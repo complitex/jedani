@@ -15,6 +15,7 @@
 
     <properties>
         <wicket.version>8.0.0-M8</wicket.version>
+        <wicket-bootstrap.version>2.0.0-M7</wicket-bootstrap.version>
     </properties>
 
     <dependencyManagement>
@@ -36,6 +37,30 @@
                 <groupId>org.apache.wicket</groupId>
                 <artifactId>wicket-core</artifactId>
                 <version>${wicket.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.wicket</groupId>
+                <artifactId>wicket-cdi-1.1</artifactId>
+                <version>${wicket.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>de.agilecoders.wicket</groupId>
+                <artifactId>wicket-bootstrap-core</artifactId>
+                <version>${wicket-bootstrap.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>de.agilecoders.wicket</groupId>
+                <artifactId>wicket-bootstrap-less</artifactId>
+                <version>${wicket-bootstrap.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>de.agilecoders.wicket</groupId>
+                <artifactId>wicket-bootstrap-themes</artifactId>
+                <version>${wicket-bootstrap.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
