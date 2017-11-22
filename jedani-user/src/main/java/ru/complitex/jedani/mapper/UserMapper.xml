@@ -5,4 +5,47 @@
     <select id="ping" resultType="string">
         select concat('pong ', now())
     </select>
+
+    <insert id="insertUser" parameterType="ru.complitex.jedani.entity.User">
+        insert into user (id, email, encrypted_password, ancestry, j_id, reset_password_token, reset_password_send_at,
+                          remember_created_at, created_at, updated_at, mk_status, first_name, second_name, last_name,
+                          phone, city_id, manager_rank_id, involved_at, full_ancestry_path, depth_level, ancestry_depth,
+                          contact_info, birthday, fired_status, old_parent_id, old_child_id)
+        value (#{id}, #{email}, #{encryptedPassword}, #{ancestry}, #{jId}, #{resetPasswordToken}, #{resetPasswordSendAt},
+          #{rememberCreatedAt}, #{createdAt}, #{updatedAt}, #{mkStatus}, #{firstName}, #{secondName}, #{lastName}, #{phone},
+          #{cityId}, #{managerRankId}, #{involvedAt}, #{fullAncestryPath}, #{depthLevel}, #{ancestryDepth}, #{contactInfo},
+          #{birthday}, #{firedStatus}, #{oldParentId}, #{oldChildId})
+    </insert>
+
+    <update id="updateUser" parameterType="ru.complitex.jedani.entity.User">
+        update user
+        <set>
+            <if test="email != null">email = #{email},</if>
+            <if test="encryptedPassword != null">encrypted_password = #{encryptedPassword},</if>
+            <if test="ancestry != null">ancestry = #{ancestry},</if>
+            <if test="jId != null">j_id = #{jId},</if>
+            <if test="resetPasswordToken != null">reset_password_token = #{resetPasswordToken},</if>
+            <if test="resetPasswordSendAt != null">reset_password_send_at = #{resetPasswordSendAt},</if>
+            <if test="rememberCreatedAt != null">remember_created_at = #{rememberCreatedAt},</if>
+            <if test="createdAt != null">created_at = #{createdAt},</if>
+            <if test="updatedAt != null">updated_at = #{updatedAt},</if>
+            <if test="mkStatus != null">mk_status = #{mkStatus},</if>
+            <if test="firstName != null">first_name = #{firstName},</if>
+            <if test="secondName != null">second_name = #{secondName},</if>
+            <if test="lastName != null">last_name = #{lastName},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="cityId != null">city_id = #{cityId},</if>
+            <if test="managerRankId != null">manager_rank_id = #{managerRankId},</if>
+            <if test="involvedAt != null">involved_at = #{involvedAt},</if>
+            <if test="fullAncestryPath != null">full_ancestry_path = #{fullAncestryPath},</if>
+            <if test="depthLevel != null">depth_level = #{depthLevel},</if>
+            <if test="ancestryDepth != null">ancestry_depth = #{ancestryDepth},</if>
+            <if test="contactInfo != null">contact_info = #{contactInfo},</if>
+            <if test="birthday != null">birthday = #{birthday},</if>
+            <if test="firedStatus != null">fired_status = #{firedStatus},</if>
+            <if test="oldParentId != null">old_parent_id = #{oldParentId},</if>
+            <if test="oldChildId != null">old_child_id = #{oldChildId},</if>
+        </set>
+        where id = #{id}
+    </update>
 </mapper>
