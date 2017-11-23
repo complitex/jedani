@@ -9,6 +9,7 @@ import de.agilecoders.wicket.themes.markup.html.google.GoogleTheme;
 import org.apache.wicket.Page;
 import org.apache.wicket.cdi.CdiConfiguration;
 import org.apache.wicket.protocol.http.WebApplication;
+import ru.complitex.jedani.web.catalog.ImportPage;
 
 /**
  * @author Anatoly A. Ivanov
@@ -37,6 +38,7 @@ public class JedaniWebApplication extends WebApplication{
     }
 
     private void configureMount() {
+        mountPage("import", ImportPage.class);
 
     }
 }

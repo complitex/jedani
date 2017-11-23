@@ -13,6 +13,8 @@
     </environments>
 
     <mappers>
+        <mapper resource="ru/complitex/jedani/mapper/RegionMapper.xml"/>
+        <mapper resource="ru/complitex/jedani/mapper/CityMapper.xml"/>
         <mapper resource="ru/complitex/jedani/mapper/UserMapper.xml"/>
     </mappers>
 </configuration>

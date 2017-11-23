@@ -1,4 +1,4 @@
-package ru.complitex.jedani.service;
+package ru.complitex.jedani.producer;
 
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -13,7 +13,7 @@ import java.io.IOException;
  * @author Anatoly A. Ivanov
  * 22.11.2017 15:12
  */
-public class DatabaseProducer {
+public class SqlSessionFactoryProducer {
     @ApplicationScoped
     @Produces
     @SessionFactoryProvider
