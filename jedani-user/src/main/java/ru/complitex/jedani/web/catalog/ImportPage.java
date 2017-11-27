@@ -28,6 +28,7 @@ public class ImportPage extends BasePage{
         add(feedback);
 
         Form regionForm = new Form("regionForm");
+        regionForm.setOutputMarkupId(true);
         regionForm.setMultiPart(true);
         add(regionForm);
 
@@ -38,19 +39,19 @@ public class ImportPage extends BasePage{
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
                 try {
-                    importService.importRegions(uploadField.getFileUpload().getInputStream());
+                    ImportService.Status status = importService.importRegions(uploadField.getFileUpload().getInputStream());
 
-                    info("Импорт успешно");
+                    if (status.getErrorMessage() == null){
+                        info("Успешно импортированно " + status.getCount() + " районов");
+                    }else{
+                        error("Ошибка импорта " + status.getErrorMessage());
+                    }
                 } catch (Exception e) {
                     log.error("error import regions", e);
-
-                    error(e.getMessage());
                 }finally {
-                    target.add(feedback);
+                    target.add(feedback, regionForm);
                 }
             }
         });
-
-
     }
 }

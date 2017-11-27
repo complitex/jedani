@@ -5,4 +5,8 @@
     <insert id="insertRegion" parameterType="ru.complitex.jedani.entity.Region">
         insert into region (id, name, manager_id) value (#{id}, #{name}, #{managerId})
     </insert>
+
+    <select id="selectHasRegion" parameterType="int" resultType="boolean">
+        select count(id) > 0 from region where id = #{id}
+    </select>
 </mapper>

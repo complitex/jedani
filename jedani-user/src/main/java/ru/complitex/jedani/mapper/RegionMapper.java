@@ -1,12 +1,10 @@
 package ru.complitex.jedani.mapper;
 
 import org.apache.ibatis.session.SqlSession;
-import org.mybatis.cdi.Transactional;
 import ru.complitex.jedani.entity.Region;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import java.util.List;
 
 /**
  * @author Anatoly A. Ivanov
@@ -21,8 +19,7 @@ public class RegionMapper {
         sqlSession.insert("insertRegion", region);
     }
 
-    @Transactional
-    public void insertRegions(List<Region> regions){
-        regions.forEach(this::insertRegion);
+    public boolean hasRegion(Integer id){
+        return sqlSession.selectOne("selectHasRegion", id);
     }
 }
