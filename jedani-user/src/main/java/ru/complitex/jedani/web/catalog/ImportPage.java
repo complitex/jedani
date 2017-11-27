@@ -20,26 +20,28 @@ public class ImportPage extends BasePage{
     private Logger log = LoggerFactory.getLogger(ImportPage.class);
 
     @Inject
-    private ImportService importService;
+    private transient ImportService importService;
 
     public ImportPage() {
         FeedbackPanel feedback = new FeedbackPanel("feedback");
         feedback.setOutputMarkupId(true);
         add(feedback);
 
+        //Regions
+
         Form regionForm = new Form("regionForm");
         regionForm.setOutputMarkupId(true);
         regionForm.setMultiPart(true);
         add(regionForm);
 
-        FileUploadField uploadField = new FileUploadField("uploadField");
-        regionForm.add(uploadField);
+        FileUploadField regionUploadField = new FileUploadField("uploadField");
+        regionForm.add(regionUploadField);
 
         regionForm.add(new AjaxSubmitLink("upload") {
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
                 try {
-                    ImportService.Status status = importService.importRegions(uploadField.getFileUpload().getInputStream());
+                    ImportService.Status status = importService.importRegions(regionUploadField.getFileUpload().getInputStream());
 
                     if (status.getErrorMessage() == null){
                         info("Успешно импортированно " + status.getCount() + " районов");
@@ -50,6 +52,64 @@ public class ImportPage extends BasePage{
                     log.error("error import regions", e);
                 }finally {
                     target.add(feedback, regionForm);
+                }
+            }
+        });
+
+        //Cities
+
+        Form cityForm = new Form("cityForm");
+        cityForm.setOutputMarkupId(true);
+        cityForm.setMultiPart(true);
+        add(cityForm);
+
+        FileUploadField cityUploadField = new FileUploadField("uploadField");
+        cityForm.add(cityUploadField);
+
+        cityForm.add(new AjaxSubmitLink("upload") {
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                try {
+                    ImportService.Status status = importService.importCities(cityUploadField.getFileUpload().getInputStream());
+
+                    if (status.getErrorMessage() == null){
+                        info("Успешно импортированно " + status.getCount() + " населенных пунктов");
+                    }else{
+                        error("Ошибка импорта " + status.getErrorMessage());
+                    }
+                } catch (Exception e) {
+                    log.error("error import cities", e);
+                }finally {
+                    target.add(feedback, cityForm);
+                }
+            }
+        });
+
+        //Users
+
+        Form userForm = new Form("userForm");
+        userForm.setOutputMarkupId(true);
+        userForm.setMultiPart(true);
+        add(userForm);
+
+        FileUploadField userUploadField = new FileUploadField("uploadField");
+        userForm.add(userUploadField);
+
+        userForm.add(new AjaxSubmitLink("upload") {
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                try {
+                    ImportService.Status status = importService.importUsers(cityUploadField.getFileUpload().getInputStream());
+
+                    if (status.getErrorMessage() == null){
+                        info("Успешно импортированно " + status.getCount() + " пользователей");
+                    }else{
+                        error("Ошибка импорта " + status.getErrorMessage());
+                    }
+                } catch (Exception e) {
+                    log.error("error import users", e);
+                }finally {
+                    target.add(feedback, userForm);
                 }
             }
         });

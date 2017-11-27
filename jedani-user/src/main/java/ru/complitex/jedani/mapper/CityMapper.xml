@@ -5,4 +5,8 @@
     <insert id="insertCity" parameterType="ru.complitex.jedani.entity.City">
         insert into city (id, name, region_id, manager_id) value (#{id}, #{name}, #{regionId}, #{managerId})
     </insert>
+
+    <select id="hasCity" parameterType="int" resultType="boolean">
+        select count(id) > 0 from city where id = #{id}
+    </select>
 </mapper>

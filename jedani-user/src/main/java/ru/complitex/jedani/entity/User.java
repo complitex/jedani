@@ -67,11 +67,11 @@ public class User implements Serializable{
         this.ancestry = ancestry;
     }
 
-    public String getjId() {
+    public String getJId() {
         return jId;
     }
 
-    public void setjId(String jId) {
+    public void setJId(String jId) {
         this.jId = jId;
     }
 

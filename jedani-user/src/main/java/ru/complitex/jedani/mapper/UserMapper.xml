@@ -48,4 +48,8 @@
         </set>
         where id = #{id}
     </update>
+
+    <select id="hasUser" parameterType="int" resultType="boolean">
+        select count(id) > 0 from user where id = #{id}
+    </select>
 </mapper>
