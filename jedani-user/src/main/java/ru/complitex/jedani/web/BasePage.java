@@ -6,6 +6,7 @@ import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import ru.complitex.jedani.web.catalog.ImportPage;
+import ru.complitex.jedani.web.user.UserListPage;
 
 /**
  * @author Anatoly A. Ivanov
@@ -14,6 +15,7 @@ import ru.complitex.jedani.web.catalog.ImportPage;
 public class BasePage extends WebPage{
     public BasePage() {
         add(new BookmarkablePageLink<>("import", ImportPage.class)); //todo class="active"
+        add(new BookmarkablePageLink<>("users", UserListPage.class));
     }
 
     @Override

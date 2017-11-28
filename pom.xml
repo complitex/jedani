@@ -46,6 +46,12 @@
             </dependency>
 
             <dependency>
+                <groupId>org.apache.wicket</groupId>
+                <artifactId>wicket-extensions</artifactId>
+                <version>${wicket.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>de.agilecoders.wicket</groupId>
                 <artifactId>wicket-bootstrap-core</artifactId>
                 <version>${wicket-bootstrap.version}</version>
@@ -60,6 +66,12 @@
             <dependency>
                 <groupId>de.agilecoders.wicket</groupId>
                 <artifactId>wicket-bootstrap-themes</artifactId>
+                <version>${wicket-bootstrap.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>de.agilecoders.wicket</groupId>
+                <artifactId>wicket-bootstrap-extensions</artifactId>
                 <version>${wicket-bootstrap.version}</version>
             </dependency>
 

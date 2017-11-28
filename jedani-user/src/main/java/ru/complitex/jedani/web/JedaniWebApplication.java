@@ -10,6 +10,7 @@ import org.apache.wicket.Page;
 import org.apache.wicket.cdi.CdiConfiguration;
 import org.apache.wicket.protocol.http.WebApplication;
 import ru.complitex.jedani.web.catalog.ImportPage;
+import ru.complitex.jedani.web.user.UserListPage;
 
 /**
  * @author Anatoly A. Ivanov
@@ -39,6 +40,7 @@ public class JedaniWebApplication extends WebApplication{
 
     private void configureMount() {
         mountPage("import", ImportPage.class);
+        mountPage("users", UserListPage.class);
 
     }
 }
