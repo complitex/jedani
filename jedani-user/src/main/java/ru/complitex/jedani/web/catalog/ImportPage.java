@@ -1,5 +1,6 @@
 package ru.complitex.jedani.web.catalog;
 
+import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.form.Form;
@@ -23,7 +24,7 @@ public class ImportPage extends BasePage{
     private transient ImportService importService;
 
     public ImportPage() {
-        FeedbackPanel feedback = new FeedbackPanel("feedback");
+        FeedbackPanel feedback = new NotificationPanel("feedback");
         feedback.setOutputMarkupId(true);
         add(feedback);
 
@@ -44,7 +45,7 @@ public class ImportPage extends BasePage{
                     ImportService.Status status = importService.importRegions(regionUploadField.getFileUpload().getInputStream());
 
                     if (status.getErrorMessage() == null){
-                        info("Успешно импортированно " + status.getCount() + " районов");
+                        info("Импортировано " + status.getCount() + " районов");
                     }else{
                         error("Ошибка импорта " + status.getErrorMessage());
                     }
@@ -73,7 +74,7 @@ public class ImportPage extends BasePage{
                     ImportService.Status status = importService.importCities(cityUploadField.getFileUpload().getInputStream());
 
                     if (status.getErrorMessage() == null){
-                        info("Успешно импортированно " + status.getCount() + " населенных пунктов");
+                        info("Импортировано " + status.getCount() + " населенных пунктов");
                     }else{
                         error("Ошибка импорта " + status.getErrorMessage());
                     }
@@ -102,7 +103,7 @@ public class ImportPage extends BasePage{
                     ImportService.Status status = importService.importUsers(cityUploadField.getFileUpload().getInputStream());
 
                     if (status.getErrorMessage() == null){
-                        info("Успешно импортированно " + status.getCount() + " пользователей");
+                        info("Импортировано " + status.getCount() + " пользователей");
                     }else{
                         error("Ошибка импорта " + status.getErrorMessage());
                     }
