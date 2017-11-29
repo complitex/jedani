@@ -52,4 +52,55 @@
     <select id="hasUser" parameterType="int" resultType="boolean">
         select count(id) > 0 from user where id = #{id}
     </select>
+
+    <resultMap id="userResultMap" type="ru.complitex.jedani.entity.User">
+        <id column="id" property="id"/>
+        <result column="email" property="email"/>
+        <result column="encrypted_password" property="encryptedPassword"/>
+        <result column="ancestry" property="ancestry"/>
+        <result column="j_id" property="jId"/>
+        <result column="reset_password_token" property="resetPasswordToken"/>
+        <result column="reset_password_send_at" property="resetPasswordSendAt"/>
+        <result column="remember_created_at" property="rememberCreatedAt"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+        <result column="mk_status" property="mkStatus"/>
+        <result column="first_name" property="firstName"/>
+        <result column="second_name" property="secondName"/>
+        <result column="last_name" property="lastName"/>
+        <result column="phone" property="phone"/>
+        <result column="city_id" property="cityId"/>
+        <result column="manager_rank_id" property="managerRankId"/>
+        <result column="involved_at" property="involvedAt"/>
+        <result column="full_ancestry_path" property="fullAncestryPath"/>
+        <result column="depth_level" property="depthLevel"/>
+        <result column="ancestry_depth" property="ancestryDepth"/>
+        <result column="contact_info" property="contactInfo"/>
+        <result column="birthday" property="birthday"/>
+        <result column="fired_status" property="firedStatus"/>
+        <result column="old_parent_id" property="oldParentId"/>
+        <result column="old_child_id" property="oldChildId"/>
+    </resultMap>
+
+    <sql id="selectUserWhere">
+        <where>
+            <if test="object.id != null">and id = #{object.id}</if>
+            <if test="object.email != null">and email = #{object.email}</if>
+            <if test="object.firstName != null">and first_name = #{object.firstName}</if>
+            <if test="object.secondName != null">and second_name = #{object.secondName}</if>
+            <if test="object.lastName != null">and last_name = #{object.lastName}</if>
+        </where>
+    </sql>
+
+    <select id="selectUserList" parameterType="ru.complitex.common.entity.FilterWrapper" resultMap="userResultMap">
+        select * from user <include refid="selectUserWhere"/> ${orderLimit}
+    </select>
+
+    <select id="selectUserListCount" parameterType="ru.complitex.common.entity.FilterWrapper" resultType="int">
+        select count(id) from user <include refid="selectUserWhere"/>
+    </select>
+
+    <select id="selectUser" parameterType="int" resultMap="userResultMap">
+        select * from user where id = #{id}
+    </select>
 </mapper>

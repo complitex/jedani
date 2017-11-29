@@ -10,3 +10,7 @@ body {
 .form-import{
     margin-bottom: 30px;
 }
+
+li.disabled a, li.disabled span{
+    cursor: default !important;
+}
