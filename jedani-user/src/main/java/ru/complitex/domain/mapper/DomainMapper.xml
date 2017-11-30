@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ru.complitex.domain.mapper.DomainMapper">
+    <!--suppress SqlResolve -->
+    <insert id="insertDomain" parameterType="ru.complitex.domain.entity.Domain">
+        insert into `${entityName}` (`object_id`, `parent_id`, `parent_entity_id`, `start_date`, `end_date`, `status`,
+          `permission_id`, `external_id`)
+        value (#{objectId}, #{parentId}, #{parentEntityId}, #{startDate}, #{endDate}, #{status},
+          #{permissionId}, #{externalId})
+    </insert>
+
+</mapper>
