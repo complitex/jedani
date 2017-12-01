@@ -137,7 +137,7 @@ CREATE TABLE `permission` (
 -- ------------------------------
 DROP TABLE IF EXISTS `region`;
 CREATE TABLE `region` (
-  `pk_id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Суррогатный ключ',
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
   `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
   `parent_id` BIGINT(20) COMMENT 'Идентификатор родительского объекта',
   `parent_entity_id` BIGINT(20) COMMENT 'Идентификатор сущности родительского объекта',
@@ -146,7 +146,7 @@ CREATE TABLE `region` (
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
   `permission_id` BIGINT(20) NOT NULL DEFAULT 0 COMMENT 'Ключ прав доступа к объекту',
   `external_id` VARCHAR(20) COMMENT 'Внешний идентификатор импорта записи',
-  PRIMARY KEY  (`pk_id`),
+  PRIMARY KEY  (`id`),
   UNIQUE KEY `unique_object_id__start_date` (`object_id`,`start_date`),
   UNIQUE KEY `unique_external_id` (`external_id`,`start_date`),
   KEY `key_object_id` (`object_id`),
@@ -162,7 +162,7 @@ CREATE TABLE `region` (
 
 DROP TABLE IF EXISTS `region_attribute`;
 CREATE TABLE `region_attribute` (
-  `pk_id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Суррогатный ключ',
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
   `attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор атрибута',
   `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
   `entity_attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор типа атрибута',
@@ -170,7 +170,7 @@ CREATE TABLE `region_attribute` (
   `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия атрибута',
   `end_date` TIMESTAMP NULL DEFAULT NULL COMMENT 'Дата окончания периода действия атрибута',
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
-  PRIMARY KEY  (`pk_id`),
+  PRIMARY KEY  (`id`),
   UNIQUE KEY `unique_id` (`attribute_id`,`object_id`,`entity_attribute_id`, `start_date`),
   KEY `key_object_id` (`object_id`),
   KEY `key_entity_attribute_id` (`entity_attribute_id`),
@@ -184,12 +184,12 @@ CREATE TABLE `region_attribute` (
 
 DROP TABLE IF EXISTS `region_string_value`;
 CREATE TABLE `region_string_value` (
-  `pk_id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Суррогатный ключ',
-  `id` BIGINT(20) NOT NULL COMMENT 'Идентификатор локализации',
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
+  `value_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор локализации',
   `locale_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор локали',
   `value` VARCHAR(1000) COMMENT 'Текстовое значение',
-  PRIMARY KEY (`pk_id`),
-  UNIQUE KEY `unique_id__locale` (`id`,`locale_id`),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_id__locale` (`value_id`,`locale_id`),
   KEY `key_locale` (`locale_id`),
   KEY `key_value` (`value`(128)),
   CONSTRAINT `fk_region_string_value__locale` FOREIGN KEY (`locale_id`) REFERENCES `locale` (`id`)
@@ -201,7 +201,7 @@ CREATE TABLE `region_string_value` (
 
 DROP TABLE IF EXISTS `city_type`;
 CREATE TABLE `city_type` (
-  `pk_id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Суррогатный ключ',
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
   `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
   `parent_id` BIGINT(20) COMMENT 'Идентификатор родительского объекта: не используется',
   `parent_entity_id` BIGINT(20) COMMENT 'Идентификатор сущности родительского объекта',
@@ -210,7 +210,7 @@ CREATE TABLE `city_type` (
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
   `permission_id` BIGINT(20) NOT NULL DEFAULT 0 COMMENT 'Ключ прав доступа к объекту',
   `external_id` VARCHAR(20) COMMENT 'Внешний идентификатор импорта записи',
-  PRIMARY KEY (`pk_id`),
+  PRIMARY KEY (`id`),
   UNIQUE KEY `unique_object_id__start_date` (`object_id`,`start_date`),
   UNIQUE KEY `unique_external_id` (`external_id`,`start_date`),
   KEY `key_object_id` (object_id),
@@ -226,7 +226,7 @@ CREATE TABLE `city_type` (
 
 DROP TABLE IF EXISTS `city_type_attribute`;
 CREATE TABLE `city_type_attribute` (
-  `pk_id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Суррогатный ключ',
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
   `attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор атрибута',
   `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
   `entity_attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор типа атрибута',
@@ -234,7 +234,7 @@ CREATE TABLE `city_type_attribute` (
   `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия атрибута',
   `end_date` TIMESTAMP NULL DEFAULT NULL COMMENT 'Дата окончания периода действия атрибута',
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
-  PRIMARY KEY (`pk_id`),
+  PRIMARY KEY (`id`),
   UNIQUE KEY `unique_id` (`attribute_id`,`object_id`,`entity_attribute_id`, `start_date`),
   KEY `key_object_id` (`object_id`),
   KEY `key_entity_attribute_id` (`entity_attribute_id`),
@@ -249,12 +249,12 @@ CREATE TABLE `city_type_attribute` (
 
 DROP TABLE IF EXISTS `city_type_string_value`;
 CREATE TABLE `city_type_string_value` (
-  `pk_id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Суррогатный ключ',
-  `id` BIGINT(20) NOT NULL COMMENT 'Идентификатор локализации',
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
+  `value_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор локализации',
   `locale_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор локали',
   `value` VARCHAR(1000) COMMENT 'Текстовое значение',
-  PRIMARY KEY (`pk_id`),
-  UNIQUE KEY `unique_id__locale` (`id`,`locale_id`),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_id__locale` (`value_id`,`locale_id`),
   KEY `key_locale` (`locale_id`),
   KEY `key_value` (`value`(128)),
   CONSTRAINT `fk_city_type_string_value__locale` FOREIGN KEY (`locale_id`) REFERENCES `locale` (`id`)
@@ -265,7 +265,7 @@ CREATE TABLE `city_type_string_value` (
 -- ------------------------------
 DROP TABLE IF EXISTS `city`;
 CREATE TABLE `city` (
-  `pk_id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Суррогатный ключ',
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
   `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
   `parent_id` BIGINT(20) COMMENT 'Идентификатор родительского объекта',
   `parent_entity_id` BIGINT(20) COMMENT 'Идентификатор сущности родительского объекта',
@@ -274,7 +274,7 @@ CREATE TABLE `city` (
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
   `permission_id` BIGINT(20) NOT NULL DEFAULT 0 COMMENT 'Ключ прав доступа к объекту',
   `external_id` VARCHAR(20) COMMENT 'Внешний идентификатор импорта записи',
-  PRIMARY KEY (`pk_id`),
+  PRIMARY KEY (`id`),
   UNIQUE KEY `unique_object_id__start_date` (`object_id`,`start_date`),
   UNIQUE KEY `unique_external_id` (`external_id`,`start_date`),
   KEY `key_object_id` (`object_id`),
@@ -290,7 +290,7 @@ CREATE TABLE `city` (
 
 DROP TABLE IF EXISTS `city_attribute`;
 CREATE TABLE `city_attribute` (
-  `pk_id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Суррогатный ключ',
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
   `attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор атрибута',
   `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
   `entity_attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор типа атрибута',
@@ -298,7 +298,7 @@ CREATE TABLE `city_attribute` (
   `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия атрибута',
   `end_date` TIMESTAMP NULL DEFAULT NULL COMMENT 'Дата окончания периода действия атрибута',
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
-  PRIMARY KEY  (`pk_id`),
+  PRIMARY KEY  (`id`),
   UNIQUE KEY `unique_id` (`attribute_id`,`object_id`,`entity_attribute_id`, `start_date`),
   KEY `key_object_id` (`object_id`),
   KEY `key_entity_attribute_id` (`entity_attribute_id`),
@@ -312,12 +312,12 @@ CREATE TABLE `city_attribute` (
 
 DROP TABLE IF EXISTS `city_string_value`;
 CREATE TABLE `city_string_value` (
-  `pk_id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Суррогатный ключ',
-  `id` BIGINT(20) NOT NULL COMMENT 'Идентификатор локализации',
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Суррогатный ключ',
+  `value_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор локализации',
   `locale_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор локали',
   `value` VARCHAR(1000) COMMENT 'Текстовое значение',
-  PRIMARY KEY (`pk_id`),
-  UNIQUE KEY `unique_id__locale` (`id`,`locale_id`),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_id__locale` (`value_id`,`locale_id`),
   KEY `key_locale` (`locale_id`),
   KEY `key_value` (`value`(128)),
   CONSTRAINT `fk_city_string_value__locale` FOREIGN KEY (`locale_id`) REFERENCES `locale` (`id`)

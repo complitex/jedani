@@ -11,8 +11,8 @@ import java.util.List;
  * 30.11.2017 15:42
  */
 public class StringValue implements Serializable{
-    private Long pkId;
     private Long id;
+    private Long valueId;
     private Long localeId;
     private String value;
 
@@ -40,20 +40,20 @@ public class StringValue implements Serializable{
         return stringValues;
     }
 
-    public Long getPkId() {
-        return pkId;
-    }
-
-    public void setPkId(Long pkId) {
-        this.pkId = pkId;
-    }
-
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getValueId() {
+        return valueId;
+    }
+
+    public void setValueId(Long valueId) {
+        this.valueId = valueId;
     }
 
     public Long getLocaleId() {
