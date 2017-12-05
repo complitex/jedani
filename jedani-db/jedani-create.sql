@@ -58,29 +58,28 @@ CREATE TABLE `locale` (
 -- Entity
 -- ------------------------------
 
-DROP TABLE IF EXISTS `entity_string_value`;
-CREATE TABLE `entity_string_value` (
-  `pk_id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Суррогатный ключ',
-  `id` BIGINT(20) NOT NULL COMMENT 'Идентификатор локализации',
-  `locale_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор локали',
-  `value` VARCHAR(1000) COMMENT 'Текстовое значение',
-  PRIMARY KEY (`pk_id`),
-  UNIQUE KEY `unique_id__locale` (`id`, `locale_id`),
-  KEY `key_locale` (`locale_id`),
-  KEY `key_value` (`value`(128)),
-  CONSTRAINT `fk_string_value__locale` FOREIGN KEY (`locale_id`) REFERENCES `locale` (`id`)
-) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Локализация';
-
 DROP TABLE IF EXISTS `entity`;
 CREATE TABLE `entity` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор сущности',
   `entity` VARCHAR(100) NOT NULL COMMENT 'Название сущности',
-  `name_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор локализации названия сущности',
-  PRIMARY KEY  (`id`),
-  UNIQUE KEY `unique_entity` (entity),
-  KEY `key_name_id` (`name_id`),
-  CONSTRAINT `fk_entity__entity_string_value` FOREIGN KEY (name_id) REFERENCES entity_string_value (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_entity` (entity)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Сущность';
+
+DROP TABLE IF EXISTS `entity_string_value`;
+CREATE TABLE `entity_string_value` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор локализации',
+  `entity_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор сущности',
+  `locale_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор локали',
+  `value` VARCHAR(1000) COMMENT 'Текстовое значение',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_id__locale` (`entity_id`, `locale_id`),
+  KEY `key_entity` (`entity_id`),
+  KEY `key_locale` (`locale_id`),
+  KEY `key_value` (`value`(128)),
+  CONSTRAINT `fk_entity_string_value__entity` FOREIGN KEY (`entity_id`) REFERENCES `entity` (`id`),
+  CONSTRAINT `fk_entity_string_value__locale` FOREIGN KEY (`locale_id`) REFERENCES `locale` (`id`)
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Локализация';
 
 DROP TABLE IF EXISTS entity_value_type;
 CREATE TABLE `entity_value_type` (
@@ -108,6 +107,21 @@ CREATE TABLE `entity_attribute` (
   CONSTRAINT `fk_entity_attribute__entity_string_value` FOREIGN KEY (`name_id`) REFERENCES entity_string_value (`id`),
   CONSTRAINT `fk_entity_attribute__entity_value_type` FOREIGN KEY (`value_type_id`) REFERENCES entity_value_type (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Тип атрибута сущности';
+
+DROP TABLE IF EXISTS `entity_attribute_string_value`;
+CREATE TABLE `entity_attribute_string_value` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор локализации',
+  `entity_attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор типа аттрибута',
+  `locale_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор локали',
+  `value` VARCHAR(1000) COMMENT 'Текстовое значение',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_id__locale` (`entity_attribute_id`, `locale_id`),
+  KEY `key_entity_attribute_id` (`entity_attribute_id`),
+  KEY `key_locale` (`locale_id`),
+  KEY `key_value` (`value`(128)),
+  CONSTRAINT `fk_entity_string_value__entity_attribute` FOREIGN KEY (`entity_attribute_id`) REFERENCES `entity_attribute` (`id`),
+  CONSTRAINT `fk_string_value__locale` FOREIGN KEY (`locale_id`) REFERENCES `locale` (`id`)
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Локализация';
 
 -- ------------------------------
 -- Permission
@@ -189,6 +203,7 @@ CREATE TABLE `region_string_value` (
   `value` VARCHAR(1000) COMMENT 'Текстовое значение',
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_id__locale` (`attribute_id`,`locale_id`),
+  KEY `key_attribute_id` (`attribute_id`),
   KEY `key_locale` (`locale_id`),
   KEY `key_value` (`value`(128)),
   CONSTRAINT `fk_region_string_value__region_attribute` FOREIGN KEY (`attribute_id`) REFERENCES `region_attribute` (`id`),
@@ -254,6 +269,7 @@ CREATE TABLE `city_type_string_value` (
   `value` VARCHAR(1000) COMMENT 'Текстовое значение',
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_id__locale` (`attribute_id`,`locale_id`),
+  KEY `key_attribute_id` (`attribute_id`),
   KEY `key_locale` (`locale_id`),
   KEY `key_value` (`value`(128)),
   CONSTRAINT `fk_city_type_string_value__city_type_attribute` FOREIGN KEY (`attribute_id`) REFERENCES `city_type_attribute` (`id`),
@@ -317,6 +333,7 @@ CREATE TABLE `city_string_value` (
   `value` VARCHAR(1000) COMMENT 'Текстовое значение',
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_id__locale` (`attribute_id`,`locale_id`),
+  KEY `key_attribute_id` (`attribute_id`),
   KEY `key_locale` (`locale_id`),
   KEY `key_value` (`value`(128)),
   CONSTRAINT `fk_city_string_value__city_attribute` FOREIGN KEY (`attribute_id`) REFERENCES `city_attribute` (`id`),

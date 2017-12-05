@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class StringValue implements Serializable{
     private Long id;
-    private Long valueId;
+    private Long attributeId;
     private Long localeId;
     private String value;
 
@@ -48,12 +48,12 @@ public class StringValue implements Serializable{
         this.id = id;
     }
 
-    public Long getValueId() {
-        return valueId;
+    public Long getAttributeId() {
+        return attributeId;
     }
 
-    public void setValueId(Long valueId) {
-        this.valueId = valueId;
+    public void setAttributeId(Long attributeId) {
+        this.attributeId = attributeId;
     }
 
     public Long getLocaleId() {
