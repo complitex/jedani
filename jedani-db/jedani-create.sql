@@ -61,22 +61,22 @@ CREATE TABLE `locale` (
 DROP TABLE IF EXISTS `entity`;
 CREATE TABLE `entity` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор сущности',
-  `entity` VARCHAR(100) NOT NULL COMMENT 'Название сущности',
+  `name` VARCHAR(100) NOT NULL COMMENT 'Название сущности',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `unique_entity` (entity)
+  UNIQUE KEY `unique_entity` (`name`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Сущность';
 
-DROP TABLE IF EXISTS `entity_string_value`;
-CREATE TABLE `entity_string_value` (
+DROP TABLE IF EXISTS `entity_value`;
+CREATE TABLE `entity_value` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор локализации',
   `entity_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор сущности',
   `locale_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор локали',
-  `value` VARCHAR(1000) COMMENT 'Текстовое значение',
+  `text` VARCHAR(1000) COMMENT 'Текстовое значение',
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_id__locale` (`entity_id`, `locale_id`),
   KEY `key_entity` (`entity_id`),
   KEY `key_locale` (`locale_id`),
-  KEY `key_value` (`value`(128)),
+  KEY `key_value` (`text`(128)),
   CONSTRAINT `fk_entity_string_value__entity` FOREIGN KEY (`entity_id`) REFERENCES `entity` (`id`),
   CONSTRAINT `fk_entity_string_value__locale` FOREIGN KEY (`locale_id`) REFERENCES `locale` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Локализация';
@@ -92,7 +92,6 @@ DROP TABLE IF EXISTS `entity_attribute`;
 CREATE TABLE `entity_attribute` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор типа атрибута',
   `entity_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор сущности',
-  `name_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор локализации названия атрибута',
   `start_date` TIMESTAMP NOT NULL default CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия типа атрибута',
   `end_date` TIMESTAMP NULL default NULL COMMENT 'Дата окончания периода действия типа атрибута',
   `value_type_id` BIGINT(20) COMMENT  'Тип значения атрибута',
@@ -101,24 +100,22 @@ CREATE TABLE `entity_attribute` (
   `required` TINYINT(1) default 0 NOT NULL COMMENT 'Является ли атрибут обязательным',
   PRIMARY KEY (`id`),
   KEY `key_entity_id` (`entity_id`),
-  KEY `key_name_id` (`name_id`),
   KEY `key_value_id` (`value_type_id`),
   CONSTRAINT `fk_attribute_type__entity` FOREIGN KEY (`entity_id`) REFERENCES `entity` (`id`),
-  CONSTRAINT `fk_entity_attribute__entity_string_value` FOREIGN KEY (`name_id`) REFERENCES entity_string_value (`id`),
   CONSTRAINT `fk_entity_attribute__entity_value_type` FOREIGN KEY (`value_type_id`) REFERENCES entity_value_type (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Тип атрибута сущности';
 
-DROP TABLE IF EXISTS `entity_attribute_string_value`;
-CREATE TABLE `entity_attribute_string_value` (
+DROP TABLE IF EXISTS `entity_attribute_value`;
+CREATE TABLE `entity_attribute_value` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор локализации',
   `entity_attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор типа аттрибута',
   `locale_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор локали',
-  `value` VARCHAR(1000) COMMENT 'Текстовое значение',
+  `text` VARCHAR(1000) COMMENT 'Текстовое значение',
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_id__locale` (`entity_attribute_id`, `locale_id`),
   KEY `key_entity_attribute_id` (`entity_attribute_id`),
   KEY `key_locale` (`locale_id`),
-  KEY `key_value` (`value`(128)),
+  KEY `key_value` (`text`(128)),
   CONSTRAINT `fk_entity_string_value__entity_attribute` FOREIGN KEY (`entity_attribute_id`) REFERENCES `entity_attribute` (`id`),
   CONSTRAINT `fk_string_value__locale` FOREIGN KEY (`locale_id`) REFERENCES `locale` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Локализация';
@@ -195,19 +192,19 @@ CREATE TABLE `region_attribute` (
   CONSTRAINT `fk_region_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`) REFERENCES entity_attribute (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты региона';
 
-DROP TABLE IF EXISTS `region_string_value`;
-CREATE TABLE `region_string_value` (
+DROP TABLE IF EXISTS `region_attribute_value`;
+CREATE TABLE `region_attribute_value` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
   `attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор атрибута',
   `locale_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор локали',
-  `value` VARCHAR(1000) COMMENT 'Текстовое значение',
+  `text` VARCHAR(1000) COMMENT 'Текстовое значение',
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_id__locale` (`attribute_id`,`locale_id`),
   KEY `key_attribute_id` (`attribute_id`),
   KEY `key_locale` (`locale_id`),
-  KEY `key_value` (`value`(128)),
-  CONSTRAINT `fk_region_string_value__region_attribute` FOREIGN KEY (`attribute_id`) REFERENCES `region_attribute` (`id`),
-  CONSTRAINT `fk_region_string_value__locale` FOREIGN KEY (`locale_id`) REFERENCES `locale` (`id`)
+  KEY `key_value` (`text`(128)),
+  CONSTRAINT `fk_region_attribute_value__region_attribute` FOREIGN KEY (`attribute_id`) REFERENCES `region_attribute` (`id`),
+  CONSTRAINT `fk_region_attribute_value__locale` FOREIGN KEY (`locale_id`) REFERENCES `locale` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Локализация атрибутов региона';
 
 -- ------------------------------
@@ -261,19 +258,19 @@ CREATE TABLE `city_type_attribute` (
   REFERENCES entity_attribute (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты типа населенного пункта';
 
-DROP TABLE IF EXISTS `city_type_string_value`;
-CREATE TABLE `city_type_string_value` (
+DROP TABLE IF EXISTS `city_type_attribute_value`;
+CREATE TABLE `city_type_attribute_value` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
   `attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор атрибута',
   `locale_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор локали',
-  `value` VARCHAR(1000) COMMENT 'Текстовое значение',
+  `text` VARCHAR(1000) COMMENT 'Текстовое значение',
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_id__locale` (`attribute_id`,`locale_id`),
   KEY `key_attribute_id` (`attribute_id`),
   KEY `key_locale` (`locale_id`),
-  KEY `key_value` (`value`(128)),
-  CONSTRAINT `fk_city_type_string_value__city_type_attribute` FOREIGN KEY (`attribute_id`) REFERENCES `city_type_attribute` (`id`),
-  CONSTRAINT `fk_city_type_string_value__locale` FOREIGN KEY (`locale_id`) REFERENCES `locale` (`id`)
+  KEY `key_value` (`text`(128)),
+  CONSTRAINT `fk_city_type_attribute_value__city_type_attribute` FOREIGN KEY (`attribute_id`) REFERENCES `city_type_attribute` (`id`),
+  CONSTRAINT `fk_city_type_attribute_value__locale` FOREIGN KEY (`locale_id`) REFERENCES `locale` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Локализация атрибутов типа населенного пункта';
 
 -- ------------------------------
@@ -325,19 +322,19 @@ CREATE TABLE `city_attribute` (
   CONSTRAINT `fk_city_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`) REFERENCES entity_attribute (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты населенного пункта';
 
-DROP TABLE IF EXISTS `city_string_value`;
-CREATE TABLE `city_string_value` (
+DROP TABLE IF EXISTS `city_attribute_value`;
+CREATE TABLE `city_attribute_value` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Суррогатный ключ',
   `attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор атрибута',
   `locale_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор локали',
-  `value` VARCHAR(1000) COMMENT 'Текстовое значение',
+  `text` VARCHAR(1000) COMMENT 'Текстовое значение',
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_id__locale` (`attribute_id`,`locale_id`),
   KEY `key_attribute_id` (`attribute_id`),
   KEY `key_locale` (`locale_id`),
-  KEY `key_value` (`value`(128)),
-  CONSTRAINT `fk_city_string_value__city_attribute` FOREIGN KEY (`attribute_id`) REFERENCES `city_attribute` (`id`),
-  CONSTRAINT `fk_city_string_value__locale` FOREIGN KEY (`locale_id`) REFERENCES `locale` (`id`)
+  KEY `key_value` (`text`(128)),
+  CONSTRAINT `fk_city_attribute_value__city_attribute` FOREIGN KEY (`attribute_id`) REFERENCES `city_attribute` (`id`),
+  CONSTRAINT `fk_city_attribute_value__locale` FOREIGN KEY (`locale_id`) REFERENCES `locale` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Локализация атрибутов населенного пункта';
 
 -- --------------------------------------------------------------------------------------------------------------------

@@ -4,7 +4,7 @@ package ru.complitex.domain.entity;
  * @author Anatoly A. Ivanov
  * 30.11.2017 15:31
  */
-public enum Status implements IdType{
+public enum Status implements IdEnum {
     INACTIVE(0), ACTIVE(1),  ARCHIVE(2);
 
     private Integer id;

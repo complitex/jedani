@@ -116,13 +116,13 @@ public class Domain implements Serializable{
     }
 
     public Map<String, String> getStringMap(Long entityAttributeId){
-        if (getAttribute(entityAttributeId) == null || getAttribute(entityAttributeId).getStringValues().isEmpty()){
+        if (getAttribute(entityAttributeId) == null || getAttribute(entityAttributeId).getValues().isEmpty()){
             return null;
         }
 
-        return getAttribute(entityAttributeId).getStringValues().stream()
+        return getAttribute(entityAttributeId).getValues().stream()
                 .filter(s -> s.getValue() != null)
-                .collect(Collectors.toMap(s -> Locales.getLanguage(s.getLocaleId()), StringValue::getValue));
+                .collect(Collectors.toMap(s -> Locales.getLanguage(s.getLocaleId()), Value::getValue));
     }
 
     public Long getValueId(Long entityAttributeId){

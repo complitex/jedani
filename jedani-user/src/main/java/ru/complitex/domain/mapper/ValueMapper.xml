@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ru.complitex.domain.entity.Value">
+    <!--suppress SqlResolve -->
+    <insert id="insertValue" parameterType="ru.complitex.domain.entity.Value">
+        insert into `${entityName}_value`(`attribute_id`, `locale_id`, `value`) value (#{attributeId}, #{localeId}, #{value})
+    </insert>
+
+</mapper>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ru.complitex.domain.mapper.EntityAttributeMapper">
+    <resultMap id="entityAttributeResultMap" type="ru.complitex.domain.mapper.EntityAttributeMapper">
+        <id column="id" property="id"/>
+        <result column="entity_id" property="entityId"/>
+        <result column="start_date" property="startDate"/>
+        <result column="end_date" property="endDate"/>
+        <result column="value_type_id" property="valueTypeId"/>
+        <result column="reference_id" property="referenceId"/>
+        <result column="system" property="system"/>
+        <result column="required" property="required"/>
+        <collection column="id" property="values" select="selectEntityAttributeValues"/>
+    </resultMap>
+
+    <select id="selectEntityAttributes" parameterType="long" resultMap="entityAttributeResultMap">
+        select * from entity_attribute where entity_id = #{entityId}
+    </select>
+</mapper>

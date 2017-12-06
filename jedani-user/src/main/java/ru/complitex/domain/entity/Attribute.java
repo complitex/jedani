@@ -22,7 +22,7 @@ public class Attribute implements Serializable{
 
     private String entityName;
 
-    private List<StringValue> stringValues;
+    private List<Value> values;
 
     public Attribute() {
     }
@@ -32,9 +32,9 @@ public class Attribute implements Serializable{
         this.attributeId = attributeId;
     }
 
-    public StringValue getStringValue(Long localeId){
-        if (stringValues != null){
-            for (StringValue sc: stringValues){
+    public Value getStringValue(Long localeId){
+        if (values != null){
+            for (Value sc: values){
                 if (sc.getLocaleId().equals(localeId)){
                     return sc;
                 }
@@ -45,23 +45,23 @@ public class Attribute implements Serializable{
     }
 
     public String getStringValue(){
-        StringValue stringValue = getStringValue(Locales.getSystemLocaleId());
+        Value value = getStringValue(Locales.getSystemLocaleId());
 
-        return stringValue != null ? stringValue.getValue() : null;
+        return value != null ? value.getValue() : null;
     }
 
     public String getStringValue(java.util.Locale locale){
-        StringValue stringValue = getStringValue(Locales.getLocaleId(locale));
+        Value value = getStringValue(Locales.getLocaleId(locale));
 
-        return stringValue != null ? stringValue.getValue() : null;
+        return value != null ? value.getValue() : null;
     }
 
     public void setStringValue(String value, long localeId){
-        if (stringValues == null){
-            stringValues = StringValue.newStringValues();
+        if (values == null){
+            values = Value.newStringValues();
         }
 
-        stringValues.stream()
+        values.stream()
                 .filter(s -> s.getLocaleId().equals(localeId) ||
                         (Locales.getSystemLocaleId().equals(s.getLocaleId()) && s.getValue() == null))
                 .forEach(s -> s.setValue(value));
@@ -139,11 +139,11 @@ public class Attribute implements Serializable{
         this.entityName = entityName;
     }
 
-    public List<StringValue> getStringValues() {
-        return stringValues;
+    public List<Value> getValues() {
+        return values;
     }
 
-    public void setStringValues(List<StringValue> stringValues) {
-        this.stringValues = stringValues;
+    public void setValues(List<Value> values) {
+        this.values = values;
     }
 }

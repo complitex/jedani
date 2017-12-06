@@ -10,7 +10,7 @@ import java.util.List;
  * @author Anatoly A. Ivanov
  * 30.11.2017 15:42
  */
-public class StringValue implements Serializable{
+public class Value implements Serializable{
     private Long id;
     private Long attributeId;
     private Long localeId;
@@ -18,26 +18,26 @@ public class StringValue implements Serializable{
 
     private String entityName;
 
-    public StringValue() {
+    public Value() {
     }
 
-    public StringValue(Long localeId) {
+    public Value(Long localeId) {
         this.localeId = localeId;
     }
 
-    public StringValue(Long localeId, String value) {
+    public Value(Long localeId, String value) {
         this.localeId = localeId;
         this.value = value;
     }
 
-    public static List<StringValue> newStringValues() {
-        List<StringValue> stringValues = new ArrayList<>();
+    public static List<Value> newStringValues() {
+        List<Value> values = new ArrayList<>();
 
         for (Long localeId : Locales.getLocaleIds()){
-            stringValues.add(new StringValue(localeId));
+            values.add(new Value(localeId));
         }
 
-        return stringValues;
+        return values;
     }
 
     public Long getId() {

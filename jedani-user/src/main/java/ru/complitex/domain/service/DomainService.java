@@ -4,7 +4,7 @@ import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.mapper.AttributeMapper;
 import ru.complitex.domain.mapper.DomainMapper;
 import ru.complitex.domain.mapper.SequenceMapper;
-import ru.complitex.domain.mapper.StringValueMapper;
+import ru.complitex.domain.mapper.ValueMapper;
 
 import javax.inject.Inject;
 
@@ -23,7 +23,7 @@ public class DomainService {
     private AttributeMapper attributeMapper;
 
     @Inject
-    private StringValueMapper stringValueMapper;
+    private ValueMapper valueMapper;
 
     public void save(Domain domain){
         if (domain.getObjectId() == null){
@@ -35,15 +35,15 @@ public class DomainService {
                 a.setObjectId(domain.getObjectId());
                 a.setStartDate(domain.getStartDate());
 
-                if (!a.getStringValues().isEmpty()){
+                if (!a.getValues().isEmpty()){
                     Long valueId = sequenceMapper.nextId(domain.getEntityName() + "_string_value");
 
                     a.setValueId(valueId);
 
-                    a.getStringValues().forEach(s -> {
+                    a.getValues().forEach(s -> {
                         s.setId(valueId);
 
-                        stringValueMapper.insertStringValue(s);
+                        valueMapper.insertStringValue(s);
                     });
                 }
 

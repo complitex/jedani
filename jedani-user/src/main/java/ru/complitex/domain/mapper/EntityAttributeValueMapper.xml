@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ru.complitex.domain.mapper.EntityAttributeValueMapper">
+    <resultMap id="entityAttributeValueResultMap" type="ru.complitex.domain.entity.EntityAttributeValue">
+        <id column="id" property="id"/>
+        <result column="entity_attribute_id" property="entityAttributeId"/>
+        <result column="locale_id" property="localeId"/>
+        <result column="text" property="text"/>
+    </resultMap>
+
+    <select id="selectEntityAttributeValues" parameterType="long" resultMap="entityAttributeValueResultMap">
+        select * from entity_attribute_value where entity_attribute_id = #{entityAttributeId}
+    </select>
+</mapper>
