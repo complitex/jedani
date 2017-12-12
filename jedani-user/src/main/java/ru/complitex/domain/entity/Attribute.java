@@ -11,8 +11,7 @@ import java.util.List;
  * 30.11.2017 15:29
  */
 public class Attribute implements Serializable{
-    private Long pkId;
-    private Long attributeId;
+    private Long id;
     private Long objectId;
     private Long entityAttributeId;
     private Long valueId;
@@ -27,9 +26,8 @@ public class Attribute implements Serializable{
     public Attribute() {
     }
 
-    public Attribute(Long entityAttributeId, Long attributeId) {
+    public Attribute(Long entityAttributeId) {
         this.entityAttributeId = entityAttributeId;
-        this.attributeId = attributeId;
     }
 
     public Value getStringValue(Long localeId){
@@ -67,20 +65,12 @@ public class Attribute implements Serializable{
                 .forEach(s -> s.setValue(value));
     }
 
-    public Long getPkId() {
-        return pkId;
+    public Long getId() {
+        return id;
     }
 
-    public void setPkId(Long pkId) {
-        this.pkId = pkId;
-    }
-
-    public Long getAttributeId() {
-        return attributeId;
-    }
-
-    public void setAttributeId(Long attributeId) {
-        this.attributeId = attributeId;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public Long getObjectId() {

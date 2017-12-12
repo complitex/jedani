@@ -35,24 +35,15 @@ public class DomainService {
                 a.setObjectId(domain.getObjectId());
                 a.setStartDate(domain.getStartDate());
 
-                if (!a.getValues().isEmpty()){
-                    Long valueId = sequenceMapper.nextId(domain.getEntityName() + "_string_value");
+                attributeMapper.insertAttribute(a);
 
-                    a.setValueId(valueId);
-
+                if (a.getValues() != null){
                     a.getValues().forEach(s -> {
-                        s.setId(valueId);
+                        s.setAttributeId(a.getId());
 
                         valueMapper.insertStringValue(s);
                     });
                 }
-
-                //todo string value ref to attribute id, dev attribute pair
-
-
-
-
-
             });
         }
     }

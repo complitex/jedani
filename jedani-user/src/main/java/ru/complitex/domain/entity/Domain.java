@@ -31,26 +31,8 @@ public class Domain implements Serializable{
         }
     }
 
-    public void addAttributePair(Long entityAttributeId1, Long entityAttributeId2){
-        Long attributeId = attributes.stream()
-                .filter(a -> a.getEntityAttributeId().equals(entityAttributeId1))
-                .mapToLong(Attribute::getAttributeId)
-                .max()
-                .orElse(0) + 1;
-
-        attributes.add(new Attribute(entityAttributeId1, attributeId));
-        attributes.add(new Attribute(entityAttributeId2, attributeId));
-    }
-
     public void addAttribute(Long entityAttributeId, Long valueId){
-        Long attributeId = attributes.stream()
-                .filter(a -> a.getEntityAttributeId().equals(entityAttributeId))
-                .mapToLong(Attribute::getAttributeId)
-                .max()
-                .orElse(0) + 1;
-
         Attribute attribute = new Attribute();
-        attribute.setAttributeId(attributeId);
         attribute.setEntityAttributeId(entityAttributeId);
         attribute.setValueId(valueId);
     }
@@ -59,15 +41,6 @@ public class Domain implements Serializable{
         return attributes.stream()
                 .filter(a -> a.getEntityAttributeId().equals(entityAttributeId))
                 .filter(a -> a.getEndDate() == null)
-                .findAny()
-                .orElse(null);
-    }
-
-    public Attribute getAttribute(Long entityAttributeId, Long attributeId){
-        return attributes.stream()
-                .filter(a -> a.getEndDate() == null)
-                .filter(a -> a.getEntityAttributeId().equals(entityAttributeId))
-                .filter(a -> a.getAttributeId().equals(attributeId))
                 .findAny()
                 .orElse(null);
     }
@@ -89,10 +62,6 @@ public class Domain implements Serializable{
 
     public void removeAttribute(Long entityAttributeId) {
         attributes.removeIf(attribute -> attribute.getEntityAttributeId().equals(entityAttributeId));
-    }
-
-    public void removeAttribute(Long entityAttributeId, Long attributeId){
-        attributes.removeIf(a -> a.getEntityAttributeId().equals(entityAttributeId) && a.getAttributeId().equals(attributeId));
     }
 
     public String getStringValue(Long entityAttributeId){

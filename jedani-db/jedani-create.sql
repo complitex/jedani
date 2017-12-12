@@ -90,15 +90,17 @@ CREATE TABLE `entity_value_type` (
 
 DROP TABLE IF EXISTS `entity_attribute`;
 CREATE TABLE `entity_attribute` (
-  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор типа атрибута',
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
+  `attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор атрибута',
   `entity_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор сущности',
-  `start_date` TIMESTAMP NOT NULL default CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия типа атрибута',
-  `end_date` TIMESTAMP NULL default NULL COMMENT 'Дата окончания периода действия типа атрибута',
+  `start_date` TIMESTAMP NOT NULL default CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия атрибута',
+  `end_date` TIMESTAMP NULL default NULL COMMENT 'Дата окончания периода действия атрибута',
   `value_type_id` BIGINT(20) COMMENT  'Тип значения атрибута',
   `reference_id` BIGINT(20) COMMENT  'Внешний ключ',
   `system` TINYINT(1) default 0 NOT NULL COMMENT 'Является ли тип атрибута системным',
   `required` TINYINT(1) default 0 NOT NULL COMMENT 'Является ли атрибут обязательным',
   PRIMARY KEY (`id`),
+  UNIQUE KEY `key_unique` (`attribute_id`, `entity_id`),
   KEY `key_entity_id` (`entity_id`),
   KEY `key_value_id` (`value_type_id`),
   CONSTRAINT `fk_attribute_type__entity` FOREIGN KEY (`entity_id`) REFERENCES `entity` (`id`),
@@ -126,12 +128,12 @@ CREATE TABLE `entity_attribute_value` (
 
 DROP TABLE IF EXISTS `permission`;
 CREATE TABLE `permission` (
-  `pk_id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Суррогатный ключ',
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
   `permission_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор права доступа',
   `table` VARCHAR(64) NOT NULL COMMENT 'Таблица',
   `entity` VARCHAR(64) NOT NULL COMMENT 'Сущность',
   `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
-  PRIMARY KEY (`pk_id`),
+  PRIMARY KEY (`id`),
   UNIQUE KEY `key_unique` (`permission_id`, `entity`, `object_id`),
   KEY `key_permission_id` (`permission_id`),
   KEY `key_table` (`table`),
@@ -189,7 +191,7 @@ CREATE TABLE `region_attribute` (
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
   CONSTRAINT `fk_region_attribute__region` FOREIGN KEY (`object_id`) REFERENCES `region`(`object_id`),
-  CONSTRAINT `fk_region_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`) REFERENCES entity_attribute (`id`)
+  CONSTRAINT `fk_region_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`) REFERENCES entity_attribute (`attribute_id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты региона';
 
 DROP TABLE IF EXISTS `region_attribute_value`;
@@ -255,7 +257,7 @@ CREATE TABLE `city_type_attribute` (
   KEY `key_status` (`status`),
   CONSTRAINT `fk_city_type_attribute__city_type` FOREIGN KEY (`object_id`) REFERENCES `city_type`(`object_id`),
   CONSTRAINT `fk_city_type_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`)
-  REFERENCES entity_attribute (`id`)
+    REFERENCES entity_attribute (`attribute_id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты типа населенного пункта';
 
 DROP TABLE IF EXISTS `city_type_attribute_value`;
@@ -319,7 +321,8 @@ CREATE TABLE `city_attribute` (
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
   CONSTRAINT `fk_city_attribute__city` FOREIGN KEY (`object_id`) REFERENCES `city`(`object_id`),
-  CONSTRAINT `fk_city_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`) REFERENCES entity_attribute (`id`)
+  CONSTRAINT `fk_city_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`)
+    REFERENCES entity_attribute (`attribute_id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты населенного пункта';
 
 DROP TABLE IF EXISTS `city_attribute_value`;
