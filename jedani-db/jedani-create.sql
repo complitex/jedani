@@ -37,7 +37,7 @@ CREATE TABLE  `usergroup` (
 DROP TABLE IF EXISTS `sequence`;
 CREATE TABLE `sequence`(
   `name` VARCHAR(100) NOT NULL COMMENT 'Название таблицы сущности',
-  `value` bigint UNSIGNED NOT NULL DEFAULT '0' COMMENT 'Значение идентификатора',
+  `value` bigint UNSIGNED NOT NULL DEFAULT 1 COMMENT 'Значение идентификатора',
   PRIMARY KEY (`name`)
 )ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Генератор идентификаторов объектов';
 
@@ -66,21 +66,6 @@ CREATE TABLE `entity` (
   UNIQUE KEY `unique_entity` (`name`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Сущность';
 
-DROP TABLE IF EXISTS `entity_value`;
-CREATE TABLE `entity_value` (
-  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор локализации',
-  `entity_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор сущности',
-  `locale_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор локали',
-  `text` VARCHAR(1000) COMMENT 'Текстовое значение',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `unique_id__locale` (`entity_id`, `locale_id`),
-  KEY `key_entity` (`entity_id`),
-  KEY `key_locale` (`locale_id`),
-  KEY `key_value` (`text`(128)),
-  CONSTRAINT `fk_entity_string_value__entity` FOREIGN KEY (`entity_id`) REFERENCES `entity` (`id`),
-  CONSTRAINT `fk_entity_string_value__locale` FOREIGN KEY (`locale_id`) REFERENCES `locale` (`id`)
-) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Локализация';
-
 DROP TABLE IF EXISTS entity_value_type;
 CREATE TABLE `entity_value_type` (
   `id` BIGINT(20) NOT NULL COMMENT 'Идентификатор типа значения атрибута',
@@ -97,8 +82,8 @@ CREATE TABLE `entity_attribute` (
   `end_date` TIMESTAMP NULL default NULL COMMENT 'Дата окончания периода действия атрибута',
   `value_type_id` BIGINT(20) COMMENT  'Тип значения атрибута',
   `reference_id` BIGINT(20) COMMENT  'Внешний ключ',
-  `system` TINYINT(1) default 0 NOT NULL COMMENT 'Является ли тип атрибута системным',
-  `required` TINYINT(1) default 0 NOT NULL COMMENT 'Является ли атрибут обязательным',
+  `system` TINYINT(1) default 1 NOT NULL COMMENT 'Является ли тип атрибута системным',
+  `required` TINYINT(1) default 1 NOT NULL COMMENT 'Является ли атрибут обязательным',
   PRIMARY KEY (`id`),
   UNIQUE KEY `key_unique` (`attribute_id`, `entity_id`),
   KEY `key_entity_id` (`entity_id`),
@@ -107,19 +92,22 @@ CREATE TABLE `entity_attribute` (
   CONSTRAINT `fk_entity_attribute__entity_value_type` FOREIGN KEY (`value_type_id`) REFERENCES entity_value_type (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Тип атрибута сущности';
 
-DROP TABLE IF EXISTS `entity_attribute_value`;
-CREATE TABLE `entity_attribute_value` (
-  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор локализации',
-  `entity_attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор типа аттрибута',
+DROP TABLE IF EXISTS `entity_value`;
+CREATE TABLE `entity_value` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
+  `entity_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор типа аттрибута',
+  `attribute_id` BIGINT(20) NULL COMMENT 'Идентификатор типа аттрибута',
   `locale_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор локали',
   `text` VARCHAR(1000) COMMENT 'Текстовое значение',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `unique_id__locale` (`entity_attribute_id`, `locale_id`),
-  KEY `key_entity_attribute_id` (`entity_attribute_id`),
+  UNIQUE KEY `key_unique` (`entity_id`, `attribute_id`, `locale_id`),
+  KEY `key_entity_id` (`entity_id`),
+  KEY `key_attribute_id` (`attribute_id`),
   KEY `key_locale` (`locale_id`),
   KEY `key_value` (`text`(128)),
-  CONSTRAINT `fk_entity_string_value__entity_attribute` FOREIGN KEY (`entity_attribute_id`) REFERENCES `entity_attribute` (`id`),
-  CONSTRAINT `fk_string_value__locale` FOREIGN KEY (`locale_id`) REFERENCES `locale` (`id`)
+  CONSTRAINT `fk_entity_value__entity` FOREIGN KEY (`entity_id`) REFERENCES `entity` (`id`),
+  CONSTRAINT `fk_entity_value__entity_attribute` FOREIGN KEY (`attribute_id`) REFERENCES `entity_attribute` (`id`),
+  CONSTRAINT `fk_entity_value__locale` FOREIGN KEY (`locale_id`) REFERENCES `locale` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Локализация';
 
 -- ------------------------------
