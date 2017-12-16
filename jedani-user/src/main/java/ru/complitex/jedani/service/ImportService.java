@@ -110,6 +110,7 @@ public class ImportService {
                 City city = new City();
                 city.setExternalId(columns[0]);
                 city.setText(City.NAME, columns[1]);
+                city.setParentEntityId(Region.ENTITY_ID);
                 city.setParentId(region.getObjectId());
                 if (!columns[3].isEmpty()) {
                     city.setText(City.MANAGER_ID, columns[3]);

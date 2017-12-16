@@ -2,6 +2,18 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="ru.complitex.domain.mapper.DomainMapper">
+    <resultMap id="domainResultMap" type="ru.complitex.domain.entity.Domain">
+        <id column="id" property="id"/>
+        <result column="object_id" property="objectId"/>
+        <result column="parent_id" property="parentId"/>
+        <result column="parent_entity_id" property="parentEntityId"/>
+        <result column="start_date" property="startDate"/>
+        <result column="end_date" property="endDate"/>
+        <result column="status" property="status"/>
+        <result column="permission_id" property="permissionId"/>
+        <result column="external_id" property="externalId"/>
+    </resultMap>
+
     <!--suppress SqlResolve -->
     <insert id="insertDomain" parameterType="ru.complitex.domain.entity.Domain">
         insert into ${entityName} (object_id, parent_id, parent_entity_id, start_date, end_date, `status`,
@@ -16,7 +28,7 @@
     </select>
 
     <!--suppress SqlResolve -->
-    <select id="selectDomain" parameterType="ru.complitex.domain.entity.Domain" resultType="ru.complitex.domain.entity.Domain">
+    <select id="selectDomain" parameterType="ru.complitex.domain.entity.Domain" resultMap="domainResultMap">
         select * from ${entityName} where external_id = #{externalId}
     </select>
 
