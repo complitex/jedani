@@ -30,12 +30,21 @@ public class Value implements Serializable{
         this.value = value;
     }
 
-    public static List<Value> newStringValues() {
+    public static List<Value> newValues() {
         List<Value> values = new ArrayList<>();
 
         for (Long localeId : Locales.getLocaleIds()){
             values.add(new Value(localeId));
         }
+
+        return values;
+    }
+
+    public static List<Value> newSystemValue() {
+        List<Value> values = new ArrayList<>();
+
+        values.add(new Value(Locales.getSystemLocaleId()));
+
 
         return values;
     }

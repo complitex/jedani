@@ -30,7 +30,7 @@ public class Attribute implements Serializable{
         this.entityAttributeId = entityAttributeId;
     }
 
-    public Value getStringValue(Long localeId){
+    public Value getValue(Long localeId){
         if (values != null){
             for (Value sc: values){
                 if (sc.getLocaleId().equals(localeId)){
@@ -42,26 +42,21 @@ public class Attribute implements Serializable{
         return null;
     }
 
-    public String getStringValue(){
-        Value value = getStringValue(Locales.getSystemLocaleId());
+    public String getText(){
+        Value value = getValue(Locales.getSystemLocaleId());
 
         return value != null ? value.getValue() : null;
     }
 
-    public String getStringValue(java.util.Locale locale){
-        Value value = getStringValue(Locales.getLocaleId(locale));
+    public String getText(java.util.Locale locale){
+        Value value = getValue(Locales.getLocaleId(locale));
 
         return value != null ? value.getValue() : null;
     }
 
-    public void setStringValue(String value, long localeId){
-        if (values == null){
-            values = Value.newStringValues();
-        }
-
-        values.stream()
-                .filter(s -> s.getLocaleId().equals(localeId) ||
-                        (Locales.getSystemLocaleId().equals(s.getLocaleId()) && s.getValue() == null))
+    public void setText(String value, long localeId){
+        values.stream().filter(s -> s.getLocaleId().equals(localeId) ||
+                (Locales.getSystemLocaleId().equals(s.getLocaleId()) && s.getValue() == null))
                 .forEach(s -> s.setValue(value));
     }
 

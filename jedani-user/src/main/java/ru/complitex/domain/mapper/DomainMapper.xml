@@ -4,8 +4,8 @@
 <mapper namespace="ru.complitex.domain.mapper.DomainMapper">
     <!--suppress SqlResolve -->
     <insert id="insertDomain" parameterType="ru.complitex.domain.entity.Domain">
-        insert into `${entityName}` (`object_id`, `parent_id`, `parent_entity_id`, `start_date`, `end_date`, `status`,
-          `permission_id`, `external_id`)
+        insert into ${entityName} (object_id, parent_id, parent_entity_id, start_date, end_date, `status`,
+          permission_id, external_id)
         value (#{objectId}, #{parentId}, #{parentEntityId}, #{startDate}, #{endDate}, #{status},
           #{permissionId}, #{externalId})
     </insert>
@@ -13,6 +13,11 @@
     <!--suppress SqlResolve -->
     <select id="hasExternalId" parameterType="ru.complitex.domain.entity.Domain" resultType="boolean">
         select count(id) > 0 from ${entityName} where external_id = #{externalId}
+    </select>
+
+    <!--suppress SqlResolve -->
+    <select id="selectDomain" parameterType="ru.complitex.domain.entity.Domain" resultType="ru.complitex.domain.entity.Domain">
+        select * from ${entityName} where external_id = #{externalId}
     </select>
 
 </mapper>

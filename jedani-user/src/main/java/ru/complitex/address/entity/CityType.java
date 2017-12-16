@@ -7,12 +7,13 @@ import ru.complitex.domain.entity.Domain;
  * 16.12.2017 22:47
  */
 public class CityType extends Domain{
-    public static final Integer SHORT_NAME = 1;
-    public static final Integer NAME = 2;
+    public static final Long SHORT_NAME = 1L;
+    public static final Long NAME = 2L;
 
-    @Override
-    public String getEntityName() {
-        return "city_type";
+    public CityType() {
+        addAttribute(SHORT_NAME);
+        addAttribute(NAME);
+
+        setEntityName("city_type");
     }
-
 }

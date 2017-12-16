@@ -2,11 +2,13 @@ package ru.complitex.jedani.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.complitex.jedani.entity.City;
-import ru.complitex.jedani.entity.Region;
+import ru.complitex.address.entity.City;
+import ru.complitex.address.entity.Region;
+import ru.complitex.domain.entity.Domain;
+import ru.complitex.domain.mapper.DomainMapper;
+
 import ru.complitex.jedani.entity.User;
-import ru.complitex.jedani.mapper.CityMapper;
-import ru.complitex.jedani.mapper.RegionMapper;
+
 import ru.complitex.jedani.mapper.UserMapper;
 
 import javax.inject.Inject;
@@ -25,10 +27,7 @@ public class ImportService {
     private Logger log = LoggerFactory.getLogger(ImportService.class);
 
     @Inject
-    private RegionMapper regionMapper;
-
-    @Inject
-    private CityMapper cityMapper;
+    private DomainMapper domainMapper;
 
     @Inject
     private UserMapper userMapper;
@@ -63,9 +62,9 @@ public class ImportService {
                 }
 
                 Region region = new Region();
-                region.setId(Integer.valueOf(columns[0]));
-                region.setName(columns[1]);
-                region.setManagerId(Integer.valueOf(columns[2]));
+                region.setExternalId(columns[0]);
+                region.setText(Region.NAME, columns[1]);
+                region.setText(Region.MANAGER_ID, columns[2]);
 
                 regions.add(region);
             }
@@ -75,10 +74,9 @@ public class ImportService {
             status.errorMessage = e.getMessage();
         }
 
-        regions.stream()
-                .filter(r -> !regionMapper.hasRegion(r.getId()))
+        regions.stream().filter(r -> !domainMapper.hasExternalId(r))
                 .forEach(r -> {
-                    regionMapper.insertRegion(r);
+                    domainMapper.save(r);
                     ++status.count;
                 });
 
@@ -101,21 +99,28 @@ public class ImportService {
                     break;
                 }
 
+                Domain region = domainMapper.getDomain(new Region(columns[2]));
+
+                if (region == null){
+                    status.errorMessage = "Ненайден район " + columns[2] + " для " + columns[1];
+
+                    break;
+                }
+
                 City city = new City();
-                city.setId(Integer.valueOf(columns[0]));
-                city.setName(columns[1]);
-                city.setRegionId(Integer.valueOf(columns[2]));
+                city.setExternalId(columns[0]);
+                city.setText(City.NAME, columns[1]);
+                city.setParentId(region.getObjectId());
                 if (!columns[3].isEmpty()) {
-                    city.setManagerId(Integer.valueOf(columns[3]));
+                    city.setText(City.MANAGER_ID, columns[3]);
                 }
 
                 cities.add(city);
             }
 
-            cities.stream()
-                    .filter(r -> !cityMapper.hasCity(r.getId()))
+            cities.stream().filter(c -> !domainMapper.hasExternalId(c))
                     .forEach(r -> {
-                        cityMapper.insertCity(r);
+                        domainMapper.save(r);
                         ++status.count;
                     });
         } catch (Exception e) {

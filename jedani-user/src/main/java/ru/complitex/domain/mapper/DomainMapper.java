@@ -1,6 +1,5 @@
 package ru.complitex.domain.mapper;
 
-import com.google.common.collect.Maps;
 import org.apache.ibatis.session.SqlSession;
 import ru.complitex.domain.entity.Domain;
 
@@ -37,6 +36,7 @@ public class DomainMapper {
             domainMapper.insertDomain(domain);
 
             domain.getAttributes().forEach(a -> {
+                a.setEntityName(domain.getEntityName());
                 a.setObjectId(domain.getObjectId());
                 a.setStartDate(domain.getStartDate());
 
@@ -44,6 +44,7 @@ public class DomainMapper {
 
                 if (a.getValues() != null){
                     a.getValues().forEach(s -> {
+                        s.setEntityName(domain.getEntityName());
                         s.setAttributeId(a.getId());
 
                         valueMapper.insertStringValue(s);
@@ -55,5 +56,9 @@ public class DomainMapper {
 
     public boolean hasExternalId(Domain domain){
         return sqlSession.selectOne("hasExternalId", domain);
+    }
+
+    public Domain getDomain(Domain domain){
+        return sqlSession.selectOne("selectDomain", domain);
     }
 }

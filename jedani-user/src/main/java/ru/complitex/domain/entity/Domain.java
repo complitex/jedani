@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
  * 30.11.2017 15:29
  */
 public class Domain implements Serializable{
-    private Long pkId;
+    private Long id;
     private Long objectId;
     private Long parentId;
     private Long parentEntityId;
@@ -25,17 +25,25 @@ public class Domain implements Serializable{
 
     private List<Attribute> attributes = new ArrayList<>();
 
-    public void addAttribute(Attribute attribute) {
-        if (attribute != null) {
-            attributes.add(attribute);
-        }
-    }
-
-    public void addAttribute(Long entityAttributeId, Long valueId){
+    public void addAttribute(Long entityAttributeId, ValueType valueType){
         Attribute attribute = new Attribute();
         attribute.setEntityAttributeId(entityAttributeId);
-        attribute.setValueId(valueId);
+
+        switch (valueType){
+            case STRING_VALUE:
+                attribute.setValues(Value.newValues());
+                break;
+            case INTEGER:
+                attribute.setValues(Value.newSystemValue());
+        }
+
+        attributes.add(attribute);
     }
+
+    public void addAttribute(Long entityAttributeId){
+        addAttribute(entityAttributeId, ValueType.STRING_VALUE);
+    }
+
 
     public Attribute getAttribute(Long entityAttributeId) {
         return attributes.stream()
@@ -64,24 +72,24 @@ public class Domain implements Serializable{
         attributes.removeIf(attribute -> attribute.getEntityAttributeId().equals(entityAttributeId));
     }
 
-    public String getStringValue(Long entityAttributeId){
+    public String getText(Long entityAttributeId){
         Attribute attribute = getAttribute(entityAttributeId);
 
-        return attribute != null? attribute.getStringValue() : null;
+        return attribute != null? attribute.getText() : null;
     }
 
-    public String getStringValue(Long entityAttributeId, Locale locale){
+    public String setText(Long entityAttributeId, Locale locale){
         Attribute attribute = getAttribute(entityAttributeId);
 
-        return attribute != null ? attribute.getStringValue(locale) : null;
+        return attribute != null ? attribute.getText(locale) : null;
     }
 
-    public void setStringValue(Long entityAttributeId, String value, Locale locale){
-        getAttribute(entityAttributeId).setStringValue(value, Locales.getLocaleId(locale));
+    public void setText(Long entityAttributeId, String value, Locale locale){
+        getAttribute(entityAttributeId).setText(value, Locales.getLocaleId(locale));
     }
 
-    public void setStringValue(Long entityAttributeId, String value){
-        setStringValue(entityAttributeId, value, Locales.getSystemLocale());
+    public void setText(Long entityAttributeId, String value){
+        setText(entityAttributeId, value, Locales.getSystemLocale());
     }
 
     public Map<String, String> getStringMap(Long entityAttributeId){
@@ -100,12 +108,12 @@ public class Domain implements Serializable{
         return attribute != null ? attribute.getValueId() : null;
     }
 
-    public Long getPkId() {
-        return pkId;
+    public Long getId() {
+        return id;
     }
 
-    public void setPkId(Long pkId) {
-        this.pkId = pkId;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public Long getObjectId() {
