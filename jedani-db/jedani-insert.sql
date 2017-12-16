@@ -38,6 +38,31 @@ INSERT INTO `entity_value`(`entity_id`, `attribute_id`, `locale_id`, `text`) VAL
 
 
 -- todo user attributes
+INSERT INTO `entity`(`id`, `name`) VALUES (10, 'profile');
+INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (10, 1, 1);
+INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (10, 2, 1);
+INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (10, 3, 1);
+INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (10, 4, 1);
+INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (10, 5, 5);
+INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (10, 6, 5);
+INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (10, 7, 5);
+INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (10, 8, 5);
+INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (10, 9, 4);
+INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (10, 10, 0);
+INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (10, 11, 0);
+INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (10, 12, 0);
+INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (10, 13, 1);
+INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`, `reference_id`) VALUES (10, 14, 10, 4);
+INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (10, 15, 4);
+INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (10, 16, 5);
+INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (10, 17, 1);
+INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (10, 18, 1);
+INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (10, 19, 4);
+INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (10, 20, 1);
+INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (10, 21, 4);
+INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (10, 22, 2);
+INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (10, 23, 4);
+INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (10, 24, 1);
 
 
 

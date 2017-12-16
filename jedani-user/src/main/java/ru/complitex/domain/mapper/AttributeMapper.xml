@@ -4,8 +4,8 @@
 <mapper namespace="ru.complitex.domain.mapper.AttributeMapper">
     <!--suppress SqlResolve -->
     <insert id="insertAttribute" parameterType="ru.complitex.domain.entity.Attribute" useGeneratedKeys="true" keyProperty="id">
-        insert into `${entityName}_attribute` (`object_id`, `entity_attribute_id`, `value_id`, `start_date`, `end_date`, `status`)
-        value (#{objectId}, #{entityAttributeId}, #{valueId}, #{startDate}, #{endDate}, #{status})
+        insert into `${entityName}_attribute` (`object_id`, `entity_attribute_id`, `text`, `number`, `start_date`, `end_date`, `status`)
+        value (#{objectId}, #{entityAttributeId}, #{text}, #{number}, #{startDate}, #{endDate}, #{status})
     </insert>
 
 </mapper>

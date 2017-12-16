@@ -3,7 +3,7 @@ package ru.complitex.domain.entity;
 import ru.complitex.common.entity.IdEnum;
 
 public enum ValueType implements IdEnum {
-    STRING_VALUE(0),
+    VALUE(0),
     STRING(1),
     BOOLEAN(2),
     DECIMAL(3),

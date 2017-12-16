@@ -11,9 +11,6 @@ public class CityType extends Domain{
     public static final Long NAME = 2L;
 
     public CityType() {
-        addAttribute(SHORT_NAME);
-        addAttribute(NAME);
-
         setEntityName("city_type");
     }
 }

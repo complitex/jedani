@@ -14,7 +14,8 @@ public class Attribute implements Serializable{
     private Long id;
     private Long objectId;
     private Long entityAttributeId;
-    private Long valueId;
+    private String text;
+    private Long number;
     private Date startDate;
     private Date endDate;
     private Status status;
@@ -32,32 +33,27 @@ public class Attribute implements Serializable{
 
     public Value getValue(Long localeId){
         if (values != null){
-            for (Value sc: values){
-                if (sc.getLocaleId().equals(localeId)){
-                    return sc;
-                }
-            }
+            return values.stream().filter(sc -> sc.getLocaleId().equals(localeId))
+                    .findFirst()
+                    .orElse(null);
         }
 
         return null;
     }
 
-    public String getText(){
-        Value value = getValue(Locales.getSystemLocaleId());
 
-        return value != null ? value.getText() : null;
+    public Value getValue(java.util.Locale locale){
+        return getValue(Locales.getLocaleId(locale));
     }
 
-    public String getText(java.util.Locale locale){
-        Value value = getValue(Locales.getLocaleId(locale));
+    public void setValue(String text, Long localeId){
+        if (values == null){
+            values = Value.newValues();
+        }
 
-        return value != null ? value.getText() : null;
-    }
-
-    public void setText(String value, long localeId){
-        values.stream().filter(s -> s.getLocaleId().equals(localeId) ||
-                (Locales.getSystemLocaleId().equals(s.getLocaleId()) && s.getText() == null))
-                .forEach(s -> s.setText(value));
+        values.stream().filter(value -> value.getLocaleId().equals(localeId))
+                .findFirst()
+                .ifPresent(value -> value.setText(text));
     }
 
     public Long getId() {
@@ -84,12 +80,20 @@ public class Attribute implements Serializable{
         this.entityAttributeId = entityAttributeId;
     }
 
-    public Long getValueId() {
-        return valueId;
+    public String getText() {
+        return text;
     }
 
-    public void setValueId(Long valueId) {
-        this.valueId = valueId;
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public Long getNumber() {
+        return number;
+    }
+
+    public void setNumber(Long number) {
+        this.number = number;
     }
 
     public Date getStartDate() {

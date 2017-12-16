@@ -40,14 +40,6 @@ public class Value implements Serializable{
         return values;
     }
 
-    public static List<Value> newSystemValues() {
-        List<Value> values = new ArrayList<>();
-
-        values.add(new Value(Locales.getSystemLocaleId()));
-
-        return values;
-    }
-
     public Long getId() {
         return id;
     }
