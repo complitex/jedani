@@ -4,7 +4,7 @@
     <resultMap id="entityResultMap" type="ru.complitex.domain.entity.Entity">
         <id column="id" property="id"/>
         <result column="name" property="name"/>
-        <collection column="id" property="values" select="selectEntityValues"/>
+        <collection column="entityId = id" property="values" select="selectEntityValues"/>
         <collection column="id" property="attributes" select="selectEntityAttributes"/>
     </resultMap>
 

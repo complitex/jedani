@@ -7,5 +7,5 @@ import ru.complitex.domain.entity.Domain;
  * 30.11.2017 16:06
  */
 public class Region extends Domain{
-    public static final Long NAME = 700L;
+    public static final Integer NAME = 1;
 }

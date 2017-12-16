@@ -10,7 +10,7 @@
         <result column="reference_id" property="referenceId"/>
         <result column="system" property="system"/>
         <result column="required" property="required"/>
-        <collection column="id" property="values" select="selectEntityAttributeValues"/>
+        <collection column="entityId = entity_id, attributeId = id" property="values" select="selectEntityValues"/>
     </resultMap>
 
     <select id="selectEntityAttributes" parameterType="long" resultMap="entityAttributeResultMap">

@@ -7,6 +7,7 @@ package ru.complitex.domain.entity;
 public class EntityValue {
     private Long id;
     private Long entityId;
+    private Long attributeId;
     private Long localeId;
     private String text;
 
@@ -24,6 +25,14 @@ public class EntityValue {
 
     public void setEntityId(Long entityId) {
         this.entityId = entityId;
+    }
+
+    public Long getAttributeId() {
+        return attributeId;
+    }
+
+    public void setAttributeId(Long attributeId) {
+        this.attributeId = attributeId;
     }
 
     public Long getLocaleId() {
