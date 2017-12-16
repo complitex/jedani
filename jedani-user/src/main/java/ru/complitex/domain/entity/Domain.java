@@ -33,8 +33,14 @@ public class Domain implements Serializable{
             case STRING_VALUE:
                 attribute.setValues(Value.newValues());
                 break;
+            case STRING:
             case INTEGER:
-                attribute.setValues(Value.newSystemValue());
+            case DATE:
+            case DECIMAL:
+                attribute.setValues(Value.newSystemValues());
+                break;
+            default:
+                throw new RuntimeException(valueType.name());
         }
 
         attributes.add(attribute);
@@ -98,8 +104,8 @@ public class Domain implements Serializable{
         }
 
         return getAttribute(entityAttributeId).getValues().stream()
-                .filter(s -> s.getValue() != null)
-                .collect(Collectors.toMap(s -> Locales.getLanguage(s.getLocaleId()), Value::getValue));
+                .filter(s -> s.getText() != null)
+                .collect(Collectors.toMap(s -> Locales.getLanguage(s.getLocaleId()), Value::getText));
     }
 
     public Long getValueId(Long entityAttributeId){

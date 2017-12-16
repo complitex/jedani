@@ -2,8 +2,10 @@ package ru.complitex.domain.mapper;
 
 import org.apache.ibatis.session.SqlSession;
 import ru.complitex.domain.entity.Domain;
+import ru.complitex.domain.entity.Status;
 
 import javax.inject.Inject;
+import java.util.Date;
 
 /**
  * @author Anatoly A. Ivanov
@@ -15,9 +17,6 @@ public class DomainMapper {
 
     @Inject
     private SequenceMapper sequenceMapper;
-
-    @Inject
-    private DomainMapper domainMapper;
 
     @Inject
     private AttributeMapper attributeMapper;
@@ -33,28 +32,40 @@ public class DomainMapper {
         if (domain.getObjectId() == null){
             domain.setObjectId(sequenceMapper.nextId(domain.getEntityName()));
 
-            domainMapper.insertDomain(domain);
+            if (domain.getStartDate() == null){
+                domain.setStartDate(new Date());
+            }
+            if (domain.getStatus() == null){
+                domain.setStatus(Status.ACTIVE);
+            }
+
+            insertDomain(domain);
 
             domain.getAttributes().forEach(a -> {
                 a.setEntityName(domain.getEntityName());
                 a.setObjectId(domain.getObjectId());
                 a.setStartDate(domain.getStartDate());
 
+                if (a.getStatus() == null){
+                    a.setStatus(Status.ACTIVE);
+                }
+
                 attributeMapper.insertAttribute(a);
 
                 if (a.getValues() != null){
-                    a.getValues().forEach(s -> {
-                        s.setEntityName(domain.getEntityName());
-                        s.setAttributeId(a.getId());
+                    a.getValues().stream().filter(s -> s.getText() != null)
+                            .forEach(s -> {
+                                s.setEntityName(domain.getEntityName());
+                                s.setAttributeId(a.getId());
 
-                        valueMapper.insertStringValue(s);
-                    });
+                                valueMapper.insertValue(s);
+                            });
                 }
             });
         }
     }
 
-    public boolean hasExternalId(Domain domain){
+    public Boolean hasExternalId(Domain domain){
         return sqlSession.selectOne("hasExternalId", domain);
     }
 

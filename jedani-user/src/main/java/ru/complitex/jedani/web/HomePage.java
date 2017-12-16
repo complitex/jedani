@@ -4,6 +4,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import ru.complitex.jedani.mapper.UserMapper;
 
 import javax.inject.Inject;
+import java.util.Date;
 
 /**
  * @author Anatoly A. Ivanov
@@ -14,7 +15,7 @@ public class HomePage extends BasePage{
     private UserMapper userMapper;
 
     public HomePage() {
-        add(new Label("test", userMapper.ping()));
+        add(new Label("test", new Date()));
     }
 
 

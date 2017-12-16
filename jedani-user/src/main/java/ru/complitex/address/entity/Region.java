@@ -15,7 +15,7 @@ public class Region extends Domain{
     public Region() {
         addAttribute(SHORT_NAME);
         addAttribute(NAME);
-        addAttribute(MANAGER_ID, ValueType.STRING);
+        addAttribute(MANAGER_ID, ValueType.INTEGER);
 
         setEntityName("region");
     }

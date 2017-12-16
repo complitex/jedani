@@ -17,7 +17,7 @@ public class EntityAttribute {
     private Boolean system;
     private Boolean required;
 
-    private List<EntityAttributeValue> values;
+    private List<EntityValue> values;
 
     public Long getId() {
         return id;
@@ -83,11 +83,11 @@ public class EntityAttribute {
         this.required = required;
     }
 
-    public List<EntityAttributeValue> getValues() {
+    public List<EntityValue> getValues() {
         return values;
     }
 
-    public void setValues(List<EntityAttributeValue> values) {
+    public void setValues(List<EntityValue> values) {
         this.values = values;
     }
 }

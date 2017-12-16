@@ -145,7 +145,7 @@ CREATE TABLE `region` (
   `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия объекта',
   `end_date` TIMESTAMP NULL DEFAULT NULL COMMENT 'Дата окончания периода действия объекта',
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
-  `permission_id` BIGINT(20) NOT NULL DEFAULT 0 COMMENT 'Ключ прав доступа к объекту',
+  `permission_id` BIGINT(20) NULL DEFAULT 0 COMMENT 'Ключ прав доступа к объекту',
   `external_id` VARCHAR(20) COMMENT 'Внешний идентификатор импорта записи',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `unique_object_id__start_date` (`object_id`,`start_date`),
@@ -182,8 +182,8 @@ CREATE TABLE `region_attribute` (
   CONSTRAINT `fk_region_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`) REFERENCES entity_attribute (`attribute_id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты региона';
 
-DROP TABLE IF EXISTS `region_attribute_value`;
-CREATE TABLE `region_attribute_value` (
+DROP TABLE IF EXISTS `region_value`;
+CREATE TABLE `region_value` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
   `attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор атрибута',
   `locale_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор локали',
@@ -210,7 +210,7 @@ CREATE TABLE `city_type` (
   `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия объекта',
   `end_date` TIMESTAMP NULL DEFAULT NULL COMMENT 'Дата окончания периода действия объекта',
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
-  `permission_id` BIGINT(20) NOT NULL DEFAULT 0 COMMENT 'Ключ прав доступа к объекту',
+  `permission_id` BIGINT(20) NULL DEFAULT 0 COMMENT 'Ключ прав доступа к объекту',
   `external_id` VARCHAR(20) COMMENT 'Внешний идентификатор импорта записи',
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_object_id__start_date` (`object_id`,`start_date`),
@@ -248,8 +248,8 @@ CREATE TABLE `city_type_attribute` (
     REFERENCES entity_attribute (`attribute_id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты типа населенного пункта';
 
-DROP TABLE IF EXISTS `city_type_attribute_value`;
-CREATE TABLE `city_type_attribute_value` (
+DROP TABLE IF EXISTS `city_type_value`;
+CREATE TABLE `city_type_value` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
   `attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор атрибута',
   `locale_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор локали',
@@ -275,7 +275,7 @@ CREATE TABLE `city` (
   `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия объекта',
   `end_date` TIMESTAMP NULL DEFAULT NULL COMMENT 'Дата окончания периода действия объекта',
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
-  `permission_id` BIGINT(20) NOT NULL DEFAULT 0 COMMENT 'Ключ прав доступа к объекту',
+  `permission_id` BIGINT(20) NULL DEFAULT 0 COMMENT 'Ключ прав доступа к объекту',
   `external_id` VARCHAR(20) COMMENT 'Внешний идентификатор импорта записи',
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_object_id__start_date` (`object_id`,`start_date`),
@@ -313,8 +313,8 @@ CREATE TABLE `city_attribute` (
     REFERENCES entity_attribute (`attribute_id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты населенного пункта';
 
-DROP TABLE IF EXISTS `city_attribute_value`;
-CREATE TABLE `city_attribute_value` (
+DROP TABLE IF EXISTS `city_value`;
+CREATE TABLE `city_value` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Суррогатный ключ',
   `attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор атрибута',
   `locale_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор локали',

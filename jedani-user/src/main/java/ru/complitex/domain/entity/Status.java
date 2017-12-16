@@ -1,5 +1,7 @@
 package ru.complitex.domain.entity;
 
+import ru.complitex.common.entity.IdEnum;
+
 /**
  * @author Anatoly A. Ivanov
  * 30.11.2017 15:31

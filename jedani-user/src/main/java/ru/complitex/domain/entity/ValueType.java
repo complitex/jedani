@@ -1,5 +1,7 @@
 package ru.complitex.domain.entity;
 
+import ru.complitex.common.entity.IdEnum;
+
 public enum ValueType implements IdEnum {
     STRING_VALUE(0),
     STRING(1),
@@ -8,12 +10,7 @@ public enum ValueType implements IdEnum {
     INTEGER(4),
     DATE(5),
 
-    ENTITY(10),
-
-    BUILDING_CODE(20),
-    LAST_NAME(21),
-    FIRST_NAME(22),
-    MIDDLE_NAME(23);
+    ENTITY(10);
 
     private Integer id;
 

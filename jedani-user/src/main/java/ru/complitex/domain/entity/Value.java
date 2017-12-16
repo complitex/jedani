@@ -14,7 +14,7 @@ public class Value implements Serializable{
     private Long id;
     private Long attributeId;
     private Long localeId;
-    private String value;
+    private String text;
 
     private String entityName;
 
@@ -25,9 +25,9 @@ public class Value implements Serializable{
         this.localeId = localeId;
     }
 
-    public Value(Long localeId, String value) {
+    public Value(Long localeId, String text) {
         this.localeId = localeId;
-        this.value = value;
+        this.text = text;
     }
 
     public static List<Value> newValues() {
@@ -40,11 +40,10 @@ public class Value implements Serializable{
         return values;
     }
 
-    public static List<Value> newSystemValue() {
+    public static List<Value> newSystemValues() {
         List<Value> values = new ArrayList<>();
 
         values.add(new Value(Locales.getSystemLocaleId()));
-
 
         return values;
     }
@@ -73,12 +72,12 @@ public class Value implements Serializable{
         this.localeId = localeId;
     }
 
-    public String getValue() {
-        return value;
+    public String getText() {
+        return text;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public void setText(String text) {
+        this.text = text;
     }
 
     public String getEntityName() {

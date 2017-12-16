@@ -1,4 +1,4 @@
-package ru.complitex.domain.entity;
+package ru.complitex.common.entity;
 
 import java.io.Serializable;
 

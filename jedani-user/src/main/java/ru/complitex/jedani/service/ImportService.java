@@ -6,9 +6,7 @@ import ru.complitex.address.entity.City;
 import ru.complitex.address.entity.Region;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.mapper.DomainMapper;
-
 import ru.complitex.jedani.entity.User;
-
 import ru.complitex.jedani.mapper.UserMapper;
 
 import javax.inject.Inject;
@@ -64,21 +62,23 @@ public class ImportService {
                 Region region = new Region();
                 region.setExternalId(columns[0]);
                 region.setText(Region.NAME, columns[1]);
-                region.setText(Region.MANAGER_ID, columns[2]);
+                if (columns[2] != null) {
+                    region.setText(Region.MANAGER_ID, columns[2]);
+                }
 
                 regions.add(region);
             }
+
+            regions.stream().filter(r -> !domainMapper.hasExternalId(r))
+                    .forEach(r -> {
+                        domainMapper.save(r);
+                        ++status.count;
+                    });
         } catch (Exception e) {
             log.error("error import regions", e);
 
-            status.errorMessage = e.getMessage();
+            status.errorMessage = "" + e.getMessage();
         }
-
-        regions.stream().filter(r -> !domainMapper.hasExternalId(r))
-                .forEach(r -> {
-                    domainMapper.save(r);
-                    ++status.count;
-                });
 
         return status;
     }

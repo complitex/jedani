@@ -17,10 +17,10 @@ public class Locales {
     private Map<Locale, Long> map = new ConcurrentHashMap<>();
     private Map<Long, Locale> mapId = new ConcurrentHashMap<>();
 
-    private static Locales instance = new Locales();
-
     public static final Locale RU = new Locale("ru");
     public static final Locale UA = new Locale("uk");
+
+    private static Locales instance = new Locales();
 
     public Locales() {
         map.put(RU, 1L);
@@ -31,10 +31,6 @@ public class Locales {
 
         systemLocale = RU;
         systemLocaleId = 1L;
-    }
-
-    private static Locales get(){
-        return instance;
     }
 
     public static Locale getSystemLocale() {

@@ -45,19 +45,19 @@ public class Attribute implements Serializable{
     public String getText(){
         Value value = getValue(Locales.getSystemLocaleId());
 
-        return value != null ? value.getValue() : null;
+        return value != null ? value.getText() : null;
     }
 
     public String getText(java.util.Locale locale){
         Value value = getValue(Locales.getLocaleId(locale));
 
-        return value != null ? value.getValue() : null;
+        return value != null ? value.getText() : null;
     }
 
     public void setText(String value, long localeId){
         values.stream().filter(s -> s.getLocaleId().equals(localeId) ||
-                (Locales.getSystemLocaleId().equals(s.getLocaleId()) && s.getValue() == null))
-                .forEach(s -> s.setValue(value));
+                (Locales.getSystemLocaleId().equals(s.getLocaleId()) && s.getText() == null))
+                .forEach(s -> s.setText(value));
     }
 
     public Long getId() {

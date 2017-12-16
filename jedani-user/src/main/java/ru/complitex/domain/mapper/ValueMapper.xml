@@ -3,7 +3,7 @@
 <mapper namespace="ru.complitex.domain.entity.Value">
     <!--suppress SqlResolve -->
     <insert id="insertValue" parameterType="ru.complitex.domain.entity.Value">
-        insert into `${entityName}_value`(`attribute_id`, `locale_id`, `value`) value (#{attributeId}, #{localeId}, #{value})
+        insert into `${entityName}_value`(`attribute_id`, `locale_id`, `text`) value (#{attributeId}, #{localeId}, #{text})
     </insert>
 
 </mapper>

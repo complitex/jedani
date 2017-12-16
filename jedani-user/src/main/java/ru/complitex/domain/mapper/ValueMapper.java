@@ -13,7 +13,7 @@ public class ValueMapper {
     @Inject
     private SqlSession sqlSession;
 
-    public void insertStringValue(Value value){
+    public void insertValue(Value value){
         sqlSession.insert("insertValue", value);
     }
 }

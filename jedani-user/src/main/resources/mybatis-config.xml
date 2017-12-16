@@ -3,6 +3,10 @@
 <!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
 
 <configuration>
+    <typeHandlers>
+        <typeHandler handler="ru.complitex.common.mybatis.IdEnumTypeHandler" javaType="ru.complitex.domain.entity.Status"/>
+    </typeHandlers>
+
     <environments default="local">
         <environment id="local">
             <transactionManager type="MANAGED"/>
@@ -13,8 +17,12 @@
     </environments>
 
     <mappers>
-        <mapper resource="ru/complitex/jedani/mapper/RegionMapper.xml"/>
-        <mapper resource="ru/complitex/jedani/mapper/CityMapper.xml"/>
-        <mapper resource="ru/complitex/jedani/mapper/UserMapper.xml"/>
+        <mapper resource="ru/complitex/domain/mapper/SequenceMapper.xml"/>
+        <mapper resource="ru/complitex/domain/mapper/EntityMapper.xml"/>
+        <mapper resource="ru/complitex/domain/mapper/EntityAttributeMapper.xml"/>        
+        <mapper resource="ru/complitex/domain/mapper/EntityValueMapper.xml"/>
+        <mapper resource="ru/complitex/domain/mapper/DomainMapper.xml"/>
+        <mapper resource="ru/complitex/domain/mapper/AttributeMapper.xml"/>
+        <mapper resource="ru/complitex/domain/mapper/ValueMapper.xml"/>        
     </mappers>
 </configuration>
