@@ -7,11 +7,11 @@ import ru.complitex.domain.entity.Domain;
  * 30.11.2017 16:06
  */
 public class Region extends Domain{
-    public static final Long ENTITY_ID = 2L;
+    public static final long ENTITY_ID = 2;
 
-    public static final Long SHORT_NAME = 1L;
-    public static final Long NAME = 2L;
-    public static final Long MANAGER_ID = 3L;
+    public static final long SHORT_NAME = 1;
+    public static final long NAME = 2;
+    public static final long MANAGER_ID = 3;
 
     public Region() {
         setEntityName("region");

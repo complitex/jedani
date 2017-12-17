@@ -7,9 +7,8 @@
 -- User
 -- ------------------------------
 DROP TABLE IF EXISTS `user`;
-
 CREATE TABLE  `user` (
-  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор пользователя',
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
   `login` VARCHAR(64) NOT NULL COMMENT 'Имя пользователя',
   `password` VARCHAR(64) NOT NULL COMMENT 'Пароль',
   PRIMARY KEY (`id`),
@@ -19,15 +18,14 @@ CREATE TABLE  `user` (
 -- ------------------------------
 -- Usergroup
 -- ------------------------------
-DROP TABLE IF EXISTS `usergroup`;
-
-CREATE TABLE  `usergroup` (
-  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор группы пользователей',
+DROP TABLE IF EXISTS `user_group`;
+CREATE TABLE  `user_group` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
   `login` VARCHAR(45) NOT NULL COMMENT 'Имя пользователя',
-  `group_name` VARCHAR(45) NOT NULL COMMENT 'Название группы',
+  `name` VARCHAR(45) NOT NULL COMMENT 'Название группы',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `unique_login__group_name` (`login`, `group_name`),
-  CONSTRAINT `fk_usergroup__user` FOREIGN KEY (`login`) REFERENCES `user` (`login`)
+  UNIQUE KEY `key_unique` (`login`, `name`),
+  CONSTRAINT `fk_user_group__user` FOREIGN KEY (`login`) REFERENCES `user` (`login`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Группа пользователей';
 
 -- ------------------------------
@@ -338,7 +336,57 @@ CREATE TABLE `city_value` (
 -- Domain
 -- --------------------------------------------------------------------------------------------------------------------
 
--- todo jedani user profile
+-- ------------------------------
+-- Profile
+-- ------------------------------
+DROP TABLE IF EXISTS `profile`;
+CREATE TABLE `profile` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
+  `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
+  `parent_id` BIGINT(20) COMMENT 'Идентификатор родительского объекта',
+  `parent_entity_id` BIGINT(20) COMMENT 'Идентификатор сущности родительского объекта',
+  `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия объекта',
+  `end_date` TIMESTAMP NULL DEFAULT NULL COMMENT 'Дата окончания периода действия объекта',
+  `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
+  `permission_id` BIGINT(20) NULL DEFAULT 0 COMMENT 'Ключ прав доступа к объекту',
+  `external_id` VARCHAR(20) COMMENT 'Внешний идентификатор импорта записи',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_object_id__start_date` (`object_id`,`start_date`),
+  UNIQUE KEY `unique_external_id` (`external_id`,`start_date`),
+  KEY `key_object_id` (`object_id`),
+  KEY `key_parent_id` (`parent_id`),
+  KEY `key_parent_entity_id` (`parent_entity_id`),
+  KEY `key_start_date` (`start_date`),
+  KEY `key_end_date` (`end_date`),
+  KEY `key_status` (`status`),
+  KEY `key_permission_id` (`permission_id`),
+  CONSTRAINT `ft_profile__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
+  CONSTRAINT `fk_profile__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`)
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Профиль сотрудника';
+
+DROP TABLE IF EXISTS `profile_attribute`;
+CREATE TABLE `profile_attribute` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
+  `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
+  `entity_attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор типа атрибута',
+  `text` VARCHAR(255) COMMENT 'Текст',
+  `number` BIGINT(20) COMMENT 'Число',
+  `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия атрибута',
+  `end_date` TIMESTAMP NULL DEFAULT NULL COMMENT 'Дата окончания периода действия атрибута',
+  `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `unique_id` (`object_id`,`entity_attribute_id`, `start_date`),
+  KEY `key_object_id` (`object_id`),
+  KEY `key_entity_attribute_id` (`entity_attribute_id`),
+  KEY `key_text` (`text`),
+  KEY `key_number` (`number`),
+  KEY `key_start_date` (`start_date`),
+  KEY `key_end_date` (`end_date`),
+  KEY `key_status` (`status`),
+  CONSTRAINT `fk_profile_attribute__city` FOREIGN KEY (`object_id`) REFERENCES `profile`(`object_id`),
+  CONSTRAINT `fk_profile_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`)
+  REFERENCES entity_attribute (`attribute_id`)
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты профиля пользователя';
 
 
 

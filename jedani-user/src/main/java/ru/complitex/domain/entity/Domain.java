@@ -29,6 +29,13 @@ public class Domain implements Serializable{
         getOrCreateAttribute(entityAttributeId).setText(text);
     }
 
+    public void setNumber(Long entityAttributeId, String number){
+        setNumber(entityAttributeId, Optional.ofNullable(number).
+                filter(s -> !s.isEmpty())
+                .map(Long::valueOf)
+                .orElse(null));
+    }
+
     public void setNumber(Long entityAttributeId, Long number){
         getOrCreateAttribute(entityAttributeId).setNumber(number);
     }

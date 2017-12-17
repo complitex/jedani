@@ -23,7 +23,7 @@
     </insert>
 
     <!--suppress SqlResolve -->
-    <select id="hasExternalId" parameterType="ru.complitex.domain.entity.Domain" resultType="boolean">
+    <select id="hasDomain" parameterType="ru.complitex.domain.entity.Domain" resultType="boolean">
         select count(id) > 0 from ${entityName} where external_id = #{externalId}
     </select>
 

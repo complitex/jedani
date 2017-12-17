@@ -7,6 +7,8 @@ import ru.complitex.domain.entity.Domain;
  * 17.12.2017 3:29
  */
 public class Profile extends Domain{
+    public static final long ENTITY_ID = 10;
+
     public static final Long EMAIL = 1L;
     public static final Long ANCESTRY = 2L;
     public static final Long J_ID = 3L;
@@ -32,4 +34,7 @@ public class Profile extends Domain{
     public static final Long OLD_PARENT_ID = 23L;
     public static final Long OLD_CHILD_ID = 24L;
 
+    public Profile() {
+        setEntityName("profile");
+    }
 }

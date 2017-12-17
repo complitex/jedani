@@ -23,6 +23,9 @@
         <mapper resource="ru/complitex/domain/mapper/EntityValueMapper.xml"/>
         <mapper resource="ru/complitex/domain/mapper/DomainMapper.xml"/>
         <mapper resource="ru/complitex/domain/mapper/AttributeMapper.xml"/>
-        <mapper resource="ru/complitex/domain/mapper/ValueMapper.xml"/>        
+        <mapper resource="ru/complitex/domain/mapper/ValueMapper.xml"/>       
+        
+        <mapper resource="ru/complitex/user/mapper/UserMapper.xml"/>
+        <mapper resource="ru/complitex/user/mapper/UserGroupMapper.xml"/>
     </mappers>
 </configuration>

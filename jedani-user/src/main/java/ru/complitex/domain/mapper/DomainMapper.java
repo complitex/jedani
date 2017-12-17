@@ -25,10 +25,6 @@ public class DomainMapper {
     private ValueMapper valueMapper;
 
     public void insertDomain(Domain domain){
-        sqlSession.insert("insertDomain", domain);
-    }
-
-    public void save(Domain domain){
         if (domain.getObjectId() == null){
             domain.setObjectId(sequenceMapper.nextId(domain.getEntityName()));
 
@@ -39,34 +35,36 @@ public class DomainMapper {
                 domain.setStatus(Status.ACTIVE);
             }
 
-            insertDomain(domain);
+            sqlSession.insert("insertDomain", domain);
 
-            domain.getAttributes().forEach(a -> {
-                a.setEntityName(domain.getEntityName());
-                a.setObjectId(domain.getObjectId());
-                a.setStartDate(domain.getStartDate());
+            domain.getAttributes().stream()
+                    .filter(a -> (a.getText() != null && !a.getText().isEmpty()) || a.getNumber() != null || a.getValues() != null)
+                    .forEach(a -> {
+                        a.setEntityName(domain.getEntityName());
+                        a.setObjectId(domain.getObjectId());
+                        a.setStartDate(domain.getStartDate());
 
-                if (a.getStatus() == null){
-                    a.setStatus(Status.ACTIVE);
-                }
+                        if (a.getStatus() == null){
+                            a.setStatus(Status.ACTIVE);
+                        }
 
-                attributeMapper.insertAttribute(a);
+                        attributeMapper.insertAttribute(a);
 
-                if (a.getValues() != null){
-                    a.getValues().stream().filter(s -> s.getText() != null)
-                            .forEach(s -> {
-                                s.setEntityName(domain.getEntityName());
-                                s.setAttributeId(a.getId());
+                        if (a.getValues() != null){
+                            a.getValues().stream().filter(s -> s.getText() != null)
+                                    .forEach(s -> {
+                                        s.setEntityName(domain.getEntityName());
+                                        s.setAttributeId(a.getId());
 
-                                valueMapper.insertValue(s);
-                            });
-                }
-            });
+                                        valueMapper.insertValue(s);
+                                    });
+                        }
+                    });
         }
     }
 
-    public Boolean hasExternalId(Domain domain){
-        return sqlSession.selectOne("hasExternalId", domain);
+    public Boolean hasDomain(Domain domain){
+        return sqlSession.selectOne("hasDomain", domain);
     }
 
     public Domain getDomain(Domain domain){

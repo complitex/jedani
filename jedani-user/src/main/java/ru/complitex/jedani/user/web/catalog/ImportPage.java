@@ -2,13 +2,20 @@ package ru.complitex.jedani.user.web.catalog;
 
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
+import org.apache.wicket.model.Model;
+import org.apache.wicket.protocol.ws.WebSocketSettings;
+import org.apache.wicket.protocol.ws.api.WebSocketBehavior;
+import org.apache.wicket.protocol.ws.api.WebSocketPushBroadcaster;
+import org.apache.wicket.protocol.ws.api.WebSocketRequestHandler;
+import org.apache.wicket.protocol.ws.api.message.IWebSocketPushMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.complitex.jedani.user.entity.Profile;
 import ru.complitex.jedani.user.service.ImportService;
 import ru.complitex.jedani.user.web.BasePage;
 
@@ -23,6 +30,18 @@ public class ImportPage extends BasePage{
 
     @Inject
     private transient ImportService importService;
+
+    private class PushMessage implements IWebSocketPushMessage{
+        private String text;
+
+        public PushMessage(String text) {
+            this.text = text;
+        }
+
+        public String getText() {
+            return text;
+        }
+    }
 
     public ImportPage() {
         FeedbackPanel feedback = new NotificationPanel("feedback");
@@ -97,12 +116,35 @@ public class ImportPage extends BasePage{
         FileUploadField userUploadField = new FileUploadField("uploadField");
         userForm.add(userUploadField);
 
-        userForm.add(new AjaxSubmitLink("upload") {
+        Label info  = new Label("info", Model.of(""));
+        info.setOutputMarkupId(true);
+        info.add(new WebSocketBehavior(){
+            @Override
+            protected void onPush(WebSocketRequestHandler handler, IWebSocketPushMessage message) {
+                if (message instanceof PushMessage){
+                    info.setDefaultModelObject(((PushMessage)message).getText());
+                    handler.add(info);
+                }
+            }
+        });
+        userForm.add(info);
+
+        WebSocketPushBroadcaster broadcaster = new WebSocketPushBroadcaster(WebSocketSettings.Holder.get(getApplication()).getConnectionRegistry());
+
+        userForm.add(new IndicatingAjaxButton("upload") {
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
                 try {
-                    ImportService.Status status = importService.importUsers(cityUploadField.getFileUpload().getInputStream());
+                    ImportService.Status status =
+                            importService.importUsers(cityUploadField.getFileUpload().getInputStream(), p -> {
 
+                                String m = p.getText(Profile.J_ID) + " " + p.getText(Profile.LAST_NAME) + " " +
+                                        p.getText(Profile.SECOND_NAME) + " " + p.getText(Profile.FIRST_NAME);
+                                broadcaster.broadcastAll(getApplication(), new PushMessage(m));
+                            });
+
+                    info.setDefaultModelObject("");
+                    target.add(info);
                     if (status.getErrorMessage() == null){
                         info("Импортировано " + status.getCount() + " пользователей");
                     }else{

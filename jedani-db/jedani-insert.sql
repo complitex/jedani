@@ -1,7 +1,7 @@
 INSERT INTO `locale`(`id`, `locale`, `system`) VALUES (1, 'RU', 1);
 INSERT INTO `locale`(`id`, `locale`, `system`) VALUES (2, 'UA', 0);
 
-INSERT INTO `sequence` (`name`) VALUES ('city'), ('city_type'), ('region');
+INSERT INTO `sequence` (`name`) VALUES ('city'), ('city_type'), ('region'), ('profile');
 
 INSERT INTO entity_value_type (id, value_type) VALUE (0, 'string_value');
 INSERT INTO entity_value_type (id, value_type) VALUE (1, 'string');
@@ -63,6 +63,8 @@ INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VAL
 INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (10, 22, 2);
 INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (10, 23, 4);
 INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (10, 24, 1);
+
+INSERT INTO `entity`(`id`, `name`) VALUES (11, 'user');
 
 
 

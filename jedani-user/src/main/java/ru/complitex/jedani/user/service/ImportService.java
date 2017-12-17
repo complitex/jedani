@@ -1,21 +1,25 @@
 package ru.complitex.jedani.user.service;
 
+import org.mybatis.cdi.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.complitex.address.entity.City;
 import ru.complitex.address.entity.Region;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.mapper.DomainMapper;
-import ru.complitex.jedani.user.entity.User;
-import ru.complitex.jedani.user.mapper.UserMapper;
+import ru.complitex.jedani.user.entity.Profile;
+import ru.complitex.user.entity.User;
+import ru.complitex.user.mapper.UserMapper;
 
 import javax.inject.Inject;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * @author Anatoly A. Ivanov
@@ -69,9 +73,9 @@ public class ImportService {
                 regions.add(region);
             }
 
-            regions.stream().filter(r -> !domainMapper.hasExternalId(r))
+            regions.stream().filter(r -> !domainMapper.hasDomain(r))
                     .forEach(r -> {
-                        domainMapper.save(r);
+                        domainMapper.insertDomain(r);
                         ++status.count;
                     });
         } catch (Exception e) {
@@ -119,9 +123,9 @@ public class ImportService {
                 cities.add(city);
             }
 
-            cities.stream().filter(c -> !domainMapper.hasExternalId(c))
+            cities.stream().filter(c -> !domainMapper.hasDomain(c))
                     .forEach(r -> {
-                        domainMapper.save(r);
+                        domainMapper.insertDomain(r);
                         ++status.count;
                     });
         } catch (Exception e) {
@@ -133,12 +137,11 @@ public class ImportService {
         return status;
     }
 
-    public Status importUsers(InputStream inputStream){
+    public Status importUsers(InputStream inputStream, Consumer<Profile> listener){
         Status status = new Status();
-        List<User> users = new ArrayList<>();
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        SimpleDateFormat dayFormat = new SimpleDateFormat("yyyy-MM-dd");
+        List<Profile> profiles = new ArrayList<>();
+        Map<String, User> userMap = new HashMap<>();
 
         try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"))){
             String line;
@@ -153,61 +156,49 @@ public class ImportService {
                 }
 
                 User user = new User();
-                user.setId(Integer.valueOf(columns[0]));
-                user.setEmail(columns[1]);
-                user.setEncryptedPassword(columns[2]);
-                user.setAncestry(columns[3]);
-                user.setJId(columns[4]);
-                user.setResetPasswordToken(columns[5]);
-                if (!columns[6].isEmpty()) {
-                    user.setResetPasswordSendAt(dateFormat.parse(columns[6]));
-                }
-                if (!columns[7].isEmpty()) {
-                    user.setRememberCreatedAt(dateFormat.parse(columns[7]));
-                }
-                if (!columns[8].isEmpty()) {
-                    user.setCreatedAt(dateFormat.parse(columns[8]));
-                }
-                if (!columns[9].isEmpty()) {
-                    user.setUpdatedAt(dateFormat.parse(columns[9]));
-                }
-                if (!columns[10].isEmpty()) {
-                    user.setMkStatus(Integer.valueOf(columns[10]));
-                }
-                user.setFirstName(columns[11]);
-                user.setSecondName(columns[12]);
-                user.setLastName(columns[13]);
-                user.setPhone(columns[14]);
-                if (!columns[25].isEmpty()) {
-                    user.setCityId(Integer.valueOf(columns[15]));
-                }
-                if (!columns[16].isEmpty()) {
-                    user.setManagerRankId(Integer.valueOf(columns[16]));
-                }
-                if (!columns[17].isEmpty()) {
-                    user.setInvolvedAt(dateFormat.parse(columns[17]));
-                }
-                user.setFullAncestryPath(columns[18]);
-                user.setDepthLevel(columns[19]);
-                user.setAncestryDepth(Integer.valueOf(columns[20]));
-                user.setContactInfo(columns[21]);
-                if (!columns[22].isEmpty()) {
-                    user.setBirthday(dayFormat.parse(columns[22]));
-                }
-                user.setFiredStatus(Boolean.valueOf(columns[23]));
-                if (!columns[24].isEmpty()) {
-                    user.setOldParentId(Integer.valueOf(columns[24]));
-                }
-                user.setOldChildId(columns[25]);
 
-                users.add(user);
+                user.setLogin(columns[4]);
+                user.setPassword(columns[2]);
+                userMap.put(columns[0], user);
+
+                Profile profile = new Profile();
+
+                profile.setExternalId(columns[0]);
+                profile.setText(Profile.EMAIL, columns[1]);
+                profile.setText(Profile.ANCESTRY, columns[3]);
+                profile.setText(Profile.J_ID, columns[4]);
+                profile.setText(Profile.RESET_PASSWORD_TOKEN, columns[5]);
+                profile.setText(Profile.RESET_PASSWORD_SEND_AT, columns[6]);
+                profile.setText(Profile.REMEMBER_CREATED_AT, columns[7]);
+                profile.setText(Profile.CREATED_AT, columns[8]);
+                profile.setText(Profile.UPDATED_AT, columns[9]);
+                profile.setText(Profile.MK_STATUS, columns[10]);
+                profile.setText(Profile.FIRST_NAME, columns[11]);
+                profile.setText(Profile.SECOND_NAME, columns[12]);
+                profile.setText(Profile.LAST_NAME, columns[13]);
+                profile.setText(Profile.PHONE, columns[14]);
+                profile.setNumber(Profile.CITY_ID, columns[15]);
+                profile.setNumber(Profile.MANAGER_RANK_ID, columns[16]);
+                profile.setText(Profile.INVOLVED_AT, columns[17]);
+                profile.setText(Profile.FULL_ANCESTRY_PATH, columns[18]);
+                profile.setText(Profile.DEPTH_LEVEL, columns[19]);
+                profile.setNumber(Profile.ANCESTRY_DEPTH, columns[20]);
+                profile.setText(Profile.CONTACT_INFO, columns[21]);
+                profile.setText(Profile.BIRTHDAY, columns[22]);
+                profile.setText(Profile.FIRED_STATUS, columns[23]);
+                profile.setNumber(Profile.OLD_PARENT_ID, columns[24]);
+                profile.setText(Profile.OLD_CHILD_ID, columns[25]);
+
+                profiles.add(profile);
             }
 
-            users.stream()
-                    .filter(r -> !userMapper.hasUser(r.getId()))
-                    .forEach(r -> {
-                        userMapper.insertUser(r);
+            profiles.stream()
+                    .filter(p -> !domainMapper.hasDomain(p))
+                    .forEach(p -> {
+                        insertUserProfile(userMap.get(p.getExternalId()), p);
                         ++status.count;
+
+                        listener.accept(p);
                     });
         }catch (Exception e){
             log.error("error import users", e);
@@ -216,5 +207,17 @@ public class ImportService {
         }
 
         return status;
+    }
+
+    @Transactional
+    private void insertUserProfile(User user, Profile profile){
+        if (!user.getLogin().isEmpty() && !user.getPassword().isEmpty()) {
+            userMapper.insertUser(user);
+
+            profile.setParentId(user.getId());
+            profile.setParentEntityId(User.ENTITY_ID);
+        }
+
+        domainMapper.insertDomain(profile);
     }
 }
