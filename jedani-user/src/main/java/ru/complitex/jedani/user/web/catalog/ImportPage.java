@@ -1,15 +1,16 @@
-package ru.complitex.jedani.web.catalog;
+package ru.complitex.jedani.user.web.catalog;
 
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
+import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.complitex.jedani.service.ImportService;
-import ru.complitex.jedani.web.BasePage;
+import ru.complitex.jedani.user.service.ImportService;
+import ru.complitex.jedani.user.web.BasePage;
 
 import javax.inject.Inject;
 
@@ -38,7 +39,7 @@ public class ImportPage extends BasePage{
         FileUploadField regionUploadField = new FileUploadField("uploadField");
         regionForm.add(regionUploadField);
 
-        regionForm.add(new AjaxSubmitLink("upload") {
+        regionForm.add(new IndicatingAjaxButton("upload") {
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
                 try {
@@ -67,7 +68,7 @@ public class ImportPage extends BasePage{
         FileUploadField cityUploadField = new FileUploadField("uploadField");
         cityForm.add(cityUploadField);
 
-        cityForm.add(new AjaxSubmitLink("upload") {
+        cityForm.add(new IndicatingAjaxButton("upload") {
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
                 try {

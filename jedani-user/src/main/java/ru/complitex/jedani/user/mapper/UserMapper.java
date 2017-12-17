@@ -1,8 +1,8 @@
-package ru.complitex.jedani.mapper;
+package ru.complitex.jedani.user.mapper;
 
 import org.apache.ibatis.session.SqlSession;
 import ru.complitex.common.entity.FilterWrapper;
-import ru.complitex.jedani.entity.User;
+import ru.complitex.user.entity.User;
 
 import javax.inject.Inject;
 import java.util.List;

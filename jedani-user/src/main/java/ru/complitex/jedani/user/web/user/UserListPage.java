@@ -1,4 +1,4 @@
-package ru.complitex.jedani.web.user;
+package ru.complitex.jedani.user.web.user;
 
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
@@ -7,9 +7,9 @@ import org.apache.wicket.model.ResourceModel;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.ui.datatable.DataProvider;
 import ru.complitex.common.ui.datatable.FilterDataTable;
-import ru.complitex.jedani.entity.User;
-import ru.complitex.jedani.mapper.UserMapper;
-import ru.complitex.jedani.web.BasePage;
+import ru.complitex.jedani.user.entity.User;
+import ru.complitex.jedani.user.mapper.UserMapper;
+import ru.complitex.jedani.user.web.BasePage;
 
 import javax.inject.Inject;
 import java.util.ArrayList;

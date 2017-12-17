@@ -1,4 +1,4 @@
-package ru.complitex.jedani.producer;
+package ru.complitex.jedani.user.producer;
 
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSessionFactory;

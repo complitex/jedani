@@ -1,4 +1,4 @@
-package ru.complitex.jedani.entity;
+package ru.complitex.jedani.user.entity;
 
 import ru.complitex.domain.entity.Domain;
 
@@ -32,7 +32,4 @@ public class Profile extends Domain{
     public static final Long OLD_PARENT_ID = 23L;
     public static final Long OLD_CHILD_ID = 24L;
 
-    public Profile() {
-
-    }
 }

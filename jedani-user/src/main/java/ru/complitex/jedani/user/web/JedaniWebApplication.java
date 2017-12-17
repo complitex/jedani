@@ -1,4 +1,4 @@
-package ru.complitex.jedani.web;
+package ru.complitex.jedani.user.web;
 
 import de.agilecoders.wicket.core.Bootstrap;
 import de.agilecoders.wicket.core.settings.BootstrapSettings;
@@ -9,8 +9,8 @@ import de.agilecoders.wicket.themes.markup.html.google.GoogleTheme;
 import org.apache.wicket.Page;
 import org.apache.wicket.cdi.CdiConfiguration;
 import org.apache.wicket.protocol.http.WebApplication;
-import ru.complitex.jedani.web.catalog.ImportPage;
-import ru.complitex.jedani.web.user.UserListPage;
+import ru.complitex.jedani.user.web.catalog.ImportPage;
+import ru.complitex.jedani.user.web.user.UserListPage;
 
 /**
  * @author Anatoly A. Ivanov

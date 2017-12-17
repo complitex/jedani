@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="ru.complitex.jedani.mapper.UserMapper">
+<mapper namespace="ru.complitex.jedani.user.mapper.UserMapper">
     <select id="ping" resultType="string">
         select concat('pong ', now())
     </select>
 
-    <insert id="insertUser" parameterType="ru.complitex.jedani.entity.User">
+    <insert id="insertUser" parameterType="ru.complitex.jedani.user.entity.User">
         insert into user (id, email, encrypted_password, ancestry, j_id, reset_password_token, reset_password_send_at,
                           remember_created_at, created_at, updated_at, mk_status, first_name, second_name, last_name,
                           phone, city_id, manager_rank_id, involved_at, full_ancestry_path, depth_level, ancestry_depth,
@@ -17,7 +17,7 @@
           #{birthday}, #{firedStatus}, #{oldParentId}, #{oldChildId})
     </insert>
 
-    <update id="updateUser" parameterType="ru.complitex.jedani.entity.User">
+    <update id="updateUser" parameterType="ru.complitex.jedani.user.entity.User">
         update user
         <set>
             <if test="email != null">email = #{email},</if>
@@ -53,7 +53,7 @@
         select count(id) > 0 from user where id = #{id}
     </select>
 
-    <resultMap id="userResultMap" type="ru.complitex.jedani.entity.User">
+    <resultMap id="userResultMap" type="ru.complitex.jedani.user.entity.User">
         <id column="id" property="id"/>
         <result column="email" property="email"/>
         <result column="encrypted_password" property="encryptedPassword"/>

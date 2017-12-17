@@ -1,12 +1,12 @@
-package ru.complitex.jedani.web;
+package ru.complitex.jedani.user.web;
 
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.request.resource.PackageResourceReference;
-import ru.complitex.jedani.web.catalog.ImportPage;
-import ru.complitex.jedani.web.user.UserListPage;
+import ru.complitex.jedani.user.web.catalog.ImportPage;
+import ru.complitex.jedani.user.web.user.UserListPage;
 
 /**
  * @author Anatoly A. Ivanov

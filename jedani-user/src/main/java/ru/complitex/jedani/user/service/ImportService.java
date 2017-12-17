@@ -1,4 +1,4 @@
-package ru.complitex.jedani.service;
+package ru.complitex.jedani.user.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -6,8 +6,8 @@ import ru.complitex.address.entity.City;
 import ru.complitex.address.entity.Region;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.mapper.DomainMapper;
-import ru.complitex.jedani.entity.User;
-import ru.complitex.jedani.mapper.UserMapper;
+import ru.complitex.jedani.user.entity.User;
+import ru.complitex.jedani.user.mapper.UserMapper;
 
 import javax.inject.Inject;
 import java.io.BufferedReader;

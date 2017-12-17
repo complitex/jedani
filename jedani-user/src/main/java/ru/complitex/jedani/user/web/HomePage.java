@@ -1,7 +1,7 @@
-package ru.complitex.jedani.web;
+package ru.complitex.jedani.user.web;
 
 import org.apache.wicket.markup.html.basic.Label;
-import ru.complitex.jedani.mapper.UserMapper;
+import ru.complitex.jedani.user.mapper.UserMapper;
 
 import javax.inject.Inject;
 import java.util.Date;

@@ -1,4 +1,4 @@
-package ru.complitex.jedani.entity;
+package ru.complitex.jedani.user.entity;
 
 import java.io.Serializable;
 import java.util.Date;
