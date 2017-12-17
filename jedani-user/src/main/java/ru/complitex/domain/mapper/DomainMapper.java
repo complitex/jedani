@@ -67,6 +67,14 @@ public class DomainMapper {
         return sqlSession.selectOne("hasDomain", domain);
     }
 
+    public Domain getDomain(String entityName, Long objectId){
+        Domain domain = new Domain();
+        domain.setEntityName(entityName);
+        domain.setObjectId(objectId);
+
+        return getDomain(domain);
+    }
+
     public Domain getDomain(Domain domain){
         return sqlSession.selectOne("selectDomain", domain);
     }

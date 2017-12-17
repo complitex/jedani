@@ -9,8 +9,12 @@
         <result column="text" property="text"/>
     </resultMap>
 
-    <select id="selectEntityValues" parameterType="long" resultMap="entityValueResultMap">
-        select * from entity_value where entity_id = #{entityId} and attribute_id = #{attributeId}
+    <select id="selectEntityValues" parameterType="map" resultMap="entityValueResultMap">
+        select * from entity_value where entity_id = #{entityId}
+            <choose>
+                <when test="attributeId != null">and attribute_id = #{attributeId}</when>
+                <otherwise>and attribute_id is null</otherwise>
+            </choose>
     </select>
 
 </mapper>

@@ -65,7 +65,7 @@ public class ImportService {
 
                 Region region = new Region();
                 region.setExternalId(columns[0]);
-                region.setText(Region.NAME, columns[1]);
+                region.setValue(Region.NAME, columns[1]);
                 if (columns[2] != null) {
                     region.setNumber(Region.MANAGER_ID, Long.parseLong(columns[2]));
                 }
@@ -113,7 +113,7 @@ public class ImportService {
 
                 City city = new City();
                 city.setExternalId(columns[0]);
-                city.setText(City.NAME, columns[1]);
+                city.setValue(City.NAME, columns[1]);
                 city.setParentEntityId(Region.ENTITY_ID);
                 city.setParentId(region.getObjectId());
                 if (!columns[3].isEmpty()) {

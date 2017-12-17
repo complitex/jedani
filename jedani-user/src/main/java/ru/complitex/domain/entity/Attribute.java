@@ -41,6 +41,21 @@ public class Attribute implements Serializable{
         return null;
     }
 
+    public Value getOrCreateValue(Long localeId){
+        if (values == null){
+            values = Value.newValues();
+        }
+
+        Value value = getValue(localeId);
+
+        if (value == null){
+            value = new Value(localeId);
+            values.add(value);
+        }
+
+        return value;
+    }
+
 
     public Value getValue(java.util.Locale locale){
         return getValue(Locales.getLocaleId(locale));

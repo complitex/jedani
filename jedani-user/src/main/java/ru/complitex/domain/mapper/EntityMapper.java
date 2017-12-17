@@ -17,6 +17,10 @@ public class EntityMapper {
         return sqlSession.selectOne("selectEntity", id);
     }
 
+    public Entity getEntity(String entityName){
+        return sqlSession.selectOne("selectEntityByName", entityName);
+    }
+
 
     //todo domain mapper -> region import
 }

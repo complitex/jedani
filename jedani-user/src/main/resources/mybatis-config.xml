@@ -5,6 +5,7 @@
 <configuration>
     <typeHandlers>
         <typeHandler handler="ru.complitex.common.mybatis.IdEnumTypeHandler" javaType="ru.complitex.domain.entity.Status"/>
+        <typeHandler handler="ru.complitex.common.mybatis.IdEnumTypeHandler" javaType="ru.complitex.domain.entity.ValueType"/>
     </typeHandlers>
 
     <environments default="local">

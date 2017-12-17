@@ -1,5 +1,7 @@
 package ru.complitex.domain.entity;
 
+import ru.complitex.domain.util.Locales;
+
 import java.util.Date;
 import java.util.List;
 
@@ -18,6 +20,10 @@ public class EntityAttribute {
     private Boolean required;
 
     private List<EntityValue> values;
+
+    public EntityValue getValue(){
+        return values.stream().filter(v -> v.getLocaleId().equals(Locales.getSystemLocaleId())).findAny().orElse(null);
+    }
 
     public Long getId() {
         return id;

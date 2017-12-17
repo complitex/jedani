@@ -1,5 +1,7 @@
 package ru.complitex.domain.entity;
 
+import ru.complitex.domain.util.Locales;
+
 import java.util.List;
 
 /**
@@ -12,6 +14,10 @@ public class Entity {
     private List<EntityValue> values;
 
     private List<EntityAttribute> attributes;
+
+    public EntityValue getValue(){
+        return values.stream().filter(v -> v.getLocaleId().equals(Locales.getSystemLocaleId())).findAny().orElse(null);
+    }
 
     public Long getId() {
         return id;
