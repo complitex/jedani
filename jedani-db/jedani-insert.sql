@@ -17,7 +17,7 @@ INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VAL
 INSERT INTO `entity_value`(`entity_id`, `attribute_id`, `locale_id`, `text`) VALUES (2, 1, 1, 'Краткое название'), (2, 1, 2, 'Коротка назва');
 INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (2, 2, 0);
 INSERT INTO `entity_value`(`entity_id`, `attribute_id`, `locale_id`, `text`) VALUES (2, 2, 1, 'Название'), (2, 2, 2, 'Назва');
-INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (2, 3, 1);
+INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (2, 3, 4);
 INSERT INTO `entity_value`(`entity_id`, `attribute_id`, `locale_id`, `text`) VALUES (2, 3, 1, 'Менеджер'), (2, 3, 2, 'Менеджер');
 
 INSERT INTO `entity`(`id`, `name`) VALUES (3, 'city_type');
@@ -33,7 +33,7 @@ INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VAL
 INSERT INTO `entity_value`(`entity_id`, `attribute_id`, `locale_id`, `text`) VALUES (4, 1, 1, 'Краткое название'), (4, 1, 2, 'Коротка назва');
 INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`,  `value_type_id`) VALUES (4, 2, 0);
 INSERT INTO `entity_value`(`entity_id`, `attribute_id`, `locale_id`, `text`) VALUES (4, 2, 1, 'Название'), (4, 2, 2, 'Назва');
-INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (4, 3, 0);
+INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (4, 3, 4);
 INSERT INTO `entity_value`(`entity_id`, `attribute_id`, `locale_id`, `text`) VALUES (4, 3, 1, 'Менеджер'), (4, 3, 2, 'Менеджер');
 
 

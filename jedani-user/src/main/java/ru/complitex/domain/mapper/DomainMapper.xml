@@ -12,6 +12,7 @@
         <result column="status" property="status"/>
         <result column="permission_id" property="permissionId"/>
         <result column="external_id" property="externalId"/>
+        <result column="entity_name" property="entityName"/>
         <collection column="entityName=entity_name, objectId=id" property="attributes" select="ru.complitex.domain.mapper.AttributeMapper.selectAttributes"/>
     </resultMap>
 

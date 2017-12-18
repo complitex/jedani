@@ -11,6 +11,7 @@
         <result column="start_date" property="startDate"/>
         <result column="end_date" property="endDate"/>
         <result column="status" property="status"/>
+        <result column="entity_name" property="entityName"/>
         <collection column="entityName=entity_name, attributeId=id" property="values" select="ru.complitex.domain.entity.Value.selectValues"/>
     </resultMap>
 
@@ -22,7 +23,12 @@
 
     <!--suppress SqlResolve -->
     <select id="selectAttributes" parameterType="map" resultMap="attributeResultMap">
-        select '${entityName}' entity_name, a.* from ${entityName}_attribute a where a.object_id = #{objectId}
+        select '${entityName}' entity_name, a.* from ${entityName}_attribute a where a.object_id = #{objectId} and a.status = 1
     </select>
+
+    <!--suppress SqlResolve -->
+    <update id="archiveAttribute" parameterType="ru.complitex.domain.entity.Attribute">
+        update ${entityName}_attribute set end_date = #{endDate}, `status` = 2 where id = #{id}
+    </update>
 
 </mapper>

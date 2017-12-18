@@ -2,6 +2,7 @@ package ru.complitex.domain.entity;
 
 import ru.complitex.domain.util.Locales;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -9,7 +10,7 @@ import java.util.List;
  * @author Anatoly A. Ivanov
  * 06.12.2017 17:12
  */
-public class EntityAttribute {
+public class EntityAttribute implements Serializable{
     private Long id;
     private Long entityId;
     private Date startDate;

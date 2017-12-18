@@ -2,13 +2,14 @@ package ru.complitex.domain.entity;
 
 import ru.complitex.domain.util.Locales;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * @author Anatoly A. Ivanov
  * 30.11.2017 14:27
  */
-public class Entity {
+public class Entity implements Serializable {
     private Long id;
     private String name;
     private List<EntityValue> values;

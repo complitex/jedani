@@ -1,9 +1,12 @@
 package ru.complitex.domain.page;
 
+import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxButton;
+import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
 import de.agilecoders.wicket.core.markup.html.bootstrap.form.BootstrapForm;
 import de.agilecoders.wicket.core.markup.html.bootstrap.form.FormGroup;
 import org.apache.wicket.WicketRuntimeException;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.FormComponent;
@@ -14,7 +17,10 @@ import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.Entity;
@@ -30,6 +36,8 @@ import javax.inject.Inject;
  * 17.12.2017 21:51
  */
 public abstract class DomainEditPage extends BasePage{
+    private Logger log = LoggerFactory.getLogger(getClass());
+
     @Inject
     private EntityMapper entityMapper;
 
@@ -48,7 +56,9 @@ public abstract class DomainEditPage extends BasePage{
         BootstrapForm form = new BootstrapForm("form");
         add(form);
 
-        Domain domain = domainMapper.getDomain(entityName, parameters.get("id").toLongObject());
+        Long objectId = parameters.get("id").toOptionalLong();
+
+        Domain domain = objectId != null ? domainMapper.getDomain(entityName, objectId) : new Domain();
 
         if (domain == null){
             throw new WicketRuntimeException("domain not found");
@@ -90,8 +100,43 @@ public abstract class DomainEditPage extends BasePage{
         listView.setReuseItems(true);
         form.add(listView);
 
+        BootstrapAjaxButton save = new BootstrapAjaxButton("save", Buttons.Type.Primary) {
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                try {
+                    domain.setEntityName(entityName);
 
+                    if (domain.getObjectId() != null){
+                        domainMapper.updateDomain(domain);
+                    }else{
+                        domainMapper.insertDomain(domain);
+                    }
 
-        //todo dev submit -> validate -> update
+                    getSession().info(entity.getValue().getText() + " сохранен");
+
+                    if (backPage != null) {
+                        setResponsePage(backPage);
+                    }else {
+                        target.add(feedback);
+                    }
+                } catch (Exception e) {
+                    log.error("error save domain", e);
+
+                    getSession().error("Ошибка сохранения " + e.getLocalizedMessage());
+                }
+            }
+        };
+        save.setLabel(new ResourceModel("save"));
+        form.add(save);
+
+        BootstrapAjaxButton cancel = new BootstrapAjaxButton("cancel", Buttons.Type.Default) {
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                setResponsePage(backPage);
+            }
+        };
+        cancel.setLabel(new ResourceModel("cancel"));
+        cancel.setDefaultFormProcessing(false);
+        form.add(cancel);
     }
 }

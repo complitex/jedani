@@ -1,10 +1,12 @@
 package ru.complitex.domain.entity;
 
+import java.io.Serializable;
+
 /**
  * @author Anatoly A. Ivanov
  * 06.12.2017 17:37
  */
-public class EntityValue {
+public class EntityValue implements Serializable {
     private Long id;
     private Long entityId;
     private Long attributeId;
