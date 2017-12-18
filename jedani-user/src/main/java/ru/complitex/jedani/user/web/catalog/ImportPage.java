@@ -15,7 +15,6 @@ import org.apache.wicket.protocol.ws.api.WebSocketRequestHandler;
 import org.apache.wicket.protocol.ws.api.message.IWebSocketPushMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.complitex.jedani.user.entity.Profile;
 import ru.complitex.jedani.user.service.ImportService;
 import ru.complitex.jedani.user.web.BasePage;
 
@@ -65,7 +64,7 @@ public class ImportPage extends BasePage{
                     ImportService.Status status = importService.importRegions(regionUploadField.getFileUpload().getInputStream());
 
                     if (status.getErrorMessage() == null){
-                        info("Импортировано " + status.getCount() + " районов");
+                        info("Добавлено " + status.getCount() + " районов");
                     }else{
                         error("Ошибка импорта " + status.getErrorMessage());
                     }
@@ -94,7 +93,7 @@ public class ImportPage extends BasePage{
                     ImportService.Status status = importService.importCities(cityUploadField.getFileUpload().getInputStream());
 
                     if (status.getErrorMessage() == null){
-                        info("Импортировано " + status.getCount() + " населенных пунктов");
+                        info("Добавлено " + status.getCount() + " населенных пунктов");
                     }else{
                         error("Ошибка импорта " + status.getErrorMessage());
                     }
@@ -122,31 +121,31 @@ public class ImportPage extends BasePage{
             @Override
             protected void onPush(WebSocketRequestHandler handler, IWebSocketPushMessage message) {
                 if (message instanceof PushMessage){
-                    info.setDefaultModelObject(((PushMessage)message).getText());
-                    handler.add(info);
+                    String s = ((PushMessage)message).getText();
+
+                    if (!info.getDefaultModelObject().equals(s)){
+                        info.setDefaultModelObject(s);
+                        handler.add(info);
+                    }
                 }
             }
         });
         userForm.add(info);
 
-        WebSocketPushBroadcaster broadcaster = new WebSocketPushBroadcaster(WebSocketSettings.Holder.get(getApplication()).getConnectionRegistry());
-
         userForm.add(new IndicatingAjaxButton("upload") {
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
                 try {
-                    ImportService.Status status =
-                            importService.importUsers(cityUploadField.getFileUpload().getInputStream(), p -> {
+                    WebSocketPushBroadcaster broadcaster = new WebSocketPushBroadcaster(WebSocketSettings.Holder.get(getApplication()).getConnectionRegistry());
 
-                                String m = p.getText(Profile.J_ID) + " " + p.getText(Profile.LAST_NAME) + " " +
-                                        p.getText(Profile.SECOND_NAME) + " " + p.getText(Profile.FIRST_NAME);
-                                broadcaster.broadcastAll(getApplication(), new PushMessage(m));
-                            });
+                    ImportService.Status status =
+                            importService.importUsers(cityUploadField.getFileUpload().getInputStream(),
+                                    p -> broadcaster.broadcastAll(getApplication(), new PushMessage((int)(p*100) + "%")));
 
                     info.setDefaultModelObject("");
                     target.add(info);
                     if (status.getErrorMessage() == null){
-                        info("Импортировано " + status.getCount() + " пользователей");
+                        info("Добавлено " + status.getCount() + " пользователей");
                     }else{
                         error("Ошибка импорта " + status.getErrorMessage());
                     }

@@ -137,7 +137,7 @@ public class ImportService {
         return status;
     }
 
-    public Status importUsers(InputStream inputStream, Consumer<Profile> listener){
+    public Status importUsers(InputStream inputStream, Consumer<Double> listener){
         Status status = new Status();
 
         List<Profile> profiles = new ArrayList<>();
@@ -198,7 +198,7 @@ public class ImportService {
                         insertUserProfile(userMap.get(p.getExternalId()), p);
                         ++status.count;
 
-                        listener.accept(p);
+                        listener.accept((double)status.count/profiles.size());
                     });
         }catch (Exception e){
             log.error("error import users", e);

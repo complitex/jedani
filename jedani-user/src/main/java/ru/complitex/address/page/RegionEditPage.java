@@ -9,11 +9,6 @@ import ru.complitex.domain.page.DomainEditPage;
  */
 public class RegionEditPage extends DomainEditPage{
     public RegionEditPage(PageParameters parameters) {
-        super(parameters);
-    }
-
-    @Override
-    protected String getEntityName() {
-        return "region";
+        super("region", parameters, null);
     }
 }

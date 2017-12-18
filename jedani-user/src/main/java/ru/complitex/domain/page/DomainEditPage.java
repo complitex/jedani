@@ -4,6 +4,7 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel
 import de.agilecoders.wicket.core.markup.html.bootstrap.form.BootstrapForm;
 import de.agilecoders.wicket.core.markup.html.bootstrap.form.FormGroup;
 import org.apache.wicket.WicketRuntimeException;
+import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.TextField;
@@ -35,8 +36,8 @@ public abstract class DomainEditPage extends BasePage{
     @Inject
     private DomainMapper domainMapper;
 
-    public DomainEditPage(PageParameters parameters) {
-        Entity entity = entityMapper.getEntity(getEntityName());
+    public DomainEditPage(String entityName, PageParameters parameters, Class<? extends WebPage> backPage) {
+        Entity entity = entityMapper.getEntity(entityName);
 
         add(new Label("header", entity.getValue().getText()));
 
@@ -47,7 +48,7 @@ public abstract class DomainEditPage extends BasePage{
         BootstrapForm form = new BootstrapForm("form");
         add(form);
 
-        Domain domain = domainMapper.getDomain(getEntityName(), parameters.get("id").toLongObject());
+        Domain domain = domainMapper.getDomain(entityName, parameters.get("id").toLongObject());
 
         if (domain == null){
             throw new WicketRuntimeException("domain not found");
@@ -91,8 +92,6 @@ public abstract class DomainEditPage extends BasePage{
 
 
 
-        //todo dev domain edit page, entity -> attribute -> domain -> form -> submit -> validate -> update
+        //todo dev submit -> validate -> update
     }
-
-    protected abstract String getEntityName();
 }
