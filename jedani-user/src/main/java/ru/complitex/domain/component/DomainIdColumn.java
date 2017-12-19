@@ -9,6 +9,7 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import ru.complitex.common.entity.SortProperty;
 import ru.complitex.domain.entity.Domain;
 
 /**
@@ -17,7 +18,7 @@ import ru.complitex.domain.entity.Domain;
  */
 public class DomainIdColumn extends AbstractDomainColumn{
     public DomainIdColumn() {
-        super(Model.of("#"));
+        super(Model.of("#"), new SortProperty("id"));
     }
 
     @Override

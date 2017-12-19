@@ -25,4 +25,22 @@ public enum ValueType implements IdEnum {
     public boolean isSimple(){
         return id <= 5;
     }
+
+    public String getKey(){
+        switch (this){
+            case VALUE:
+                return "value";
+            case STRING:
+            case DATE:
+            case DECIMAL:
+                return "text";
+            case BOOLEAN:
+            case INTEGER:
+                return "number";
+            case ENTITY:
+                return "entity";
+        }
+
+        return null;
+    }
 }

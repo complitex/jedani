@@ -8,6 +8,7 @@ import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.wicket.datatable.DataProvider;
 import ru.complitex.common.wicket.datatable.FilterDataTable;
+import ru.complitex.common.entity.SortProperty;
 import ru.complitex.domain.component.DomainActionColumn;
 import ru.complitex.domain.component.DomainColumn;
 import ru.complitex.domain.component.DomainIdColumn;
@@ -45,7 +46,14 @@ public class DomainListPage extends BasePage{
         DataProvider<Domain> dataProvider = new DataProvider<Domain>(FilterWrapper.of(new Domain(entityName))) {
             @Override
             public Iterator<? extends Domain> iterator(long first, long count) {
-                return domainMapper.getDomains(getFilterState().limit(first, count)).iterator();
+                FilterWrapper<Domain> filterWrapper = getFilterState().limit(first, count);
+
+                if (getSort() != null){
+                    filterWrapper.setSortProperty(getSort().getProperty());
+                    filterWrapper.setAscending(getSort().isAscending());
+                }
+
+                return domainMapper.getDomains(filterWrapper).iterator();
             }
 
             @Override
@@ -58,7 +66,7 @@ public class DomainListPage extends BasePage{
         filterForm.setOutputMarkupId(true);
         add(filterForm);
 
-        List<IColumn<Domain, String>> columns = new ArrayList<>();
+        List<IColumn<Domain, SortProperty>> columns = new ArrayList<>();
 
         columns.add(new DomainIdColumn());
         entity.getAttributes().forEach(a -> columns.add(new DomainColumn(a)));
@@ -66,10 +74,5 @@ public class DomainListPage extends BasePage{
 
         FilterDataTable<Domain> table = new FilterDataTable<>("table", columns, dataProvider, filterForm, 10);
         filterForm.add(table);
-
-
-
-        //todo action column, id column, parent column
-
     }
 }

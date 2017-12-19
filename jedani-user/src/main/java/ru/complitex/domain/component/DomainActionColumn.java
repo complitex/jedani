@@ -23,8 +23,6 @@ public class DomainActionColumn extends AbstractDomainColumn{
     private Class<? extends DomainEditPage> editPageClass;
 
     public DomainActionColumn(Class<? extends DomainEditPage> editPageClass) {
-        super(null);
-
         this.editPageClass = editPageClass;
     }
 

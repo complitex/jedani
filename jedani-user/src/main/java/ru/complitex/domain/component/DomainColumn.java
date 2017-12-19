@@ -9,6 +9,7 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import ru.complitex.common.entity.FilterWrapper;
+import ru.complitex.common.entity.SortProperty;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.entity.Value;
@@ -22,7 +23,8 @@ public class DomainColumn extends AbstractDomainColumn {
     private EntityAttribute entityAttribute;
 
     public DomainColumn(EntityAttribute entityAttribute) {
-        super(Model.of(entityAttribute.getValue().getText()));
+        super(Model.of(entityAttribute.getValue().getText()), new SortProperty(entityAttribute.getValueType().getKey(),
+                entityAttribute.getAttributeId()));
 
         this.entityAttribute = entityAttribute;
     }

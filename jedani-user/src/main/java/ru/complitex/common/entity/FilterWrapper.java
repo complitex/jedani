@@ -12,7 +12,7 @@ public class FilterWrapper<T extends Serializable> implements Serializable {
     private T object;
     private Long first = 0L;
     private Long count = 0L;
-    private String sortProperty = "id";
+    private SortProperty sortProperty;
     private boolean ascending = false;
     private Map<String, Object> map = new HashMap<>();
 
@@ -64,15 +64,7 @@ public class FilterWrapper<T extends Serializable> implements Serializable {
     }
 
     public String getOrderLimit(){
-        return "order by `" + getSortProperty() + "` " + getAsc() + getLimit();
-    }
-
-    public Map<String, Object> getMap() {
-        return map;
-    }
-
-    public void setMap(Map<String, Object> map) {
-        this.map = map;
+        return "order by `" + getSortProperty().getKey() + "` " + getAsc() + getLimit();
     }
 
     public T getObject() {
@@ -83,31 +75,27 @@ public class FilterWrapper<T extends Serializable> implements Serializable {
         this.object = object;
     }
 
-    public long getFirst() {
-        return first > 0 ? first : 0;
+    public Long getFirst() {
+        return first;
     }
 
-    public void setFirst(long first) {
+    public void setFirst(Long first) {
         this.first = first;
     }
 
-    public long getCount() {
+    public Long getCount() {
         return count;
     }
 
-    public void setCount(long count) {
+    public void setCount(Long count) {
         this.count = count;
     }
 
-    public String getSortProperty() {
-        if (sortProperty == null){
-            return "id";
-        }
-
+    public SortProperty getSortProperty() {
         return sortProperty;
     }
 
-    public void setSortProperty(String sortProperty) {
+    public void setSortProperty(SortProperty sortProperty) {
         this.sortProperty = sortProperty;
     }
 
@@ -117,5 +105,13 @@ public class FilterWrapper<T extends Serializable> implements Serializable {
 
     public void setAscending(boolean ascending) {
         this.ascending = ascending;
+    }
+
+    public Map<String, Object> getMap() {
+        return map;
+    }
+
+    public void setMap(Map<String, Object> map) {
+        this.map = map;
     }
 }

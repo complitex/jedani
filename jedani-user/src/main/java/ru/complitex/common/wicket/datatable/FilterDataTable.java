@@ -9,6 +9,7 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.Filte
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterToolbar;
 import org.apache.wicket.markup.html.form.TextField;
 import ru.complitex.common.entity.FilterWrapper;
+import ru.complitex.common.entity.SortProperty;
 
 import java.io.Serializable;
 import java.util.List;
@@ -17,8 +18,8 @@ import java.util.List;
  * @author Anatoly A. Ivanov
  * 28.11.2017 17:09
  */
-public class FilterDataTable<T extends Serializable> extends DataTable<T, String>{
-    public FilterDataTable(String id, List<? extends IColumn<T, String>> columns, DataProvider<T> dataProvider,
+public class FilterDataTable<T extends Serializable> extends DataTable<T, SortProperty>{
+    public FilterDataTable(String id, List<? extends IColumn<T, SortProperty>> columns, DataProvider<T> dataProvider,
                            FilterForm<FilterWrapper<T>> filterForm, long rowsPerPage) {
         super(id, columns, dataProvider, rowsPerPage);
 

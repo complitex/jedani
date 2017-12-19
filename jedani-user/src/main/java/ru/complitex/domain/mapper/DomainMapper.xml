@@ -20,9 +20,9 @@
     <!--suppress SqlResolve -->
     <insert id="insertDomain" parameterType="ru.complitex.domain.entity.Domain">
         insert into ${entityName} (object_id, parent_id, parent_entity_id, start_date, end_date, `status`,
-          permission_id, external_id)
+        permission_id, external_id)
         value (#{objectId}, #{parentId}, #{parentEntityId}, #{startDate}, #{endDate}, #{status},
-          #{permissionId}, #{externalId})
+        #{permissionId}, #{externalId})
     </insert>
 
     <!--suppress SqlResolve -->
@@ -39,13 +39,61 @@
         </where>
     </select>
 
+    <sql id="selectDomainsFromWhere">
+        from ${object.entityName} d
+        left join ${object.entityName}_attribute a on a.object_id = d.object_id
+        left join `${object.entityName}_value` v on v.attribute_id = a.id
+
+        <if test="sortProperty != null">
+            <if test="sortProperty.key == 'text' or sortProperty.key == 'number' or sortProperty.key == 'value'">
+                left join ${object.entityName}_attribute sort_a on sort_a.object_id = d.object_id and
+                sort_a.entity_attribute_id = #{sortProperty.value}
+
+                <if test="sortProperty.key == 'value'">
+                    left join `${object.entityName}_value` sort_v on sort_v.attribute_id = sort_a.id
+                </if>
+            </if>
+        </if>
+
+        <where>
+            <if test="object.objectId != null">d.object_id = #{object.objectId}</if>
+
+            <if test="object.parentId != null and object.parentEntityId != null">
+                and (d.object_id = #{object.objectId} and d.parent_entity_id = #{object.parentEntityId})
+            </if>
+
+            <foreach collection="object.attributes" item="i" separator="and">
+                <if test="i.text != null">
+                    (a.entity_attribute_id = #{i.entityAttributeId} and (a.text like concat('%', #{i.text}, '%') or
+                    v.text = concat('%', #{i.text}, '%')))
+                </if>
+                <if test="i.number != null">
+                    (a.entity_attribute_id = #{i.entityAttributeId} and a.number like concat('%', #{i.number}, '%')
+                </if>
+            </foreach>
+
+            and d.status = 1 and a.status = 1
+        </where>
+    </sql>
+
     <select id="selectDomains" parameterType="ru.complitex.common.entity.FilterWrapper" resultMap="domainResultMap">
-        select '${object.entityName}' entity_name, d.* from ${object.entityName} d
+        select distinct d.object_id, '${object.entityName}' entity_name, d.* <include refid="selectDomainsFromWhere"/>
+
+        <if test="sortProperty != null">
+            <choose>
+                <when test="sortProperty.key == 'id'">order by d.id ${asc}</when>
+                <when test="sortProperty.key == 'text'">order by sort_a.text ${asc}</when>
+                <when test="sortProperty.key == 'number'">order by sort_a.number + 0 ${asc}</when>
+                <when test="sortProperty.key == 'value'">order by sort_v.text ${asc}</when>
+            </choose>
+        </if>
+
+        ${limit}
     </select>
 
-    <!--todo dev join filter -->
+    <!--suppress SqlResolve -->
     <select id="selectDomainsCount" parameterType="ru.complitex.common.entity.FilterWrapper" resultType="long">
-        select count(object_id) from ${object.entityName}
+        select count(distinct d.object_id) <include refid="selectDomainsFromWhere"/>
     </select>
 
 
