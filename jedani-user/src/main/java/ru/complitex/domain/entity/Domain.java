@@ -37,8 +37,8 @@ public class Domain implements Serializable{
     }
 
     public void setNumber(Long entityAttributeId, String number){
-        setNumber(entityAttributeId, Optional.ofNullable(number).
-                filter(s -> !s.isEmpty())
+        setNumber(entityAttributeId, Optional.ofNullable(number)
+                .filter(s -> !s.isEmpty())
                 .map(Long::valueOf)
                 .orElse(null));
     }

@@ -14,3 +14,10 @@ body {
 li.disabled a, li.disabled span{
     cursor: default !important;
 }
+.domain-id-column{
+    width: 55px;
+}
+
+.btn{
+    cursor: pointer;
+}

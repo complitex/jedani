@@ -8,6 +8,6 @@ import ru.complitex.domain.page.DomainListPage;
  */
 public class CityListPage extends DomainListPage{
     public CityListPage() {
-        super("city");
+        super("city", CityEditPage.class);
     }
 }

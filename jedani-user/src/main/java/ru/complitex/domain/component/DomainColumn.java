@@ -2,9 +2,7 @@ package ru.complitex.domain.component;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.IFilteredColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.TextFilter;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.repeater.Item;
@@ -20,7 +18,7 @@ import ru.complitex.domain.util.Locales;
  * @author Anatoly A. Ivanov
  * 19.12.2017 7:55
  */
-public class DomainColumn extends AbstractColumn<Domain, String> implements  IFilteredColumn<Domain, String> {
+public class DomainColumn extends AbstractDomainColumn {
     private EntityAttribute entityAttribute;
 
     public DomainColumn(EntityAttribute entityAttribute) {

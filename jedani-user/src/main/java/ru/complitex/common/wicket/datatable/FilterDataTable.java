@@ -1,4 +1,4 @@
-package ru.complitex.common.ui.datatable;
+package ru.complitex.common.wicket.datatable;
 
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.table.toolbars.BootstrapNavigationToolbar;
 import org.apache.wicket.AttributeModifier;

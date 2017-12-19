@@ -6,9 +6,11 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.Filte
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import ru.complitex.common.entity.FilterWrapper;
-import ru.complitex.common.ui.datatable.DataProvider;
-import ru.complitex.common.ui.datatable.FilterDataTable;
+import ru.complitex.common.wicket.datatable.DataProvider;
+import ru.complitex.common.wicket.datatable.FilterDataTable;
+import ru.complitex.domain.component.DomainActionColumn;
 import ru.complitex.domain.component.DomainColumn;
+import ru.complitex.domain.component.DomainIdColumn;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.mapper.DomainMapper;
@@ -31,7 +33,7 @@ public class DomainListPage extends BasePage{
     @Inject
     private DomainMapper domainMapper;
 
-    public DomainListPage(String entityName) {
+    public DomainListPage(String entityName, Class<? extends DomainEditPage> editPageClass) {
         Entity entity = entityMapper.getEntity(entityName);
 
         add(new Label("header", entity.getValue().getText()));
@@ -53,14 +55,18 @@ public class DomainListPage extends BasePage{
         };
 
         FilterForm<FilterWrapper<Domain>> filterForm = new FilterForm<>("form", dataProvider);
+        filterForm.setOutputMarkupId(true);
         add(filterForm);
 
         List<IColumn<Domain, String>> columns = new ArrayList<>();
 
+        columns.add(new DomainIdColumn());
         entity.getAttributes().forEach(a -> columns.add(new DomainColumn(a)));
+        columns.add(new DomainActionColumn(editPageClass));
 
         FilterDataTable<Domain> table = new FilterDataTable<>("table", columns, dataProvider, filterForm, 10);
         filterForm.add(table);
+
 
 
         //todo action column, id column, parent column

@@ -1,4 +1,4 @@
-package ru.complitex.common.ui.datatable;
+package ru.complitex.common.wicket.datatable;
 
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.IFilterStateLocator;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
