@@ -16,7 +16,7 @@
         <filter-class>org.apache.wicket.protocol.ws.javax.JavaxWebSocketFilter</filter-class>
         <init-param>
             <param-name>applicationClassName</param-name>
-            <param-value>ru.complitex.jedani.user.web.JedaniWebApplication</param-value>
+            <param-value>ru.complitex.jedani.user.page.JedaniWebApplication</param-value>
         </init-param>
     </filter>
     <filter-mapping>

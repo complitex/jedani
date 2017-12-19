@@ -13,6 +13,7 @@ import java.util.List;
 public class EntityAttribute implements Serializable{
     private Long id;
     private Long entityId;
+    private Long attributeId;
     private Date startDate;
     private Date endDate;
     private ValueType valueType;
@@ -40,6 +41,14 @@ public class EntityAttribute implements Serializable{
 
     public void setEntityId(Long entityId) {
         this.entityId = entityId;
+    }
+
+    public Long getAttributeId() {
+        return attributeId;
+    }
+
+    public void setAttributeId(Long attributeId) {
+        this.attributeId = attributeId;
     }
 
     public Date getStartDate() {

@@ -13,7 +13,8 @@
         <result column="permission_id" property="permissionId"/>
         <result column="external_id" property="externalId"/>
         <result column="entity_name" property="entityName"/>
-        <collection column="entityName=entity_name, objectId=id" property="attributes" select="ru.complitex.domain.mapper.AttributeMapper.selectAttributes"/>
+        <collection column="entityName=entity_name, objectId=id" property="attributes"
+                    select="ru.complitex.domain.mapper.AttributeMapper.selectAttributes"/>
     </resultMap>
 
     <!--suppress SqlResolve -->
@@ -37,5 +38,15 @@
             <if test="externalId != null">and d.external_id = #{externalId}</if>
         </where>
     </select>
+
+    <select id="selectDomains" parameterType="ru.complitex.common.entity.FilterWrapper" resultMap="domainResultMap">
+        select '${object.entityName}' entity_name, d.* from ${object.entityName} d
+    </select>
+
+    <!--todo dev join filter -->
+    <select id="selectDomainsCount" parameterType="ru.complitex.common.entity.FilterWrapper" resultType="long">
+        select count(object_id) from ${object.entityName}
+    </select>
+
 
 </mapper>

@@ -11,10 +11,10 @@
 
     <select id="selectEntityValues" parameterType="map" resultMap="entityValueResultMap">
         select * from entity_value where entity_id = #{entityId}
-            <choose>
-                <when test="attributeId != null">and attribute_id = #{attributeId}</when>
-                <otherwise>and attribute_id is null</otherwise>
-            </choose>
+        <choose>
+            <when test="attributeId != null">and attribute_id = #{attributeId}</when>
+            <otherwise>and attribute_id is null</otherwise>
+        </choose>
     </select>
 
 </mapper>

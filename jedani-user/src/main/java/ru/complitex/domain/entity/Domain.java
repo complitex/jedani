@@ -25,6 +25,13 @@ public class Domain implements Serializable{
 
     private List<Attribute> attributes = new ArrayList<>();
 
+    public Domain() {
+    }
+
+    public Domain(String entityName) {
+        this.entityName = entityName;
+    }
+
     public void setText(Long entityAttributeId, String text){
         getOrCreateAttribute(entityAttributeId).setText(text);
     }
@@ -76,7 +83,13 @@ public class Domain implements Serializable{
     public String getText(Long entityAttributeId){
         Attribute attribute = getAttribute(entityAttributeId);
 
-        return attribute != null? attribute.getText() : null;
+        return attribute != null ? attribute.getText() : null;
+    }
+
+    public Long getNumber(Long entityAttributeId){
+        Attribute attribute = getAttribute(entityAttributeId);
+
+        return attribute != null ? attribute.getNumber() : null;
     }
 
     public Value getValue(Long entityAttributeId, Locale locale){

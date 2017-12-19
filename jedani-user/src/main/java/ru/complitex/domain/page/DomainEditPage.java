@@ -27,7 +27,7 @@ import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.mapper.DomainMapper;
 import ru.complitex.domain.mapper.EntityMapper;
-import ru.complitex.jedani.user.web.BasePage;
+import ru.complitex.jedani.user.page.BasePage;
 
 import javax.inject.Inject;
 
@@ -68,7 +68,7 @@ public abstract class DomainEditPage extends BasePage{
             @Override
             protected void populateItem(ListItem<EntityAttribute> item) {
                 EntityAttribute entityAttribute = item.getModelObject();
-                Attribute attribute = domain.getOrCreateAttribute(entityAttribute.getId());
+                Attribute attribute = domain.getOrCreateAttribute(entityAttribute.getAttributeId());
 
                 FormGroup group = new FormGroup("group", Model.of(entityAttribute.getValue().getText()));
                 FormComponent input1 = null;

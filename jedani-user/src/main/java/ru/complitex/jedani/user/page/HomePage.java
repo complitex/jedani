@@ -1,4 +1,4 @@
-package ru.complitex.jedani.user.web;
+package ru.complitex.jedani.user.page;
 
 import org.apache.wicket.markup.html.basic.Label;
 

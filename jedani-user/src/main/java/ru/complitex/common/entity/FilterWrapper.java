@@ -48,6 +48,13 @@ public class FilterWrapper<T extends Serializable> implements Serializable {
         return this;
     }
 
+    public FilterWrapper<T> limit(Long first, Long count){
+        this.first = first;
+        this.count = count;
+
+        return this;
+    }
+
     public String getAsc(){
         return ascending ? "asc" : "desc";
     }

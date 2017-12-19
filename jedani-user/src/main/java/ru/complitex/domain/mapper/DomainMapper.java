@@ -1,6 +1,7 @@
 package ru.complitex.domain.mapper;
 
 import org.apache.ibatis.session.SqlSession;
+import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.Status;
@@ -8,6 +9,7 @@ import ru.complitex.domain.entity.Value;
 
 import javax.inject.Inject;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -102,5 +104,13 @@ public class DomainMapper {
 
     public Domain getDomain(Domain domain){
         return sqlSession.selectOne("selectDomain", domain);
+    }
+
+    public List<Domain> getDomains(FilterWrapper<Domain> filterWrapper){
+        return sqlSession.selectList("selectDomains", filterWrapper);
+    }
+
+    public Long getDomainsCount(FilterWrapper<Domain> filterWrapper){
+        return sqlSession.selectOne("selectDomainsCount", filterWrapper);
     }
 }

@@ -1,4 +1,4 @@
-package ru.complitex.jedani.user.web;
+package ru.complitex.jedani.user.page;
 
 import de.agilecoders.wicket.core.Bootstrap;
 import de.agilecoders.wicket.core.settings.BootstrapSettings;
@@ -9,9 +9,10 @@ import de.agilecoders.wicket.themes.markup.html.google.GoogleTheme;
 import org.apache.wicket.Page;
 import org.apache.wicket.cdi.CdiConfiguration;
 import org.apache.wicket.protocol.http.WebApplication;
+import ru.complitex.address.page.CityListPage;
 import ru.complitex.address.page.RegionEditPage;
-import ru.complitex.jedani.user.web.catalog.ImportPage;
-import ru.complitex.jedani.user.web.user.UserListPage;
+import ru.complitex.address.page.RegionListPage;
+import ru.complitex.jedani.user.page.catalog.ImportPage;
 
 /**
  * @author Anatoly A. Ivanov
@@ -41,7 +42,8 @@ public class JedaniWebApplication extends WebApplication{
 
     private void configureMount() {
         mountPage("import", ImportPage.class);
-        mountPage("users", UserListPage.class);
+        mountPage("regions", RegionListPage.class);
         mountPage("region/${id}", RegionEditPage.class);
+        mountPage("cities", CityListPage.class);
     }
 }

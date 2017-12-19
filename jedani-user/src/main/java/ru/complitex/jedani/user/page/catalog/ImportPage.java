@@ -1,4 +1,4 @@
-package ru.complitex.jedani.user.web.catalog;
+package ru.complitex.jedani.user.page.catalog;
 
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -16,7 +16,7 @@ import org.apache.wicket.protocol.ws.api.message.IWebSocketPushMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.complitex.jedani.user.service.ImportService;
-import ru.complitex.jedani.user.web.BasePage;
+import ru.complitex.jedani.user.page.BasePage;
 
 import javax.inject.Inject;
 

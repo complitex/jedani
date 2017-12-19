@@ -9,12 +9,12 @@ import ru.complitex.domain.entity.Domain;
 public class Region extends Domain{
     public static final long ENTITY_ID = 2;
 
-    public static final long SHORT_NAME = 1;
-    public static final long NAME = 2;
+    public static final long NAME = 1;
+    public static final long SHORT_NAME = 2;
     public static final long MANAGER_ID = 3;
 
     public Region() {
-        setEntityName("region");
+        super("region");
     }
 
     public Region(String externalId){

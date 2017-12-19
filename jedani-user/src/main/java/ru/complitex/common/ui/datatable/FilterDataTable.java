@@ -8,17 +8,19 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterToolbar;
 import org.apache.wicket.markup.html.form.TextField;
+import ru.complitex.common.entity.FilterWrapper;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * @author Anatoly A. Ivanov
  * 28.11.2017 17:09
  */
-public class FilterDataTable<T> extends DataTable<T, String>{
-    public FilterDataTable(String id, List<? extends IColumn<T, String>> iColumns, DataProvider<T> dataProvider,
-                           FilterForm<T> filterForm, long rowsPerPage) {
-        super(id, iColumns, dataProvider, rowsPerPage);
+public class FilterDataTable<T extends Serializable> extends DataTable<T, String>{
+    public FilterDataTable(String id, List<? extends IColumn<T, String>> columns, DataProvider<T> dataProvider,
+                           FilterForm<FilterWrapper<T>> filterForm, long rowsPerPage) {
+        super(id, columns, dataProvider, rowsPerPage);
 
         addTopToolbar(new AjaxFallbackHeadersToolbar<>(this, dataProvider));
         addTopToolbar(new FilterToolbar(this, filterForm){
