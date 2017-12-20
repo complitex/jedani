@@ -56,7 +56,7 @@
         </if>
 
         <where>
-            <if test="object.objectId != null">d.object_id = #{object.objectId}</if>
+            <if test="object.objectId != null">d.object_id like concat('%', #{object.objectId}, '%')</if>
 
             <if test="object.parentId != null and object.parentEntityId != null">
                 and (d.object_id = #{object.objectId} and d.parent_entity_id = #{object.parentEntityId})

@@ -7,7 +7,8 @@ import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import ru.complitex.address.page.CityListPage;
 import ru.complitex.address.page.RegionListPage;
-import ru.complitex.jedani.user.page.catalog.ImportPage;
+import ru.complitex.jedani.user.page.admin.ImportPage;
+import ru.complitex.jedani.user.page.profile.ProfileListPage;
 
 /**
  * @author Anatoly A. Ivanov
@@ -18,6 +19,7 @@ public class BasePage extends WebPage{
         add(new BookmarkablePageLink<>("import", ImportPage.class)); //todo class="active"
         add(new BookmarkablePageLink<>("regions", RegionListPage.class));
         add(new BookmarkablePageLink<>("cities", CityListPage.class));
+        add(new BookmarkablePageLink<>("profiles", ProfileListPage.class));
     }
 
     @Override

@@ -9,10 +9,13 @@ import de.agilecoders.wicket.themes.markup.html.google.GoogleTheme;
 import org.apache.wicket.Page;
 import org.apache.wicket.cdi.CdiConfiguration;
 import org.apache.wicket.protocol.http.WebApplication;
+import ru.complitex.address.page.CityEditPage;
 import ru.complitex.address.page.CityListPage;
 import ru.complitex.address.page.RegionEditPage;
 import ru.complitex.address.page.RegionListPage;
-import ru.complitex.jedani.user.page.catalog.ImportPage;
+import ru.complitex.jedani.user.page.admin.ImportPage;
+import ru.complitex.jedani.user.page.profile.ProfileEditPage;
+import ru.complitex.jedani.user.page.profile.ProfileListPage;
 
 /**
  * @author Anatoly A. Ivanov
@@ -45,5 +48,8 @@ public class JedaniWebApplication extends WebApplication{
         mountPage("regions", RegionListPage.class);
         mountPage("region/${id}", RegionEditPage.class);
         mountPage("cities", CityListPage.class);
+        mountPage("city/${id}", CityEditPage.class);
+        mountPage("profiles", ProfileListPage.class);
+        mountPage("profile/${id}", ProfileEditPage.class);
     }
 }

@@ -388,6 +388,21 @@ CREATE TABLE `profile_attribute` (
   REFERENCES entity_attribute (`attribute_id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты профиля пользователя';
 
+DROP TABLE IF EXISTS `profile_value`;
+CREATE TABLE `profile_value` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Суррогатный ключ',
+  `attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор атрибута',
+  `locale_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор локали',
+  `text` VARCHAR(1000) COMMENT 'Текстовое значение',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_id__locale` (`attribute_id`,`locale_id`),
+  KEY `key_attribute_id` (`attribute_id`),
+  KEY `key_locale` (`locale_id`),
+  KEY `key_value` (`text`(128)),
+  CONSTRAINT `fk_profile_attribute_value__profile_attribute` FOREIGN KEY (`attribute_id`) REFERENCES `profile_attribute` (`id`),
+  CONSTRAINT `fk_profile_attribute_value__locale` FOREIGN KEY (`locale_id`) REFERENCES `locale` (`id`)
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Локализация атрибутов профиля пользователя';
+
 
 
 

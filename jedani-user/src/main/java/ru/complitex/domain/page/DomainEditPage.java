@@ -39,10 +39,10 @@ public abstract class DomainEditPage extends BasePage{
     private Logger log = LoggerFactory.getLogger(getClass());
 
     @Inject
-    private EntityMapper entityMapper;
+    private transient EntityMapper entityMapper;
 
     @Inject
-    private DomainMapper domainMapper;
+    private transient DomainMapper domainMapper;
 
     public DomainEditPage(String entityName, PageParameters parameters, Class<? extends WebPage> backPage) {
         Entity entity = entityMapper.getEntity(entityName);
@@ -138,5 +138,7 @@ public abstract class DomainEditPage extends BasePage{
         cancel.setLabel(new ResourceModel("cancel"));
         cancel.setDefaultFormProcessing(false);
         form.add(cancel);
+
+        //todo validate -> entity select
     }
 }

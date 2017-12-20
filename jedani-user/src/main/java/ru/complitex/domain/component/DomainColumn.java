@@ -23,7 +23,8 @@ public class DomainColumn extends AbstractDomainColumn {
     private EntityAttribute entityAttribute;
 
     public DomainColumn(EntityAttribute entityAttribute) {
-        super(Model.of(entityAttribute.getValue().getText()), new SortProperty(entityAttribute.getValueType().getKey(),
+        super(Model.of(entityAttribute.getValue() != null ? entityAttribute.getValue().getText() : "[" + entityAttribute.getAttributeId() + "]"),
+                new SortProperty(entityAttribute.getValueType().getKey(),
                 entityAttribute.getAttributeId()));
 
         this.entityAttribute = entityAttribute;

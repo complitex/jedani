@@ -6,9 +6,9 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.Filte
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import ru.complitex.common.entity.FilterWrapper;
+import ru.complitex.common.entity.SortProperty;
 import ru.complitex.common.wicket.datatable.DataProvider;
 import ru.complitex.common.wicket.datatable.FilterDataTable;
-import ru.complitex.common.entity.SortProperty;
 import ru.complitex.domain.component.DomainActionColumn;
 import ru.complitex.domain.component.DomainColumn;
 import ru.complitex.domain.component.DomainIdColumn;
@@ -29,15 +29,15 @@ import java.util.List;
  */
 public class DomainListPage extends BasePage{
     @Inject
-    private EntityMapper entityMapper;
+    private transient EntityMapper entityMapper;
 
     @Inject
-    private DomainMapper domainMapper;
+    private transient DomainMapper domainMapper;
 
     public DomainListPage(String entityName, Class<? extends DomainEditPage> editPageClass) {
         Entity entity = entityMapper.getEntity(entityName);
 
-        add(new Label("header", entity.getValue().getText()));
+        add(new Label("header", entity.getValue() != null ? entity.getValue().getText() : "[" + entityName + "]"));
 
         FeedbackPanel feedback = new NotificationPanel("feedback");
         feedback.setOutputMarkupId(true);

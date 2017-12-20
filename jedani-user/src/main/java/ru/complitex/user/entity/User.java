@@ -7,7 +7,7 @@ import java.io.Serializable;
  * 17.12.2017 12:36
  */
 public class User implements Serializable{
-    public static final long ENTITY_ID = 11;
+    public static final long ENTITY_ID = 10;
 
     private Long id;
     private String login;

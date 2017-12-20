@@ -155,6 +155,8 @@ public class ImportService {
                     break;
                 }
 
+                //todo fio catalog
+
                 User user = new User();
 
                 user.setLogin(columns[4]);

@@ -1,4 +1,4 @@
-package ru.complitex.jedani.user.page.catalog;
+package ru.complitex.jedani.user.page.admin;
 
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
 import org.apache.wicket.ajax.AjaxRequestTarget;
