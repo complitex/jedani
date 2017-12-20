@@ -1,7 +1,7 @@
 INSERT INTO `locale`(`id`, `locale`, `system`) VALUES (1, 'RU', 1);
 INSERT INTO `locale`(`id`, `locale`, `system`) VALUES (2, 'UA', 0);
 
-INSERT INTO `sequence` (`name`) VALUES ('city'), ('city_type'), ('region'), ('worker');
+INSERT INTO `sequence` (`name`) VALUES ('city'), ('city_type'), ('region'), ('country'), ('worker');
 
 INSERT INTO entity_value_type (id, value_type) VALUE (0, 'string_value');
 INSERT INTO entity_value_type (id, value_type) VALUE (1, 'string');
@@ -10,6 +10,15 @@ INSERT INTO entity_value_type (id, value_type) VALUE (3, 'decimal');
 INSERT INTO entity_value_type (id, value_type) VALUE (4, 'integer');
 INSERT INTO entity_value_type (id, value_type) VALUE (5, 'date');
 INSERT INTO entity_value_type (id, value_type) VALUE (10, 'entity');
+
+INSERT INTO `entity`(`id`, `name`) VALUES (1, 'country');
+INSERT INTO `entity_value`(`entity_id`, `locale_id`, `text`) VALUES (1, 1, 'Страна'), (1, 2, 'Країна');
+INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (1, 1, 0);
+INSERT INTO `entity_value`(`entity_id`, `attribute_id`, `locale_id`, `text`) VALUES (1, 1, 1, 'Название'), (1, 1, 2, 'Назва');
+INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (1, 2, 0);
+INSERT INTO `entity_value`(`entity_id`, `attribute_id`, `locale_id`, `text`) VALUES (1, 2, 1, 'Краткое название'), (1, 2, 2, 'Коротка назва');
+INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (1, 3, 4);
+INSERT INTO `entity_value`(`entity_id`, `attribute_id`, `locale_id`, `text`) VALUES (1, 3, 1, 'Менеджер'), (1, 3, 2, 'Менеджер');
 
 INSERT INTO `entity`(`id`, `name`) VALUES (2, 'region');
 INSERT INTO `entity_value`(`entity_id`, `locale_id`, `text`) VALUES (2, 1, 'Регион'), (2, 2, 'Регіон');
