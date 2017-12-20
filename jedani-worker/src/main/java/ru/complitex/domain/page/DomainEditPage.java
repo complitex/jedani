@@ -77,6 +77,8 @@ public abstract class DomainEditPage extends BasePage{
                 switch (entityAttribute.getValueType()){
                     case STRING:
                     case DECIMAL:
+                    case BOOLEAN:
+                    case ENTITY:
                         input1 = new TextField<>("input1", new PropertyModel<>(attribute, "text"));
                         break;
                     case DATE:

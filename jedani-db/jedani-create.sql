@@ -74,8 +74,8 @@ CREATE TABLE `entity_value_type` (
 DROP TABLE IF EXISTS `entity_attribute`;
 CREATE TABLE `entity_attribute` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
-  `attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор атрибута',
   `entity_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор сущности',
+  `attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор атрибута',
   `start_date` TIMESTAMP NOT NULL default CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия атрибута',
   `end_date` TIMESTAMP NULL default NULL COMMENT 'Дата окончания периода действия атрибута',
   `value_type_id` BIGINT(20) COMMENT  'Тип значения атрибута',

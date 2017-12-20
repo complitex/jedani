@@ -58,11 +58,11 @@ INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VAL
 INSERT INTO `entity_value`(`entity_id`, `attribute_id`, `locale_id`, `text`) VALUES (11, 8, 1, 'Дата обновления'), (11, 8, 2, 'Дата оновлення');
 INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (11, 9, 4);
 INSERT INTO `entity_value`(`entity_id`, `attribute_id`, `locale_id`, `text`) VALUES (11, 9, 1, 'МК статус'), (11, 9, 2, 'МК статус');
-INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (11, 10, 0);
+INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (11, 10, 1);
 INSERT INTO `entity_value`(`entity_id`, `attribute_id`, `locale_id`, `text`) VALUES (11, 10, 1, 'Имя'), (11, 10, 2, 'Ім''я');
-INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (11, 11, 0);
+INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (11, 11, 1);
 INSERT INTO `entity_value`(`entity_id`, `attribute_id`, `locale_id`, `text`) VALUES (11, 11, 1, 'Отчество'), (11, 11, 2, 'По батькові');
-INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (11, 12, 0);
+INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (11, 12, 1);
 INSERT INTO `entity_value`(`entity_id`, `attribute_id`, `locale_id`, `text`) VALUES (11, 12, 1, 'Фамилия'), (11, 12, 2, 'Прізвище');
 INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (11, 13, 1);
 INSERT INTO `entity_value`(`entity_id`, `attribute_id`, `locale_id`, `text`) VALUES (11, 13, 1, 'Телефон'), (11, 13, 2, 'Телефон');
