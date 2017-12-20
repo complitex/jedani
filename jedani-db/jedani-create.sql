@@ -337,10 +337,10 @@ CREATE TABLE `city_value` (
 -- --------------------------------------------------------------------------------------------------------------------
 
 -- ------------------------------
--- Profile
+-- Worker
 -- ------------------------------
-DROP TABLE IF EXISTS `profile`;
-CREATE TABLE `profile` (
+DROP TABLE IF EXISTS `worker`;
+CREATE TABLE `worker` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
   `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
   `parent_id` BIGINT(20) COMMENT 'Идентификатор родительского объекта',
@@ -360,12 +360,12 @@ CREATE TABLE `profile` (
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
   KEY `key_permission_id` (`permission_id`),
-  CONSTRAINT `ft_profile__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
-  CONSTRAINT `fk_profile__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`)
+  CONSTRAINT `ft_worker__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
+  CONSTRAINT `fk_worker__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Профиль сотрудника';
 
-DROP TABLE IF EXISTS `profile_attribute`;
-CREATE TABLE `profile_attribute` (
+DROP TABLE IF EXISTS `worker_attribute`;
+CREATE TABLE `worker_attribute` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
   `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
   `entity_attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор типа атрибута',
@@ -383,13 +383,13 @@ CREATE TABLE `profile_attribute` (
   KEY `key_start_date` (`start_date`),
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
-  CONSTRAINT `fk_profile_attribute__city` FOREIGN KEY (`object_id`) REFERENCES `profile`(`object_id`),
-  CONSTRAINT `fk_profile_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`)
+  CONSTRAINT `fk_worker_attribute__city` FOREIGN KEY (`object_id`) REFERENCES `worker`(`object_id`),
+  CONSTRAINT `fk_worker_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`)
   REFERENCES entity_attribute (`attribute_id`)
-) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты профиля пользователя';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты сотрудника';
 
-DROP TABLE IF EXISTS `profile_value`;
-CREATE TABLE `profile_value` (
+DROP TABLE IF EXISTS `worker_value`;
+CREATE TABLE `worker_value` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Суррогатный ключ',
   `attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор атрибута',
   `locale_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор локали',
@@ -399,9 +399,17 @@ CREATE TABLE `profile_value` (
   KEY `key_attribute_id` (`attribute_id`),
   KEY `key_locale` (`locale_id`),
   KEY `key_value` (`text`(128)),
-  CONSTRAINT `fk_profile_attribute_value__profile_attribute` FOREIGN KEY (`attribute_id`) REFERENCES `profile_attribute` (`id`),
-  CONSTRAINT `fk_profile_attribute_value__locale` FOREIGN KEY (`locale_id`) REFERENCES `locale` (`id`)
-) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Локализация атрибутов профиля пользователя';
+  CONSTRAINT `fk_worker_attribute_value__worker_attribute` FOREIGN KEY (`attribute_id`) REFERENCES `worker_attribute` (`id`),
+  CONSTRAINT `fk_worker_attribute_value__locale` FOREIGN KEY (`locale_id`) REFERENCES `locale` (`id`)
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Локализация атрибутов сотрудника';
+
+-- todo dev
+DROP TABLE IF EXISTS `profile_value`;
+DROP TABLE IF EXISTS `profile_attribute`;
+DROP TABLE IF EXISTS `profile`;
+
+
+
 
 
 
