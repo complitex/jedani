@@ -3,8 +3,9 @@
 <html xmlns:wicket="http://wicket.apache.org">
 <head></head>
 <body>
-<div class="container">
-    <nav class="navbar navbar-masthead navbar-default">
+
+<nav class="navbar navbar-masthead navbar-default navbar-static-top">
+    <div class="container">
         <div class="container-fluid">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -24,7 +25,7 @@
                             <li class="dropdown-header">Адресные</li>
                             <li><a wicket:id="countries">Страны</a></li>
                             <li><a wicket:id="regions">Регионы</a></li>
-                            <li><a href="#">Типы нас.пунктов</a></li>
+                            <li><a wicket:id="cityTypes">Типы нас.пунктов</a></li>
                             <li><a wicket:id="cities">Нас.пункты</a></li>
                             <li role="separator" class="divider"></li>
                             <li class="dropdown-header">Данные по людям</li>
@@ -50,11 +51,12 @@
                 </ul>
             </div>
         </div>
-    </nav>
-
-    <div>
-        <wicket:child/>
     </div>
+</nav>
+
+
+<div class="container">
+    <wicket:child/>
 </div>
 </body>
 </html>
