@@ -50,7 +50,7 @@ INSERT INTO `entity`(`id`, `name`) VALUES (10, 'user');
 INSERT INTO `entity`(`id`, `name`) VALUES (11, 'worker');
 INSERT INTO `entity_value`(`entity_id`, `locale_id`, `text`) VALUES (11, 1, 'Сотрудник'), (11, 2, 'Співробітник');
 INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (11, 1, 1);
-INSERT INTO `entity_value`(`entity_id`, `attribute_id`, `locale_id`, `text`) VALUES (11, 1, 1, 'Идентификатор Джедани'), (11, 1, 2, 'Ідентифікатор Джедані');
+INSERT INTO `entity_value`(`entity_id`, `attribute_id`, `locale_id`, `text`) VALUES (11, 1, 1, 'Номер'), (11, 1, 2, 'Номер');
 INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (11, 2, 1);
 INSERT INTO `entity_value`(`entity_id`, `attribute_id`, `locale_id`, `text`) VALUES (11, 2, 1, 'E-mail'), (11, 2, 2, 'E-mail');
 INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (11, 3, 1);
@@ -76,7 +76,7 @@ INSERT INTO `entity_value`(`entity_id`, `attribute_id`, `locale_id`, `text`) VAL
 INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (11, 13, 1);
 INSERT INTO `entity_value`(`entity_id`, `attribute_id`, `locale_id`, `text`) VALUES (11, 13, 1, 'Телефон'), (11, 13, 2, 'Телефон');
 INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`, `reference_id`) VALUES (11, 14, 10, 4);
-INSERT INTO `entity_value`(`entity_id`, `attribute_id`, `locale_id`, `text`) VALUES (11, 14, 1, 'Населенный пункт'), (11, 14, 2, 'Населенный пункт');
+INSERT INTO `entity_value`(`entity_id`, `attribute_id`, `locale_id`, `text`) VALUES (11, 14, 1, 'Нас.пункт'), (11, 14, 2, 'Нас.пункт');
 INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (11, 15, 4);
 INSERT INTO `entity_value`(`entity_id`, `attribute_id`, `locale_id`, `text`) VALUES (11, 15, 1, 'Менеджер'), (11, 15, 2, 'Менеджер');
 INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (11, 16, 5);

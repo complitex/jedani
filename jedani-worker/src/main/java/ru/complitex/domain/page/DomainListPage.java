@@ -14,6 +14,7 @@ import ru.complitex.domain.component.DomainColumn;
 import ru.complitex.domain.component.DomainIdColumn;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.Entity;
+import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.mapper.DomainMapper;
 import ru.complitex.domain.mapper.EntityMapper;
 import ru.complitex.jedani.worker.page.BasePage;
@@ -69,10 +70,14 @@ public class DomainListPage extends BasePage{
         List<IColumn<Domain, SortProperty>> columns = new ArrayList<>();
 
         columns.add(new DomainIdColumn());
-        entity.getAttributes().forEach(a -> columns.add(new DomainColumn(a))); //todo attribute filter
+        getEntityAttributes(entity).forEach(a -> columns.add(new DomainColumn(a)));
         columns.add(new DomainActionColumn(editPageClass));
 
         FilterDataTable<Domain> table = new FilterDataTable<>("table", columns, dataProvider, filterForm, 10);
         filterForm.add(table);
+    }
+
+    protected List<EntityAttribute> getEntityAttributes(Entity entity){
+        return entity.getAttributes();
     }
 }

@@ -16,6 +16,10 @@ public class Entity implements Serializable {
 
     private List<EntityAttribute> attributes;
 
+    public EntityAttribute getEntityAttribute(Long attributeId){
+        return attributes.stream().filter(a -> a.getAttributeId().equals(attributeId)).findAny().orElse(null);
+    }
+
     public EntityValue getValue(){
         return values.stream().filter(v -> v.getLocaleId().equals(Locales.getSystemLocaleId())).findAny().orElse(null);
     }
