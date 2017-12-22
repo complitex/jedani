@@ -14,7 +14,6 @@ import ru.complitex.address.page.CityListPage;
 import ru.complitex.address.page.RegionEditPage;
 import ru.complitex.address.page.RegionListPage;
 import ru.complitex.jedani.worker.page.admin.ImportPage;
-import ru.complitex.jedani.worker.page.worker.WorkerEditPage;
 import ru.complitex.jedani.worker.page.worker.WorkerListPage;
 import ru.complitex.jedani.worker.page.worker.WorkerPage;
 
@@ -51,8 +50,7 @@ public class JedaniWebApplication extends WebApplication{
         mountPage("cities", CityListPage.class);
         mountPage("city/${id}", CityEditPage.class);
         mountPage("workers", WorkerListPage.class);
-        mountPage("worker/${id}", WorkerEditPage.class);
-        mountPage("lk", WorkerPage.class);
-        mountPage("lk/${id}", WorkerPage.class);
+        mountPage("worker", WorkerPage.class);
+        mountPage("worker/${id}", WorkerPage.class);
     }
 }

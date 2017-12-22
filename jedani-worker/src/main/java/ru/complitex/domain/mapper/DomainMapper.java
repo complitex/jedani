@@ -106,11 +106,11 @@ public class DomainMapper {
         return sqlSession.selectOne("selectDomain", domain);
     }
 
-    public List<Domain> getDomains(FilterWrapper<Domain> filterWrapper){
+    public List<Domain> getDomains(FilterWrapper<? extends Domain> filterWrapper){
         return sqlSession.selectList("selectDomains", filterWrapper);
     }
 
-    public Long getDomainsCount(FilterWrapper<Domain> filterWrapper){
+    public Long getDomainsCount(FilterWrapper<? extends Domain> filterWrapper){
         return sqlSession.selectOne("selectDomainsCount", filterWrapper);
     }
 }

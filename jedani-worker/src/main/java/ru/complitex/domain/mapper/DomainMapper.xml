@@ -72,10 +72,15 @@
                 </if>
             </foreach>
 
+            <if test="map.entityAttributeId != null and map.endWith != null">
+                and (a.entity_attribute_id = #{map.entityAttributeId} and a.text like concat ('%', #{map.endWith}))
+            </if>
+
             and d.status = 1 and a.status = 1
         </where>
     </sql>
 
+    <!--suppress SqlResolve -->
     <select id="selectDomains" parameterType="ru.complitex.common.entity.FilterWrapper" resultMap="domainResultMap">
         select distinct d.object_id, '${object.entityName}' entity_name, d.* <include refid="selectDomainsFromWhere"/>
 

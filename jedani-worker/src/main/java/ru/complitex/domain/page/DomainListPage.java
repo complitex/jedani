@@ -3,6 +3,7 @@ package ru.complitex.domain.page;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
+import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import ru.complitex.common.entity.FilterWrapper;
@@ -35,7 +36,7 @@ public class DomainListPage extends BasePage{
     @Inject
     private DomainMapper domainMapper;
 
-    public DomainListPage(String entityName, Class<? extends DomainEditPage> editPageClass) {
+    public DomainListPage(String entityName, Class<? extends WebPage> editPageClass) {
         Entity entity = entityMapper.getEntity(entityName);
 
         add(new Label("header", entity.getValue() != null ? entity.getValue().getText() : "[" + entityName + "]"));

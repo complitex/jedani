@@ -8,21 +8,21 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
+import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import ru.complitex.common.wicket.component.LinkPanel;
 import ru.complitex.domain.entity.Domain;
-import ru.complitex.domain.page.DomainEditPage;
 
 /**
  * @author Anatoly A. Ivanov
  * 20.12.2017 3:19
  */
 public class DomainActionColumn extends AbstractDomainColumn{
-    private Class<? extends DomainEditPage> editPageClass;
+    private Class<? extends WebPage> editPageClass;
 
-    public DomainActionColumn(Class<? extends DomainEditPage> editPageClass) {
+    public DomainActionColumn(Class<? extends WebPage> editPageClass) {
         this.editPageClass = editPageClass;
     }
 

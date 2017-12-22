@@ -4,6 +4,7 @@ import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import ru.complitex.address.page.CityListPage;
 import ru.complitex.address.page.CityTypeListPage;
@@ -20,7 +21,7 @@ import ru.complitex.jedani.worker.page.worker.WorkerPage;
 public class BasePage extends WebPage{
     public BasePage() {
         add(new BookmarkablePageLink<>("home", HomePage.class));
-        add(new BookmarkablePageLink<>("worker", WorkerPage.class));
+        add(new BookmarkablePageLink<>("worker", WorkerPage.class, new PageParameters().add("id", 17)));
         add(new BookmarkablePageLink<>("import", ImportPage.class)); //todo class="active"
         add(new BookmarkablePageLink<>("countries", CountryListPage.class));
         add(new BookmarkablePageLink<>("regions", RegionListPage.class));

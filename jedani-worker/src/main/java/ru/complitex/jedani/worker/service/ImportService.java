@@ -166,9 +166,9 @@ public class ImportService {
                 Worker worker = new Worker();
 
                 worker.setExternalId(columns[0]);
+                worker.setText(Worker.J_ID, columns[4]);
                 worker.setText(Worker.EMAIL, columns[1]);
                 worker.setText(Worker.ANCESTRY, columns[3]);
-                worker.setText(Worker.J_ID, columns[4]);
                 worker.setText(Worker.RESET_PASSWORD_TOKEN, columns[5]);
                 worker.setText(Worker.RESET_PASSWORD_SEND_AT, columns[6]);
                 worker.setText(Worker.REMEMBER_CREATED_AT, columns[7]);

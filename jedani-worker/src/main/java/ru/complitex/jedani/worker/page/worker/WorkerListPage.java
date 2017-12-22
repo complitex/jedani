@@ -16,7 +16,7 @@ import static ru.complitex.jedani.worker.entity.Worker.*;
  */
 public class WorkerListPage extends DomainListPage{
     public WorkerListPage() {
-        super("worker", WorkerEditPage.class);
+        super("worker", WorkerPage.class);
     }
 
     @Override
