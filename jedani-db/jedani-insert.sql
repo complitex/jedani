@@ -89,11 +89,11 @@ INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VAL
 INSERT INTO `entity_value`(`entity_id`, `attribute_id`, `locale_id`, `text`) VALUES (11, 19, 1, 'Глубина иерархии'), (11, 19, 2, 'Глибина ієрархії');
 INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (11, 20, 1);
 INSERT INTO `entity_value`(`entity_id`, `attribute_id`, `locale_id`, `text`) VALUES (11, 20, 1, 'Контакты'), (11, 20, 2, 'Контакти');
-INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (11, 21, 4);
+INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (11, 21, 5);
 INSERT INTO `entity_value`(`entity_id`, `attribute_id`, `locale_id`, `text`) VALUES (11, 21, 1, 'Дата рождения'), (11, 21, 2, 'Дата народження');
 INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (11, 22, 2);
 INSERT INTO `entity_value`(`entity_id`, `attribute_id`, `locale_id`, `text`) VALUES (11, 22, 1, 'Дата увольнения'), (11, 22, 2, 'Дата звільнення');
-INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (11, 23, 4);
+INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (11, 23, 5);
 INSERT INTO `entity_value`(`entity_id`, `attribute_id`, `locale_id`, `text`) VALUES (11, 23, 1, 'Идертификатор родителя'), (11, 23, 2, 'Ідертіфікатор батька');
 INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VALUES (11, 24, 1);
 INSERT INTO `entity_value`(`entity_id`, `attribute_id`, `locale_id`, `text`) VALUES (11, 24, 1, 'Идертификатор потомка'), (11, 24, 2, 'Ідертіфікатор нащадка');

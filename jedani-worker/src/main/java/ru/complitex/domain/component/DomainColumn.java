@@ -80,6 +80,7 @@ public class DomainColumn extends AbstractDomainColumn {
                 model = Model.of(value != null ? value.getText() : null);
 
                 break;
+            case ENTITY:
             case INTEGER:
                 model = Model.of(rowModel.getObject().getNumber(entityAttribute.getAttributeId()));
 

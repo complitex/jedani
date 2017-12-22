@@ -11,6 +11,7 @@ import ru.complitex.address.page.CountryListPage;
 import ru.complitex.address.page.RegionListPage;
 import ru.complitex.jedani.worker.page.admin.ImportPage;
 import ru.complitex.jedani.worker.page.worker.WorkerListPage;
+import ru.complitex.jedani.worker.page.worker.WorkerPage;
 
 /**
  * @author Anatoly A. Ivanov
@@ -19,6 +20,7 @@ import ru.complitex.jedani.worker.page.worker.WorkerListPage;
 public class BasePage extends WebPage{
     public BasePage() {
         add(new BookmarkablePageLink<>("home", HomePage.class));
+        add(new BookmarkablePageLink<>("worker", WorkerPage.class));
         add(new BookmarkablePageLink<>("import", ImportPage.class)); //todo class="active"
         add(new BookmarkablePageLink<>("countries", CountryListPage.class));
         add(new BookmarkablePageLink<>("regions", RegionListPage.class));

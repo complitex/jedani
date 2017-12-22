@@ -78,12 +78,12 @@ public abstract class DomainEditPage extends BasePage{
                     case STRING:
                     case DECIMAL:
                     case BOOLEAN:
-                    case ENTITY:
                         input1 = new TextField<>("input1", new PropertyModel<>(attribute, "text"));
                         break;
                     case DATE:
                         input1 = new TextField<>("input1", new PropertyModel<>(attribute, "text"));
                         break;
+                    case ENTITY:
                     case INTEGER:
                         input1 = new TextField<>("input1", new PropertyModel<>(attribute, "number"));
                         break;
