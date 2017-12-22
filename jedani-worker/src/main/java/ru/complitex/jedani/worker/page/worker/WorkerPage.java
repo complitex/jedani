@@ -1,6 +1,7 @@
 package ru.complitex.jedani.worker.page.worker;
 
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
+import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
@@ -11,9 +12,9 @@ import ru.complitex.common.entity.SortProperty;
 import ru.complitex.common.wicket.datatable.DataProvider;
 import ru.complitex.common.wicket.datatable.FilterDataTable;
 import ru.complitex.common.wicket.form.HorizontalInputPanel;
-import ru.complitex.domain.component.DomainActionColumn;
-import ru.complitex.domain.component.DomainColumn;
-import ru.complitex.domain.component.DomainIdColumn;
+import ru.complitex.domain.component.datatable.DomainActionColumn;
+import ru.complitex.domain.component.datatable.DomainColumn;
+import ru.complitex.domain.component.datatable.DomainIdColumn;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
@@ -46,6 +47,10 @@ public class WorkerPage extends BasePage{
         Long objectId = parameters.get("id").toOptionalLong();
 
         Domain worker = objectId != null ? domainMapper.getDomain("worker", objectId) : new Worker();
+
+        if (worker == null){
+            throw new WicketRuntimeException("worker not found");
+        }
 
         FeedbackPanel feedback = new NotificationPanel("feedback");
         feedback.setOutputMarkupId(true);

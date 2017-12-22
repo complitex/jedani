@@ -1,4 +1,4 @@
-package ru.complitex.common.wicket.component;
+package ru.complitex.common.wicket.panel;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.panel.Panel;

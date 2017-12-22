@@ -1,4 +1,4 @@
-package ru.complitex.domain.component;
+package ru.complitex.domain.component.datatable;
 
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxButton;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapBookmarkablePageLink;
@@ -12,7 +12,7 @@ import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import ru.complitex.common.wicket.component.LinkPanel;
+import ru.complitex.common.wicket.panel.LinkPanel;
 import ru.complitex.domain.entity.Domain;
 
 /**

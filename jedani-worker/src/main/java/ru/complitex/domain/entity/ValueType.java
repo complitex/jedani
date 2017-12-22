@@ -41,6 +41,6 @@ public enum ValueType implements IdEnum {
                 return "entity";
         }
 
-        return null;
+        return "none";
     }
 }

@@ -1,5 +1,6 @@
 package ru.complitex.address.page;
 
+import ru.complitex.address.entity.Region;
 import ru.complitex.domain.page.DomainListPage;
 
 /**
@@ -8,6 +9,6 @@ import ru.complitex.domain.page.DomainListPage;
  */
 public class CityListPage extends DomainListPage{
     public CityListPage() {
-        super("city", CityEditPage.class);
+        super("city", "region", Region.NAME, CityEditPage.class);
     }
 }

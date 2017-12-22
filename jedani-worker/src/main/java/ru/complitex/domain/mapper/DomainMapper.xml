@@ -58,14 +58,14 @@
         <where>
             <if test="object.objectId != null">d.object_id like concat('%', #{object.objectId}, '%')</if>
 
-            <if test="object.parentId != null and object.parentEntityId != null">
-                and (d.object_id = #{object.objectId} and d.parent_entity_id = #{object.parentEntityId})
+            <if test="object.parentId != null">
+                and (d.parent_id = #{object.parentId})
             </if>
 
             <foreach collection="object.attributes" item="i" separator="and">
                 <if test="i.text != null">
                     (a.entity_attribute_id = #{i.entityAttributeId} and (a.text like concat('%', #{i.text}, '%') or
-                    v.text = concat('%', #{i.text}, '%')))
+                    v.text like concat('%', #{i.text}, '%')))
                 </if>
                 <if test="i.number != null">
                     (a.entity_attribute_id = #{i.entityAttributeId} and a.number like concat('%', #{i.number}, '%')

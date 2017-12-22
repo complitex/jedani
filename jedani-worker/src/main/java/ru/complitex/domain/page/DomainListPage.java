@@ -10,9 +10,10 @@ import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
 import ru.complitex.common.wicket.datatable.DataProvider;
 import ru.complitex.common.wicket.datatable.FilterDataTable;
-import ru.complitex.domain.component.DomainActionColumn;
-import ru.complitex.domain.component.DomainColumn;
-import ru.complitex.domain.component.DomainIdColumn;
+import ru.complitex.domain.component.datatable.DomainActionColumn;
+import ru.complitex.domain.component.datatable.DomainColumn;
+import ru.complitex.domain.component.datatable.DomainIdColumn;
+import ru.complitex.domain.component.datatable.DomainParentColumn;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
@@ -36,7 +37,11 @@ public class DomainListPage extends BasePage{
     @Inject
     private DomainMapper domainMapper;
 
-    public DomainListPage(String entityName, Class<? extends WebPage> editPageClass) {
+    private String parentEntityName;
+    private Long parentEntityAttributeId;
+
+    public DomainListPage(String entityName, String parentEntityName, Long parentEntityAttributeId,
+                          Class<? extends WebPage> editPageClass) {
         Entity entity = entityMapper.getEntity(entityName);
 
         add(new Label("header", entity.getValue() != null ? entity.getValue().getText() : "[" + entityName + "]"));
@@ -71,11 +76,25 @@ public class DomainListPage extends BasePage{
         List<IColumn<Domain, SortProperty>> columns = new ArrayList<>();
 
         columns.add(new DomainIdColumn());
+
+        if (parentEntityName != null){
+            columns.add(new DomainParentColumn(entityMapper.getEntity(parentEntityName), parentEntityAttributeId) {
+                @Override
+                protected Domain getDomain(Long objectId) {
+                    return domainMapper.getDomain(parentEntityName, objectId);
+                }
+            });
+        }
+
         getEntityAttributes(entity).forEach(a -> columns.add(new DomainColumn(a)));
         columns.add(new DomainActionColumn(editPageClass));
 
         FilterDataTable<Domain> table = new FilterDataTable<>("table", columns, dataProvider, filterForm, 10);
         filterForm.add(table);
+    }
+
+    public DomainListPage(String entityName, Class<? extends WebPage> editPageClass) {
+        this(entityName, null, null, editPageClass);
     }
 
     protected List<EntityAttribute> getEntityAttributes(Entity entity){
