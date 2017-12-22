@@ -102,7 +102,17 @@ public class WorkerPage extends BasePage{
         List<IColumn<Domain, SortProperty>> columns = new ArrayList<>();
 
         columns.add(new DomainIdColumn());
-        getEntityAttributes().forEach(a -> columns.add(new DomainColumn(a)));
+        getEntityAttributes().forEach(a -> columns.add(new DomainColumn(a) {
+            @Override
+            protected EntityMapper getEntityMapper() {
+                return entityMapper;
+            }
+
+            @Override
+            protected DomainMapper getDomainMapper() {
+                return domainMapper;
+            }
+        }));
         columns.add(new DomainActionColumn(WorkerPage.class));
 
         FilterDataTable<Domain> table = new FilterDataTable<>("table", columns, dataProvider, form, 10);

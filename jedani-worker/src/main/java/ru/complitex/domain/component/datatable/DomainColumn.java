@@ -10,22 +10,23 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
-import ru.complitex.domain.entity.Domain;
-import ru.complitex.domain.entity.EntityAttribute;
-import ru.complitex.domain.entity.Value;
+import ru.complitex.domain.component.form.DomainAutoComplete;
+import ru.complitex.domain.entity.*;
+import ru.complitex.domain.mapper.DomainMapper;
+import ru.complitex.domain.mapper.EntityMapper;
 import ru.complitex.domain.util.Locales;
 
 /**
  * @author Anatoly A. Ivanov
  * 19.12.2017 7:55
  */
-public class DomainColumn extends AbstractDomainColumn {
+public abstract class DomainColumn extends AbstractDomainColumn {
     private EntityAttribute entityAttribute;
 
     public DomainColumn(EntityAttribute entityAttribute) {
         super(Model.of(entityAttribute.getValue() != null ? entityAttribute.getValue().getText() : "[" + entityAttribute.getAttributeId() + "]"),
                 new SortProperty(entityAttribute.getValueType().getKey(),
-                entityAttribute.getAttributeId()));
+                        entityAttribute.getAttributeId()));
 
         this.entityAttribute = entityAttribute;
     }
@@ -50,7 +51,25 @@ public class DomainColumn extends AbstractDomainColumn {
                     }
                 };
 
-                break;
+                return new TextFilter<>(componentId, model, form);
+            case ENTITY:
+                Entity entity = getEntityMapper().getEntity(entityAttribute.getReferenceId());
+
+                return new DomainAutoComplete(componentId, entity.getName(),
+                        entity.getEntityAttribute(1L),
+                        new IModel<Long>() { //todo number model
+                            @Override
+                            public Long getObject() {
+                                return ((Domain)((FilterWrapper)form.getDefaultModelObject()).getObject())
+                                        .getNumber(entityAttribute.getAttributeId());
+                            }
+
+                            @Override
+                            public void setObject(Long object) {
+                                ((Domain)((FilterWrapper)form.getDefaultModelObject()).getObject())
+                                        .setNumber(entityAttribute.getAttributeId(), object);
+                            }
+                        });
             default:
                 model = new IModel<String>() {
                     @Override
@@ -65,30 +84,47 @@ public class DomainColumn extends AbstractDomainColumn {
                                 .setText(entityAttribute.getAttributeId(), object);
                     }
                 };
+                return new TextFilter<>(componentId, model, form);
         }
-
-        return new TextFilter<>(componentId, model, form);
     }
 
     @Override
     public void populateItem(Item<ICellPopulator<Domain>> cellItem, String componentId, IModel<Domain> rowModel) {
         IModel model;
 
+        Attribute attribute = rowModel.getObject().getOrCreateAttribute(entityAttribute.getAttributeId());
+
         switch (entityAttribute.getValueType()){
             case VALUE:
-                Value value = rowModel.getObject().getValue(entityAttribute.getAttributeId(), Locales.RU);
+                Value value = attribute.getValue(Locales.getSystemLocaleId());
                 model = Model.of(value != null ? value.getText() : null);
 
                 break;
             case ENTITY:
+                if (attribute.getNumber() != null) {
+                    Domain domain = getDomainMapper().getDomain(getEntityMapper()
+                            .getEntity(entityAttribute.getReferenceId()).getName(), attribute.getNumber());
+
+                    model = Model.of(domain != null
+                            ? domain.getAttributes().get(0).getValue(Locales.getSystemLocaleId()).getText()
+                            : attribute.getNumber()); //todo def attribute
+                }else{
+                    model = Model.of("");
+                }
+
+                break;
             case INTEGER:
-                model = Model.of(rowModel.getObject().getNumber(entityAttribute.getAttributeId()));
+                model = Model.of(attribute.getNumber());
 
                 break;
             default:
-                model = Model.of(rowModel.getObject().getText(entityAttribute.getAttributeId()));
+                model = Model.of(attribute.getText());
         }
 
         cellItem.add(new Label(componentId, model));
     }
+
+    protected abstract EntityMapper getEntityMapper();
+
+    protected abstract DomainMapper getDomainMapper();
 }

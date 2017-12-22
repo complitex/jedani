@@ -34,8 +34,7 @@ public class DomainAutoComplete extends Panel{
     public DomainAutoComplete(String id, String entityName, EntityAttribute entityAttribute, IModel<Long> model) {
         super(id);
 
-
-        HiddenField inputId = new HiddenField<>("inputId", model);
+        HiddenField inputId = new HiddenField<>("inputId", model, Long.class);
         inputId.setConvertEmptyInputStringToNull(true);
         inputId.setOutputMarkupId(true);
         add(inputId);
@@ -79,11 +78,11 @@ public class DomainAutoComplete extends Panel{
                     protected CharSequence getOnSelectJavaScriptExpression(Attribute item) {
                         return "$('#" + inputId.getMarkupId() + "').val('" + item.getObjectId() + "'); input";
                     }
-                }, new AutoCompleteSettings()) {
+                }, new AutoCompleteSettings().setAdjustInputWidth(false)) {
             @Override
             protected Iterator<Attribute> getChoices(String input) {
                 Domain domain = new Domain(entityName);
-                domain.getOrCreateAttribute(entityAttribute.getAttributeId()).setText(input);
+                domain.getOrCreateAttribute(1L).setText(input); //todo def attribute
 
                 return domainMapper.getDomains(FilterWrapper.of(domain)).stream() //todo opt load attribute
                         .map(d -> d.getAttribute(entityAttribute.getAttributeId()))

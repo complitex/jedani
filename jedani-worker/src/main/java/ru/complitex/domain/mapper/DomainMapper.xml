@@ -64,11 +64,12 @@
 
             <foreach collection="object.attributes" item="i" separator="and">
                 <if test="i.text != null">
-                    (a.entity_attribute_id = #{i.entityAttributeId} and (a.text like concat('%', #{i.text}, '%') or
+                    and (a.entity_attribute_id = #{i.entityAttributeId} and (a.text like concat('%', #{i.text}, '%') or
                     v.text like concat('%', #{i.text}, '%')))
                 </if>
+                <!--todo number -> id-->
                 <if test="i.number != null">
-                    (a.entity_attribute_id = #{i.entityAttributeId} and a.number like concat('%', #{i.number}, '%')
+                    and (a.entity_attribute_id = #{i.entityAttributeId} and a.number = #{i.number})
                 </if>
             </foreach>
 
