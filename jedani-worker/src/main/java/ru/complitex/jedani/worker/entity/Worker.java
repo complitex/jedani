@@ -7,7 +7,7 @@ import ru.complitex.domain.entity.Domain;
  * 17.12.2017 3:29
  */
 public class Worker extends Domain{
-    public static final long ENTITY_ID = 11;
+    public static final long ENTITY_ID = 20;
 
     public static final long J_ID = 1;
     public static final long EMAIL = 2;

@@ -113,4 +113,8 @@ public class DomainMapper {
     public Long getDomainsCount(FilterWrapper<? extends Domain> filterWrapper){
         return sqlSession.selectOne("selectDomainsCount", filterWrapper);
     }
+
+    public Long getDomainObjectId(Domain domain){
+        return sqlSession.selectOne("selectDomainObjectId", domain);
+    }
 }
