@@ -403,6 +403,210 @@ CREATE TABLE `city_value` (
 -- --------------------------------------------------------------------------------------------------------------------
 
 -- ------------------------------
+-- Last Name
+-- ------------------------------
+
+DROP TABLE IF EXISTS `last_name`;
+CREATE TABLE `last_name` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
+  `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
+  `parent_id` BIGINT(20) COMMENT 'Идентификатор родительского объекта',
+  `parent_entity_id` BIGINT(20) COMMENT 'Идентификатор сущности родительского объекта',
+  `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия объекта',
+  `end_date` TIMESTAMP NULL DEFAULT NULL COMMENT 'Дата окончания периода действия объекта',
+  `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
+  `permission_id` BIGINT(20) NULL DEFAULT 0 COMMENT 'Ключ прав доступа к объекту',
+  `external_id` VARCHAR(20) COMMENT 'Внешний идентификатор импорта записи',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_object_id__start_date` (`object_id`,`start_date`),
+  UNIQUE KEY `unique_external_id` (`external_id`,`start_date`),
+  KEY `key_object_id` (`object_id`),
+  KEY `key_parent_id` (`parent_id`),
+  KEY `key_parent_entity_id` (`parent_entity_id`),
+  KEY `key_start_date` (`start_date`),
+  KEY `key_end_date` (`end_date`),
+  KEY `key_status` (`status`),
+  KEY `key_permission_id` (`permission_id`),
+  CONSTRAINT `ft_last_name__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
+  CONSTRAINT `fk_last_name__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`)
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Фамилия';
+
+DROP TABLE IF EXISTS `last_name_attribute`;
+CREATE TABLE `last_name_attribute` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
+  `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
+  `entity_attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор типа атрибута',
+  `text` VARCHAR(255) COMMENT 'Текст',
+  `number` BIGINT(20) COMMENT 'Число',
+  `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия атрибута',
+  `end_date` TIMESTAMP NULL DEFAULT NULL COMMENT 'Дата окончания периода действия атрибута',
+  `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `unique_id` (`object_id`,`entity_attribute_id`, `start_date`),
+  KEY `key_object_id` (`object_id`),
+  KEY `key_entity_attribute_id` (`entity_attribute_id`),
+  KEY `key_text` (`text`),
+  KEY `key_number` (`number`),
+  KEY `key_start_date` (`start_date`),
+  KEY `key_end_date` (`end_date`),
+  KEY `key_status` (`status`),
+  CONSTRAINT `fk_last_name_attribute__city` FOREIGN KEY (`object_id`) REFERENCES `last_name`(`object_id`),
+  CONSTRAINT `fk_last_name_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`)
+  REFERENCES entity_attribute (`attribute_id`)
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты фамилии';
+
+DROP TABLE IF EXISTS `last_name_value`;
+CREATE TABLE `last_name_value` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
+  `attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор атрибута',
+  `locale_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор локали',
+  `text` VARCHAR(1000) COMMENT 'Текстовое значение',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_id__locale` (`attribute_id`,`locale_id`),
+  KEY `key_attribute_id` (`attribute_id`),
+  KEY `key_locale` (`locale_id`),
+  KEY `key_value` (`text`(128)),
+  CONSTRAINT `fk_last_name_attribute_value__last_name_attribute` FOREIGN KEY (`attribute_id`) REFERENCES `last_name_attribute` (`id`),
+  CONSTRAINT `fk_last_name_attribute_value__locale` FOREIGN KEY (`locale_id`) REFERENCES `locale` (`id`)
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Локализация атрибутов фамилии';
+
+-- ------------------------------
+-- First Name
+-- ------------------------------
+
+DROP TABLE IF EXISTS `first_name`;
+CREATE TABLE `first_name` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
+  `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
+  `parent_id` BIGINT(20) COMMENT 'Идентификатор родительского объекта',
+  `parent_entity_id` BIGINT(20) COMMENT 'Идентификатор сущности родительского объекта',
+  `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия объекта',
+  `end_date` TIMESTAMP NULL DEFAULT NULL COMMENT 'Дата окончания периода действия объекта',
+  `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
+  `permission_id` BIGINT(20) NULL DEFAULT 0 COMMENT 'Ключ прав доступа к объекту',
+  `external_id` VARCHAR(20) COMMENT 'Внешний идентификатор импорта записи',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_object_id__start_date` (`object_id`,`start_date`),
+  UNIQUE KEY `unique_external_id` (`external_id`,`start_date`),
+  KEY `key_object_id` (`object_id`),
+  KEY `key_parent_id` (`parent_id`),
+  KEY `key_parent_entity_id` (`parent_entity_id`),
+  KEY `key_start_date` (`start_date`),
+  KEY `key_end_date` (`end_date`),
+  KEY `key_status` (`status`),
+  KEY `key_permission_id` (`permission_id`),
+  CONSTRAINT `ft_first_name__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
+  CONSTRAINT `fk_first_name__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`)
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Имя';
+
+DROP TABLE IF EXISTS `first_name_attribute`;
+CREATE TABLE `first_name_attribute` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
+  `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
+  `entity_attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор типа атрибута',
+  `text` VARCHAR(255) COMMENT 'Текст',
+  `number` BIGINT(20) COMMENT 'Число',
+  `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия атрибута',
+  `end_date` TIMESTAMP NULL DEFAULT NULL COMMENT 'Дата окончания периода действия атрибута',
+  `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `unique_id` (`object_id`,`entity_attribute_id`, `start_date`),
+  KEY `key_object_id` (`object_id`),
+  KEY `key_entity_attribute_id` (`entity_attribute_id`),
+  KEY `key_text` (`text`),
+  KEY `key_number` (`number`),
+  KEY `key_start_date` (`start_date`),
+  KEY `key_end_date` (`end_date`),
+  KEY `key_status` (`status`),
+  CONSTRAINT `fk_first_name_attribute__city` FOREIGN KEY (`object_id`) REFERENCES `first_name`(`object_id`),
+  CONSTRAINT `fk_first_name_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`)
+  REFERENCES entity_attribute (`attribute_id`)
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты имени';
+
+DROP TABLE IF EXISTS `first_name_value`;
+CREATE TABLE `first_name_value` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
+  `attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор атрибута',
+  `locale_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор локали',
+  `text` VARCHAR(1000) COMMENT 'Текстовое значение',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_id__locale` (`attribute_id`,`locale_id`),
+  KEY `key_attribute_id` (`attribute_id`),
+  KEY `key_locale` (`locale_id`),
+  KEY `key_value` (`text`(128)),
+  CONSTRAINT `fk_first_name_attribute_value__first_name_attribute` FOREIGN KEY (`attribute_id`) REFERENCES `first_name_attribute` (`id`),
+  CONSTRAINT `fk_first_name_attribute_value__locale` FOREIGN KEY (`locale_id`) REFERENCES `locale` (`id`)
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Локализация атрибутов имени';
+
+-- ------------------------------
+-- Middle Name
+-- ------------------------------
+
+DROP TABLE IF EXISTS `middle_name`;
+CREATE TABLE `middle_name` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
+  `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
+  `parent_id` BIGINT(20) COMMENT 'Идентификатор родительского объекта',
+  `parent_entity_id` BIGINT(20) COMMENT 'Идентификатор сущности родительского объекта',
+  `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия объекта',
+  `end_date` TIMESTAMP NULL DEFAULT NULL COMMENT 'Дата окончания периода действия объекта',
+  `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
+  `permission_id` BIGINT(20) NULL DEFAULT 0 COMMENT 'Ключ прав доступа к объекту',
+  `external_id` VARCHAR(20) COMMENT 'Внешний идентификатор импорта записи',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_object_id__start_date` (`object_id`,`start_date`),
+  UNIQUE KEY `unique_external_id` (`external_id`,`start_date`),
+  KEY `key_object_id` (`object_id`),
+  KEY `key_parent_id` (`parent_id`),
+  KEY `key_parent_entity_id` (`parent_entity_id`),
+  KEY `key_start_date` (`start_date`),
+  KEY `key_end_date` (`end_date`),
+  KEY `key_status` (`status`),
+  KEY `key_permission_id` (`permission_id`),
+  CONSTRAINT `ft_middle_name__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
+  CONSTRAINT `fk_middle_name__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`)
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Отчество';
+
+DROP TABLE IF EXISTS `middle_name_attribute`;
+CREATE TABLE `middle_name_attribute` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
+  `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
+  `entity_attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор типа атрибута',
+  `text` VARCHAR(255) COMMENT 'Текст',
+  `number` BIGINT(20) COMMENT 'Число',
+  `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия атрибута',
+  `end_date` TIMESTAMP NULL DEFAULT NULL COMMENT 'Дата окончания периода действия атрибута',
+  `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `unique_id` (`object_id`,`entity_attribute_id`, `start_date`),
+  KEY `key_object_id` (`object_id`),
+  KEY `key_entity_attribute_id` (`entity_attribute_id`),
+  KEY `key_text` (`text`),
+  KEY `key_number` (`number`),
+  KEY `key_start_date` (`start_date`),
+  KEY `key_end_date` (`end_date`),
+  KEY `key_status` (`status`),
+  CONSTRAINT `fk_middle_name_attribute__city` FOREIGN KEY (`object_id`) REFERENCES `middle_name`(`object_id`),
+  CONSTRAINT `fk_middle_name_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`)
+  REFERENCES entity_attribute (`attribute_id`)
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты отчества';
+
+DROP TABLE IF EXISTS `middle_name_value`;
+CREATE TABLE `middle_name_value` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
+  `attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор атрибута',
+  `locale_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор локали',
+  `text` VARCHAR(1000) COMMENT 'Текстовое значение',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_id__locale` (`attribute_id`,`locale_id`),
+  KEY `key_attribute_id` (`attribute_id`),
+  KEY `key_locale` (`locale_id`),
+  KEY `key_value` (`text`(128)),
+  CONSTRAINT `fk_middle_name_attribute_value__middle_name_attribute` FOREIGN KEY (`attribute_id`) REFERENCES `middle_name_attribute` (`id`),
+  CONSTRAINT `fk_middle_name_attribute_value__locale` FOREIGN KEY (`locale_id`) REFERENCES `locale` (`id`)
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Локализация атрибутов отчества';
+
+-- ------------------------------
 -- Worker
 -- ------------------------------
 DROP TABLE IF EXISTS `worker`;
