@@ -68,6 +68,7 @@
                     v.text like concat('%', #{i.text}, '%')))
                 </if>
                 <!--todo number -> id-->
+                <!--todo multy attribute -->
                 <if test="i.number != null">
                     and (a.entity_attribute_id = #{i.entityAttributeId} and a.number = #{i.number})
                 </if>

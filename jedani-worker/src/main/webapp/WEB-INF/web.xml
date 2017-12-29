@@ -28,12 +28,12 @@
         <role-name>AUTHORIZED</role-name>
     </security-role>
 
-    <!--<login-config>
+    <login-config>
         <auth-method>FORM</auth-method>
-        <realm-name>Realm</realm-name>
+        <realm-name>jedaniRealm</realm-name>
         <form-login-config>
             <form-login-page>/login/login.jsp</form-login-page>
             <form-error-page>/login/error.jsp</form-error-page>
         </form-login-config>
-    </login-config>-->
+    </login-config>
 </web-app>

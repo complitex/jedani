@@ -7,13 +7,19 @@ import de.agilecoders.wicket.core.settings.SingleThemeProvider;
 import de.agilecoders.wicket.less.BootstrapLess;
 import de.agilecoders.wicket.themes.markup.html.google.GoogleTheme;
 import org.apache.wicket.Page;
+import org.apache.wicket.Session;
 import org.apache.wicket.cdi.CdiConfiguration;
 import org.apache.wicket.protocol.http.WebApplication;
+import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
+import org.apache.wicket.request.Request;
+import org.apache.wicket.request.Response;
 import ru.complitex.address.page.CityEditPage;
 import ru.complitex.address.page.CityListPage;
 import ru.complitex.address.page.RegionEditPage;
 import ru.complitex.address.page.RegionListPage;
+import ru.complitex.common.wicket.session.AuthSession;
 import ru.complitex.jedani.worker.page.admin.ImportPage;
+import ru.complitex.jedani.worker.page.login.LoginPage;
 import ru.complitex.jedani.worker.page.worker.WorkerListPage;
 import ru.complitex.jedani.worker.page.worker.WorkerPage;
 
@@ -44,6 +50,7 @@ public class JedaniWebApplication extends WebApplication{
     }
 
     private void configureMount() {
+        mountPage("login", LoginPage.class);
         mountPage("import", ImportPage.class);
         mountPage("regions", RegionListPage.class);
         mountPage("region/${id}", RegionEditPage.class);
@@ -52,5 +59,14 @@ public class JedaniWebApplication extends WebApplication{
         mountPage("workers", WorkerListPage.class);
         mountPage("worker", WorkerPage.class);
         mountPage("worker/${id}", WorkerPage.class);
+    }
+
+    @Override
+    public Session newSession(Request request, Response response) {
+        if (request instanceof ServletWebRequest){
+            return new AuthSession((ServletWebRequest) request);
+        }
+
+        return super.newSession(request, response);
     }
 }

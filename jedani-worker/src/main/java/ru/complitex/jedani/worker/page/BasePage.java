@@ -36,4 +36,6 @@ public class BasePage extends WebPage{
 
         response.render(CssHeaderItem.forReference(new PackageResourceReference(HomePage.class, "/css/jedani.css")));
     }
+
+
 }
