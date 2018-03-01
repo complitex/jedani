@@ -1,7 +1,6 @@
 package ru.complitex.jedani.worker.page;
 
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.protocol.http.WebSession;
 
 /**
  * @author Anatoly A. Ivanov
@@ -10,7 +9,7 @@ import org.apache.wicket.protocol.http.WebSession;
 public class HomePage extends BasePage{
 
     public HomePage() {
-        add(new Label("test", ((WebSession)getSession()).getClientInfo().getUserAgent()));
+        add(new Label("test", ""));
 
     }
 

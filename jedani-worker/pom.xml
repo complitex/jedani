@@ -75,6 +75,12 @@
             <artifactId>mybatis-cdi</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.43</version>
+        </dependency>
+
     </dependencies>
 
 

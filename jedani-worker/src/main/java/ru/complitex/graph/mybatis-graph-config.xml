@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+    <typeHandlers>
+        <typeHandler handler="ru.complitex.common.mybatis.IdEnumTypeHandler" javaType="ru.complitex.domain.entity.Status"/>
+        <typeHandler handler="ru.complitex.common.mybatis.IdEnumTypeHandler" javaType="ru.complitex.domain.entity.ValueType"/>
+    </typeHandlers>
+
+    <environments default="local">
+        <environment id="local">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="com.mysql.jdbc.Driver"/>
+                <property name="url" value="jdbc:mysql://localhost:3306/jedani?useSSL=false"/>
+                <property name="username" value="jedani"/>
+                <property name="password" value="jedani"/>
+            </dataSource>
+        </environment>
+    </environments>
+
+    <mappers>
+        <mapper resource="ru/complitex/domain/mapper/SequenceMapper.xml"/>
+        <mapper resource="ru/complitex/domain/mapper/EntityMapper.xml"/>
+        <mapper resource="ru/complitex/domain/mapper/EntityAttributeMapper.xml"/>        
+        <mapper resource="ru/complitex/domain/mapper/EntityValueMapper.xml"/>
+        <mapper resource="ru/complitex/domain/mapper/DomainMapper.xml"/>
+        <mapper resource="ru/complitex/domain/mapper/AttributeMapper.xml"/>
+        <mapper resource="ru/complitex/domain/mapper/ValueMapper.xml"/>       
+        
+        <mapper resource="ru/complitex/user/mapper/UserMapper.xml"/>
+        <mapper resource="ru/complitex/user/mapper/UserGroupMapper.xml"/>
+    </mappers>
+</configuration>
