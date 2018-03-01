@@ -32,8 +32,8 @@ public class WorkerGraphExport {
                         String[] s = a.getText().split("/");
 
                         if (s.length >= 2){
-                            return s[s.length - 1] + "," +
-                                    s[s.length - 2] + "," +
+                            return s[s.length - 2] + "," +
+                                    s[s.length - 1] + "," +
                                     d.getAttribute(1L).getText() + "," +
                                     d.getAttribute(10L).getText() + "," +
                                     d.getAttribute(11L).getText() + "," +
