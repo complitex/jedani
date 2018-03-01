@@ -46,6 +46,8 @@ public class WorkerGraphExport {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
 
+        graph.add(0, "from, to, jid, first, second, last");
+
         Path path = Paths.get("jedani-worker-graph.csv");
 
         Files.write(path, graph);
