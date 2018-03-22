@@ -38,6 +38,8 @@ public class JedaniWebApplication extends WebApplication{
 
         configureBootstrap();
         configureMount();
+
+        getDebugSettings().setAjaxDebugModeEnabled(false);
     }
 
     private void configureBootstrap() {
