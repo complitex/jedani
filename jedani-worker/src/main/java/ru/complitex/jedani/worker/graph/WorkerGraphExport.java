@@ -1,4 +1,4 @@
-package ru.complitex.graph;
+package ru.complitex.jedani.worker.graph;
 
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;

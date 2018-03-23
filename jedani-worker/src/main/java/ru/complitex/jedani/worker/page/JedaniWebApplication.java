@@ -18,6 +18,7 @@ import ru.complitex.address.page.CityListPage;
 import ru.complitex.address.page.RegionEditPage;
 import ru.complitex.address.page.RegionListPage;
 import ru.complitex.common.wicket.session.AuthSession;
+import ru.complitex.jedani.worker.graph.GraphPage;
 import ru.complitex.jedani.worker.page.admin.ImportPage;
 import ru.complitex.jedani.worker.page.login.LoginPage;
 import ru.complitex.jedani.worker.page.worker.WorkerListPage;
@@ -61,6 +62,7 @@ public class JedaniWebApplication extends WebApplication{
         mountPage("workers", WorkerListPage.class);
         mountPage("worker", WorkerPage.class);
         mountPage("worker/${id}", WorkerPage.class);
+        mountPage("graph", GraphPage.class);
     }
 
     @Override
