@@ -8,6 +8,7 @@
         <result column="entity_attribute_id" property="entityAttributeId"/>
         <result column="text" property="text"/>
         <result column="number" property="number"/>
+        <result column="json" property="json"/>
         <result column="start_date" property="startDate"/>
         <result column="end_date" property="endDate"/>
         <result column="status" property="status"/>
@@ -17,8 +18,8 @@
 
     <!--suppress SqlResolve -->
     <insert id="insertAttribute" parameterType="ru.complitex.domain.entity.Attribute" useGeneratedKeys="true" keyProperty="id">
-        insert into ${entityName}_attribute (object_id, entity_attribute_id, `text`, `number`, start_date, end_date, `status`)
-        value (#{objectId}, #{entityAttributeId}, #{text}, #{number}, #{startDate}, #{endDate}, #{status})
+        insert into ${entityName}_attribute (object_id, entity_attribute_id, `text`, `number`, `json`, start_date, end_date, `status`)
+        value (#{objectId}, #{entityAttributeId}, #{text}, #{number}, #{json}, #{startDate}, #{endDate}, #{status})
     </insert>
 
     <!--suppress SqlResolve -->

@@ -16,6 +16,7 @@ public class Attribute implements Serializable{
     private Long entityAttributeId;
     private String text;
     private Long number;
+    private String json;
     private Date startDate;
     private Date endDate;
     private Status status;
@@ -109,6 +110,14 @@ public class Attribute implements Serializable{
 
     public void setNumber(Long number) {
         this.number = number;
+    }
+
+    public String getJson() {
+        return json;
+    }
+
+    public void setJson(String json) {
+        this.json = json;
     }
 
     public Date getStartDate() {

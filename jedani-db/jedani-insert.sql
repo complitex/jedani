@@ -10,6 +10,7 @@ INSERT INTO entity_value_type (id, value_type) VALUE (2, 'boolean');
 INSERT INTO entity_value_type (id, value_type) VALUE (3, 'decimal');
 INSERT INTO entity_value_type (id, value_type) VALUE (4, 'integer');
 INSERT INTO entity_value_type (id, value_type) VALUE (5, 'date');
+INSERT INTO entity_value_type (id, value_type) VALUE (6, 'json');
 INSERT INTO entity_value_type (id, value_type) VALUE (10, 'entity');
 
 INSERT INTO `entity`(`id`, `name`) VALUES (1, 'country');

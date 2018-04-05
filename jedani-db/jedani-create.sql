@@ -641,6 +641,7 @@ CREATE TABLE `worker_attribute` (
   `entity_attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор типа атрибута',
   `text` VARCHAR(255) COMMENT 'Текст',
   `number` BIGINT(20) COMMENT 'Число',
+  `json` JSON COMMENT 'JSON',
   `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия атрибута',
   `end_date` TIMESTAMP NULL DEFAULT NULL COMMENT 'Дата окончания периода действия атрибута',
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
