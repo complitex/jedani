@@ -18,6 +18,7 @@ import ru.complitex.address.page.CityListPage;
 import ru.complitex.address.page.RegionEditPage;
 import ru.complitex.address.page.RegionListPage;
 import ru.complitex.common.wicket.application.ServletAuthorizationStrategy;
+import ru.complitex.common.wicket.application.ServletUnauthorizedListener;
 import ru.complitex.common.wicket.application.ServletWebSession;
 import ru.complitex.jedani.worker.graph.GraphPage;
 import ru.complitex.jedani.worker.page.admin.ImportPage;
@@ -44,7 +45,7 @@ public class JedaniWebApplication extends WebApplication{
         getDebugSettings().setAjaxDebugModeEnabled(false);
 
         getSecuritySettings().setAuthorizationStrategy(new ServletAuthorizationStrategy());
-//        getSecuritySettings().setUnauthorizedComponentInstantiationListener();
+        getSecuritySettings().setUnauthorizedComponentInstantiationListener(new ServletUnauthorizedListener(LoginPage.class));
     }
 
     private void configureBootstrap() {
