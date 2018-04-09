@@ -17,7 +17,8 @@ import ru.complitex.address.page.CityEditPage;
 import ru.complitex.address.page.CityListPage;
 import ru.complitex.address.page.RegionEditPage;
 import ru.complitex.address.page.RegionListPage;
-import ru.complitex.common.wicket.session.AuthSession;
+import ru.complitex.common.wicket.application.ServletAuthorizationStrategy;
+import ru.complitex.common.wicket.application.ServletWebSession;
 import ru.complitex.jedani.worker.graph.GraphPage;
 import ru.complitex.jedani.worker.page.admin.ImportPage;
 import ru.complitex.jedani.worker.page.login.LoginPage;
@@ -41,6 +42,9 @@ public class JedaniWebApplication extends WebApplication{
         configureMount();
 
         getDebugSettings().setAjaxDebugModeEnabled(false);
+
+        getSecuritySettings().setAuthorizationStrategy(new ServletAuthorizationStrategy());
+//        getSecuritySettings().setUnauthorizedComponentInstantiationListener();
     }
 
     private void configureBootstrap() {
@@ -68,7 +72,7 @@ public class JedaniWebApplication extends WebApplication{
     @Override
     public Session newSession(Request request, Response response) {
         if (request instanceof ServletWebRequest){
-            return new AuthSession((ServletWebRequest) request);
+            return new ServletWebSession((ServletWebRequest) request);
         }
 
         return super.newSession(request, response);
