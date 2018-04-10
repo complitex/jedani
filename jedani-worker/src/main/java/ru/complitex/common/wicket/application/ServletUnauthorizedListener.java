@@ -1,6 +1,9 @@
 package ru.complitex.common.wicket.application;
 
-import org.apache.wicket.*;
+import org.apache.wicket.Component;
+import org.apache.wicket.Page;
+import org.apache.wicket.RestartResponseException;
+import org.apache.wicket.Session;
 import org.apache.wicket.authorization.IUnauthorizedComponentInstantiationListener;
 import org.apache.wicket.authorization.UnauthorizedInstantiationException;
 import org.apache.wicket.request.cycle.RequestCycle;
@@ -25,7 +28,7 @@ public class ServletUnauthorizedListener implements IUnauthorizedComponentInstan
         if (servletRequest.getSession(false) == null) {
             Session.get().invalidateNow();
 
-            throw new RestartResponseException(Application.get().getApplicationSettings().getPageExpiredErrorPage());
+            throw new RestartResponseException(loginPage);
         } else {
             if (servletRequest.getUserPrincipal() == null) {
                 Session.get().invalidate();

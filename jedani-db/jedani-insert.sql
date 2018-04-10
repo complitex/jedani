@@ -116,6 +116,9 @@ INSERT INTO `entity_attribute`(`entity_id`, `attribute_id`, `value_type_id`) VAL
 INSERT INTO `entity_value`(`entity_id`, `attribute_id`, `locale_id`, `text`) VALUES (20, 24, 1, 'Идертификатор потомка'), (20, 24, 2, 'Ідертіфікатор нащадка');
 
 
+INSERT INTO `user`(login, password) value ('admin', sha2('admin', 256));
+INSERT INTO `user_group` (login, name) value ('admin', 'AUTHORIZED');
+
 
 
 

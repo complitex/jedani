@@ -28,4 +28,8 @@ public class ServletWebSession extends WebSession{
             throw new RuntimeException(e);
         }
     }
+
+    public ServletWebRequest getRequest() {
+        return request;
+    }
 }
