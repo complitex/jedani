@@ -9,6 +9,7 @@ public enum ValueType implements IdEnum {
     DECIMAL(3),
     INTEGER(4),
     DATE(5),
+    JSON(6),
 
     ENTITY(10);
 

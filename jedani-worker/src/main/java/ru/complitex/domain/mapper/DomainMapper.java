@@ -102,6 +102,14 @@ public class DomainMapper {
         return getDomain(domain);
     }
 
+    public Domain getDomainByParentId(String entityName, Long parentId){
+        Domain domain = new Domain();
+        domain.setEntityName(entityName);
+        domain.setParentId(parentId);
+
+        return getDomain(domain);
+    }
+
     public Domain getDomain(Domain domain){
         return sqlSession.selectOne("selectDomain", domain);
     }

@@ -34,6 +34,7 @@
     <select id="selectDomain" parameterType="ru.complitex.domain.entity.Domain" resultMap="domainResultMap">
         select '${entityName}' entity_name, d.* from ${entityName} d
         <where>
+            <if test="parentId != null">and d.parent_id = #{parentId} and `status` = 1</if>
             <if test="objectId != null">and d.object_id = #{objectId} and `status` = 1</if>
             <if test="externalId != null">and d.external_id = #{externalId}</if>
         </where>

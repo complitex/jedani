@@ -38,4 +38,8 @@ public class Worker extends Domain{
     public Worker() {
         super("worker");
     }
+
+    public Worker(Domain domain) {
+        super(domain, "worker");
+    }
 }

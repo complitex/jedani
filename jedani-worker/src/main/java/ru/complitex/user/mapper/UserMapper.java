@@ -16,4 +16,8 @@ public class UserMapper {
     public void insertUser(User user){
         sqlSession.insert("insertUser", user);
     }
+
+    public Long getUserId(String login){
+        return sqlSession.selectOne("selectUserId", login);
+    }
 }

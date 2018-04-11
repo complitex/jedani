@@ -32,6 +32,26 @@ public class Domain implements Serializable{
         this.entityName = entityName;
     }
 
+    public Domain(Domain domain){
+        this.id = domain.id;
+        this.objectId = domain.objectId;
+        this.parentId = domain.parentId;
+        this.parentEntityId = domain.parentEntityId;
+        this.startDate = domain.startDate;
+        this.endDate = domain.endDate;
+        this.status = domain.status;
+        this.permissionId = domain.permissionId;
+        this.externalId = domain.externalId;
+        this.entityName = domain.entityName;
+        this.attributes = domain.attributes;
+    }
+
+    public Domain(Domain domain, String entityName){
+        this(domain);
+
+        this.entityName = entityName;
+    }
+
     public void setText(Long entityAttributeId, String text){
         getOrCreateAttribute(entityAttributeId).setText(text);
     }

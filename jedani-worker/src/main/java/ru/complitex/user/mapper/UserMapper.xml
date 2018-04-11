@@ -5,4 +5,8 @@
     <insert id="insertUser" parameterType="ru.complitex.user.entity.User" useGeneratedKeys="true" keyProperty="id">
         insert into `user` (login, password) value (#{login}, #{password});
     </insert>
+
+    <select id="selectUserId" parameterType="string" resultType="long">
+        select id from `user` where login = #{login}
+    </select>
 </mapper>
