@@ -46,6 +46,8 @@ public class WorkerPage extends BasePage{
     public WorkerPage(PageParameters parameters) {
         Long objectId = parameters.get("id").toOptionalLong();
 
+        //todo dev worker page
+
         Domain worker = objectId != null ? domainMapper.getDomain("worker", objectId) : new Worker();
 
         if (worker == null){

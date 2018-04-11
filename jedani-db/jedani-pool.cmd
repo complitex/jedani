@@ -1,4 +1,4 @@
-SET GLASSFISH_ASADMIN=c:\glassfish4\bin\asadmin.bat
+SET GLASSFISH_ASADMIN=c:\glassfish5\bin\asadmin.bat
 
 call %GLASSFISH_ASADMIN% create-jdbc-connection-pool ^
     --datasourceclassname="com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource" ^
