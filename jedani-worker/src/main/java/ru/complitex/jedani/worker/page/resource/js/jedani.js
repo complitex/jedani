@@ -4,3 +4,7 @@ $(function () {
     });
 });
 
+$(function () {
+    $("#content").css('min-height', ($("#menu").height()) + 'px');
+});
+
