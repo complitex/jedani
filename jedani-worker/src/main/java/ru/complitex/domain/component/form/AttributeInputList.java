@@ -28,18 +28,12 @@ public class AttributeInputList extends FormComponentPanel<Attribute> {
     public AttributeInputList(String id, IModel<Attribute> model) {
         super(id, model);
 
-        String json = model.getObject().getJson();
-
         List<String> list;
 
         try {
-            list = new ObjectMapper().readValue(json, new TypeReference<List<String>>(){});
+            list = new ObjectMapper().readValue(model.getObject().getJson(), new TypeReference<List<String>>(){});
         } catch (Exception e) {
             list = new ArrayList<>();
-
-            if (json != null && !json.trim().isEmpty()){
-                list.add(json);
-            }
         }
 
         listModel.setObject(list);

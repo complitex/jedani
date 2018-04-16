@@ -15,6 +15,7 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.complitex.address.entity.City;
+import ru.complitex.address.entity.Region;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
 import ru.complitex.common.wicket.datatable.DataProvider;
@@ -109,7 +110,13 @@ public class WorkerPage extends BasePage{
         form.add(new TextFieldFormGroup<>("birthday", new PropertyModel<>(worker.getAttribute(Worker.BIRTHDAY), "text")));
         form.add(new AttributeListFormGroup("phone", Model.of(worker.getOrCreateAttribute(Worker.PHONE))));
         form.add(new TextFieldFormGroup<>("email", new PropertyModel<>(worker.getAttribute(Worker.EMAIL), "text")));
-        form.add(new AttributeSelectFormGroup("city", Model.of(worker.getAttribute(Worker.CITY_ID)), "city", City.NAME));
+
+        AttributeSelectFormGroup city, region;
+        form.add(region = new AttributeSelectFormGroup("region", Model.of(worker.getAttribute(Worker.REGION_ID)), "region", Region.NAME));
+        form.add(city = new AttributeSelectFormGroup("city", Model.of(worker.getAttribute(Worker.CITY_ID)), "city", City.NAME, region.getListModel()));
+        region.setOnChange(t -> t.add(city));
+
+
         //todo position
         //todo regions
         //todo login password

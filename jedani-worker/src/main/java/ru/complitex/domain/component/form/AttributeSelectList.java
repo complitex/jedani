@@ -1,5 +1,6 @@
 package ru.complitex.domain.component.form;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -12,7 +13,9 @@ import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.util.ListModel;
+import org.danekja.java.util.function.serializable.SerializableConsumer;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Domain;
@@ -36,44 +39,69 @@ public class AttributeSelectList extends FormComponentPanel<Attribute> {
 
     private ListModel<Long> listModel = new ListModel<>();
 
-    public AttributeSelectList(String id, IModel<Attribute> model, String referenceEntityName, Long referenceEntityAttributeId) {
+    private SerializableConsumer<AjaxRequestTarget> onChange;
+
+    public AttributeSelectList(String id, IModel<Attribute> model, String referenceEntityName,
+                               Long referenceEntityAttributeId, IModel<List<Long>> parentListModel) {
         super(id, model);
+
+        setOutputMarkupId(true);
 
         WebMarkupContainer container = new WebMarkupContainer("container");
         container.setOutputMarkupId(true);
         add(container);
 
-        List<Domain> list = domainMapper.getDomains(FilterWrapper.of(new Domain(referenceEntityName)));
-        list.sort(Comparator.comparing(d -> d.getAttribute(referenceEntityAttributeId).getValue(getLocale()).getText()));
+        List<Domain> domains = domainMapper.getDomains(FilterWrapper.of(new Domain(referenceEntityName)));
+        domains.sort(Comparator.comparing(d -> d.getAttribute(referenceEntityAttributeId).getValue(getLocale()).getText()));
 
-        List<Long> listIds = list.stream().map(Domain::getObjectId).collect(Collectors.toList());
-
-        Map<Long, String> names = list.stream().collect(Collectors.toMap(Domain::getId,
+        Map<Long, String> names = domains.stream().collect(Collectors.toMap(Domain::getId,
                 d -> d.getAttribute(referenceEntityAttributeId).getValue(getLocale()).getText()));
 
-        listModel.setObject(new ArrayList<>());
+        List<Long> list;
 
-        listModel.getObject().add(model.getObject().getNumber());
+        try {
+            list = new ObjectMapper().readValue(model.getObject().getJson(), new TypeReference<List<Long>>(){});
+        } catch (Exception e) {
+            list = new ArrayList<>();
+        }
+
+        listModel.setObject(list);
 
         ListView<Long> listView = new ListView<Long>("selects", listModel) {
             @Override
             protected void populateItem(ListItem<Long> item) {
-                item.add(new DropDownChoice<>("select", item.getModel(), listIds, new IChoiceRenderer<Long>() {
-                    @Override
-                    public Object getDisplayValue(Long object) {
-                        return names.get(object);
-                    }
+                item.add(new DropDownChoice<Long>("select", item.getModel(),
+                        new LoadableDetachableModel<List<Long>>() {
+                            @Override
+                            protected List<Long> load() {
+                                return domains.stream()
+                                        .filter(d -> parentListModel == null ||
+                                                parentListModel.getObject().contains(d.getParentId()))
+                                        .map(Domain::getObjectId)
+                                        .collect(Collectors.toList());
+                            }
+                        },
+                        new IChoiceRenderer<Long>() {
+                            @Override
+                            public Object getDisplayValue(Long object) {
+                                return names.get(object);
+                            }
 
-                    @Override
-                    public String getIdValue(Long object, int index) {
-                        return index + "";
-                    }
+                            @Override
+                            public String getIdValue(Long object, int index) {
+                                return object + "";
+                            }
 
+                            @Override
+                            public Long getObject(String id, IModel<? extends List<? extends Long>> choices) {
+                                return Long.parseLong(id);
+                            }
+                        }){
                     @Override
-                    public Long getObject(String id, IModel<? extends List<? extends Long>> choices) {
-                        return listIds.get(Integer.parseInt(id));
+                    protected String getNullKeyDisplayValue() {
+                        return "";
                     }
-                }).add(OnChangeAjaxBehavior.onChange(t -> {})));
+                }.add(OnChangeAjaxBehavior.onChange(AttributeSelectList.this::onChange)));
 
                 item.add(new AjaxLink<Void>("remove") {
                     @Override
@@ -81,6 +109,8 @@ public class AttributeSelectList extends FormComponentPanel<Attribute> {
                         listModel.getObject().remove(item.getIndex());
 
                         target.add(container);
+
+                        onChange(target);
                     }
                 });
             }
@@ -91,9 +121,11 @@ public class AttributeSelectList extends FormComponentPanel<Attribute> {
         add(new AjaxLink<Void>("add") {
             @Override
             public void onClick(AjaxRequestTarget target) {
-                listModel.getObject().add(listIds.get(0));
+                listModel.getObject().add(null);
 
                 target.add(container);
+
+                onChange(target);
             }
         });
     }
@@ -110,5 +142,23 @@ public class AttributeSelectList extends FormComponentPanel<Attribute> {
         attribute.setJson(array.toString());
 
         setConvertedInput(attribute);
+    }
+
+    public IModel<List<Long>> getListModel() {
+        return listModel;
+    }
+
+    public AttributeSelectList(String id, IModel<Attribute> model, String referenceEntityName, Long referenceEntityAttributeId){
+        this(id, model, referenceEntityName, referenceEntityAttributeId, null);
+    }
+
+    protected void onChange(AjaxRequestTarget target){
+        if (onChange != null) {
+            onChange.accept(target);
+        }
+    }
+
+    public void setOnChange(SerializableConsumer<AjaxRequestTarget> onChange) {
+        this.onChange = onChange;
     }
 }
