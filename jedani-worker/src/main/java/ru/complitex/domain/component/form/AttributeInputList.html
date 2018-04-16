@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <wicket:panel xmlns:wicket="http://wicket.apache.org">
-    <ul class="list-group">
+    <ul class="list-group" wicket:id="container">
         <li wicket:id="inputs" class="list-group-item">
             <div class="input-group">
                 <input wicket:id="input" type="text" class="form-control"/>
 
                 <span class="input-group-btn">
-                <button class="btn btn-default"><span class="glyphicon glyphicon-remove"></span></button>
-            </span>
+                    <button wicket:id="remove" class="btn btn-default">
+                        <i class="glyphicon glyphicon-remove"></i>
+                    </button>
+                </span>
             </div>
         </li>
     </ul>
     <div class="text-center">
-        <button class="btn btn-default"><span>Добавить</span></button>
+        <button wicket:id="add" class="btn btn-default"><span>Добавить</span></button>
     </div>
 </wicket:panel>

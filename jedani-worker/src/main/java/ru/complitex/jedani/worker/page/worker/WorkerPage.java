@@ -2,6 +2,8 @@ package ru.complitex.jedani.worker.page.worker;
 
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
 import org.apache.wicket.WicketRuntimeException;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
@@ -62,6 +64,8 @@ public class WorkerPage extends BasePage{
 
         String[] levels = worker.getText(Worker.FULL_ANCESTRY_PATH).split("/");
 
+        //Data provider
+
         DataProvider<Domain> dataProvider = new DataProvider<Domain>(FilterWrapper.of(new Domain("worker")) //todo generic
                 .add("entityAttributeId", Worker.ANCESTRY)
                 .add("endWith", "/" + levels[levels.length - 1])) {
@@ -82,6 +86,8 @@ public class WorkerPage extends BasePage{
                 return domainMapper.getDomainsCount(getFilterState());
             }
         };
+
+        //Worker
 
         FilterForm<FilterWrapper<Domain>> form = new FilterForm<>("form", dataProvider);
         add(form);
@@ -104,6 +110,22 @@ public class WorkerPage extends BasePage{
 
         //todo subworkers
 
+        form.add(new AjaxButton("save") {
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                System.out.println(worker);
+            }
+        });
+
+        form.add(new AjaxButton("cancel") {
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                setResponsePage(WorkerPage.class, parameters);
+            }
+        }.setDefaultFormProcessing(false));
+
+        //Structure
+
         List<IColumn<Domain, SortProperty>> columns = new ArrayList<>();
 
         columns.add(new DomainIdColumn());
@@ -122,10 +144,9 @@ public class WorkerPage extends BasePage{
 
         FilterDataTable<Domain> table = new FilterDataTable<>("table", columns, dataProvider, form, 10);
         form.add(table);
-
     }
 
-    protected List<EntityAttribute> getEntityAttributes() {
+    private List<EntityAttribute> getEntityAttributes() {
         Entity entity = entityMapper.getEntity("worker");
 
         return Stream.of(J_ID, CREATED_AT, FIRST_NAME, SECOND_NAME, LAST_NAME, BIRTHDAY, PHONE, EMAIL, CITY_ID) //todo regions
