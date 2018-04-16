@@ -36,7 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 @AuthorizeInstantiation(JedaniRoles.AUTHORIZED)
 public class BasePage extends WebPage{
     @Inject
-    private WorkerService workerService;
+    private transient WorkerService workerService;
 
     protected BasePage() {
         add(new BookmarkablePageLink<>("home", HomePage.class));

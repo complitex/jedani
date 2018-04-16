@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
@@ -50,7 +51,7 @@ public class AttributeInputList extends FormComponentPanel<Attribute> {
         ListView<String> listView = new ListView<String>("inputs", listModel) {
             @Override
             protected void populateItem(ListItem<String> item) {
-                item.add(new TextField<>("input", item.getModel()));
+                item.add(new TextField<>("input", item.getModel()).add(OnChangeAjaxBehavior.onChange(t -> {})));
 
                 item.add(new AjaxLink<Void>("remove") {
                     @Override

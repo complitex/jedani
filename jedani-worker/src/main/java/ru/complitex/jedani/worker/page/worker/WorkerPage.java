@@ -1,5 +1,7 @@
 package ru.complitex.jedani.worker.page.worker;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -10,6 +12,8 @@ import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
 import ru.complitex.common.wicket.datatable.DataProvider;
@@ -41,11 +45,13 @@ import static ru.complitex.jedani.worker.entity.Worker.*;
  * 22.12.2017 5:57
  */
 public class WorkerPage extends BasePage{
-    @Inject
-    private EntityMapper entityMapper;
+    private Logger log = LoggerFactory.getLogger(Worker.class);
 
     @Inject
-    private DomainMapper domainMapper;
+    private transient EntityMapper entityMapper;
+
+    @Inject
+    private transient DomainMapper domainMapper;
 
     public WorkerPage(PageParameters parameters) {
         Long objectId = parameters.get("id").toOptionalLong();
@@ -113,7 +119,11 @@ public class WorkerPage extends BasePage{
         form.add(new AjaxButton("save") {
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
-                System.out.println(worker);
+                try {
+                    log.info(new ObjectMapper().writer().writeValueAsString(worker));
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
