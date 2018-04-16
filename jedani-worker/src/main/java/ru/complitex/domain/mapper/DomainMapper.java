@@ -111,6 +111,14 @@ public class DomainMapper {
         return getDomain(domain);
     }
 
+    public Domain getDomainByExternalId(String entityName, String externalId){
+        Domain domain = new Domain();
+        domain.setEntityName(entityName);
+        domain.setExternalId(externalId);
+
+        return getDomain(domain);
+    }
+
     public Domain getDomain(Domain domain){
         return sqlSession.selectOne("selectDomain", domain);
     }

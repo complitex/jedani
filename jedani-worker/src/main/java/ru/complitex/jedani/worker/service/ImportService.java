@@ -34,10 +34,10 @@ public class ImportService {
     private Logger log = LoggerFactory.getLogger(ImportService.class);
 
     @Inject
-    private DomainMapper domainMapper;
+    private transient DomainMapper domainMapper;
 
     @Inject
-    private UserMapper userMapper;
+    private transient UserMapper userMapper;
 
     public static class Status{
         private int count = 0;
@@ -108,7 +108,7 @@ public class ImportService {
                     break;
                 }
 
-                Domain region = domainMapper.getDomain(new Region(columns[2]));
+                Domain region = domainMapper.getDomainByExternalId("region", columns[2]);
 
                 if (region == null){
                     status.errorMessage = "Ненайден район " + columns[2] + " для " + columns[1];
@@ -136,7 +136,7 @@ public class ImportService {
         } catch (Exception e) {
             log.error("error import cities", e);
 
-            status.errorMessage = e.getMessage();
+            status.errorMessage = "Ошибка: " + e.getMessage();
         }
 
         return status;
@@ -184,7 +184,13 @@ public class ImportService {
                 worker.setText(Worker.SECOND_NAME, columns[12]);
                 worker.setText(Worker.LAST_NAME, columns[13]);
                 worker.setJson(Worker.PHONE, objectMapper.createArrayNode().add(columns[14]).toString());
-                worker.setNumber(Worker.CITY_ID, columns[15]);
+
+                if (columns[15] != null && !columns[15].trim().isEmpty()) {
+                    Domain city = domainMapper.getDomainByExternalId("city", columns[15]);
+                    worker.setJson(Worker.CITY_ID, objectMapper.createArrayNode().add(city.getObjectId()).toString());
+                    worker.setJson(Worker.REGION_ID, objectMapper.createArrayNode().add(city.getParentId()).toString());
+                }
+
                 worker.setNumber(Worker.MANAGER_RANK_ID, columns[16]);
                 worker.setText(Worker.INVOLVED_AT, columns[17]);
                 worker.setText(Worker.FULL_ANCESTRY_PATH, columns[18]);
