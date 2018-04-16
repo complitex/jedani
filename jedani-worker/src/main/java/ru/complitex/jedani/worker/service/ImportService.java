@@ -1,5 +1,6 @@
 package ru.complitex.jedani.worker.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.mybatis.cdi.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -147,6 +148,8 @@ public class ImportService {
         List<Worker> workers = new ArrayList<>();
         Map<String, User> userMap = new HashMap<>();
 
+        ObjectMapper objectMapper = new ObjectMapper();
+
         try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"))){
             String line;
 
@@ -180,7 +183,7 @@ public class ImportService {
                 worker.setText(Worker.FIRST_NAME, columns[11]);
                 worker.setText(Worker.SECOND_NAME, columns[12]);
                 worker.setText(Worker.LAST_NAME, columns[13]);
-                worker.setText(Worker.PHONE, columns[14]);
+                worker.setJson(Worker.PHONE, objectMapper.createArrayNode().add(columns[14]).toString());
                 worker.setNumber(Worker.CITY_ID, columns[15]);
                 worker.setNumber(Worker.MANAGER_RANK_ID, columns[16]);
                 worker.setText(Worker.INVOLVED_AT, columns[17]);

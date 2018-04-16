@@ -80,12 +80,12 @@
             <artifactId>mybatis-cdi</artifactId>
         </dependency>
 
-       <!-- <dependency>
-            <groupId>org.hibernate.validator</groupId>
-            <artifactId>hibernate-validator-cdi</artifactId>
-            <version>6.0.9.Final</version>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
         </dependency>
--->
+
+
         <!--<dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>

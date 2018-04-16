@@ -67,6 +67,10 @@ public class Domain implements Serializable{
         getOrCreateAttribute(entityAttributeId).setNumber(number);
     }
 
+    public void setJson(Long entityAttributeId, String json){
+        getOrCreateAttribute(entityAttributeId).setJson(json);
+    }
+
     public Attribute getOrCreateAttribute(Long entityAttributeId) {
         return attributes.stream()
                 .filter(a -> a.getEntityAttributeId().equals(entityAttributeId))

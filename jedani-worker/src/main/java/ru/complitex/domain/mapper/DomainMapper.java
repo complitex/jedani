@@ -39,7 +39,8 @@ public class DomainMapper {
         sqlSession.insert("insertDomain", domain);
 
         domain.getAttributes().stream()
-                .filter(a -> (a.getText() != null && !a.getText().isEmpty()) || a.getNumber() != null || a.getValues() != null)
+                .filter(a -> (a.getText() != null && !a.getText().isEmpty()) || a.getNumber() != null ||
+                        a.getJson() != null || a.getValues() != null)
                 .forEach(a -> {
                     a.setEntityName(domain.getEntityName());
                     a.setObjectId(domain.getObjectId());

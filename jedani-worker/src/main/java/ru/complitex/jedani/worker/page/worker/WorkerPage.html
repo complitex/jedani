@@ -7,20 +7,63 @@
 <body>
 <wicket:extend>
     <div>
-        <div><h3>Сотрудник</h3></div>
+        <h3>Сотрудник</h3>
+
+        <br/>
+
         <div>
             <div wicket:id="feedback"></div>
 
-            <form wicket:id="form" class="form-horizontal">
-                <div wicket:id="lastName"></div>
-                <div wicket:id="firstName"></div>
-                <div wicket:id="secondName"></div>
-                <div wicket:id="birthday"></div>
-                <div wicket:id="phone"></div>
-                <div wicket:id="email"></div>
-                <div wicket:id="jId"></div>
-                <div wicket:id="mkStatus"></div>
-                <div wicket:id="city"></div>
+            <form wicket:id="form">
+                <div class="row">
+                    <div class="col-md-2">
+                        <span wicket:id="lastName"></span>
+                    </div>
+                    <div class="col-md-2">
+                        <span wicket:id="firstName"></span>
+                    </div>
+                    <div class="col-md-2">
+                        <span wicket:id="secondName"></span>
+                    </div>
+                    <div class="col-md-2">
+                        <span wicket:id="managerRankId"></span>
+                    </div>
+                    <div class="col-md-2">
+                        <span wicket:id="jId"></span>
+                    </div>
+                    <div class="col-md-2">
+                        <span wicket:id="mkStatus"></span>
+                    </div>
+                </div>
+
+                <br/>
+
+                <div class="row">
+                    <div class="col-md-2">
+                        <div>Пользователь</div>
+                        <div>Пароль</div>
+                        <div>Дата регистрации</div>
+                    </div>
+                    <div class="col-md-2">
+                        <div wicket:id="phone"></div>
+                    </div>
+                    <div class="col-md-2">
+                        <div wicket:id="email"></div>
+                        <div wicket:id="birthday"></div>
+                    </div>
+                    <div class="col-md-2">
+                        <div>Регионы</div>
+
+                    </div>
+                    <div class="col-md-2">
+                        <div wicket:id="city"></div>
+                    </div>
+                    <div class="col-md-2">
+                        <div>Вышестоящий сотрудник</div>
+                        <div>Телефон</div>
+                        <div>E-Mail</div>
+                    </div>
+                </div>
 
                 <table wicket:id="table" class="table table-hover"></table>
 
