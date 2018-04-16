@@ -14,6 +14,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.complitex.address.entity.City;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
 import ru.complitex.common.wicket.datatable.DataProvider;
@@ -23,6 +24,7 @@ import ru.complitex.domain.component.datatable.DomainActionColumn;
 import ru.complitex.domain.component.datatable.DomainColumn;
 import ru.complitex.domain.component.datatable.DomainIdColumn;
 import ru.complitex.domain.component.form.AttributeListFormGroup;
+import ru.complitex.domain.component.form.AttributeSelectFormGroup;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
@@ -107,7 +109,7 @@ public class WorkerPage extends BasePage{
         form.add(new TextFieldFormGroup<>("birthday", new PropertyModel<>(worker.getAttribute(Worker.BIRTHDAY), "text")));
         form.add(new AttributeListFormGroup("phone", Model.of(worker.getOrCreateAttribute(Worker.PHONE))));
         form.add(new TextFieldFormGroup<>("email", new PropertyModel<>(worker.getAttribute(Worker.EMAIL), "text")));
-        form.add(new TextFieldFormGroup<>("city", new PropertyModel<>(worker.getAttribute(Worker.CITY_ID), "number")));
+        form.add(new AttributeSelectFormGroup("city", Model.of(worker.getAttribute(Worker.CITY_ID)), "city", City.NAME));
         //todo position
         //todo regions
         //todo login password

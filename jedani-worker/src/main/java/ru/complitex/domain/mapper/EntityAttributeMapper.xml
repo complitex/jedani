@@ -18,4 +18,10 @@
     <select id="selectEntityAttributes" parameterType="long" resultMap="entityAttributeResultMap">
         select * from entity_attribute where entity_id = #{entityId}
     </select>
+
+    <select id="selectEntityAttribute" parameterType="map" resultMap="entityAttributeResultMap">
+        select a.* from entity_attribute a left join entity e on a.entity_id = e.id
+          where e.name = #{entityName} and a.entity_attribute_id = #{entityAttributeId}
+    </select>
+
 </mapper>

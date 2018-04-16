@@ -15,4 +15,11 @@
     <select id="selectEntityByName" parameterType="string" resultMap="entityResultMap">
         select * from entity where name = #{name}
     </select>
+
+    <select id="selectReferenceEntityName" parameterType="map" resultType="string">
+        select r.name from entity_attribute a
+            left join entity e on a.entity_id = e.id
+            left join entity r on a.reference_id = r.id
+          where e.name = #{entityName} and a.entity_attribute_id = #{entityAttributeId}
+    </select>
 </mapper>

@@ -1,6 +1,8 @@
 package ru.complitex.domain.mapper;
 
 import org.apache.ibatis.session.SqlSession;
+import ru.complitex.common.util.MapUtil;
+import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Entity;
 
 import javax.inject.Inject;
@@ -20,6 +22,17 @@ public class EntityMapper {
     public Entity getEntity(String entityName){
         return sqlSession.selectOne("selectEntityByName", entityName);
     }
+
+    public String getReferenceEntityName(String entityName, Long entityAttributeId){
+        return sqlSession.selectOne("selectReferenceEntityName", MapUtil.of("entityName", entityName,
+                "entityAttributeId", entityAttributeId));
+    }
+
+    public String getReferenceEntityName(Attribute attribute){
+        return sqlSession.selectOne("selectReferenceEntityName", MapUtil.of("entityName", attribute.getEntityName(),
+                "entityAttributeId", attribute.getEntityAttributeId()));
+    }
+
 
 
     //todo domain mapper -> region import

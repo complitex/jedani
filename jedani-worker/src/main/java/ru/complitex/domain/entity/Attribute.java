@@ -5,6 +5,7 @@ import ru.complitex.domain.util.Locales;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * @author Anatoly A. Ivanov
@@ -58,8 +59,12 @@ public class Attribute implements Serializable{
     }
 
 
-    public Value getValue(java.util.Locale locale){
-        return getValue(Locales.getLocaleId(locale));
+    public Value getValue(Locale locale){
+        Long localeId = Locales.getLocaleId(locale);
+
+        Value value = localeId != null ? getValue(localeId) : null;
+
+        return value != null || Locales.getSystemLocaleId().equals(localeId) ? value : getValue(Locales.getSystemLocaleId());
     }
 
     public void setValue(String text, Long localeId){

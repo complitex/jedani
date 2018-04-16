@@ -64,7 +64,6 @@ public class AttributeInputList extends FormComponentPanel<Attribute> {
             }
         };
         listView.setReuseItems(false);
-
         container.add(listView);
 
         add(new AjaxLink<Void>("add") {
@@ -77,6 +76,7 @@ public class AttributeInputList extends FormComponentPanel<Attribute> {
         });
     }
 
+    @SuppressWarnings("Duplicates")
     @Override
     public void convertInput() {
         ArrayNode array = new ObjectMapper().createArrayNode();

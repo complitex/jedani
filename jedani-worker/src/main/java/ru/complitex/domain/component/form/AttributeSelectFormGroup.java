@@ -11,15 +11,15 @@ import ru.complitex.domain.entity.Attribute;
  * 16.04.2018 21:39
  */
 public class AttributeSelectFormGroup extends Panel {
-    public AttributeSelectFormGroup(String id, IModel<Attribute> model) {
-        this(id, new ResourceModel(id), model);
+    public AttributeSelectFormGroup(String id, IModel<Attribute> model, String referenceEntityName, Long referenceEntityAttributeId) {
+        this(id, new ResourceModel(id), model, referenceEntityName, referenceEntityAttributeId);
     }
 
-    public AttributeSelectFormGroup(String id, IModel<String> label, IModel<Attribute> model) {
+    public AttributeSelectFormGroup(String id, IModel<String> label, IModel<Attribute> model, String referenceEntityName, Long referenceEntityAttributeId) {
         super(id);
 
         FormGroup group = new FormGroup("group", label);
-        group.add(new AttributeInputList("input", model));
+        group.add(new AttributeSelectList("select", model, referenceEntityName, referenceEntityAttributeId));
 
         add(group);
     }
