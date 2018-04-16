@@ -8,6 +8,8 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
+import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
@@ -33,6 +35,8 @@ import ru.complitex.domain.mapper.DomainMapper;
 import ru.complitex.domain.mapper.EntityMapper;
 import ru.complitex.jedani.worker.entity.Worker;
 import ru.complitex.jedani.worker.page.BasePage;
+import ru.complitex.user.entity.User;
+import ru.complitex.user.mapper.UserMapper;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -55,6 +59,9 @@ public class WorkerPage extends BasePage{
 
     @Inject
     private transient DomainMapper domainMapper;
+
+    @Inject
+    private transient UserMapper userMapper;
 
     public WorkerPage(PageParameters parameters) {
         Long objectId = parameters.get("id").toOptionalLong();
@@ -116,6 +123,19 @@ public class WorkerPage extends BasePage{
         form.add(city = new AttributeSelectFormGroup("city", Model.of(worker.getAttribute(Worker.CITY_ID)), "city", City.NAME, region.getListModel()));
         region.setOnChange(t -> t.add(city));
 
+        //User
+
+        User user = userMapper.getUser(worker.getParentId());
+
+        form.add(new Label("user", Model.of(user.getLogin())));
+
+        PasswordTextField password = new PasswordTextField("password");
+        form.add(password);
+
+        PasswordTextField confirmPassword = new PasswordTextField("confirmPassword");
+        form.add(confirmPassword);
+
+        form.add(new Label("registrationDate", Model.of(worker.getAttribute(INVOLVED_AT).getText())));
 
         //todo position
         //todo regions
