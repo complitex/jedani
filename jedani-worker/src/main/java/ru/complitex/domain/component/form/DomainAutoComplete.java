@@ -48,7 +48,7 @@ public class DomainAutoComplete extends Panel{
                         }
 
                         return domainMapper.getDomain(entityName, model.getObject())
-                                .getAttribute(entityAttribute.getAttributeId());
+                                .getAttribute(entityAttribute.getEntityAttributeId());
                     }
 
                     @Override
@@ -85,7 +85,7 @@ public class DomainAutoComplete extends Panel{
                 domain.getOrCreateAttribute(1L).setText(input); //todo def attribute
 
                 return domainMapper.getDomains(FilterWrapper.of(domain)).stream() //todo opt load attribute
-                        .map(d -> d.getAttribute(entityAttribute.getAttributeId()))
+                        .map(d -> d.getAttribute(entityAttribute.getEntityAttributeId()))
                         .collect(Collectors.toList())
                         .iterator();
             }

@@ -4,7 +4,7 @@
     <resultMap id="entityValueResultMap" type="ru.complitex.domain.entity.EntityValue">
         <id column="id" property="id"/>
         <result column="entity_id" property="entityId"/>
-        <result column="attribute_id" property="attributeId"/>
+        <result column="entity_attribute_id" property="entityAttributeId"/>
         <result column="locale_id" property="localeId"/>
         <result column="text" property="text"/>
     </resultMap>
@@ -12,8 +12,8 @@
     <select id="selectEntityValues" parameterType="map" resultMap="entityValueResultMap">
         select * from entity_value where entity_id = #{entityId}
         <choose>
-            <when test="attributeId != null">and attribute_id = #{attributeId}</when>
-            <otherwise>and attribute_id is null</otherwise>
+            <when test="entityAttributeId != null">and entity_attribute_id = #{entityAttributeId}</when>
+            <otherwise>and entity_attribute_id is null</otherwise>
         </choose>
     </select>
 

@@ -75,7 +75,7 @@ DROP TABLE IF EXISTS `entity_attribute`;
 CREATE TABLE `entity_attribute` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
   `entity_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор сущности',
-  `attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор атрибута',
+  `entity_attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор атрибута',
   `start_date` TIMESTAMP NOT NULL default CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия атрибута',
   `end_date` TIMESTAMP NULL default NULL COMMENT 'Дата окончания периода действия атрибута',
   `value_type_id` BIGINT(20) COMMENT  'Тип значения атрибута',
@@ -83,7 +83,7 @@ CREATE TABLE `entity_attribute` (
   `system` TINYINT(1) default 1 NOT NULL COMMENT 'Является ли тип атрибута системным',
   `required` TINYINT(1) default 1 NOT NULL COMMENT 'Является ли атрибут обязательным',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `key_unique` (`attribute_id`, `entity_id`),
+  UNIQUE KEY `key_unique` (`entity_attribute_id`, `entity_id`),
   KEY `key_entity_id` (`entity_id`),
   KEY `key_value_type_id` (`value_type_id`),
   CONSTRAINT `fk_attribute_type__entity` FOREIGN KEY (`entity_id`) REFERENCES `entity` (`id`),
@@ -94,17 +94,17 @@ DROP TABLE IF EXISTS `entity_value`;
 CREATE TABLE `entity_value` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
   `entity_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор типа аттрибута',
-  `attribute_id` BIGINT(20) NULL COMMENT 'Идентификатор типа аттрибута',
+  `entity_attribute_id` BIGINT(20) NULL COMMENT 'Идентификатор типа аттрибута',
   `locale_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор локали',
   `text` VARCHAR(1000) COMMENT 'Текстовое значение',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `key_unique` (`entity_id`, `attribute_id`, `locale_id`),
+  UNIQUE KEY `key_unique` (`entity_id`, `entity_attribute_id`, `locale_id`),
   KEY `key_entity_id` (`entity_id`),
-  KEY `key_attribute_id` (`attribute_id`),
+  KEY `key_entity_attribute_id` (`entity_attribute_id`),
   KEY `key_locale` (`locale_id`),
   KEY `key_value` (`text`(128)),
   CONSTRAINT `fk_entity_value__entity` FOREIGN KEY (`entity_id`) REFERENCES `entity` (`id`),
-  CONSTRAINT `fk_entity_value__entity_attribute` FOREIGN KEY (`attribute_id`) REFERENCES `entity_attribute` (`id`),
+  CONSTRAINT `fk_entity_value__entity_attribute` FOREIGN KEY (`entity_attribute_id`) REFERENCES `entity_attribute` (`entity_attribute_id`),
   CONSTRAINT `fk_entity_value__locale` FOREIGN KEY (`locale_id`) REFERENCES `locale` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Локализация';
 
@@ -179,7 +179,7 @@ CREATE TABLE `country_attribute` (
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
   CONSTRAINT `fk_country_attribute__country` FOREIGN KEY (`object_id`) REFERENCES `country`(`object_id`),
-  CONSTRAINT `fk_country_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`) REFERENCES entity_attribute (`attribute_id`)
+  CONSTRAINT `fk_country_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`) REFERENCES entity_attribute (`entity_attribute_id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты страны';
 
 DROP TABLE IF EXISTS `country_value`;
@@ -245,7 +245,7 @@ CREATE TABLE `region_attribute` (
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
   CONSTRAINT `fk_region_attribute__region` FOREIGN KEY (`object_id`) REFERENCES `region`(`object_id`),
-  CONSTRAINT `fk_region_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`) REFERENCES entity_attribute (`attribute_id`)
+  CONSTRAINT `fk_region_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`) REFERENCES entity_attribute (`entity_attribute_id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты региона';
 
 DROP TABLE IF EXISTS `region_value`;
@@ -313,7 +313,7 @@ CREATE TABLE `city_type_attribute` (
   KEY `key_status` (`status`),
   CONSTRAINT `fk_city_type_attribute__city_type` FOREIGN KEY (`object_id`) REFERENCES `city_type`(`object_id`),
   CONSTRAINT `fk_city_type_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`)
-    REFERENCES entity_attribute (`attribute_id`)
+    REFERENCES entity_attribute (`entity_attribute_id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты типа населенного пункта';
 
 DROP TABLE IF EXISTS `city_type_value`;
@@ -380,7 +380,7 @@ CREATE TABLE `city_attribute` (
   KEY `key_status` (`status`),
   CONSTRAINT `fk_city_attribute__city` FOREIGN KEY (`object_id`) REFERENCES `city`(`object_id`),
   CONSTRAINT `fk_city_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`)
-    REFERENCES entity_attribute (`attribute_id`)
+    REFERENCES entity_attribute (`entity_attribute_id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты населенного пункта';
 
 DROP TABLE IF EXISTS `city_value`;
@@ -452,7 +452,7 @@ CREATE TABLE `last_name_attribute` (
   KEY `key_status` (`status`),
   CONSTRAINT `fk_last_name_attribute__city` FOREIGN KEY (`object_id`) REFERENCES `last_name`(`object_id`),
   CONSTRAINT `fk_last_name_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`)
-  REFERENCES entity_attribute (`attribute_id`)
+  REFERENCES entity_attribute (`entity_attribute_id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты фамилии';
 
 DROP TABLE IF EXISTS `last_name_value`;
@@ -520,7 +520,7 @@ CREATE TABLE `first_name_attribute` (
   KEY `key_status` (`status`),
   CONSTRAINT `fk_first_name_attribute__city` FOREIGN KEY (`object_id`) REFERENCES `first_name`(`object_id`),
   CONSTRAINT `fk_first_name_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`)
-  REFERENCES entity_attribute (`attribute_id`)
+  REFERENCES entity_attribute (`entity_attribute_id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты имени';
 
 DROP TABLE IF EXISTS `first_name_value`;
@@ -588,7 +588,7 @@ CREATE TABLE `middle_name_attribute` (
   KEY `key_status` (`status`),
   CONSTRAINT `fk_middle_name_attribute__city` FOREIGN KEY (`object_id`) REFERENCES `middle_name`(`object_id`),
   CONSTRAINT `fk_middle_name_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`)
-  REFERENCES entity_attribute (`attribute_id`)
+  REFERENCES entity_attribute (`entity_attribute_id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты отчества';
 
 DROP TABLE IF EXISTS `middle_name_value`;
@@ -656,7 +656,7 @@ CREATE TABLE `worker_attribute` (
   KEY `key_status` (`status`),
   CONSTRAINT `fk_worker_attribute__city` FOREIGN KEY (`object_id`) REFERENCES `worker`(`object_id`),
   CONSTRAINT `fk_worker_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`)
-  REFERENCES entity_attribute (`attribute_id`)
+  REFERENCES entity_attribute (`entity_attribute_id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты сотрудника';
 
 DROP TABLE IF EXISTS `worker_value`;

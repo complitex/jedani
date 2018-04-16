@@ -4,14 +4,14 @@
     <resultMap id="entityAttributeResultMap" type="ru.complitex.domain.entity.EntityAttribute">
         <id column="id" property="id"/>
         <result column="entity_id" property="entityId"/>
-        <result column="attribute_id" property="attributeId"/>
+        <result column="entity_attribute_id" property="entityAttributeId"/>
         <result column="start_date" property="startDate"/>
         <result column="end_date" property="endDate"/>
         <result column="value_type_id" property="valueType"/>
         <result column="reference_id" property="referenceId"/>
         <result column="system" property="system"/>
         <result column="required" property="required"/>
-        <collection column="entityId = entity_id, attributeId = attribute_id" property="values"
+        <collection column="entityId = entity_id, entityAttributeId = entity_attribute_id" property="values"
                     select="ru.complitex.domain.mapper.EntityValueMapper.selectEntityValues"/>
     </resultMap>
 

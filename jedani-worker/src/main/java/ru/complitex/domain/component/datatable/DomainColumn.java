@@ -24,9 +24,9 @@ public abstract class DomainColumn extends AbstractDomainColumn {
     private EntityAttribute entityAttribute;
 
     public DomainColumn(EntityAttribute entityAttribute) {
-        super(Model.of(entityAttribute.getValue() != null ? entityAttribute.getValue().getText() : "[" + entityAttribute.getAttributeId() + "]"),
+        super(Model.of(entityAttribute.getValue() != null ? entityAttribute.getValue().getText() : "[" + entityAttribute.getEntityAttributeId() + "]"),
                 new SortProperty(entityAttribute.getValueType().getKey(),
-                        entityAttribute.getAttributeId()));
+                        entityAttribute.getEntityAttributeId()));
 
         this.entityAttribute = entityAttribute;
     }
@@ -41,13 +41,13 @@ public abstract class DomainColumn extends AbstractDomainColumn {
                     @Override
                     public Long getObject() {
                         return ((Domain)((FilterWrapper)form.getDefaultModelObject()).getObject())
-                                .getNumber(entityAttribute.getAttributeId());
+                                .getNumber(entityAttribute.getEntityAttributeId());
                     }
 
                     @Override
                     public void setObject(Long object) {
                         ((Domain)((FilterWrapper)form.getDefaultModelObject()).getObject())
-                                .setNumber(entityAttribute.getAttributeId(), object);
+                                .setNumber(entityAttribute.getEntityAttributeId(), object);
                     }
                 };
 
@@ -61,13 +61,13 @@ public abstract class DomainColumn extends AbstractDomainColumn {
                             @Override
                             public Long getObject() {
                                 return ((Domain)((FilterWrapper)form.getDefaultModelObject()).getObject())
-                                        .getNumber(entityAttribute.getAttributeId());
+                                        .getNumber(entityAttribute.getEntityAttributeId());
                             }
 
                             @Override
                             public void setObject(Long object) {
                                 ((Domain)((FilterWrapper)form.getDefaultModelObject()).getObject())
-                                        .setNumber(entityAttribute.getAttributeId(), object);
+                                        .setNumber(entityAttribute.getEntityAttributeId(), object);
                             }
                         });
             default:
@@ -75,13 +75,13 @@ public abstract class DomainColumn extends AbstractDomainColumn {
                     @Override
                     public String getObject() {
                         return ((Domain)((FilterWrapper)form.getDefaultModelObject()).getObject())
-                                .getText(entityAttribute.getAttributeId());
+                                .getText(entityAttribute.getEntityAttributeId());
                     }
 
                     @Override
                     public void setObject(String object) {
                         ((Domain)((FilterWrapper)form.getDefaultModelObject()).getObject())
-                                .setText(entityAttribute.getAttributeId(), object);
+                                .setText(entityAttribute.getEntityAttributeId(), object);
                     }
                 };
                 return new TextFilter<>(componentId, model, form);
@@ -92,7 +92,7 @@ public abstract class DomainColumn extends AbstractDomainColumn {
     public void populateItem(Item<ICellPopulator<Domain>> cellItem, String componentId, IModel<Domain> rowModel) {
         IModel model;
 
-        Attribute attribute = rowModel.getObject().getOrCreateAttribute(entityAttribute.getAttributeId());
+        Attribute attribute = rowModel.getObject().getOrCreateAttribute(entityAttribute.getEntityAttributeId());
 
         switch (entityAttribute.getValueType()){
             case VALUE:

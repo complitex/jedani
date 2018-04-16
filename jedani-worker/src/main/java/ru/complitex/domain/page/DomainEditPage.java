@@ -68,7 +68,7 @@ public abstract class DomainEditPage extends BasePage{
             @Override
             protected void populateItem(ListItem<EntityAttribute> item) {
                 EntityAttribute entityAttribute = item.getModelObject();
-                Attribute attribute = domain.getOrCreateAttribute(entityAttribute.getAttributeId());
+                Attribute attribute = domain.getOrCreateAttribute(entityAttribute.getEntityAttributeId());
 
                 FormGroup group = new FormGroup("group", Model.of(entityAttribute.getValue().getText()));
                 FormComponent input1 = null;

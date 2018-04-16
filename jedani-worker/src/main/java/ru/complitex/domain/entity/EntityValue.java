@@ -9,7 +9,7 @@ import java.io.Serializable;
 public class EntityValue implements Serializable {
     private Long id;
     private Long entityId;
-    private Long attributeId;
+    private Long entityAttributeId;
     private Long localeId;
     private String text;
 
@@ -29,12 +29,12 @@ public class EntityValue implements Serializable {
         this.entityId = entityId;
     }
 
-    public Long getAttributeId() {
-        return attributeId;
+    public Long getEntityAttributeId() {
+        return entityAttributeId;
     }
 
-    public void setAttributeId(Long attributeId) {
-        this.attributeId = attributeId;
+    public void setEntityAttributeId(Long entityAttributeId) {
+        this.entityAttributeId = entityAttributeId;
     }
 
     public Long getLocaleId() {
