@@ -40,7 +40,9 @@ import ru.complitex.user.entity.User;
 import ru.complitex.user.mapper.UserMapper;
 
 import javax.inject.Inject;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -136,7 +138,10 @@ public class WorkerPage extends BasePage{
         PasswordTextField confirmPassword = new PasswordTextField("confirmPassword");
         form.add(confirmPassword);
 
-        form.add(new Label("registrationDate", Model.of(worker.getAttribute(INVOLVED_AT).getDate())));
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+        Date registrationDate = worker.getAttribute(INVOLVED_AT).getDate();
+
+        form.add(new Label("registrationDate", registrationDate != null ? dateFormat.format(registrationDate) : ""));
 
         //todo position
         //todo regions

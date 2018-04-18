@@ -21,7 +21,7 @@ public class DateTextFieldFormGroup extends Panel{
         super(id);
 
         FormGroup group = new FormGroup("group", label);
-        group.add(new DateTextField("input", model));
+        group.add(new DateTextField("input", model, "dd.MM.yyyy"));
 
         add(group);
     }
