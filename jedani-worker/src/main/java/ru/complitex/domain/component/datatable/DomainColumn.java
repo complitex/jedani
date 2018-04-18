@@ -36,7 +36,7 @@ public abstract class DomainColumn extends AbstractDomainColumn {
         IModel<?> model;
 
         switch (entityAttribute.getValueType()){
-            case INTEGER:
+            case NUMBER:
                 model = new IModel<Long>() {
                     @Override
                     public Long getObject() {
@@ -113,7 +113,7 @@ public abstract class DomainColumn extends AbstractDomainColumn {
                 }
 
                 break;
-            case INTEGER:
+            case NUMBER:
                 model = Model.of(attribute.getNumber());
 
                 break;

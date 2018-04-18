@@ -1,6 +1,7 @@
 package ru.complitex.jedani.worker.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Strings;
 import org.mybatis.cdi.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +21,7 @@ import javax.inject.Inject;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -148,6 +150,9 @@ public class ImportService {
         List<Worker> workers = new ArrayList<>();
         Map<String, User> userMap = new HashMap<>();
 
+        SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat dayFormat = new SimpleDateFormat("yyyy-MM-dd");
+
         ObjectMapper objectMapper = new ObjectMapper();
 
         try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"))){
@@ -177,8 +182,14 @@ public class ImportService {
                 worker.setText(Worker.RESET_PASSWORD_TOKEN, columns[5]);
                 worker.setText(Worker.RESET_PASSWORD_SEND_AT, columns[6]);
                 worker.setText(Worker.REMEMBER_CREATED_AT, columns[7]);
-                worker.setText(Worker.CREATED_AT, columns[8]);
-                worker.setText(Worker.UPDATED_AT, columns[9]);
+
+                if (!Strings.isNullOrEmpty(columns[8])) {
+                    worker.setDate(Worker.CREATED_AT, dateTimeFormat.parse(columns[8]));
+                }
+                if (!Strings.isNullOrEmpty(columns[9])) {
+                    worker.setDate(Worker.UPDATED_AT, dateTimeFormat.parse(columns[9]));
+                }
+
                 worker.setText(Worker.MK_STATUS, columns[10]);
                 worker.setText(Worker.FIRST_NAME, columns[11]);
                 worker.setText(Worker.SECOND_NAME, columns[12]);
@@ -192,12 +203,20 @@ public class ImportService {
                 }
 
                 worker.setNumber(Worker.MANAGER_RANK_ID, columns[16]);
-                worker.setText(Worker.INVOLVED_AT, columns[17]);
+
+                if (!Strings.isNullOrEmpty(columns[17])) {
+                    worker.setDate(Worker.INVOLVED_AT, dateTimeFormat.parse(columns[17]));
+                }
+
                 worker.setText(Worker.FULL_ANCESTRY_PATH, columns[18]);
                 worker.setText(Worker.DEPTH_LEVEL, columns[19]);
                 worker.setNumber(Worker.ANCESTRY_DEPTH, columns[20]);
                 worker.setText(Worker.CONTACT_INFO, columns[21]);
-                worker.setText(Worker.BIRTHDAY, columns[22]);
+
+                if (!Strings.isNullOrEmpty(columns[22])) {
+                    worker.setDate(Worker.BIRTHDAY, dayFormat.parse(columns[22]));
+                }
+
                 worker.setText(Worker.FIRED_STATUS, columns[23]);
                 worker.setNumber(Worker.OLD_PARENT_ID, columns[24]);
                 worker.setText(Worker.OLD_CHILD_ID, columns[25]);

@@ -67,6 +67,10 @@ public class Domain implements Serializable{
         getOrCreateAttribute(entityAttributeId).setNumber(number);
     }
 
+    public void setDate(Long entityAttributeId, Date date){
+        getOrCreateAttribute(entityAttributeId).setDate(date);
+    }
+
     public void setJson(Long entityAttributeId, String json){
         getOrCreateAttribute(entityAttributeId).setJson(json);
     }
@@ -114,6 +118,12 @@ public class Domain implements Serializable{
         Attribute attribute = getAttribute(entityAttributeId);
 
         return attribute != null ? attribute.getNumber() : null;
+    }
+
+    public Date getDate(Long entityAttributeId){
+        return Optional.ofNullable(getAttribute(entityAttributeId))
+                .map(Attribute::getDate)
+                .orElse(null);
     }
 
     public Value getValue(Long entityAttributeId, Locale locale){

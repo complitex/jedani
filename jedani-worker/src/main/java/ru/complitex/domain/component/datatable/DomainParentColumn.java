@@ -51,7 +51,7 @@ public abstract class DomainParentColumn extends AbstractDomainColumn{
 
                     break;
                 case ENTITY:
-                case INTEGER:
+                case NUMBER:
                     model = Model.of(domain.getNumber(entityAttributeId));
 
                     break;

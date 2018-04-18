@@ -24,8 +24,9 @@ public class AttributeMapper {
         if (attribute.getStatus() == null){
             attribute.setStatus(Status.ACTIVE);
         }
-
-        if (attribute.getJson() != null){
+        if (attribute.getDate() != null){
+            sqlSession.insert("insertAttributeWithDate", attribute);
+        }else if (attribute.getJson() != null){
             sqlSession.insert("insertAttributeWithJson", attribute);
         }else{
             sqlSession.insert("insertAttribute", attribute);

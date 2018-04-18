@@ -4,10 +4,10 @@ import ru.complitex.common.entity.IdEnum;
 
 public enum ValueType implements IdEnum {
     VALUE(0),
-    STRING(1),
+    TEXT(1),
     BOOLEAN(2),
     DECIMAL(3),
-    INTEGER(4),
+    NUMBER(4),
     DATE(5),
     JSON(6),
 
@@ -24,20 +24,21 @@ public enum ValueType implements IdEnum {
     }
 
     public boolean isSimple(){
-        return id <= 5;
+        return id < 10;
     }
 
     public String getKey(){
         switch (this){
             case VALUE:
                 return "value";
-            case STRING:
-            case DATE:
+            case TEXT:
             case DECIMAL:
                 return "text";
             case BOOLEAN:
-            case INTEGER:
+            case NUMBER:
                 return "number";
+            case DATE:
+                return "date";
             case ENTITY:
                 return "entity";
         }

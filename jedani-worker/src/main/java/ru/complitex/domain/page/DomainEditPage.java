@@ -75,7 +75,7 @@ public abstract class DomainEditPage extends BasePage{
                 FormComponent input2 = null;
 
                 switch (entityAttribute.getValueType()){
-                    case STRING:
+                    case TEXT:
                     case DECIMAL:
                     case BOOLEAN:
                         input1 = new TextField<>("input1", new PropertyModel<>(attribute, "text"));
@@ -84,7 +84,7 @@ public abstract class DomainEditPage extends BasePage{
                         input1 = new TextField<>("input1", new PropertyModel<>(attribute, "text"));
                         break;
                     case ENTITY:
-                    case INTEGER:
+                    case NUMBER:
                         input1 = new TextField<>("input1", new PropertyModel<>(attribute, "number"));
                         break;
                     case VALUE:

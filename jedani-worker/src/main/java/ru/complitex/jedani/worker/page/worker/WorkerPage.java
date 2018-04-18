@@ -22,6 +22,7 @@ import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
 import ru.complitex.common.wicket.datatable.DataProvider;
 import ru.complitex.common.wicket.datatable.FilterDataTable;
+import ru.complitex.common.wicket.form.DateTextFieldFormGroup;
 import ru.complitex.common.wicket.form.TextFieldFormGroup;
 import ru.complitex.domain.component.datatable.DomainActionColumn;
 import ru.complitex.domain.component.datatable.DomainColumn;
@@ -114,7 +115,7 @@ public class WorkerPage extends BasePage{
         form.add(new TextFieldFormGroup<>("managerRankId", new PropertyModel<>(worker.getAttribute(Worker.MANAGER_RANK_ID), "text")));
         form.add(new TextFieldFormGroup<>("jId", new PropertyModel<>(worker.getAttribute(Worker.J_ID), "text")));
         form.add(new TextFieldFormGroup<>("mkStatus", new PropertyModel<>(worker.getAttribute(Worker.MK_STATUS), "text")));
-        form.add(new TextFieldFormGroup<>("birthday", new PropertyModel<>(worker.getAttribute(Worker.BIRTHDAY), "text")));
+        form.add(new DateTextFieldFormGroup("birthday", new PropertyModel<>(worker.getAttribute(Worker.BIRTHDAY), "date")));
         form.add(new AttributeListFormGroup("phone", Model.of(worker.getOrCreateAttribute(Worker.PHONE))));
         form.add(new TextFieldFormGroup<>("email", new PropertyModel<>(worker.getAttribute(Worker.EMAIL), "text")));
 
@@ -135,7 +136,7 @@ public class WorkerPage extends BasePage{
         PasswordTextField confirmPassword = new PasswordTextField("confirmPassword");
         form.add(confirmPassword);
 
-        form.add(new Label("registrationDate", Model.of(worker.getAttribute(INVOLVED_AT).getText())));
+        form.add(new Label("registrationDate", Model.of(worker.getAttribute(INVOLVED_AT).getDate())));
 
         //todo position
         //todo regions

@@ -62,12 +62,12 @@ public class DomainAutoComplete extends Panel{
 
                     @Override
                     protected String getTextValue(Attribute attribute) {
-                        switch (entityAttribute.getValueType().getKey()){
-                            case "value":
+                        switch (entityAttribute.getValueType()){
+                            case VALUE:
                                 return attribute.getOrCreateValue(Locales.getSystemLocaleId()).getText();
-                            case "text":
+                            case TEXT:
                                 return attribute.getText();
-                            case "number":
+                            case NUMBER:
                                 return attribute.getNumber() + "";
                         }
 
@@ -101,12 +101,12 @@ public class DomainAutoComplete extends Panel{
 
                         @Override
                         public String convertToString(Attribute attribute, Locale locale) {
-                            switch (entityAttribute.getValueType().getKey()){
-                                case "value":
+                            switch (entityAttribute.getValueType()){
+                                case VALUE:
                                     return attribute.getOrCreateValue(Locales.getSystemLocaleId()).getText();
-                                case "text":
+                                case TEXT:
                                     return attribute.getText();
-                                case "number":
+                                case NUMBER:
                                     return attribute.getNumber() + "";
                             }
 
