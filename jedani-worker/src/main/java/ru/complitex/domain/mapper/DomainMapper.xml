@@ -102,7 +102,13 @@
 
     <!--suppress SqlResolve -->
     <select id="selectDomains" parameterType="ru.complitex.common.entity.FilterWrapper" resultMap="domainResultMap">
-        select distinct d.object_id, '${object.entityName}' entity_name, d.* <include refid="selectDomainsFromWhere"/>
+        select distinct d.object_id, '${object.entityName}' entity_name, d.*
+
+        <if test="sortProperty != null">
+            , sort_v.text
+        </if>
+
+        <include refid="selectDomainsFromWhere"/>
 
         <if test="sortProperty != null">
             <choose>

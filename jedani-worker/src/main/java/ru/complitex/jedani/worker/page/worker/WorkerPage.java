@@ -29,6 +29,7 @@ import ru.complitex.domain.component.datatable.DomainColumn;
 import ru.complitex.domain.component.datatable.DomainIdColumn;
 import ru.complitex.domain.component.form.AttributeListFormGroup;
 import ru.complitex.domain.component.form.AttributeSelectFormGroup;
+import ru.complitex.domain.component.form.DomainAutoCompleteFormGroup;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
@@ -36,6 +37,9 @@ import ru.complitex.domain.mapper.DomainMapper;
 import ru.complitex.domain.mapper.EntityMapper;
 import ru.complitex.jedani.worker.entity.Worker;
 import ru.complitex.jedani.worker.page.BasePage;
+import ru.complitex.name.entity.FirstName;
+import ru.complitex.name.entity.LastName;
+import ru.complitex.name.entity.MiddleName;
 import ru.complitex.user.entity.User;
 import ru.complitex.user.mapper.UserMapper;
 
@@ -111,9 +115,9 @@ public class WorkerPage extends BasePage{
         FilterForm<FilterWrapper<Domain>> form = new FilterForm<>("form", dataProvider);
         add(form);
 
-        form.add(new TextFieldFormGroup<>("lastName", new PropertyModel<>(worker.getAttribute(Worker.LAST_NAME), "text")));
-        form.add(new TextFieldFormGroup<>("firstName", new PropertyModel<>(worker.getAttribute(Worker.FIRST_NAME), "text"))); //todo fio ref
-        form.add(new TextFieldFormGroup<>("secondName", new PropertyModel<>(worker.getAttribute(Worker.SECOND_NAME), "text")));
+        form.add(new DomainAutoCompleteFormGroup("lastName", "last_name", LastName.NAME, new PropertyModel<>(worker.getAttribute(Worker.LAST_NAME), "number")));
+        form.add(new DomainAutoCompleteFormGroup("firstName", "first_name", FirstName.NAME, new PropertyModel<>(worker.getAttribute(Worker.FIRST_NAME), "number")));
+        form.add(new DomainAutoCompleteFormGroup("middleName", "middle_name", MiddleName.NAME, new PropertyModel<>(worker.getAttribute(Worker.MIDDLE_NAME), "number")));
         form.add(new TextFieldFormGroup<>("managerRankId", new PropertyModel<>(worker.getAttribute(Worker.MANAGER_RANK_ID), "text")));
         form.add(new TextFieldFormGroup<>("jId", new PropertyModel<>(worker.getAttribute(Worker.J_ID), "text")));
         form.add(new TextFieldFormGroup<>("mkStatus", new PropertyModel<>(worker.getAttribute(Worker.MK_STATUS), "text")));
@@ -132,14 +136,16 @@ public class WorkerPage extends BasePage{
 
         form.add(new Label("user", Model.of(user.getLogin())));
 
-        PasswordTextField password = new PasswordTextField("password");
+        PasswordTextField password = new PasswordTextField("password", Model.of(""));
+        password.setRequired(false);
         form.add(password);
 
-        PasswordTextField confirmPassword = new PasswordTextField("confirmPassword");
+        PasswordTextField confirmPassword = new PasswordTextField("confirmPassword", Model.of(""));
+        confirmPassword.setRequired(false);
         form.add(confirmPassword);
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
-        Date registrationDate = worker.getAttribute(INVOLVED_AT).getDate();
+        Date registrationDate = worker.getDate(INVOLVED_AT);
 
         form.add(new Label("registrationDate", registrationDate != null ? dateFormat.format(registrationDate) : ""));
 
@@ -159,6 +165,11 @@ public class WorkerPage extends BasePage{
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
                 }
+            }
+
+            @Override
+            protected void onError(AjaxRequestTarget target) {
+                target.add(feedback);
             }
         });
 
@@ -194,7 +205,7 @@ public class WorkerPage extends BasePage{
     private List<EntityAttribute> getEntityAttributes() {
         Entity entity = entityMapper.getEntity("worker");
 
-        return Stream.of(J_ID, CREATED_AT, FIRST_NAME, SECOND_NAME, LAST_NAME, BIRTHDAY, PHONE, EMAIL, CITY_ID) //todo regions
+        return Stream.of(J_ID, CREATED_AT, FIRST_NAME, MIDDLE_NAME, LAST_NAME, BIRTHDAY, PHONE, EMAIL, CITY_ID) //todo regions
                 .map(entity::getEntityAttribute).collect(Collectors.toList());
     }
 }

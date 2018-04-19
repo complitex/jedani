@@ -2,6 +2,7 @@ package ru.complitex.jedani.worker.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
+import org.apache.commons.lang3.StringUtils;
 import org.mybatis.cdi.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -191,9 +192,9 @@ public class ImportService {
                 }
 
                 worker.setText(Worker.MK_STATUS, columns[10]);
-                worker.setText(Worker.FIRST_NAME, columns[11]);
-                worker.setText(Worker.SECOND_NAME, columns[12]);
-                worker.setText(Worker.LAST_NAME, columns[13]);
+                worker.setText(Worker.FIRST_NAME, StringUtils.trim(columns[11]));
+                worker.setText(Worker.MIDDLE_NAME, StringUtils.trim(columns[12]));
+                worker.setText(Worker.LAST_NAME, StringUtils.trim(columns[13]));
                 worker.setJson(Worker.PHONE, objectMapper.createArrayNode().add(columns[14]).toString());
 
                 if (columns[15] != null && !columns[15].trim().isEmpty()) {
@@ -250,36 +251,42 @@ public class ImportService {
             worker.setParentEntityId(User.ENTITY_ID);
         }
 
-        FirstName firstName = new FirstName();
-        firstName.getOrCreateAttribute(FirstName.NAME).getOrCreateValue(Locales.getSystemLocaleId())
-                .setText(worker.getText(Worker.FIRST_NAME));
-        Long firstNameId = domainMapper.getDomainObjectId(firstName);
-        if (firstNameId == null){
-            domainMapper.insertDomain(firstName);
-            firstNameId = firstName.getObjectId();
+        {
+            FirstName firstName = new FirstName();
+            firstName.getOrCreateAttribute(FirstName.NAME).getOrCreateValue(Locales.getSystemLocaleId())
+                    .setText(worker.getText(Worker.FIRST_NAME));
+            Long firstNameId = domainMapper.getDomainObjectId(firstName);
+            if (firstNameId == null) {
+                domainMapper.insertDomain(firstName);
+                firstNameId = firstName.getObjectId();
+            }
+            worker.setNumber(Worker.FIRST_NAME, firstNameId);
         }
-        worker.setNumber(Worker.FIRST_NAME, firstNameId);
 
-        MiddleName middleName = new MiddleName();
-        middleName.getOrCreateAttribute(MiddleName.NAME).getOrCreateValue(Locales.getSystemLocaleId())
-                .setText(worker.getText(Worker.SECOND_NAME));
-        Long middleNameId = domainMapper.getDomainObjectId(middleName);
-        if (middleNameId == null){
-            domainMapper.insertDomain(middleName);
-            middleNameId = middleName.getObjectId();
+        {
+            MiddleName middleName = new MiddleName();
+            middleName.getOrCreateAttribute(MiddleName.NAME).getOrCreateValue(Locales.getSystemLocaleId())
+                    .setText(worker.getText(Worker.MIDDLE_NAME));
+            Long middleNameId = domainMapper.getDomainObjectId(middleName);
+            if (middleNameId == null) {
+                domainMapper.insertDomain(middleName);
+                middleNameId = middleName.getObjectId();
+            }
+            worker.setNumber(Worker.MIDDLE_NAME, middleNameId);
         }
-        worker.setNumber(Worker.SECOND_NAME, middleNameId);
 
-        LastName lastName = new LastName();
-        lastName.getOrCreateAttribute(LastName.NAME).getOrCreateValue(Locales.getSystemLocaleId())
-                .setText(worker.getText(Worker.LAST_NAME));
-        Long lastNameId = domainMapper.getDomainObjectId(lastName);
-        if (lastNameId == null){
-            domainMapper.insertDomain(lastName);
-            lastNameId = middleName.getObjectId();
+        {
+            LastName lastName = new LastName();
+            lastName.getOrCreateAttribute(LastName.NAME).getOrCreateValue(Locales.getSystemLocaleId())
+                    .setText(worker.getText(Worker.LAST_NAME));
+            Long lastNameId = domainMapper.getDomainObjectId(lastName);
+            if (lastNameId == null) {
+                domainMapper.insertDomain(lastName);
+                lastNameId = lastName.getObjectId();
+            }
+            worker.setNumber(Worker.LAST_NAME, lastNameId);
+
+            domainMapper.insertDomain(worker);
         }
-        worker.setNumber(Worker.LAST_NAME, lastNameId);
-
-        domainMapper.insertDomain(worker);
     }
 }

@@ -11,7 +11,7 @@ public class Worker extends Domain{
 
     public static final long J_ID = 1;
     public static final long FIRST_NAME = 2;
-    public static final long SECOND_NAME = 3;
+    public static final long MIDDLE_NAME = 3;
     public static final long LAST_NAME = 4;
     public static final long BIRTHDAY = 5;
     public static final long REGION_ID = 6;

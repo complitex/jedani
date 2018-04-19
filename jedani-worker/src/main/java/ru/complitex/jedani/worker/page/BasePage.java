@@ -59,7 +59,7 @@ public class BasePage extends WebPage{
         String jid = "";
         if (worker != null){
             fio = worker.getText(Worker.LAST_NAME) + " " +
-                    worker.getText(Worker.SECOND_NAME) + " " +
+                    worker.getText(Worker.MIDDLE_NAME) + " " +
                     worker.getText(Worker.FIRST_NAME) + " ";
 
             jid = worker.getText(Worker.J_ID);

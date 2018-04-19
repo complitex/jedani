@@ -32,10 +32,10 @@ import java.util.List;
  */
 public class DomainListPage extends BasePage{
     @Inject
-    private EntityMapper entityMapper;
+    private transient EntityMapper entityMapper;
 
     @Inject
-    private DomainMapper domainMapper;
+    private transient DomainMapper domainMapper;
 
     private String parentEntityName;
     private Long parentEntityAttributeId;

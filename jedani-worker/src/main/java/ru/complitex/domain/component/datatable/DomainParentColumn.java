@@ -33,7 +33,7 @@ public abstract class DomainParentColumn extends AbstractDomainColumn{
 
     @Override
     public Component getFilter(String componentId, FilterForm<?> form) {
-        return new DomainAutoComplete(componentId, entity.getName(), entity.getEntityAttribute(entityAttributeId),
+        return new DomainAutoComplete(componentId, entity.getName(), entityAttributeId,
                 new PropertyModel<>(((FilterWrapper)form.getDefaultModelObject()).getObject(), "parentId"));
     }
 

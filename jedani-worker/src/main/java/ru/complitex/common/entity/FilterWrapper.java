@@ -55,6 +55,18 @@ public class FilterWrapper<T extends Serializable> implements Serializable {
         return this;
     }
 
+    public FilterWrapper<T> sort(String key, Long value){
+        this.sortProperty = new SortProperty(key, value);
+
+        return this;
+    }
+
+    public FilterWrapper<T> asc(){
+        ascending = true;
+
+        return this;
+    }
+
     public String getAsc(){
         return ascending ? "asc" : "desc";
     }

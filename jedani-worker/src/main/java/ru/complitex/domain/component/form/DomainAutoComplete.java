@@ -14,6 +14,7 @@ import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.mapper.DomainMapper;
+import ru.complitex.domain.mapper.EntityAttributeMapper;
 import ru.complitex.domain.util.Locales;
 
 import javax.inject.Inject;
@@ -29,15 +30,20 @@ public class DomainAutoComplete extends Panel{
     private final static Attribute ATTRIBUTE = new Attribute();
 
     @Inject
-    private DomainMapper domainMapper;
+    private transient DomainMapper domainMapper;
 
-    public DomainAutoComplete(String id, String entityName, EntityAttribute entityAttribute, IModel<Long> model) {
+    @Inject
+    private transient EntityAttributeMapper entityAttributeMapper;
+
+    public DomainAutoComplete(String id, String entityName, Long entityAttributeId, IModel<Long> model) {
         super(id);
 
         HiddenField inputId = new HiddenField<>("inputId", model, Long.class);
         inputId.setConvertEmptyInputStringToNull(true);
         inputId.setOutputMarkupId(true);
         add(inputId);
+
+        EntityAttribute entityAttribute = entityAttributeMapper.getEntityAttribute(entityName, entityAttributeId);
 
         AutoCompleteTextField input = new AutoCompleteTextField<Attribute>("input",
                 new Model<Attribute>(){
@@ -48,7 +54,7 @@ public class DomainAutoComplete extends Panel{
                         }
 
                         return domainMapper.getDomain(entityName, model.getObject())
-                                .getAttribute(entityAttribute.getEntityAttributeId());
+                                .getAttribute(entityAttributeId);
                     }
 
                     @Override
@@ -78,14 +84,16 @@ public class DomainAutoComplete extends Panel{
                     protected CharSequence getOnSelectJavaScriptExpression(Attribute item) {
                         return "$('#" + inputId.getMarkupId() + "').val('" + item.getObjectId() + "'); input";
                     }
-                }, new AutoCompleteSettings().setAdjustInputWidth(false)) {
+                }, new AutoCompleteSettings().setAdjustInputWidth(true)) {
             @Override
             protected Iterator<Attribute> getChoices(String input) {
                 Domain domain = new Domain(entityName);
-                domain.getOrCreateAttribute(1L).setText(input); //todo def attribute
+                domain.getOrCreateAttribute(entityAttributeId).setText(input); //todo def attribute
 
-                return domainMapper.getDomains(FilterWrapper.of(domain)).stream() //todo opt load attribute
-                        .map(d -> d.getAttribute(entityAttribute.getEntityAttributeId()))
+                return domainMapper.getDomains(FilterWrapper.of(domain).limit(0L, 10L)
+                        .sort("value", entityAttributeId).asc())
+                        .stream() //todo opt load attribute
+                        .map(d -> d.getAttribute(entityAttributeId))
                         .collect(Collectors.toList())
                         .iterator();
             }

@@ -56,7 +56,7 @@ public abstract class DomainColumn extends AbstractDomainColumn {
                 Entity entity = getEntityMapper().getEntity(entityAttribute.getReferenceId());
 
                 return new DomainAutoComplete(componentId, entity.getName(),
-                        entity.getEntityAttribute(1L),
+                        1L,
                         new IModel<Long>() { //todo number model
                             @Override
                             public Long getObject() {
