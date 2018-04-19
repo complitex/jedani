@@ -32,6 +32,11 @@ body {
     }
 }
 
+.sidebar-nav{
+    padding-right: 0;
+    padding-left: 0;
+}
+
 .sidebar-nav .metismenu ul a {
     padding-left: 30px;
 }
@@ -79,6 +84,10 @@ li.disabled a, li.disabled span{
 .wicket-aa ul li.selected {
     color: #fff;
     background-color: rgb(30, 144, 255);
+}
+
+.form-control-info{
+    height: auto;
 }
 
 /* Sidebar navigation */

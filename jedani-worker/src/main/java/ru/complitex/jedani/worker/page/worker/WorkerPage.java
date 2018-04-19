@@ -1,7 +1,9 @@
 package ru.complitex.jedani.worker.page.worker;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Strings;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -44,6 +46,7 @@ import ru.complitex.user.entity.User;
 import ru.complitex.user.mapper.UserMapper;
 
 import javax.inject.Inject;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -72,8 +75,6 @@ public class WorkerPage extends BasePage{
 
     public WorkerPage(PageParameters parameters) {
         Long objectId = parameters.get("id").toOptionalLong();
-
-        //todo dev worker page
 
         Domain worker = objectId != null ? domainMapper.getDomain("worker", objectId) : new Worker();
 
@@ -146,16 +147,38 @@ public class WorkerPage extends BasePage{
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
         Date registrationDate = worker.getDate(INVOLVED_AT);
-
         form.add(new Label("registrationDate", registrationDate != null ? dateFormat.format(registrationDate) : ""));
 
-        //todo position
-        //todo regions
-        //todo login password
-        //todo user group
-        //todo month payment
+        //Manager
 
-        //todo subworkers
+        String managerFio = "";
+        String managerPhones = "";
+        String managerEmail = "";
+
+        String ancestry = worker.getText(Worker.ANCESTRY);
+
+        if (!Strings.isNullOrEmpty(ancestry)) {
+            Domain manager = domainMapper.getDomainByExternalId("worker",
+                    ancestry.substring(Math.max(ancestry.lastIndexOf('/') + 1, 0)));
+
+            managerFio = domainMapper.getDomain("last_name", manager.getAttribute(Worker.LAST_NAME).getNumber()).getValueText(LastName.NAME, getLocale()) + " " +
+                    domainMapper.getDomain("first_name", manager.getAttribute(Worker.FIRST_NAME).getNumber()).getValueText(FirstName.NAME, getLocale()) + " " +
+                    domainMapper.getDomain("middle_name", manager.getAttribute(Worker.MIDDLE_NAME).getNumber()).getValueText(MiddleName.NAME, getLocale());
+
+            try {
+                List<String> list = new ObjectMapper().readValue(manager.getJson(Worker.PHONE), new TypeReference<List<String>>(){});
+                managerPhones = String.join(", ", list);
+            } catch (IOException e) {
+                log.error("error parse phones ", e);
+            }
+
+            managerEmail = manager.getText(Worker.EMAIL);
+        }
+
+        form.add(new Label("managerFio", managerFio));
+        form.add(new Label("managerPhones", managerPhones));
+        form.add(new Label("managerEmail", managerEmail));
+
 
         form.add(new AjaxButton("save") {
             @Override
