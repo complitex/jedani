@@ -84,7 +84,7 @@ public class DomainAutoComplete extends Panel{
                     protected CharSequence getOnSelectJavaScriptExpression(Attribute item) {
                         return "$('#" + inputId.getMarkupId() + "').val('" + item.getObjectId() + "'); input";
                     }
-                }, new AutoCompleteSettings().setAdjustInputWidth(true)) {
+                }, new AutoCompleteSettings().setAdjustInputWidth(true).setShowListOnFocusGain(true).setPreselect(true)) {
             @Override
             protected Iterator<Attribute> getChoices(String input) {
                 Domain domain = new Domain(entityName);
