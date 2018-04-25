@@ -140,7 +140,7 @@ public class ImportPage extends BasePage{
 
                     ImportService.Status status =
                             importService.importWorkers(cityUploadField.getFileUpload().getInputStream(),
-                                    p -> broadcaster.broadcastAll(getApplication(), new PushMessage((int)(p*100) + "%")));
+                                    p -> broadcaster.broadcastAll(getApplication(), new PushMessage(p)));
 
                     info.setDefaultModelObject("");
                     target.add(info);

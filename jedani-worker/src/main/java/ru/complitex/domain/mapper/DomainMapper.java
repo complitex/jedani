@@ -61,7 +61,9 @@ public class DomainMapper {
                 attributeMapper.insertAttribute(a, date);
             }else{
                 boolean update = !Objects.equals(a.getText(), dbAttribute.getText()) ||
-                        !Objects.equals(a.getNumber(), dbAttribute.getNumber());
+                        !Objects.equals(a.getNumber(), dbAttribute.getNumber()) ||
+                        !Objects.equals(a.getJson(), dbAttribute.getJson()) ||
+                        !Objects.equals(a.getDate(), dbAttribute.getDate());
 
                 if (!update){
                     if (a.getValues() != null && dbAttribute.getValues() != null){
@@ -86,6 +88,8 @@ public class DomainMapper {
                 attributeMapper.archiveAttribute(a, date);
             }
         });
+
+        sqlSession.update("updateDomain", domain);
     }
 
     public Boolean hasDomain(Domain domain){

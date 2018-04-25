@@ -34,8 +34,8 @@
     <select id="selectDomain" parameterType="ru.complitex.domain.entity.Domain" resultMap="domainResultMap">
         select '${entityName}' entity_name, d.* from ${entityName} d
         <where>
-            <if test="parentId != null">and d.parent_id = #{parentId} and `status` = 1</if>
-            <if test="objectId != null">and d.object_id = #{objectId} and `status` = 1</if>
+            <if test="parentId != null">and d.parent_id = #{parentId} and d.`end_date` is null</if>
+            <if test="objectId != null">and d.object_id = #{objectId} and d.`end_date` is null</if>
             <if test="externalId != null">and d.external_id = #{externalId}</if>
         </where>
     </select>
@@ -137,6 +137,10 @@
     <select id="selectDomainsCount" parameterType="ru.complitex.common.entity.FilterWrapper" resultType="long">
         select count(distinct d.object_id) <include refid="selectDomainsFromWhere"/>
     </select>
+
+    <update id="updateDomain" parameterType="ru.complitex.domain.entity.Domain">
+        update ${entityName} set `status` = #{status}
+    </update>
 
 
 </mapper>

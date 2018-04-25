@@ -147,7 +147,7 @@ public class ImportService {
         return status;
     }
 
-    public Status importWorkers(InputStream inputStream, Consumer<Double> listener){
+    public Status importWorkers(InputStream inputStream, Consumer<String> listener){
         Status status = new Status();
 
         List<Worker> workers = new ArrayList<>();
@@ -235,10 +235,10 @@ public class ImportService {
                         insertUserProfile(userMap.get(p.getExternalId()), p);
                         ++status.count;
 
-                        listener.accept((double)status.count/ workers.size());
+                        listener.accept(status.count*100/ workers.size() + "%");
                     });
 
-            updateWorkerPath();
+            updateWorkerPath(listener);
         }catch (Exception e){
             log.error("error import users", e);
 
@@ -248,9 +248,10 @@ public class ImportService {
         return status;
     }
 
-    private void updateWorkerPath(){
+    private void updateWorkerPath(Consumer<String> listener){
         domainMapper.getDomains(FilterWrapper.of(new Domain("worker").setStatus(EDIT))).forEach(w -> {
             w.setText(Worker.FULL_ANCESTRY_PATH, Arrays.stream(w.getText(Worker.FULL_ANCESTRY_PATH).split("/"))
+                    .filter(p -> !p.isEmpty())
                     .map(p -> {
                         Domain d = domainMapper.getDomainByExternalId("worker", p);
 
@@ -263,6 +264,7 @@ public class ImportService {
                     .collect(Collectors.joining("/")));
 
             w.setText(Worker.ANCESTRY, Arrays.stream(w.getText(Worker.ANCESTRY).split("/"))
+                    .filter(p -> !p.isEmpty())
                     .map(p -> {
                         Domain d = domainMapper.getDomainByExternalId("worker", p);
 
@@ -277,6 +279,8 @@ public class ImportService {
             w.setStatus(ACTIVE);
 
             domainMapper.updateDomain(w);
+
+            listener.accept(w.getText(Worker.FULL_ANCESTRY_PATH));
         });
     }
 
