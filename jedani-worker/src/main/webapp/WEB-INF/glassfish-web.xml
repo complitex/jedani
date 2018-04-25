@@ -8,5 +8,11 @@
     <security-role-mapping>
         <role-name>AUTHORIZED</role-name>
         <group-name>AUTHORIZED</group-name>
+        <group-name>ADMINISTRATORS</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>ADMINISTRATORS</role-name>
+        <group-name>ADMINISTRATORS</group-name>
     </security-role-mapping>
 </glassfish-web-app>

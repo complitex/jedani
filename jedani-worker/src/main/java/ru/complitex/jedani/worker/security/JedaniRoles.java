@@ -6,4 +6,5 @@ package ru.complitex.jedani.worker.security;
  */
 public class JedaniRoles {
     public static final String AUTHORIZED = "AUTHORIZED";
+    public static final String ADMINISTRATORS = "ADMINISTRATORS";
 }

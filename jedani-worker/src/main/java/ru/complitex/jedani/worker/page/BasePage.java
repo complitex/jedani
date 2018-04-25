@@ -9,6 +9,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.request.cycle.RequestCycle;
 import ru.complitex.address.page.CityListPage;
 import ru.complitex.address.page.CityTypeListPage;
 import ru.complitex.address.page.CountryListPage;
@@ -88,5 +89,7 @@ public class BasePage extends WebPage{
         response.render(JavaScriptHeaderItem.forReference(JedaniJsResourceReference.INSTANCE));
     }
 
-
+    protected boolean isAdmin(){
+        return ((HttpServletRequest)RequestCycle.get().getRequest().getContainerRequest()).isUserInRole(JedaniRoles.ADMINISTRATORS);
+    }
 }

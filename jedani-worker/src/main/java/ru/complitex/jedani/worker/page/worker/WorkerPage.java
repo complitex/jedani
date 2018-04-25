@@ -82,6 +82,9 @@ public class WorkerPage extends BasePage{
             throw new WicketRuntimeException("worker not found");
         }
 
+        //todo is admin
+
+
         FeedbackPanel feedback = new NotificationPanel("feedback");
         feedback.setOutputMarkupId(true);
         add(feedback);

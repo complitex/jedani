@@ -151,6 +151,7 @@ INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `tex
 
 INSERT INTO `user`(login, password) value ('admin', sha2('admin', 256));
 INSERT INTO `user_group` (login, name) value ('admin', 'AUTHORIZED');
+INSERT INTO `user_group` (login, name) value ('admin', 'ADMINISTRATORS');
 
 
 

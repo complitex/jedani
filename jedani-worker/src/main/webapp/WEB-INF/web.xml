@@ -27,6 +27,9 @@
     <security-role>
         <role-name>AUTHORIZED</role-name>
     </security-role>
+    <security-role>
+        <role-name>ADMINISTRATORS</role-name>
+    </security-role>
 
     <login-config>
         <auth-method>FORM</auth-method>
