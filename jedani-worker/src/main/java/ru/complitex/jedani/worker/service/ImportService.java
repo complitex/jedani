@@ -223,6 +223,8 @@ public class ImportService {
                 worker.setText(Worker.OLD_CHILD_ID, columns[25]);
 
                 workers.add(worker);
+
+                //todo change path
             }
 
             workers.stream()

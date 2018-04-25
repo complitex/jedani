@@ -89,7 +89,15 @@ public class BasePage extends WebPage{
         response.render(JavaScriptHeaderItem.forReference(JedaniJsResourceReference.INSTANCE));
     }
 
+    protected String getLogin(){
+        return getHttpServletRequest().getUserPrincipal().getName();
+    }
+
     protected boolean isAdmin(){
-        return ((HttpServletRequest)RequestCycle.get().getRequest().getContainerRequest()).isUserInRole(JedaniRoles.ADMINISTRATORS);
+        return getHttpServletRequest().isUserInRole(JedaniRoles.ADMINISTRATORS);
+    }
+
+    private HttpServletRequest getHttpServletRequest(){
+        return ((HttpServletRequest)RequestCycle.get().getRequest().getContainerRequest());
     }
 }

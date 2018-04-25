@@ -20,4 +20,7 @@
         select * from `user` where id = #{id}
     </select>
 
+    <select id="selectUserByLogin" parameterType="string" resultMap="userResultMap">
+        select * from `user` where login = #{login}
+    </select>
 </mapper>

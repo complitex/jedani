@@ -8,6 +8,7 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
 import org.apache.wicket.markup.html.basic.Label;
@@ -39,6 +40,7 @@ import ru.complitex.domain.mapper.DomainMapper;
 import ru.complitex.domain.mapper.EntityMapper;
 import ru.complitex.jedani.worker.entity.Worker;
 import ru.complitex.jedani.worker.page.BasePage;
+import ru.complitex.jedani.worker.security.JedaniRoles;
 import ru.complitex.name.entity.FirstName;
 import ru.complitex.name.entity.LastName;
 import ru.complitex.name.entity.MiddleName;
@@ -61,6 +63,8 @@ import static ru.complitex.jedani.worker.entity.Worker.*;
  * @author Anatoly A. Ivanov
  * 22.12.2017 5:57
  */
+
+@AuthorizeInstantiation(JedaniRoles.AUTHORIZED)
 public class WorkerPage extends BasePage{
     private Logger log = LoggerFactory.getLogger(Worker.class);
 
@@ -75,6 +79,21 @@ public class WorkerPage extends BasePage{
 
     public WorkerPage(PageParameters parameters) {
         Long objectId = parameters.get("id").toOptionalLong();
+
+        boolean admin = isAdmin();
+
+        User currentUser = userMapper.getUser(getLogin());
+        Domain currentWorker = domainMapper.getDomainByParentId("worker", currentUser.getId());
+
+        if (!admin){
+            if (currentWorker != null){
+
+            }else{
+                throw new WicketRuntimeException("current worker is null");
+            }
+        }
+
+
 
         Domain worker = objectId != null ? domainMapper.getDomain("worker", objectId) : new Worker();
 

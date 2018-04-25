@@ -24,4 +24,8 @@ public class UserMapper {
     public User getUser(Long id){
         return sqlSession.selectOne("selectUser", id);
     }
+
+    public User getUser(String login){
+        return sqlSession.selectOne("selectUserByLogin", login);
+    }
 }
