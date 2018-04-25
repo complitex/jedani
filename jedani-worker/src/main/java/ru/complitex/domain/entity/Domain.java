@@ -215,8 +215,10 @@ public class Domain implements Serializable{
         return status;
     }
 
-    public void setStatus(Status status) {
+    public Domain setStatus(Status status) {
         this.status = status;
+
+        return this;
     }
 
     public Long getPermissionId() {

@@ -96,7 +96,18 @@
                 and (a.entity_attribute_id = #{map.entityAttributeId} and a.text like concat ('%', #{map.endWith}))
             </if>
 
-            and d.status = 1 and a.status = 1
+            <choose>
+                <when test="object.status != null">
+                    and d.status = #{object.status} and a.status = 1
+                </when>
+                <otherwise>
+                    and d.status = 1 and a.status = 1
+                </otherwise>
+            </choose>
+
+
+
+
         </where>
     </sql>
 

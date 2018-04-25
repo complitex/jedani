@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.complitex.address.entity.City;
 import ru.complitex.address.entity.Region;
+import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.mapper.DomainMapper;
 import ru.complitex.domain.util.Locales;
@@ -23,11 +24,12 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+
+import static ru.complitex.domain.entity.Status.ACTIVE;
+import static ru.complitex.domain.entity.Status.EDIT;
 
 /**
  * @author Anatoly A. Ivanov
@@ -224,7 +226,7 @@ public class ImportService {
 
                 workers.add(worker);
 
-                //todo change path
+                worker.setStatus(EDIT);
             }
 
             workers.stream()
@@ -235,6 +237,8 @@ public class ImportService {
 
                         listener.accept((double)status.count/ workers.size());
                     });
+
+            updateWorkerPath();
         }catch (Exception e){
             log.error("error import users", e);
 
@@ -242,6 +246,38 @@ public class ImportService {
         }
 
         return status;
+    }
+
+    private void updateWorkerPath(){
+        domainMapper.getDomains(FilterWrapper.of(new Domain("worker").setStatus(EDIT))).forEach(w -> {
+            w.setText(Worker.FULL_ANCESTRY_PATH, Arrays.stream(w.getText(Worker.FULL_ANCESTRY_PATH).split("/"))
+                    .map(p -> {
+                        Domain d = domainMapper.getDomainByExternalId("worker", p);
+
+                        if (d == null){
+                            throw new RuntimeException("worker not found by external id" + p);
+                        }
+
+                        return d.getObjectId().toString();
+                    })
+                    .collect(Collectors.joining("/")));
+
+            w.setText(Worker.ANCESTRY, Arrays.stream(w.getText(Worker.ANCESTRY).split("/"))
+                    .map(p -> {
+                        Domain d = domainMapper.getDomainByExternalId("worker", p);
+
+                        if (d == null){
+                            throw new RuntimeException("worker not found by external id" + p);
+                        }
+
+                        return d.getObjectId().toString();
+                    })
+                    .collect(Collectors.joining("/")));
+
+            w.setStatus(ACTIVE);
+
+            domainMapper.updateDomain(w);
+        });
     }
 
     @Transactional
