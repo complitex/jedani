@@ -5,7 +5,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
-import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
@@ -27,6 +26,7 @@ import ru.complitex.common.wicket.datatable.DataProvider;
 import ru.complitex.common.wicket.datatable.FilterDataTable;
 import ru.complitex.common.wicket.form.DateTextFieldFormGroup;
 import ru.complitex.common.wicket.form.TextFieldFormGroup;
+import ru.complitex.common.wicket.util.ComponentUtil;
 import ru.complitex.domain.component.datatable.DomainActionColumn;
 import ru.complitex.domain.component.datatable.DomainColumn;
 import ru.complitex.domain.component.datatable.DomainIdColumn;
@@ -39,6 +39,7 @@ import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.mapper.DomainMapper;
 import ru.complitex.domain.mapper.EntityMapper;
 import ru.complitex.jedani.worker.entity.Worker;
+import ru.complitex.jedani.worker.mapper.WorkerMapper;
 import ru.complitex.jedani.worker.page.BasePage;
 import ru.complitex.jedani.worker.security.JedaniRoles;
 import ru.complitex.name.entity.FirstName;
@@ -77,44 +78,35 @@ public class WorkerPage extends BasePage{
     @Inject
     private transient UserMapper userMapper;
 
+    @Inject
+    private transient WorkerMapper workerMapper;
+
     public WorkerPage(PageParameters parameters) {
-        Long objectId = parameters.get("id").toOptionalLong();
+        Domain worker;
 
-        boolean admin = isAdmin();
+        if (!parameters.get("new").isNull()){
+            worker = new Worker();
 
-        User currentUser = userMapper.getUser(getLogin());
-        Domain currentWorker = domainMapper.getDomainByParentId("worker", currentUser.getId());
+            worker.setText(J_ID, workerMapper.getNewJId());
+        }else{
+            Long id = parameters.get("id").toOptionalLong();
 
-        if (!admin){
-            if (currentWorker != null){
-
+            if (id != null){
+                worker = domainMapper.getDomain("worker", id);
             }else{
-                throw new WicketRuntimeException("current worker is null");
+                worker = getCurrentWorker();
             }
         }
-
-
-
-        Domain worker = objectId != null ? domainMapper.getDomain("worker", objectId) : new Worker();
-
-        if (worker == null){
-            throw new WicketRuntimeException("worker not found");
-        }
-
-        //todo is admin
-
 
         FeedbackPanel feedback = new NotificationPanel("feedback");
         feedback.setOutputMarkupId(true);
         add(feedback);
 
-        String[] levels = worker.getText(Worker.FULL_ANCESTRY_PATH).split("/");
-
         //Data provider
 
-        DataProvider<Domain> dataProvider = new DataProvider<Domain>(FilterWrapper.of(new Domain("worker")) //todo generic
+        DataProvider<Domain> dataProvider = new DataProvider<Domain>(FilterWrapper.of(new Domain("worker"))
                 .add("entityAttributeId", Worker.ANCESTRY)
-                .add("endWith", "/" + levels[levels.length - 1])) {
+                .add("endWith", "/" + worker.getObjectId())) {
             @Override
             public Iterator<? extends Domain> iterator(long first, long count) {
                 FilterWrapper<Domain> filterWrapper = getFilterState().limit(first, count);
@@ -142,7 +134,24 @@ public class WorkerPage extends BasePage{
         form.add(new DomainAutoCompleteFormGroup("firstName", "first_name", FirstName.NAME, new PropertyModel<>(worker.getAttribute(Worker.FIRST_NAME), "number")));
         form.add(new DomainAutoCompleteFormGroup("middleName", "middle_name", MiddleName.NAME, new PropertyModel<>(worker.getAttribute(Worker.MIDDLE_NAME), "number")));
         form.add(new TextFieldFormGroup<>("managerRankId", new PropertyModel<>(worker.getAttribute(Worker.MANAGER_RANK_ID), "text")));
-        form.add(new TextFieldFormGroup<>("jId", new PropertyModel<>(worker.getAttribute(Worker.J_ID), "text")));
+
+
+
+        TextFieldFormGroup jId = new TextFieldFormGroup<>("jId", new PropertyModel<>(worker.getAttribute(Worker.J_ID), "text"));
+        jId.setRequired(true);
+
+        if (worker.getObjectId() == null) {
+            jId.onUpdate(target -> {
+                if (workerMapper.isExistJId(jId.getTextField().getInput())){
+                    jId.getTextField().error(getString("error_jid_exist"));
+                }
+
+                ((AjaxRequestTarget)target).add(jId);
+            });
+        }
+
+        form.add(jId);
+
         form.add(new TextFieldFormGroup<>("mkStatus", new PropertyModel<>(worker.getAttribute(Worker.MK_STATUS), "text")));
         form.add(new DateTextFieldFormGroup("birthday", new PropertyModel<>(worker.getAttribute(Worker.BIRTHDAY), "date")));
         form.add(new AttributeListFormGroup("phone", Model.of(worker.getOrCreateAttribute(Worker.PHONE))));
@@ -155,7 +164,7 @@ public class WorkerPage extends BasePage{
 
         //User
 
-        User user = userMapper.getUser(worker.getParentId());
+        User user = worker.getParentId() != null ? userMapper.getUser(worker.getParentId()) : new User();
 
         form.add(new Label("user", Model.of(user.getLogin())));
 
@@ -206,6 +215,10 @@ public class WorkerPage extends BasePage{
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
                 try {
+                    info("Сохранено");
+
+                    target.add(feedback);
+
                     log.info(new ObjectMapper().writer().writeValueAsString(worker));
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
@@ -215,6 +228,14 @@ public class WorkerPage extends BasePage{
             @Override
             protected void onError(AjaxRequestTarget target) {
                 target.add(feedback);
+
+                form.visitFormComponents((object, visit) -> {
+                    if (object.hasErrorMessage()){
+                        target.add(ComponentUtil.getAjaxParent(object));
+                    }
+                });
+
+                target.add(form);
             }
         });
 

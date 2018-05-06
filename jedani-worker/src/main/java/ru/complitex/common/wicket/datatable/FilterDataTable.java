@@ -23,7 +23,12 @@ public class FilterDataTable<T extends Serializable> extends DataTable<T, SortPr
                            FilterForm<FilterWrapper<T>> filterForm, long rowsPerPage) {
         super(id, columns, dataProvider, rowsPerPage);
 
-        addTopToolbar(new AjaxFallbackHeadersToolbar<>(this, dataProvider));
+        addTopToolbar(new AjaxFallbackHeadersToolbar<SortProperty>(this, dataProvider){
+            @Override
+            public boolean isVisible() {
+                return FilterDataTable.this.getRowCount() > 0;
+            }
+        });
         addTopToolbar(new FilterToolbar(this, filterForm){
             @Override
             protected void onBeforeRender() {
@@ -31,6 +36,11 @@ public class FilterDataTable<T extends Serializable> extends DataTable<T, SortPr
 
                 visitChildren(TextField.class, (component, visit) ->
                         component.add(new AttributeModifier("class", "form-control")));
+            }
+
+            @Override
+            public boolean isVisible() {
+                return FilterDataTable.this.getRowCount() > 0;
             }
         });
         addBottomToolbar(new BootstrapNavigationToolbar(this));

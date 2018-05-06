@@ -139,9 +139,13 @@ public class AttributeSelectList extends FormComponentPanel<Attribute> {
 
         Attribute attribute = getModelObject();
 
-        attribute.setJson(array.toString());
+        if (attribute != null){
+            attribute.setJson(array.toString());
 
-        setConvertedInput(attribute);
+            setConvertedInput(attribute);
+        }else{
+            setConvertedInput(null);
+        }
     }
 
     public IModel<List<Long>> getListModel() {

@@ -25,4 +25,9 @@ public class WorkerListPage extends DomainListPage{
         return Stream.of(J_ID, CREATED_AT, FIRST_NAME, MIDDLE_NAME, LAST_NAME, BIRTHDAY, PHONE, EMAIL, CITY_ID) //todo regions
                 .map(entity::getEntityAttribute).collect(Collectors.toList());
     }
+
+    @Override
+    protected boolean isShowHeader() {
+        return false;
+    }
 }

@@ -9,6 +9,7 @@ import de.agilecoders.wicket.themes.markup.html.google.GoogleTheme;
 import org.apache.wicket.Page;
 import org.apache.wicket.Session;
 import org.apache.wicket.cdi.CdiConfiguration;
+import org.apache.wicket.cdi.ConversationPropagation;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
 import org.apache.wicket.request.Request;
@@ -37,7 +38,7 @@ public class JedaniWebApplication extends WebApplication{
 
     @Override
     protected void init() {
-        new CdiConfiguration().configure(this);
+        new CdiConfiguration().setPropagation(ConversationPropagation.ALL).configure(this);
 
         configureBootstrap();
         configureMount();

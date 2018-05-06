@@ -1,11 +1,14 @@
 package ru.complitex.domain.page;
 
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
 import ru.complitex.common.wicket.datatable.DataProvider;
@@ -32,19 +35,17 @@ import java.util.List;
  */
 public class DomainListPage extends BasePage{
     @Inject
-    private transient EntityMapper entityMapper;
+    private EntityMapper entityMapper;
 
     @Inject
-    private transient DomainMapper domainMapper;
-
-    private String parentEntityName;
-    private Long parentEntityAttributeId;
+    private DomainMapper domainMapper;
 
     public DomainListPage(String entityName, String parentEntityName, Long parentEntityAttributeId,
                           Class<? extends WebPage> editPageClass) {
         Entity entity = entityMapper.getEntity(entityName);
 
-        add(new Label("header", entity.getValue() != null ? entity.getValue().getText() : "[" + entityName + "]"));
+        add(new Label("header", entity.getValue() != null ? entity.getValue().getText() : "[" + entityName + "]")
+                .setVisible(isShowHeader()));
 
         FeedbackPanel feedback = new NotificationPanel("feedback");
         feedback.setOutputMarkupId(true);
@@ -101,6 +102,13 @@ public class DomainListPage extends BasePage{
 
         FilterDataTable<Domain> table = new FilterDataTable<>("table", columns, dataProvider, filterForm, 10);
         filterForm.add(table);
+
+        add(new AjaxLink<Void>("add") {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                setResponsePage(editPageClass, new PageParameters().add("new", ""));
+            }
+        });
     }
 
     public DomainListPage(String entityName, Class<? extends WebPage> editPageClass) {
@@ -109,5 +117,9 @@ public class DomainListPage extends BasePage{
 
     protected List<EntityAttribute> getEntityAttributes(Entity entity){
         return entity.getAttributes();
+    }
+
+    protected boolean isShowHeader(){
+        return true;
     }
 }

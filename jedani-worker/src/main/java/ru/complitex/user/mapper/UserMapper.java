@@ -4,14 +4,15 @@ import org.apache.ibatis.session.SqlSession;
 import ru.complitex.user.entity.User;
 
 import javax.inject.Inject;
+import java.io.Serializable;
 
 /**
  * @author Anatoly A. Ivanov
  * 17.12.2017 13:03
  */
-public class UserMapper {
+public class UserMapper implements Serializable {
     @Inject
-    private SqlSession sqlSession;
+    private transient SqlSession sqlSession;
 
     public void insertUser(User user){
         sqlSession.insert("insertUser", user);

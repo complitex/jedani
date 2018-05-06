@@ -12,7 +12,7 @@ import javax.inject.Inject;
  */
 public class EntityAttributeMapper {
     @Inject
-    private SqlSession sqlSession;
+    private transient SqlSession sqlSession;
 
     public EntityAttribute getEntityAttribute(String entityName, Long entityAttributeId){
         return sqlSession.selectOne("selectEntityAttribute", MapUtil.of("entityName", entityName,

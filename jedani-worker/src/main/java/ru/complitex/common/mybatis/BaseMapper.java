@@ -1,0 +1,23 @@
+package ru.complitex.common.mybatis;
+
+import org.apache.ibatis.session.SqlSession;
+import org.apache.wicket.cdi.NonContextual;
+
+import javax.inject.Inject;
+
+/**
+ * @author Anatoly A. Ivanov
+ * 07.05.2018 0:18
+ */
+public abstract class BaseMapper {
+    @Inject
+    private transient SqlSession sqlSession;
+
+    protected SqlSession sqlSession(){
+        if (sqlSession == null){
+            NonContextual.of(BaseMapper.class).inject(this);
+        }
+
+        return sqlSession;
+    }
+}

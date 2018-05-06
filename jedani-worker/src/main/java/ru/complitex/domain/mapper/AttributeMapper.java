@@ -5,18 +5,19 @@ import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Status;
 
 import javax.inject.Inject;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * @author Anatoly A. Ivanov
  * 30.11.2017 16:17
  */
-public class AttributeMapper {
+public class AttributeMapper implements Serializable {
     @Inject
-    private SqlSession sqlSession;
+    private transient SqlSession sqlSession;
 
     @Inject
-    private ValueMapper valueMapper;
+    private transient ValueMapper valueMapper;
 
     public void insertAttribute(Attribute attribute, Date startDate){
         attribute.setStartDate(startDate);

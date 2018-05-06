@@ -37,7 +37,9 @@ import javax.servlet.http.HttpServletRequest;
 @AuthorizeInstantiation(JedaniRoles.AUTHORIZED)
 public class BasePage extends WebPage{
     @Inject
-    private transient WorkerService workerService;
+    private WorkerService workerService;
+
+    private Worker currentWorker;
 
     protected BasePage() {
         add(new BookmarkablePageLink<>("home", HomePage.class));
@@ -54,16 +56,16 @@ public class BasePage extends WebPage{
 
         String login = ((HttpServletRequest)getRequestCycle().getRequest().getContainerRequest()).getUserPrincipal().getName();
 
-        Worker worker = workerService.getWorker(login);
+        currentWorker = workerService.getWorker(login);
 
         String fio = "";
         String jid = "";
-        if (worker != null){
-            fio = worker.getText(Worker.LAST_NAME) + " " +
-                    worker.getText(Worker.MIDDLE_NAME) + " " +
-                    worker.getText(Worker.FIRST_NAME) + " ";
+        if (currentWorker != null){
+            fio = currentWorker.getText(Worker.LAST_NAME) + " " +
+                    currentWorker.getText(Worker.MIDDLE_NAME) + " " +
+                    currentWorker.getText(Worker.FIRST_NAME) + " ";
 
-            jid = worker.getText(Worker.J_ID);
+            jid = currentWorker.getText(Worker.J_ID);
         }
 
         add(new Label("fio", Model.of(fio)));
@@ -99,5 +101,9 @@ public class BasePage extends WebPage{
 
     private HttpServletRequest getHttpServletRequest(){
         return ((HttpServletRequest)RequestCycle.get().getRequest().getContainerRequest());
+    }
+
+    public Worker getCurrentWorker() {
+        return currentWorker;
     }
 }

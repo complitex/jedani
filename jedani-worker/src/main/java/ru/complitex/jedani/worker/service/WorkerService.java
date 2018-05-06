@@ -3,19 +3,17 @@ package ru.complitex.jedani.worker.service;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.mapper.DomainMapper;
 import ru.complitex.jedani.worker.entity.Worker;
-import ru.complitex.jedani.worker.mapper.WorkerMapper;
 import ru.complitex.user.mapper.UserMapper;
 
 import javax.inject.Inject;
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * @author Anatoly A. Ivanov
  * 26.03.2018 15:19
  */
-public class WorkerService {
-    @Inject
-    private WorkerMapper workerMapper;
+public class WorkerService implements Serializable {
 
     @Inject
     private UserMapper userMapper;

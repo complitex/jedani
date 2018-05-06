@@ -8,6 +8,7 @@ import ru.complitex.domain.entity.Status;
 import ru.complitex.domain.entity.Value;
 
 import javax.inject.Inject;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -16,9 +17,9 @@ import java.util.Objects;
  * @author Anatoly A. Ivanov
  * 29.11.2017 17:54
  */
-public class DomainMapper {
+public class DomainMapper implements Serializable {
     @Inject
-    private SqlSession sqlSession;
+    private transient SqlSession sqlSession;
 
     @Inject
     private SequenceMapper sequenceMapper;

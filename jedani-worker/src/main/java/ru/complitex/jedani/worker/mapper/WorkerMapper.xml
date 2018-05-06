@@ -5,5 +5,12 @@
                extends="ru.complitex.domain.mapper.DomainMapper.domainResultMap">
     </resultMap>
 
+    <select id="selectMaxJId" resultType="string">
+        select max(lpad(`text`, 6, '0')) from worker_attribute where entity_attribute_id = 1
+    </select>
+
+    <select id="selectIsExistJId" resultType="boolean">
+        select count(*) > 0 from worker_attribute where entity_attribute_id = 1 and `text` = #{jid}
+    </select>
 
 </mapper>

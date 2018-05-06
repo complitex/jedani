@@ -3,6 +3,7 @@ package ru.complitex.common.wicket.application;
 import org.apache.wicket.protocol.http.WebSession;
 import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
 import org.apache.wicket.request.cycle.RequestCycle;
+import ru.complitex.domain.util.Locales;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -14,6 +15,8 @@ import javax.servlet.http.HttpServletRequest;
 public class ServletWebSession extends WebSession{
     public ServletWebSession(ServletWebRequest request) {
         super(request);
+
+        setLocale(Locales.RU);
     }
 
     @Override

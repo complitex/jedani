@@ -7,13 +7,18 @@
 <body>
 <wicket:extend>
     <div>
-        <div><h3 wicket:id="header"></h3></div>
+        <h3 wicket:id="header"></h3>
+        <br/>
         <div>
             <div wicket:id="feedback"></div>
 
             <form wicket:id="form">
                 <table wicket:id="table" class="table table-hover"></table>
             </form>
+
+            <div>
+                <button wicket:id="add" class="btn btn-primary">Создать</button>
+            </div>
         </div>
     </div>
 </wicket:extend>
