@@ -2,6 +2,8 @@ package ru.complitex.jedani.worker.entity;
 
 import ru.complitex.domain.entity.Domain;
 
+import java.util.Date;
+
 /**
  * @author Anatoly A. Ivanov
  * 17.12.2017 3:29
@@ -14,8 +16,8 @@ public class Worker extends Domain{
     public static final long MIDDLE_NAME = 3;
     public static final long LAST_NAME = 4;
     public static final long BIRTHDAY = 5;
-    public static final long REGION_ID = 6;
-    public static final long CITY_ID = 7;
+    public static final long REGION_IDS = 6;
+    public static final long CITY_IDS = 7;
     public static final long PHONE = 8;
     public static final long EMAIL = 9;
     public static final long CONTACT_INFO = 10;
@@ -41,5 +43,17 @@ public class Worker extends Domain{
 
     public Worker(Domain domain) {
         super(domain, "worker");
+    }
+
+    public void init(){
+        setDate(INVOLVED_AT, new Date());
+        setNumber(LAST_NAME, null);
+        setNumber(FIRST_NAME, null);
+        setNumber(MIDDLE_NAME, null);
+        setDate(BIRTHDAY, null);
+        setJson(PHONE, null);
+        setText(EMAIL, null);
+        setJson(REGION_IDS, null);
+        setJson(CITY_IDS, null);
     }
 }

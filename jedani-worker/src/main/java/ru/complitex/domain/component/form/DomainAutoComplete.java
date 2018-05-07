@@ -26,14 +26,14 @@ import java.util.stream.Collectors;
  * @author Anatoly A. Ivanov
  * 22.12.2017 12:45
  */
-public class DomainAutoComplete extends Panel{
-    private final static Attribute ATTRIBUTE = new Attribute();
+public class DomainAutoComplete extends Panel {
+    @Inject
+    private DomainMapper domainMapper;
 
     @Inject
-    private transient DomainMapper domainMapper;
+    private EntityAttributeMapper entityAttributeMapper;
 
-    @Inject
-    private transient EntityAttributeMapper entityAttributeMapper;
+    private AutoCompleteTextField autoCompleteTextField;
 
     public DomainAutoComplete(String id, String entityName, Long entityAttributeId, IModel<Long> model) {
         super(id);
@@ -45,25 +45,14 @@ public class DomainAutoComplete extends Panel{
 
         EntityAttribute entityAttribute = entityAttributeMapper.getEntityAttribute(entityName, entityAttributeId);
 
-        AutoCompleteTextField input = new AutoCompleteTextField<Attribute>("input",
-                new Model<Attribute>(){
-                    @Override
-                    public Attribute getObject() {
-                        if (model.getObject() == null){
-                            return null;
-                        }
+        IModel<Attribute> attributeModel = new Model<>();
 
-                        return domainMapper.getDomain(entityName, model.getObject())
-                                .getAttribute(entityAttributeId);
-                    }
+        if (model.getObject() != null){
+            attributeModel.setObject(domainMapper.getDomain(entityName, model.getObject())
+                    .getAttribute(entityAttributeId));
+        }
 
-                    @Override
-                    public void setObject(Attribute attribute) {
-                        if (attribute == null){
-                            model.setObject(null);
-                        }
-                    }
-                }, Attribute.class,
+        autoCompleteTextField = new AutoCompleteTextField<Attribute>("input", attributeModel, Attribute.class,
                 new AbstractAutoCompleteTextRenderer<Attribute>() {
 
                     @Override
@@ -104,7 +93,29 @@ public class DomainAutoComplete extends Panel{
                     return new IConverter<Attribute>() {
                         @Override
                         public Attribute convertToObject(String s, Locale locale) throws ConversionException {
-                            return s != null ? ATTRIBUTE : null;
+                            if (s == null || s.isEmpty()){
+                                return null;
+                            }
+
+                            Attribute attribute = new Attribute(entityAttributeId);
+
+                            switch (entityAttribute.getValueType()){
+                                case VALUE:
+                                     attribute.setValue(s, Locales.getLocaleId(locale));
+                                     break;
+                                case TEXT:
+                                    attribute.setText(s);;
+                                    break;
+                                case NUMBER:
+                                    try {
+                                        attribute.setNumber(Long.parseLong(s));
+                                    } catch (NumberFormatException e) {
+                                        //
+                                    }
+                                    break;
+                            }
+
+                            return attribute;
                         }
 
                         @Override
@@ -126,7 +137,15 @@ public class DomainAutoComplete extends Panel{
                 return super.createConverter(type);
             }
         };
-        add(input);
 
+        add(autoCompleteTextField);
     }
+
+    public AutoCompleteTextField getAutoCompleteTextField() {
+        return autoCompleteTextField;
+    }
+
+
+
+
 }

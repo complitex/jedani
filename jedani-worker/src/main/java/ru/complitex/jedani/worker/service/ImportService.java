@@ -201,11 +201,15 @@ public class ImportService {
 
                 if (columns[15] != null && !columns[15].trim().isEmpty()) {
                     Domain city = domainMapper.getDomainByExternalId("city", columns[15]);
-                    worker.setJson(Worker.CITY_ID, objectMapper.createArrayNode().add(city.getObjectId()).toString());
-                    worker.setJson(Worker.REGION_ID, objectMapper.createArrayNode().add(city.getParentId()).toString());
+                    worker.setJson(Worker.CITY_IDS, objectMapper.createArrayNode().add(city.getObjectId()).toString());
+                    worker.setJson(Worker.REGION_IDS, objectMapper.createArrayNode().add(city.getParentId()).toString());
                 }
 
-                worker.setNumber(Worker.MANAGER_RANK_ID, columns[16]);
+                try {
+                    worker.setNumber(Worker.MANAGER_RANK_ID, Long.parseLong(columns[16]));
+                } catch (NumberFormatException e) {
+                    //
+                }
 
                 if (!Strings.isNullOrEmpty(columns[17])) {
                     worker.setDate(Worker.INVOLVED_AT, dateTimeFormat.parse(columns[17]));
@@ -213,7 +217,11 @@ public class ImportService {
 
                 worker.setText(Worker.FULL_ANCESTRY_PATH, columns[18]);
                 worker.setText(Worker.DEPTH_LEVEL, columns[19]);
-                worker.setNumber(Worker.ANCESTRY_DEPTH, columns[20]);
+                try {
+                    worker.setNumber(Worker.ANCESTRY_DEPTH, Long.parseLong(columns[20]));
+                } catch (NumberFormatException e) {
+                    //
+                }
                 worker.setText(Worker.CONTACT_INFO, columns[21]);
 
                 if (!Strings.isNullOrEmpty(columns[22])) {
@@ -221,7 +229,11 @@ public class ImportService {
                 }
 
                 worker.setText(Worker.FIRED_STATUS, columns[23]);
-                worker.setNumber(Worker.OLD_PARENT_ID, columns[24]);
+                try {
+                    worker.setNumber(Worker.OLD_PARENT_ID, Long.parseLong(columns[24]));
+                } catch (NumberFormatException e) {
+                    //
+                }
                 worker.setText(Worker.OLD_CHILD_ID, columns[25]);
 
                 workers.add(worker);

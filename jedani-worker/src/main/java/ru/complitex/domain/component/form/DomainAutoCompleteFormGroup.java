@@ -10,6 +10,8 @@ import org.apache.wicket.model.ResourceModel;
  * 22.12.2017 8:03
  */
 public class DomainAutoCompleteFormGroup extends Panel{
+    private DomainAutoComplete domainAutoComplete;
+
     public DomainAutoCompleteFormGroup(String id, String entityName, Long entityAttributeId, IModel<Long> model) {
         this(id, new ResourceModel(id), entityName, entityAttributeId, model);
     }
@@ -17,9 +19,26 @@ public class DomainAutoCompleteFormGroup extends Panel{
     public DomainAutoCompleteFormGroup(String id, IModel<String> label, String entityName, Long entityAttributeId, IModel<Long> model) {
         super(id);
 
+        setOutputMarkupId(true);
+
         FormGroup group = new FormGroup("group", label);
-        group.add(new DomainAutoComplete("input", entityName, entityAttributeId, model));
+        group.add(domainAutoComplete = new DomainAutoComplete("input", entityName, entityAttributeId, model));
+        domainAutoComplete.getAutoCompleteTextField().setLabel(label);
 
         add(group);
+    }
+
+    public DomainAutoComplete getDomainAutoComplete(){
+        return domainAutoComplete;
+    }
+
+    public String getInput(){
+        return domainAutoComplete.getAutoCompleteTextField().getInput();
+    }
+
+    public DomainAutoCompleteFormGroup setRequired(boolean required){
+        domainAutoComplete.getAutoCompleteTextField().setRequired(required);
+
+        return this;
     }
 }

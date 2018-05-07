@@ -52,15 +52,10 @@ public class Domain implements Serializable{
         this.entityName = entityName;
     }
 
-    public void setText(Long entityAttributeId, String text){
+    public Domain setText(Long entityAttributeId, String text){
         getOrCreateAttribute(entityAttributeId).setText(text);
-    }
 
-    public void setNumber(Long entityAttributeId, String number){
-        setNumber(entityAttributeId, Optional.ofNullable(number)
-                .filter(s -> !s.isEmpty())
-                .map(Long::valueOf)
-                .orElse(null));
+        return this;
     }
 
     public void setNumber(Long entityAttributeId, Long number){
@@ -149,8 +144,14 @@ public class Domain implements Serializable{
         getOrCreateAttribute(entityAttributeId).setValue(value, Locales.getLocaleId(locale));
     }
 
-    public void setValue(Long entityAttributeId, String value){
+    public Domain setValue(Long entityAttributeId, String value){
         setValue(entityAttributeId, value, Locales.getSystemLocale());
+
+        return this;
+    }
+
+    public boolean hasValueText(Long entityAttributeId, String value){
+        return getAttribute(entityAttributeId).getValues().stream().anyMatch(v -> v.getText().equals(value));
     }
 
     public Map<String, String> getStringMap(Long entityAttributeId){

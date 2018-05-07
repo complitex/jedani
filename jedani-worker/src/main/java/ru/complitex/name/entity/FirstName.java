@@ -7,11 +7,13 @@ import ru.complitex.domain.entity.Domain;
  * 28.12.2017 16:34
  */
 public class FirstName extends Domain{
+    public static final String ENTITY_NAME = "first_name";
+
     public static final long ENTITY_ID = 11;
 
     public static final long NAME = 1;
 
     public FirstName() {
-        super("first_name");
+        super(ENTITY_NAME);
     }
 }

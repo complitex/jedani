@@ -82,8 +82,16 @@
 
             <foreach collection="object.attributes" item="i" separator="and">
                 <if test="i.text != null">
-                    and (a.entity_attribute_id = #{i.entityAttributeId} and (a.text like concat('%', #{i.text}, '%') or
-                    v.text like concat('%', #{i.text}, '%')))
+                    <choose>
+                        <when test="filter == 'equal'">
+                            and (a.entity_attribute_id = #{i.entityAttributeId} and (a.text = #{i.text} or
+                                v.text = #{i.text}))
+                        </when>
+                        <otherwise>
+                            and (a.entity_attribute_id = #{i.entityAttributeId} and (a.text like concat('%', #{i.text}, '%') or
+                                v.text like concat('%', #{i.text}, '%')))
+                        </otherwise>
+                    </choose>
                 </if>
                 <!--todo number -> id-->
                 <!--todo multy attribute -->

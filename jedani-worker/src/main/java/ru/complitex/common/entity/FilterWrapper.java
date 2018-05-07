@@ -16,6 +16,8 @@ public class FilterWrapper<T extends Serializable> implements Serializable {
     private boolean ascending = false;
     private Map<String, Object> map = new HashMap<>();
 
+    private String filter;
+
     public FilterWrapper() {
     }
 
@@ -125,5 +127,15 @@ public class FilterWrapper<T extends Serializable> implements Serializable {
 
     public void setMap(Map<String, Object> map) {
         this.map = map;
+    }
+
+    public String getFilter() {
+        return filter;
+    }
+
+    public FilterWrapper<T> setFilter(String filter) {
+        this.filter = filter;
+
+        return this;
     }
 }
