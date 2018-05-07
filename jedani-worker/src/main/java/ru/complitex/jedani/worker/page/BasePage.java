@@ -15,6 +15,7 @@ import ru.complitex.address.page.CityTypeListPage;
 import ru.complitex.address.page.CountryListPage;
 import ru.complitex.address.page.RegionListPage;
 import ru.complitex.jedani.worker.entity.Worker;
+import ru.complitex.jedani.worker.mapper.WorkerMapper;
 import ru.complitex.jedani.worker.page.admin.ImportPage;
 import ru.complitex.jedani.worker.page.directory.MkStatusListPage;
 import ru.complitex.jedani.worker.page.directory.PositionListPage;
@@ -28,9 +29,13 @@ import ru.complitex.jedani.worker.service.WorkerService;
 import ru.complitex.name.page.FirstNameListPage;
 import ru.complitex.name.page.LastNameListPage;
 import ru.complitex.name.page.MiddleNameListPage;
+import ru.complitex.user.entity.User;
+import ru.complitex.user.mapper.UserMapper;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+
+import static ru.complitex.jedani.worker.entity.Worker.J_ID;
 
 /**
  * @author Anatoly A. Ivanov
@@ -40,6 +45,14 @@ import javax.servlet.http.HttpServletRequest;
 public class BasePage extends WebPage{
     @Inject
     private WorkerService workerService;
+
+    @Inject
+    private WorkerMapper workerMapper;
+
+    @Inject
+    private UserMapper userMapper;
+
+    private User currentUser;
 
     private Worker currentWorker;
 
@@ -60,6 +73,7 @@ public class BasePage extends WebPage{
 
         String login = ((HttpServletRequest)getRequestCycle().getRequest().getContainerRequest()).getUserPrincipal().getName();
 
+        currentUser = userMapper.getUser(login);
         currentWorker = workerService.getWorker(login);
 
         String fio = "";
@@ -107,7 +121,20 @@ public class BasePage extends WebPage{
         return ((HttpServletRequest)RequestCycle.get().getRequest().getContainerRequest());
     }
 
+    public User getCurrentUser() {
+        return currentUser;
+    }
+
     public Worker getCurrentWorker() {
+        if (currentWorker == null && isAdmin()){
+            currentWorker = new Worker();
+            currentWorker.init();
+
+            currentWorker.setText(J_ID, workerMapper.getNewJId());
+
+            currentWorker.setParentId(getCurrentUser().getId());
+        }
+
         return currentWorker;
     }
 }
