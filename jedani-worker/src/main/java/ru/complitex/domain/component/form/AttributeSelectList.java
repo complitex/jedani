@@ -35,14 +35,14 @@ import java.util.stream.Collectors;
  */
 public class AttributeSelectList extends FormComponentPanel<Attribute> {
     @Inject
-    private transient DomainMapper domainMapper;
+    private DomainMapper domainMapper;
 
     private ListModel<Long> listModel = new ListModel<>();
 
     private SerializableConsumer<AjaxRequestTarget> onChange;
 
-    public AttributeSelectList(String id, IModel<Attribute> model, String referenceEntityName,
-                               Long referenceEntityAttributeId, IModel<List<Long>> parentListModel) {
+    public AttributeSelectList(String id, IModel<Attribute> model, String refEntityName, //todo json model
+                               Long refEntityAttributeId, IModel<List<Long>> parentListModel) {
         super(id, model);
 
         setOutputMarkupId(true);
@@ -51,11 +51,11 @@ public class AttributeSelectList extends FormComponentPanel<Attribute> {
         container.setOutputMarkupId(true);
         add(container);
 
-        List<Domain> domains = domainMapper.getDomains(FilterWrapper.of(new Domain(referenceEntityName)));
-        domains.sort(Comparator.comparing(d -> d.getAttribute(referenceEntityAttributeId).getValue(getLocale()).getText()));
+        List<Domain> domains = domainMapper.getDomains(FilterWrapper.of(new Domain(refEntityName)));
+        domains.sort(Comparator.comparing(d -> d.getAttribute(refEntityAttributeId).getValue(getLocale()).getText()));
 
         Map<Long, String> names = domains.stream().collect(Collectors.toMap(Domain::getId,
-                d -> d.getAttribute(referenceEntityAttributeId).getValue(getLocale()).getText()));
+                d -> d.getValueText(refEntityAttributeId, getLocale())));
 
         List<Long> list;
 
@@ -89,7 +89,7 @@ public class AttributeSelectList extends FormComponentPanel<Attribute> {
 
                             @Override
                             public String getIdValue(Long object, int index) {
-                                return object + "";
+                                return object.toString();
                             }
 
                             @Override

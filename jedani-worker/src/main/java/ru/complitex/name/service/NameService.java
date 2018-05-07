@@ -1,4 +1,4 @@
-package ru.complitex.jedani.worker.service;
+package ru.complitex.name.service;
 
 import com.google.common.base.Strings;
 import ru.complitex.common.entity.FilterWrapper;

@@ -10,14 +10,14 @@ import ru.complitex.domain.entity.Attribute;
  * @author Anatoly A. Ivanov
  * 16.04.2018 21:39
  */
-public class AttributeListFormGroup extends Panel {
+public class AttributeInputListFormGroup extends Panel {
     private AttributeInputList attributeInputList;
 
-    public AttributeListFormGroup(String id, IModel<Attribute> model) {
+    public AttributeInputListFormGroup(String id, IModel<Attribute> model) {
         this(id, new ResourceModel(id), model);
     }
 
-    public AttributeListFormGroup(String id, IModel<String> label, IModel<Attribute> model) {
+    public AttributeInputListFormGroup(String id, IModel<String> label, IModel<Attribute> model) {
         super(id);
 
         FormGroup group = new FormGroup("group", label);
@@ -27,7 +27,7 @@ public class AttributeListFormGroup extends Panel {
         add(group);
     }
 
-    public AttributeListFormGroup setRequired(boolean required){
+    public AttributeInputListFormGroup setRequired(boolean required){
         attributeInputList.setRequired(required);
 
         return this;

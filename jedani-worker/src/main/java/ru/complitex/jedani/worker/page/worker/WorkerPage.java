@@ -29,8 +29,8 @@ import ru.complitex.common.wicket.util.ComponentUtil;
 import ru.complitex.domain.component.datatable.DomainActionColumn;
 import ru.complitex.domain.component.datatable.DomainColumn;
 import ru.complitex.domain.component.datatable.DomainIdColumn;
-import ru.complitex.domain.component.form.AttributeListFormGroup;
-import ru.complitex.domain.component.form.AttributeSelectFormGroup;
+import ru.complitex.domain.component.form.AttributeInputListFormGroup;
+import ru.complitex.domain.component.form.AttributeSelectListFormGroup;
 import ru.complitex.domain.component.form.DomainAutoCompleteFormGroup;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.Entity;
@@ -41,7 +41,7 @@ import ru.complitex.jedani.worker.entity.Worker;
 import ru.complitex.jedani.worker.mapper.WorkerMapper;
 import ru.complitex.jedani.worker.page.BasePage;
 import ru.complitex.jedani.worker.security.JedaniRoles;
-import ru.complitex.jedani.worker.service.NameService;
+import ru.complitex.name.service.NameService;
 import ru.complitex.name.entity.FirstName;
 import ru.complitex.name.entity.LastName;
 import ru.complitex.name.entity.MiddleName;
@@ -168,13 +168,13 @@ public class WorkerPage extends BasePage{
 
         form.add(new TextFieldFormGroup<>("mkStatus", new PropertyModel<>(worker.getAttribute(Worker.MK_STATUS), "text")));
         form.add(new DateTextFieldFormGroup("birthday", new PropertyModel<>(worker.getAttribute(Worker.BIRTHDAY), "date")));
-        form.add(new AttributeListFormGroup("phone", Model.of(worker.getOrCreateAttribute(Worker.PHONE))).setRequired(true));
+        form.add(new AttributeInputListFormGroup("phone", Model.of(worker.getOrCreateAttribute(Worker.PHONE))).setRequired(true));
         form.add(new TextFieldFormGroup<>("email", new PropertyModel<>(worker.getAttribute(Worker.EMAIL), "text")));
 
-        AttributeSelectFormGroup city, region;
-        form.add(region = new AttributeSelectFormGroup("region", Model.of(worker.getAttribute(Worker.REGION_IDS)),
+        AttributeSelectListFormGroup city, region;
+        form.add(region = new AttributeSelectListFormGroup("region", Model.of(worker.getAttribute(Worker.REGION_IDS)),
                 "region", Region.NAME).setRequired(true));
-        form.add(city = new AttributeSelectFormGroup("city", Model.of(worker.getAttribute(Worker.CITY_IDS)),
+        form.add(city = new AttributeSelectListFormGroup("city", Model.of(worker.getAttribute(Worker.CITY_IDS)),
                 "city", City.NAME, region.getListModel()).setRequired(true));
         region.onChange(t -> t.add(city));
 

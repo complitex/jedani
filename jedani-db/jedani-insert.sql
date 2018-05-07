@@ -148,6 +148,13 @@ INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `tex
 INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (20, 25, 5);
 INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (20, 25, 1, 'Дата запоминания устройства'), (20, 25, 2, 'Дата запам''ятовування пристрої');
 
+/* MK Status */
+
+INSERT INTO `entity`(`id`, `name`) VALUES (21, 'mk_status');
+INSERT INTO `entity_value`(`entity_id`, `locale_id`, `text`) VALUES (21, 1, 'МК статус'), (21, 2, 'МК статус');
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (21, 1, 0);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (21, 1, 1, 'Статус'), (21, 1, 2, 'Статус');
+
 
 INSERT INTO `user`(login, password) value ('admin', sha2('admin', 256));
 INSERT INTO `user_group` (login, name) value ('admin', 'AUTHORIZED');
