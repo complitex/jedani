@@ -1,8 +1,8 @@
 package ru.complitex.jedani.worker.page;
 
 import org.apache.wicket.markup.html.basic.Label;
-import ru.complitex.jedani.worker.page.worker.WorkerEditPage;
 import ru.complitex.jedani.worker.page.worker.WorkerListPage;
+import ru.complitex.jedani.worker.page.worker.WorkerPage;
 
 import java.time.LocalDateTime;
 
@@ -18,7 +18,7 @@ public class HomePage extends BasePage{
         if (isAdmin()){
             setResponsePage(WorkerListPage.class);
         }else {
-            setResponsePage(WorkerEditPage.class);
+            setResponsePage(WorkerPage.class);
         }
     }
 }

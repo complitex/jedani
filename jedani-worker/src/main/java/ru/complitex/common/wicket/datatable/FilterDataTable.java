@@ -1,5 +1,6 @@
 package ru.complitex.common.wicket.datatable;
 
+import de.agilecoders.wicket.core.markup.html.bootstrap.navigation.BootstrapPagingNavigator;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.table.toolbars.BootstrapNavigationToolbar;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackHeadersToolbar;
@@ -8,6 +9,8 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterToolbar;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.panel.EmptyPanel;
+import org.apache.wicket.markup.html.panel.Panel;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
 
@@ -29,6 +32,7 @@ public class FilterDataTable<T extends Serializable> extends DataTable<T, SortPr
                 return FilterDataTable.this.getRowCount() > 0;
             }
         });
+
         addTopToolbar(new FilterToolbar(this, filterForm){
             @Override
             protected void onBeforeRender() {
@@ -43,6 +47,12 @@ public class FilterDataTable<T extends Serializable> extends DataTable<T, SortPr
                 return FilterDataTable.this.getRowCount() > 0;
             }
         });
-        addBottomToolbar(new BootstrapNavigationToolbar(this));
+
+        addBottomToolbar(new BootstrapNavigationToolbar(this){
+            @Override
+            protected Panel newNavigatorLabel(String navigatorId, DataTable<?, ?> table, BootstrapPagingNavigator.Size size) {
+                return new EmptyPanel(navigatorId);
+            }
+        });
     }
 }

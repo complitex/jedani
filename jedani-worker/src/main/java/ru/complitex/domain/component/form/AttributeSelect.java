@@ -44,7 +44,7 @@ public class AttributeSelect extends DropDownChoice<Long> {
 
             @Override
             public Long getObject(String id, IModel<? extends List<? extends Long>> choices) {
-                return Long.parseLong(id);
+                return id != null ? Long.parseLong(id) : null;
             }
         });
     }

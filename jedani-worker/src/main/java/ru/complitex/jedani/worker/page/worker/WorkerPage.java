@@ -47,6 +47,7 @@ import ru.complitex.jedani.worker.entity.Worker;
 import ru.complitex.jedani.worker.mapper.WorkerMapper;
 import ru.complitex.jedani.worker.page.BasePage;
 import ru.complitex.jedani.worker.security.JedaniRoles;
+import ru.complitex.jedani.worker.service.WorkerService;
 import ru.complitex.name.entity.FirstName;
 import ru.complitex.name.entity.LastName;
 import ru.complitex.name.entity.MiddleName;
@@ -75,23 +76,27 @@ public class WorkerPage extends BasePage{
     private Logger log = LoggerFactory.getLogger(Worker.class);
 
     @Inject
-    private transient EntityMapper entityMapper;
+    private EntityMapper entityMapper;
 
     @Inject
-    private transient DomainMapper domainMapper;
+    private DomainMapper domainMapper;
 
     @Inject
-    private transient UserMapper userMapper;
+    private UserMapper userMapper;
 
     @Inject
-    private transient WorkerMapper workerMapper;
+    private WorkerMapper workerMapper;
 
     @Inject
-    private transient NameService nameService;
+    private NameService nameService;
+
+    @Inject
+    private WorkerService workerService;
+
+    private Worker worker;
+    private Domain manager = null;
 
     public WorkerPage(PageParameters parameters) {
-        Worker worker;
-
         Long id = parameters.get("id").toOptionalLong();
 
         if (!parameters.get("new").isNull()){
@@ -101,7 +106,7 @@ public class WorkerPage extends BasePage{
             worker.setText(J_ID, workerMapper.getNewJId());
 
             if (id != null){
-                Domain manager = domainMapper.getDomain("worker", id);
+                manager = domainMapper.getDomain("worker", id);
 
                 worker.setJson(REGION_IDS, manager.getJson(REGION_IDS));
                 worker.setJson(CITY_IDS, manager.getJson(CITY_IDS));
@@ -208,20 +213,19 @@ public class WorkerPage extends BasePage{
                 .setRequired(true));
 
         //Manager
+        String ancestry = worker.getText(Worker.ANCESTRY);
+
+        if (manager == null && ancestry != null){
+            manager = domainMapper.getDomainByExternalId("worker",
+                    ancestry.substring(Math.max(ancestry.lastIndexOf('/') + 1, 0)));
+        }
 
         String managerFio = "";
         String managerPhones = "";
         String managerEmail = "";
 
-        String ancestry = worker.getText(Worker.ANCESTRY);
-
-        if (!Strings.isNullOrEmpty(ancestry)) {
-            Domain manager = domainMapper.getDomainByExternalId("worker",
-                    ancestry.substring(Math.max(ancestry.lastIndexOf('/') + 1, 0)));
-
-            managerFio = domainMapper.getDomain("last_name", manager.getAttribute(Worker.LAST_NAME).getNumber()).getValueText(LastName.NAME, getLocale()) + " " +
-                    domainMapper.getDomain("first_name", manager.getAttribute(Worker.FIRST_NAME).getNumber()).getValueText(FirstName.NAME, getLocale()) + " " +
-                    domainMapper.getDomain("middle_name", manager.getAttribute(Worker.MIDDLE_NAME).getNumber()).getValueText(MiddleName.NAME, getLocale());
+        if (manager != null) {
+            managerFio = workerService.getWorkerFio(manager, getLocale());
 
             try {
                 List<String> list = new ObjectMapper().readValue(manager.getJson(Worker.PHONE), new TypeReference<List<String>>(){});
@@ -281,6 +285,14 @@ public class WorkerPage extends BasePage{
                     worker.setNumber(FIRST_NAME, nameService.getOrCreateFirstName(firstName.getInput(), worker.getNumber(FIRST_NAME)));
                     worker.setNumber(MIDDLE_NAME, nameService.getOrCreateMiddleName(middleName.getInput(), worker.getNumber(MIDDLE_NAME)));
 
+                    if (worker.getText(Worker.ANCESTRY) == null && manager != null){
+                        worker.setText(Worker.ANCESTRY, !Strings.isNullOrEmpty(manager.getText(Worker.ANCESTRY))
+                                ? manager.getText(Worker.ANCESTRY) + "/" + manager.getObjectId()
+                                : manager.getObjectId() + "");
+
+                        //todo update path
+                    }
+
                     if (worker.getObjectId() == null){
                         domainMapper.insertDomain(worker);
 
@@ -292,9 +304,13 @@ public class WorkerPage extends BasePage{
                     }
 
                     if (isAdmin()){
-                        setResponsePage(WorkerListPage.class);
+                        if (manager != null){
+                            setResponsePage(WorkerPage.class, new PageParameters().add("id", manager.getObjectId()));
+                        }else{
+                            setResponsePage(WorkerListPage.class);
+                        }
                     }else{
-                        setResponsePage(WorkerEditPage.class);
+                        setResponsePage(WorkerPage.class);
                     }
                 } catch (Exception e) {
                     log.error("error save worker ", e);
@@ -315,16 +331,38 @@ public class WorkerPage extends BasePage{
             }
         });
 
-        form.add(new AjaxButton("cancel") {
+        form.add(new AjaxButton("create") {
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                setResponsePage(WorkerPage.class, new PageParameters().add("id", worker.getObjectId())
+                        .add("new", ""));
+            }
+
+            @Override
+            public boolean isVisible() {
+                return worker.getObjectId() != null;
+            }
+        }.setDefaultFormProcessing(false));
+
+        AjaxButton cancel = new AjaxButton("cancel") {
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
                 if (isAdmin()){
-                    setResponsePage(WorkerListPage.class);
+                    if (manager != null){
+                        setResponsePage(WorkerPage.class, new PageParameters().add("id", manager.getObjectId()));
+                    }else{
+                        setResponsePage(WorkerListPage.class);
+                    }
                 }else{
-                    setResponsePage(WorkerEditPage.class);
+                    setResponsePage(WorkerPage.class);
                 }
             }
-        }.setDefaultFormProcessing(false));
+        };
+
+        cancel.setDefaultFormProcessing(false);
+        cancel.add(new Label("label", getString(worker.getObjectId() == null ? "cancel" : "back")));
+
+        form.add(cancel);
 
         //Structure
 
