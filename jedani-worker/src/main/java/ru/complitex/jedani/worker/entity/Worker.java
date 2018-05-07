@@ -55,5 +55,7 @@ public class Worker extends Domain{
         setText(EMAIL, null);
         setJson(REGION_IDS, null);
         setJson(CITY_IDS, null);
+        setNumber(POSITION_ID, null);
+        setNumber(MK_STATUS_ID, null);
     }
 }

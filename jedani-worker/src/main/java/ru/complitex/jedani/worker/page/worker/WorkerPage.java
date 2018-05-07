@@ -3,14 +3,17 @@ package ru.complitex.jedani.worker.page.worker;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
+import com.google.common.hash.Hashing;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
+import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.PasswordTextField;
+import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
@@ -44,15 +47,16 @@ import ru.complitex.jedani.worker.entity.Worker;
 import ru.complitex.jedani.worker.mapper.WorkerMapper;
 import ru.complitex.jedani.worker.page.BasePage;
 import ru.complitex.jedani.worker.security.JedaniRoles;
-import ru.complitex.name.service.NameService;
 import ru.complitex.name.entity.FirstName;
 import ru.complitex.name.entity.LastName;
 import ru.complitex.name.entity.MiddleName;
+import ru.complitex.name.service.NameService;
 import ru.complitex.user.entity.User;
 import ru.complitex.user.mapper.UserMapper;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -184,15 +188,18 @@ public class WorkerPage extends BasePage{
 
         //User
 
-        User user = worker.getParentId() != null ? userMapper.getUser(worker.getParentId()) : new User();
+        User user = worker.getParentId() != null ? userMapper.getUser(worker.getParentId()) : new User(worker.getText(J_ID));
 
-        form.add(new Label("user", Model.of(user.getLogin())));
+        TextField<String> login = new TextField<>("login", new PropertyModel<>(user, "login"));
+        login.setRequired(true);
+        login.setEnabled(user.getId() == null);
+        form.add(login);
 
-        PasswordTextField password = new PasswordTextField("password", Model.of(""));
+        PasswordTextField password = new PasswordTextField("password", new PropertyModel<>(user, "password"));
         password.setRequired(false);
         form.add(password);
 
-        PasswordTextField confirmPassword = new PasswordTextField("confirmPassword", Model.of(""));
+        PasswordTextField confirmPassword = new PasswordTextField("confirmPassword", new PropertyModel<>(user, "confirmPassword"));
         confirmPassword.setRequired(false);
         form.add(confirmPassword);
 
@@ -231,18 +238,64 @@ public class WorkerPage extends BasePage{
         form.add(new Label("managerEmail", managerEmail));
 
 
-        form.add(new AjaxButton("save") {
+        form.add(new IndicatingAjaxButton("save") {
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
                 try {
+                    target.add(feedback);
+
+                    //User
+                    if (!Strings.isNullOrEmpty(user.getPassword())){
+                        if (!user.getPassword().equals(user.getConfirmPassword())){
+                            password.error(getString("error_confirm_password"));
+                            target.add(feedback);
+                            return;
+                        }
+
+                        user.setPassword(Hashing.sha256().hashString(user.getPassword(), StandardCharsets.UTF_8).toString());
+                    }
+
+                    if (user.getId() == null){
+                        if (userMapper.getUser(user.getLogin()) != null){
+                            login.error(getString("error_login_exist"));
+                            target.add(feedback);
+                            return;
+                        }
+
+                        if (Strings.isNullOrEmpty(user.getPassword())){
+                            password.error(getString("error_empty_password"));
+                            target.add(feedback);
+                            return;
+                        }
+
+                        userMapper.insertUser(user);
+                    }else if (!Strings.isNullOrEmpty(user.getPassword())){
+                        userMapper.updateUserPassword(user);
+                    }
+
+                    //Worker
+                    worker.setParentId(user.getId());
+                    worker.setParentEntityId(User.ENTITY_ID);
+
                     worker.setNumber(LAST_NAME, nameService.getOrCreateLastName(lastName.getInput(), worker.getNumber(LAST_NAME)));
                     worker.setNumber(FIRST_NAME, nameService.getOrCreateFirstName(firstName.getInput(), worker.getNumber(FIRST_NAME)));
                     worker.setNumber(MIDDLE_NAME, nameService.getOrCreateMiddleName(middleName.getInput(), worker.getNumber(MIDDLE_NAME)));
 
-                    target.add(feedback);
-                    target.add(form);
+                    if (worker.getObjectId() == null){
+                        domainMapper.insertDomain(worker);
 
-                    log.info(new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(worker));
+                        getSession().info(getString("info_user_created"));
+                    }else{
+                        domainMapper.updateDomain(worker);
+
+                        getSession().info(getString("info_user_updated"));
+                    }
+
+                    if (isAdmin()){
+                        setResponsePage(WorkerListPage.class);
+                    }else{
+                        setResponsePage(WorkerEditPage.class);
+                    }
                 } catch (Exception e) {
                     log.error("error save worker ", e);
                 }
@@ -265,7 +318,11 @@ public class WorkerPage extends BasePage{
         form.add(new AjaxButton("cancel") {
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
-                setResponsePage(WorkerPage.class, parameters);
+                if (isAdmin()){
+                    setResponsePage(WorkerListPage.class);
+                }else{
+                    setResponsePage(WorkerEditPage.class);
+                }
             }
         }.setDefaultFormProcessing(false));
 

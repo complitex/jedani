@@ -29,4 +29,8 @@ public class UserMapper implements Serializable {
     public User getUser(String login){
         return sqlSession.selectOne("selectUserByLogin", login);
     }
+
+    public void updateUserPassword(User user){
+        sqlSession.update("updateUserPassword", user);
+    }
 }

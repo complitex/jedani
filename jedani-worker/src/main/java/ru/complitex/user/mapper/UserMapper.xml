@@ -23,4 +23,8 @@
     <select id="selectUserByLogin" parameterType="string" resultMap="userResultMap">
         select * from `user` where login = #{login}
     </select>
+
+    <update id="updateUserPassword" parameterType="ru.complitex.user.entity.User">
+        update `user` set password = #{password} where login = #{login}
+    </update>
 </mapper>

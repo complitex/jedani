@@ -1,14 +1,13 @@
 package ru.complitex.domain.mapper;
 
-import org.apache.ibatis.session.SqlSession;
 import ru.complitex.common.entity.FilterWrapper;
+import ru.complitex.common.mybatis.BaseMapper;
 import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.Status;
 import ru.complitex.domain.entity.Value;
 
 import javax.inject.Inject;
-import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -17,10 +16,7 @@ import java.util.Objects;
  * @author Anatoly A. Ivanov
  * 29.11.2017 17:54
  */
-public class DomainMapper implements Serializable {
-    @Inject
-    private transient SqlSession sqlSession;
-
+public class DomainMapper extends BaseMapper {
     @Inject
     private SequenceMapper sequenceMapper;
 
@@ -37,7 +33,7 @@ public class DomainMapper implements Serializable {
             domain.setStatus(Status.ACTIVE);
         }
 
-        sqlSession.insert("insertDomain", domain);
+        sqlSession().insert("insertDomain", domain);
 
         domain.getAttributes().forEach(a -> {
                     a.setEntityName(domain.getEntityName());
@@ -90,11 +86,11 @@ public class DomainMapper implements Serializable {
             }
         });
 
-        sqlSession.update("updateDomain", domain);
+        sqlSession().update("updateDomain", domain);
     }
 
     public Boolean hasDomain(Domain domain){
-        return sqlSession.selectOne("hasDomain", domain);
+        return sqlSession().selectOne("hasDomain", domain);
     }
 
     public Domain getDomain(String entityName, Long objectId){
@@ -122,18 +118,18 @@ public class DomainMapper implements Serializable {
     }
 
     public Domain getDomain(Domain domain){
-        return sqlSession.selectOne("selectDomain", domain);
+        return sqlSession().selectOne("selectDomain", domain);
     }
 
     public List<Domain> getDomains(FilterWrapper<? extends Domain> filterWrapper){
-        return sqlSession.selectList("selectDomains", filterWrapper);
+        return sqlSession().selectList("selectDomains", filterWrapper);
     }
 
     public Long getDomainsCount(FilterWrapper<? extends Domain> filterWrapper){
-        return sqlSession.selectOne("selectDomainsCount", filterWrapper);
+        return sqlSession().selectOne("selectDomainsCount", filterWrapper);
     }
 
     public Long getDomainObjectId(Domain domain){
-        return sqlSession.selectOne("selectDomainObjectId", domain);
+        return sqlSession().selectOne("selectDomainObjectId", domain);
     }
 }

@@ -15,6 +15,13 @@ public class User implements Serializable{
 
     private String confirmPassword;
 
+    public User() {
+    }
+
+    public User(String login) {
+        this.login = login;
+    }
+
     public Long getId() {
         return id;
     }
