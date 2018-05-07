@@ -147,7 +147,7 @@ public class WorkerPage extends BasePage{
                 new PropertyModel<>(worker.getAttribute(Worker.FIRST_NAME), "number")).setRequired(true));
         form.add(middleName = new DomainAutoCompleteFormGroup("middleName", "middle_name", MiddleName.NAME,
                 new PropertyModel<>(worker.getAttribute(Worker.MIDDLE_NAME), "number")));
-        form.add(new TextFieldFormGroup<>("managerRankId", new PropertyModel<>(worker.getAttribute(Worker.MANAGER_RANK_ID), "text")));
+        form.add(new TextFieldFormGroup<>("managerRankId", new PropertyModel<>(worker.getAttribute(Worker.POSITION_ID), "text")));
 
 
 
@@ -166,7 +166,7 @@ public class WorkerPage extends BasePage{
 
         form.add(jId);
 
-        form.add(new TextFieldFormGroup<>("mkStatus", new PropertyModel<>(worker.getAttribute(Worker.MK_STATUS), "text")));
+        form.add(new TextFieldFormGroup<>("mkStatus", new PropertyModel<>(worker.getAttribute(Worker.MK_STATUS_ID), "text")));
         form.add(new DateTextFieldFormGroup("birthday", new PropertyModel<>(worker.getAttribute(Worker.BIRTHDAY), "date")));
         form.add(new AttributeInputListFormGroup("phone", Model.of(worker.getOrCreateAttribute(Worker.PHONE))).setRequired(true));
         form.add(new TextFieldFormGroup<>("email", new PropertyModel<>(worker.getAttribute(Worker.EMAIL), "text")));

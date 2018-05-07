@@ -17,6 +17,7 @@ import ru.complitex.address.page.RegionListPage;
 import ru.complitex.jedani.worker.entity.Worker;
 import ru.complitex.jedani.worker.page.admin.ImportPage;
 import ru.complitex.jedani.worker.page.directory.MkStatusListPage;
+import ru.complitex.jedani.worker.page.directory.PositionListPage;
 import ru.complitex.jedani.worker.page.resource.JedaniCssResourceReference;
 import ru.complitex.jedani.worker.page.resource.JedaniJsResourceReference;
 import ru.complitex.jedani.worker.page.resource.MenuCssResourceReference;
@@ -55,6 +56,7 @@ public class BasePage extends WebPage{
         add(new BookmarkablePageLink<>("middle_name", MiddleNameListPage.class));
         add(new BookmarkablePageLink<>("last_name", LastNameListPage.class));
         add(new BookmarkablePageLink<>("mk_status", MkStatusListPage.class));
+        add(new BookmarkablePageLink<>("position", PositionListPage.class));
 
         String login = ((HttpServletRequest)getRequestCycle().getRequest().getContainerRequest()).getUserPrincipal().getName();
 

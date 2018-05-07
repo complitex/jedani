@@ -193,7 +193,10 @@ public class ImportService {
                     worker.setDate(Worker.UPDATED_AT, dateTimeFormat.parse(columns[9]));
                 }
 
-                worker.setText(Worker.MK_STATUS, columns[10]);
+                if (!Strings.isNullOrEmpty(columns[10])) {
+                    worker.setNumber(Worker.MK_STATUS_ID, Long.parseLong(columns[10]) + 1);
+                }
+
                 worker.setText(Worker.FIRST_NAME, StringUtils.trim(columns[11]));
                 worker.setText(Worker.MIDDLE_NAME, StringUtils.trim(columns[12]));
                 worker.setText(Worker.LAST_NAME, StringUtils.trim(columns[13]));
@@ -206,7 +209,7 @@ public class ImportService {
                 }
 
                 try {
-                    worker.setNumber(Worker.MANAGER_RANK_ID, Long.parseLong(columns[16]));
+                    worker.setNumber(Worker.POSITION_ID, Long.parseLong(columns[16]));
                 } catch (NumberFormatException e) {
                     //
                 }

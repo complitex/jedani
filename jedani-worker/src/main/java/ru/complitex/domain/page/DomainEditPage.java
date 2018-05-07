@@ -27,6 +27,7 @@ import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.mapper.DomainMapper;
 import ru.complitex.domain.mapper.EntityMapper;
+import ru.complitex.domain.util.Locales;
 import ru.complitex.jedani.worker.page.BasePage;
 
 import javax.inject.Inject;
@@ -88,8 +89,8 @@ public abstract class DomainEditPage extends BasePage{
                         input1 = new TextField<>("input1", new PropertyModel<>(attribute, "number"));
                         break;
                     case VALUE:
-                        input1 = new TextField<>("input1", new PropertyModel<>(attribute.getOrCreateValue(1L), "text"));
-                        input2 = new TextField<>("input2", new PropertyModel<>(attribute.getOrCreateValue(2L), "text"));
+                        input1 = new TextField<>("input1", new PropertyModel<>(attribute.getOrCreateValue(Locales.getLocaleId(Locales.RU)), "text"));
+                        input2 = new TextField<>("input2", new PropertyModel<>(attribute.getOrCreateValue(Locales.getLocaleId(Locales.UA)), "text"));
                         break;
                 }
 
@@ -125,6 +126,8 @@ public abstract class DomainEditPage extends BasePage{
                     log.error("error save domain", e);
 
                     getSession().error("Ошибка сохранения " + e.getLocalizedMessage());
+
+                    target.add(feedback);
                 }
             }
         };

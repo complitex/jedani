@@ -23,6 +23,10 @@ import ru.complitex.common.wicket.application.ServletUnauthorizedListener;
 import ru.complitex.common.wicket.application.ServletWebSession;
 import ru.complitex.jedani.worker.graph.GraphPage;
 import ru.complitex.jedani.worker.page.admin.ImportPage;
+import ru.complitex.jedani.worker.page.directory.MkStatusEditPage;
+import ru.complitex.jedani.worker.page.directory.MkStatusListPage;
+import ru.complitex.jedani.worker.page.directory.PositionEditPage;
+import ru.complitex.jedani.worker.page.directory.PositionListPage;
 import ru.complitex.jedani.worker.page.login.LoginPage;
 import ru.complitex.jedani.worker.page.worker.WorkerListPage;
 import ru.complitex.jedani.worker.page.worker.WorkerPage;
@@ -69,6 +73,12 @@ public class JedaniWebApplication extends WebApplication{
         mountPage("worker", WorkerPage.class);
         mountPage("worker/${id}", WorkerPage.class);
         mountPage("graph", GraphPage.class);
+        mountPage("mk_statuses", MkStatusListPage.class);
+        mountPage("mk_status", MkStatusEditPage.class);
+        mountPage("mk_status/${id}", MkStatusEditPage.class);
+        mountPage("positions", PositionListPage.class);
+        mountPage("position", PositionEditPage.class);
+        mountPage("position/${id}", PositionEditPage.class);
     }
 
     @Override

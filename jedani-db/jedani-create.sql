@@ -143,7 +143,7 @@ CREATE TABLE `country` (
   `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия объекта',
   `end_date` TIMESTAMP NULL DEFAULT NULL COMMENT 'Дата окончания периода действия объекта',
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
-  `permission_id` BIGINT(20) NULL DEFAULT 0 COMMENT 'Ключ прав доступа к объекту',
+  `permission_id` BIGINT(20) NULL COMMENT 'Ключ прав доступа к объекту',
   `external_id` VARCHAR(20) COMMENT 'Внешний идентификатор импорта записи',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `unique_object_id__start_date` (`object_id`,`start_date`),
@@ -209,7 +209,7 @@ CREATE TABLE `region` (
   `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия объекта',
   `end_date` TIMESTAMP NULL DEFAULT NULL COMMENT 'Дата окончания периода действия объекта',
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
-  `permission_id` BIGINT(20) NULL DEFAULT 0 COMMENT 'Ключ прав доступа к объекту',
+  `permission_id` BIGINT(20) NULL COMMENT 'Ключ прав доступа к объекту',
   `external_id` VARCHAR(20) COMMENT 'Внешний идентификатор импорта записи',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `unique_object_id__start_date` (`object_id`,`start_date`),
@@ -276,7 +276,7 @@ CREATE TABLE `city_type` (
   `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия объекта',
   `end_date` TIMESTAMP NULL DEFAULT NULL COMMENT 'Дата окончания периода действия объекта',
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
-  `permission_id` BIGINT(20) NULL DEFAULT 0 COMMENT 'Ключ прав доступа к объекту',
+  `permission_id` BIGINT(20) NULL COMMENT 'Ключ прав доступа к объекту',
   `external_id` VARCHAR(20) COMMENT 'Внешний идентификатор импорта записи',
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_object_id__start_date` (`object_id`,`start_date`),
@@ -343,7 +343,7 @@ CREATE TABLE `city` (
   `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия объекта',
   `end_date` TIMESTAMP NULL DEFAULT NULL COMMENT 'Дата окончания периода действия объекта',
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
-  `permission_id` BIGINT(20) NULL DEFAULT 0 COMMENT 'Ключ прав доступа к объекту',
+  `permission_id` BIGINT(20) NULL COMMENT 'Ключ прав доступа к объекту',
   `external_id` VARCHAR(20) COMMENT 'Внешний идентификатор импорта записи',
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_object_id__start_date` (`object_id`,`start_date`),
@@ -415,7 +415,7 @@ CREATE TABLE `last_name` (
   `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия объекта',
   `end_date` TIMESTAMP NULL DEFAULT NULL COMMENT 'Дата окончания периода действия объекта',
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
-  `permission_id` BIGINT(20) NULL DEFAULT 0 COMMENT 'Ключ прав доступа к объекту',
+  `permission_id` BIGINT(20) NULL COMMENT 'Ключ прав доступа к объекту',
   `external_id` VARCHAR(20) COMMENT 'Внешний идентификатор импорта записи',
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_object_id__start_date` (`object_id`,`start_date`),
@@ -483,7 +483,7 @@ CREATE TABLE `first_name` (
   `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия объекта',
   `end_date` TIMESTAMP NULL DEFAULT NULL COMMENT 'Дата окончания периода действия объекта',
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
-  `permission_id` BIGINT(20) NULL DEFAULT 0 COMMENT 'Ключ прав доступа к объекту',
+  `permission_id` BIGINT(20) NULL COMMENT 'Ключ прав доступа к объекту',
   `external_id` VARCHAR(20) COMMENT 'Внешний идентификатор импорта записи',
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_object_id__start_date` (`object_id`,`start_date`),
@@ -551,7 +551,7 @@ CREATE TABLE `middle_name` (
   `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия объекта',
   `end_date` TIMESTAMP NULL DEFAULT NULL COMMENT 'Дата окончания периода действия объекта',
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
-  `permission_id` BIGINT(20) NULL DEFAULT 0 COMMENT 'Ключ прав доступа к объекту',
+  `permission_id` BIGINT(20) NULL COMMENT 'Ключ прав доступа к объекту',
   `external_id` VARCHAR(20) COMMENT 'Внешний идентификатор импорта записи',
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_object_id__start_date` (`object_id`,`start_date`),
@@ -618,7 +618,7 @@ CREATE TABLE `worker` (
   `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия объекта',
   `end_date` TIMESTAMP NULL DEFAULT NULL COMMENT 'Дата окончания периода действия объекта',
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
-  `permission_id` BIGINT(20) NULL DEFAULT 0 COMMENT 'Ключ прав доступа к объекту',
+  `permission_id` BIGINT(20) NULL COMMENT 'Ключ прав доступа к объекту',
   `external_id` VARCHAR(20) COMMENT 'Внешний идентификатор импорта записи',
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_object_id__start_date` (`object_id`,`start_date`),
@@ -689,7 +689,7 @@ CREATE TABLE `mk_status` (
   `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия объекта',
   `end_date` TIMESTAMP NULL DEFAULT NULL COMMENT 'Дата окончания периода действия объекта',
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
-  `permission_id` BIGINT(20) NULL DEFAULT 0 COMMENT 'Ключ прав доступа к объекту',
+  `permission_id` BIGINT(20) NULL COMMENT 'Ключ прав доступа к объекту',
   `external_id` VARCHAR(20) COMMENT 'Внешний идентификатор импорта записи',
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_object_id__start_date` (`object_id`,`start_date`),
@@ -724,7 +724,7 @@ CREATE TABLE `mk_status_attribute` (
   KEY `key_start_date` (`start_date`),
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
-  CONSTRAINT `fk_mk_status_attribute__mk_status` FOREIGN KEY (`object_id`) REFERENCES `city`(`object_id`),
+  CONSTRAINT `fk_mk_status_attribute__mk_status` FOREIGN KEY (`object_id`) REFERENCES `mk_status`(`object_id`),
   CONSTRAINT `fk_mk_status_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`)
   REFERENCES entity_attribute (`entity_attribute_id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты МК статуса';
@@ -743,6 +743,74 @@ CREATE TABLE `mk_status_value` (
   CONSTRAINT `fk_mk_status_value__mk_status_attribute` FOREIGN KEY (`attribute_id`) REFERENCES `mk_status_attribute` (`id`),
   CONSTRAINT `fk_mk_status_value__locale` FOREIGN KEY (`locale_id`) REFERENCES `locale` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Локализация атрибутов МК статуса';
+
+-- ------------------------------
+-- Position
+-- ------------------------------
+
+DROP TABLE IF EXISTS `position`;
+CREATE TABLE `position` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
+  `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
+  `parent_id` BIGINT(20) COMMENT 'Идентификатор родительского объекта',
+  `parent_entity_id` BIGINT(20) COMMENT 'Идентификатор сущности родительского объекта',
+  `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия объекта',
+  `end_date` TIMESTAMP NULL DEFAULT NULL COMMENT 'Дата окончания периода действия объекта',
+  `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
+  `permission_id` BIGINT(20) NULL COMMENT 'Ключ прав доступа к объекту',
+  `external_id` VARCHAR(20) COMMENT 'Внешний идентификатор импорта записи',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_object_id__start_date` (`object_id`,`start_date`),
+  UNIQUE KEY `unique_external_id` (`external_id`,`start_date`),
+  KEY `key_object_id` (`object_id`),
+  KEY `key_parent_id` (`parent_id`),
+  KEY `key_parent_entity_id` (`parent_entity_id`),
+  KEY `key_start_date` (`start_date`),
+  KEY `key_end_date` (`end_date`),
+  KEY `key_status` (`status`),
+  KEY `key_permission_id` (`permission_id`),
+  CONSTRAINT `ft_position__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
+  CONSTRAINT `fk_position__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`)
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Должности';
+
+DROP TABLE IF EXISTS `position_attribute`;
+CREATE TABLE `position_attribute` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
+  `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
+  `entity_attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор типа атрибута',
+  `text` VARCHAR(255) COMMENT 'Текст',
+  `number` BIGINT(20) COMMENT 'Число',
+  `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия атрибута',
+  `end_date` TIMESTAMP NULL DEFAULT NULL COMMENT 'Дата окончания периода действия атрибута',
+  `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `unique_id` (`object_id`,`entity_attribute_id`, `start_date`),
+  KEY `key_object_id` (`object_id`),
+  KEY `key_entity_attribute_id` (`entity_attribute_id`),
+  KEY `key_text` (`text`),
+  KEY `key_number` (`number`),
+  KEY `key_start_date` (`start_date`),
+  KEY `key_end_date` (`end_date`),
+  KEY `key_status` (`status`),
+  CONSTRAINT `fk_position_attribute__position` FOREIGN KEY (`object_id`) REFERENCES `position`(`object_id`),
+  CONSTRAINT `fk_position_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`)
+  REFERENCES entity_attribute (`entity_attribute_id`)
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты должности';
+
+DROP TABLE IF EXISTS `position_value`;
+CREATE TABLE `position_value` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Суррогатный ключ',
+  `attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор атрибута',
+  `locale_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор локали',
+  `text` VARCHAR(1000) COMMENT 'Текстовое значение',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_id__locale` (`attribute_id`,`locale_id`),
+  KEY `key_attribute_id` (`attribute_id`),
+  KEY `key_locale` (`locale_id`),
+  KEY `key_value` (`text`(128)),
+  CONSTRAINT `fk_position_value__position_attribute` FOREIGN KEY (`attribute_id`) REFERENCES `position_attribute` (`id`),
+  CONSTRAINT `fk_position_value__locale` FOREIGN KEY (`locale_id`) REFERENCES `locale` (`id`)
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Локализация атрибутов должности';
 
 
 

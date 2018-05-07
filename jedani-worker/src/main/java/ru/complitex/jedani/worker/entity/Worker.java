@@ -21,11 +21,11 @@ public class Worker extends Domain{
     public static final long PHONE = 8;
     public static final long EMAIL = 9;
     public static final long CONTACT_INFO = 10;
-    public static final long MANAGER_RANK_ID = 11;
+    public static final long POSITION_ID = 11;
     public static final long CREATED_AT = 12;
     public static final long UPDATED_AT = 13;
     public static final long INVOLVED_AT = 14;
-    public static final long MK_STATUS = 15;
+    public static final long MK_STATUS_ID = 15;
     public static final long FIRED_STATUS = 16;
     public static final long OLD_PARENT_ID = 17;
     public static final long OLD_CHILD_ID = 18;
