@@ -16,6 +16,8 @@ import ru.complitex.domain.mapper.DomainMapper;
 import ru.complitex.domain.mapper.EntityMapper;
 import ru.complitex.domain.util.Locales;
 
+import java.text.SimpleDateFormat;
+
 /**
  * @author Anatoly A. Ivanov
  * 19.12.2017 7:55
@@ -88,6 +90,8 @@ public abstract class DomainColumn extends AbstractDomainColumn {
         }
     }
 
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+
     @Override
     public void populateItem(Item<ICellPopulator<Domain>> cellItem, String componentId, IModel<Domain> rowModel) {
         IModel model;
@@ -115,6 +119,11 @@ public abstract class DomainColumn extends AbstractDomainColumn {
                 break;
             case NUMBER:
                 model = Model.of(attribute.getNumber());
+
+                break;
+
+            case DATE:
+                model = Model.of(attribute.getDate() != null ? dateFormat.format(attribute.getDate()) : "");
 
                 break;
             default:
