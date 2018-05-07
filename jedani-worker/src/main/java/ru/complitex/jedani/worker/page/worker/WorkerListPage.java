@@ -22,7 +22,7 @@ public class WorkerListPage extends DomainListPage{
     @Override
     protected List<EntityAttribute> getEntityAttributes(Entity entity) {
 
-        return Stream.of(J_ID, CREATED_AT, FIRST_NAME, MIDDLE_NAME, LAST_NAME, BIRTHDAY, PHONE, EMAIL, CITY_IDS) //todo regions
+        return Stream.of(J_ID, INVOLVED_AT, FIRST_NAME, MIDDLE_NAME, LAST_NAME, BIRTHDAY, PHONE, EMAIL, CITY_IDS) //todo regions
                 .map(entity::getEntityAttribute).collect(Collectors.toList());
     }
 

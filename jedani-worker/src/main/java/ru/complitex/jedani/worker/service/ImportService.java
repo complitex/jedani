@@ -29,7 +29,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static ru.complitex.domain.entity.Status.ACTIVE;
-import static ru.complitex.domain.entity.Status.EDIT;
+import static ru.complitex.domain.entity.Status.SYNC;
 
 /**
  * @author Anatoly A. Ivanov
@@ -241,7 +241,7 @@ public class ImportService {
 
                 workers.add(worker);
 
-                worker.setStatus(EDIT);
+                worker.setStatus(SYNC);
             }
 
             workers.stream()
@@ -264,7 +264,7 @@ public class ImportService {
     }
 
     private void updateWorkerPath(Consumer<String> listener){
-        domainMapper.getDomains(FilterWrapper.of(new Domain("worker").setStatus(EDIT))).forEach(w -> {
+        domainMapper.getDomains(FilterWrapper.of(new Domain("worker").setStatus(SYNC))).forEach(w -> {
             w.setText(Worker.FULL_ANCESTRY_PATH, Arrays.stream(w.getText(Worker.FULL_ANCESTRY_PATH).split("/"))
                     .filter(p -> !p.isEmpty())
                     .map(p -> {
