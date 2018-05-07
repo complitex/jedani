@@ -48,4 +48,9 @@ public class AttributeSelect extends DropDownChoice<Long> {
             }
         });
     }
+
+    @Override
+    protected String getNullKeyDisplayValue() {
+        return "";
+    }
 }

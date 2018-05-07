@@ -30,6 +30,7 @@ import ru.complitex.domain.component.datatable.DomainActionColumn;
 import ru.complitex.domain.component.datatable.DomainColumn;
 import ru.complitex.domain.component.datatable.DomainIdColumn;
 import ru.complitex.domain.component.form.AttributeInputListFormGroup;
+import ru.complitex.domain.component.form.AttributeSelectFormGroup;
 import ru.complitex.domain.component.form.AttributeSelectListFormGroup;
 import ru.complitex.domain.component.form.DomainAutoCompleteFormGroup;
 import ru.complitex.domain.entity.Domain;
@@ -37,6 +38,8 @@ import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.mapper.DomainMapper;
 import ru.complitex.domain.mapper.EntityMapper;
+import ru.complitex.jedani.worker.entity.MkStatus;
+import ru.complitex.jedani.worker.entity.Position;
 import ru.complitex.jedani.worker.entity.Worker;
 import ru.complitex.jedani.worker.mapper.WorkerMapper;
 import ru.complitex.jedani.worker.page.BasePage;
@@ -147,8 +150,8 @@ public class WorkerPage extends BasePage{
                 new PropertyModel<>(worker.getAttribute(Worker.FIRST_NAME), "number")).setRequired(true));
         form.add(middleName = new DomainAutoCompleteFormGroup("middleName", "middle_name", MiddleName.NAME,
                 new PropertyModel<>(worker.getAttribute(Worker.MIDDLE_NAME), "number")));
-        form.add(new TextFieldFormGroup<>("managerRankId", new PropertyModel<>(worker.getAttribute(Worker.POSITION_ID), "text")));
-
+        form.add(new AttributeSelectFormGroup("position", new PropertyModel<>(worker.getAttribute(Worker.POSITION_ID), "number"),
+                Position.ENTITY_NAME, Position.NAME));
 
 
         TextFieldFormGroup jId = new TextFieldFormGroup<>("jId", new PropertyModel<>(worker.getAttribute(Worker.J_ID), "text"));
@@ -166,16 +169,17 @@ public class WorkerPage extends BasePage{
 
         form.add(jId);
 
-        form.add(new TextFieldFormGroup<>("mkStatus", new PropertyModel<>(worker.getAttribute(Worker.MK_STATUS_ID), "text")));
+        form.add(new AttributeSelectFormGroup("mkStatus", new PropertyModel<>(worker.getAttribute(Worker.MK_STATUS_ID), "number"),
+                MkStatus.ENTITY_NAME, MkStatus.NAME));
         form.add(new DateTextFieldFormGroup("birthday", new PropertyModel<>(worker.getAttribute(Worker.BIRTHDAY), "date")));
         form.add(new AttributeInputListFormGroup("phone", Model.of(worker.getOrCreateAttribute(Worker.PHONE))).setRequired(true));
         form.add(new TextFieldFormGroup<>("email", new PropertyModel<>(worker.getAttribute(Worker.EMAIL), "text")));
 
         AttributeSelectListFormGroup city, region;
         form.add(region = new AttributeSelectListFormGroup("region", Model.of(worker.getAttribute(Worker.REGION_IDS)),
-                "region", Region.NAME).setRequired(true));
+                Region.ENTITY_NAME, Region.NAME).setRequired(true));
         form.add(city = new AttributeSelectListFormGroup("city", Model.of(worker.getAttribute(Worker.CITY_IDS)),
-                "city", City.NAME, region.getListModel()).setRequired(true));
+                City.ENTITY_NAME, City.NAME, region.getListModel()).setRequired(true));
         region.onChange(t -> t.add(city));
 
         //User

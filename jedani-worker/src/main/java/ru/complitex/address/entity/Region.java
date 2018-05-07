@@ -7,6 +7,8 @@ import ru.complitex.domain.entity.Domain;
  * 30.11.2017 16:06
  */
 public class Region extends Domain{
+    public static final String ENTITY_NAME = "region";
+
     public static final long ENTITY_ID = 2;
 
     public static final long NAME = 1;
@@ -14,7 +16,7 @@ public class Region extends Domain{
     public static final long MANAGER_ID = 3;
 
     public Region() {
-        super("region");
+        super(ENTITY_NAME);
     }
 
     public Region(String externalId){
