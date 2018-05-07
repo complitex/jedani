@@ -26,6 +26,7 @@ public class AttributeSelectFormGroup extends Panel {
         FormGroup group = new FormGroup("group", label);
         group.add(attributeSelectList = new AttributeSelectList("select", model, referenceEntityName,
                 referenceEntityAttributeId, parentListModel));
+        attributeSelectList.setLabel(label);
 
         add(group);
     }
@@ -44,7 +45,13 @@ public class AttributeSelectFormGroup extends Panel {
         return attributeSelectList.getListModel();
     }
 
-    public void setOnChange(SerializableConsumer<AjaxRequestTarget> onChange) {
-        attributeSelectList.setOnChange(onChange);
+    public void onChange(SerializableConsumer<AjaxRequestTarget> onChange) {
+        attributeSelectList.onChange(onChange);
+    }
+
+    public AttributeSelectFormGroup setRequired(boolean required){
+        attributeSelectList.setRequired(required);
+
+        return this;
     }
 }

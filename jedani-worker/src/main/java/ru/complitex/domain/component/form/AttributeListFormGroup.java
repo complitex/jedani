@@ -11,6 +11,8 @@ import ru.complitex.domain.entity.Attribute;
  * 16.04.2018 21:39
  */
 public class AttributeListFormGroup extends Panel {
+    private AttributeInputList attributeInputList;
+
     public AttributeListFormGroup(String id, IModel<Attribute> model) {
         this(id, new ResourceModel(id), model);
     }
@@ -19,8 +21,15 @@ public class AttributeListFormGroup extends Panel {
         super(id);
 
         FormGroup group = new FormGroup("group", label);
-        group.add(new AttributeInputList("input", model));
+        group.add(attributeInputList = new AttributeInputList("input", model));
+        attributeInputList.setLabel(label);
 
         add(group);
+    }
+
+    public AttributeListFormGroup setRequired(boolean required){
+        attributeInputList.setRequired(required);
+
+        return this;
     }
 }

@@ -168,13 +168,15 @@ public class WorkerPage extends BasePage{
 
         form.add(new TextFieldFormGroup<>("mkStatus", new PropertyModel<>(worker.getAttribute(Worker.MK_STATUS), "text")));
         form.add(new DateTextFieldFormGroup("birthday", new PropertyModel<>(worker.getAttribute(Worker.BIRTHDAY), "date")));
-        form.add(new AttributeListFormGroup("phone", Model.of(worker.getOrCreateAttribute(Worker.PHONE))));
+        form.add(new AttributeListFormGroup("phone", Model.of(worker.getOrCreateAttribute(Worker.PHONE))).setRequired(true));
         form.add(new TextFieldFormGroup<>("email", new PropertyModel<>(worker.getAttribute(Worker.EMAIL), "text")));
 
         AttributeSelectFormGroup city, region;
-        form.add(region = new AttributeSelectFormGroup("region", Model.of(worker.getAttribute(Worker.REGION_IDS)), "region", Region.NAME));
-        form.add(city = new AttributeSelectFormGroup("city", Model.of(worker.getAttribute(Worker.CITY_IDS)), "city", City.NAME, region.getListModel()));
-        region.setOnChange(t -> t.add(city));
+        form.add(region = new AttributeSelectFormGroup("region", Model.of(worker.getAttribute(Worker.REGION_IDS)),
+                "region", Region.NAME).setRequired(true));
+        form.add(city = new AttributeSelectFormGroup("city", Model.of(worker.getAttribute(Worker.CITY_IDS)),
+                "city", City.NAME, region.getListModel()).setRequired(true));
+        region.onChange(t -> t.add(city));
 
         //User
 

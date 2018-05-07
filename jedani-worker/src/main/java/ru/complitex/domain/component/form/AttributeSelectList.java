@@ -162,7 +162,12 @@ public class AttributeSelectList extends FormComponentPanel<Attribute> {
         }
     }
 
-    public void setOnChange(SerializableConsumer<AjaxRequestTarget> onChange) {
+    public void onChange(SerializableConsumer<AjaxRequestTarget> onChange) {
         this.onChange = onChange;
+    }
+
+    @Override
+    public boolean checkRequired() {
+        return !isRequired() || !listModel.getObject().isEmpty();
     }
 }

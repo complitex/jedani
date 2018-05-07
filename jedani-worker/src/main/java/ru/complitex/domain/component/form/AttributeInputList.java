@@ -83,6 +83,11 @@ public class AttributeInputList extends FormComponentPanel<Attribute> {
 
         setConvertedInput(attribute);
     }
+
+    @Override
+    public boolean checkRequired() {
+        return !isRequired() || !listModel.getObject().isEmpty();
+    }
 }
 
 
