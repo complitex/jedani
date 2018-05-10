@@ -127,7 +127,8 @@ public class WorkerPage extends BasePage{
 
         DataProvider<Domain> dataProvider = new DataProvider<Domain>(FilterWrapper.of(new Domain("worker"))
                 .add("entityAttributeId", Worker.ANCESTRY)
-                .add("endWith", "/" + worker.getObjectId())) {
+                .add("endWith", "/" + worker.getObjectId())
+                .add("orEqual", worker.getObjectId())) {
             @Override
             public Iterator<? extends Domain> iterator(long first, long count) {
                 FilterWrapper<Domain> filterWrapper = getFilterState().limit(first, count);
