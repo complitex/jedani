@@ -1,5 +1,6 @@
 package ru.complitex.domain.component.form;
 
+import com.google.common.base.Strings;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.model.IModel;
@@ -44,7 +45,7 @@ public class AttributeSelect extends DropDownChoice<Long> {
 
             @Override
             public Long getObject(String id, IModel<? extends List<? extends Long>> choices) {
-                return id != null ? Long.parseLong(id) : null;
+                return !Strings.isNullOrEmpty(id) ? Long.parseLong(id) : null;
             }
         });
     }
