@@ -46,7 +46,10 @@ public class DomainActionColumn extends AbstractDomainColumn{
         cellItem.add(new LinkPanel(componentId, new BootstrapBookmarkablePageLink(LinkPanel.LINK_COMPONENT_ID,
                 editPageClass, new PageParameters().add("id", rowModel.getObject().getId()),
                 Buttons.Type.Link).setIconType(GlyphIconType.edit).setSize(Buttons.Size.Small)));
-
     }
 
+    @Override
+    public String getCssClass() {
+        return "domain-id-column";
+    }
 }

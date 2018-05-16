@@ -80,7 +80,7 @@ public class DomainAutoComplete extends Panel {
                 domain.getOrCreateAttribute(entityAttributeId).setText(input); //todo def attribute
 
                 return domainMapper.getDomains(FilterWrapper.of(domain).limit(0L, 10L)
-                        .sort("value", entityAttributeId).asc())
+                        .sort("value", domain.getAttribute(entityAttributeId)).asc())
                         .stream() //todo opt load attribute
                         .map(d -> d.getAttribute(entityAttributeId))
                         .collect(Collectors.toList())

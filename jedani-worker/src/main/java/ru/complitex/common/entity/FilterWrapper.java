@@ -57,7 +57,7 @@ public class FilterWrapper<T extends Serializable> implements Serializable {
         return this;
     }
 
-    public FilterWrapper<T> sort(String key, Long value){
+    public FilterWrapper<T> sort(String key, Object value){
         this.sortProperty = new SortProperty(key, value);
 
         return this;
