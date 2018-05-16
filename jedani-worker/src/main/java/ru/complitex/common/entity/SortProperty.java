@@ -8,13 +8,13 @@ import java.io.Serializable;
  */
 public class SortProperty implements Serializable{
     private String key;
-    private Long value;
+    private Object value;
 
     public SortProperty(String key) {
         this.key = key;
     }
 
-    public SortProperty(String key, Long value) {
+    public SortProperty(String key, Object value) {
         this.key = key;
         this.value = value;
     }
@@ -23,7 +23,7 @@ public class SortProperty implements Serializable{
         return key;
     }
 
-    public Long getValue() {
+    public Object getValue() {
         return value;
     }
 }

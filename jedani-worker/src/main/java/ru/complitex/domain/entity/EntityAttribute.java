@@ -13,7 +13,7 @@ import java.util.List;
 public class EntityAttribute implements Serializable{
     private Long id;
     private Long entityId;
-    private Long EntityAttributeId;
+    private Long entityAttributeId;
     private Date startDate;
     private Date endDate;
     private ValueType valueType;
@@ -22,6 +22,10 @@ public class EntityAttribute implements Serializable{
     private Boolean required;
 
     private List<EntityValue> values;
+
+    private String entityName;
+
+    private EntityAttribute refEntityAttribute;
 
     public EntityValue getValue(){
         return values.stream().filter(v -> v.getLocaleId().equals(Locales.getSystemLocaleId())).findAny().orElse(null);
@@ -44,11 +48,11 @@ public class EntityAttribute implements Serializable{
     }
 
     public Long getEntityAttributeId() {
-        return EntityAttributeId;
+        return entityAttributeId;
     }
 
     public void setEntityAttributeId(Long entityAttributeId) {
-        this.EntityAttributeId = entityAttributeId;
+        this.entityAttributeId = entityAttributeId;
     }
 
     public Date getStartDate() {
@@ -105,5 +109,21 @@ public class EntityAttribute implements Serializable{
 
     public void setValues(List<EntityValue> values) {
         this.values = values;
+    }
+
+    public String getEntityName() {
+        return entityName;
+    }
+
+    public void setEntityName(String entityName) {
+        this.entityName = entityName;
+    }
+
+    public EntityAttribute getRefEntityAttribute() {
+        return refEntityAttribute;
+    }
+
+    public void setRefEntityAttribute(EntityAttribute refEntityAttribute) {
+        this.refEntityAttribute = refEntityAttribute;
     }
 }

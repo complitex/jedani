@@ -41,6 +41,7 @@ import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.mapper.DomainMapper;
 import ru.complitex.domain.mapper.EntityMapper;
+import ru.complitex.domain.service.EntityService;
 import ru.complitex.jedani.worker.entity.MkStatus;
 import ru.complitex.jedani.worker.entity.Position;
 import ru.complitex.jedani.worker.entity.Worker;
@@ -61,8 +62,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static ru.complitex.jedani.worker.entity.Worker.*;
 
@@ -92,6 +91,9 @@ public class WorkerPage extends BasePage{
 
     @Inject
     private WorkerService workerService;
+
+    @Inject
+    private EntityService entityService;
 
     private Worker worker;
     private Domain manager = null;
@@ -370,17 +372,7 @@ public class WorkerPage extends BasePage{
         List<IColumn<Domain, SortProperty>> columns = new ArrayList<>();
 
         columns.add(new DomainIdColumn());
-        getEntityAttributes().forEach(a -> columns.add(new DomainColumn(a) {
-            @Override
-            protected EntityMapper getEntityMapper() {
-                return entityMapper;
-            }
-
-            @Override
-            protected DomainMapper getDomainMapper() {
-                return domainMapper;
-            }
-        }));
+        getEntityAttributes().forEach(a -> columns.add(new DomainColumn(a)));
         columns.add(new DomainActionColumn(WorkerPage.class));
 
         FilterDataTable<Domain> table = new FilterDataTable<>("table", columns, dataProvider, form, 10);
@@ -390,7 +382,25 @@ public class WorkerPage extends BasePage{
     private List<EntityAttribute> getEntityAttributes() {
         Entity entity = entityMapper.getEntity("worker");
 
-        return Stream.of(J_ID, CREATED_AT, FIRST_NAME, MIDDLE_NAME, LAST_NAME, BIRTHDAY, PHONE, EMAIL, CITY_IDS) //todo regions
-                .map(entity::getEntityAttribute).collect(Collectors.toList());
+        List<EntityAttribute> list = new ArrayList<>();
+
+        entityService.setRefEntityAttribute(entity, LAST_NAME, LastName.ENTITY_NAME, LastName.NAME);
+        list.add(entity.getEntityAttribute(LAST_NAME));
+
+        entityService.setRefEntityAttribute(entity, FIRST_NAME, FirstName.ENTITY_NAME, FirstName.NAME);
+        list.add(entity.getEntityAttribute(FIRST_NAME));
+
+        entityService.setRefEntityAttribute(entity, MIDDLE_NAME, MiddleName.ENTITY_NAME, MiddleName.NAME);
+        list.add(entity.getEntityAttribute(MIDDLE_NAME));
+
+        list.add(entity.getEntityAttribute(J_ID));
+
+        entityService.setRefEntityAttribute(entity, REGION_IDS, Region.ENTITY_NAME, Region.NAME);
+        list.add(entity.getEntityAttribute(REGION_IDS));
+
+        entityService.setRefEntityAttribute(entity, CITY_IDS, City.ENTITY_NAME, City.NAME);
+        list.add(entity.getEntityAttribute(CITY_IDS));
+
+        return list;
     }
 }

@@ -1,6 +1,7 @@
 package ru.complitex.domain.component.datatable;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.cdi.NonContextual;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.TextFilter;
@@ -22,13 +23,18 @@ import java.text.SimpleDateFormat;
  * @author Anatoly A. Ivanov
  * 19.12.2017 7:55
  */
-public abstract class DomainColumn extends AbstractDomainColumn {
+public class DomainColumn extends AbstractDomainColumn {
     private EntityAttribute entityAttribute;
 
+    private EntityMapper entityMapper;
+
+    private DomainMapper domainMapper;
+
     public DomainColumn(EntityAttribute entityAttribute) {
-        super(Model.of(entityAttribute.getValue() != null ? entityAttribute.getValue().getText() : "[" + entityAttribute.getEntityAttributeId() + "]"),
-                new SortProperty(entityAttribute.getValueType().getKey(),
-                        entityAttribute.getEntityAttributeId()));
+        super(Model.of(entityAttribute.getValue() != null
+                        ? entityAttribute.getValue().getText()
+                        : "[" + entityAttribute.getEntityAttributeId() + "]"),
+                new SortProperty(entityAttribute.getValueType().getKey(), entityAttribute));
 
         this.entityAttribute = entityAttribute;
     }
@@ -133,7 +139,23 @@ public abstract class DomainColumn extends AbstractDomainColumn {
         cellItem.add(new Label(componentId, model));
     }
 
-    protected abstract EntityMapper getEntityMapper();
+    private EntityMapper getEntityMapper(){
+        if (entityMapper == null){
+            entityMapper = new EntityMapper();
 
-    protected abstract DomainMapper getDomainMapper();
+            NonContextual.of(EntityMapper.class).inject(entityMapper);
+        }
+
+        return entityMapper;
+    }
+
+    private DomainMapper getDomainMapper(){
+        if (domainMapper == null){
+            domainMapper = new DomainMapper();
+
+            NonContextual.of(DomainMapper.class).inject(domainMapper);
+        }
+
+        return domainMapper;
+    }
 }

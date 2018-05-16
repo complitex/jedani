@@ -63,12 +63,16 @@
         left join `${object.entityName}_value` v on v.attribute_id = a.id
 
         <if test="sortProperty != null">
-            <if test="sortProperty.key == 'text' or sortProperty.key == 'number' or sortProperty.key == 'value'">
+            <if test="sortProperty.key in {'text', 'number', 'date', 'value'}">
                 left join ${object.entityName}_attribute sort_a on sort_a.object_id = d.object_id and
-                sort_a.entity_attribute_id = #{sortProperty.value}
+                sort_a.entity_attribute_id = #{sortProperty.value.entityAttributeId}
 
                 <if test="sortProperty.key == 'value'">
                     left join `${object.entityName}_value` sort_v on sort_v.attribute_id = sort_a.id
+                </if>
+
+                <if test="sortProperty.key == 'entity'">
+                    -- todo
                 </if>
             </if>
         </if>
@@ -113,10 +117,6 @@
                     and d.status = 1 and a.status = 1
                 </otherwise>
             </choose>
-
-
-
-
         </where>
     </sql>
 
@@ -125,7 +125,12 @@
         select distinct d.object_id, '${object.entityName}' entity_name, d.*
 
         <if test="sortProperty != null">
-            , sort_v.text
+            <choose>
+                <when test="sortProperty.key == 'text'">, sort_a.text</when>
+                <when test="sortProperty.key == 'number'">, sort_a.number</when>
+                <when test="sortProperty.key == 'date'">, sort_a.date</when>
+                <when test="sortProperty.key == 'value'">, sort_v.text</when>
+            </choose>
         </if>
 
         <include refid="selectDomainsFromWhere"/>
@@ -135,6 +140,7 @@
                 <when test="sortProperty.key == 'id'">order by d.id ${asc}</when>
                 <when test="sortProperty.key == 'text'">order by sort_a.text ${asc}</when>
                 <when test="sortProperty.key == 'number'">order by sort_a.number + 0 ${asc}</when>
+                <when test="sortProperty.key == 'date'">order by sort_a.date ${asc}</when>
                 <when test="sortProperty.key == 'value'">order by sort_v.text ${asc}</when>
             </choose>
         </if>

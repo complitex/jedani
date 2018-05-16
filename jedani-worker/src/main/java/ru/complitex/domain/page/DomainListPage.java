@@ -87,17 +87,7 @@ public class DomainListPage extends BasePage{
             });
         }
 
-        getEntityAttributes(entity).forEach(a -> columns.add(new DomainColumn(a) {
-            @Override
-            protected EntityMapper getEntityMapper() {
-                return entityMapper;
-            }
-
-            @Override
-            protected DomainMapper getDomainMapper() {
-                return domainMapper;
-            }
-        }));
+        getEntityAttributes(entity).forEach(a -> columns.add(new DomainColumn(a)));
         columns.add(new DomainActionColumn(editPageClass));
 
         FilterDataTable<Domain> table = new FilterDataTable<>("table", columns, dataProvider, filterForm, 10);
