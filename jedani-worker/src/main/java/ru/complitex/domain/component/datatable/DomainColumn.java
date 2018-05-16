@@ -1,6 +1,9 @@
 package ru.complitex.domain.component.datatable;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.wicket.Component;
+import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.cdi.NonContextual;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
@@ -9,6 +12,8 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
 import ru.complitex.domain.component.form.DomainAutoComplete;
@@ -17,13 +22,18 @@ import ru.complitex.domain.mapper.DomainMapper;
 import ru.complitex.domain.mapper.EntityMapper;
 import ru.complitex.domain.util.Locales;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Anatoly A. Ivanov
  * 19.12.2017 7:55
  */
 public class DomainColumn extends AbstractDomainColumn {
+    private static Logger log = LoggerFactory.getLogger(DomainColumn.class);
+
     private EntityAttribute entityAttribute;
 
     private EntityMapper entityMapper;
@@ -98,16 +108,18 @@ public class DomainColumn extends AbstractDomainColumn {
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
 
+    private ObjectMapper objectMapper = new ObjectMapper();
+
     @Override
     public void populateItem(Item<ICellPopulator<Domain>> cellItem, String componentId, IModel<Domain> rowModel) {
-        IModel model;
+        String text = "";
 
         Attribute attribute = rowModel.getObject().getOrCreateAttribute(entityAttribute.getEntityAttributeId());
 
         switch (entityAttribute.getValueType()){
             case VALUE:
                 Value value = attribute.getValue(Locales.getSystemLocaleId());
-                model = Model.of(value != null ? value.getText() : null);
+                text = value != null ? value.getText() : null;
 
                 break;
             case ENTITY:
@@ -115,28 +127,58 @@ public class DomainColumn extends AbstractDomainColumn {
                     Domain domain = getDomainMapper().getDomain(getEntityMapper()
                             .getEntity(entityAttribute.getReferenceId()).getName(), attribute.getNumber());
 
-                    model = Model.of(domain != null
+                    text = domain != null
                             ? domain.getAttributes().get(0).getValue(Locales.getSystemLocaleId()).getText()
-                            : attribute.getNumber()); //todo def attribute
-                }else{
-                    model = Model.of("");
+                            : attribute.getNumber() + ""; //todo def attribute
                 }
 
                 break;
             case NUMBER:
-                model = Model.of(attribute.getNumber());
+                text = attribute.getNumber() + "";
 
                 break;
 
             case DATE:
-                model = Model.of(attribute.getDate() != null ? dateFormat.format(attribute.getDate()) : "");
+                text = attribute.getDate() != null ? dateFormat.format(attribute.getDate()) : "";
+
+                break;
+
+            case JSON:
+                if (attribute.getJson() != null){
+                    EntityAttribute refEA = entityAttribute.getRefEntityAttribute();
+
+                    if (refEA != null){
+                        try {
+                            List<Long> list = objectMapper.readValue(attribute.getJson(), new TypeReference<List<Long>>(){});
+
+                            text = list.stream()
+                                    .map(id -> getDomainMapper().getDomain(refEA.getEntityName(), id)
+                                            .getValueText(refEA.getEntityAttributeId()))
+                                    .collect(Collectors.joining(", "));
+                        } catch (IOException e) {
+                            log.error("error parse json ", e);
+
+                            throw new WicketRuntimeException(e);
+                        }
+                    }else{
+                        try {
+                            List<String> list = objectMapper.readValue(attribute.getJson(), new TypeReference<List<String>>(){});
+
+                            text = String.join(", ", list);
+                        } catch (IOException e) {
+                            log.error("error parse json ", e);
+
+                            throw new WicketRuntimeException(e);
+                        }
+                    }
+                }
 
                 break;
             default:
-                model = Model.of(attribute.getText());
+                text = attribute.getText();
         }
 
-        cellItem.add(new Label(componentId, model));
+        cellItem.add(new Label(componentId, text));
     }
 
     private EntityMapper getEntityMapper(){

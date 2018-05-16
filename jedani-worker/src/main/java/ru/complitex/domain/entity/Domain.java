@@ -140,6 +140,10 @@ public class Domain implements Serializable{
                 .orElse(null);
     }
 
+    public String getValueText(Long entityAttributeId){
+        return getValueText(entityAttributeId, Locales.getSystemLocale());
+    }
+
     public void setValue(Long entityAttributeId, String value, Locale locale){
         getOrCreateAttribute(entityAttributeId).setValue(value, Locales.getLocaleId(locale));
     }
