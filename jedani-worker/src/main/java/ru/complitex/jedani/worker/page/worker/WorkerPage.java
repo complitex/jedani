@@ -5,18 +5,24 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.google.common.hash.Hashing;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
+import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.TextFilter;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
+import org.apache.wicket.markup.repeater.Item;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +35,7 @@ import ru.complitex.common.wicket.datatable.FilterDataTable;
 import ru.complitex.common.wicket.form.DateTextFieldFormGroup;
 import ru.complitex.common.wicket.form.TextFieldFormGroup;
 import ru.complitex.common.wicket.util.ComponentUtil;
+import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.component.datatable.DomainActionColumn;
 import ru.complitex.domain.component.datatable.DomainColumn;
 import ru.complitex.domain.component.datatable.DomainIdColumn;
@@ -140,7 +147,11 @@ public class WorkerPage extends BasePage{
                     filterWrapper.setAscending(getSort().isAscending());
                 }
 
-                return domainMapper.getDomains(filterWrapper).iterator();
+                List<Domain> list =  domainMapper.getDomains(filterWrapper);
+
+                list.forEach(d -> d.getMap().put("subWorkersCount", workerMapper.getSubWorkersCount(d.getObjectId())));
+
+                return list.iterator();
             }
 
             @Override
@@ -373,6 +384,32 @@ public class WorkerPage extends BasePage{
 
         columns.add(new DomainIdColumn());
         getEntityAttributes().forEach(a -> columns.add(new DomainColumn(a)));
+
+        columns.add(new AbstractDomainColumn(new ResourceModel("subWorkersCount"),
+                new SortProperty("subWorkersCount")) {
+            @Override
+            public void populateItem(Item<ICellPopulator<Domain>> cellItem, String componentId, IModel<Domain> rowModel) {
+                cellItem.add(new Label(componentId, rowModel.getObject().getMap().get("subWorkersCount") + ""));
+            }
+
+            @Override
+            public Component getFilter(String componentId, FilterForm<?> form) {
+                return new TextFilter<>(componentId, Model.of(""), form);
+            }
+        });
+
+        columns.add(new AbstractDomainColumn(new ResourceModel("level"), new SortProperty("level")) {
+            @Override
+            public void populateItem(Item<ICellPopulator<Domain>> cellItem, String componentId, IModel<Domain> rowModel) {
+                cellItem.add(new Label(componentId,  rowModel.getObject().getText(Worker.ANCESTRY).split("/").length));
+            }
+
+            @Override
+            public Component getFilter(String componentId, FilterForm<?> form) {
+                return new TextFilter<>(componentId, Model.of(""), form);
+            }
+        });
+
         columns.add(new DomainActionColumn(WorkerPage.class));
 
         FilterDataTable<Domain> table = new FilterDataTable<>("table", columns, dataProvider, form, 10);

@@ -61,7 +61,11 @@ public class DomainListPage extends BasePage{
                     filterWrapper.setAscending(getSort().isAscending());
                 }
 
-                return domainMapper.getDomains(filterWrapper).iterator();
+                List<Domain> list =  domainMapper.getDomains(filterWrapper);
+
+                onDataLoad(list);
+
+                return list.iterator();
             }
 
             @Override
@@ -88,6 +92,9 @@ public class DomainListPage extends BasePage{
         }
 
         getEntityAttributes(entity).forEach(a -> columns.add(new DomainColumn(a)));
+
+        onAddColumns(columns);
+
         columns.add(new DomainActionColumn(editPageClass));
 
         FilterDataTable<Domain> table = new FilterDataTable<>("table", columns, dataProvider, filterForm, 10);
@@ -111,5 +118,11 @@ public class DomainListPage extends BasePage{
 
     protected boolean isShowHeader(){
         return true;
+    }
+
+    protected void onDataLoad(List<Domain> list){
+    }
+
+    protected void onAddColumns(List<IColumn<Domain, SortProperty>> columns){
     }
 }

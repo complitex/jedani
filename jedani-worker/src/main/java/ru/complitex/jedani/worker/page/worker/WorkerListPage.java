@@ -1,11 +1,26 @@
 package ru.complitex.jedani.worker.page.worker;
 
+import org.apache.wicket.Component;
+import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.TextFilter;
+import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.repeater.Item;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
+import org.apache.wicket.model.ResourceModel;
 import ru.complitex.address.entity.City;
 import ru.complitex.address.entity.Region;
+import ru.complitex.common.entity.SortProperty;
+import ru.complitex.domain.component.datatable.AbstractDomainColumn;
+import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.page.DomainListPage;
 import ru.complitex.domain.service.EntityService;
+import ru.complitex.jedani.worker.entity.Worker;
+import ru.complitex.jedani.worker.mapper.WorkerMapper;
 import ru.complitex.name.entity.FirstName;
 import ru.complitex.name.entity.LastName;
 import ru.complitex.name.entity.MiddleName;
@@ -21,8 +36,11 @@ import static ru.complitex.jedani.worker.entity.Worker.*;
  * 20.12.2017 7:11
  */
 public class WorkerListPage extends DomainListPage{
-   @Inject
-   private EntityService entityService;
+    @Inject
+    private EntityService entityService;
+
+    @Inject
+    private WorkerMapper workerMapper;
 
     public WorkerListPage() {
         super("worker", WorkerPage.class);
@@ -49,7 +67,7 @@ public class WorkerListPage extends DomainListPage{
         entityService.setRefEntityAttribute(entity, CITY_IDS, City.ENTITY_NAME, City.NAME);
         list.add(entity.getEntityAttribute(CITY_IDS));
 
-        list.add(entity.getEntityAttribute(BIRTHDAY));
+//        list.add(entity.getEntityAttribute(BIRTHDAY));
         list.add(entity.getEntityAttribute(PHONE));
         list.add(entity.getEntityAttribute(EMAIL));
         list.add(entity.getEntityAttribute(INVOLVED_AT));
@@ -57,6 +75,39 @@ public class WorkerListPage extends DomainListPage{
         //todo кол-во сотрудников и уровней
 
         return list;
+    }
+
+    @Override
+    protected void onDataLoad(List<Domain> list) {
+        list.forEach(d -> d.getMap().put("subWorkersCount", workerMapper.getSubWorkersCount(d.getObjectId())));
+    }
+
+    @Override
+    protected void onAddColumns(List<IColumn<Domain, SortProperty>> columns) {
+        columns.add(new AbstractDomainColumn(new ResourceModel("subWorkersCount"),
+                new SortProperty("subWorkersCount")) {
+            @Override
+            public void populateItem(Item<ICellPopulator<Domain>> cellItem, String componentId, IModel<Domain> rowModel) {
+                cellItem.add(new Label(componentId, rowModel.getObject().getMap().get("subWorkersCount") + ""));
+            }
+
+            @Override
+            public Component getFilter(String componentId, FilterForm<?> form) {
+                return new TextFilter<>(componentId, Model.of(""), form);
+            }
+        });
+
+        columns.add(new AbstractDomainColumn(new ResourceModel("level"), new SortProperty("level")) {
+            @Override
+            public void populateItem(Item<ICellPopulator<Domain>> cellItem, String componentId, IModel<Domain> rowModel) {
+                cellItem.add(new Label(componentId,  rowModel.getObject().getText(Worker.ANCESTRY).split("/").length));
+            }
+
+            @Override
+            public Component getFilter(String componentId, FilterForm<?> form) {
+                return new TextFilter<>(componentId, Model.of(""), form);
+            }
+        });
     }
 
     @Override

@@ -25,6 +25,8 @@ public class Domain implements Serializable{
 
     private List<Attribute> attributes = new ArrayList<>();
 
+    private Map<String, Object> map = new HashMap<>();
+
     public Domain() {
     }
 
@@ -256,5 +258,13 @@ public class Domain implements Serializable{
 
     public void setAttributes(List<Attribute> attributes) {
         this.attributes = attributes;
+    }
+
+    public Map<String, Object> getMap() {
+        return map;
+    }
+
+    public void setMap(Map<String, Object> map) {
+        this.map = map;
     }
 }

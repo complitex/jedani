@@ -22,5 +22,9 @@ public class WorkerMapper implements Serializable {
         return sqlSession.selectOne("selectIsExistJId", jid);
     }
 
+    public int getSubWorkersCount(Long objectId){
+        return sqlSession.selectOne("selectSubWorkersCount", objectId);
+    }
+
 }
 
