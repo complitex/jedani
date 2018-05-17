@@ -299,10 +299,14 @@ public class WorkerPage extends BasePage{
                     worker.setNumber(FIRST_NAME, nameService.getOrCreateFirstName(firstName.getInput(), worker.getNumber(FIRST_NAME)));
                     worker.setNumber(MIDDLE_NAME, nameService.getOrCreateMiddleName(middleName.getInput(), worker.getNumber(MIDDLE_NAME)));
 
-                    if (worker.getText(Worker.ANCESTRY) == null && manager != null){
-                        worker.setText(Worker.ANCESTRY, !Strings.isNullOrEmpty(manager.getText(Worker.ANCESTRY))
-                                ? manager.getText(Worker.ANCESTRY) + "/" + manager.getObjectId()
-                                : manager.getObjectId() + "");
+                    if (worker.getText(Worker.ANCESTRY) == null){
+                        if (manager != null) {
+                            worker.setText(Worker.ANCESTRY, !Strings.isNullOrEmpty(manager.getText(Worker.ANCESTRY))
+                                    ? manager.getText(Worker.ANCESTRY) + "/" + manager.getObjectId()
+                                    : manager.getObjectId() + "");
+                        }else{
+                            worker.setText(Worker.ANCESTRY, "");
+                        }
 
                         //todo update path
                     }
