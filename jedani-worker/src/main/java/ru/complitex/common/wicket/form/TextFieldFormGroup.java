@@ -38,10 +38,8 @@ public class TextFieldFormGroup<T> extends Panel{
         return this;
     }
 
-    public TextFieldFormGroup onUpdate(SerializableConsumer<AjaxRequestTarget> onUpdate){
+    public void onUpdate(SerializableConsumer<AjaxRequestTarget> onUpdate){
         textField.add(AjaxFormComponentUpdatingBehavior.onUpdate("blur", onUpdate));
-
-        return this;
     }
 
     public TextField<T> getTextField() {

@@ -51,7 +51,7 @@ public class DomainActionColumn extends AbstractDomainColumn {
 
     @Override
     public void populateItem(Item<ICellPopulator<Domain>> cellItem, String componentId, IModel<Domain> rowModel) {
-        cellItem.add(new LinkPanel(componentId, new BootstrapBookmarkablePageLink(LinkPanel.LINK_COMPONENT_ID,
+        cellItem.add(new LinkPanel(componentId, new BootstrapBookmarkablePageLink<>(LinkPanel.LINK_COMPONENT_ID,
                 editPageClass, new PageParameters().add("id", rowModel.getObject().getId()),
                 Buttons.Type.Link).setIconType(GlyphIconType.edit).setSize(Buttons.Size.Small)));
     }

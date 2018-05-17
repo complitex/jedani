@@ -33,7 +33,7 @@ public class DomainAutoComplete extends Panel {
     @Inject
     private EntityAttributeMapper entityAttributeMapper;
 
-    private AutoCompleteTextField autoCompleteTextField;
+    private AutoCompleteTextField<Attribute> autoCompleteTextField;
 
     public DomainAutoComplete(String id, String entityName, Long entityAttributeId, IModel<Long> model) {
         super(id);
@@ -141,7 +141,7 @@ public class DomainAutoComplete extends Panel {
         add(autoCompleteTextField);
     }
 
-    public AutoCompleteTextField getAutoCompleteTextField() {
+    public AutoCompleteTextField<Attribute> getAutoCompleteTextField() {
         return autoCompleteTextField;
     }
 

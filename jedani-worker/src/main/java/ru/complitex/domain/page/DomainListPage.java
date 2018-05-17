@@ -40,8 +40,8 @@ public class DomainListPage extends BasePage{
     @Inject
     private DomainMapper domainMapper;
 
-    public DomainListPage(String entityName, String parentEntityName, Long parentEntityAttributeId,
-                          Class<? extends WebPage> editPageClass) {
+    public <P extends WebPage> DomainListPage(String entityName, String parentEntityName, Long parentEntityAttributeId,
+                          Class<P> editPageClass) {
         Entity entity = entityMapper.getEntity(entityName);
 
         add(new Label("header", entity.getValue() != null ? entity.getValue().getText() : "[" + entityName + "]")

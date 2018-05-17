@@ -177,7 +177,7 @@ public class WorkerPage extends BasePage{
                 Position.ENTITY_NAME, Position.NAME));
 
 
-        TextFieldFormGroup jId = new TextFieldFormGroup<>("jId", new PropertyModel<>(worker.getAttribute(Worker.J_ID), "text"));
+        TextFieldFormGroup<String> jId = new TextFieldFormGroup<>("jId", new PropertyModel<>(worker.getAttribute(Worker.J_ID), "text"));
         jId.setRequired(true);
 
         if (worker.getObjectId() == null) {
