@@ -6,6 +6,7 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.image.GlyphIconType;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.extensions.ajax.markup.html.AjaxIndicatorAppender;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
 import org.apache.wicket.markup.html.WebPage;
@@ -19,8 +20,15 @@ import ru.complitex.domain.entity.Domain;
  * @author Anatoly A. Ivanov
  * 20.12.2017 3:19
  */
-public class DomainActionColumn extends AbstractDomainColumn{
+public class DomainActionColumn extends AbstractDomainColumn {
     private Class<? extends WebPage> editPageClass;
+
+    private AjaxIndicatorAppender ajaxIndicatorAppender = new AjaxIndicatorAppender(){
+        @Override
+        protected String getSpanClass() {
+            return super.getSpanClass() + " btn-sm";
+        }
+    };
 
     public DomainActionColumn(Class<? extends WebPage> editPageClass) {
         this.editPageClass = editPageClass;
@@ -28,7 +36,7 @@ public class DomainActionColumn extends AbstractDomainColumn{
 
     @Override
     public Component getHeader(String componentId) {
-        return super.getHeader(componentId);
+        return super.getHeader(componentId).add(ajaxIndicatorAppender);
     }
 
     @Override
@@ -51,5 +59,9 @@ public class DomainActionColumn extends AbstractDomainColumn{
     @Override
     public String getCssClass() {
         return "domain-id-column";
+    }
+
+    public AjaxIndicatorAppender getAjaxIndicatorAppender() {
+        return ajaxIndicatorAppender;
     }
 }
