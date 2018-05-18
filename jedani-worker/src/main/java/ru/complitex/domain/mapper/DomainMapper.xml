@@ -62,6 +62,13 @@
         left join ${object.entityName}_attribute a on a.object_id = d.object_id
         left join `${object.entityName}_value` v on v.attribute_id = a.id
 
+        <foreach collection="object.attributes" index="i" item="a">
+            <if test="a.text != null or a.number != null">
+                left join ${object.entityName}_attribute a${i} on a${i}.object_id = d.object_id
+                left join `${object.entityName}_value` v${i} on v${i}.attribute_id = a${i}.id
+            </if>
+        </foreach>
+
         <if test="sortProperty != null">
             <if test="sortProperty.key in {'text', 'number', 'date', 'value'}">
                 left join ${object.entityName}_attribute sort_a on sort_a.object_id = d.object_id and
@@ -84,23 +91,22 @@
                 and (d.parent_id = #{object.parentId})
             </if>
 
-            <foreach collection="object.attributes" item="i" separator="and">
-                <if test="i.text != null">
+            <foreach collection="object.attributes" index="i" item="a">
+                <if test="a.text != null">
                     <choose>
                         <when test="filter == 'equal'">
-                            and (a.entity_attribute_id = #{i.entityAttributeId} and (a.text = #{i.text} or
-                                v.text = #{i.text}))
+                            and (a${i}.entity_attribute_id = #{a.entityAttributeId} and (a${i}.text = #{a.text} or
+                                v${i}.text = #{a.text}))
                         </when>
                         <otherwise>
-                            and (a.entity_attribute_id = #{i.entityAttributeId} and (a.text like concat('%', #{i.text}, '%') or
-                                v.text like concat('%', #{i.text}, '%')))
+                            and (a${i}.entity_attribute_id = #{a.entityAttributeId}
+                              and (a${i}.text like concat('%', #{a.text}, '%') or v${i}.text like concat('%', #{a.text}, '%')))
                         </otherwise>
                     </choose>
                 </if>
-                <!--todo number -> id-->
-                <!--todo multy attribute -->
-                <if test="i.number != null">
-                    and (a.entity_attribute_id = #{i.entityAttributeId} and a.number = #{i.number})
+
+                <if test="a.number != null">
+                    and (a${i}.entity_attribute_id = #{a.entityAttributeId} and a${i}.number = #{a.number})
                 </if>
             </foreach>
 
