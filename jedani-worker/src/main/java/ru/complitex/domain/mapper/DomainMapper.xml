@@ -106,7 +106,8 @@
                 </if>
 
                 <if test="a.number != null">
-                    and (a${i}.entity_attribute_id = #{a.entityAttributeId} and a${i}.number = #{a.number})
+                    and (a${i}.entity_attribute_id = #{a.entityAttributeId} and (a${i}.number = #{a.number}) or
+                      (a${i}.json is not null and json_contains(a${i}.json, '${a.number}')))
                 </if>
             </foreach>
 
