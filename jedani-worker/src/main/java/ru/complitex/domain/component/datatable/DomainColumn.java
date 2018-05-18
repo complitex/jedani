@@ -71,23 +71,26 @@ public class DomainColumn extends AbstractDomainColumn {
 
                 return new TextFilter<>(componentId, model, form);
             case ENTITY:
-                Entity entity = getEntityMapper().getEntity(entityAttribute.getReferenceId());
+            case JSON:
+                if (entityAttribute.getRefEntityAttribute() != null) {
+                    Entity entity = getEntityMapper().getEntity(entityAttribute.getReferenceId());
 
-                return new DomainAutoComplete(componentId, entity.getName(),
-                        1L,
-                        new IModel<Long>() { //todo number model
-                            @Override
-                            public Long getObject() {
-                                return ((Domain)((FilterWrapper)form.getDefaultModelObject()).getObject())
-                                        .getNumber(entityAttribute.getEntityAttributeId());
-                            }
+                    return new DomainAutoComplete(componentId, entity.getName(),
+                            entityAttribute.getRefEntityAttribute().getEntityAttributeId(),
+                            new IModel<Long>() {
+                                @Override
+                                public Long getObject() {
+                                    return ((Domain)((FilterWrapper)form.getDefaultModelObject()).getObject())
+                                            .getNumber(entityAttribute.getEntityAttributeId());
+                                }
 
-                            @Override
-                            public void setObject(Long object) {
-                                ((Domain)((FilterWrapper)form.getDefaultModelObject()).getObject())
-                                        .setNumber(entityAttribute.getEntityAttributeId(), object);
-                            }
-                        });
+                                @Override
+                                public void setObject(Long object) {
+                                    ((Domain)((FilterWrapper)form.getDefaultModelObject()).getObject())
+                                            .setNumber(entityAttribute.getEntityAttributeId(), object);
+                                }
+                            });
+                }
             default:
                 model = new IModel<String>() {
                     @Override

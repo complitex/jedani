@@ -28,6 +28,8 @@ import java.util.List;
 public class FilterDataTable<T extends Serializable> extends DataTable<T, SortProperty> implements IAjaxIndicatorAware {
     private AjaxIndicatorAppender ajaxIndicatorAppender;
 
+    private boolean hideOnEmpty = false;
+
     public FilterDataTable(String id, List<? extends IColumn<T, SortProperty>> columns, DataProvider<T> dataProvider,
                            FilterForm<FilterWrapper<T>> filterForm, long rowsPerPage) {
         super(id, columns, dataProvider, rowsPerPage);
@@ -40,7 +42,7 @@ public class FilterDataTable<T extends Serializable> extends DataTable<T, SortPr
         addTopToolbar(new AjaxFallbackHeadersToolbar<SortProperty>(this, dataProvider){
             @Override
             public boolean isVisible() {
-                return FilterDataTable.this.getRowCount() > 0;
+                return !hideOnEmpty || FilterDataTable.this.getRowCount() > 0;
             }
         });
 
@@ -55,7 +57,7 @@ public class FilterDataTable<T extends Serializable> extends DataTable<T, SortPr
 
             @Override
             public boolean isVisible() {
-                return FilterDataTable.this.getRowCount() > 0;
+                return !hideOnEmpty || FilterDataTable.this.getRowCount() > 0;
             }
         });
 
@@ -80,5 +82,21 @@ public class FilterDataTable<T extends Serializable> extends DataTable<T, SortPr
     @Override
     public String getAjaxIndicatorMarkupId() {
         return ajaxIndicatorAppender.getMarkupId();
+    }
+
+    public AjaxIndicatorAppender getAjaxIndicatorAppender() {
+        return ajaxIndicatorAppender;
+    }
+
+    public void setAjaxIndicatorAppender(AjaxIndicatorAppender ajaxIndicatorAppender) {
+        this.ajaxIndicatorAppender = ajaxIndicatorAppender;
+    }
+
+    public boolean isHideOnEmpty() {
+        return hideOnEmpty;
+    }
+
+    public void setHideOnEmpty(boolean hideOnEmpty) {
+        this.hideOnEmpty = hideOnEmpty;
     }
 }

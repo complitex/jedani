@@ -186,7 +186,7 @@ public class WorkerPage extends BasePage{
                     jId.getTextField().error(getString("error_jid_exist"));
                 }
 
-                ((AjaxRequestTarget)target).add(jId);
+                target.add(jId);
             });
         }
 
@@ -417,6 +417,7 @@ public class WorkerPage extends BasePage{
         columns.add(new DomainActionColumn(WorkerPage.class));
 
         FilterDataTable<Domain> table = new FilterDataTable<>("table", columns, dataProvider, form, 10);
+        table.setHideOnEmpty(worker.getObjectId() == null);
         form.add(table);
     }
 

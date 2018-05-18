@@ -105,8 +105,8 @@
             </foreach>
 
             <if test="map.entityAttributeId != null and map.endWith != null">
-                and (a.entity_attribute_id = #{map.entityAttributeId} and (a.text like concat ('%', #{map.endWith}))
-                  <if test="map.orEqual != null">or a.text = #{map.orEqual}</if>)
+                and (a.entity_attribute_id = #{map.entityAttributeId} and (a.text like concat ('%', #{map.endWith})
+                  <if test="map.orEqual != null">or a.text = #{map.orEqual}</if>) and a.status = 1)
             </if>
 
             <choose>
