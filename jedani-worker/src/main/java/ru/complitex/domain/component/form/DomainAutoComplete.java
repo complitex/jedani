@@ -45,7 +45,16 @@ public class DomainAutoComplete extends Panel {
 
         EntityAttribute entityAttribute = entityAttributeMapper.getEntityAttribute(entityName, entityAttributeId);
 
-        IModel<Attribute> attributeModel = new Model<>();
+        IModel<Attribute> attributeModel = new Model<Attribute>(){
+            @Override
+            public void setObject(Attribute attribute) {
+                if (attribute == null){
+                    model.setObject(null);
+                }
+
+                super.setObject(attribute);
+            }
+        };
 
         if (model.getObject() != null){
             attributeModel.setObject(domainMapper.getDomain(entityName, model.getObject())
@@ -73,7 +82,12 @@ public class DomainAutoComplete extends Panel {
                     protected CharSequence getOnSelectJavaScriptExpression(Attribute item) {
                         return "$('#" + inputId.getMarkupId() + "').val('" + item.getObjectId() + "'); input";
                     }
-                }, new AutoCompleteSettings().setAdjustInputWidth(true).setShowListOnFocusGain(true).setPreselect(true)) {
+                },
+                new AutoCompleteSettings()
+                        .setAdjustInputWidth(true)
+                        .setShowListOnFocusGain(true)
+                        .setPreselect(true)
+        ) {
             @Override
             protected Iterator<Attribute> getChoices(String input) {
                 Domain domain = new Domain(entityName);
@@ -101,8 +115,8 @@ public class DomainAutoComplete extends Panel {
 
                             switch (entityAttribute.getValueType()){
                                 case VALUE:
-                                     attribute.setValue(s, Locales.getLocaleId(locale));
-                                     break;
+                                    attribute.setValue(s, Locales.getLocaleId(locale));
+                                    break;
                                 case TEXT:
                                     attribute.setText(s);;
                                     break;

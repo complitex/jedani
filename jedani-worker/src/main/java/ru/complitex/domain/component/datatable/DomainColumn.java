@@ -70,7 +70,7 @@ public class DomainColumn extends AbstractDomainColumn {
                 };
 
                 return new TextFilter<>(componentId, model, form);
-            case ENTITY: //todo test reset filter
+            case ENTITY:
                 Entity entity = getEntityMapper().getEntity(entityAttribute.getReferenceId());
 
                 return new DomainAutoComplete(componentId, entity.getName(),
