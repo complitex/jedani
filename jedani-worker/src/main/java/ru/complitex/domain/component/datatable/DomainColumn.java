@@ -1,9 +1,6 @@
 package ru.complitex.domain.component.datatable;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.wicket.Component;
-import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.cdi.NonContextual;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
@@ -22,7 +19,6 @@ import ru.complitex.domain.mapper.DomainMapper;
 import ru.complitex.domain.mapper.EntityMapper;
 import ru.complitex.domain.util.Locales;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -71,7 +67,7 @@ public class DomainColumn extends AbstractDomainColumn {
 
                 return new TextFilter<>(componentId, model, form);
             case ENTITY:
-            case JSON:
+            case ENTITY_VALUE:
                 if (entityAttribute.getRefEntityAttribute() != null) {
                     Entity entity = getEntityMapper().getEntity(entityAttribute.getReferenceId());
 
@@ -111,8 +107,6 @@ public class DomainColumn extends AbstractDomainColumn {
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
 
-    private ObjectMapper objectMapper = new ObjectMapper();
-
     @Override
     public void populateItem(Item<ICellPopulator<Domain>> cellItem, String componentId, IModel<Domain> rowModel) {
         String text = "";
@@ -120,7 +114,7 @@ public class DomainColumn extends AbstractDomainColumn {
         Attribute attribute = rowModel.getObject().getOrCreateAttribute(entityAttribute.getEntityAttributeId());
 
         switch (entityAttribute.getValueType()){
-            case VALUE:
+            case TEXT_VALUE:
                 Value value = attribute.getValue(Locales.getSystemLocaleId());
                 text = value != null ? value.getText() : null;
 
@@ -146,33 +140,25 @@ public class DomainColumn extends AbstractDomainColumn {
 
                 break;
 
-            case JSON:
-                if (attribute.getJson() != null){
+            case ENTITY_VALUE:
+                if (attribute.getValues() != null){
                     EntityAttribute refEA = entityAttribute.getRefEntityAttribute();
 
                     if (refEA != null){
-                        try {
-                            List<Long> list = objectMapper.readValue(attribute.getJson(), new TypeReference<List<Long>>(){});
+                        List<Long> list = attribute.getValues().stream()
+                                .map(Value::getNumber)
+                                .collect(Collectors.toList());
 
-                            text = list.stream()
-                                    .map(id -> getDomainMapper().getDomain(refEA.getEntityName(), id)
-                                            .getValueText(refEA.getEntityAttributeId()))
-                                    .collect(Collectors.joining(", "));
-                        } catch (IOException e) {
-                            log.error("error parse json ", e);
-
-                            throw new WicketRuntimeException(e);
-                        }
+                        text = list.stream()
+                                .map(id -> getDomainMapper().getDomain(refEA.getEntityName(), id)
+                                        .getValueText(refEA.getEntityAttributeId()))
+                                .collect(Collectors.joining(", "));
                     }else{
-                        try {
-                            List<String> list = objectMapper.readValue(attribute.getJson(), new TypeReference<List<String>>(){});
+                        List<String> list = attribute.getValues().stream()
+                                .map(Value::getText)
+                                .collect(Collectors.toList());
 
-                            text = String.join(", ", list);
-                        } catch (IOException e) {
-                            log.error("error parse json ", e);
-
-                            throw new WicketRuntimeException(e);
-                        }
+                        text = String.join(", ", list);
                     }
                 }
 

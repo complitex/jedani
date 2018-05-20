@@ -23,15 +23,13 @@ public class AttributeMapper extends BaseMapper {
         }
         if (attribute.getDate() != null){
             sqlSession().insert("insertAttributeWithDate", attribute);
-        }else if (attribute.getJson() != null){
-            sqlSession().insert("insertAttributeWithJson", attribute);
         }else{
             sqlSession().insert("insertAttribute", attribute);
         }
 
         if (attribute.getValues() != null){
             attribute.getValues().stream()
-                    .filter(s -> s.getText() != null)
+                    .filter(v -> v.getText() != null || v.getNumber() != null)
                     .forEach(s -> {
                         s.setEntityName(attribute.getEntityName());
                         s.setAttributeId(attribute.getId());

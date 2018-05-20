@@ -41,7 +41,7 @@ public class NameService implements Serializable {
         }
 
         Domain domain = new Domain(entityName);
-        domain.setValue(entityAttributeId, name);
+        domain.setTextValue(entityAttributeId, name);
 
         domainMapper.insertDomain(domain);
 

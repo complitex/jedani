@@ -10,6 +10,10 @@ import ru.complitex.domain.entity.Value;
 public class ValueMapper extends BaseMapper {
 
     public void insertValue(Value value){
-        sqlSession().insert("insertValue", value);
+        if (value.getNumber() != null) {
+            sqlSession().insert("insertValueWithNumber", value);
+        } else {
+            sqlSession().insert("insertValue", value);
+        }
     }
 }

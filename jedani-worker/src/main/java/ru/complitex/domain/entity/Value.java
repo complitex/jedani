@@ -1,10 +1,6 @@
 package ru.complitex.domain.entity;
 
-import ru.complitex.domain.util.Locales;
-
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author Anatoly A. Ivanov
@@ -15,6 +11,7 @@ public class Value implements Serializable{
     private Long attributeId;
     private Long localeId;
     private String text;
+    private Long number;
 
     private String entityName;
 
@@ -28,16 +25,6 @@ public class Value implements Serializable{
     public Value(Long localeId, String text) {
         this.localeId = localeId;
         this.text = text;
-    }
-
-    public static List<Value> newValues() {
-        List<Value> values = new ArrayList<>();
-
-        for (Long localeId : Locales.getLocaleIds()){
-            values.add(new Value(localeId));
-        }
-
-        return values;
     }
 
     public Long getId() {
@@ -70,6 +57,14 @@ public class Value implements Serializable{
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public Long getNumber() {
+        return number;
+    }
+
+    public void setNumber(Long number) {
+        this.number = number;
     }
 
     public String getEntityName() {

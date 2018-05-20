@@ -68,10 +68,6 @@ public class Domain implements Serializable{
         getOrCreateAttribute(entityAttributeId).setDate(date);
     }
 
-    public void setJson(Long entityAttributeId, String json){
-        getOrCreateAttribute(entityAttributeId).setJson(json);
-    }
-
     public Attribute getOrCreateAttribute(Long entityAttributeId) {
         return attributes.stream()
                 .filter(a -> a.getEntityAttributeId().equals(entityAttributeId))
@@ -117,12 +113,6 @@ public class Domain implements Serializable{
         return attribute != null ? attribute.getNumber() : null;
     }
 
-    public String getJson(Long entityAttributeId){
-        return Optional.ofNullable(getAttribute(entityAttributeId))
-                .map(Attribute::getJson)
-                .orElse(null);
-    }
-
     public Date getDate(Long entityAttributeId){
         return Optional.ofNullable(getAttribute(entityAttributeId))
                 .map(Attribute::getDate)
@@ -146,14 +136,28 @@ public class Domain implements Serializable{
         return getValueText(entityAttributeId, Locales.getSystemLocale());
     }
 
-    public void setValue(Long entityAttributeId, String value, Locale locale){
-        getOrCreateAttribute(entityAttributeId).setValue(value, Locales.getLocaleId(locale));
+    public void setTextValue(Long entityAttributeId, String value, Locale locale){
+        getOrCreateAttribute(entityAttributeId).setTextValue(value, Locales.getLocaleId(locale));
     }
 
-    public Domain setValue(Long entityAttributeId, String value){
-        setValue(entityAttributeId, value, Locales.getSystemLocale());
+    public void setTextValue(Long entityAttributeId, String value){
+        setTextValue(entityAttributeId, value, Locales.getSystemLocale());
+    }
 
-        return this;
+    public void addTextValue(Long entityAttributeId, String text){
+        getOrCreateAttribute(entityAttributeId).addTextValue(text);
+    }
+
+    public void addNumberValue(Long entityAttributeId, Long number){
+        getOrCreateAttribute(entityAttributeId).addNumberValue(number);
+    }
+
+    public List<Long> getNumberValues(Long entityAttributeId){
+        return getOrCreateAttribute(entityAttributeId).getNumberValues();
+    }
+
+    public List<String> getTextValues(Long entityAttributeId){
+        return getOrCreateAttribute(entityAttributeId).getTextValues();
     }
 
     public boolean hasValueText(Long entityAttributeId, String value){

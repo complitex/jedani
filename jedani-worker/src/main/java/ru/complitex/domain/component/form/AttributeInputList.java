@@ -1,8 +1,5 @@
 package ru.complitex.domain.component.form;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -15,9 +12,6 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.util.ListModel;
 import ru.complitex.domain.entity.Attribute;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * @author Anatoly A. Ivanov
  * 15.04.2018 22:35
@@ -28,15 +22,7 @@ public class AttributeInputList extends FormComponentPanel<Attribute> {
     public AttributeInputList(String id, IModel<Attribute> model) {
         super(id, model);
 
-        List<String> list;
-
-        try {
-            list = new ObjectMapper().readValue(model.getObject().getJson(), new TypeReference<List<String>>(){});
-        } catch (Exception e) {
-            list = new ArrayList<>();
-        }
-
-        listModel.setObject(list);
+        listModel.setObject(model.getObject().getTextValues());
 
         WebMarkupContainer container = new WebMarkupContainer("container");
         container.setOutputMarkupId(true);
@@ -73,13 +59,13 @@ public class AttributeInputList extends FormComponentPanel<Attribute> {
     @SuppressWarnings("Duplicates")
     @Override
     public void convertInput() {
-        ArrayNode array = new ObjectMapper().createArrayNode();
-
-        listModel.getObject().forEach(array::add);
-
         Attribute attribute = getModelObject();
 
-        attribute.setJson(array.toString());
+        if (attribute != null){
+            attribute.getValues().clear();
+
+            listModel.getObject().forEach(attribute::addTextValue);
+        }
 
         setConvertedInput(attribute);
     }

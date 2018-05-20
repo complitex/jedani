@@ -79,7 +79,7 @@ public abstract class DomainEditPage extends BasePage{
                     case TEXT:
                     case DECIMAL:
                     case BOOLEAN:
-                    case JSON:
+                    case ENTITY_VALUE:
                         input1 = new TextField<>("input1", new PropertyModel<>(attribute, "text"));
                         break;
                     case DATE:
@@ -89,7 +89,7 @@ public abstract class DomainEditPage extends BasePage{
                     case NUMBER:
                         input1 = new TextField<>("input1", new PropertyModel<>(attribute, "number"));
                         break;
-                    case VALUE:
+                    case TEXT_VALUE:
                         input1 = new TextField<>("input1", new PropertyModel<>(attribute.getOrCreateValue(Locales.getLocaleId(Locales.RU)), "text"));
                         input2 = new TextField<>("input2", new PropertyModel<>(attribute.getOrCreateValue(Locales.getLocaleId(Locales.UA)), "text"));
                         break;

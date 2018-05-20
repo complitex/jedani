@@ -67,7 +67,7 @@ public class DomainAutoComplete extends Panel {
                     @Override
                     protected String getTextValue(Attribute attribute) {
                         switch (entityAttribute.getValueType()){
-                            case VALUE:
+                            case TEXT_VALUE:
                                 return attribute.getOrCreateValue(Locales.getSystemLocaleId()).getText();
                             case TEXT:
                                 return attribute.getText();
@@ -114,8 +114,8 @@ public class DomainAutoComplete extends Panel {
                             Attribute attribute = new Attribute(entityAttributeId);
 
                             switch (entityAttribute.getValueType()){
-                                case VALUE:
-                                    attribute.setValue(s, Locales.getLocaleId(locale));
+                                case TEXT_VALUE:
+                                    attribute.setTextValue(s, Locales.getLocaleId(locale));
                                     break;
                                 case TEXT:
                                     attribute.setText(s);;
@@ -135,7 +135,7 @@ public class DomainAutoComplete extends Panel {
                         @Override
                         public String convertToString(Attribute attribute, Locale locale) {
                             switch (entityAttribute.getValueType()){
-                                case VALUE:
+                                case TEXT_VALUE:
                                     return attribute.getOrCreateValue(Locales.getSystemLocaleId()).getText();
                                 case TEXT:
                                     return attribute.getText();

@@ -1,8 +1,5 @@
 package ru.complitex.domain.component.form;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -22,7 +19,6 @@ import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.mapper.DomainMapper;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +37,7 @@ public class AttributeSelectList extends FormComponentPanel<Attribute> {
 
     private SerializableConsumer<AjaxRequestTarget> onChange;
 
-    public AttributeSelectList(String id, IModel<Attribute> model, String refEntityName, //todo json model
+    public AttributeSelectList(String id, IModel<Attribute> model, String refEntityName,
                                Long refEntityAttributeId, IModel<List<Long>> parentListModel) {
         super(id, model);
 
@@ -57,15 +53,7 @@ public class AttributeSelectList extends FormComponentPanel<Attribute> {
         Map<Long, String> names = domains.stream().collect(Collectors.toMap(Domain::getId,
                 d -> d.getValueText(refEntityAttributeId, getLocale())));
 
-        List<Long> list;
-
-        try {
-            list = new ObjectMapper().readValue(model.getObject().getJson(), new TypeReference<List<Long>>(){});
-        } catch (Exception e) {
-            list = new ArrayList<>();
-        }
-
-        listModel.setObject(list);
+        listModel.setObject(model.getObject().getNumberValues());
 
         ListView<Long> listView = new ListView<Long>("selects", listModel) {
             @Override
@@ -133,19 +121,15 @@ public class AttributeSelectList extends FormComponentPanel<Attribute> {
     @SuppressWarnings("Duplicates")
     @Override
     public void convertInput() {
-        ArrayNode array = new ObjectMapper().createArrayNode();
-
-        listModel.getObject().forEach(array::add);
-
         Attribute attribute = getModelObject();
 
         if (attribute != null){
-            attribute.setJson(array.toString());
+            attribute.getValues().clear();
 
-            setConvertedInput(attribute);
-        }else{
-            setConvertedInput(null);
+            listModel.getObject().forEach(n -> getModelObject().addNumberValue(n));
         }
+
+        setConvertedInput(attribute);
     }
 
     public IModel<List<Long>> getListModel() {

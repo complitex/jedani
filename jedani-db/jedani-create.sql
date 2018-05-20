@@ -665,16 +665,18 @@ DROP TABLE IF EXISTS `worker_value`;
 CREATE TABLE `worker_value` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Суррогатный ключ',
   `attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор атрибута',
-  `locale_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор локали',
+  `locale_id` BIGINT(20) COMMENT 'Идентификатор локали',
   `text` VARCHAR(1000) COMMENT 'Текстовое значение',
+  `number` BIGINT(20) COMMENT 'Числовое значение',
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_id__locale` (`attribute_id`,`locale_id`),
   KEY `key_attribute_id` (`attribute_id`),
   KEY `key_locale` (`locale_id`),
-  KEY `key_value` (`text`(128)),
+  KEY `key_text` (`text`(128)),
+  KEY `key_number` (`number`),
   CONSTRAINT `fk_worker_value__worker_attribute` FOREIGN KEY (`attribute_id`) REFERENCES `worker_attribute` (`id`),
   CONSTRAINT `fk_worker_value__locale` FOREIGN KEY (`locale_id`) REFERENCES `locale` (`id`)
-) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Локализация атрибутов сотрудника';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Значения атрибутов сотрудника';
 
 -- ------------------------------
 -- MK Status

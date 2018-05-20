@@ -3,9 +3,11 @@ package ru.complitex.domain.entity;
 import ru.complitex.domain.util.Locales;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 /**
  * @author Anatoly A. Ivanov
@@ -18,7 +20,6 @@ public class Attribute implements Serializable{
     private String text;
     private Long number;
     private Date date;
-    private String json;
     private Date startDate;
     private Date endDate;
     private Status status;
@@ -36,7 +37,7 @@ public class Attribute implements Serializable{
 
     public Value getValue(Long localeId){
         if (values != null){
-            return values.stream().filter(sc -> sc.getLocaleId().equals(localeId))
+            return values.stream().filter(sc -> localeId.equals(sc.getLocaleId()))
                     .findFirst()
                     .orElse(null);
         }
@@ -44,10 +45,14 @@ public class Attribute implements Serializable{
         return null;
     }
 
-    public Value getOrCreateValue(Long localeId){
+    public void initValues(){
         if (values == null){
-            values = Value.newValues();
+            values = new ArrayList<>();
         }
+    }
+
+    public Value getOrCreateValue(Long localeId){
+        initValues();
 
         Value value = getValue(localeId);
 
@@ -68,14 +73,42 @@ public class Attribute implements Serializable{
         return value != null || Locales.getSystemLocaleId().equals(localeId) ? value : getValue(Locales.getSystemLocaleId());
     }
 
-    public void setValue(String text, Long localeId){
-        if (values == null){
-            values = Value.newValues();
-        }
+    public void setTextValue(String text, Long localeId){
+        initValues();
 
         values.stream().filter(value -> value.getLocaleId().equals(localeId))
                 .findFirst()
                 .ifPresent(value -> value.setText(text));
+    }
+
+    public void addTextValue(String text){
+        initValues();
+
+        Value value = new Value();
+        value.setText(text);
+
+        values.add(value);
+    }
+
+    public void addNumberValue(Long number){
+        initValues();
+
+        Value value = new Value();
+        value.setNumber(number);
+
+        values.add(value);
+    }
+
+    public List<Long> getNumberValues(){
+        initValues();
+
+        return values.stream().map(Value::getNumber).collect(Collectors.toList());
+    }
+
+    public List<String> getTextValues(){
+        initValues();
+
+        return values.stream().map(Value::getText).collect(Collectors.toList());
     }
 
     public Long getId() {
@@ -124,14 +157,6 @@ public class Attribute implements Serializable{
 
     public void setDate(Date date) {
         this.date = date;
-    }
-
-    public String getJson() {
-        return json;
-    }
-
-    public void setJson(String json) {
-        this.json = json;
     }
 
     public Date getStartDate() {

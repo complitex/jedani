@@ -1,6 +1,5 @@
 package ru.complitex.jedani.worker.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import org.apache.commons.lang3.StringUtils;
 import org.mybatis.cdi.Transactional;
@@ -75,7 +74,7 @@ public class ImportService {
 
                 Region region = new Region();
                 region.setExternalId(columns[0]);
-                region.setValue(Region.NAME, columns[1]);
+                region.setTextValue(Region.NAME, columns[1]);
                 if (columns[2] != null) {
                     region.setNumber(Region.MANAGER_ID, Long.parseLong(columns[2]));
                 }
@@ -123,7 +122,7 @@ public class ImportService {
 
                 City city = new City();
                 city.setExternalId(columns[0]);
-                city.setValue(City.NAME, columns[1]);
+                city.setTextValue(City.NAME, columns[1]);
                 city.setParentEntityId(Region.ENTITY_ID);
                 city.setParentId(region.getObjectId());
                 if (!columns[3].isEmpty()) {
@@ -155,8 +154,6 @@ public class ImportService {
 
         SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         SimpleDateFormat dayFormat = new SimpleDateFormat("yyyy-MM-dd");
-
-        ObjectMapper objectMapper = new ObjectMapper();
 
         try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"))){
             String line;
@@ -200,12 +197,12 @@ public class ImportService {
                 worker.setText(Worker.FIRST_NAME, StringUtils.trim(columns[11]));
                 worker.setText(Worker.MIDDLE_NAME, StringUtils.trim(columns[12]));
                 worker.setText(Worker.LAST_NAME, StringUtils.trim(columns[13]));
-                worker.setJson(Worker.PHONE, objectMapper.createArrayNode().add(columns[14]).toString());
+                worker.addTextValue(Worker.PHONE, columns[14]);
 
                 if (columns[15] != null && !columns[15].trim().isEmpty()) {
                     Domain city = domainMapper.getDomainByExternalId("city", columns[15]);
-                    worker.setJson(Worker.CITY_IDS, objectMapper.createArrayNode().add(city.getObjectId()).toString());
-                    worker.setJson(Worker.REGION_IDS, objectMapper.createArrayNode().add(city.getParentId()).toString());
+                    worker.addNumberValue(Worker.CITY_IDS, city.getObjectId());
+                    worker.addNumberValue(Worker.REGION_IDS, city.getParentId());
                 }
 
                 try {
@@ -257,7 +254,7 @@ public class ImportService {
         }catch (Exception e){
             log.error("error import users", e);
 
-            status.errorMessage = e.getMessage();
+            status.errorMessage = "error import users: " + e.getMessage();
         }
 
         return status;

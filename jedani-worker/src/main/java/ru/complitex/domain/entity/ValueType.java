@@ -3,15 +3,16 @@ package ru.complitex.domain.entity;
 import ru.complitex.common.entity.IdEnum;
 
 public enum ValueType implements IdEnum {
-    VALUE(0),
-    TEXT(1),
-    BOOLEAN(2),
-    DECIMAL(3),
-    NUMBER(4),
-    DATE(5),
-    JSON(6),
+    TEXT_VALUE(0),
+    NUMBER_VALUE(1),
+    TEXT(2),
+    BOOLEAN(3),
+    DECIMAL(4),
+    NUMBER(5),
+    DATE(6),
 
-    ENTITY(10);
+    ENTITY_VALUE(10),
+    ENTITY(11);
 
     private Integer id;
 
@@ -29,7 +30,7 @@ public enum ValueType implements IdEnum {
 
     public String getKey(){
         switch (this){
-            case VALUE:
+            case TEXT_VALUE:
                 return "value";
             case TEXT:
             case DECIMAL:

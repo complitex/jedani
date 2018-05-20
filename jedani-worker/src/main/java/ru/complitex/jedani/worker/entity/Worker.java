@@ -51,10 +51,10 @@ public class Worker extends Domain{
         setNumber(FIRST_NAME, null);
         setNumber(MIDDLE_NAME, null);
         setDate(BIRTHDAY, null);
-        setJson(PHONE, null);
+        getOrCreateAttribute(PHONE);
         setText(EMAIL, null);
-        setJson(REGION_IDS, null);
-        setJson(CITY_IDS, null);
+        getOrCreateAttribute(REGION_IDS);
+        getOrCreateAttribute(CITY_IDS);
         setNumber(POSITION_ID, null);
         setNumber(MK_STATUS_ID, null);
     }

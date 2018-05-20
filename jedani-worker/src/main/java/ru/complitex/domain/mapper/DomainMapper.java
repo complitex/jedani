@@ -59,15 +59,20 @@ public class DomainMapper extends BaseMapper {
             }else{
                 boolean update = !Objects.equals(a.getText(), dbAttribute.getText()) ||
                         !Objects.equals(a.getNumber(), dbAttribute.getNumber()) ||
-                        !Objects.equals(a.getJson(), dbAttribute.getJson()) ||
                         !Objects.equals(a.getDate(), dbAttribute.getDate());
 
                 if (!update){
                     if (a.getValues() != null && dbAttribute.getValues() != null){
                         update = a.getValues().stream().anyMatch(v -> {
-                            Value dbValue = dbAttribute.getValue(v.getLocaleId());
+                            if (v.getLocaleId() != null) {
+                                Value dbValue = dbAttribute.getValue(v.getLocaleId());
 
-                            return !Objects.equals(v.getText(), dbValue != null ? dbValue.getText() : null);
+                                return !Objects.equals(v.getText(), dbValue != null ? dbValue.getText() : null);
+                            }else{
+                                return dbAttribute.getValues().stream()
+                                        .noneMatch(dbV -> Objects.equals(v.getText(), dbV.getText()) ||
+                                                Objects.equals(v.getNumber(), dbV.getNumber()));
+                            }
                         });
                     }
                 }

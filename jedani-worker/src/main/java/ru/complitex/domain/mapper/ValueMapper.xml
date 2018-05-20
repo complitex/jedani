@@ -6,11 +6,18 @@
         <result column="attribute_id" property="attributeId"/>
         <result column="locale_id" property="localeId"/>
         <result column="text" property="text"/>
+        <result column="number" property="number"/>
     </resultMap>
 
     <!--suppress SqlResolve -->
     <insert id="insertValue" parameterType="ru.complitex.domain.entity.Value">
         insert into ${entityName}_value (attribute_id, locale_id, text) value (#{attributeId}, #{localeId}, #{text})
+    </insert>
+
+    <!--suppress SqlResolve -->
+    <insert id="insertValueWithNumber" parameterType="ru.complitex.domain.entity.Value">
+        insert into ${entityName}_value (attribute_id, locale_id, text, number)
+          value (#{attributeId}, #{localeId}, #{text}, #{number})
     </insert>
 
     <!--suppress SqlResolve -->

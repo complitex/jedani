@@ -1,7 +1,5 @@
 package ru.complitex.jedani.worker.page.worker;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.google.common.hash.Hashing;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
@@ -64,7 +62,6 @@ import ru.complitex.user.entity.User;
 import ru.complitex.user.mapper.UserMapper;
 
 import javax.inject.Inject;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -117,8 +114,8 @@ public class WorkerPage extends BasePage{
             if (id != null){
                 manager = domainMapper.getDomain("worker", id);
 
-                worker.setJson(REGION_IDS, manager.getJson(REGION_IDS));
-                worker.setJson(CITY_IDS, manager.getJson(CITY_IDS));
+                manager.getNumberValues(REGION_IDS).forEach(n -> worker.addNumberValue(REGION_IDS, n));
+                manager.getNumberValues(CITY_IDS).forEach(n -> worker.addNumberValue(CITY_IDS, n));
             }
         }else{
             if (id != null){
@@ -240,14 +237,7 @@ public class WorkerPage extends BasePage{
 
         if (manager != null) {
             managerFio = workerService.getWorkerFio(manager, getLocale());
-
-            try {
-                List<String> list = new ObjectMapper().readValue(manager.getJson(Worker.PHONE), new TypeReference<List<String>>(){});
-                managerPhones = String.join(", ", list);
-            } catch (IOException e) {
-                log.error("error parse phones ", e);
-            }
-
+            managerPhones = String.join(", ", manager.getTextValues(Worker.PHONE));
             managerEmail = manager.getText(Worker.EMAIL);
         }
 
