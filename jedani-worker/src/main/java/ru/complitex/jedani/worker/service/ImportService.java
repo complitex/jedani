@@ -22,10 +22,13 @@ import javax.inject.Inject;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import static ru.complitex.domain.entity.Status.ACTIVE;
 import static ru.complitex.domain.entity.Status.SYNC;
@@ -60,7 +63,7 @@ public class ImportService {
         Status status = new Status();
         List<Region> regions = new ArrayList<>();
 
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"))) {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
             String line;
 
             while ((line = br.readLine()) != null) {
@@ -73,16 +76,15 @@ public class ImportService {
                 }
 
                 Region region = new Region();
-                region.setExternalId(columns[0]);
                 region.setTextValue(Region.NAME, columns[1]);
-                if (columns[2] != null) {
-                    region.setNumber(Region.MANAGER_ID, Long.parseLong(columns[2]));
-                }
+
+                region.setText(Region.IMPORT_ID, columns[0]);
+                region.setText(Region.IMPORT_MANAGER_ID, columns[2]);
 
                 regions.add(region);
             }
 
-            regions.stream().filter(r -> !domainMapper.hasDomain(r))
+            regions.stream().filter(r -> !domainMapper.hasDomain(Region.ENTITY_NAME, Region.IMPORT_ID, r.getText(Region.IMPORT_ID)))
                     .forEach(r -> {
                         domainMapper.insertDomain(r);
                         ++status.count;
@@ -100,7 +102,7 @@ public class ImportService {
         Status status = new Status();
         List<City> cities = new ArrayList<>();
 
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"))){
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))){
             String line;
 
             while ((line = br.readLine()) != null){
@@ -112,7 +114,7 @@ public class ImportService {
                     break;
                 }
 
-                Domain region = domainMapper.getDomainByExternalId("region", columns[2]);
+                Domain region = domainMapper.getDomain("region", Region.IMPORT_ID, columns[2]);
 
                 if (region == null){
                     status.errorMessage = "Ненайден район " + columns[2] + " для " + columns[1];
@@ -121,18 +123,16 @@ public class ImportService {
                 }
 
                 City city = new City();
-                city.setExternalId(columns[0]);
                 city.setTextValue(City.NAME, columns[1]);
+                city.setText(City.IMPORT_ID, columns[0]);
                 city.setParentEntityId(Region.ENTITY_ID);
                 city.setParentId(region.getObjectId());
-                if (!columns[3].isEmpty()) {
-                    city.setNumber(City.MANAGER_ID, Long.parseLong(columns[3]));
-                }
+                city.setText(City.IMPORT_MANAGER_ID, columns[3]);
 
                 cities.add(city);
             }
 
-            cities.stream().filter(c -> !domainMapper.hasDomain(c))
+            cities.stream().filter(c -> !domainMapper.hasDomain(City.ENTITY_NAME, City.IMPORT_ID, c.getText(City.IMPORT_ID)))
                     .forEach(r -> {
                         domainMapper.insertDomain(r);
                         ++status.count;
@@ -155,7 +155,7 @@ public class ImportService {
         SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         SimpleDateFormat dayFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"))){
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))){
             String line;
 
             while ((line = br.readLine()) != null){
@@ -175,10 +175,10 @@ public class ImportService {
 
                 Worker worker = new Worker();
 
-                worker.setExternalId(columns[0]);
+                worker.setText(Worker.IMPORT_ID, columns[0]);
                 worker.setText(Worker.J_ID, columns[4]);
                 worker.setText(Worker.EMAIL, columns[1]);
-                worker.setText(Worker.ANCESTRY, columns[3]);
+                worker.setText(Worker.IMPORT_ANCESTRY, columns[3]);
                 worker.setText(Worker.RESET_PASSWORD_TOKEN, columns[5]);
                 worker.setText(Worker.RESET_PASSWORD_SEND_AT, columns[6]);
                 worker.setText(Worker.REMEMBER_CREATED_AT, columns[7]);
@@ -199,29 +199,18 @@ public class ImportService {
                 worker.setText(Worker.LAST_NAME, StringUtils.trim(columns[13]));
                 worker.addTextValue(Worker.PHONE, columns[14]);
 
-                if (columns[15] != null && !columns[15].trim().isEmpty()) {
-                    Domain city = domainMapper.getDomainByExternalId("city", columns[15]);
+                if (!columns[15].trim().isEmpty()) {
+                    Domain city = domainMapper.getDomain("city", City.IMPORT_ID, columns[15]);
                     worker.addNumberValue(Worker.CITY_IDS, city.getObjectId());
                     worker.addNumberValue(Worker.REGION_IDS, city.getParentId());
                 }
 
-                try {
-                    worker.setNumber(Worker.POSITION_ID, Long.parseLong(columns[16]));
-                } catch (NumberFormatException e) {
-                    //
-                }
+                worker.setText(Worker.IMPORT_MANAGER_RANK_ID, columns[16]);
 
                 if (!Strings.isNullOrEmpty(columns[17])) {
                     worker.setDate(Worker.INVOLVED_AT, dateTimeFormat.parse(columns[17]));
                 }
 
-                worker.setText(Worker.FULL_ANCESTRY_PATH, columns[18]);
-                worker.setText(Worker.DEPTH_LEVEL, columns[19]);
-                try {
-                    worker.setNumber(Worker.ANCESTRY_DEPTH, Long.parseLong(columns[20]));
-                } catch (NumberFormatException e) {
-                    //
-                }
                 worker.setText(Worker.CONTACT_INFO, columns[21]);
 
                 if (!Strings.isNullOrEmpty(columns[22])) {
@@ -229,12 +218,9 @@ public class ImportService {
                 }
 
                 worker.setText(Worker.FIRED_STATUS, columns[23]);
-                try {
-                    worker.setNumber(Worker.OLD_PARENT_ID, Long.parseLong(columns[24]));
-                } catch (NumberFormatException e) {
-                    //
-                }
-                worker.setText(Worker.OLD_CHILD_ID, columns[25]);
+
+                worker.setText(Worker.IMPORT_OLD_PARENT_ID, columns[24]);
+                worker.setText(Worker.IMPORT_OLD_CHILD_ID, columns[25]);
 
                 workers.add(worker);
 
@@ -242,15 +228,15 @@ public class ImportService {
             }
 
             workers.stream()
-                    .filter(p -> !domainMapper.hasDomain(p))
-                    .forEach(p -> {
-                        insertUserProfile(userMap.get(p.getExternalId()), p);
+                    .filter(w -> !domainMapper.hasDomain("worker", Worker.IMPORT_ID, w.getText(Worker.IMPORT_ID)))
+                    .forEach(w -> {
+                        insertUserProfile(userMap.get(w.getText(Worker.IMPORT_ID)), w);
                         ++status.count;
 
                         listener.accept(status.count*100/ workers.size() + "%");
                     });
 
-            updateWorkerPath(listener);
+            updateWorkerManagerId(listener);
         }catch (Exception e){
             log.error("error import users", e);
 
@@ -260,39 +246,23 @@ public class ImportService {
         return status;
     }
 
-    private void updateWorkerPath(Consumer<String> listener){
+    private void updateWorkerManagerId(Consumer<String> listener){
         domainMapper.getDomains(FilterWrapper.of(new Domain("worker").setStatus(SYNC))).forEach(w -> {
-            w.setText(Worker.FULL_ANCESTRY_PATH, Arrays.stream(w.getText(Worker.FULL_ANCESTRY_PATH).split("/"))
-                    .filter(p -> !p.isEmpty())
-                    .map(p -> {
-                        Domain d = domainMapper.getDomainByExternalId("worker", p);
+            String importAncestry = w.getText(Worker.IMPORT_ANCESTRY);
 
-                        if (d == null){
-                            throw new RuntimeException("worker not found by external id" + p);
-                        }
+            if (importAncestry != null) {
+                String importManagerId = importAncestry.substring(importAncestry.lastIndexOf('/') + 1);
 
-                        return d.getObjectId().toString();
-                    })
-                    .collect(Collectors.joining("/")));
+                Domain manager = domainMapper.getDomain("worker", Worker.IMPORT_ID, importManagerId);
 
-            w.setText(Worker.ANCESTRY, Arrays.stream(w.getText(Worker.ANCESTRY).split("/"))
-                    .filter(p -> !p.isEmpty())
-                    .map(p -> {
-                        Domain d = domainMapper.getDomainByExternalId("worker", p);
+                w.setNumber(Worker.MANAGER_ID, manager.getObjectId());
 
-                        if (d == null){
-                            throw new RuntimeException("worker not found by external id" + p);
-                        }
+                w.setStatus(ACTIVE);
 
-                        return d.getObjectId().toString();
-                    })
-                    .collect(Collectors.joining("/")));
+                domainMapper.updateDomain(w);
 
-            w.setStatus(ACTIVE);
-
-            domainMapper.updateDomain(w);
-
-            listener.accept(w.getText(Worker.FULL_ANCESTRY_PATH));
+                listener.accept(w.getText(Worker.IMPORT_ANCESTRY));
+            }
         });
     }
 

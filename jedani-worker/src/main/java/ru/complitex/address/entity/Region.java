@@ -15,12 +15,10 @@ public class Region extends Domain{
     public static final long SHORT_NAME = 2;
     public static final long MANAGER_ID = 3;
 
+    public static final long IMPORT_ID = 100;
+    public static final long IMPORT_MANAGER_ID = 101;
+
     public Region() {
         super(ENTITY_NAME);
-    }
-
-    public Region(String externalId){
-        this();
-        setExternalId(externalId);
     }
 }

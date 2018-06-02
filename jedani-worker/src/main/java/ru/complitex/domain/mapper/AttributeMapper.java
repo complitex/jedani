@@ -23,7 +23,8 @@ public class AttributeMapper extends BaseMapper {
         }
         if (attribute.getDate() != null){
             sqlSession().insert("insertAttributeWithDate", attribute);
-        }else{
+        }else if (attribute.getNumber() != null || (attribute.getText() != null && !attribute.getText().isEmpty()) ||
+                attribute.getValues() != null){
             sqlSession().insert("insertAttribute", attribute);
         }
 

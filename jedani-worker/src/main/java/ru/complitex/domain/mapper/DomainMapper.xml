@@ -19,25 +19,40 @@
 
     <!--suppress SqlResolve -->
     <insert id="insertDomain" parameterType="ru.complitex.domain.entity.Domain" useGeneratedKeys="false" keyProperty="id">
-        insert into ${entityName} (object_id, parent_id, parent_entity_id, start_date, end_date, `status`,
-        permission_id, external_id)
-        value (#{objectId}, #{parentId}, #{parentEntityId}, #{startDate}, #{endDate}, #{status},
-        #{permissionId}, #{externalId})
+        insert into ${entityName} (object_id, parent_id, parent_entity_id, start_date, end_date, `status`, permission_id)
+        value (#{objectId}, #{parentId}, #{parentEntityId}, #{startDate}, #{endDate}, #{status}, #{permissionId})
     </insert>
 
-    <!--suppress SqlResolve -->
-    <select id="hasDomain" parameterType="ru.complitex.domain.entity.Domain" resultType="boolean">
-        select count(id) > 0 from ${entityName} where external_id = #{externalId}
-    </select>
-
-    <!--suppress SqlResolve -->
-    <select id="selectDomain" parameterType="ru.complitex.domain.entity.Domain" resultMap="domainResultMap">
-        select '${entityName}' entity_name, d.* from ${entityName} d
+    <sql id="selectDomainSql">
+        select distinct d.*, '${entityName}' entity_name from ${entityName} d
+        <if test="attributes != null">
+            <foreach collection="attributes" index="i" item="a">
+                <if test="a.text != null or a.number != null">
+                    left join ${entityName}_attribute a${i}
+                    on (a${i}.object_id = d.object_id and a${i}.entity_attribute_id = #{a.entityAttributeId})
+                </if>
+            </foreach>
+        </if>
         <where>
             <if test="parentId != null">and d.parent_id = #{parentId} and d.`end_date` is null</if>
             <if test="objectId != null">and d.object_id = #{objectId} and d.`end_date` is null</if>
-            <if test="externalId != null">and d.external_id = #{externalId}</if>
+            <if test="attributes != null">
+                <foreach collection="attributes" index="i" item="a">
+                    <if test="a.text != null">and (a${i}.text = #{a.text} and a${i}.status = 1)</if>
+                    <if test="a.number != null">and (a${i}.number = #{a.number} and a${i}.status = 1)</if>
+                </foreach>
+            </if>
         </where>
+    </sql>
+
+    <!--suppress SqlResolve -->
+    <select id="selectDomain" parameterType="ru.complitex.domain.entity.Domain" resultMap="domainResultMap">
+        <include refid="selectDomainSql"/>
+    </select>
+
+    <!--suppress SqlResolve -->
+    <select id="hasDomain" parameterType="ru.complitex.domain.entity.Domain" resultType="boolean">
+        select count(d1.object_id) > 0 from (<include refid="selectDomainSql"/>) d1
     </select>
 
     <!--suppress SqlResolve -->
@@ -85,7 +100,17 @@
         </if>
 
         <where>
-            <if test="object.objectId != null">d.object_id like concat('%', #{object.objectId}, '%')</if>
+            <if test="object.objectId != null">
+                <choose>
+                    <when test="filter == 'equal'">
+                        d.object_id = #{object.objectId}
+                    </when>
+                    <otherwise>
+                        d.object_id like concat('%', #{object.objectId}, '%')
+                    </otherwise>
+                </choose>
+
+            </if>
 
             <if test="object.parentId != null">
                 and (d.parent_id = #{object.parentId})
@@ -106,15 +131,9 @@
                 </if>
 
                 <if test="a.number != null">
-                    and (a${i}.entity_attribute_id = #{a.entityAttributeId} and (a${i}.number = #{a.number}) or
-                      (a${i}.json is not null and json_contains(a${i}.json, '${a.number}')))
+                    and (a${i}.entity_attribute_id = #{a.entityAttributeId} and (a${i}.number = #{a.number}))
                 </if>
             </foreach>
-
-            <if test="map.entityAttributeId != null and map.endWith != null">
-                and (a.entity_attribute_id = #{map.entityAttributeId} and (a.text like concat ('%', #{map.endWith})
-                  <if test="map.orEqual != null">or a.text = #{map.orEqual}</if>) and a.status = 1)
-            </if>
 
             <choose>
                 <when test="object.status != null">

@@ -19,7 +19,6 @@ public class Domain implements Serializable{
     private Date endDate;
     private Status status;
     private Long permissionId;
-    private String externalId;
 
     private String entityName;
 
@@ -43,7 +42,6 @@ public class Domain implements Serializable{
         this.endDate = domain.endDate;
         this.status = domain.status;
         this.permissionId = domain.permissionId;
-        this.externalId = domain.externalId;
         this.entityName = domain.entityName;
         this.attributes = domain.attributes;
     }
@@ -60,8 +58,10 @@ public class Domain implements Serializable{
         return this;
     }
 
-    public void setNumber(Long entityAttributeId, Long number){
+    public Domain setNumber(Long entityAttributeId, Long number){
         getOrCreateAttribute(entityAttributeId).setNumber(number);
+
+        return this;
     }
 
     public void setDate(Long entityAttributeId, Date date){
@@ -238,14 +238,6 @@ public class Domain implements Serializable{
 
     public void setPermissionId(Long permissionId) {
         this.permissionId = permissionId;
-    }
-
-    public String getExternalId() {
-        return externalId;
-    }
-
-    public void setExternalId(String externalId) {
-        this.externalId = externalId;
     }
 
     public String getEntityName() {

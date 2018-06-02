@@ -74,11 +74,7 @@ public class Attribute implements Serializable{
     }
 
     public void setTextValue(String text, Long localeId){
-        initValues();
-
-        values.stream().filter(value -> value.getLocaleId().equals(localeId))
-                .findFirst()
-                .ifPresent(value -> value.setText(text));
+        getOrCreateValue(localeId).setText(text);
     }
 
     public void addTextValue(String text){

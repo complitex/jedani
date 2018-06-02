@@ -27,15 +27,21 @@ public class Worker extends Domain{
     public static final long INVOLVED_AT = 14;
     public static final long MK_STATUS_ID = 15;
     public static final long FIRED_STATUS = 16;
-    public static final long OLD_PARENT_ID = 17;
-    public static final long OLD_CHILD_ID = 18;
-    public static final long ANCESTRY = 19;
-    public static final long FULL_ANCESTRY_PATH = 20;
-    public static final long DEPTH_LEVEL = 21;
-    public static final long ANCESTRY_DEPTH = 22;
+    public static final long RESERVED1 = 17;
+    public static final long RESERVED2 = 18;
+    public static final long MANAGER_ID = 19;
+    public static final long INDEX_LEFT = 20;
+    public static final long INDEX_RIGHT = 21;
+    public static final long INDEX_LEVEL = 22;
     public static final long RESET_PASSWORD_TOKEN = 23;
     public static final long RESET_PASSWORD_SEND_AT = 24;
     public static final long REMEMBER_CREATED_AT = 25;
+
+    public static final long IMPORT_ID = 100;
+    public static final long IMPORT_ANCESTRY = 101;
+    public static final long IMPORT_OLD_PARENT_ID = 102;
+    public static final long IMPORT_OLD_CHILD_ID = 103;
+    public static final long IMPORT_MANAGER_RANK_ID = 103;
 
     public Worker() {
         super("worker");

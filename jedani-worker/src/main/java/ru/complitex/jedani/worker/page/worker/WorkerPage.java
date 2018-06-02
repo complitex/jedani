@@ -131,10 +131,8 @@ public class WorkerPage extends BasePage{
 
         //Data provider
 
-        DataProvider<Domain> dataProvider = new DataProvider<Domain>(FilterWrapper.of(new Domain("worker"))
-                .add("entityAttributeId", Worker.ANCESTRY)
-                .add("endWith", "/" + worker.getObjectId())
-                .add("orEqual", worker.getObjectId())) {
+        DataProvider<Domain> dataProvider = new DataProvider<Domain>(FilterWrapper.of(new Domain("worker")
+                .setNumber(Worker.MANAGER_ID, worker.getObjectId()))) {
             @Override
             public Iterator<? extends Domain> iterator(long first, long count) {
                 FilterWrapper<Domain> filterWrapper = getFilterState().limit(first, count);
@@ -224,11 +222,8 @@ public class WorkerPage extends BasePage{
                 .setRequired(true));
 
         //Manager
-        String ancestry = worker.getText(Worker.ANCESTRY);
-
-        if (manager == null && ancestry != null){
-            manager = domainMapper.getDomainByExternalId("worker",
-                    ancestry.substring(Math.max(ancestry.lastIndexOf('/') + 1, 0)));
+        if (manager == null && worker.getNumber(Worker.MANAGER_ID) != null){
+            manager = domainMapper.getDomain("worker", worker.getNumber(Worker.MANAGER_ID));
         }
 
         String managerFio = "";
@@ -289,16 +284,8 @@ public class WorkerPage extends BasePage{
                     worker.setNumber(FIRST_NAME, nameService.getOrCreateFirstName(firstName.getInput(), worker.getNumber(FIRST_NAME)));
                     worker.setNumber(MIDDLE_NAME, nameService.getOrCreateMiddleName(middleName.getInput(), worker.getNumber(MIDDLE_NAME)));
 
-                    if (worker.getText(Worker.ANCESTRY) == null){
-                        if (manager != null) {
-                            worker.setText(Worker.ANCESTRY, !Strings.isNullOrEmpty(manager.getText(Worker.ANCESTRY))
-                                    ? manager.getText(Worker.ANCESTRY) + "/" + manager.getObjectId()
-                                    : manager.getObjectId() + "");
-                        }else{
-                            worker.setText(Worker.ANCESTRY, "");
-                        }
-
-                        //todo update path
+                    if (manager != null){
+                        worker.setNumber(Worker.MANAGER_ID, manager.getObjectId());
                     }
 
                     if (worker.getObjectId() == null){
@@ -395,7 +382,7 @@ public class WorkerPage extends BasePage{
         columns.add(new AbstractDomainColumn(new ResourceModel("level"), new SortProperty("level")) {
             @Override
             public void populateItem(Item<ICellPopulator<Domain>> cellItem, String componentId, IModel<Domain> rowModel) {
-                cellItem.add(new Label(componentId,  rowModel.getObject().getText(Worker.ANCESTRY).split("/").length));
+                cellItem.add(new Label(componentId,  rowModel.getObject().getNumber(Worker.INDEX_LEVEL)));
             }
 
             @Override

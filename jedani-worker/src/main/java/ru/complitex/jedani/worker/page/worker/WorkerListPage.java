@@ -67,12 +67,9 @@ public class WorkerListPage extends DomainListPage{
         entityService.setRefEntityAttribute(entity, CITY_IDS, City.ENTITY_NAME, City.NAME);
         list.add(entity.getEntityAttribute(CITY_IDS));
 
-//        list.add(entity.getEntityAttribute(BIRTHDAY));
         list.add(entity.getEntityAttribute(PHONE));
         list.add(entity.getEntityAttribute(EMAIL));
         list.add(entity.getEntityAttribute(INVOLVED_AT));
-
-        //todo кол-во сотрудников и уровней
 
         return list;
     }
@@ -100,7 +97,7 @@ public class WorkerListPage extends DomainListPage{
         columns.add(new AbstractDomainColumn(new ResourceModel("level"), new SortProperty("level")) {
             @Override
             public void populateItem(Item<ICellPopulator<Domain>> cellItem, String componentId, IModel<Domain> rowModel) {
-                cellItem.add(new Label(componentId,  rowModel.getObject().getText(Worker.ANCESTRY).split("/").length));
+                cellItem.add(new Label(componentId,  rowModel.getObject().getNumber(Worker.INDEX_LEVEL)));
             }
 
             @Override
