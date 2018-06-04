@@ -172,6 +172,7 @@ INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_i
 INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (20, 25, 0);
 
 INSERT INTO `worker` (`object_id`, `status`) VALUE (1, 4);
+UPDATE `sequence` set `value` = 2 where `name` = 'worker';
 
 /* Admin */
 
