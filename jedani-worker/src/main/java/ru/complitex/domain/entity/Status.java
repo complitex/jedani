@@ -7,7 +7,7 @@ import ru.complitex.common.entity.IdEnum;
  * 30.11.2017 15:31
  */
 public enum Status implements IdEnum {
-    INACTIVE(0), ACTIVE(1),  ARCHIVE(2), SYNC(3);
+    INACTIVE(0), ACTIVE(1),  ARCHIVE(2), SYNC(3), SYSTEM(4);
 
     private Integer id;
 

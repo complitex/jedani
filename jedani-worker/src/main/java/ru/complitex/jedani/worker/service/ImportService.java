@@ -24,10 +24,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 
 import static ru.complitex.domain.entity.Status.ACTIVE;
@@ -170,7 +167,13 @@ public class ImportService {
                 User user = new User();
 
                 user.setLogin(columns[4]);
-                user.setPassword(columns[2]);
+
+                if (!columns[2].isEmpty()) {
+                    user.setPassword(columns[2]);
+                }else {
+                    user.setPassword(UUID.randomUUID().toString());
+                }
+
                 userMap.put(columns[0], user);
 
                 Worker worker = new Worker();
@@ -268,7 +271,7 @@ public class ImportService {
 
     @Transactional
     private void insertUserProfile(User user, Worker worker){
-        if (!user.getLogin().isEmpty() && !user.getPassword().isEmpty()) {
+        if (!user.getLogin().isEmpty()) {
             userMapper.insertUser(user);
 
             worker.setParentId(user.getId());
