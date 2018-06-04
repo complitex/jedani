@@ -112,14 +112,14 @@ public class WorkerPage extends BasePage{
             worker.setText(J_ID, workerMapper.getNewJId());
 
             if (id != null){
-                manager = domainMapper.getDomain("worker", id);
+                manager = domainMapper.getDomain(Worker.ENTITY_NAME, id);
 
                 manager.getNumberValues(REGION_IDS).forEach(n -> worker.addNumberValue(REGION_IDS, n));
                 manager.getNumberValues(CITY_IDS).forEach(n -> worker.addNumberValue(CITY_IDS, n));
             }
         }else{
             if (id != null){
-                worker = new Worker(domainMapper.getDomain("worker", id));
+                worker = new Worker(domainMapper.getDomain(Worker.ENTITY_NAME, id));
             }else{
                 worker = getCurrentWorker();
             }
@@ -131,7 +131,7 @@ public class WorkerPage extends BasePage{
 
         //Data provider
 
-        DataProvider<Domain> dataProvider = new DataProvider<Domain>(FilterWrapper.of(new Domain("worker")
+        DataProvider<Domain> dataProvider = new DataProvider<Domain>(FilterWrapper.of(new Domain(Worker.ENTITY_NAME)
                 .setNumber(Worker.MANAGER_ID, worker.getObjectId()))) {
             @Override
             public Iterator<? extends Domain> iterator(long first, long count) {
@@ -223,7 +223,7 @@ public class WorkerPage extends BasePage{
 
         //Manager
         if (manager == null && worker.getNumber(Worker.MANAGER_ID) != null){
-            manager = domainMapper.getDomain("worker", worker.getNumber(Worker.MANAGER_ID));
+            manager = domainMapper.getDomain(Worker.ENTITY_NAME, worker.getNumber(Worker.MANAGER_ID));
         }
 
         String managerFio = "";
@@ -399,7 +399,7 @@ public class WorkerPage extends BasePage{
     }
 
     private List<EntityAttribute> getEntityAttributes() {
-        Entity entity = entityMapper.getEntity("worker");
+        Entity entity = entityMapper.getEntity(Worker.ENTITY_NAME);
 
         List<EntityAttribute> list = new ArrayList<>();
 

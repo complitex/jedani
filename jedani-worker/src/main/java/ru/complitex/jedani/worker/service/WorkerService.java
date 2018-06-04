@@ -35,7 +35,7 @@ public class WorkerService implements Serializable {
         Long userId = userMapper.getUserId(login);
 
         if (userId != null){
-            Domain domain = domainMapper.getDomainByParentId("worker", userId);
+            Domain domain = domainMapper.getDomainByParentId(Worker.ENTITY_NAME, userId);
 
             if (domain != null){
                 return new Worker(domain);

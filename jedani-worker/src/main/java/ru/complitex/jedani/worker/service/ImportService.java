@@ -231,7 +231,7 @@ public class ImportService {
             }
 
             workers.stream()
-                    .filter(w -> !domainMapper.hasDomain("worker", Worker.IMPORT_ID, w.getText(Worker.IMPORT_ID)))
+                    .filter(w -> !domainMapper.hasDomain(Worker.ENTITY_NAME, Worker.IMPORT_ID, w.getText(Worker.IMPORT_ID)))
                     .forEach(w -> {
                         insertUserProfile(userMap.get(w.getText(Worker.IMPORT_ID)), w);
                         ++status.count;
@@ -250,13 +250,13 @@ public class ImportService {
     }
 
     private void updateWorkerManagerId(Consumer<String> listener){
-        domainMapper.getDomains(FilterWrapper.of(new Domain("worker").setStatus(SYNC))).forEach(w -> {
+        domainMapper.getDomains(FilterWrapper.of(new Domain(Worker.ENTITY_NAME).setStatus(SYNC))).forEach(w -> {
             String importAncestry = w.getText(Worker.IMPORT_ANCESTRY);
 
             if (importAncestry != null) {
                 String importManagerId = importAncestry.substring(importAncestry.lastIndexOf('/') + 1);
 
-                Domain manager = domainMapper.getDomain("worker", Worker.IMPORT_ID, importManagerId);
+                Domain manager = domainMapper.getDomain(Worker.ENTITY_NAME, Worker.IMPORT_ID, importManagerId);
 
                 w.setNumber(Worker.MANAGER_ID, manager.getObjectId());
             }else{

@@ -5,6 +5,7 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Domain;
+import ru.complitex.jedani.worker.entity.Worker;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -22,7 +23,7 @@ public class WorkerGraphExport {
     public static void main(String[] args) throws IOException {
         SqlSessionFactory factory = new SqlSessionFactoryBuilder().build(WorkerGraphExport.class.getResourceAsStream("mybatis-graph-config.xml"));
 
-        List<Domain> workers = factory.openSession().selectList("selectDomains", FilterWrapper.of(new Domain("worker")));
+        List<Domain> workers = factory.openSession().selectList("selectDomains", FilterWrapper.of(new Domain(Worker.ENTITY_NAME)));
 
         List<String> graph = workers.stream()
                 .map(d -> {

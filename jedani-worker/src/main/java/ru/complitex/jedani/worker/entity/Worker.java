@@ -10,6 +10,8 @@ import java.util.Date;
  * 17.12.2017 3:29
  */
 public class Worker extends DomainNode {
+    public static final String ENTITY_NAME = "worker";
+
     public static final long ENTITY_ID = 20;
 
     public static final long J_ID = 1;
@@ -39,11 +41,11 @@ public class Worker extends DomainNode {
     public static final long IMPORT_MANAGER_RANK_ID = 25;
 
     public Worker() {
-        super("worker");
+        super(ENTITY_NAME);
     }
 
     public Worker(Domain domain) {
-        super(domain, "worker");
+        super(domain, ENTITY_NAME);
     }
 
     public void init() {

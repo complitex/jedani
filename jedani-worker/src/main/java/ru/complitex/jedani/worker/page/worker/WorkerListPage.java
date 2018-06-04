@@ -43,7 +43,7 @@ public class WorkerListPage extends DomainListPage{
     private WorkerMapper workerMapper;
 
     public WorkerListPage() {
-        super("worker", WorkerPage.class);
+        super(Worker.ENTITY_NAME, WorkerPage.class);
     }
 
     @Override
