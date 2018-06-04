@@ -44,6 +44,7 @@ public class Domain implements Serializable{
         this.permissionId = domain.permissionId;
         this.entityName = domain.entityName;
         this.attributes = domain.attributes;
+        this.map = domain.map;
     }
 
     public Domain(Domain domain, String entityName){

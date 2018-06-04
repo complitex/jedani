@@ -1,7 +1,7 @@
 package ru.complitex.jedani.worker.entity;
 
 import ru.complitex.domain.entity.Domain;
-import ru.complitex.domain.entity.IDomainNode;
+import ru.complitex.domain.entity.DomainNode;
 
 import java.util.Date;
 
@@ -9,7 +9,7 @@ import java.util.Date;
  * @author Anatoly A. Ivanov
  * 17.12.2017 3:29
  */
-public class Worker extends Domain implements IDomainNode {
+public class Worker extends DomainNode {
     public static final long ENTITY_ID = 20;
 
     public static final long J_ID = 1;
@@ -49,7 +49,7 @@ public class Worker extends Domain implements IDomainNode {
         super(domain, "worker");
     }
 
-    public void init(){
+    public void init() {
         setDate(INVOLVED_AT, new Date());
         setNumber(LAST_NAME, null);
         setNumber(FIRST_NAME, null);
@@ -64,37 +64,22 @@ public class Worker extends Domain implements IDomainNode {
     }
 
     @Override
-    public Long getLeft() {
-        return getNumber(INDEX_LEVEL);
+    public Long getLeftEntityAttributeId() {
+        return INDEX_LEFT;
     }
 
     @Override
-    public void setLeft(Long left) {
-        setNumber(INDEX_LEFT, left);
+    public Long getRightEntityAttributeId() {
+        return INDEX_RIGHT;
     }
 
     @Override
-    public Long getRight() {
-        return getNumber(INDEX_RIGHT);
+    public Long getLevelEntityAttributeId() {
+        return INDEX_LEVEL;
     }
 
     @Override
-    public void setRight(Long right) {
-        setNumber(INDEX_RIGHT, right);
-    }
-
-    @Override
-    public Long getLevel() {
-        return getNumber(INDEX_LEVEL);
-    }
-
-    @Override
-    public void setLevel(Long level) {
-        setNumber(INDEX_LEVEL, level);
-    }
-
-    @Override
-    public Long getNodeParentId() {
-        return getNumber(MANAGER_ID);
+    public Long getNodeParentEntityAttributeId() {
+        return MANAGER_ID;
     }
 }
