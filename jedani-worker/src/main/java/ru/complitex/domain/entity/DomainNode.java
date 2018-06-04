@@ -5,6 +5,9 @@ package ru.complitex.domain.entity;
  * 04.06.2018 13:44
  */
 public abstract class DomainNode extends Domain{
+    private Long left;
+    private Long right;
+    private Long level;
 
     public DomainNode(String entityName) {
         super(entityName);
@@ -14,36 +17,29 @@ public abstract class DomainNode extends Domain{
         super(domain, entityName);
     }
 
-    public abstract Long getLeftEntityAttributeId();
-    public abstract Long getRightEntityAttributeId();
-    public abstract Long getLevelEntityAttributeId();
-    public abstract Long getNodeParentEntityAttributeId();
-
     public Long getLeft() {
-        return getNumber(getLeftEntityAttributeId());
+        return left;
     }
 
     public void setLeft(Long left) {
-        setNumber(getLeftEntityAttributeId(), left);
+        this.left = left;
     }
 
     public Long getRight() {
-        return getNumber(getRightEntityAttributeId());
+        return right;
     }
 
     public void setRight(Long right) {
-        setNumber(getRightEntityAttributeId(), right);
+        this.right = right;
     }
 
     public Long getLevel() {
-        return getNumber(getLevelEntityAttributeId());
+        return level;
     }
 
     public void setLevel(Long level) {
-        setNumber(getLevelEntityAttributeId(), level);
+        this.level = level;
     }
 
-    public Long getNodeParentId(){
-        return getNumber(getNodeParentEntityAttributeId());
-    }
+    public abstract Long getNodeParentId();
 }

@@ -37,9 +37,6 @@ public class Worker extends DomainNode {
     public static final long IMPORT_OLD_PARENT_ID = 23;
     public static final long IMPORT_OLD_CHILD_ID = 24;
     public static final long IMPORT_MANAGER_RANK_ID = 25;
-    public static final long INDEX_LEFT = 26;
-    public static final long INDEX_RIGHT = 27;
-    public static final long INDEX_LEVEL = 28;
 
     public Worker() {
         super("worker");
@@ -63,23 +60,9 @@ public class Worker extends DomainNode {
         setNumber(MK_STATUS_ID, null);
     }
 
-    @Override
-    public Long getLeftEntityAttributeId() {
-        return INDEX_LEFT;
-    }
 
     @Override
-    public Long getRightEntityAttributeId() {
-        return INDEX_RIGHT;
-    }
-
-    @Override
-    public Long getLevelEntityAttributeId() {
-        return INDEX_LEVEL;
-    }
-
-    @Override
-    public Long getNodeParentEntityAttributeId() {
-        return MANAGER_ID;
+    public Long getNodeParentId() {
+        return getNumber(MANAGER_ID);
     }
 }
