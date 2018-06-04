@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ru.complitex.domain.mapper.DomainNodeMapper">
+    <!--suppress SqlResolve -->
+    <update id="clearDomainNodeIndex" parameterType="ru.complitex.domain.entity.DomainNode">
+        update ${entityName}_attribute set `number` = 0 where entity_attribute_id = #{leftEntityAttributeId} or
+          entity_attribute_id = #{rightEntityAttributeId} or entity_attribute_id = #{levelEntityAttributeId}
+    </update>
+
+
+</mapper>

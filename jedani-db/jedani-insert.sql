@@ -180,6 +180,8 @@ INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `tex
 INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (20, 28, 1);
 INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (20, 28, 1, 'Уровень иерархии'), (20, 28, 2, 'Рівень ієрархії');
 
+INSERT INTO `worker` (`object_id`, `status`) VALUE (1, 4);
+
 /* Admin */
 
 INSERT INTO `user`(login, password) value ('admin', sha2('admin', 256));

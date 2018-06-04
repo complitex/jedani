@@ -259,13 +259,15 @@ public class ImportService {
                 Domain manager = domainMapper.getDomain("worker", Worker.IMPORT_ID, importManagerId);
 
                 w.setNumber(Worker.MANAGER_ID, manager.getObjectId());
-
-                w.setStatus(ACTIVE);
-
-                domainMapper.updateDomain(w);
-
-                listener.accept(w.getText(Worker.IMPORT_ANCESTRY));
+            }else{
+                w.setNumber(Worker.MANAGER_ID, 1L);
             }
+
+            w.setStatus(ACTIVE);
+
+            domainMapper.updateDomain(w);
+
+            listener.accept(w.getText(Worker.IMPORT_ANCESTRY));
         });
     }
 
