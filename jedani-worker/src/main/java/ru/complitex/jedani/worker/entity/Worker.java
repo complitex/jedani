@@ -1,6 +1,7 @@
 package ru.complitex.jedani.worker.entity;
 
 import ru.complitex.domain.entity.Domain;
+import ru.complitex.domain.entity.IDomainNode;
 
 import java.util.Date;
 
@@ -8,7 +9,7 @@ import java.util.Date;
  * @author Anatoly A. Ivanov
  * 17.12.2017 3:29
  */
-public class Worker extends Domain{
+public class Worker extends Domain implements IDomainNode {
     public static final long ENTITY_ID = 20;
 
     public static final long J_ID = 1;
@@ -27,21 +28,18 @@ public class Worker extends Domain{
     public static final long INVOLVED_AT = 14;
     public static final long MK_STATUS_ID = 15;
     public static final long FIRED_STATUS = 16;
-    public static final long RESERVED1 = 17;
-    public static final long RESERVED2 = 18;
-    public static final long MANAGER_ID = 19;
-    public static final long INDEX_LEFT = 20;
-    public static final long INDEX_RIGHT = 21;
-    public static final long INDEX_LEVEL = 22;
-    public static final long RESET_PASSWORD_TOKEN = 23;
-    public static final long RESET_PASSWORD_SEND_AT = 24;
-    public static final long REMEMBER_CREATED_AT = 25;
-
-    public static final long IMPORT_ID = 100;
-    public static final long IMPORT_ANCESTRY = 101;
-    public static final long IMPORT_OLD_PARENT_ID = 102;
-    public static final long IMPORT_OLD_CHILD_ID = 103;
-    public static final long IMPORT_MANAGER_RANK_ID = 103;
+    public static final long MANAGER_ID = 17;
+    public static final long RESET_PASSWORD_TOKEN = 18;
+    public static final long RESET_PASSWORD_SEND_AT = 19;
+    public static final long REMEMBER_CREATED_AT = 20;
+    public static final long IMPORT_ID = 21;
+    public static final long IMPORT_ANCESTRY = 22;
+    public static final long IMPORT_OLD_PARENT_ID = 23;
+    public static final long IMPORT_OLD_CHILD_ID = 24;
+    public static final long IMPORT_MANAGER_RANK_ID = 25;
+    public static final long INDEX_LEFT = 26;
+    public static final long INDEX_RIGHT = 27;
+    public static final long INDEX_LEVEL = 28;
 
     public Worker() {
         super("worker");
@@ -63,5 +61,40 @@ public class Worker extends Domain{
         getOrCreateAttribute(CITY_IDS);
         setNumber(POSITION_ID, null);
         setNumber(MK_STATUS_ID, null);
+    }
+
+    @Override
+    public Long getLeft() {
+        return getNumber(INDEX_LEVEL);
+    }
+
+    @Override
+    public void setLeft(Long left) {
+        setNumber(INDEX_LEFT, left);
+    }
+
+    @Override
+    public Long getRight() {
+        return getNumber(INDEX_RIGHT);
+    }
+
+    @Override
+    public void setRight(Long right) {
+        setNumber(INDEX_RIGHT, right);
+    }
+
+    @Override
+    public Long getLevel() {
+        return getNumber(INDEX_LEVEL);
+    }
+
+    @Override
+    public void setLevel(Long level) {
+        setNumber(INDEX_LEVEL, level);
+    }
+
+    @Override
+    public Long getNodeParentId() {
+        return getNumber(MANAGER_ID);
     }
 }
