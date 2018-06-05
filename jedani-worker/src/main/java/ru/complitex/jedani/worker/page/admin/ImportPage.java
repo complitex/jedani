@@ -3,6 +3,7 @@ package ru.complitex.jedani.worker.page.admin;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
+import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
@@ -15,6 +16,8 @@ import org.apache.wicket.protocol.ws.api.WebSocketRequestHandler;
 import org.apache.wicket.protocol.ws.api.message.IWebSocketPushMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.complitex.domain.service.DomainNodeService;
+import ru.complitex.jedani.worker.entity.Worker;
 import ru.complitex.jedani.worker.page.BasePage;
 import ru.complitex.jedani.worker.service.ImportService;
 
@@ -28,7 +31,10 @@ public class ImportPage extends BasePage{
     private Logger log = LoggerFactory.getLogger(ImportPage.class);
 
     @Inject
-    private transient ImportService importService;
+    private ImportService importService;
+
+    @Inject
+    private DomainNodeService domainNodeService;
 
     private class PushMessage implements IWebSocketPushMessage{
         private String text;
@@ -154,6 +160,23 @@ public class ImportPage extends BasePage{
                 }finally {
                     target.add(feedback, userForm);
                 }
+            }
+        });
+
+        add(new IndicatingAjaxLink<Void>("rebuildIndex") {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                try {
+                    domainNodeService.rebuildRootIndex(Worker.ENTITY_NAME, 1L, Worker.MANAGER_ID);
+
+                    info("Индекс обновлен успешно");
+                } catch (Exception e) {
+                    error("Ошибка обновления индекса " + e.getMessage());
+
+                    log.error("Ошибка обновления индекса ", e);
+                }
+
+                target.add(feedback);
             }
         });
     }

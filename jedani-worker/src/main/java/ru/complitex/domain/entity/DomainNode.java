@@ -4,13 +4,22 @@ package ru.complitex.domain.entity;
  * @author Anatoly A. Ivanov
  * 04.06.2018 13:44
  */
-public abstract class DomainNode extends Domain{
+public class DomainNode extends Domain{
     private Long left;
     private Long right;
     private Long level;
 
+    public DomainNode() {
+    }
+
     public DomainNode(String entityName) {
         super(entityName);
+    }
+
+    public DomainNode(String entityName, Long objectId) {
+        super(entityName);
+
+        setObjectId(objectId);
     }
 
     public DomainNode(Domain domain, String entityName) {
