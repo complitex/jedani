@@ -222,7 +222,7 @@ public class WorkerPage extends BasePage{
                 .setRequired(true));
 
         //Manager
-        if (manager == null && worker.getNumber(Worker.MANAGER_ID) != null){
+        if (manager == null && worker.getNumber(Worker.MANAGER_ID) != null && worker.getNumber(Worker.MANAGER_ID) > 1L){
             manager = domainMapper.getDomain(Worker.ENTITY_NAME, worker.getNumber(Worker.MANAGER_ID));
         }
 
@@ -382,7 +382,7 @@ public class WorkerPage extends BasePage{
         columns.add(new AbstractDomainColumn(new ResourceModel("level"), new SortProperty("level")) {
             @Override
             public void populateItem(Item<ICellPopulator<Domain>> cellItem, String componentId, IModel<Domain> rowModel) {
-                cellItem.add(new Label(componentId, ((Worker)rowModel.getObject()).getLevel()));
+                cellItem.add(new Label(componentId, 0)); //((Worker)rowModel.getObject()).getLevel()
             }
 
             @Override
