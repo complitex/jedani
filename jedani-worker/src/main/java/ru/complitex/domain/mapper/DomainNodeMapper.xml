@@ -4,9 +4,15 @@
 <mapper namespace="ru.complitex.domain.mapper.DomainNodeMapper">
     <!--suppress SqlResolve -->
     <update id="clearDomainNodeIndex" parameterType="ru.complitex.domain.entity.DomainNode">
-        update ${entityName}_attribute set `number` = 0 where entity_attribute_id = #{leftEntityAttributeId} or
-          entity_attribute_id = #{rightEntityAttributeId} or entity_attribute_id = #{levelEntityAttributeId}
+        update ${entityName} set `right` = 0, `left` = 0, `level` = 0 where object_id >= #{objectId}
     </update>
+
+    <!--suppress SqlResolve -->
+    <select id="selectDomainNodeChildren" parameterType="ru.complitex.domain.entity.DomainNode"
+            resultMap="domainNodeResultMap">
+        select * from `${entityName}` d left join ${entityName}_attribute a on a.object_id = d.object_id
+          where d.status = 1 and a.status = 1 and a.entityAttributeId = #{map.parentEntityAttributeId}
+    </select>
 
 
 </mapper>

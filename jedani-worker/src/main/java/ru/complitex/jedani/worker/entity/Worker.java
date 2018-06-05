@@ -61,10 +61,4 @@ public class Worker extends DomainNode {
         setNumber(POSITION_ID, null);
         setNumber(MK_STATUS_ID, null);
     }
-
-
-    @Override
-    public Long getNodeParentId() {
-        return getNumber(MANAGER_ID);
-    }
 }

@@ -40,6 +40,4 @@ public abstract class DomainNode extends Domain{
     public void setLevel(Long level) {
         this.level = level;
     }
-
-    public abstract Long getNodeParentId();
 }
