@@ -179,6 +179,7 @@
         select count(distinct d.object_id) <include refid="selectDomainsFromWhere"/>
     </select>
 
+    <!--suppress SqlResolve -->
     <update id="updateDomain" parameterType="ru.complitex.domain.entity.Domain">
         update ${entityName} set `status` = #{status}
     </update>

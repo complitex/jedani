@@ -34,6 +34,7 @@
           left join ${entityName}_attribute a on a.object_id = d.object_id
         where d.status = 1 and a.status = 1 and a.entity_attribute_id = #{map.parentEntityAttributeId}
           and a.number = #{objectId}
+        order by d.object_id asc
     </select>
 
     <!--suppress SqlResolve -->

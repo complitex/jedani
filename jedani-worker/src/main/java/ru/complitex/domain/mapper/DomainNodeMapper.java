@@ -1,5 +1,6 @@
 package ru.complitex.domain.mapper;
 
+import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.mybatis.BaseMapper;
 import ru.complitex.domain.entity.DomainNode;
 
@@ -45,5 +46,13 @@ public class DomainNodeMapper extends BaseMapper {
         domainNode.setLevel(parent.getLevel() + 1);
 
         update(domainNode);
+    }
+
+    public List<DomainNode> getDomainNodes(FilterWrapper<DomainNode> filterWrapper){
+        return null; //todo add subtree list
+    }
+
+    public Long getDomainNodesCount(FilterWrapper<DomainNode> filterWrapper){
+        return null; //todo add subtree list count
     }
 }
