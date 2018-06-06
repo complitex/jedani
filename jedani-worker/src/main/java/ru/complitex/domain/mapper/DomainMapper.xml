@@ -146,10 +146,7 @@
         </where>
     </sql>
 
-    <!--suppress SqlResolve -->
-    <select id="selectDomains" parameterType="ru.complitex.common.entity.FilterWrapper" resultMap="domainResultMap">
-        select distinct d.object_id, '${object.entityName}' entity_name, d.*
-
+    <sql id="selectDomainsFromSort">
         <if test="sortProperty != null">
             <choose>
                 <when test="sortProperty.key == 'text'">, sort_a.text</when>
@@ -158,9 +155,9 @@
                 <when test="sortProperty.key == 'value'">, sort_v.text</when>
             </choose>
         </if>
+    </sql>
 
-        <include refid="selectDomainsFromWhere"/>
-
+    <sql id="selectDomainsOrderSort">
         <if test="sortProperty != null">
             <choose>
                 <when test="sortProperty.key == 'id'">order by d.id ${asc}</when>
@@ -170,13 +167,21 @@
                 <when test="sortProperty.key == 'value'">order by sort_v.text ${asc}</when>
             </choose>
         </if>
+    </sql>
 
+    <!--suppress SqlResolve -->
+    <select id="selectDomains" parameterType="ru.complitex.common.entity.FilterWrapper" resultMap="domainResultMap">
+        select distinct d.object_id, '${object.entityName}' entity_name, d.*
+        <include refid="selectDomainsFromSort"/>
+        <include refid="selectDomainsFromWhere"/>
+        <include refid="selectDomainsOrderSort"/>
         ${limit}
     </select>
 
     <!--suppress SqlResolve -->
     <select id="selectDomainsCount" parameterType="ru.complitex.common.entity.FilterWrapper" resultType="long">
-        select count(distinct d.object_id) <include refid="selectDomainsFromWhere"/>
+        select count(distinct d.object_id)
+        <include refid="selectDomainsFromWhere"/>
     </select>
 
     <!--suppress SqlResolve -->

@@ -3,6 +3,9 @@
 <mapper namespace="ru.complitex.jedani.worker.mapper.WorkerMapper">
     <resultMap id="workerResultMap" type="ru.complitex.jedani.worker.entity.Worker"
                extends="ru.complitex.domain.mapper.DomainMapper.domainResultMap">
+        <result column="left" property="left"/>
+        <result column="right" property="right"/>
+        <result column="level" property="level"/>
     </resultMap>
 
     <select id="selectMaxJId" resultType="string">
@@ -17,6 +20,32 @@
         select count(wa.id)from  worker_attribute wa
           where wa.entity_attribute_id = 19 and wa.status = 1 and (wa.text = #{objectId} or
             wa.text like concat('%/', #{objectId}, '/%') or  wa.text like concat('%/', #{objectId}));
+    </select>
+
+    <sql id="selectWorkersWhereNode">
+
+    </sql>
+
+    <sql id="selectWorkersOrderNode">
+
+    </sql>
+
+    <!--suppress SqlResolve -->
+    <select id="selectWorkers" parameterType="ru.complitex.common.entity.FilterWrapper" resultMap="workerResultMap">
+        select distinct d.*
+        <include refid="selectDomainsFromSort"/>
+        <include refid="selectDomainsFromWhere"/>
+        <include refid="selectWorkersWhereNode"/>
+        <include refid="selectDomainsOrderSort"/>
+        <include refid="selectWorkersOrderNode"/>
+        ${limit}
+    </select>
+
+    <!--suppress SqlResolve -->
+    <select id="selectWorkersCount" parameterType="ru.complitex.common.entity.FilterWrapper" resultType="long">
+        select count(distinct d.object_id)
+        <include refid="selectDomainsFromWhere"/>
+        <include refid="selectWorkersWhereNode"/>
     </select>
 
 </mapper>
