@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
  * @author Anatoly A. Ivanov
  * 19.12.2017 7:55
  */
-public class DomainColumn extends AbstractDomainColumn {
+public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
     private static Logger log = LoggerFactory.getLogger(DomainColumn.class);
 
     private EntityAttribute entityAttribute;
@@ -108,7 +108,7 @@ public class DomainColumn extends AbstractDomainColumn {
     private SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
 
     @Override
-    public void populateItem(Item<ICellPopulator<Domain>> cellItem, String componentId, IModel<Domain> rowModel) {
+    public void populateItem(Item<ICellPopulator<T>> cellItem, String componentId, IModel<T> rowModel) {
         String text = "";
 
         Attribute attribute = rowModel.getObject().getOrCreateAttribute(entityAttribute.getEntityAttributeId());

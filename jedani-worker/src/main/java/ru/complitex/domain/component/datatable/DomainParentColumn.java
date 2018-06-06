@@ -20,7 +20,7 @@ import ru.complitex.domain.util.Locales;
  * @author Anatoly A. Ivanov
  * 22.12.2017 13:12
  */
-public abstract class DomainParentColumn extends AbstractDomainColumn{
+public abstract class DomainParentColumn<T extends Domain> extends AbstractDomainColumn<T>{
     private Entity entity;
     private Long entityAttributeId;
 
@@ -38,7 +38,7 @@ public abstract class DomainParentColumn extends AbstractDomainColumn{
     }
 
     @Override
-    public void populateItem(Item<ICellPopulator<Domain>> cellItem, String componentId, IModel<Domain> rowModel) {
+    public void populateItem(Item<ICellPopulator<T>> cellItem, String componentId, IModel<T> rowModel) {
         IModel model = Model.of("");
 
         Domain domain = getDomain(rowModel.getObject().getParentId());

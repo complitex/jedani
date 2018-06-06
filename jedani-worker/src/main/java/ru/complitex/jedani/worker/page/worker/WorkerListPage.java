@@ -12,9 +12,9 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import ru.complitex.address.entity.City;
 import ru.complitex.address.entity.Region;
+import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
-import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.page.DomainListPage;
@@ -35,7 +35,7 @@ import static ru.complitex.jedani.worker.entity.Worker.*;
  * @author Anatoly A. Ivanov
  * 20.12.2017 7:11
  */
-public class WorkerListPage extends DomainListPage{
+public class WorkerListPage extends DomainListPage<Worker>{
     @Inject
     private EntityService entityService;
 
@@ -75,17 +75,12 @@ public class WorkerListPage extends DomainListPage{
     }
 
     @Override
-    protected void onDataLoad(List<Domain> list) {
-        list.forEach(d -> d.getMap().put("subWorkersCount", workerMapper.getSubWorkersCount(d.getObjectId())));
-    }
-
-    @Override
-    protected void onAddColumns(List<IColumn<Domain, SortProperty>> columns) {
-        columns.add(new AbstractDomainColumn(new ResourceModel("subWorkersCount"),
+    protected void onAddColumns(List<IColumn<Worker, SortProperty>> columns) {
+        columns.add(new AbstractDomainColumn<Worker>(new ResourceModel("subWorkersCount"),
                 new SortProperty("subWorkersCount")) {
             @Override
-            public void populateItem(Item<ICellPopulator<Domain>> cellItem, String componentId, IModel<Domain> rowModel) {
-                cellItem.add(new Label(componentId, rowModel.getObject().getMap().get("subWorkersCount") + ""));
+            public void populateItem(Item<ICellPopulator<Worker>> cellItem, String componentId, IModel<Worker> rowModel) {
+                cellItem.add(new Label(componentId, ""));
             }
 
             @Override
@@ -94,10 +89,10 @@ public class WorkerListPage extends DomainListPage{
             }
         });
 
-        columns.add(new AbstractDomainColumn(new ResourceModel("level"), new SortProperty("level")) {
+        columns.add(new AbstractDomainColumn<Worker>(new ResourceModel("level"), new SortProperty("level")) {
             @Override
-            public void populateItem(Item<ICellPopulator<Domain>> cellItem, String componentId, IModel<Domain> rowModel) {
-                cellItem.add(new Label(componentId, 0)); //((Worker)rowModel.getObject()).getLevel()
+            public void populateItem(Item<ICellPopulator<Worker>> cellItem, String componentId, IModel<Worker> rowModel) {
+                cellItem.add(new Label(componentId, rowModel.getObject().getLevel()));
             }
 
             @Override
@@ -110,5 +105,20 @@ public class WorkerListPage extends DomainListPage{
     @Override
     protected boolean isShowHeader() {
         return false;
+    }
+
+    @Override
+    protected FilterWrapper<Worker> getNewFilterWrapper() {
+        return FilterWrapper.of(new Worker());
+    }
+
+    @Override
+    protected List<Worker> getDomains(FilterWrapper<Worker> filterWrapper) {
+        return workerMapper.getWorkers(filterWrapper);
+    }
+
+    @Override
+    protected Long getDomainsCount(FilterWrapper<Worker> filterWrapper) {
+        return workerMapper.getWorkersCount(filterWrapper);
     }
 }

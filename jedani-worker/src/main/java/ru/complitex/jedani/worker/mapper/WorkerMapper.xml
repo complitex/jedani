@@ -23,7 +23,9 @@
     </select>
 
     <sql id="selectWorkersWhereNode">
-
+        <if test="object.left != null and object.right != null">
+            and d.left >= #{object.left} and #{object.right} >= d.right
+        </if>
     </sql>
 
     <sql id="selectWorkersOrderNode">
@@ -32,11 +34,11 @@
 
     <!--suppress SqlResolve -->
     <select id="selectWorkers" parameterType="ru.complitex.common.entity.FilterWrapper" resultMap="workerResultMap">
-        select distinct d.*
-        <include refid="selectDomainsFromSort"/>
-        <include refid="selectDomainsFromWhere"/>
+        select distinct d.*, '${object.entityName}' entity_name
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromSort"/>
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromWhere"/>
         <include refid="selectWorkersWhereNode"/>
-        <include refid="selectDomainsOrderSort"/>
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsOrderSort"/>
         <include refid="selectWorkersOrderNode"/>
         ${limit}
     </select>
@@ -44,7 +46,7 @@
     <!--suppress SqlResolve -->
     <select id="selectWorkersCount" parameterType="ru.complitex.common.entity.FilterWrapper" resultType="long">
         select count(distinct d.object_id)
-        <include refid="selectDomainsFromWhere"/>
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromWhere"/>
         <include refid="selectWorkersWhereNode"/>
     </select>
 

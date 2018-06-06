@@ -20,7 +20,7 @@ import ru.complitex.domain.entity.Domain;
  * @author Anatoly A. Ivanov
  * 20.12.2017 3:19
  */
-public class DomainActionColumn extends AbstractDomainColumn {
+public class DomainActionColumn<T extends Domain> extends AbstractDomainColumn<T> {
     private Class<? extends WebPage> editPageClass;
 
     private AjaxIndicatorAppender ajaxIndicatorAppender = new AjaxIndicatorAppender(){
@@ -50,7 +50,7 @@ public class DomainActionColumn extends AbstractDomainColumn {
     }
 
     @Override
-    public void populateItem(Item<ICellPopulator<Domain>> cellItem, String componentId, IModel<Domain> rowModel) {
+    public void populateItem(Item<ICellPopulator<T>> cellItem, String componentId, IModel<T> rowModel) {
         cellItem.add(new LinkPanel(componentId, new BootstrapBookmarkablePageLink<>(LinkPanel.LINK_COMPONENT_ID,
                 editPageClass, new PageParameters().add("id", rowModel.getObject().getId()),
                 Buttons.Type.Link).setIconType(GlyphIconType.edit).setSize(Buttons.Size.Small)));

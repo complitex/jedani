@@ -33,15 +33,19 @@ import java.util.List;
  * @author Anatoly A. Ivanov
  * 19.12.2017 3:40
  */
-public class DomainListPage extends BasePage{
+public class DomainListPage<T extends Domain> extends BasePage{
     @Inject
     private EntityMapper entityMapper;
 
     @Inject
     private DomainMapper domainMapper;
 
+    private String entityName;
+
     public <P extends WebPage> DomainListPage(String entityName, String parentEntityName, Long parentEntityAttributeId,
                           Class<P> editPageClass) {
+        this.entityName = entityName;
+
         Entity entity = entityMapper.getEntity(entityName);
 
         add(new Label("header", entity.getValue() != null ? entity.getValue().getText() : "[" + entityName + "]")
@@ -51,17 +55,17 @@ public class DomainListPage extends BasePage{
         feedback.setOutputMarkupId(true);
         add(feedback);
 
-        DataProvider<Domain> dataProvider = new DataProvider<Domain>(FilterWrapper.of(new Domain(entityName))) {
+        DataProvider<T> dataProvider = new DataProvider<T>(getNewFilterWrapper()) {
             @Override
-            public Iterator<? extends Domain> iterator(long first, long count) {
-                FilterWrapper<Domain> filterWrapper = getFilterState().limit(first, count);
+            public Iterator<? extends T> iterator(long first, long count) {
+                FilterWrapper<T> filterWrapper = getFilterState().limit(first, count);
 
                 if (getSort() != null){
                     filterWrapper.setSortProperty(getSort().getProperty());
                     filterWrapper.setAscending(getSort().isAscending());
                 }
 
-                List<Domain> list =  domainMapper.getDomains(filterWrapper);
+                List<T> list = getDomains(filterWrapper);
 
                 onDataLoad(list);
 
@@ -70,20 +74,21 @@ public class DomainListPage extends BasePage{
 
             @Override
             public long size() {
-                return domainMapper.getDomainsCount(getFilterState());
+                return getDomainsCount(getFilterState());
             }
+
         };
 
-        FilterForm<FilterWrapper<Domain>> filterForm = new FilterForm<>("form", dataProvider);
+        FilterForm<FilterWrapper<T>> filterForm = new FilterForm<>("form", dataProvider);
         filterForm.setOutputMarkupId(true);
         add(filterForm);
 
-        List<IColumn<Domain, SortProperty>> columns = new ArrayList<>();
+        List<IColumn<T, SortProperty>> columns = new ArrayList<>();
 
-        columns.add(new DomainIdColumn());
+        columns.add(new DomainIdColumn<>());
 
         if (parentEntityName != null){
-            columns.add(new DomainParentColumn(entityMapper.getEntity(parentEntityName), parentEntityAttributeId) {
+            columns.add(new DomainParentColumn<T>(entityMapper.getEntity(parentEntityName), parentEntityAttributeId) {
                 @Override
                 protected Domain getDomain(Long objectId) {
                     return domainMapper.getDomain(parentEntityName, objectId);
@@ -91,13 +96,13 @@ public class DomainListPage extends BasePage{
             });
         }
 
-        getEntityAttributes(entity).forEach(a -> columns.add(new DomainColumn(a)));
+        getEntityAttributes(entity).forEach(a -> columns.add(new DomainColumn<>(a)));
 
         onAddColumns(columns);
 
-        columns.add(new DomainActionColumn(editPageClass));
+        columns.add(new DomainActionColumn<>(editPageClass));
 
-        FilterDataTable<Domain> table = new FilterDataTable<>("table", columns, dataProvider, filterForm, 10);
+        FilterDataTable<T> table = new FilterDataTable<>("table", columns, dataProvider, filterForm, 10);
         filterForm.add(table);
 
         add(new AjaxLink<Void>("add") {
@@ -106,6 +111,19 @@ public class DomainListPage extends BasePage{
                 setResponsePage(editPageClass, new PageParameters().add("new", ""));
             }
         });
+    }
+
+    protected FilterWrapper<T> getNewFilterWrapper(){
+        return (FilterWrapper<T>) FilterWrapper.of(new Domain(entityName)); //todo abstract
+    }
+
+
+    protected List<T> getDomains(FilterWrapper<T> filterWrapper) {
+        return (List<T>) domainMapper.getDomains(filterWrapper);
+    }
+
+    protected Long getDomainsCount(FilterWrapper<T> filterWrapper) {
+        return domainMapper.getDomainsCount(filterWrapper);
     }
 
     public DomainListPage(String entityName, Class<? extends WebPage> editPageClass) {
@@ -120,9 +138,9 @@ public class DomainListPage extends BasePage{
         return true;
     }
 
-    protected void onDataLoad(List<Domain> list){
+    protected void onDataLoad(List<T> list){
     }
 
-    protected void onAddColumns(List<IColumn<Domain, SortProperty>> columns){
+    protected void onAddColumns(List<IColumn<T, SortProperty>> columns){
     }
 }

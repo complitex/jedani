@@ -131,18 +131,17 @@ public class WorkerPage extends BasePage{
 
         //Data provider
 
-        DataProvider<Domain> dataProvider = new DataProvider<Domain>(FilterWrapper.of(new Domain(Worker.ENTITY_NAME)
-                .setNumber(Worker.MANAGER_ID, worker.getObjectId()))) {
+        DataProvider<Worker> dataProvider = new DataProvider<Worker>(FilterWrapper.of(new Worker())) {
             @Override
-            public Iterator<? extends Domain> iterator(long first, long count) {
-                FilterWrapper<Domain> filterWrapper = getFilterState().limit(first, count);
+            public Iterator<Worker> iterator(long first, long count) {
+                FilterWrapper<Worker> filterWrapper = getFilterState().limit(first, count);
 
                 if (getSort() != null){
                     filterWrapper.setSortProperty(getSort().getProperty());
                     filterWrapper.setAscending(getSort().isAscending());
                 }
 
-                List<Domain> list =  domainMapper.getDomains(filterWrapper);
+                List<Worker> list =  workerMapper.getWorkers(filterWrapper);
 
                 list.forEach(d -> d.getMap().put("subWorkersCount", workerMapper.getSubWorkersCount(d.getObjectId())));
 
@@ -151,13 +150,13 @@ public class WorkerPage extends BasePage{
 
             @Override
             public long size() {
-                return domainMapper.getDomainsCount(getFilterState());
+                return workerMapper.getWorkersCount(getFilterState());
             }
         };
 
         //Worker
 
-        FilterForm<FilterWrapper<Domain>> form = new FilterForm<>("form", dataProvider);
+        FilterForm<FilterWrapper<Worker>> form = new FilterForm<>("form", dataProvider);
         add(form);
 
         DomainAutoCompleteFormGroup lastName, firstName, middleName;
@@ -361,16 +360,16 @@ public class WorkerPage extends BasePage{
 
         //Structure
 
-        List<IColumn<Domain, SortProperty>> columns = new ArrayList<>();
+        List<IColumn<Worker, SortProperty>> columns = new ArrayList<>();
 
-        columns.add(new DomainIdColumn());
-        getEntityAttributes().forEach(a -> columns.add(new DomainColumn(a)));
+        columns.add(new DomainIdColumn<>());
+        getEntityAttributes().forEach(a -> columns.add(new DomainColumn<>(a)));
 
-        columns.add(new AbstractDomainColumn(new ResourceModel("subWorkersCount"),
+        columns.add(new AbstractDomainColumn<Worker>(new ResourceModel("subWorkersCount"),
                 new SortProperty("subWorkersCount")) {
             @Override
-            public void populateItem(Item<ICellPopulator<Domain>> cellItem, String componentId, IModel<Domain> rowModel) {
-                cellItem.add(new Label(componentId, rowModel.getObject().getMap().get("subWorkersCount") + ""));
+            public void populateItem(Item<ICellPopulator<Worker>> cellItem, String componentId, IModel<Worker> rowModel) {
+                cellItem.add(new Label(componentId, ""));
             }
 
             @Override
@@ -379,10 +378,10 @@ public class WorkerPage extends BasePage{
             }
         });
 
-        columns.add(new AbstractDomainColumn(new ResourceModel("level"), new SortProperty("level")) {
+        columns.add(new AbstractDomainColumn<Worker>(new ResourceModel("level"), new SortProperty("level")) {
             @Override
-            public void populateItem(Item<ICellPopulator<Domain>> cellItem, String componentId, IModel<Domain> rowModel) {
-                cellItem.add(new Label(componentId, 0)); //((Worker)rowModel.getObject()).getLevel()
+            public void populateItem(Item<ICellPopulator<Worker>> cellItem, String componentId, IModel<Worker> rowModel) {
+                cellItem.add(new Label(componentId, rowModel.getObject().getLevel()));
             }
 
             @Override
@@ -391,9 +390,9 @@ public class WorkerPage extends BasePage{
             }
         });
 
-        columns.add(new DomainActionColumn(WorkerPage.class));
+        columns.add(new DomainActionColumn<>(WorkerPage.class));
 
-        FilterDataTable<Domain> table = new FilterDataTable<>("table", columns, dataProvider, form, 10);
+        FilterDataTable<Worker> table = new FilterDataTable<>("table", columns, dataProvider, form, 10);
         table.setHideOnEmpty(worker.getObjectId() == null);
         form.add(table);
     }

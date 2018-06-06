@@ -16,7 +16,7 @@ import ru.complitex.domain.entity.Domain;
  * @author Anatoly A. Ivanov
  * 20.12.2017 2:17
  */
-public class DomainIdColumn extends AbstractDomainColumn{
+public class DomainIdColumn<T extends Domain> extends AbstractDomainColumn<T>{
     public DomainIdColumn() {
         super(Model.of("#"), new SortProperty("id"));
     }
@@ -27,7 +27,7 @@ public class DomainIdColumn extends AbstractDomainColumn{
     }
 
     @Override
-    public void populateItem(Item<ICellPopulator<Domain>> cellItem, String componentId, IModel<Domain> rowModel) {
+    public void populateItem(Item<ICellPopulator<T>> cellItem, String componentId, IModel<T> rowModel) {
         cellItem.add(new Label(componentId, () -> rowModel.getObject().getObjectId()));
     }
 

@@ -11,8 +11,8 @@ import ru.complitex.domain.entity.Domain;
  * @author Anatoly A. Ivanov
  * 20.12.2017 3:20
  */
-public abstract class AbstractDomainColumn  extends AbstractColumn<Domain, SortProperty>
-        implements IFilteredColumn<Domain, SortProperty> {
+public abstract class AbstractDomainColumn<T extends Domain>  extends AbstractColumn<T, SortProperty>
+        implements IFilteredColumn<T, SortProperty> {
 
     public AbstractDomainColumn() {
         super(Model.of(""), null);
