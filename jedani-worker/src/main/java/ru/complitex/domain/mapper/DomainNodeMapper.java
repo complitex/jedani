@@ -30,7 +30,7 @@ public class DomainNodeMapper extends BaseMapper {
 
     public void rebuildIndex(DomainNode parent, Long parentEntityAttributeId){
         for (DomainNode domainNode : getChildren(parent, parentEntityAttributeId)){
-            updateIndex(parent, domainNode);
+            updateIndex(getDomainNode(parent.getEntityName(), parent.getObjectId()), domainNode);
 
             rebuildIndex(domainNode, parentEntityAttributeId);
         }
@@ -41,7 +41,7 @@ public class DomainNodeMapper extends BaseMapper {
         sqlSession().update("updateDomainNodeRight", parent);
 
         domainNode.setLeft(parent.getRight());
-        domainNode.setRight(domainNode.getLeft() + 1);
+        domainNode.setRight(parent.getRight() + 1);
         domainNode.setLevel(parent.getLevel() + 1);
 
         update(domainNode);
