@@ -80,7 +80,7 @@ public class WorkerListPage extends DomainListPage<Worker>{
                 new SortProperty("subWorkersCount")) {
             @Override
             public void populateItem(Item<ICellPopulator<Worker>> cellItem, String componentId, IModel<Worker> rowModel) {
-                cellItem.add(new Label(componentId, ""));
+                cellItem.add(new Label(componentId, rowModel.getObject().getSubWorkerCount()));
             }
 
             @Override

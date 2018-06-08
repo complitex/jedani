@@ -617,6 +617,9 @@ CREATE TABLE `worker` (
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
   KEY `key_permission_id` (`permission_id`),
+  KEY `key_left` (`left`),
+  KEY `key_right` (`right`),
+  KEY `key_level` (`level`),
   CONSTRAINT `ft_worker__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
   CONSTRAINT `fk_worker__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Профиль сотрудника';

@@ -24,6 +24,17 @@ public class WorkerMapper extends BaseMapper {
         return sqlSession().selectOne("selectSubWorkersCount", objectId);
     }
 
+    public Worker getWorker(Long objectId){
+        return sqlSession().selectOne("selectWorker", new Worker(objectId));
+    }
+
+    public Worker getWorkerByUserId(Long userId){
+        Worker worker = new Worker();
+        worker.setParentId(userId);
+
+        return sqlSession().selectOne("selectWorker", worker);
+    }
+
     public List<Worker> getWorkers(FilterWrapper<Worker> filterWrapper){
         return sqlSession().selectList("selectWorkers", filterWrapper);
     }

@@ -6,6 +6,7 @@
         <result column="left" property="left"/>
         <result column="right" property="right"/>
         <result column="level" property="level"/>
+        <result column="sub_worker_count" property="subWorkerCount"/>
     </resultMap>
 
     <select id="selectMaxJId" resultType="string">
@@ -24,7 +25,7 @@
 
     <sql id="selectWorkersWhereNode">
         <if test="object.left != null and object.right != null">
-            and d.left >= #{object.left} and #{object.right} >= d.right
+            and d.left > #{object.left} and #{object.right} > d.right
         </if>
     </sql>
 
@@ -34,7 +35,8 @@
 
     <!--suppress SqlResolve -->
     <select id="selectWorkers" parameterType="ru.complitex.common.entity.FilterWrapper" resultMap="workerResultMap">
-        select distinct d.*, '${object.entityName}' entity_name
+        select distinct d.*, '${object.entityName}' entity_name,
+          (select count(w.object_id) from worker w where w.left > d.left and d.right > w.right and w.status = 1) sub_worker_count
         <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromSort"/>
         <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromWhere"/>
         <include refid="selectWorkersWhereNode"/>
@@ -48,6 +50,10 @@
         select count(distinct d.object_id)
         <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromWhere"/>
         <include refid="selectWorkersWhereNode"/>
+    </select>
+
+    <select id="selectWorker" parameterType="long" resultMap="workerResultMap">
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainSql"/>
     </select>
 
 </mapper>

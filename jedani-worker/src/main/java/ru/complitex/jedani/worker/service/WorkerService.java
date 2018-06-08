@@ -3,6 +3,7 @@ package ru.complitex.jedani.worker.service;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.mapper.DomainMapper;
 import ru.complitex.jedani.worker.entity.Worker;
+import ru.complitex.jedani.worker.mapper.WorkerMapper;
 import ru.complitex.name.entity.FirstName;
 import ru.complitex.name.entity.LastName;
 import ru.complitex.name.entity.MiddleName;
@@ -10,7 +11,6 @@ import ru.complitex.user.mapper.UserMapper;
 
 import javax.inject.Inject;
 import java.io.Serializable;
-import java.util.List;
 import java.util.Locale;
 
 /**
@@ -25,21 +25,14 @@ public class WorkerService implements Serializable {
     @Inject
     private DomainMapper domainMapper;
 
-    public List<Worker> getWorkerTree(Long workerId){
-
-
-        return null;
-    }
+    @Inject
+    private WorkerMapper workerMapper;
 
     public Worker getWorker(String login){
         Long userId = userMapper.getUserId(login);
 
         if (userId != null){
-            Domain domain = domainMapper.getDomainByParentId(Worker.ENTITY_NAME, userId);
-
-            if (domain != null){
-                return new Worker(domain);
-            }
+            return  workerMapper.getWorkerByUserId(userId);
         }
 
         return null;

@@ -119,7 +119,7 @@ public class WorkerPage extends BasePage{
             }
         }else{
             if (id != null){
-                worker = new Worker(domainMapper.getDomain(Worker.ENTITY_NAME, id));
+                worker = workerMapper.getWorker(id);
             }else{
                 worker = getCurrentWorker();
             }
@@ -131,7 +131,7 @@ public class WorkerPage extends BasePage{
 
         //Data provider
 
-        DataProvider<Worker> dataProvider = new DataProvider<Worker>(FilterWrapper.of(new Worker())) {
+        DataProvider<Worker> dataProvider = new DataProvider<Worker>(FilterWrapper.of(new Worker(worker.getLeft(), worker.getRight()))) {
             @Override
             public Iterator<Worker> iterator(long first, long count) {
                 FilterWrapper<Worker> filterWrapper = getFilterState().limit(first, count);
@@ -369,7 +369,7 @@ public class WorkerPage extends BasePage{
                 new SortProperty("subWorkersCount")) {
             @Override
             public void populateItem(Item<ICellPopulator<Worker>> cellItem, String componentId, IModel<Worker> rowModel) {
-                cellItem.add(new Label(componentId, ""));
+                cellItem.add(new Label(componentId, rowModel.getObject().getSubWorkerCount()));
             }
 
             @Override

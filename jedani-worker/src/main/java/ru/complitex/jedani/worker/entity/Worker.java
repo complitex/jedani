@@ -40,12 +40,25 @@ public class Worker extends DomainNode {
     public static final long IMPORT_OLD_CHILD_ID = 24;
     public static final long IMPORT_MANAGER_RANK_ID = 25;
 
+    private Long subWorkerCount;
+
     public Worker() {
         super(ENTITY_NAME);
     }
 
+    public Worker(Long objectId) {
+        super(ENTITY_NAME, objectId);
+    }
+
     public Worker(Domain domain) {
         super(domain, ENTITY_NAME);
+    }
+
+    public Worker(Long left, Long right){
+        this();
+
+        setLeft(left);
+        setRight(right);
     }
 
     public void init() {
@@ -60,5 +73,13 @@ public class Worker extends DomainNode {
         getOrCreateAttribute(CITY_IDS);
         setNumber(POSITION_ID, null);
         setNumber(MK_STATUS_ID, null);
+    }
+
+    public Long getSubWorkerCount() {
+        return subWorkerCount;
+    }
+
+    public void setSubWorkerCount(Long subWorkerCount) {
+        this.subWorkerCount = subWorkerCount;
     }
 }
