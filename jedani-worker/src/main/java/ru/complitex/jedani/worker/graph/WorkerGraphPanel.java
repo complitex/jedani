@@ -37,7 +37,7 @@ public class WorkerGraphPanel extends Panel {
         elements += "," + workers.stream()
                 .map(w -> " {data: {id: '" + w.getObjectId() + "', " +
                         "label: '" + w.getText(Worker.J_ID) + " " + w.getText(Worker.LAST_NAME) + " " +
-                                worker.getText(Worker.FIRST_NAME) + "'" +
+                                w.getText(Worker.FIRST_NAME) + "'" +
                         "}}")
                 .collect(Collectors.joining(","));
 
