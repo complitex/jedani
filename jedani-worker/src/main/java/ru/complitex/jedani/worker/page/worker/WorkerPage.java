@@ -3,8 +3,10 @@ package ru.complitex.jedani.worker.page.worker;
 import com.google.common.base.Strings;
 import com.google.common.hash.Hashing;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
+import org.apache.wicket.ClassAttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
@@ -12,6 +14,7 @@ import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulato
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.TextFilter;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.TextField;
@@ -50,6 +53,7 @@ import ru.complitex.domain.service.EntityService;
 import ru.complitex.jedani.worker.entity.MkStatus;
 import ru.complitex.jedani.worker.entity.Position;
 import ru.complitex.jedani.worker.entity.Worker;
+import ru.complitex.jedani.worker.graph.WorkerGraphPanel;
 import ru.complitex.jedani.worker.mapper.WorkerMapper;
 import ru.complitex.jedani.worker.page.BasePage;
 import ru.complitex.jedani.worker.security.JedaniRoles;
@@ -66,6 +70,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import static ru.complitex.jedani.worker.entity.Worker.*;
 
@@ -101,6 +106,8 @@ public class WorkerPage extends BasePage{
 
     private Worker worker;
     private Domain manager = null;
+
+    private IModel<Boolean> showGraph = Model.of(false);
 
     public WorkerPage(PageParameters parameters) {
         Long id = parameters.get("id").toOptionalLong();
@@ -141,11 +148,7 @@ public class WorkerPage extends BasePage{
                     filterWrapper.setAscending(getSort().isAscending());
                 }
 
-                List<Worker> list =  workerMapper.getWorkers(filterWrapper);
-
-                list.forEach(d -> d.getMap().put("subWorkersCount", workerMapper.getSubWorkersCount(d.getObjectId())));
-
-                return list.iterator();
+                return workerMapper.getWorkers(filterWrapper).iterator();
             }
 
             @Override
@@ -193,9 +196,9 @@ public class WorkerPage extends BasePage{
         form.add(new TextFieldFormGroup<>("email", new PropertyModel<>(worker.getAttribute(Worker.EMAIL), "text")));
 
         AttributeSelectListFormGroup city, region;
-        form.add(region = new AttributeSelectListFormGroup("region", Model.of(worker.getAttribute(Worker.REGION_IDS)),
+        form.add(region = new AttributeSelectListFormGroup("region", Model.of(worker.getOrCreateAttribute(Worker.REGION_IDS)),
                 Region.ENTITY_NAME, Region.NAME).setRequired(true));
-        form.add(city = new AttributeSelectListFormGroup("city", Model.of(worker.getAttribute(Worker.CITY_IDS)),
+        form.add(city = new AttributeSelectListFormGroup("city", Model.of(worker.getOrCreateAttribute(Worker.CITY_IDS)),
                 City.ENTITY_NAME, City.NAME, region.getListModel()).setRequired(true));
         region.onChange(t -> t.add(city));
 
@@ -360,6 +363,10 @@ public class WorkerPage extends BasePage{
 
         //Structure
 
+        WebMarkupContainer structure = new WebMarkupContainer("structure");
+        structure.setOutputMarkupId(true);
+        form.add(structure);
+
         List<IColumn<Worker, SortProperty>> columns = new ArrayList<>();
 
         columns.add(new DomainIdColumn<>());
@@ -392,9 +399,55 @@ public class WorkerPage extends BasePage{
 
         columns.add(new DomainActionColumn<>(WorkerPage.class));
 
-        FilterDataTable<Worker> table = new FilterDataTable<>("table", columns, dataProvider, form, 10);
+        FilterDataTable<Worker> table = new FilterDataTable<Worker>("table", columns, dataProvider, form, 10){
+            @Override
+            public boolean isVisible() {
+                return !showGraph.getObject();
+            }
+        };
         table.setHideOnEmpty(worker.getObjectId() == null);
-        form.add(table);
+        structure.add(table);
+
+        structure.add(new WorkerGraphPanel("graph", worker){
+            @Override
+            public boolean isVisible() {
+                return showGraph.getObject();
+            }
+        });
+
+        form.add(new AjaxLink<Void>("radioTable") {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                showGraph.setObject(false);
+                target.add(structure);
+            }
+        }.add(new ClassAttributeModifier() {
+            @Override
+            protected Set<String> update(Set<String> oldClasses) {
+                if (!showGraph.getObject()){
+                    oldClasses.add("active");
+                }
+
+                return oldClasses;
+            }
+        }));
+
+        form.add(new AjaxLink<Void>("radioGraph") {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                showGraph.setObject(true);
+                target.add(structure);
+            }
+        }.add(new ClassAttributeModifier() {
+            @Override
+            protected Set<String> update(Set<String> oldClasses) {
+                if (showGraph.getObject()){
+                    oldClasses.add("active");
+                }
+
+                return oldClasses;
+            }
+        }));
     }
 
     private List<EntityAttribute> getEntityAttributes() {

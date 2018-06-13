@@ -85,7 +85,17 @@
 
                 <br/>
 
-                <table wicket:id="table" class="table table-hover"></table>
+                <div class="pull-right">
+                    <button wicket:id="radioTable" class="btn btn-default">Таблица</button>
+                    <button wicket:id="radioGraph" class="btn btn-default">Структура</button>
+                </div>
+
+                <br/>
+
+                <div wicket:id="structure">
+                    <table wicket:id="table" class="table table-hover"></table>
+                    <div wicket:id="graph"></div>
+                </div>
 
                 <br/>
 

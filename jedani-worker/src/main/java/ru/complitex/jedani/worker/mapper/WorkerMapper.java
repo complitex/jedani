@@ -20,10 +20,6 @@ public class WorkerMapper extends BaseMapper {
         return sqlSession().selectOne("selectIsExistJId", jid);
     }
 
-    public int getSubWorkersCount(Long objectId){
-        return sqlSession().selectOne("selectSubWorkersCount", objectId);
-    }
-
     public Worker getWorker(Long objectId){
         return sqlSession().selectOne("selectWorker", new Worker(objectId));
     }
