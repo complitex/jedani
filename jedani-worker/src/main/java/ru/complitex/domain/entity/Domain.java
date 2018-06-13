@@ -53,6 +53,11 @@ public class Domain implements Serializable{
         this.entityName = entityName;
     }
 
+    public Domain(String entityName, Long objectId) {
+        this.entityName = entityName;
+        this.objectId = objectId;
+    }
+
     public Domain setText(Long entityAttributeId, String text){
         getOrCreateAttribute(entityAttributeId).setText(text);
 

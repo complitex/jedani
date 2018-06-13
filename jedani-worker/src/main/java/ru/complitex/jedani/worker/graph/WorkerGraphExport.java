@@ -3,7 +3,6 @@ package ru.complitex.jedani.worker.graph;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import ru.complitex.common.entity.FilterWrapper;
-import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.jedani.worker.entity.Worker;
 
@@ -27,19 +26,13 @@ public class WorkerGraphExport {
 
         List<String> graph = workers.stream()
                 .map(d -> {
-                    Attribute a = d.getAttribute(17L);
-
-                    if (a != null && a.getText() != null){
-                        String[] s = a.getText().split("/");
-
-                        if (s.length >= 2){
-                            return s[s.length - 2] + "," +
-                                    s[s.length - 1] + "," +
-                                    d.getAttribute(1L).getText() + "," +
-                                    d.getAttribute(10L).getText() + "," +
-                                    d.getAttribute(11L).getText() + "," +
-                                    d.getAttribute(12L).getText();
-                        }
+                    if (d.getNumber(Worker.MANAGER_ID) != null){
+                        return d.getNumber(Worker.MANAGER_ID) + "," +
+                                d.getObjectId() + "," +
+                                d.getText(Worker.J_ID) + "," +
+                                d.getText(Worker.LAST_NAME) + "," +
+                                d.getText(Worker.FIRST_NAME) + "," +
+                                d.getText(Worker.LAST_NAME);
                     }
 
                     return null;
