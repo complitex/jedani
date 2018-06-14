@@ -61,6 +61,14 @@ public class Worker extends DomainNode {
         setRight(right);
     }
 
+    public Worker(Long left, Long right, Long level){
+        this();
+
+        setLeft(left);
+        setRight(right);
+        setLevel(level);
+    }
+
     public void init() {
         setDate(INVOLVED_AT, new Date());
         setNumber(LAST_NAME, null);

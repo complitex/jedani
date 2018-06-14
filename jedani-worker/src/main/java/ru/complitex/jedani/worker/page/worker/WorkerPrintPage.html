@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns:wicket="http://wicket.apache.org">
+<head>
+    <title>Jedani</title>
+    <script>
+        function b64toBlob(b64Data, contentType, sliceSize) {
+            contentType = contentType || '';
+            sliceSize = sliceSize || 512;
+
+            var byteCharacters = atob(b64Data);
+            var byteArrays = [];
+
+            for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+                var slice = byteCharacters.slice(offset, offset + sliceSize);
+
+                var byteNumbers = new Array(slice.length);
+                for (var i = 0; i < slice.length; i++) {
+                    byteNumbers[i] = slice.charCodeAt(i);
+                }
+
+                var byteArray = new Uint8Array(byteNumbers);
+
+                byteArrays.push(byteArray);
+            }
+
+            return new Blob(byteArrays, {type: contentType});
+        }
+
+        function savePng() {
+            var b64key = 'base64,';
+            var png = cy.png({bg: '#fff'});
+            var b64 = png.substring(png.indexOf(b64key) + b64key.length);
+            var imgBlob = b64toBlob(b64, 'image/png');
+
+            saveAs(imgBlob, 'jedani-graph.png');
+        }
+    </script>
+    <style>
+        @media print {
+            #action{
+                display: none;
+            }
+
+        }
+
+        #action{
+            margin: 5px;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+
+<div wicket:id="graph" style="width: 100%; height: 90vh"></div>
+
+<div id="action">
+    <button class="btn btn-primary" onclick="savePng()">Сохранить</button>
+    <button  class="btn btn-default" onclick="window.print()">Печать</button>
+    <button wicket:id="back" class="btn btn-default">Назад</button>
+</div>
+
+</body>
+</html>

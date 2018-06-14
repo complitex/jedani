@@ -83,18 +83,17 @@
                     </div>
                 </div>
 
-                <br/>
-
-                <div class="pull-right">
-                    <button wicket:id="radioTable" class="btn btn-default">Таблица</button>
-                    <button wicket:id="radioGraph" class="btn btn-default">Структура</button>
-                </div>
-
-                <br/>
-
                 <div wicket:id="structure">
-                    <table wicket:id="table" class="table table-hover"></table>
-                    <div wicket:id="graph"></div>
+                    <div class="pull-right">
+                        <button wicket:id="tableLink" class="btn btn-default">Таблица</button>
+                        <button wicket:id="graphLink" class="btn btn-default">Структура</button>
+                        <button wicket:id="printLink" class="btn btn-default">Печать</button>
+                    </div>
+
+                    <br/>
+
+                    <table wicket:id="table" class="table table-hover table-condensed"></table>
+                    <div wicket:id="graph" style="height: 552px"></div>
                 </div>
 
                 <br/>

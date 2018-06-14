@@ -30,15 +30,20 @@ public class WorkerGraphPanel extends Panel {
         super(id);
 
         List<Worker> workers = new ArrayList<>(workerMapper.getWorkers(FilterWrapper.of(
-                new Worker(worker.getLeft(), worker.getRight()))));
+                new Worker(worker.getLeft(), worker.getRight(), worker.getLevel())).setFilter("level3")));
 
-        elements =  " {data: {id: '" + worker.getObjectId() + "'}}";
+        elements =  " {data: {id: '" + worker.getObjectId() + "', " +
+                "label: '" + worker.getText(Worker.J_ID) + "\\n" +
+                worker.getText(Worker.LAST_NAME) + "\\n" +
+                worker.getText(Worker.FIRST_NAME) + "\\n" +
+                worker.getText(Worker.MIDDLE_NAME) + "'}}";
 
         elements += "," + workers.stream()
                 .map(w -> " {data: {id: '" + w.getObjectId() + "', " +
-                        "label: '" + w.getText(Worker.J_ID) + " " + w.getText(Worker.LAST_NAME) + " " +
-                                w.getText(Worker.FIRST_NAME) + "'" +
-                        "}}")
+                        "label: '" + w.getText(Worker.J_ID) + "\\n" +
+                        w.getText(Worker.LAST_NAME) + "\\n" +
+                        w.getText(Worker.FIRST_NAME) + "\\n" +
+                        w.getText(Worker.MIDDLE_NAME) + "'}}")
                 .collect(Collectors.joining(","));
 
         elements += "," + workers.stream()

@@ -26,6 +26,10 @@
     <sql id="selectWorkersWhereNode">
         <if test="object.left != null and object.right != null">
             and d.left > #{object.left} and #{object.right} > d.right
+
+            <if test="filter == 'level3' and object.level != null">
+                and #{object.level} + 3 > d.level
+            </if>
         </if>
     </sql>
 

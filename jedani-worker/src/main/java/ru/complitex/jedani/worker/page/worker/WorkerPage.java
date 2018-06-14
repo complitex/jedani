@@ -18,6 +18,7 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
@@ -44,10 +45,10 @@ import ru.complitex.domain.component.form.AttributeInputListFormGroup;
 import ru.complitex.domain.component.form.AttributeSelectFormGroup;
 import ru.complitex.domain.component.form.AttributeSelectListFormGroup;
 import ru.complitex.domain.component.form.DomainAutoCompleteFormGroup;
-import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.mapper.DomainMapper;
+import ru.complitex.domain.mapper.DomainNodeMapper;
 import ru.complitex.domain.mapper.EntityMapper;
 import ru.complitex.domain.service.EntityService;
 import ru.complitex.jedani.worker.entity.MkStatus;
@@ -104,8 +105,11 @@ public class WorkerPage extends BasePage{
     @Inject
     private EntityService entityService;
 
+    @Inject
+    private DomainNodeMapper domainNodeMapper;
+
     private Worker worker;
-    private Domain manager = null;
+    private Worker manager = null;
 
     private IModel<Boolean> showGraph = Model.of(false);
 
@@ -119,7 +123,7 @@ public class WorkerPage extends BasePage{
             worker.setText(J_ID, workerMapper.getNewJId());
 
             if (id != null){
-                manager = domainMapper.getDomain(Worker.ENTITY_NAME, id);
+                manager = workerMapper.getWorker(id);
 
                 manager.getNumberValues(REGION_IDS).forEach(n -> worker.addNumberValue(REGION_IDS, n));
                 manager.getNumberValues(CITY_IDS).forEach(n -> worker.addNumberValue(CITY_IDS, n));
@@ -225,7 +229,7 @@ public class WorkerPage extends BasePage{
 
         //Manager
         if (manager == null && worker.getNumber(Worker.MANAGER_ID) != null && worker.getNumber(Worker.MANAGER_ID) > 1L){
-            manager = domainMapper.getDomain(Worker.ENTITY_NAME, worker.getNumber(Worker.MANAGER_ID));
+            manager = workerMapper.getWorker(worker.getNumber(Worker.MANAGER_ID));
         }
 
         String managerFio = "";
@@ -292,6 +296,10 @@ public class WorkerPage extends BasePage{
 
                     if (worker.getObjectId() == null){
                         domainMapper.insertDomain(worker);
+
+                        if (manager != null) {
+                            domainNodeMapper.updateIndex(manager, worker);
+                        }
 
                         getSession().info(getString("info_user_created"));
                     }else{
@@ -415,7 +423,7 @@ public class WorkerPage extends BasePage{
             }
         });
 
-        form.add(new AjaxLink<Void>("radioTable") {
+        structure.add(new AjaxLink<Void>("tableLink") {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 showGraph.setObject(false);
@@ -432,7 +440,7 @@ public class WorkerPage extends BasePage{
             }
         }));
 
-        form.add(new AjaxLink<Void>("radioGraph") {
+        structure.add(new AjaxLink<Void>("graphLink") {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 showGraph.setObject(true);
@@ -448,6 +456,13 @@ public class WorkerPage extends BasePage{
                 return oldClasses;
             }
         }));
+
+        structure.add(new Link<Void>("printLink") {
+            @Override
+            public void onClick() {
+                setResponsePage(WorkerPrintPage.class, new PageParameters().add("id", worker.getObjectId()));
+            }
+        });
     }
 
     private List<EntityAttribute> getEntityAttributes() {

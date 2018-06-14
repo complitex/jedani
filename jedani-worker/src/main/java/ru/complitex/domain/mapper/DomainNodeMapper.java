@@ -36,7 +36,7 @@ public class DomainNodeMapper extends BaseMapper {
         }
     }
 
-    private void updateIndex(DomainNode parent, DomainNode domainNode){
+    public void updateIndex(DomainNode parent, DomainNode domainNode){
         sqlSession().update("updateDomainNodeLeft", parent);
         sqlSession().update("updateDomainNodeRight", parent);
 
