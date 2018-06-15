@@ -22,11 +22,13 @@ import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.complitex.domain.component.form.DomainAutoComplete;
 import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.mapper.DomainMapper;
+import ru.complitex.domain.mapper.EntityAttributeMapper;
 import ru.complitex.domain.mapper.EntityMapper;
 import ru.complitex.domain.util.Locales;
 import ru.complitex.jedani.worker.page.BasePage;
@@ -43,10 +45,13 @@ public abstract class DomainEditPage extends BasePage{
     private Logger log = LoggerFactory.getLogger(getClass());
 
     @Inject
-    private transient EntityMapper entityMapper;
+    private EntityMapper entityMapper;
 
     @Inject
-    private transient DomainMapper domainMapper;
+    private EntityAttributeMapper entityAttributeMapper;
+
+    @Inject
+    private DomainMapper domainMapper;
 
     public DomainEditPage(String entityName, PageParameters parameters, Class<? extends WebPage> backPage) {
         Entity entity = entityMapper.getEntity(entityName);
@@ -67,6 +72,22 @@ public abstract class DomainEditPage extends BasePage{
         if (domain == null){
             throw new WicketRuntimeException("domain not found");
         }
+
+        //Parent
+
+        Entity parentEntity = getParentEntityName() != null ? entityMapper.getEntity(getParentEntityName()) : null;
+
+        if (parentEntity != null) {
+            FormGroup parentGroup = new FormGroup("parentGroup", Model.of(parentEntity.getValue().getText()));
+            form.add(parentGroup);
+
+            parentGroup.add(new DomainAutoComplete("parent", getParentEntityName(),
+                    getParentEntityAttributeId(), new PropertyModel<>(domain, "parentId")));
+        }else{
+            form.add(new EmptyPanel("parentGroup").setVisible(false));
+        }
+
+        //Attributes
 
         List<Long> entityAttributeIds = getEntityAttributeIds();
 
@@ -161,6 +182,14 @@ public abstract class DomainEditPage extends BasePage{
         form.add(cancel);
 
         //todo validate -> entity select
+    }
+
+    protected String getParentEntityName(){
+        return null;
+    }
+
+    protected Long getParentEntityAttributeId(){
+        return null;
     }
 
     protected List<Long> getEntityAttributeIds(){

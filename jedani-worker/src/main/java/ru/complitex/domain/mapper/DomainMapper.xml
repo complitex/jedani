@@ -58,8 +58,6 @@
     <!--suppress SqlResolve -->
     <select id="selectDomainObjectId" parameterType="ru.complitex.domain.entity.Domain" resultType="long">
         select d.object_id from ${entityName} d
-          left join ${entityName}_attribute a on a.object_id = d.object_id
-          left join `${entityName}_value` v on v.attribute_id = a.id
         <where>
             <foreach collection="attributes" item="i" separator="and">
               <foreach collection="i.values" item="j" separator="and">
@@ -137,10 +135,10 @@
 
             <choose>
                 <when test="object.status != null">
-                    and d.status = #{object.status} and a.status = 1
+                    and d.status = #{object.status}
                 </when>
                 <otherwise>
-                    and d.status = 1 and a.status = 1
+                    and d.status = 1
                 </otherwise>
             </choose>
         </where>

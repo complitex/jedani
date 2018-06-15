@@ -94,3 +94,7 @@ li.disabled a, li.disabled span{
 .alert{
     display: inline-block;
 }
+
+.domain-edit-input{
+    max-width: 350px;
+}

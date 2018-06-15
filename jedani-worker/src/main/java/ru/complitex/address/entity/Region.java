@@ -15,8 +15,8 @@ public class Region extends Domain{
     public static final long SHORT_NAME = 2;
     public static final long MANAGER_ID = 3;
 
-    public static final long IMPORT_ID = 4;
-    public static final long IMPORT_MANAGER_ID = 5;
+    public static final long IMPORT_ID = 10;
+    public static final long IMPORT_MANAGER_ID = 11;
 
     public Region() {
         super(ENTITY_NAME);

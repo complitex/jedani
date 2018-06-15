@@ -13,7 +13,6 @@ public class Country extends Domain {
 
     public static final long NAME = 1;
     public static final long SHORT_NAME = 2;
-    public static final long MANAGER_ID = 3;
 
     public Country() {
         super(ENTITY_NAME);

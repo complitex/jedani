@@ -34,11 +34,12 @@ public class Worker extends DomainNode {
     public static final long RESET_PASSWORD_TOKEN = 18;
     public static final long RESET_PASSWORD_SEND_AT = 19;
     public static final long REMEMBER_CREATED_AT = 20;
-    public static final long IMPORT_ID = 21;
-    public static final long IMPORT_ANCESTRY = 22;
-    public static final long IMPORT_OLD_PARENT_ID = 23;
-    public static final long IMPORT_OLD_CHILD_ID = 24;
-    public static final long IMPORT_MANAGER_RANK_ID = 25;
+
+    public static final long IMPORT_ID = 100;
+    public static final long IMPORT_ANCESTRY = 101;
+    public static final long IMPORT_OLD_PARENT_ID = 102;
+    public static final long IMPORT_OLD_CHILD_ID = 103;
+    public static final long IMPORT_MANAGER_RANK_ID = 104;
 
     private Long subWorkerCount;
 

@@ -18,6 +18,7 @@ import ru.complitex.domain.mapper.EntityAttributeMapper;
 import ru.complitex.domain.util.Locales;
 
 import javax.inject.Inject;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -93,10 +94,11 @@ public class DomainAutoComplete extends Panel {
                 Domain domain = new Domain(entityName);
                 domain.getOrCreateAttribute(entityAttributeId).setText(input); //todo def attribute
 
-                return domainMapper.getDomains(FilterWrapper.of(domain).limit(0L, 10L)
-                        .sort("value", domain.getAttribute(entityAttributeId)).asc())
+
+                return domainMapper.getDomains(FilterWrapper.of(domain).limit(0L, 10L))
                         .stream() //todo opt load attribute
-                        .map(d -> d.getAttribute(entityAttributeId))
+                        .map(d -> d.getAttribute(entityAttributeId)) //todo sort duplicate
+                        .sorted(Comparator.comparing(a -> a.getOrCreateValue(Locales.getSystemLocaleId()).getText()))
                         .collect(Collectors.toList())
                         .iterator();
             }
