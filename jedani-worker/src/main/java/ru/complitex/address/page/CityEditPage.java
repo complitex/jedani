@@ -2,6 +2,7 @@ package ru.complitex.address.page;
 
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import ru.complitex.address.entity.City;
+import ru.complitex.address.entity.CityType;
 import ru.complitex.address.entity.Region;
 import ru.complitex.domain.page.DomainEditPage;
 
@@ -19,7 +20,7 @@ public class CityEditPage extends DomainEditPage{
 
     @Override
     protected List<Long> getEntityAttributeIds() {
-        return Arrays.asList(City.NAME, City.SHORT_NAME);
+        return Arrays.asList(City.CITY_TYPE_ID, City.NAME, City.SHORT_NAME);
     }
 
     @Override
@@ -30,5 +31,14 @@ public class CityEditPage extends DomainEditPage{
     @Override
     protected Long getParentEntityAttributeId() {
         return Region.NAME;
+    }
+
+    @Override
+    protected Long getRefEntityAttributeId(Long entityAttributeId) {
+        if (entityAttributeId == City.CITY_TYPE_ID){
+            return CityType.NAME;
+        }
+
+        return null;
     }
 }

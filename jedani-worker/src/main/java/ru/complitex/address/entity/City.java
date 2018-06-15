@@ -13,11 +13,12 @@ public class City extends Domain{
 
     public static final long NAME = 1;
     public static final long SHORT_NAME = 2;
-    public static final long MANAGER_ID = 3;
-    public static final long CITY_TYPE_ID = 4;
+    public static final long CITY_TYPE_ID = 3;
 
-    public static final long IMPORT_ID = 10;
-    public static final long IMPORT_MANAGER_ID = 11;
+    public static final long MANAGER_ID = 10;
+
+    public static final long IMPORT_ID = 100;
+    public static final long IMPORT_MANAGER_ID = 101;
 
     public City() {
         super(ENTITY_NAME);

@@ -6,6 +6,7 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel
 import de.agilecoders.wicket.core.markup.html.bootstrap.form.BootstrapForm;
 import de.agilecoders.wicket.core.markup.html.bootstrap.form.FormGroup;
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.WebPage;
@@ -91,9 +92,9 @@ public abstract class DomainEditPage extends BasePage{
 
         List<Long> entityAttributeIds = getEntityAttributeIds();
 
-        List<EntityAttribute> entityAttributes = entity.getAttributes().stream()
-                .filter(a -> entityAttributeIds == null || entityAttributeIds.contains(a.getEntityAttributeId()))
-                .collect(Collectors.toList());
+        List<EntityAttribute> entityAttributes = entityAttributeIds != null
+                ? entityAttributeIds.stream().map(entity::getEntityAttribute).collect(Collectors.toList())
+                : entity.getAttributes();
 
         ListView listView = new ListView<EntityAttribute>("attributes", entityAttributes) {
             @Override
@@ -104,6 +105,7 @@ public abstract class DomainEditPage extends BasePage{
                 FormGroup group = new FormGroup("group", Model.of(entityAttribute.getValue().getText()));
                 FormComponent input1 = null;
                 FormComponent input2 = null;
+                Component component = null;
 
                 switch (entityAttribute.getValueType()){
                     case TEXT:
@@ -116,6 +118,11 @@ public abstract class DomainEditPage extends BasePage{
                         input1 = new TextField<>("input1", new PropertyModel<>(attribute, "date"));
                         break;
                     case ENTITY:
+                        component = new DomainAutoComplete("component", entityMapper.getReferenceEntityName(
+                                entity.getName(), entityAttribute.getEntityAttributeId()),
+                                getRefEntityAttributeId(entityAttribute.getEntityAttributeId()),
+                                new PropertyModel<>(attribute, "number"));
+                        break;
                     case NUMBER:
                         input1 = new TextField<>("input1", new PropertyModel<>(attribute, "number"));
                         break;
@@ -131,8 +138,9 @@ public abstract class DomainEditPage extends BasePage{
                         break;
                 }
 
-                group.add(input1);
+                group.add(input1 != null ? input1 : new EmptyPanel("input1").setVisible(false));
                 group.add(input2 != null ? input2 : new EmptyPanel("input2").setVisible(false));
+                group.add(component != null ? component : new EmptyPanel("component").setVisible(false));
 
                 item.add(group);
             }
@@ -193,6 +201,10 @@ public abstract class DomainEditPage extends BasePage{
     }
 
     protected List<Long> getEntityAttributeIds(){
+        return null;
+    }
+
+    protected Long getRefEntityAttributeId(Long entityAttributeId){
         return null;
     }
 }
