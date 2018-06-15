@@ -1,0 +1,21 @@
+package ru.complitex.address.entity;
+
+import ru.complitex.domain.entity.Domain;
+
+/**
+ * @author Anatoly A. Ivanov
+ * 15.06.2018 17:07
+ */
+public class Country extends Domain {
+    public static final String ENTITY_NAME = "country";
+
+    public static final long ENTITY_ID = 1;
+
+    public static final long NAME = 1;
+    public static final long SHORT_NAME = 2;
+    public static final long MANAGER_ID = 3;
+
+    public Country() {
+        super(ENTITY_NAME);
+    }
+}

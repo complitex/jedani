@@ -14,10 +14,7 @@ import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.request.Response;
-import ru.complitex.address.page.CityEditPage;
-import ru.complitex.address.page.CityListPage;
-import ru.complitex.address.page.RegionEditPage;
-import ru.complitex.address.page.RegionListPage;
+import ru.complitex.address.page.*;
 import ru.complitex.common.wicket.application.ServletAuthorizationStrategy;
 import ru.complitex.common.wicket.application.ServletUnauthorizedListener;
 import ru.complitex.common.wicket.application.ServletWebSession;
@@ -66,9 +63,14 @@ public class JedaniWebApplication extends WebApplication{
     private void configureMount() {
         mountPage("login", LoginPage.class);
         mountPage("import", ImportPage.class);
+        mountPage("countries", CountryListPage.class);
+        mountPage("country", CountryEditPage.class);
+        mountPage("country/${id}", CountryEditPage.class);
         mountPage("regions", RegionListPage.class);
+        mountPage("region", RegionEditPage.class);
         mountPage("region/${id}", RegionEditPage.class);
         mountPage("cities", CityListPage.class);
+        mountPage("city", CityEditPage.class);
         mountPage("city/${id}", CityEditPage.class);
         mountPage("workers", WorkerListPage.class);
         mountPage("worker", WorkerPage.class);

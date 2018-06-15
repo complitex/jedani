@@ -96,7 +96,11 @@ public class DomainListPage<T extends Domain> extends BasePage{
             });
         }
 
-        getEntityAttributes(entity).forEach(a -> columns.add(new DomainColumn<>(a)));
+        List<Long> entityAttributeIds = getEntityAttributeIds();
+
+        getEntityAttributes(entity).stream()
+                .filter(a -> entityAttributeIds == null || entityAttributeIds.contains(a.getEntityAttributeId()))
+                .forEach(a -> columns.add(new DomainColumn<>(a)));
 
         onAddColumns(columns);
 
@@ -142,5 +146,9 @@ public class DomainListPage<T extends Domain> extends BasePage{
     }
 
     protected void onAddColumns(List<IColumn<T, SortProperty>> columns){
+    }
+
+    protected List<Long> getEntityAttributeIds(){
+        return null;
     }
 }

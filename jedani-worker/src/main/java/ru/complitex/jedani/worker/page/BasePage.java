@@ -35,8 +35,6 @@ import ru.complitex.user.mapper.UserMapper;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
-import static ru.complitex.jedani.worker.entity.Worker.J_ID;
-
 /**
  * @author Anatoly A. Ivanov
  * 22.11.2017 16:58
@@ -129,8 +127,6 @@ public class BasePage extends WebPage{
         if (currentWorker == null && isAdmin()){
             currentWorker = new Worker();
             currentWorker.init();
-
-            currentWorker.setText(J_ID, workerMapper.getNewJId());
 
             currentWorker.setParentId(getCurrentUser().getId());
         }

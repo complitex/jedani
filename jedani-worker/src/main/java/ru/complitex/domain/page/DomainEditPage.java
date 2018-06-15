@@ -5,6 +5,7 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
 import de.agilecoders.wicket.core.markup.html.bootstrap.form.BootstrapForm;
 import de.agilecoders.wicket.core.markup.html.bootstrap.form.FormGroup;
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.WebPage;
@@ -31,6 +32,8 @@ import ru.complitex.domain.util.Locales;
 import ru.complitex.jedani.worker.page.BasePage;
 
 import javax.inject.Inject;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Anatoly A. Ivanov
@@ -65,7 +68,13 @@ public abstract class DomainEditPage extends BasePage{
             throw new WicketRuntimeException("domain not found");
         }
 
-        ListView listView = new ListView<EntityAttribute>("attributes", entity.getAttributes()) {
+        List<Long> entityAttributeIds = getEntityAttributeIds();
+
+        List<EntityAttribute> entityAttributes = entity.getAttributes().stream()
+                .filter(a -> entityAttributeIds == null || entityAttributeIds.contains(a.getEntityAttributeId()))
+                .collect(Collectors.toList());
+
+        ListView listView = new ListView<EntityAttribute>("attributes", entityAttributes) {
             @Override
             protected void populateItem(ListItem<EntityAttribute> item) {
                 EntityAttribute entityAttribute = item.getModelObject();
@@ -90,8 +99,14 @@ public abstract class DomainEditPage extends BasePage{
                         input1 = new TextField<>("input1", new PropertyModel<>(attribute, "number"));
                         break;
                     case TEXT_VALUE:
-                        input1 = new TextField<>("input1", new PropertyModel<>(attribute.getOrCreateValue(Locales.getLocaleId(Locales.RU)), "text"));
-                        input2 = new TextField<>("input2", new PropertyModel<>(attribute.getOrCreateValue(Locales.getLocaleId(Locales.UA)), "text"));
+                        input1 = new TextField<>("input1", new PropertyModel<>(attribute.getOrCreateValue(
+                                Locales.getLocaleId(Locales.RU)), "text"));
+                        input1.add(new AttributeModifier("placeholder", getString("RU")));
+
+                        input2 = new TextField<>("input2", new PropertyModel<>(attribute.getOrCreateValue(
+                                Locales.getLocaleId(Locales.UA)), "text"));
+                        input2.add(new AttributeModifier("placeholder", getString("UA")));
+
                         break;
                 }
 
@@ -116,7 +131,7 @@ public abstract class DomainEditPage extends BasePage{
                         domainMapper.insertDomain(domain);
                     }
 
-                    getSession().info(entity.getValue().getText() + " сохранен");
+                    getSession().info(entity.getValue().getText() + " " + getString("info_saved"));
 
                     if (backPage != null) {
                         setResponsePage(backPage);
@@ -146,5 +161,9 @@ public abstract class DomainEditPage extends BasePage{
         form.add(cancel);
 
         //todo validate -> entity select
+    }
+
+    protected List<Long> getEntityAttributeIds(){
+        return null;
     }
 }

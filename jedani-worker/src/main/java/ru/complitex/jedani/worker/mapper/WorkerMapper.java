@@ -13,7 +13,9 @@ import java.util.List;
  */
 public class WorkerMapper extends BaseMapper {
     public String getNewJId(){
-        return StringUtils.leftPad(Long.parseLong(sqlSession().selectOne("selectMaxJId")) + 1 + "", 6, '0');
+        String maxJId = sqlSession().selectOne("selectMaxJId");
+
+        return maxJId != null ? StringUtils.leftPad(Long.parseLong(maxJId) + 1 + "", 6, '0') : null;
     }
 
     public boolean isExistJId(String jid){
