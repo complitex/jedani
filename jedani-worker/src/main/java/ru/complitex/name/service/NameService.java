@@ -59,4 +59,18 @@ public class NameService implements Serializable {
     public Long getOrCreateMiddleName(String middleName, Long objectId){
         return getOrCreateName(MiddleName.ENTITY_NAME, MiddleName.NAME, middleName, objectId);
     }
+
+    public String getLastName(Long objectId){
+        return domainMapper.getDomain(LastName.ENTITY_NAME, objectId).getValueText(LastName.NAME);
+    }
+
+    public String getFirstName(Long objectId){
+        return domainMapper.getDomain(FirstName.ENTITY_NAME, objectId).getValueText(FirstName.NAME);
+    }
+
+    public String getMiddleName(Long objectId){
+        return domainMapper.getDomain(MiddleName.ENTITY_NAME, objectId).getValueText(MiddleName.NAME);
+    }
+
+
 }

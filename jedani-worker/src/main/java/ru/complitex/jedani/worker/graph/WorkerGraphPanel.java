@@ -9,6 +9,7 @@ import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.jedani.worker.entity.Worker;
 import ru.complitex.jedani.worker.graph.resource.CytoscapeCoseJsResourceReference;
 import ru.complitex.jedani.worker.mapper.WorkerMapper;
+import ru.complitex.name.service.NameService;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -24,6 +25,9 @@ public class WorkerGraphPanel extends Panel {
     @Inject
     private WorkerMapper workerMapper;
 
+    @Inject
+    private NameService nameService;
+
     private String elements;
 
     public WorkerGraphPanel(String id, Worker worker) {
@@ -34,23 +38,25 @@ public class WorkerGraphPanel extends Panel {
 
         elements =  " {data: {id: '" + worker.getObjectId() + "', " +
                 "label: '" + worker.getText(Worker.J_ID) + "\\n" +
-                worker.getText(Worker.LAST_NAME) + "\\n" +
-                worker.getText(Worker.FIRST_NAME) + "\\n" +
-                worker.getText(Worker.MIDDLE_NAME) + "'}}";
+                nameService.getLastName(worker.getNumber(Worker.LAST_NAME)) + "\\n" +
+                nameService.getFirstName(worker.getNumber(Worker.FIRST_NAME)) + "\\n" +
+                nameService.getMiddleName(worker.getNumber(Worker.MIDDLE_NAME)) + "'}}";
 
-        elements += "," + workers.stream()
-                .map(w -> " {data: {id: '" + w.getObjectId() + "', " +
-                        "label: '" + w.getText(Worker.J_ID) + "\\n" +
-                        w.getText(Worker.LAST_NAME) + "\\n" +
-                        w.getText(Worker.FIRST_NAME) + "\\n" +
-                        w.getText(Worker.MIDDLE_NAME) + "'}}")
-                .collect(Collectors.joining(","));
+        if (!workers.isEmpty()) {
+            elements += "," + workers.stream()
+                    .map(w -> " {data: {id: '" + w.getObjectId() + "', " +
+                            "label: '" + w.getText(Worker.J_ID) + "\\n" +
+                            nameService.getLastName(w.getNumber(Worker.LAST_NAME)) + "\\n" +
+                            nameService.getFirstName(w.getNumber(Worker.FIRST_NAME)) + "\\n" +
+                            nameService.getMiddleName(w.getNumber(Worker.MIDDLE_NAME)) + "'}}")
+                    .collect(Collectors.joining(","));
 
-        elements += "," + workers.stream()
-                .map(w -> " {data: {id: 'e" + w.getObjectId() + "', " +
-                        "source: '" + w.getNumber(Worker.MANAGER_ID) + "', " +
-                        "target: '" + w.getObjectId() + "'}}")
-                .collect(Collectors.joining(","));
+            elements += "," + workers.stream()
+                    .map(w -> " {data: {id: 'e" + w.getObjectId() + "', " +
+                            "source: '" + w.getNumber(Worker.MANAGER_ID) + "', " +
+                            "target: '" + w.getObjectId() + "'}}")
+                    .collect(Collectors.joining(","));
+        }
     }
 
     @Override

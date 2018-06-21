@@ -25,7 +25,7 @@
 
     <sql id="selectDomainSql">
         select distinct d.*, '${entityName}' entity_name from ${entityName} d
-        <if test="attributes != null">
+        <if test="attributes != null and !attributes.isEmpty">
             <foreach collection="attributes" index="i" item="a">
                 <if test="a.text != null or a.number != null">
                     left join ${entityName}_attribute a${i}
@@ -34,9 +34,9 @@
             </foreach>
         </if>
         <where>
-            <if test="parentId != null">and d.parent_id = #{parentId} and d.`end_date` is null</if>
-            <if test="objectId != null">and d.object_id = #{objectId} and d.`end_date` is null</if>
-            <if test="attributes != null">
+            <if test="parentId != null">and d.parent_id = #{parentId} and d.`status` in (1, 4)</if>
+            <if test="objectId != null">and d.object_id = #{objectId} and d.`status` in (1, 4)</if>
+            <if test="attributes != null and !attributes.isEmpty">
                 <foreach collection="attributes" index="i" item="a">
                     <if test="a.text != null">and (a${i}.text = #{a.text} and a${i}.status = 1)</if>
                     <if test="a.number != null">and (a${i}.number = #{a.number} and a${i}.status = 1)</if>

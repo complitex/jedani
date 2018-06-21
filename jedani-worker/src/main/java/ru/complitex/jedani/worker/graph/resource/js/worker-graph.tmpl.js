@@ -19,7 +19,9 @@ var cy = window.cy = cytoscape({
                 'height': 'label',
                 'padding' : '5px',
                 'label': 'data(label)',
-                'font-size': '10px',
+                'font-size': '13px',
+                'font-family': 'Arial, Helvetica, sans-serif',
+                'font-weight': 'normal',
                 'text-wrap': 'wrap',
                 'text-valign': 'center',
                 'overlay-color': '#fff',
@@ -50,3 +52,6 @@ var cy = window.cy = cytoscape({
 
     elements: [${elements}]
 });
+
+cy.zoom(1.1);
+cy.center();

@@ -19,6 +19,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.Link;
+import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
@@ -127,8 +128,6 @@ public class WorkerPage extends BasePage {
 
                 manager.getNumberValues(REGION_IDS).forEach(n -> worker.addNumberValue(REGION_IDS, n));
                 manager.getNumberValues(CITY_IDS).forEach(n -> worker.addNumberValue(CITY_IDS, n));
-            } else {
-                manager = workerMapper.getWorker(1L);
             }
         }else{
             if (id != null) {
@@ -137,10 +136,7 @@ public class WorkerPage extends BasePage {
                 worker = getCurrentWorker();
             }
 
-            if (worker.getNumber(Worker.MANAGER_ID) == null) {
-                worker.setNumber(Worker.MANAGER_ID, 1L);
-                manager = workerMapper.getWorker(1L);
-            } else {
+            if (worker.getNumber(Worker.MANAGER_ID) == null && worker.getNumber(Worker.MANAGER_ID) != 1) {
                 manager = workerMapper.getWorker(worker.getNumber(Worker.MANAGER_ID));
             }
         }
@@ -238,7 +234,7 @@ public class WorkerPage extends BasePage {
         String managerPhones = "";
         String managerEmail = "";
 
-        if (manager.getObjectId() != 1L) {
+        if (manager != null) {
             managerFio = workerService.getWorkerFio(manager, getLocale());
             managerPhones = String.join(", ", manager.getTextValues(Worker.PHONE));
             managerEmail = manager.getText(Worker.EMAIL);
@@ -292,7 +288,12 @@ public class WorkerPage extends BasePage {
                     worker.setNumber(FIRST_NAME, nameService.getOrCreateFirstName(firstName.getInput(), worker.getNumber(FIRST_NAME)));
                     worker.setNumber(MIDDLE_NAME, nameService.getOrCreateMiddleName(middleName.getInput(), worker.getNumber(MIDDLE_NAME)));
 
-                    worker.setNumber(Worker.MANAGER_ID, manager.getObjectId());
+                    if (manager != null) {
+                        worker.setNumber(Worker.MANAGER_ID, manager.getObjectId());
+                    }else{
+                        worker.setNumber(Worker.MANAGER_ID, 1L);
+                        manager = workerMapper.getWorker(1L);
+                    }
 
                     if (worker.getObjectId() == null){
                         domainMapper.insertDomain(worker);
@@ -307,7 +308,7 @@ public class WorkerPage extends BasePage {
                     }
 
                     if (isAdmin()){
-                        if (manager.getObjectId() != 1L) {
+                        if (manager != null && manager.getObjectId() != 1L) {
                             setResponsePage(WorkerPage.class, new PageParameters().add("id", manager.getObjectId()));
                         } else {
                             setResponsePage(WorkerListPage.class);
@@ -368,7 +369,6 @@ public class WorkerPage extends BasePage {
         form.add(cancel);
 
         //Structure
-
         WebMarkupContainer structure = new WebMarkupContainer("structure");
         structure.setOutputMarkupId(true);
         structure.setVisible(worker.getObjectId() != null);
@@ -415,12 +415,16 @@ public class WorkerPage extends BasePage {
         table.setHideOnEmpty(worker.getObjectId() == null);
         structure.add(table);
 
-        structure.add(new WorkerGraphPanel("graph", worker){
-            @Override
-            public boolean isVisible() {
-                return showGraph.getObject();
-            }
-        });
+        if (worker.getObjectId() != null) {
+            structure.add(new WorkerGraphPanel("graph", worker){
+                @Override
+                public boolean isVisible() {
+                    return showGraph.getObject();
+                }
+            });
+        }else{
+            structure.add(new EmptyPanel("graph"));
+        }
 
         structure.add(new AjaxLink<Void>("tableLink") {
             @Override
