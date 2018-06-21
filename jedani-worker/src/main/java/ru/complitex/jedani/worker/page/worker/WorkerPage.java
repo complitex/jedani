@@ -81,7 +81,7 @@ import static ru.complitex.jedani.worker.entity.Worker.*;
  */
 
 @AuthorizeInstantiation(JedaniRoles.AUTHORIZED)
-public class WorkerPage extends BasePage{
+public class WorkerPage extends BasePage {
     private Logger log = LoggerFactory.getLogger(Worker.class);
 
     @Inject
@@ -109,7 +109,7 @@ public class WorkerPage extends BasePage{
     private DomainNodeMapper domainNodeMapper;
 
     private Worker worker;
-    private Worker manager = null;
+    private Worker manager;
 
     private IModel<Boolean> showGraph = Model.of(false);
 
@@ -122,25 +122,25 @@ public class WorkerPage extends BasePage{
 
             worker.setText(J_ID, workerMapper.getNewJId());
 
-            if (id != null){
+            if (id != null) {
                 manager = workerMapper.getWorker(id);
 
                 manager.getNumberValues(REGION_IDS).forEach(n -> worker.addNumberValue(REGION_IDS, n));
                 manager.getNumberValues(CITY_IDS).forEach(n -> worker.addNumberValue(CITY_IDS, n));
-            }else{
+            } else {
                 manager = workerMapper.getWorker(1L);
             }
         }else{
-            if (id != null){
+            if (id != null) {
                 worker = workerMapper.getWorker(id);
-            }else{
+            } else {
                 worker = getCurrentWorker();
             }
 
-            if (worker.getNumber(Worker.MANAGER_ID) == null){
+            if (worker.getNumber(Worker.MANAGER_ID) == null) {
                 worker.setNumber(Worker.MANAGER_ID, 1L);
                 manager = workerMapper.getWorker(1L);
-            }else if (worker.getNumber(Worker.MANAGER_ID) != 1L){
+            } else {
                 manager = workerMapper.getWorker(worker.getNumber(Worker.MANAGER_ID));
             }
         }
@@ -155,7 +155,7 @@ public class WorkerPage extends BasePage{
             public Iterator<Worker> iterator(long first, long count) {
                 FilterWrapper<Worker> filterWrapper = getFilterState().limit(first, count);
 
-                if (getSort() != null){
+                if (getSort() != null) {
                     filterWrapper.setSortProperty(getSort().getProperty());
                     filterWrapper.setAscending(getSort().isAscending());
                 }
@@ -190,7 +190,7 @@ public class WorkerPage extends BasePage{
 
         if (worker.getObjectId() == null) {
             jId.onUpdate(target -> {
-                if (workerMapper.isExistJId(jId.getTextField().getInput())){
+                if (workerMapper.isExistJId(jId.getTextField().getInput())) {
                     jId.getTextField().error(getString("error_jid_exist"));
                 }
 
