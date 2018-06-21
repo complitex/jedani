@@ -1,4 +1,4 @@
-package ru.complitex.jedani.worker.page.directory;
+package ru.complitex.jedani.worker.page.catalog;
 
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import ru.complitex.domain.page.DomainEditPage;

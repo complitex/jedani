@@ -1,6 +1,5 @@
-package ru.complitex.jedani.worker.page.directory;
+package ru.complitex.jedani.worker.page.catalog;
 
-import org.apache.wicket.markup.html.WebPage;
 import ru.complitex.domain.page.DomainListPage;
 
 /**

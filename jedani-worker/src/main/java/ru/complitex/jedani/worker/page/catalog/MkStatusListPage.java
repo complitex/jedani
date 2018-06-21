@@ -1,4 +1,4 @@
-package ru.complitex.jedani.worker.page.directory;
+package ru.complitex.jedani.worker.page.catalog;
 
 import ru.complitex.domain.page.DomainListPage;
 

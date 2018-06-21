@@ -82,7 +82,9 @@ public class Worker extends DomainNode {
         getOrCreateAttribute(CITY_IDS);
         setNumber(POSITION_ID, null);
         setNumber(MK_STATUS_ID, null);
-        setNumber(MANAGER_ID, 1L);
+        setLeft(0L);
+        setRight(0L);
+        setLevel(0L);
     }
 
     public Long getSubWorkerCount() {

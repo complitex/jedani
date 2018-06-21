@@ -127,12 +127,21 @@ public class WorkerPage extends BasePage{
 
                 manager.getNumberValues(REGION_IDS).forEach(n -> worker.addNumberValue(REGION_IDS, n));
                 manager.getNumberValues(CITY_IDS).forEach(n -> worker.addNumberValue(CITY_IDS, n));
+            }else{
+                manager = workerMapper.getWorker(1L);
             }
         }else{
             if (id != null){
                 worker = workerMapper.getWorker(id);
             }else{
                 worker = getCurrentWorker();
+            }
+
+            if (worker.getNumber(Worker.MANAGER_ID) == null){
+                worker.setNumber(Worker.MANAGER_ID, 1L);
+                manager = workerMapper.getWorker(1L);
+            }else if (worker.getNumber(Worker.MANAGER_ID) != 1L){
+                manager = workerMapper.getWorker(worker.getNumber(Worker.MANAGER_ID));
             }
         }
 
@@ -141,7 +150,6 @@ public class WorkerPage extends BasePage{
         add(feedback);
 
         //Data provider
-
         DataProvider<Worker> dataProvider = new DataProvider<Worker>(FilterWrapper.of(new Worker(worker.getLeft(), worker.getRight()))) {
             @Override
             public Iterator<Worker> iterator(long first, long count) {
@@ -162,7 +170,6 @@ public class WorkerPage extends BasePage{
         };
 
         //Worker
-
         FilterForm<FilterWrapper<Worker>> form = new FilterForm<>("form", dataProvider);
         add(form);
 
@@ -207,7 +214,6 @@ public class WorkerPage extends BasePage{
         region.onChange(t -> t.add(city));
 
         //User
-
         User user = worker.getParentId() != null ? userMapper.getUser(worker.getParentId()) : new User(worker.getText(J_ID));
 
         TextField<String> login = new TextField<>("login", new PropertyModel<>(user, "login"));
@@ -228,15 +234,11 @@ public class WorkerPage extends BasePage{
                 .setRequired(true));
 
         //Manager
-        if (manager == null && worker.getNumber(Worker.MANAGER_ID) != null && worker.getNumber(Worker.MANAGER_ID) > 1L){
-            manager = workerMapper.getWorker(worker.getNumber(Worker.MANAGER_ID));
-        }
-
         String managerFio = "";
         String managerPhones = "";
         String managerEmail = "";
 
-        if (manager != null) {
+        if (manager.getObjectId() != 1L) {
             managerFio = workerService.getWorkerFio(manager, getLocale());
             managerPhones = String.join(", ", manager.getTextValues(Worker.PHONE));
             managerEmail = manager.getText(Worker.EMAIL);
@@ -290,16 +292,12 @@ public class WorkerPage extends BasePage{
                     worker.setNumber(FIRST_NAME, nameService.getOrCreateFirstName(firstName.getInput(), worker.getNumber(FIRST_NAME)));
                     worker.setNumber(MIDDLE_NAME, nameService.getOrCreateMiddleName(middleName.getInput(), worker.getNumber(MIDDLE_NAME)));
 
-                    if (manager != null){
-                        worker.setNumber(Worker.MANAGER_ID, manager.getObjectId());
-                    }
+                    worker.setNumber(Worker.MANAGER_ID, manager.getObjectId());
 
                     if (worker.getObjectId() == null){
                         domainMapper.insertDomain(worker);
 
-                        if (manager != null) {
-                            domainNodeMapper.updateIndex(manager, worker);
-                        }
+                        domainNodeMapper.updateIndex(manager, worker);
 
                         getSession().info(getString("info_user_created"));
                     }else{
@@ -309,9 +307,9 @@ public class WorkerPage extends BasePage{
                     }
 
                     if (isAdmin()){
-                        if (manager != null){
+                        if (manager.getObjectId() != 1L) {
                             setResponsePage(WorkerPage.class, new PageParameters().add("id", manager.getObjectId()));
-                        }else{
+                        } else {
                             setResponsePage(WorkerListPage.class);
                         }
                     }else{
@@ -373,6 +371,7 @@ public class WorkerPage extends BasePage{
 
         WebMarkupContainer structure = new WebMarkupContainer("structure");
         structure.setOutputMarkupId(true);
+        structure.setVisible(worker.getObjectId() != null);
         form.add(structure);
 
         List<IColumn<Worker, SortProperty>> columns = new ArrayList<>();
