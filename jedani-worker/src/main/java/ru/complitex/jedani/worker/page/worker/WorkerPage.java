@@ -136,7 +136,7 @@ public class WorkerPage extends BasePage {
                 worker = getCurrentWorker();
             }
 
-            if (worker.getNumber(Worker.MANAGER_ID) == null && worker.getNumber(Worker.MANAGER_ID) != 1) {
+            if (worker.getNumber(Worker.MANAGER_ID) != null && worker.getNumber(Worker.MANAGER_ID) != 1) {
                 manager = workerMapper.getWorker(worker.getNumber(Worker.MANAGER_ID));
             }
         }
