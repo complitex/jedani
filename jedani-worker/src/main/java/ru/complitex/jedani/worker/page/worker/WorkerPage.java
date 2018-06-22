@@ -249,8 +249,6 @@ public class WorkerPage extends BasePage {
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
                 try {
-                    target.add(feedback);
-
                     //User
                     if (!Strings.isNullOrEmpty(user.getPassword())){
                         if (!user.getPassword().equals(user.getConfirmPassword())){
@@ -288,6 +286,8 @@ public class WorkerPage extends BasePage {
                     worker.setNumber(FIRST_NAME, nameService.getOrCreateFirstName(firstName.getInput(), worker.getNumber(FIRST_NAME)));
                     worker.setNumber(MIDDLE_NAME, nameService.getOrCreateMiddleName(middleName.getInput(), worker.getNumber(MIDDLE_NAME)));
 
+                    //todo uniquie jid
+
                     if (manager != null) {
                         worker.setNumber(Worker.MANAGER_ID, manager.getObjectId());
                     }else{
@@ -301,10 +301,12 @@ public class WorkerPage extends BasePage {
                         domainNodeMapper.updateIndex(manager, worker);
 
                         getSession().info(getString("info_user_created"));
+                        target.add(feedback);
                     }else{
                         domainMapper.updateDomain(worker);
 
                         getSession().info(getString("info_user_updated"));
+                        target.add(feedback);
                     }
 
                     if (isAdmin()){
@@ -317,6 +319,9 @@ public class WorkerPage extends BasePage {
                         setResponsePage(WorkerPage.class);
                     }
                 } catch (Exception e) {
+                    error(e.getMessage());
+                    target.add(feedback);
+
                     log.error("error save worker ", e);
                 }
             }
