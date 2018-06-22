@@ -15,7 +15,11 @@ public class WorkerMapper extends BaseMapper {
     public String getNewJId(){
         String maxJId = sqlSession().selectOne("selectMaxJId");
 
-        return maxJId != null ? StringUtils.leftPad(Long.parseLong(maxJId) + 1 + "", 6, '0') : null;
+        try {
+            return maxJId != null ? StringUtils.leftPad(Long.parseLong(maxJId) + 1 + "", 6, '0') : null;
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 
     public boolean isExistJId(String jid){
