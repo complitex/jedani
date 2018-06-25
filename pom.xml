@@ -14,8 +14,8 @@
     </modules>
 
     <properties>
-        <wicket.version>8.0.0-M9</wicket.version>
-        <wicket-bootstrap.version>2.0.0-M7</wicket-bootstrap.version>
+        <wicket.version>8.0.0</wicket.version>
+        <wicket-bootstrap.version>2.0.2</wicket-bootstrap.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -106,7 +106,7 @@
             <dependency>
                 <groupId>org.mybatis</groupId>
                 <artifactId>mybatis-cdi</artifactId>
-                <version>1.0.2</version>
+                <version>1.0.3</version>
             </dependency>
 
             <dependency>

@@ -8,6 +8,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.protocol.ws.WebSocketSettings;
 import org.apache.wicket.protocol.ws.api.WebSocketBehavior;
@@ -121,7 +122,8 @@ public class ImportPage extends BasePage{
         FileUploadField userUploadField = new FileUploadField("uploadField");
         userForm.add(userUploadField);
 
-        Label info  = new Label("info", Model.of(""));
+        IModel<String> infoModel = Model.of("");
+        Label info  = new Label("info", infoModel);
         info.setOutputMarkupId(true);
         info.add(new WebSocketBehavior(){
             @Override
@@ -129,8 +131,8 @@ public class ImportPage extends BasePage{
                 if (message instanceof PushMessage){
                     String s = ((PushMessage)message).getText();
 
-                    if (!info.getDefaultModelObject().equals(s)){
-                        info.setDefaultModelObject(s);
+                    if (!infoModel.getObject().equals(s)){
+                        infoModel.setObject(s);
                         handler.add(info);
                     }
                 }
