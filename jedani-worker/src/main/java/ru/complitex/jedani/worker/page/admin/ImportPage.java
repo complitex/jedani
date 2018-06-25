@@ -129,11 +129,15 @@ public class ImportPage extends BasePage{
             @Override
             protected void onPush(WebSocketRequestHandler handler, IWebSocketPushMessage message) {
                 if (message instanceof PushMessage){
-                    String s = ((PushMessage)message).getText();
+                    try {
+                        String s = ((PushMessage)message).getText();
 
-                    if (!infoModel.getObject().equals(s)){
-                        infoModel.setObject(s);
-                        handler.add(info);
+                        if (!infoModel.getObject().equals(s)){
+                            infoModel.setObject(s);
+                            handler.add(info);
+                        }
+                    } catch (Exception e) {
+                        log.error("info error ", e);
                     }
                 }
             }
