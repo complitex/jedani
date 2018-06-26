@@ -238,8 +238,6 @@ public class ImportService implements Serializable {
                         ++status.count;
 
                         listener.accept(status.count*100/ workers.size() + "%");
-
-                        listener.accept(null); //todo test npe
                     });
 
             updateWorkerManagerId(listener);
@@ -263,7 +261,7 @@ public class ImportService implements Serializable {
 
                 w.setNumber(Worker.MANAGER_ID, manager.getObjectId());
 
-
+                listener.accept(importAncestry);
             }else{
                 w.setNumber(Worker.MANAGER_ID, 1L);
             }
@@ -271,8 +269,6 @@ public class ImportService implements Serializable {
             w.setStatus(ACTIVE);
 
             domainMapper.updateDomain(w);
-
-            listener.accept(w.getText(Worker.IMPORT_ANCESTRY)); //todo test npe
         });
     }
 
