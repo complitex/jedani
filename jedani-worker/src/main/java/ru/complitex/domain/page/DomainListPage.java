@@ -117,11 +117,13 @@ public class DomainListPage<T extends Domain> extends BasePage{
         });
     }
 
+    @SuppressWarnings("unchecked")
     protected FilterWrapper<T> getNewFilterWrapper(){
         return (FilterWrapper<T>) FilterWrapper.of(new Domain(entityName)); //todo abstract
     }
 
 
+    @SuppressWarnings("unchecked")
     protected List<T> getDomains(FilterWrapper<T> filterWrapper) {
         return (List<T>) domainMapper.getDomains(filterWrapper);
     }

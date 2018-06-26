@@ -23,6 +23,7 @@ import ru.complitex.jedani.worker.page.BasePage;
 import ru.complitex.jedani.worker.service.ImportService;
 
 import javax.inject.Inject;
+import java.util.Objects;
 
 /**
  * @author Anatoly A. Ivanov
@@ -132,7 +133,7 @@ public class ImportPage extends BasePage{
                     try {
                         String s = ((PushMessage)message).getText();
 
-                        if (!infoModel.getObject().equals(s)){
+                        if (!Objects.equals(infoModel.getObject(), s)){
                             infoModel.setObject(s);
                             handler.add(info);
                         }
@@ -157,7 +158,7 @@ public class ImportPage extends BasePage{
                     info.setDefaultModelObject("");
                     target.add(info);
                     if (status.getErrorMessage() == null){
-                        info("Добавлено " + status.getCount() + " пользователей");
+                        info("Добавлено " + status.getCount() + " сотрудников");
                     }else{
                         error("Ошибка импорта " + status.getErrorMessage());
                     }
