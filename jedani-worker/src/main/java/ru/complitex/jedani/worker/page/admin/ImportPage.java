@@ -130,6 +130,10 @@ public class ImportPage extends BasePage{
             @Override
             protected void onPush(WebSocketRequestHandler handler, IWebSocketPushMessage message) {
                 if (message instanceof PushMessage){
+                    if (message == null){
+                        System.out.println("JDK BUG");
+                    }
+
                     try {
                         String s = ((PushMessage)message).getText();
 

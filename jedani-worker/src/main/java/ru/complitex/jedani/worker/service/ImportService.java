@@ -261,7 +261,7 @@ public class ImportService implements Serializable {
 
                 w.setNumber(Worker.MANAGER_ID, manager.getObjectId());
 
-                listener.accept(importAncestry);
+
             }else{
                 w.setNumber(Worker.MANAGER_ID, 1L);
             }
@@ -269,6 +269,8 @@ public class ImportService implements Serializable {
             w.setStatus(ACTIVE);
 
             domainMapper.updateDomain(w);
+
+            listener.accept(w.getText(Worker.IMPORT_ANCESTRY));
         });
     }
 
