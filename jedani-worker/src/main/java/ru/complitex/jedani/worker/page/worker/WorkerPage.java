@@ -3,10 +3,9 @@ package ru.complitex.jedani.worker.page.worker;
 import com.google.common.base.Strings;
 import com.google.common.hash.Hashing;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
-import org.apache.wicket.ClassAttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
@@ -16,10 +15,10 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.Filte
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.TextFilter;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.Link;
-import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.*;
@@ -53,7 +52,6 @@ import ru.complitex.jedani.worker.component.WorkerAutoComplete;
 import ru.complitex.jedani.worker.entity.MkStatus;
 import ru.complitex.jedani.worker.entity.Position;
 import ru.complitex.jedani.worker.entity.Worker;
-import ru.complitex.jedani.worker.graph.WorkerGraphPanel;
 import ru.complitex.jedani.worker.mapper.WorkerMapper;
 import ru.complitex.jedani.worker.page.BasePage;
 import ru.complitex.jedani.worker.security.JedaniRoles;
@@ -67,7 +65,12 @@ import ru.complitex.user.mapper.UserMapper;
 
 import javax.inject.Inject;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.LongStream;
 
 import static ru.complitex.jedani.worker.entity.Worker.*;
 
@@ -141,7 +144,9 @@ public class WorkerPage extends BasePage {
         add(feedback);
 
         //Data provider
-        DataProvider<Worker> dataProvider = new DataProvider<Worker>(FilterWrapper.of(new Worker(worker.getLeft(), worker.getRight()))) {
+        FilterWrapper<Worker> filterWrapper = FilterWrapper.of(new Worker(worker.getLeft(), worker.getRight(), worker.getLevel()));
+
+        DataProvider<Worker> dataProvider = new DataProvider<Worker>(filterWrapper) {
             @Override
             public Iterator<Worker> iterator(long first, long count) {
                 FilterWrapper<Worker> filterWrapper = getFilterState().limit(first, count);
@@ -433,50 +438,14 @@ public class WorkerPage extends BasePage {
         table.setHideOnEmpty(worker.getObjectId() == null);
         structure.add(table);
 
-        if (worker.getObjectId() != null) {
-            structure.add(new WorkerGraphPanel("graph", worker){
-                @Override
-                public boolean isVisible() {
-                    return showGraph.getObject();
-                }
-            });
-        }else{
-            structure.add(new EmptyPanel("graph"));
-        }
+        filterWrapper.getMap().put("levelDepth", 1L);
 
-        structure.add(new AjaxLink<Void>("tableLink") {
-            @Override
-            public void onClick(AjaxRequestTarget target) {
-                showGraph.setObject(false);
-                target.add(structure);
-            }
-        }.add(new ClassAttributeModifier() {
-            @Override
-            protected Set<String> update(Set<String> oldClasses) {
-                if (!showGraph.getObject()){
-                    oldClasses.add("active");
-                }
-
-                return oldClasses;
-            }
-        }));
-
-        structure.add(new AjaxLink<Void>("graphLink") {
-            @Override
-            public void onClick(AjaxRequestTarget target) {
-                showGraph.setObject(true);
-                target.add(structure);
-            }
-        }.add(new ClassAttributeModifier() {
-            @Override
-            protected Set<String> update(Set<String> oldClasses) {
-                if (showGraph.getObject()){
-                    oldClasses.add("active");
-                }
-
-                return oldClasses;
-            }
-        }));
+        DropDownChoice levelDepth = new DropDownChoice<>("levelDepth", new PropertyModel<>(filterWrapper, "map.levelDepth"),
+                LongStream.range(1, worker.getObjectId() != null ? workerMapper.getWorkerLevelDepth(worker.getObjectId()) + 1 : 2)
+                        .boxed().collect(Collectors.toList()));
+        levelDepth.setNullValid(false);
+        levelDepth.add(OnChangeAjaxBehavior.onChange(target -> target.add(table)));
+        structure.add(levelDepth );
 
         structure.add(new Link<Void>("printLink") {
             @Override

@@ -85,15 +85,24 @@
 
                 <div wicket:id="structure" style="z-index: 1000">
                     <div class="pull-right">
-                        <button wicket:id="tableLink" class="btn btn-default">Таблица</button>
-                        <button wicket:id="graphLink" class="btn btn-default">Структура</button>
-                        <button wicket:id="printLink" class="btn btn-default">Печать</button>
+                        <table>
+                            <tr>
+                                <td>
+                                    <label for="levels" style="margin-top: 7px; margin-right: 2px">Уровней </label>
+                                </td>
+                                <td>
+                                    <select id="levels" wicket:id="levelDepth" class="form-control" style="width: 35px; margin-right: 10px"></select>
+                                </td>
+                                <td>
+                                    <button wicket:id="printLink" class="btn btn-default">Печать</button>
+                                </td>
+                            </tr>
+                        </table>
                     </div>
 
                     <br/>
 
                     <table wicket:id="table" class="table table-hover table-condensed"></table>
-                    <div wicket:id="graph" style="height: 552px; margin-top: 10px"></div>
                 </div>
 
                 <br/>

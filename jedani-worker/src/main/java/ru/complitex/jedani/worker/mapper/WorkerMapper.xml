@@ -30,6 +30,10 @@
             <if test="filter == 'level3' and object.level != null">
                 and #{object.level} + 3 > d.level
             </if>
+
+            <if test="map.levelDepth != null and object.level != null">
+                and #{object.level} + #{map.levelDepth} >= d.level
+            </if>
         </if>
     </sql>
 
@@ -82,4 +86,11 @@
 
         limit 10
     </select>
+
+    <select id="selectWorkerLevelDepth" parameterType="long" resultType="long">
+        select (select max(w.level) - d.level from worker w where w.left > d.left and d.right > w.right and w.status = 1)
+          from worker d where d.object_id = #{objectId} and d.status = 1
+    </select>
+
+
 </mapper>
