@@ -1,6 +1,9 @@
 package ru.complitex.domain.page;
 
+import de.agilecoders.wicket.core.markup.html.bootstrap.behavior.CssClassNameAppender;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
+import org.apache.wicket.Page;
+import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
@@ -8,6 +11,8 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.Filte
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
+import org.apache.wicket.markup.repeater.Item;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
@@ -42,9 +47,12 @@ public class DomainListPage<T extends Domain> extends BasePage{
 
     private String entityName;
 
+    private Class<? extends Page> editPageClass;
+
     public <P extends WebPage> DomainListPage(String entityName, String parentEntityName, Long parentEntityAttributeId,
                           Class<P> editPageClass) {
         this.entityName = entityName;
+        this.editPageClass = editPageClass;
 
         Entity entity = entityMapper.getEntity(entityName);
 
@@ -106,7 +114,16 @@ public class DomainListPage<T extends Domain> extends BasePage{
 
         columns.add(new DomainActionColumn<>(editPageClass));
 
-        FilterDataTable<T> table = new FilterDataTable<>("table", columns, dataProvider, filterForm, 10);
+        FilterDataTable<T> table = new FilterDataTable<T>("table", columns, dataProvider, filterForm, 10){
+            @Override
+            protected Item<T> newRowItem(String id, int index, IModel<T> model) {
+                Item<T> item = super.newRowItem(id, index, model);
+
+                onRowItem(item);
+
+                return item;
+            }
+        };
         filterForm.add(table);
 
         add(new AjaxLink<Void>("add") {
@@ -115,6 +132,17 @@ public class DomainListPage<T extends Domain> extends BasePage{
                 setResponsePage(editPageClass, new PageParameters().add("new", ""));
             }
         });
+    }
+
+    protected void onRowItem(Item<T> item){
+        item.add(new AjaxEventBehavior("click") {
+            @Override
+            protected void onEvent(AjaxRequestTarget target) {
+                setResponsePage(editPageClass, new PageParameters().add("id", item.getModelObject().getObjectId()));
+            }
+        });
+
+        item.add(new CssClassNameAppender("pointer"));
     }
 
     @SuppressWarnings("unchecked")

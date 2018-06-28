@@ -88,7 +88,7 @@
     </select>
 
     <select id="selectWorkerLevelDepth" parameterType="long" resultType="long">
-        select (select max(w.level) - d.level from worker w where w.left > d.left and d.right > w.right and w.status = 1)
+        select ifnull((select max(w.level) - d.level from worker w where w.left > d.left and d.right > w.right and w.status = 1), 0)
           from worker d where d.object_id = #{objectId} and d.status = 1
     </select>
 

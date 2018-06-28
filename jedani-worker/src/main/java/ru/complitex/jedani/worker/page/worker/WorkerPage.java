@@ -2,8 +2,10 @@ package ru.complitex.jedani.worker.page.worker;
 
 import com.google.common.base.Strings;
 import com.google.common.hash.Hashing;
+import de.agilecoders.wicket.core.markup.html.bootstrap.behavior.CssClassNameAppender;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
 import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
@@ -423,6 +425,23 @@ public class WorkerPage extends BasePage {
             @Override
             public boolean isVisible() {
                 return !showGraph.getObject();
+            }
+
+            @Override
+            protected Item<Worker> newRowItem(String id, int index, final IModel<Worker> model) {
+                Item<Worker> rowItem = super.newRowItem(id, index, model);
+
+                rowItem.add(new AjaxEventBehavior("click") {
+                    @Override
+                    protected void onEvent(AjaxRequestTarget target) {
+                        setResponsePage(WorkerPage.class, new PageParameters().add("id", model.getObject().getObjectId()));
+                    }
+                });
+
+                rowItem.add(new CssClassNameAppender("pointer"));
+
+                return rowItem;
+
             }
         };
         table.setHideOnEmpty(worker.getObjectId() == null);
