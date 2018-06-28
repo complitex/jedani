@@ -44,5 +44,9 @@ public class WorkerMapper extends BaseMapper {
     public Long getWorkersCount(FilterWrapper<Worker> filterWrapper){
         return sqlSession().selectOne("selectWorkersCount", filterWrapper);
     }
+
+    public List<Worker> getWorkers(String s){
+        return sqlSession().selectList("selectWorkersByString", s);
+    }
 }
 

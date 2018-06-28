@@ -22,10 +22,7 @@ import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
-import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
-import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.model.*;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +49,7 @@ import ru.complitex.domain.mapper.DomainMapper;
 import ru.complitex.domain.mapper.DomainNodeMapper;
 import ru.complitex.domain.mapper.EntityMapper;
 import ru.complitex.domain.service.EntityService;
+import ru.complitex.jedani.worker.component.WorkerAutoComplete;
 import ru.complitex.jedani.worker.entity.MkStatus;
 import ru.complitex.jedani.worker.entity.Position;
 import ru.complitex.jedani.worker.entity.Worker;
@@ -69,10 +67,7 @@ import ru.complitex.user.mapper.UserMapper;
 
 import javax.inject.Inject;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static ru.complitex.jedani.worker.entity.Worker.*;
 
@@ -230,20 +225,32 @@ public class WorkerPage extends BasePage {
                 .setRequired(true));
 
         //Manager
-        String managerFio = "";
-        String managerPhones = "";
-        String managerEmail = "";
+        Label managerPhone = new Label("managerPhones", new LoadableDetachableModel<String>() {
+            @Override
+            protected String load() {
+                return manager != null ? String.join(", ", manager.getTextValues(Worker.PHONE)) : null;
+            }
+        });
+        managerPhone.setOutputMarkupId(true);
+        form.add(managerPhone);
 
-        if (manager != null) {
-            managerFio = workerService.getWorkerFio(manager, getLocale());
-            managerPhones = String.join(", ", manager.getTextValues(Worker.PHONE));
-            managerEmail = manager.getText(Worker.EMAIL);
-        }
+        Label managerEmail = new Label("managerEmail", new LoadableDetachableModel<String>() {
+            @Override
+            protected String load() {
+                return manager != null ? manager.getText(Worker.EMAIL): null;
+            }
+        });
+        managerEmail.setOutputMarkupId(true);
+        form.add(managerEmail);
 
-        form.add(new Label("managerFio", managerFio));
-        form.add(new Label("managerPhones", managerPhones));
-        form.add(new Label("managerEmail", managerEmail));
+        form.add(new WorkerAutoComplete("managerFio", new PropertyModel<>(worker.getAttribute(Worker.MANAGER_ID), "number")){
+            @Override
+            protected void onChange(AjaxRequestTarget target) {
+                manager = workerMapper.getWorker(worker.getNumber(Worker.MANAGER_ID));
 
+                target.add(managerPhone, managerEmail);
+            }
+        });
 
         form.add(new IndicatingAjaxButton("save") {
             @Override
@@ -292,7 +299,6 @@ public class WorkerPage extends BasePage {
                         worker.setNumber(Worker.MANAGER_ID, manager.getObjectId());
                     }else{
                         worker.setNumber(Worker.MANAGER_ID, 1L);
-                        manager = workerMapper.getWorker(1L);
                     }
 
                     if (worker.getObjectId() == null){
@@ -303,7 +309,14 @@ public class WorkerPage extends BasePage {
                         getSession().info(getString("info_user_created"));
                         target.add(feedback);
                     }else{
+                        boolean updateIndex = !Objects.equals(worker.getNumber(Worker.MANAGER_ID),
+                                workerMapper.getWorker(worker.getObjectId()).getNumber(Worker.MANAGER_ID)); //todo opt
+
                         domainMapper.updateDomain(worker);
+
+                        if (updateIndex){
+                            workerService.rebuildIndex();
+                        }
 
                         getSession().info(getString("info_user_updated"));
                         target.add(feedback);

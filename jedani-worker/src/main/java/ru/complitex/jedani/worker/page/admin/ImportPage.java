@@ -17,10 +17,9 @@ import org.apache.wicket.protocol.ws.api.WebSocketRequestHandler;
 import org.apache.wicket.protocol.ws.api.message.IWebSocketPushMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.complitex.domain.service.DomainNodeService;
-import ru.complitex.jedani.worker.entity.Worker;
 import ru.complitex.jedani.worker.page.BasePage;
 import ru.complitex.jedani.worker.service.ImportService;
+import ru.complitex.jedani.worker.service.WorkerService;
 
 import javax.inject.Inject;
 import java.util.Objects;
@@ -36,7 +35,7 @@ public class ImportPage extends BasePage{
     private ImportService importService;
 
     @Inject
-    private DomainNodeService domainNodeService;
+    private WorkerService workerService;
 
     private class PushMessage implements IWebSocketPushMessage{
         private String text;
@@ -174,7 +173,7 @@ public class ImportPage extends BasePage{
             @Override
             public void onClick(AjaxRequestTarget target) {
                 try {
-                    domainNodeService.rebuildRootIndex(Worker.ENTITY_NAME, 1L, Worker.MANAGER_ID);
+                    workerService.rebuildIndex();
 
                     info("Индекс обновлен успешно");
                 } catch (Exception e) {
