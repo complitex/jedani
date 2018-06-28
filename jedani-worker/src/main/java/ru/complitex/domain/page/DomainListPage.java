@@ -114,7 +114,7 @@ public class DomainListPage<T extends Domain> extends BasePage{
 
         columns.add(new DomainActionColumn<>(editPageClass));
 
-        FilterDataTable<T> table = new FilterDataTable<T>("table", columns, dataProvider, filterForm, 10){
+        FilterDataTable<T> table = new FilterDataTable<T>("table", columns, dataProvider, filterForm, 20){
             @Override
             protected Item<T> newRowItem(String id, int index, IModel<T> model) {
                 Item<T> item = super.newRowItem(id, index, model);

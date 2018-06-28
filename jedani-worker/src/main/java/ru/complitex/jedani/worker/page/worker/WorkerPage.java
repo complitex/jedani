@@ -231,6 +231,14 @@ public class WorkerPage extends BasePage {
                 .onUpdate(target -> target.add(get("form:registrationDate")))
                 .setRequired(true));
 
+        //User group
+        WebMarkupContainer userGroupContainer = new WebMarkupContainer("userGroups");
+        userGroupContainer.setVisible(isAdmin());
+        form.add(userGroupContainer);
+
+        //todo user roles
+
+
         //Manager
         Label managerPhone = new Label("managerPhones", new LoadableDetachableModel<String>() {
             @Override

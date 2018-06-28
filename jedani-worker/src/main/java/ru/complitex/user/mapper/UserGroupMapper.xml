@@ -2,7 +2,17 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="ru.complitex.user.mapper.UserGroupMapper">
+    <resultMap id="userGroupResultMap" type="ru.complitex.user.entity.UserGroup">
+        <id column="id" property="id"/>
+        <result column="login" property="login"/>
+        <result column="name" property="name"/>
+    </resultMap>
+
     <insert id="insertUserGroup" parameterType="ru.complitex.user.entity.UserGroup">
         insert into user_group (login, name) value (#{login}, #{name});
     </insert>
+
+    <delete id="deleteUserGroups" parameterType="string">
+        delete from user_group where login = #{login}
+    </delete>
 </mapper>

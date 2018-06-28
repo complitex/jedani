@@ -1,6 +1,7 @@
 package ru.complitex.user.entity;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @author Anatoly A. Ivanov
@@ -14,6 +15,8 @@ public class User implements Serializable{
     private String password;
 
     private String confirmPassword;
+
+    private List<UserGroup> userGroups;
 
     public User() {
     }
@@ -52,5 +55,13 @@ public class User implements Serializable{
 
     public void setConfirmPassword(String confirmPassword) {
         this.confirmPassword = confirmPassword;
+    }
+
+    public List<UserGroup> getUserGroups() {
+        return userGroups;
+    }
+
+    public void setUserGroups(List<UserGroup> userGroups) {
+        this.userGroups = userGroups;
     }
 }

@@ -30,6 +30,12 @@
     <security-role>
         <role-name>ADMINISTRATORS</role-name>
     </security-role>
+    <security-role>
+        <role-name>STRUCTURE_ADMINISTRATORS</role-name>
+    </security-role>
+    <security-role>
+        <role-name>USERS</role-name>
+    </security-role>
 
     <login-config>
         <auth-method>FORM</auth-method>

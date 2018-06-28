@@ -6,6 +6,7 @@
         <id column="id" property="id"/>
         <result column="login" property="login"/>
         <result column="password" property="password"/>
+        <collection property="userGroups" resultMap="ru.complitex.user.mapper.UserGroupMapper.userGroupResultMap" columnPrefix="ug_"/>
     </resultMap>
 
     <insert id="insertUser" parameterType="ru.complitex.user.entity.User" useGeneratedKeys="true" keyProperty="id">
@@ -17,7 +18,9 @@
     </select>
 
     <select id="selectUser" parameterType="long" resultMap="userResultMap">
-        select * from `user` where id = #{id}
+        select u.*, ug.id ug_id, ug.login ug_login, ug.name ug_name
+          from `user` u left join user_group ug on u.login = ug.login
+        where u.id = #{id}
     </select>
 
     <select id="selectUserByLogin" parameterType="string" resultMap="userResultMap">
