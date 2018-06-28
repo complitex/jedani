@@ -29,12 +29,13 @@ public class WorkerGraphPanel extends Panel {
     private NameService nameService;
 
     private String elements;
+    private String fileName;
 
-    public WorkerGraphPanel(String id, Worker worker) {
+    public WorkerGraphPanel(String id, Worker worker, Long levelDepth) {
         super(id);
 
         List<Worker> workers = new ArrayList<>(workerMapper.getWorkers(FilterWrapper.of(
-                new Worker(worker.getLeft(), worker.getRight(), worker.getLevel())).setFilter("level3")));
+                new Worker(worker.getLeft(), worker.getRight(), worker.getLevel())).add("levelDepth", levelDepth)));
 
         elements =  " {data: {id: '" + worker.getObjectId() + "', " +
                 "label: '" + worker.getText(Worker.J_ID) + "\\n" +
@@ -57,6 +58,11 @@ public class WorkerGraphPanel extends Panel {
                             "target: '" + w.getObjectId() + "'}}")
                     .collect(Collectors.joining(","));
         }
+
+        fileName =  worker.getText(Worker.J_ID) + " " +
+                nameService.getLastName(worker.getNumber(Worker.LAST_NAME)) + " " +
+                nameService.getFirstName(worker.getNumber(Worker.FIRST_NAME)) + " " +
+                nameService.getMiddleName(worker.getNumber(Worker.MIDDLE_NAME));
     }
 
     @Override
@@ -69,6 +75,7 @@ public class WorkerGraphPanel extends Panel {
                 "resource/js/worker-graph.tmpl.js")
                 .asString(new HashMap<String, String>(){{
                     put("elements", elements);
+                    put("fileName", fileName);
                 }})));
     }
 }

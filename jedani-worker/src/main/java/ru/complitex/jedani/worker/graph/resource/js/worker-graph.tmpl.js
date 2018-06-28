@@ -1,3 +1,5 @@
+var fileName = window.fileName = "${fileName}";
+
 var cy = window.cy = cytoscape({
     container: document.getElementById('cy'),
 

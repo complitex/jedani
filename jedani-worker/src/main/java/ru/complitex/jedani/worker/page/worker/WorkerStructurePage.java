@@ -4,7 +4,6 @@ import org.apache.wicket.authroles.authorization.strategies.role.annotations.Aut
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.html.WebPage;
-import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import ru.complitex.jedani.worker.graph.WorkerGraphPanel;
 import ru.complitex.jedani.worker.graph.resource.FileSaverResourceReference;
@@ -18,19 +17,13 @@ import javax.inject.Inject;
  * 14.06.2018 18:22
  */
 @AuthorizeInstantiation(JedaniRoles.AUTHORIZED)
-public class WorkerPrintPage extends WebPage {
+public class WorkerStructurePage extends WebPage {
     @Inject
     private WorkerMapper workerMapper;
 
-    public WorkerPrintPage(PageParameters pageParameters) {
-        add(new WorkerGraphPanel("graph", workerMapper.getWorker(pageParameters.get("id").toLongObject())));
-
-        add(new Link<Void>("back") {
-            @Override
-            public void onClick() {
-                setResponsePage(WorkerPage.class, pageParameters);
-            }
-        });
+    public WorkerStructurePage(PageParameters pageParameters) {
+        add(new WorkerGraphPanel("graph", workerMapper.getWorker(pageParameters.get("id").toLongObject()),
+                pageParameters.get("level_depth").toLongObject()));
     }
 
     @Override

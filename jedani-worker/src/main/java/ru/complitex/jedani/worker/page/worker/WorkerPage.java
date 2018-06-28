@@ -447,10 +447,11 @@ public class WorkerPage extends BasePage {
         levelDepth.add(OnChangeAjaxBehavior.onChange(target -> target.add(table)));
         structure.add(levelDepth );
 
-        structure.add(new Link<Void>("printLink") {
+        structure.add(new Link<Void>("structureLink") {
             @Override
             public void onClick() {
-                setResponsePage(WorkerPrintPage.class, new PageParameters().add("id", worker.getObjectId()));
+                setResponsePage(WorkerStructurePage.class, new PageParameters().add("id", worker.getObjectId())
+                .add("level_depth", filterWrapper.getMap().get("levelDepth")));
             }
         });
     }
