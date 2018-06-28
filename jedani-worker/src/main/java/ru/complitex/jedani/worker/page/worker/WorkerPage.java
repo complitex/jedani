@@ -172,16 +172,16 @@ public class WorkerPage extends BasePage {
         DomainAutoCompleteFormGroup lastName, firstName, middleName;
 
         form.add(lastName = new DomainAutoCompleteFormGroup("lastName", "last_name", LastName.NAME,
-                new PropertyModel<>(worker.getAttribute(Worker.LAST_NAME), "number")).setRequired(true));
+                new PropertyModel<>(worker.getOrCreateAttribute(Worker.LAST_NAME), "number")).setRequired(true));
         form.add(firstName = new DomainAutoCompleteFormGroup("firstName", "first_name", FirstName.NAME,
-                new PropertyModel<>(worker.getAttribute(Worker.FIRST_NAME), "number")).setRequired(true));
+                new PropertyModel<>(worker.getOrCreateAttribute(Worker.FIRST_NAME), "number")).setRequired(true));
         form.add(middleName = new DomainAutoCompleteFormGroup("middleName", "middle_name", MiddleName.NAME,
-                new PropertyModel<>(worker.getAttribute(Worker.MIDDLE_NAME), "number")));
-        form.add(new AttributeSelectFormGroup("position", new PropertyModel<>(worker.getAttribute(Worker.POSITION_ID), "number"),
+                new PropertyModel<>(worker.getOrCreateAttribute(Worker.MIDDLE_NAME), "number")));
+        form.add(new AttributeSelectFormGroup("position", new PropertyModel<>(worker.getOrCreateAttribute(Worker.POSITION_ID), "number"),
                 Position.ENTITY_NAME, Position.NAME));
 
 
-        TextFieldFormGroup<String> jId = new TextFieldFormGroup<>("jId", new PropertyModel<>(worker.getAttribute(Worker.J_ID), "text"));
+        TextFieldFormGroup<String> jId = new TextFieldFormGroup<>("jId", new PropertyModel<>(worker.getOrCreateAttribute(Worker.J_ID), "text"));
         jId.setRequired(true);
 
         if (worker.getObjectId() == null) {
@@ -196,11 +196,11 @@ public class WorkerPage extends BasePage {
 
         form.add(jId);
 
-        form.add(new AttributeSelectFormGroup("mkStatus", new PropertyModel<>(worker.getAttribute(Worker.MK_STATUS_ID), "number"),
+        form.add(new AttributeSelectFormGroup("mkStatus", new PropertyModel<>(worker.getOrCreateAttribute(Worker.MK_STATUS_ID), "number"),
                 MkStatus.ENTITY_NAME, MkStatus.NAME));
-        form.add(new DateTextFieldFormGroup("birthday", new PropertyModel<>(worker.getAttribute(Worker.BIRTHDAY), "date")));
+        form.add(new DateTextFieldFormGroup("birthday", new PropertyModel<>(worker.getOrCreateAttribute(Worker.BIRTHDAY), "date")));
         form.add(new AttributeInputListFormGroup("phone", Model.of(worker.getOrCreateAttribute(Worker.PHONE))).setRequired(true));
-        form.add(new TextFieldFormGroup<>("email", new PropertyModel<>(worker.getAttribute(Worker.EMAIL), "text")));
+        form.add(new TextFieldFormGroup<>("email", new PropertyModel<>(worker.getOrCreateAttribute(Worker.EMAIL), "text")));
 
         AttributeSelectListFormGroup city, region;
         form.add(region = new AttributeSelectListFormGroup("region", Model.of(worker.getOrCreateAttribute(Worker.REGION_IDS)),
@@ -225,7 +225,7 @@ public class WorkerPage extends BasePage {
         confirmPassword.setRequired(false);
         form.add(confirmPassword);
 
-        form.add(new DateTextFieldFormGroup("registrationDate", new PropertyModel<>(worker.getAttribute(Worker.INVOLVED_AT), "date"))
+        form.add(new DateTextFieldFormGroup("registrationDate", new PropertyModel<>(worker.getOrCreateAttribute(Worker.INVOLVED_AT), "date"))
                 .onUpdate(target -> target.add(get("form:registrationDate")))
                 .setRequired(true));
 
@@ -248,7 +248,7 @@ public class WorkerPage extends BasePage {
         managerEmail.setOutputMarkupId(true);
         form.add(managerEmail);
 
-        form.add(new WorkerAutoComplete("managerFio", new PropertyModel<>(worker.getAttribute(Worker.MANAGER_ID), "number")){
+        form.add(new WorkerAutoComplete("managerFio", new PropertyModel<>(worker.getOrCreateAttribute(Worker.MANAGER_ID), "number")){
             @Override
             protected void onChange(AjaxRequestTarget target) {
                 manager = workerMapper.getWorker(worker.getNumber(Worker.MANAGER_ID));
@@ -325,16 +325,6 @@ public class WorkerPage extends BasePage {
 
                         getSession().info(getString("info_user_updated"));
                         target.add(feedback);
-                    }
-
-                    if (isAdmin()){
-                        if (manager != null && manager.getObjectId() != 1L) {
-                            setResponsePage(WorkerPage.class, new PageParameters().add("id", manager.getObjectId()));
-                        } else {
-                            setResponsePage(WorkerListPage.class);
-                        }
-                    }else{
-                        setResponsePage(WorkerPage.class);
                     }
                 } catch (Exception e) {
                     error(e.getMessage());
