@@ -70,6 +70,15 @@ public class Worker extends DomainNode {
         setLevel(level);
     }
 
+    public Worker(Long objectId, Long left, Long right, Long level){
+        this();
+
+        setObjectId(objectId);
+        setLeft(left);
+        setRight(right);
+        setLevel(level);
+    }
+
     public void init() {
         setDate(INVOLVED_AT, new Date());
         setNumber(LAST_NAME, null);

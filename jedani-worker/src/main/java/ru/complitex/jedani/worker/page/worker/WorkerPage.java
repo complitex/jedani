@@ -64,7 +64,6 @@ import ru.complitex.name.entity.LastName;
 import ru.complitex.name.entity.MiddleName;
 import ru.complitex.name.service.NameService;
 import ru.complitex.user.entity.User;
-import ru.complitex.user.entity.UserGroup;
 import ru.complitex.user.mapper.UserGroupMapper;
 import ru.complitex.user.mapper.UserMapper;
 
@@ -294,6 +293,25 @@ public class WorkerPage extends BasePage {
                         user.setPassword(Hashing.sha256().hashString(user.getPassword(), StandardCharsets.UTF_8).toString());
                     }
 
+
+                    if (adminRole.getModelObject()){
+                        user.addRole(ADMINISTRATORS);
+                    }else{
+                        user.removeRole(ADMINISTRATORS);
+                    }
+
+                    if (structureAdminRole.getModelObject()){
+                        user.addRole(STRUCTURE_ADMINISTRATORS);
+                    }else{
+                        user.removeRole(STRUCTURE_ADMINISTRATORS);
+                    }
+
+                    if (userRole.getModelObject()){
+                        user.addRole(USERS);
+                    }else{
+                        user.removeRole(USERS);
+                    }
+
                     if (user.getId() == null){
                         if (userMapper.getUser(user.getLogin()) != null){
                             login.error(getString("error_login_exist"));
@@ -308,28 +326,13 @@ public class WorkerPage extends BasePage {
                         }
 
                         userMapper.insertUser(user);
-
-                        if (adminRole.getModelObject()){
-                            userGroupMapper.insertUserGroup(new UserGroup(user.getLogin(), ADMINISTRATORS));
-                        }
-                        if (structureAdminRole.getModelObject()){
-                            userGroupMapper.insertUserGroup(new UserGroup(user.getLogin(), STRUCTURE_ADMINISTRATORS));
-                        }
-                        if (userRole.getModelObject()){
-                            userGroupMapper.insertUserGroup(new UserGroup(user.getLogin(), USERS));
-                        }
                     }else{
-                        User dbUser = userMapper.getUser(user.getId());
-
-                        if (!Objects.equals(user.getLogin(), dbUser.getLogin())){
+                        if (!Objects.equals(user.getLogin(), userMapper.getUser(user.getId()).getLogin())){
                             if (userMapper.getUser(user.getLogin()) != null){
                                 login.error(getString("error_exist_login"));
                                 target.add(feedback);
                                 return;
                             }
-
-                            userGroupMapper.deleteUserGroups(dbUser.getLogin());
-                            user.getUserGroups().clear();
 
                             userMapper.updateUserLogin(user);
                         }
@@ -338,30 +341,8 @@ public class WorkerPage extends BasePage {
                             userMapper.updateUserPassword(user);
                         }
 
-                        if (user.getUserGroups() != null){
-                            user.getUserGroups().forEach(ug -> {
-                                if ((ug.getName().equals(ADMINISTRATORS) && !adminRole.getModelObject()) ||
-                                        (ug.getName().equals(STRUCTURE_ADMINISTRATORS) && !structureAdminRole.getModelObject()) ||
-                                        (ug.getName().equals(USERS) && !userRole.getModelObject())){
-                                    userGroupMapper.deleteUserGroup(ug.getId());
-                                }
-                            });
-                        }
-
-                        if (adminRole.getModelObject() && !user.hasRole(ADMINISTRATORS)){
-                            UserGroup userGroup = new UserGroup(user.getLogin(), ADMINISTRATORS);
-                            user.getUserGroups().add(userGroup);
-                            userGroupMapper.insertUserGroup(userGroup);
-                        }
-                        if (structureAdminRole.getModelObject() && !user.hasRole(STRUCTURE_ADMINISTRATORS)){
-                            UserGroup userGroup = new UserGroup(user.getLogin(), STRUCTURE_ADMINISTRATORS);
-                            user.getUserGroups().add(userGroup);
-                            userGroupMapper.insertUserGroup(userGroup);
-                        }
-                        if (userRole.getModelObject() && !user.hasRole(USERS)){
-                            UserGroup userGroup = new UserGroup(user.getLogin(), USERS);
-                            user.getUserGroups().add(userGroup);
-                            userGroupMapper.insertUserGroup(userGroup);
+                        if (user.getUserGroups() != null) {
+                            userMapper.updateUserGroups(user);
                         }
                     }
 
@@ -374,7 +355,10 @@ public class WorkerPage extends BasePage {
                     worker.setNumber(FIRST_NAME, nameService.getOrCreateFirstName(firstName.getInput(), worker.getNumber(FIRST_NAME)));
                     worker.setNumber(MIDDLE_NAME, nameService.getOrCreateMiddleName(middleName.getInput(), worker.getNumber(MIDDLE_NAME)));
 
-                    //todo uniquie jid
+                    if (workerMapper.isExistJId(jId.getTextField().getInput())) {
+                        jId.getTextField().error(getString("error_jid_exist"));
+                        return;
+                    }
 
                     if (manager != null) {
                         worker.setNumber(Worker.MANAGER_ID, manager.getObjectId());
@@ -385,7 +369,12 @@ public class WorkerPage extends BasePage {
                     if (worker.getObjectId() == null){
                         domainMapper.insertDomain(worker);
 
-                        domainNodeMapper.updateIndex(manager, worker);
+                        if (manager != null) {
+                            domainNodeMapper.updateIndex(manager, worker);
+                        }else{
+
+                            domainNodeMapper.updateIndex(new Worker(1L, 0L, 0L, 0L), worker);
+                        }
 
                         getSession().info(getString("info_user_created"));
                         target.add(feedback);

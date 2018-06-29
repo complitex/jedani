@@ -3,13 +3,22 @@ package ru.complitex.user.mapper;
 import ru.complitex.common.mybatis.BaseMapper;
 import ru.complitex.user.entity.User;
 
+import javax.inject.Inject;
+
 /**
  * @author Anatoly A. Ivanov
  * 17.12.2017 13:03
  */
 public class UserMapper extends BaseMapper {
+    @Inject
+    private UserGroupMapper userGroupMapper;
+
     public void insertUser(User user){
         sqlSession().insert("insertUser", user);
+
+        if (user.getUserGroups() != null) {
+            user.getUserGroups().forEach(userGroupMapper::insertUserGroup);
+        }
     }
 
     public Long getUserId(String login){
@@ -29,6 +38,25 @@ public class UserMapper extends BaseMapper {
     }
 
     public void updateUserLogin(User user){
+        User dbUser = getUser(user.getId());
+        userGroupMapper.deleteUserGroups(dbUser.getLogin());
+
         sqlSession().update("updateUserLogin", user);
+
+        if (user.getUserGroups() != null) {
+            user.getUserGroups().forEach(userGroupMapper::insertUserGroup);
+        }
+    }
+
+    public void updateUserGroups(User user){
+        User dbUser = getUser(user.getId());
+
+        dbUser.getUserGroups().stream()
+                .filter(ug -> !user.hasRole(ug.getName()))
+                .forEach(ug -> userGroupMapper.deleteUserGroup(ug.getId()));
+
+        user.getUserGroups().stream()
+                .filter(ug -> !dbUser.hasRole(ug.getName()))
+                .forEach(ug -> userGroupMapper.insertUserGroup(ug));
     }
 }

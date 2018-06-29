@@ -1,6 +1,7 @@
 package ru.complitex.user.entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -28,6 +29,22 @@ public class User implements Serializable{
         }
 
         return userGroups.stream().anyMatch(ug -> Objects.equals(ug.getName(), role));
+    }
+
+    public void addRole(String role){
+        if (!hasRole(role)){
+            if (userGroups == null){
+                userGroups = new ArrayList<>();
+            }
+
+            userGroups.add(new UserGroup(login, role));
+        }
+    }
+
+    public void removeRole(String role){
+        if (userGroups != null) {
+            userGroups.removeIf(userGroup -> userGroup.getName().equals(role));
+        }
     }
 
     public User(String login) {
