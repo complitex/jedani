@@ -29,6 +29,7 @@ import ru.complitex.jedani.worker.service.WorkerService;
 import ru.complitex.name.page.FirstNameListPage;
 import ru.complitex.name.page.LastNameListPage;
 import ru.complitex.name.page.MiddleNameListPage;
+import ru.complitex.name.service.NameService;
 import ru.complitex.user.entity.User;
 import ru.complitex.user.mapper.UserMapper;
 
@@ -49,6 +50,9 @@ public class BasePage extends WebPage{
 
     @Inject
     private UserMapper userMapper;
+
+    @Inject
+    private NameService nameService;
 
     private User currentUser;
 
@@ -77,9 +81,9 @@ public class BasePage extends WebPage{
         String fio = "";
         String jid = "";
         if (currentWorker != null){
-            fio = currentWorker.getText(Worker.LAST_NAME) + " " +
-                    currentWorker.getText(Worker.MIDDLE_NAME) + " " +
-                    currentWorker.getText(Worker.FIRST_NAME) + " ";
+            fio = nameService.getLastName(currentWorker.getNumber(Worker.LAST_NAME)) + " " +
+                    nameService.getFirstName(currentWorker.getNumber(Worker.FIRST_NAME)) + " " +
+                    nameService.getMiddleName(currentWorker.getNumber(Worker.MIDDLE_NAME));
 
             jid = currentWorker.getText(Worker.J_ID);
         }
