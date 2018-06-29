@@ -87,9 +87,27 @@
                     <label>Права доступа</label>
                     <table>
                         <tr>
-                            <td><div class="checkbox"><label><input type="checkbox"> Администатор</label></div></td>
-                            <td style="padding-left: 10px"><div class="checkbox"><label><input type="checkbox"> Администратор структуры</label></div></td>
-                            <td style="padding-left: 10px"><div class="checkbox"><label><input type="checkbox"> Пользователь</label></div></td>
+                            <td>
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" wicket:id="adminRole"> Администатор
+                                    </label>
+                                </div>
+                            </td>
+                            <td style="padding-left: 10px">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" wicket:id="structureAdminRole"> Администратор структуры
+                                    </label>
+                                </div>
+                            </td>
+                            <td style="padding-left: 10px">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" wicket:id="userRole"> Пользователь
+                                    </label>
+                                </div>
+                            </td>
                         </tr>
                     </table>
                 </div>
@@ -115,8 +133,6 @@
 
                     <table wicket:id="table" class="table table-hover table-condensed"></table>
                 </div>
-
-                <br/>
 
                 <div>
                     <button wicket:id="save" class="btn btn-primary">Сохранить</button>

@@ -17,6 +17,7 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.Filte
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.TextFilter;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.TextField;
@@ -63,6 +64,8 @@ import ru.complitex.name.entity.LastName;
 import ru.complitex.name.entity.MiddleName;
 import ru.complitex.name.service.NameService;
 import ru.complitex.user.entity.User;
+import ru.complitex.user.entity.UserGroup;
+import ru.complitex.user.mapper.UserGroupMapper;
 import ru.complitex.user.mapper.UserMapper;
 
 import javax.inject.Inject;
@@ -75,6 +78,7 @@ import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
 import static ru.complitex.jedani.worker.entity.Worker.*;
+import static ru.complitex.jedani.worker.security.JedaniRoles.*;
 
 /**
  * @author Anatoly A. Ivanov
@@ -93,6 +97,9 @@ public class WorkerPage extends BasePage {
 
     @Inject
     private UserMapper userMapper;
+
+    @Inject
+    private UserGroupMapper userGroupMapper;
 
     @Inject
     private WorkerMapper workerMapper;
@@ -216,7 +223,6 @@ public class WorkerPage extends BasePage {
 
         TextField<String> login = new TextField<>("login", new PropertyModel<>(user, "login"));
         login.setRequired(true);
-        login.setEnabled(user.getId() == null);
         form.add(login);
 
         PasswordTextField password = new PasswordTextField("password", new PropertyModel<>(user, "password"));
@@ -232,12 +238,18 @@ public class WorkerPage extends BasePage {
                 .setRequired(true));
 
         //User group
-        WebMarkupContainer userGroupContainer = new WebMarkupContainer("userGroups");
-        userGroupContainer.setVisible(isAdmin());
-        form.add(userGroupContainer);
+        WebMarkupContainer userGroups = new WebMarkupContainer("userGroups");
+        userGroups.setVisible(isAdmin());
+        form.add(userGroups);
 
-        //todo user roles
+        CheckBox adminRole = new CheckBox("adminRole", Model.of(user.hasRole(ADMINISTRATORS)));
+        userGroups.add(adminRole);
 
+        CheckBox structureAdminRole = new CheckBox("structureAdminRole", Model.of(user.hasRole(STRUCTURE_ADMINISTRATORS)));
+        userGroups.add(structureAdminRole);
+
+        CheckBox userRole = new CheckBox("userRole", Model.of(user.hasRole(USERS)));
+        userGroups.add(userRole);
 
         //Manager
         Label managerPhone = new Label("managerPhones", new LoadableDetachableModel<String>() {
@@ -296,8 +308,61 @@ public class WorkerPage extends BasePage {
                         }
 
                         userMapper.insertUser(user);
-                    }else if (!Strings.isNullOrEmpty(user.getPassword())){
-                        userMapper.updateUserPassword(user);
+
+                        if (adminRole.getModelObject()){
+                            userGroupMapper.insertUserGroup(new UserGroup(user.getLogin(), ADMINISTRATORS));
+                        }
+                        if (structureAdminRole.getModelObject()){
+                            userGroupMapper.insertUserGroup(new UserGroup(user.getLogin(), STRUCTURE_ADMINISTRATORS));
+                        }
+                        if (userRole.getModelObject()){
+                            userGroupMapper.insertUserGroup(new UserGroup(user.getLogin(), USERS));
+                        }
+                    }else{
+                        User dbUser = userMapper.getUser(user.getId());
+
+                        if (!Objects.equals(user.getLogin(), dbUser.getLogin())){
+                            if (userMapper.getUser(user.getLogin()) != null){
+                                login.error(getString("error_exist_login"));
+                                target.add(feedback);
+                                return;
+                            }
+
+                            userGroupMapper.deleteUserGroups(dbUser.getLogin());
+                            user.getUserGroups().clear();
+
+                            userMapper.updateUserLogin(user);
+                        }
+
+                        if (!Strings.isNullOrEmpty(user.getPassword())){
+                            userMapper.updateUserPassword(user);
+                        }
+
+                        if (user.getUserGroups() != null){
+                            user.getUserGroups().forEach(ug -> {
+                                if ((ug.getName().equals(ADMINISTRATORS) && !adminRole.getModelObject()) ||
+                                        (ug.getName().equals(STRUCTURE_ADMINISTRATORS) && !structureAdminRole.getModelObject()) ||
+                                        (ug.getName().equals(USERS) && !userRole.getModelObject())){
+                                    userGroupMapper.deleteUserGroup(ug.getId());
+                                }
+                            });
+                        }
+
+                        if (adminRole.getModelObject() && !user.hasRole(ADMINISTRATORS)){
+                            UserGroup userGroup = new UserGroup(user.getLogin(), ADMINISTRATORS);
+                            user.getUserGroups().add(userGroup);
+                            userGroupMapper.insertUserGroup(userGroup);
+                        }
+                        if (structureAdminRole.getModelObject() && !user.hasRole(STRUCTURE_ADMINISTRATORS)){
+                            UserGroup userGroup = new UserGroup(user.getLogin(), STRUCTURE_ADMINISTRATORS);
+                            user.getUserGroups().add(userGroup);
+                            userGroupMapper.insertUserGroup(userGroup);
+                        }
+                        if (userRole.getModelObject() && !user.hasRole(USERS)){
+                            UserGroup userGroup = new UserGroup(user.getLogin(), USERS);
+                            user.getUserGroups().add(userGroup);
+                            userGroupMapper.insertUserGroup(userGroup);
+                        }
                     }
 
                     //Worker

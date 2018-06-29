@@ -27,4 +27,8 @@ public class UserMapper extends BaseMapper {
     public void updateUserPassword(User user){
         sqlSession().update("updateUserPassword", user);
     }
+
+    public void updateUserLogin(User user){
+        sqlSession().update("updateUserLogin", user);
+    }
 }

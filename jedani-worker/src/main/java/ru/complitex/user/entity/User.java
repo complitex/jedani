@@ -2,6 +2,7 @@ package ru.complitex.user.entity;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Anatoly A. Ivanov
@@ -19,6 +20,14 @@ public class User implements Serializable{
     private List<UserGroup> userGroups;
 
     public User() {
+    }
+
+    public boolean hasRole(String role){
+        if (userGroups == null) {
+            return false;
+        }
+
+        return userGroups.stream().anyMatch(ug -> Objects.equals(ug.getName(), role));
     }
 
     public User(String login) {

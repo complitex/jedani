@@ -15,4 +15,8 @@
     <delete id="deleteUserGroups" parameterType="string">
         delete from user_group where login = #{login}
     </delete>
+
+    <delete id="deleteUserGroup" parameterType="long">
+        delete from user_group where id = #{id}
+    </delete>
 </mapper>

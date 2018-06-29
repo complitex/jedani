@@ -11,6 +11,14 @@ public class UserGroup implements Serializable{
     private String login;
     private String name;
 
+    public UserGroup() {
+    }
+
+    public UserGroup(String login, String name) {
+        this.login = login;
+        this.name = name;
+    }
+
     public Long getId() {
         return id;
     }

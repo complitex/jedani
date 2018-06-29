@@ -28,6 +28,11 @@
     </select>
 
     <update id="updateUserPassword" parameterType="ru.complitex.user.entity.User">
-        update `user` set password = #{password} where login = #{login}
+        update `user` set password = #{password} where id = #{id}
     </update>
+
+    <update id="updateUserLogin" parameterType="ru.complitex.user.entity.User">
+        update `user` set login = #{login} where id = #{id}
+    </update>
+
 </mapper>

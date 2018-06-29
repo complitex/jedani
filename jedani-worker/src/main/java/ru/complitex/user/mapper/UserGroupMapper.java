@@ -1,21 +1,23 @@
 package ru.complitex.user.mapper;
 
-import org.apache.ibatis.session.SqlSession;
+import ru.complitex.common.mybatis.BaseMapper;
 import ru.complitex.user.entity.UserGroup;
-
-import javax.inject.Inject;
 
 /**
  * @author Anatoly A. Ivanov
  * 17.12.2017 13:04
  */
-public class UserGroupMapper {
-    @Inject
-    private SqlSession sqlSession;
+public class UserGroupMapper extends BaseMapper {
 
-    private void insertUserGroup(UserGroup userGroup){
-        sqlSession.insert("insertUserGroup", userGroup);
+    public void insertUserGroup(UserGroup userGroup){
+        sqlSession().insert("insertUserGroup", userGroup);
     }
 
+    public void deleteUserGroups(String login){
+        sqlSession().delete("deleteUserGroups", login);
+    }
 
+    public void deleteUserGroup(Long userGroupId){
+        sqlSession().delete("deleteUserGroup", userGroupId);
+    }
 }
