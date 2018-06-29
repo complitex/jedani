@@ -144,6 +144,7 @@ CREATE TABLE `country` (
   `end_date` TIMESTAMP NULL DEFAULT NULL COMMENT 'Дата окончания периода действия объекта',
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
   `permission_id` BIGINT(20) NULL COMMENT 'Ключ прав доступа к объекту',
+  `user_id` BIGINT(20) NULL COMMENT 'Идентифитактор пользователя',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `unique_object_id__status` (`object_id`,`status`),
   KEY `key_object_id` (`object_id`),
@@ -154,7 +155,8 @@ CREATE TABLE `country` (
   KEY `key_status` (`status`),
   KEY `key_permission_id` (`permission_id`),
   CONSTRAINT `fk_country__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
-  CONSTRAINT `fk_country__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`)
+  CONSTRAINT `fk_country__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`),
+  CONSTRAINT `fk_country__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Страна';
 
 DROP TABLE IF EXISTS `country_attribute`;
@@ -167,6 +169,7 @@ CREATE TABLE `country_attribute` (
   `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия атрибута',
   `end_date` TIMESTAMP NULL DEFAULT NULL COMMENT 'Дата окончания периода действия атрибута',
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
+  `user_id` BIGINT(20) NULL COMMENT 'Идентифитактор пользователя',
   PRIMARY KEY  (`id`),
   KEY `key_object_id` (`object_id`),
   KEY `key_entity_attribute_id` (`entity_attribute_id`),
@@ -176,7 +179,8 @@ CREATE TABLE `country_attribute` (
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
   CONSTRAINT `fk_country_attribute__country` FOREIGN KEY (`object_id`) REFERENCES `country`(`object_id`),
-  CONSTRAINT `fk_country_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`) REFERENCES entity_attribute (`entity_attribute_id`)
+  CONSTRAINT `fk_country_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`) REFERENCES entity_attribute (`entity_attribute_id`),
+  CONSTRAINT `fk_country_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты страны';
 
 DROP TABLE IF EXISTS `country_value`;
@@ -207,6 +211,7 @@ CREATE TABLE `region` (
   `end_date` TIMESTAMP NULL DEFAULT NULL COMMENT 'Дата окончания периода действия объекта',
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
   `permission_id` BIGINT(20) NULL COMMENT 'Ключ прав доступа к объекту',
+  `user_id` BIGINT(20) NULL COMMENT 'Идентифитактор пользователя',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `unique_object_id__status` (`object_id`,`status`),
   KEY `key_object_id` (`object_id`),
@@ -217,7 +222,8 @@ CREATE TABLE `region` (
   KEY `key_status` (`status`),
   KEY `key_permission_id` (`permission_id`),
   CONSTRAINT `fk_region__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
-  CONSTRAINT `fk_region__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`)
+  CONSTRAINT `fk_region__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`),
+  CONSTRAINT `fk_region__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Регион';
 
 DROP TABLE IF EXISTS `region_attribute`;
@@ -230,6 +236,7 @@ CREATE TABLE `region_attribute` (
   `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия атрибута',
   `end_date` TIMESTAMP NULL DEFAULT NULL COMMENT 'Дата окончания периода действия атрибута',
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
+  `user_id` BIGINT(20) NULL COMMENT 'Идентифитактор пользователя',
   PRIMARY KEY  (`id`),
   KEY `key_object_id` (`object_id`),
   KEY `key_entity_attribute_id` (`entity_attribute_id`),
@@ -239,7 +246,8 @@ CREATE TABLE `region_attribute` (
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
   CONSTRAINT `fk_region_attribute__region` FOREIGN KEY (`object_id`) REFERENCES `region`(`object_id`),
-  CONSTRAINT `fk_region_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`) REFERENCES entity_attribute (`entity_attribute_id`)
+  CONSTRAINT `fk_region_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`) REFERENCES entity_attribute (`entity_attribute_id`),
+  CONSTRAINT `fk_region_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты региона';
 
 DROP TABLE IF EXISTS `region_value`;
@@ -271,6 +279,7 @@ CREATE TABLE `city_type` (
   `end_date` TIMESTAMP NULL DEFAULT NULL COMMENT 'Дата окончания периода действия объекта',
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
   `permission_id` BIGINT(20) NULL COMMENT 'Ключ прав доступа к объекту',
+  `user_id` BIGINT(20) NULL COMMENT 'Идентифитактор пользователя',
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_object_id__status` (`object_id`,`status`),
   KEY `key_object_id` (object_id),
@@ -281,7 +290,8 @@ CREATE TABLE `city_type` (
   KEY `key_status` (`status`),
   KEY `key_permission_id` (`permission_id`),
   CONSTRAINT `fk_city_type__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
-  CONSTRAINT `fk_city_type__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`)
+  CONSTRAINT `fk_city_type__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`),
+  CONSTRAINT `fk_city_type__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Тип населенного пункта';
 
 DROP TABLE IF EXISTS `city_type_attribute`;
@@ -294,6 +304,7 @@ CREATE TABLE `city_type_attribute` (
   `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия атрибута',
   `end_date` TIMESTAMP NULL DEFAULT NULL COMMENT 'Дата окончания периода действия атрибута',
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
+  `user_id` BIGINT(20) NULL COMMENT 'Идентифитактор пользователя',
   PRIMARY KEY (`id`),
   KEY `key_object_id` (`object_id`),
   KEY `key_entity_attribute_id` (`entity_attribute_id`),
@@ -304,7 +315,8 @@ CREATE TABLE `city_type_attribute` (
   KEY `key_status` (`status`),
   CONSTRAINT `fk_city_type_attribute__city_type` FOREIGN KEY (`object_id`) REFERENCES `city_type`(`object_id`),
   CONSTRAINT `fk_city_type_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`)
-    REFERENCES entity_attribute (`entity_attribute_id`)
+    REFERENCES entity_attribute (`entity_attribute_id`),
+  CONSTRAINT `fk_city_type_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты типа населенного пункта';
 
 DROP TABLE IF EXISTS `city_type_value`;
@@ -335,6 +347,7 @@ CREATE TABLE `city` (
   `end_date` TIMESTAMP NULL DEFAULT NULL COMMENT 'Дата окончания периода действия объекта',
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
   `permission_id` BIGINT(20) NULL COMMENT 'Ключ прав доступа к объекту',
+  `user_id` BIGINT(20) NULL COMMENT 'Идентифитактор пользователя',
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_object_id__status` (`object_id`,`status`),
   KEY `key_object_id` (`object_id`),
@@ -345,7 +358,8 @@ CREATE TABLE `city` (
   KEY `key_status` (`status`),
   KEY `key_permission_id` (`permission_id`),
   CONSTRAINT `ft_city__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
-  CONSTRAINT `fk_city__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`)
+  CONSTRAINT `fk_city__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`),
+  CONSTRAINT `fk_city__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Населенный пункт';
 
 DROP TABLE IF EXISTS `city_attribute`;
@@ -358,6 +372,7 @@ CREATE TABLE `city_attribute` (
   `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия атрибута',
   `end_date` TIMESTAMP NULL DEFAULT NULL COMMENT 'Дата окончания периода действия атрибута',
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
+  `user_id` BIGINT(20) NULL COMMENT 'Идентифитактор пользователя',
   PRIMARY KEY  (`id`),
   KEY `key_object_id` (`object_id`),
   KEY `key_entity_attribute_id` (`entity_attribute_id`),
@@ -368,7 +383,8 @@ CREATE TABLE `city_attribute` (
   KEY `key_status` (`status`),
   CONSTRAINT `fk_city_attribute__city` FOREIGN KEY (`object_id`) REFERENCES `city`(`object_id`),
   CONSTRAINT `fk_city_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`)
-    REFERENCES entity_attribute (`entity_attribute_id`)
+    REFERENCES entity_attribute (`entity_attribute_id`),
+  CONSTRAINT `fk_city_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты населенного пункта';
 
 DROP TABLE IF EXISTS `city_value`;
@@ -404,6 +420,7 @@ CREATE TABLE `last_name` (
   `end_date` TIMESTAMP NULL DEFAULT NULL COMMENT 'Дата окончания периода действия объекта',
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
   `permission_id` BIGINT(20) NULL COMMENT 'Ключ прав доступа к объекту',
+  `user_id` BIGINT(20) NULL COMMENT 'Идентифитактор пользователя',
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_object_id__status` (`object_id`,`status`),
   KEY `key_object_id` (`object_id`),
@@ -414,7 +431,8 @@ CREATE TABLE `last_name` (
   KEY `key_status` (`status`),
   KEY `key_permission_id` (`permission_id`),
   CONSTRAINT `ft_last_name__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
-  CONSTRAINT `fk_last_name__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`)
+  CONSTRAINT `fk_last_name__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`),
+  CONSTRAINT `fk_last_name__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Фамилия';
 
 DROP TABLE IF EXISTS `last_name_attribute`;
@@ -427,6 +445,7 @@ CREATE TABLE `last_name_attribute` (
   `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия атрибута',
   `end_date` TIMESTAMP NULL DEFAULT NULL COMMENT 'Дата окончания периода действия атрибута',
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
+  `user_id` BIGINT(20) NULL COMMENT 'Идентифитактор пользователя',
   PRIMARY KEY  (`id`),
   KEY `key_object_id` (`object_id`),
   KEY `key_entity_attribute_id` (`entity_attribute_id`),
@@ -437,7 +456,8 @@ CREATE TABLE `last_name_attribute` (
   KEY `key_status` (`status`),
   CONSTRAINT `fk_last_name_attribute__city` FOREIGN KEY (`object_id`) REFERENCES `last_name`(`object_id`),
   CONSTRAINT `fk_last_name_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`)
-  REFERENCES entity_attribute (`entity_attribute_id`)
+    REFERENCES entity_attribute (`entity_attribute_id`),
+  CONSTRAINT `fk_last_name_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты фамилии';
 
 DROP TABLE IF EXISTS `last_name_value`;
@@ -469,6 +489,7 @@ CREATE TABLE `first_name` (
   `end_date` TIMESTAMP NULL DEFAULT NULL COMMENT 'Дата окончания периода действия объекта',
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
   `permission_id` BIGINT(20) NULL COMMENT 'Ключ прав доступа к объекту',
+  `user_id` BIGINT(20) NULL COMMENT 'Идентифитактор пользователя',
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_object_id__status` (`object_id`,`status`),
   KEY `key_object_id` (`object_id`),
@@ -479,7 +500,8 @@ CREATE TABLE `first_name` (
   KEY `key_status` (`status`),
   KEY `key_permission_id` (`permission_id`),
   CONSTRAINT `ft_first_name__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
-  CONSTRAINT `fk_first_name__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`)
+  CONSTRAINT `fk_first_name__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`),
+  CONSTRAINT `fk_first_name__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Имя';
 
 DROP TABLE IF EXISTS `first_name_attribute`;
@@ -492,6 +514,7 @@ CREATE TABLE `first_name_attribute` (
   `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия атрибута',
   `end_date` TIMESTAMP NULL DEFAULT NULL COMMENT 'Дата окончания периода действия атрибута',
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
+  `user_id` BIGINT(20) NULL COMMENT 'Идентифитактор пользователя',
   PRIMARY KEY  (`id`),
   KEY `key_object_id` (`object_id`),
   KEY `key_entity_attribute_id` (`entity_attribute_id`),
@@ -502,7 +525,8 @@ CREATE TABLE `first_name_attribute` (
   KEY `key_status` (`status`),
   CONSTRAINT `fk_first_name_attribute__city` FOREIGN KEY (`object_id`) REFERENCES `first_name`(`object_id`),
   CONSTRAINT `fk_first_name_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`)
-  REFERENCES entity_attribute (`entity_attribute_id`)
+    REFERENCES entity_attribute (`entity_attribute_id`),
+  CONSTRAINT `fk_first_name_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты имени';
 
 DROP TABLE IF EXISTS `first_name_value`;
@@ -534,6 +558,7 @@ CREATE TABLE `middle_name` (
   `end_date` TIMESTAMP NULL DEFAULT NULL COMMENT 'Дата окончания периода действия объекта',
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
   `permission_id` BIGINT(20) NULL COMMENT 'Ключ прав доступа к объекту',
+  `user_id` BIGINT(20) NULL COMMENT 'Идентифитактор пользователя',
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_object_id__status` (`object_id`,`status`),
   KEY `key_object_id` (`object_id`),
@@ -544,7 +569,8 @@ CREATE TABLE `middle_name` (
   KEY `key_status` (`status`),
   KEY `key_permission_id` (`permission_id`),
   CONSTRAINT `ft_middle_name__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
-  CONSTRAINT `fk_middle_name__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`)
+  CONSTRAINT `fk_middle_name__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`),
+  CONSTRAINT `fk_middle_name__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Отчество';
 
 DROP TABLE IF EXISTS `middle_name_attribute`;
@@ -557,6 +583,7 @@ CREATE TABLE `middle_name_attribute` (
   `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия атрибута',
   `end_date` TIMESTAMP NULL DEFAULT NULL COMMENT 'Дата окончания периода действия атрибута',
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
+  `user_id` BIGINT(20) NULL COMMENT 'Идентифитактор пользователя',
   PRIMARY KEY  (`id`),
   KEY `key_object_id` (`object_id`),
   KEY `key_entity_attribute_id` (`entity_attribute_id`),
@@ -567,7 +594,8 @@ CREATE TABLE `middle_name_attribute` (
   KEY `key_status` (`status`),
   CONSTRAINT `fk_middle_name_attribute__city` FOREIGN KEY (`object_id`) REFERENCES `middle_name`(`object_id`),
   CONSTRAINT `fk_middle_name_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`)
-  REFERENCES entity_attribute (`entity_attribute_id`)
+    REFERENCES entity_attribute (`entity_attribute_id`),
+  CONSTRAINT `fk_middle_name_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты отчества';
 
 DROP TABLE IF EXISTS `middle_name_value`;
@@ -598,6 +626,7 @@ CREATE TABLE `worker` (
   `end_date` TIMESTAMP NULL DEFAULT NULL COMMENT 'Дата окончания периода действия объекта',
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
   `permission_id` BIGINT(20) COMMENT 'Ключ прав доступа к объекту',
+  `user_id` BIGINT(20) NULL COMMENT 'Идентифитактор пользователя',
   `left` BIGINT(20) COMMENT 'Левый индекс иерархии',
   `right` BIGINT(20) COMMENT 'Правый индекс иерархии',
   `level` BIGINT(20) COMMENT 'Глубина иерархии',
@@ -614,7 +643,8 @@ CREATE TABLE `worker` (
   KEY `key_right` (`right`),
   KEY `key_level` (`level`),
   CONSTRAINT `ft_worker__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
-  CONSTRAINT `fk_worker__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`)
+  CONSTRAINT `fk_worker__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`),
+  CONSTRAINT `fk_worker__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Профиль сотрудника';
 
 DROP TABLE IF EXISTS `worker_attribute`;
@@ -628,6 +658,7 @@ CREATE TABLE `worker_attribute` (
   `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия атрибута',
   `end_date` TIMESTAMP NULL DEFAULT NULL COMMENT 'Дата окончания периода действия атрибута',
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
+  `user_id` BIGINT(20) NULL COMMENT 'Идентифитактор пользователя',
   PRIMARY KEY  (`id`),
   KEY `key_object_id` (`object_id`),
   KEY `key_entity_attribute_id` (`entity_attribute_id`),
@@ -639,7 +670,8 @@ CREATE TABLE `worker_attribute` (
   KEY `key_status` (`status`),
   CONSTRAINT `fk_worker_attribute__city` FOREIGN KEY (`object_id`) REFERENCES `worker`(`object_id`),
   CONSTRAINT `fk_worker_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`)
-  REFERENCES entity_attribute (`entity_attribute_id`)
+    REFERENCES entity_attribute (`entity_attribute_id`),
+  CONSTRAINT `fk_worker_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты сотрудника';
 
 DROP TABLE IF EXISTS `worker_value`;
@@ -673,6 +705,7 @@ CREATE TABLE `mk_status` (
   `end_date` TIMESTAMP NULL DEFAULT NULL COMMENT 'Дата окончания периода действия объекта',
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
   `permission_id` BIGINT(20) NULL COMMENT 'Ключ прав доступа к объекту',
+  `user_id` BIGINT(20) NULL COMMENT 'Идентифитактор пользователя',
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_object_id__status` (`object_id`,`status`),
   KEY `key_object_id` (`object_id`),
@@ -683,7 +716,8 @@ CREATE TABLE `mk_status` (
   KEY `key_status` (`status`),
   KEY `key_permission_id` (`permission_id`),
   CONSTRAINT `ft_mk_status__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
-  CONSTRAINT `fk_mk_status__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`)
+  CONSTRAINT `fk_mk_status__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`),
+  CONSTRAINT `fk_mk_status__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'МК статус';
 
 DROP TABLE IF EXISTS `mk_status_attribute`;
@@ -696,6 +730,7 @@ CREATE TABLE `mk_status_attribute` (
   `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия атрибута',
   `end_date` TIMESTAMP NULL DEFAULT NULL COMMENT 'Дата окончания периода действия атрибута',
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
+  `user_id` BIGINT(20) NULL COMMENT 'Идентифитактор пользователя',
   PRIMARY KEY  (`id`),
   KEY `key_object_id` (`object_id`),
   KEY `key_entity_attribute_id` (`entity_attribute_id`),
@@ -706,7 +741,8 @@ CREATE TABLE `mk_status_attribute` (
   KEY `key_status` (`status`),
   CONSTRAINT `fk_mk_status_attribute__mk_status` FOREIGN KEY (`object_id`) REFERENCES `mk_status`(`object_id`),
   CONSTRAINT `fk_mk_status_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`)
-  REFERENCES entity_attribute (`entity_attribute_id`)
+    REFERENCES entity_attribute (`entity_attribute_id`),
+  CONSTRAINT `fk_mk_status_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты МК статуса';
 
 DROP TABLE IF EXISTS `mk_status_value`;
@@ -738,6 +774,7 @@ CREATE TABLE `position` (
   `end_date` TIMESTAMP NULL DEFAULT NULL COMMENT 'Дата окончания периода действия объекта',
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
   `permission_id` BIGINT(20) NULL COMMENT 'Ключ прав доступа к объекту',
+  `user_id` BIGINT(20) NULL COMMENT 'Идентифитактор пользователя',
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_object_id__status` (`object_id`,`status`),
   KEY `key_object_id` (`object_id`),
@@ -748,7 +785,8 @@ CREATE TABLE `position` (
   KEY `key_status` (`status`),
   KEY `key_permission_id` (`permission_id`),
   CONSTRAINT `ft_position__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
-  CONSTRAINT `fk_position__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`)
+  CONSTRAINT `fk_position__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`),
+  CONSTRAINT `fk_position__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Должности';
 
 DROP TABLE IF EXISTS `position_attribute`;
@@ -761,6 +799,7 @@ CREATE TABLE `position_attribute` (
   `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия атрибута',
   `end_date` TIMESTAMP NULL DEFAULT NULL COMMENT 'Дата окончания периода действия атрибута',
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
+  `user_id` BIGINT(20) NULL COMMENT 'Идентифитактор пользователя',
   PRIMARY KEY  (`id`),
   KEY `key_object_id` (`object_id`),
   KEY `key_entity_attribute_id` (`entity_attribute_id`),
@@ -771,7 +810,8 @@ CREATE TABLE `position_attribute` (
   KEY `key_status` (`status`),
   CONSTRAINT `fk_position_attribute__position` FOREIGN KEY (`object_id`) REFERENCES `position`(`object_id`),
   CONSTRAINT `fk_position_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`)
-  REFERENCES entity_attribute (`entity_attribute_id`)
+    REFERENCES entity_attribute (`entity_attribute_id`),
+  CONSTRAINT `fk_position_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты должности';
 
 DROP TABLE IF EXISTS `position_value`;

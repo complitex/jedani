@@ -13,14 +13,17 @@
         <result column="permission_id" property="permissionId"/>
         <result column="external_id" property="externalId"/>
         <result column="entity_name" property="entityName"/>
+        <result column="user_id" property="userId"/>
         <collection column="entityName=entity_name, objectId=id" property="attributes"
                     select="ru.complitex.domain.mapper.AttributeMapper.selectAttributes"/>
     </resultMap>
 
     <!--suppress SqlResolve -->
     <insert id="insertDomain" parameterType="ru.complitex.domain.entity.Domain" useGeneratedKeys="false" keyProperty="id">
-        insert into ${entityName} (object_id, parent_id, parent_entity_id, start_date, end_date, `status`, permission_id)
-        value (#{objectId}, #{parentId}, #{parentEntityId}, #{startDate}, #{endDate}, #{status}, #{permissionId})
+        insert into ${entityName} (object_id, parent_id, parent_entity_id, start_date, end_date, `status`, permission_id,
+          user_id)
+        value (#{objectId}, #{parentId}, #{parentEntityId}, #{startDate}, #{endDate}, #{status}, #{permissionId},
+          #{userId})
     </insert>
 
     <sql id="selectDomainSql">

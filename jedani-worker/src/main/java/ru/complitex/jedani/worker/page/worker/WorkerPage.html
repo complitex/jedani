@@ -83,7 +83,7 @@
                     </div>
                 </div>
 
-                <div wicket:id="userGroups">
+                <div wicket:id="userGroups"   class="pull-left">
                     <label>Права доступа</label>
                     <table>
                         <tr>
@@ -94,22 +94,22 @@
                     </table>
                 </div>
 
+                <br/>
+
                 <div wicket:id="structure" style="z-index: 1000">
-                    <div class="pull-right">
-                        <table>
-                            <tr>
-                                <td>
-                                    <label for="levels" style="margin-top: 7px; margin-right: 2px">Уровней </label>
-                                </td>
-                                <td>
-                                    <select id="levels" wicket:id="levelDepth" class="form-control" style="width: 35px; margin-right: 10px"></select>
-                                </td>
-                                <td>
-                                    <a wicket:id="structureLink" class="btn btn-default" target="_blank">Структура</a>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
+                    <table class="pull-right">
+                        <tr>
+                            <td>
+                                <label for="levels" style="margin-top: 7px; margin-right: 2px">Уровней </label>
+                            </td>
+                            <td>
+                                <select id="levels" wicket:id="levelDepth" class="form-control" style="width: 35px; margin-right: 10px"></select>
+                            </td>
+                            <td>
+                                <a wicket:id="structureLink" class="btn btn-default" target="_blank">Структура</a>
+                            </td>
+                        </tr>
+                    </table>
 
                     <br/>
 

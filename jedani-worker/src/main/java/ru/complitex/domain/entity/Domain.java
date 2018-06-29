@@ -19,6 +19,7 @@ public class Domain implements Serializable{
     private Date endDate;
     private Status status;
     private Long permissionId;
+    private Long userId;
 
     private String entityName;
 
@@ -268,5 +269,13 @@ public class Domain implements Serializable{
 
     public void setMap(Map<String, Object> map) {
         this.map = map;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 }

@@ -13,20 +13,24 @@
         <result column="start_date" property="startDate"/>
         <result column="end_date" property="endDate"/>
         <result column="status" property="status"/>
+        <result column="user_id" property="userId"/>
         <result column="entity_name" property="entityName"/>
         <collection column="entityName=entity_name, attributeId=id" property="values" select="ru.complitex.domain.entity.Value.selectValues"/>
     </resultMap>
 
     <!--suppress SqlResolve -->
     <insert id="insertAttribute" parameterType="ru.complitex.domain.entity.Attribute" useGeneratedKeys="true" keyProperty="id">
-        insert into ${entityName}_attribute (object_id, entity_attribute_id, `text`, `number`, start_date, end_date, `status`)
-            value (#{objectId}, #{entityAttributeId}, #{text}, #{number}, #{startDate}, #{endDate}, #{status})
+        insert into ${entityName}_attribute (object_id, entity_attribute_id, `text`, `number`, start_date, end_date,
+          `status`, user_id)
+            value (#{objectId}, #{entityAttributeId}, #{text}, #{number}, #{startDate}, #{endDate}, #{status}, #{userId})
     </insert>
 
     <!--suppress SqlResolve -->
     <insert id="insertAttributeWithDate" parameterType="ru.complitex.domain.entity.Attribute" useGeneratedKeys="true" keyProperty="id">
-        insert into ${entityName}_attribute (object_id, entity_attribute_id, `text`, `number`, `date`, start_date, end_date, `status`)
-            value (#{objectId}, #{entityAttributeId}, #{text}, #{number}, #{date}, #{startDate}, #{endDate}, #{status})
+        insert into ${entityName}_attribute (object_id, entity_attribute_id, `text`, `number`, `date`, start_date,
+          end_date, `status`, user_id)
+        value (#{objectId}, #{entityAttributeId}, #{text}, #{number}, #{date}, #{startDate}, #{endDate}, #{status},
+          #{userId})
     </insert>
 
     <!--suppress SqlResolve -->

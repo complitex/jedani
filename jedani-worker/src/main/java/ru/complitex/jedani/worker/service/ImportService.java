@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
+import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.Consumer;
@@ -44,6 +45,9 @@ public class ImportService implements Serializable {
     @Inject
     private UserMapper userMapper;
 
+    @Inject
+    private Principal principal;
+
     public static class Status{
         private int count = 0;
         private String errorMessage;
@@ -58,6 +62,8 @@ public class ImportService implements Serializable {
     }
 
     public Status importRegions(InputStream inputStream){
+        User currentUser = userMapper.getUser(principal.getName());
+
         Status status = new Status();
         List<Region> regions = new ArrayList<>();
 
@@ -84,6 +90,7 @@ public class ImportService implements Serializable {
 
             regions.stream().filter(r -> !domainMapper.hasDomain(Region.ENTITY_NAME, Region.IMPORT_ID, r.getText(Region.IMPORT_ID)))
                     .forEach(r -> {
+                        r.setUserId(currentUser.getId());
                         domainMapper.insertDomain(r);
                         ++status.count;
                     });
@@ -97,6 +104,8 @@ public class ImportService implements Serializable {
     }
 
     public Status importCities(InputStream inputStream){
+        User currentUser = userMapper.getUser(principal.getName());
+
         Status status = new Status();
         List<City> cities = new ArrayList<>();
 
@@ -132,6 +141,8 @@ public class ImportService implements Serializable {
 
             cities.stream().filter(c -> !domainMapper.hasDomain(City.ENTITY_NAME, City.IMPORT_ID, c.getText(City.IMPORT_ID)))
                     .forEach(r -> {
+                        r.setUserId(currentUser.getId());
+
                         domainMapper.insertDomain(r);
                         ++status.count;
                     });
@@ -274,6 +285,8 @@ public class ImportService implements Serializable {
 
     @Transactional
     private void insertUserProfile(User user, Worker worker){
+        User currentUser = userMapper.getUser(principal.getName());
+
         if (!user.getLogin().isEmpty()) {
             userMapper.insertUser(user);
 
@@ -287,6 +300,7 @@ public class ImportService implements Serializable {
                     .setText(worker.getText(Worker.FIRST_NAME));
             Long firstNameId = domainMapper.getDomainObjectId(firstName);
             if (firstNameId == null) {
+                firstName.setUserId(currentUser.getId());
                 domainMapper.insertDomain(firstName);
                 firstNameId = firstName.getObjectId();
             }
@@ -299,6 +313,8 @@ public class ImportService implements Serializable {
                     .setText(worker.getText(Worker.MIDDLE_NAME));
             Long middleNameId = domainMapper.getDomainObjectId(middleName);
             if (middleNameId == null) {
+                middleName.setUserId(currentUser.getId());
+
                 domainMapper.insertDomain(middleName);
                 middleNameId = middleName.getObjectId();
             }
@@ -311,10 +327,14 @@ public class ImportService implements Serializable {
                     .setText(worker.getText(Worker.LAST_NAME));
             Long lastNameId = domainMapper.getDomainObjectId(lastName);
             if (lastNameId == null) {
+                lastName.setUserId(currentUser.getId());
+
                 domainMapper.insertDomain(lastName);
                 lastNameId = lastName.getObjectId();
             }
             worker.setNumber(Worker.LAST_NAME, lastNameId);
+
+            worker.setUserId(currentUser.getId());
 
             domainMapper.insertDomain(worker);
         }

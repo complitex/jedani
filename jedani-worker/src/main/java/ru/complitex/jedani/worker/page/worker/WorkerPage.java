@@ -303,6 +303,7 @@ public class WorkerPage extends BasePage {
                     //Worker
                     worker.setParentId(user.getId());
                     worker.setParentEntityId(User.ENTITY_ID);
+                    worker.setUserId(getCurrentUser().getId());
 
                     worker.setNumber(LAST_NAME, nameService.getOrCreateLastName(lastName.getInput(), worker.getNumber(LAST_NAME)));
                     worker.setNumber(FIRST_NAME, nameService.getOrCreateFirstName(firstName.getInput(), worker.getNumber(FIRST_NAME)));

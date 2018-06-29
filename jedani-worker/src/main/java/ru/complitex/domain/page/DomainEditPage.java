@@ -153,6 +153,7 @@ public abstract class DomainEditPage extends BasePage{
             protected void onSubmit(AjaxRequestTarget target) {
                 try {
                     domain.setEntityName(entityName);
+                    domain.setUserId(getCurrentUser().getId());
 
                     if (domain.getObjectId() != null){
                         domainMapper.updateDomain(domain);

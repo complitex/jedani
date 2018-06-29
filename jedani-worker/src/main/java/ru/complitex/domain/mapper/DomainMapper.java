@@ -8,6 +8,7 @@ import ru.complitex.domain.entity.Status;
 import ru.complitex.domain.entity.Value;
 
 import javax.inject.Inject;
+import java.security.Principal;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -22,6 +23,9 @@ public class DomainMapper extends BaseMapper {
 
     @Inject
     private AttributeMapper attributeMapper;
+
+    @Inject
+    private Principal principal;
 
     public void insertDomain(Domain domain){
         domain.setObjectId(sequenceMapper.nextId(domain.getEntityName()));
@@ -38,6 +42,7 @@ public class DomainMapper extends BaseMapper {
         domain.getAttributes().forEach(a -> {
                     a.setEntityName(domain.getEntityName());
                     a.setObjectId(domain.getObjectId());
+                    a.setUserId(domain.getUserId());
 
                     attributeMapper.insertAttribute(a, domain.getStartDate());
                 });
@@ -51,6 +56,7 @@ public class DomainMapper extends BaseMapper {
         domain.getAttributes().forEach(a -> {
             a.setEntityName(domain.getEntityName());
             a.setObjectId(domain.getObjectId());
+            a.setUserId(domain.getUserId());
 
             Attribute dbAttribute = dbDomain.getAttribute(a.getEntityAttributeId());
 
