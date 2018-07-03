@@ -112,8 +112,6 @@
                     </table>
                 </div>
 
-                <br/>
-
                 <div wicket:id="structure" style="z-index: 1000">
                     <table class="pull-right">
                         <tr>
@@ -137,7 +135,7 @@
                 <div>
                     <button wicket:id="save" class="btn btn-primary">Сохранить</button>
                     <button wicket:id="create" class="btn btn-default">Создать</button>
-                    <button wicket:id="cancel" class="btn btn-default"><span wicket:id="label"></span></button>
+                    <button class="btn btn-default" onclick="history.back()" wicket:id="back"><span wicket:id="label"></span></button>
                 </div>
             </form>
         </div>

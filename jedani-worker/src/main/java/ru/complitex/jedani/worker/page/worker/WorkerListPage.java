@@ -1,6 +1,7 @@
 package ru.complitex.jedani.worker.page.worker;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
@@ -21,6 +22,7 @@ import ru.complitex.domain.page.DomainListPage;
 import ru.complitex.domain.service.EntityService;
 import ru.complitex.jedani.worker.entity.Worker;
 import ru.complitex.jedani.worker.mapper.WorkerMapper;
+import ru.complitex.jedani.worker.security.JedaniRoles;
 import ru.complitex.name.entity.FirstName;
 import ru.complitex.name.entity.LastName;
 import ru.complitex.name.entity.MiddleName;
@@ -35,6 +37,7 @@ import static ru.complitex.jedani.worker.entity.Worker.*;
  * @author Anatoly A. Ivanov
  * 20.12.2017 7:11
  */
+@AuthorizeInstantiation({JedaniRoles.ADMINISTRATORS, JedaniRoles.STRUCTURE_ADMINISTRATORS})
 public class WorkerListPage extends DomainListPage<Worker>{
     @Inject
     private EntityService entityService;

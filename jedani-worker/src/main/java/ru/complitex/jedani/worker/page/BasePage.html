@@ -25,22 +25,13 @@
                     <li>
                         <p class="navbar-text" wicket:id="jid"></p>
                     </li>
-                    <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                            <span wicket:id="login"></span><span class="caret"></span>
+                    <li>
+                        <p class="navbar-text" wicket:id="login"></p>
+                    </li>
+                    <li>
+                        <a wicket:id="logout" class="btn btn-sm btn-link">
+                            <i class="glyphicon glyphicon-log-out"></i>
                         </a>
-                        <ul class="dropdown-menu">
-                            <!--<li>
-                                <a href="#">
-                                    <span class="glyphicon glyphicon-user"></span><span>Профиль</span>
-                                </a>
-                            </li>-->
-                            <li>
-                                <a wicket:id="logout">
-                                    <span class="glyphicon glyphicon-log-out"></span><span>Выход</span>
-                                </a>
-                            </li>
-                        </ul>
                     </li>
                 </ul>
             </div>
@@ -50,7 +41,7 @@
             <div class="sidebar-nav navbar-collapse">
                 <ul id="menu" class="nav metismenu">
                     <li><a wicket:id="worker">Личный кабинет</a></li>
-                    <li class="active">
+                    <li class="active"  wicket:id="address">
                         <a href="#" class="has-arrow" aria-expanded="true">Адресные справочники</a>
                         <ul class="nav" aria-expanded="true">
                             <li><a wicket:id="countries">Страны</a></li>
@@ -59,19 +50,19 @@
                             <li><a wicket:id="cities">Нас.пункты</a></li>
                         </ul>
                     </li>
-                    <li  class="active">
+                    <li  class="active"  wicket:id="catalog">
                         <a href="#" class="has-arrow" aria-expanded="true">Данные по людям</a>
                         <ul class="nav" aria-expanded="true">
-                            <li><a wicket:id="workers">Сотрудники</a></li>
                             <li><a wicket:id="first_name">Имена</a></li>
                             <li><a wicket:id="middle_name">Отчества</a></li>
                             <li><a wicket:id="last_name">Фамилии</a></li>
                             <li><a wicket:id="position">Должности</a></li>
                             <li><a wicket:id="mk_status">МК статусы</a></li>
+                            <li><a wicket:id="workers">Сотрудники</a></li>
                         </ul>
                     </li>
                     <li>
-                        <a href="#" class="has-arrow">Номенклатура</a>
+                        <a href="#" class="has-arrow" wicket:id="nomenclature">Номенклатура</a>
                         <ul class="nav">
                             <li><a href="#">Разделы</a></li>
                             <li><a href="#">Товар</a></li>
@@ -81,7 +72,7 @@
                             <li><a href="#">Склад</a></li>
                         </ul>
                     </li>
-                    <li  class="active">
+                    <li  class="active" wicket:id="settings">
                         <a href="#" class="has-arrow" aria-expanded="true">Настройки</a>
                         <ul class="nav" aria-expanded="true">
                             <li><a wicket:id="import">Импорт</a></li>

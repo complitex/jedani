@@ -9,6 +9,7 @@ import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.authorization.UnauthorizedInstantiationException;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
@@ -134,6 +135,8 @@ public class WorkerPage extends BasePage {
 
                 manager.getNumberValues(REGION_IDS).forEach(n -> worker.addNumberValue(REGION_IDS, n));
                 manager.getNumberValues(CITY_IDS).forEach(n -> worker.addNumberValue(CITY_IDS, n));
+
+                worker.setNumber(Worker.MANAGER_ID, manager.getObjectId());
             }
         }else{
             if (id != null) {
@@ -144,6 +147,14 @@ public class WorkerPage extends BasePage {
 
             if (worker.getNumber(Worker.MANAGER_ID) != null && worker.getNumber(Worker.MANAGER_ID) != 1) {
                 manager = workerMapper.getWorker(worker.getNumber(Worker.MANAGER_ID));
+            }
+        }
+
+        if (worker.getObjectId() != null){
+            if (!isAdmin() && !isStructureAdmin()){
+                if (getCurrentWorker().getRight() < worker.getRight() || getCurrentWorker().getLeft() > worker.getLeft()){
+                    throw new UnauthorizedInstantiationException(getClass());
+                }
             }
         }
 
@@ -376,7 +387,7 @@ public class WorkerPage extends BasePage {
                             domainNodeMapper.updateIndex(new Worker(1L, 0L, 0L, 0L), worker);
                         }
 
-                        getSession().info(getString("info_user_created"));
+                        info(getString("info_user_created"));
                         target.add(feedback);
                     }else{
                         boolean updateIndex = !Objects.equals(worker.getNumber(Worker.MANAGER_ID),
@@ -388,7 +399,7 @@ public class WorkerPage extends BasePage {
                             workerService.rebuildIndex();
                         }
 
-                        getSession().info(getString("info_user_updated"));
+                        info(getString("info_user_updated"));
                         target.add(feedback);
                     }
                 } catch (Exception e) {
@@ -426,25 +437,11 @@ public class WorkerPage extends BasePage {
             }
         }.setDefaultFormProcessing(false));
 
-        AjaxButton cancel = new AjaxButton("cancel") {
-            @Override
-            protected void onSubmit(AjaxRequestTarget target) {
-                if (isAdmin()){
-                    if (manager != null){
-                        setResponsePage(WorkerPage.class, new PageParameters().add("id", manager.getObjectId()));
-                    }else{
-                        setResponsePage(WorkerListPage.class);
-                    }
-                }else{
-                    setResponsePage(WorkerPage.class);
-                }
-            }
-        };
+        WebMarkupContainer back = new WebMarkupContainer("back");
+        back.setVisible(id != null);
+        form.add(back);
 
-        cancel.setDefaultFormProcessing(false);
-        cancel.add(new Label("label", getString(worker.getObjectId() == null ? "cancel" : "back")));
-
-        form.add(cancel);
+        back.add(new Label("label", getString(worker.getObjectId() == null ? "cancel" : "back")));
 
         //Structure
         WebMarkupContainer structure = new WebMarkupContainer("structure");
@@ -523,7 +520,7 @@ public class WorkerPage extends BasePage {
             @Override
             public void onClick() {
                 setResponsePage(WorkerStructurePage.class, new PageParameters().add("id", worker.getObjectId())
-                .add("level_depth", filterWrapper.getMap().get("levelDepth")));
+                        .add("level_depth", filterWrapper.getMap().get("levelDepth")));
             }
         });
     }

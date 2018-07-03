@@ -4,6 +4,7 @@ import org.apache.wicket.authroles.authorization.strategies.role.annotations.Aut
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
@@ -15,7 +16,6 @@ import ru.complitex.address.page.CityTypeListPage;
 import ru.complitex.address.page.CountryListPage;
 import ru.complitex.address.page.RegionListPage;
 import ru.complitex.jedani.worker.entity.Worker;
-import ru.complitex.jedani.worker.mapper.WorkerMapper;
 import ru.complitex.jedani.worker.page.admin.ImportPage;
 import ru.complitex.jedani.worker.page.catalog.MkStatusListPage;
 import ru.complitex.jedani.worker.page.catalog.PositionListPage;
@@ -46,9 +46,6 @@ public class BasePage extends WebPage{
     private WorkerService workerService;
 
     @Inject
-    private WorkerMapper workerMapper;
-
-    @Inject
     private UserMapper userMapper;
 
     @Inject
@@ -59,24 +56,12 @@ public class BasePage extends WebPage{
     private Worker currentWorker;
 
     protected BasePage() {
-        add(new BookmarkablePageLink<>("home", HomePage.class));
-        add(new BookmarkablePageLink<>("worker", WorkerPage.class));
-        add(new BookmarkablePageLink<>("import", ImportPage.class));
-        add(new BookmarkablePageLink<>("countries", CountryListPage.class));
-        add(new BookmarkablePageLink<>("regions", RegionListPage.class));
-        add(new BookmarkablePageLink<>("cityTypes", CityTypeListPage.class));
-        add(new BookmarkablePageLink<>("cities", CityListPage.class));
-        add(new BookmarkablePageLink<>("workers", WorkerListPage.class));
-        add(new BookmarkablePageLink<>("first_name", FirstNameListPage.class));
-        add(new BookmarkablePageLink<>("middle_name", MiddleNameListPage.class));
-        add(new BookmarkablePageLink<>("last_name", LastNameListPage.class));
-        add(new BookmarkablePageLink<>("mk_status", MkStatusListPage.class));
-        add(new BookmarkablePageLink<>("position", PositionListPage.class));
-
         String login = ((HttpServletRequest)getRequestCycle().getRequest().getContainerRequest()).getUserPrincipal().getName();
 
         currentUser = userMapper.getUser(login);
         currentWorker = workerService.getWorker(login);
+
+        add(new BookmarkablePageLink<>("home", HomePage.class));
 
         String fio = "";
         String jid = "";
@@ -100,6 +85,36 @@ public class BasePage extends WebPage{
                 getSession().invalidate();
             }
         });
+
+        add(new BookmarkablePageLink<>("worker", WorkerPage.class));
+
+        WebMarkupContainer settings = new WebMarkupContainer("settings");
+        settings.setVisible(isAdmin());
+        add(settings);
+
+        settings.add(new BookmarkablePageLink<>("import", ImportPage.class).setVisible(isAdmin()));
+
+        WebMarkupContainer address = new WebMarkupContainer("address");
+        address.setVisible(isAdmin());
+        add(address);
+
+        address.add(new BookmarkablePageLink<>("countries", CountryListPage.class).setVisible(isAdmin()));
+        address.add(new BookmarkablePageLink<>("regions", RegionListPage.class).setVisible(isAdmin()));
+        address.add(new BookmarkablePageLink<>("cityTypes", CityTypeListPage.class).setVisible(isAdmin()));
+        address.add(new BookmarkablePageLink<>("cities", CityListPage.class).setVisible(isAdmin()));
+
+        WebMarkupContainer catalog = new WebMarkupContainer("catalog");
+        catalog.setVisible(isAdmin());
+        add(catalog);
+
+        catalog.add(new BookmarkablePageLink<>("first_name", FirstNameListPage.class).setVisible(isAdmin()));
+        catalog.add(new BookmarkablePageLink<>("middle_name", MiddleNameListPage.class).setVisible(isAdmin()));
+        catalog.add(new BookmarkablePageLink<>("last_name", LastNameListPage.class).setVisible(isAdmin()));
+        catalog.add(new BookmarkablePageLink<>("position", PositionListPage.class)).setVisible(isAdmin());
+        catalog.add(new BookmarkablePageLink<>("mk_status", MkStatusListPage.class).setVisible(isAdmin()));
+        catalog.add(new BookmarkablePageLink<>("workers", WorkerListPage.class).setVisible(isAdmin() || isStructureAdmin()));
+
+        add(new WebMarkupContainer("nomenclature").setVisible(isAdmin()));
     }
 
     @Override
@@ -111,6 +126,10 @@ public class BasePage extends WebPage{
         response.render(JavaScriptHeaderItem.forReference(JedaniJsResourceReference.INSTANCE));
     }
 
+    private HttpServletRequest getHttpServletRequest(){
+        return ((HttpServletRequest)RequestCycle.get().getRequest().getContainerRequest());
+    }
+
     protected String getLogin(){
         return getHttpServletRequest().getUserPrincipal().getName();
     }
@@ -119,15 +138,19 @@ public class BasePage extends WebPage{
         return getHttpServletRequest().isUserInRole(JedaniRoles.ADMINISTRATORS);
     }
 
-    private HttpServletRequest getHttpServletRequest(){
-        return ((HttpServletRequest)RequestCycle.get().getRequest().getContainerRequest());
+    protected boolean isStructureAdmin(){
+        return getHttpServletRequest().isUserInRole(JedaniRoles.STRUCTURE_ADMINISTRATORS);
+    }
+
+    protected boolean isUser(){
+        return getHttpServletRequest().isUserInRole(JedaniRoles.USERS);
     }
 
     public User getCurrentUser() {
         return currentUser;
     }
 
-    public Worker getCurrentWorker() {
+    protected Worker getCurrentWorker() {
         if (currentWorker == null && isAdmin()){
             currentWorker = new Worker();
             currentWorker.init();

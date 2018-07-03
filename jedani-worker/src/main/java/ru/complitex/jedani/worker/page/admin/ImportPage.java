@@ -2,6 +2,7 @@ package ru.complitex.jedani.worker.page.admin;
 
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
 import org.apache.wicket.markup.html.basic.Label;
@@ -18,6 +19,7 @@ import org.apache.wicket.protocol.ws.api.message.IWebSocketPushMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.complitex.jedani.worker.page.BasePage;
+import ru.complitex.jedani.worker.security.JedaniRoles;
 import ru.complitex.jedani.worker.service.ImportService;
 import ru.complitex.jedani.worker.service.WorkerService;
 
@@ -28,6 +30,7 @@ import java.util.Objects;
  * @author Anatoly A. Ivanov
  * 23.11.2017 16:52
  */
+@AuthorizeInstantiation(JedaniRoles.ADMINISTRATORS)
 public class ImportPage extends BasePage{
     private Logger log = LoggerFactory.getLogger(ImportPage.class);
 
