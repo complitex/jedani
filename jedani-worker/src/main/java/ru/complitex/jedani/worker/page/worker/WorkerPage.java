@@ -23,6 +23,8 @@ import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.Link;
+import org.apache.wicket.markup.html.list.ListItem;
+import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.*;
@@ -46,8 +48,11 @@ import ru.complitex.domain.component.form.AttributeInputListFormGroup;
 import ru.complitex.domain.component.form.AttributeSelectFormGroup;
 import ru.complitex.domain.component.form.AttributeSelectListFormGroup;
 import ru.complitex.domain.component.form.DomainAutoCompleteFormGroup;
+import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
+import ru.complitex.domain.entity.Value;
+import ru.complitex.domain.mapper.AttributeMapper;
 import ru.complitex.domain.mapper.DomainMapper;
 import ru.complitex.domain.mapper.DomainNodeMapper;
 import ru.complitex.domain.mapper.EntityMapper;
@@ -65,11 +70,11 @@ import ru.complitex.name.entity.LastName;
 import ru.complitex.name.entity.MiddleName;
 import ru.complitex.name.service.NameService;
 import ru.complitex.user.entity.User;
-import ru.complitex.user.mapper.UserGroupMapper;
 import ru.complitex.user.mapper.UserMapper;
 
 import javax.inject.Inject;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -99,9 +104,6 @@ public class WorkerPage extends BasePage {
     private UserMapper userMapper;
 
     @Inject
-    private UserGroupMapper userGroupMapper;
-
-    @Inject
     private WorkerMapper workerMapper;
 
     @Inject
@@ -115,6 +117,9 @@ public class WorkerPage extends BasePage {
 
     @Inject
     private DomainNodeMapper domainNodeMapper;
+
+    @Inject
+    private AttributeMapper attributeMapper;
 
     private Worker worker;
     private Worker manager;
@@ -481,7 +486,7 @@ public class WorkerPage extends BasePage {
 
         columns.add(new DomainActionColumn<>(WorkerPage.class));
 
-        FilterDataTable<Worker> table = new FilterDataTable<Worker>("table", columns, dataProvider, form, 10){
+        FilterDataTable<Worker> table = new FilterDataTable<Worker>("table", columns, dataProvider, form, 7){
             @Override
             public boolean isVisible() {
                 return !showGraph.getObject();
@@ -523,6 +528,72 @@ public class WorkerPage extends BasePage {
                         .add("level_depth", filterWrapper.getMap().get("levelDepth")));
             }
         });
+
+        //History
+        Entity workerEntity = entityMapper.getEntity(Worker.ENTITY_NAME);
+
+        SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd.MM.yyyy hh:mm:ss");
+
+        form.add(new ListView<Attribute>("attributes", attributeMapper.getHistoryAttributes(Worker.ENTITY_NAME, worker.getObjectId())) {
+            @Override
+            protected void populateItem(ListItem<Attribute> item) {
+                Attribute attribute = item.getModelObject();
+
+                EntityAttribute entityAttribute = workerEntity.getEntityAttribute(attribute.getEntityAttributeId());
+
+                String name = entityAttribute.getValue() != null
+                        ? entityAttribute.getValue().getText()
+                        : entityAttribute.getEntityAttributeId().toString();
+
+                item.add(new Label("date", dateTimeFormat.format(attribute.getStartDate())));
+                item.add(new Label("name", name));
+
+                String value = "";
+
+                switch (entityAttribute.getValueType()){
+                    case TEXT_VALUE:
+                        value = attribute.getValues().stream()
+                                .map(Value::getText)
+                                .collect(Collectors.joining(","));
+
+                        break;
+                    case NUMBER_VALUE:
+                        value = attribute.getValues().stream()
+                                .map(v -> String.valueOf(v.getNumber()))
+                                .collect(Collectors.joining(","));
+
+                        break;
+                    case TEXT:
+                    case BOOLEAN:
+                    case DECIMAL:
+                        value = attribute.getText();
+
+                        break;
+                    case NUMBER:
+                        value = String.valueOf(attribute.getNumber());
+
+                        break;
+                    case DATE:
+                        value = String.valueOf(attribute.getDate());
+
+                        break;
+                    case ENTITY_VALUE:
+                        value = attribute.getValues().stream()
+                                .map(v -> String.valueOf(v.getNumber()))
+                                .collect(Collectors.joining(","));
+
+                        break;
+                    case ENTITY:
+                        value = String.valueOf(attribute.getNumber());
+
+                        break;
+                }
+
+                item.add(new Label("value", value));
+            }
+        }.setVisible(worker.getObjectId() != null));
+
+
     }
 
     private List<EntityAttribute> getEntityAttributes() {

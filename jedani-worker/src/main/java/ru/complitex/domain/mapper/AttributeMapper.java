@@ -1,11 +1,13 @@
 package ru.complitex.domain.mapper;
 
 import ru.complitex.common.mybatis.BaseMapper;
+import ru.complitex.common.util.MapUtil;
 import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Status;
 
 import javax.inject.Inject;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Anatoly A. Ivanov
@@ -44,5 +46,10 @@ public class AttributeMapper extends BaseMapper {
         attribute.setEndDate(endDate);
 
         sqlSession().update("archiveAttribute", attribute);
+    }
+
+    public List<Attribute> getHistoryAttributes(String entityName, Long objectId){
+        return sqlSession().selectList("selectHistoryAttributes", MapUtil.of("entityName", entityName,
+                "objectId", objectId));
     }
 }

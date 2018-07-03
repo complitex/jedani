@@ -112,3 +112,13 @@ li.disabled a, li.disabled span{
 .pagination{
     margin: 0;
 }
+
+.panel-group .panel-heading a:before {
+    margin-right: 7px;
+    content: "";
+}
+
+.panel-group .panel-heading a.collapsed:before {
+    margin-right: 7px;
+    content: "";
+}

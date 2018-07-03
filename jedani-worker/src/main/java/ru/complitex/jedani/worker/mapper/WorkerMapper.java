@@ -52,5 +52,7 @@ public class WorkerMapper extends BaseMapper {
     public Long getWorkerLevelDepth(Long objectId){
         return sqlSession().selectOne("selectWorkerLevelDepth", objectId);
     }
+
+
 }
 

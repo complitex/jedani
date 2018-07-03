@@ -21,7 +21,7 @@
     <!--suppress SqlResolve -->
     <insert id="insertAttribute" parameterType="ru.complitex.domain.entity.Attribute" useGeneratedKeys="true" keyProperty="id">
         insert into ${entityName}_attribute (object_id, entity_attribute_id, `text`, `number`, start_date, end_date,
-          `status`, user_id)
+          `status`, `user_id`)
             value (#{objectId}, #{entityAttributeId}, #{text}, #{number}, #{startDate}, #{endDate}, #{status}, #{userId})
     </insert>
 
@@ -36,6 +36,11 @@
     <!--suppress SqlResolve -->
     <select id="selectAttributes" parameterType="map" resultMap="attributeResultMap">
         select '${entityName}' entity_name, a.* from ${entityName}_attribute a where a.object_id = #{objectId} and a.status = 1
+    </select>
+
+    <!--suppress SqlResolve -->
+    <select id="selectHistoryAttributes" parameterType="map" resultMap="attributeResultMap">
+        select '${entityName}' entity_name, a.* from ${entityName}_attribute a where a.object_id = #{objectId}
     </select>
 
     <!--suppress SqlResolve -->

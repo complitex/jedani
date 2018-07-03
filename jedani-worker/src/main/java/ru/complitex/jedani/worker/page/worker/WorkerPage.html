@@ -132,6 +132,29 @@
                     <table wicket:id="table" class="table table-hover table-condensed"></table>
                 </div>
 
+                <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                    <div class="panel panel-default">
+                        <div class="panel-heading" role="tab" id="headingOne">
+                            <h4 class="panel-title">
+                                <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                                    Журнал изменений
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+                            <div class="panel-body">
+                                <table class="table table-hover table-condensed">
+                                    <tr wicket:id="attributes" x>
+                                        <td wicket:id="date"></td>
+                                        <td wicket:id="name"></td>
+                                        <td wicket:id="value"></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div>
                     <button wicket:id="save" class="btn btn-primary">Сохранить</button>
                     <button wicket:id="create" class="btn btn-default">Создать</button>
