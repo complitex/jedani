@@ -371,8 +371,9 @@ public class WorkerPage extends BasePage {
                     worker.setNumber(FIRST_NAME, nameService.getOrCreateFirstName(firstName.getInput(), worker.getNumber(FIRST_NAME)));
                     worker.setNumber(MIDDLE_NAME, nameService.getOrCreateMiddleName(middleName.getInput(), worker.getNumber(MIDDLE_NAME)));
 
-                    if (workerMapper.isExistJId(jId.getTextField().getInput())) {
+                    if (worker.getObjectId() == null && workerMapper.isExistJId(jId.getTextField().getInput())) {
                         jId.getTextField().error(getString("error_jid_exist"));
+                        target.add(feedback, jId);
                         return;
                     }
 
@@ -401,7 +402,7 @@ public class WorkerPage extends BasePage {
                         domainMapper.updateDomain(worker);
 
                         if (updateIndex){
-                            workerService.rebuildIndex();
+                            workerService.updateIndex(manager, worker);
                         }
 
                         info(getString("info_user_updated"));

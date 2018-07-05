@@ -32,19 +32,41 @@
             resultMap="domainNodeResultMap">
         select d.*, '${entityName}' entity_name  from `${entityName}` d
           left join ${entityName}_attribute a on a.object_id = d.object_id
-        where d.status = 1 and a.status = 1 and a.entity_attribute_id = #{map.parentEntityAttributeId}
+        where d.status in (1, 4) and a.status = 1 and a.entity_attribute_id = #{map.parentEntityAttributeId}
           and a.number = #{objectId}
         order by d.object_id asc
     </select>
 
     <!--suppress SqlResolve -->
     <update id="updateDomainNodeLeft" parameterType="ru.complitex.domain.entity.DomainNode">
-        update ${entityName} set `left` = `left` + 2 where `left` >= #{right}
+        update `${entityName}` set `left` = `left` + 2 where `left` >= #{right}
     </update>
 
     <!--suppress SqlResolve -->
     <update id="updateDomainNodeRight" parameterType="ru.complitex.domain.entity.DomainNode">
-        update ${entityName} set `right` = `right` + 2 where `right` >= #{right}
+        update `${entityName}` set `right` = `right` + 2 where `right` >= #{right}
+    </update>
+
+    <!--suppress SqlResolve -->
+    <select id="selectDomainNodeIds" parameterType="ru.complitex.domain.entity.DomainNode" resultType="long">
+        select object_id from `${entityName}` where #{left} >= `left` and `right` >= #{right} and `status` in (1, 4)
+    </select>
+
+    <!--suppress SqlResolve -->
+    <update id="updateDomainNodeMoveRight" parameterType="map">
+        update `${entityName}` set `right` = `right` + #{delta*sing} where `right` > #{start} and #{stop} > `right`
+    </update>
+
+    <!--suppress SqlResolve -->
+    <update id="updateDomainNodeMoveLeft" parameterType="map">
+        update `${entityName}` set `left` = `left` + #{delta*sing} where `left` > #{start} and #{stop} > `left`
+    </update>
+
+    <!--suppress SqlResolve -->
+    <update id="updateDomainNodeMove" parameterType="map">
+        update `${entityName}` set `level` = `level` + #{levelMod}, `right` = `right` + #{nodeDelta*nodeSing},
+          `left` = `left` + #{nodeDelta*nodeSing}
+        where object_id in (<foreach collection="nodeIds" separator="," item="i">#{i}</foreach>)
     </update>
 
 

@@ -55,4 +55,8 @@ public class WorkerService implements Serializable {
     public void rebuildIndex(){
         domainNodeService.rebuildRootIndex(Worker.ENTITY_NAME, 1L, Worker.MANAGER_ID);
     }
+
+    public void updateIndex(Worker worker, Worker manager){
+        domainNodeService.move(worker, manager);
+    }
 }

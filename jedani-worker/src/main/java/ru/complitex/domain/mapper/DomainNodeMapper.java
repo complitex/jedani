@@ -1,9 +1,11 @@
 package ru.complitex.domain.mapper;
 
 import ru.complitex.common.mybatis.BaseMapper;
+import ru.complitex.common.util.MapUtil;
 import ru.complitex.domain.entity.DomainNode;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Anatoly A. Ivanov
@@ -45,5 +47,22 @@ public class DomainNodeMapper extends BaseMapper {
         domainNode.setLevel(parent.getLevel() + 1);
 
         update(domainNode);
+    }
+
+    public List<Long> getDomainNodeIds(DomainNode domainNode) {
+        return sqlSession().selectList("selectDomainNodeIds", domainNode);
+    }
+
+    public void updateDomainNodeMove(String entityName, Integer sing, Long delta, Long start, Long end){
+        Map<String, Object> map =  MapUtil.of("entityName", entityName, "sing", sing,
+                "delta", delta, "start", start, "end", end);
+
+        sqlSession().update("updateDomainNodeMoveRight", map);
+        sqlSession().update("updateDomainNodeMoveLeft", map);
+    }
+
+    public void updateDomainNodeMove(String entityName, List<Long> nodeIds, Integer nodeSign, Long nodeDelta, Long levelMod){
+        sqlSession().update("updateDomainNodeMove", MapUtil.of("entityName", entityName, "nodeIds", nodeIds,
+                "nodeSign", nodeSign, "nodeDelta", nodeDelta, "levelMod", levelMod));
     }
 }
