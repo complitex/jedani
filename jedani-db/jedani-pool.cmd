@@ -3,7 +3,7 @@ SET GLASSFISH_ASADMIN=c:\glassfish5\bin\asadmin.bat
 call %GLASSFISH_ASADMIN% create-jdbc-connection-pool ^
     --datasourceclassname="com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource" ^
     --restype="javax.sql.ConnectionPoolDataSource" ^
-    --property="url=jdbc\:mysql\://localhost\:3306/jedani:user=jedani:password=jedani:characterResultSets=utf8:characterEncoding=utf8:useUnicode=true:connectionCollation=utf8_unicode_ci:autoReconnect=true" jedaniPool
+    --property="url=jdbc\:mysql\://localhost\:3306/jedani_db:user=jedani:password=jedani:characterResultSets=utf8:characterEncoding=utf8:useUnicode=true:connectionCollation=utf8_unicode_ci:autoReconnect=true" jedaniPool
 
 call %GLASSFISH_ASADMIN% create-jdbc-resource --connectionpoolid jedaniPool jdbc/Jedani
 
