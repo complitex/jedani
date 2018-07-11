@@ -31,7 +31,7 @@ public class DomainNodeService implements Serializable {
     }
 
     @Transactional
-    public void move(DomainNode domainNode, DomainNode parentDomainNode){
+    public void move(DomainNode parentDomainNode, DomainNode domainNode){
         List<Long> nodeIds = domainNodeMapper.getDomainNodeIds(domainNode);
 
         int sign = domainNode.getLeft() - parentDomainNode.getRight() > 0 ? 1 : -1;

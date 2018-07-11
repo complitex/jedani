@@ -49,7 +49,7 @@
 
     <!--suppress SqlResolve -->
     <select id="selectDomainNodeIds" parameterType="ru.complitex.domain.entity.DomainNode" resultType="long">
-        select object_id from `${entityName}` where #{left} >= `left` and `right` >= #{right} and `status` in (1, 4)
+        select object_id from `${entityName}` where `left` >= #{left} and #{right} >= `right` and `status` in (1, 4)
     </select>
 
     <!--suppress SqlResolve -->

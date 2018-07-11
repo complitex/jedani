@@ -402,7 +402,7 @@ public class WorkerPage extends BasePage {
                         domainMapper.updateDomain(worker);
 
                         if (updateIndex){
-                            workerService.updateIndex(manager, worker);
+                            workerService.moveUpdateIndex(manager, worker);
                         }
 
                         info(getString("info_user_updated"));
