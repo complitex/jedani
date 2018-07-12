@@ -409,7 +409,7 @@ public class WorkerPage extends BasePage {
                         target.add(feedback);
                     }
                 } catch (Exception e) {
-                    error(e.getMessage());
+                    error("Ошибка: " + e.getMessage());
                     target.add(feedback);
 
                     log.error("error save worker ", e);

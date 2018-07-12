@@ -32,19 +32,24 @@ public class DomainNodeService implements Serializable {
 
     @Transactional
     public void move(DomainNode parentDomainNode, DomainNode domainNode){
+        if (domainNode.getId().equals(parentDomainNode.getId()) || (domainNode.getLeft() < parentDomainNode.getLeft() &&
+                domainNode.getRight() > parentDomainNode.getRight())) {
+            throw new RuntimeException("Node cannot move to it's child");
+        }
+
         List<Long> nodeIds = domainNodeMapper.getDomainNodeIds(domainNode);
 
-        int sign = domainNode.getLeft() - parentDomainNode.getRight() > 0 ? 1 : -1;
+        int sign = (domainNode.getLeft() - parentDomainNode.getRight()) > 0 ? 1 : -1;
         long start = sign > 0 ? parentDomainNode.getRight() - 1 : domainNode.getRight();
         long stop = sign > 0 ? domainNode.getLeft() : parentDomainNode.getRight();
         long delta = (long) (nodeIds.size() * 2);
 
-        domainNodeMapper.updateDomainNodeMove(domainNode.getEntityName(), sign, delta, start, stop);
+        domainNodeMapper.updateDomainNodeMove(domainNode.getEntityName(), sign*delta, start, stop);
 
         long nodeDelta = stop - start - 1;
         int nodeSign = sign > 0 ? -1 : 1;
         long levelMod = parentDomainNode.getLevel() + 1 - domainNode.getLevel();
 
-        domainNodeMapper.updateDomainNodeMove(domainNode.getEntityName(), nodeIds, nodeSign, nodeDelta, levelMod);
+        domainNodeMapper.updateDomainNodeMove(domainNode.getEntityName(), nodeIds, nodeSign*nodeDelta, levelMod);
     }
 }
