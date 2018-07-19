@@ -45,11 +45,16 @@ public class WorkerGraphPanel extends Panel {
 
         if (!workers.isEmpty()) {
             elements += "," + workers.stream()
-                    .map(w -> " {data: {id: '" + w.getObjectId() + "', " +
-                            "label: '" + w.getText(Worker.J_ID) + "\\n" +
-                            nameService.getLastName(w.getNumber(Worker.LAST_NAME)) + "\\n" +
-                            nameService.getFirstName(w.getNumber(Worker.FIRST_NAME)) + "\\n" +
-                            nameService.getMiddleName(w.getNumber(Worker.MIDDLE_NAME)) + "'}}")
+                    .map(w -> {
+                        int color = Math.max((int) (255 - 32*(w.getLevel() - worker.getLevel())), 128);
+
+                        return " {data: {id: '" + w.getObjectId() + "', " +
+                                "label: '" + w.getText(Worker.J_ID) + "\\n" +
+                                nameService.getLastName(w.getNumber(Worker.LAST_NAME)) + "\\n" +
+                                nameService.getFirstName(w.getNumber(Worker.FIRST_NAME)) + "\\n" +
+                                nameService.getMiddleName(w.getNumber(Worker.MIDDLE_NAME)) + "'}, " +
+                                "style: {'background-color': 'rgb("+color+", "+color+", "+color+")'}}";
+                    })
                     .collect(Collectors.joining(","));
 
             elements += "," + workers.stream()
