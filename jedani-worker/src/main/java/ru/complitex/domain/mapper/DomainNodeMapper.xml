@@ -54,18 +54,18 @@
 
     <!--suppress SqlResolve -->
     <update id="updateDomainNodeMoveRight" parameterType="map">
-        update `${entityName}` set `right` = `right` + #{delta*sing} where `right` > #{start} and #{stop} > `right`
+        update `${entityName}` set `right` = `right` + #{signDelta} where `right` > #{start} and #{stop} > `right`
     </update>
 
     <!--suppress SqlResolve -->
     <update id="updateDomainNodeMoveLeft" parameterType="map">
-        update `${entityName}` set `left` = `left` + #{delta*sing} where `left` > #{start} and #{stop} > `left`
+        update `${entityName}` set `left` = `left` + #{signDelta} where `left` > #{start} and #{stop} > `left`
     </update>
 
     <!--suppress SqlResolve -->
     <update id="updateDomainNodeMove" parameterType="map">
-        update `${entityName}` set `level` = `level` + #{levelMod}, `right` = `right` + #{nodeDelta*nodeSing},
-          `left` = `left` + #{nodeDelta*nodeSing}
+        update `${entityName}` set `level` = `level` + #{levelMod}, `right` = `right` + #{nodeSignDelta},
+          `left` = `left` + #{nodeSignDelta}
         where object_id in (<foreach collection="nodeIds" separator="," item="i">#{i}</foreach>)
     </update>
 

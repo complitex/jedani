@@ -53,16 +53,16 @@ public class DomainNodeMapper extends BaseMapper {
         return sqlSession().selectList("selectDomainNodeIds", domainNode);
     }
 
-    public void updateDomainNodeMove(String entityName, Integer sing, Long delta, Long start, Long end){
-        Map<String, Object> map =  MapUtil.of("entityName", entityName, "sing", sing,
-                "delta", delta, "start", start, "end", end);
+    public void updateDomainNodeMove(String entityName, Long signDelta, Long start, Long stop){
+        Map<String, Object> map =  MapUtil.of("entityName", entityName,
+                "signDelta", signDelta, "start", start, "stop", stop);
 
         sqlSession().update("updateDomainNodeMoveRight", map);
         sqlSession().update("updateDomainNodeMoveLeft", map);
     }
 
-    public void updateDomainNodeMove(String entityName, List<Long> nodeIds, Integer nodeSign, Long nodeDelta, Long levelMod){
+    public void updateDomainNodeMove(String entityName, List<Long> nodeIds, Long nodeSignDelta, Long levelMod){
         sqlSession().update("updateDomainNodeMove", MapUtil.of("entityName", entityName, "nodeIds", nodeIds,
-                "nodeSign", nodeSign, "nodeDelta", nodeDelta, "levelMod", levelMod));
+                "nodeSignDelta", nodeSignDelta, "levelMod", levelMod));
     }
 }
