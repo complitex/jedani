@@ -242,6 +242,8 @@ public class ImportService implements Serializable {
                 worker.setStatus(SYNC);
             }
 
+            domainMapper.sqlSession().startManagedSession(false);
+
             workers.stream()
                     .filter(w -> !domainMapper.hasDomain(Worker.ENTITY_NAME, Worker.IMPORT_ID, w.getText(Worker.IMPORT_ID)))
                     .forEach(w -> {
@@ -251,11 +253,16 @@ public class ImportService implements Serializable {
                         listener.accept(status.count*100/ workers.size() + "%");
                     });
 
+
             updateWorkerManagerId(listener);
+
+            domainMapper.sqlSession().commit();
         }catch (Exception e){
             log.error("error import users", e);
 
             status.errorMessage = "error import users: " + e.getMessage();
+
+            domainMapper.sqlSession().rollback();
         }
 
         return status;
