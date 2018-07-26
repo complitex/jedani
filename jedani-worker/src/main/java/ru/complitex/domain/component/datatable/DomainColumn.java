@@ -115,8 +115,9 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
 
         switch (entityAttribute.getValueType()){
             case TEXT_VALUE:
-                Value value = attribute.getValue(Locales.getSystemLocaleId());
-                text = value != null ? value.getText() : null;
+                if (attribute.getValues() != null) {
+                    text = attribute.getValues().stream().map(Value::getText).collect(Collectors.joining(","));
+                }
 
                 break;
             case ENTITY:

@@ -28,8 +28,6 @@ public class DomainNodeService implements Serializable {
     @Transactional
     public void rebuildRootIndex(String entityName, Long rootObjectId, Long parentEntityAttributeId){
         try {
-            getDomainNodeMapper().sqlSession().startManagedSession(false);
-
             getDomainNodeMapper().lockTablesWrite(entityName, entityName + " as d", entityName + "_attribute as a");
 
             getDomainNodeMapper().clearIndex(entityName, rootObjectId);
@@ -44,11 +42,6 @@ public class DomainNodeService implements Serializable {
 
             getDomainNodeMapper().rebuildIndex(root, parentEntityAttributeId);
 
-            getDomainNodeMapper().sqlSession().commit();
-        }catch (Exception e){
-            getDomainNodeMapper().sqlSession().rollback();
-
-            throw e;
         } finally {
             getDomainNodeMapper().unlockTables();
         }

@@ -2,7 +2,6 @@ package ru.complitex.jedani.worker.service;
 
 import com.google.common.base.Strings;
 import org.apache.commons.lang3.StringUtils;
-import org.mybatis.cdi.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.complitex.address.entity.City;
@@ -242,30 +241,20 @@ public class ImportService implements Serializable {
                 worker.setStatus(SYNC);
             }
 
-            domainMapper.sqlSession().startManagedSession(false);
+            for (Worker w : workers) {
+                if (!domainMapper.hasDomain(Worker.ENTITY_NAME, Worker.IMPORT_ID, w.getText(Worker.IMPORT_ID))) {
+                    insertUserProfile(userMap.get(w.getText(Worker.IMPORT_ID)), w);
+                    ++status.count;
 
-            workers.stream()
-                    .filter(w -> !domainMapper.hasDomain(Worker.ENTITY_NAME, Worker.IMPORT_ID, w.getText(Worker.IMPORT_ID)))
-                    .forEach(w -> {
-                        insertUserProfile(userMap.get(w.getText(Worker.IMPORT_ID)), w);
-                        ++status.count;
-
-                        listener.accept(status.count*100/ workers.size() + "%");
-                    });
-
-            domainMapper.sqlSession().commit();
-
-            domainMapper.sqlSession().startManagedSession(false);
+                    listener.accept(status.count * 100 / workers.size() + "%");
+                }
+            }
 
             updateWorkerManagerId(listener);
-
-            domainMapper.sqlSession().commit();
         }catch (Exception e){
             log.error("error import users", e);
 
             status.errorMessage = "error import users: " + e.getMessage();
-
-            domainMapper.sqlSession().rollback();
         }
 
         return status;
@@ -293,7 +282,6 @@ public class ImportService implements Serializable {
         });
     }
 
-    @Transactional
     private void insertUserProfile(User user, Worker worker){
         User currentUser = userMapper.getUser(principal.getName());
 
