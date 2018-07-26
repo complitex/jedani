@@ -253,6 +253,9 @@ public class ImportService implements Serializable {
                         listener.accept(status.count*100/ workers.size() + "%");
                     });
 
+            domainMapper.sqlSession().commit();
+
+            domainMapper.sqlSession().startManagedSession(false);
 
             updateWorkerManagerId(listener);
 
