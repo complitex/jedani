@@ -1,7 +1,8 @@
 package ru.complitex.common.mybatis;
 
-import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionManager;
 import org.apache.wicket.cdi.NonContextual;
+import org.mybatis.cdi.SqlSessionManagerRegistry;
 
 import javax.inject.Inject;
 import java.io.Serializable;
@@ -12,13 +13,23 @@ import java.io.Serializable;
  */
 public abstract class BaseMapper implements Serializable {
     @Inject
-    private transient SqlSession sqlSession;
+    private transient SqlSessionManagerRegistry sqlSessionManagerRegistry;
 
-    protected SqlSession sqlSession(){
-        if (sqlSession == null){
+    private transient SqlSessionManager sqlSessionManager;
+
+    private SqlSessionManagerRegistry getSqlSessionManagerRegistry(){
+        if (sqlSessionManagerRegistry == null){
             NonContextual.of(BaseMapper.class).inject(this);
         }
 
-        return sqlSession;
+        return sqlSessionManagerRegistry;
+    }
+
+    public SqlSessionManager sqlSession(){
+        if (sqlSessionManager == null){
+            sqlSessionManager = getSqlSessionManagerRegistry().getManagers().iterator().next();
+        }
+
+        return sqlSessionManager;
     }
 }

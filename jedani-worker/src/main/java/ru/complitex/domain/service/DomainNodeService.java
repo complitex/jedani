@@ -1,5 +1,6 @@
 package ru.complitex.domain.service;
 
+import org.apache.wicket.cdi.NonContextual;
 import org.mybatis.cdi.Transactional;
 import ru.complitex.domain.entity.DomainNode;
 import ru.complitex.domain.mapper.DomainNodeMapper;
@@ -14,20 +15,43 @@ import java.util.List;
  */
 public class DomainNodeService implements Serializable {
     @Inject
-    private DomainNodeMapper domainNodeMapper;
+    private transient DomainNodeMapper domainNodeMapper;
 
+    private DomainNodeMapper getDomainNodeMapper(){
+        if (domainNodeMapper == null){
+            NonContextual.of(DomainNodeService.class).inject(this);
+        }
+
+        return domainNodeMapper;
+    }
+
+    @Transactional
     public void rebuildRootIndex(String entityName, Long rootObjectId, Long parentEntityAttributeId){
-        domainNodeMapper.clearIndex(entityName, rootObjectId);
+        try {
+            getDomainNodeMapper().sqlSession().startManagedSession(false);
 
-        DomainNode root = domainNodeMapper.getDomainNode(entityName, rootObjectId);
+            getDomainNodeMapper().lockTablesWrite(entityName, entityName + " as d", entityName + "_attribute as a");
 
-        root.setLeft(1L);
-        root.setRight(2L);
-        root.setLevel(0L);
+            getDomainNodeMapper().clearIndex(entityName, rootObjectId);
 
-        domainNodeMapper.update(root);
+            DomainNode root = getDomainNodeMapper().getDomainNode(entityName, rootObjectId);
 
-        domainNodeMapper.rebuildIndex(root, parentEntityAttributeId);
+            root.setLeft(1L);
+            root.setRight(2L);
+            root.setLevel(0L);
+
+            getDomainNodeMapper().update(root);
+
+            getDomainNodeMapper().rebuildIndex(root, parentEntityAttributeId);
+
+            getDomainNodeMapper().sqlSession().commit();
+        }catch (Exception e){
+            getDomainNodeMapper().sqlSession().rollback();
+
+            throw e;
+        } finally {
+            getDomainNodeMapper().unlockTables();
+        }
     }
 
     @Transactional
@@ -37,19 +61,25 @@ public class DomainNodeService implements Serializable {
             throw new RuntimeException("Node cannot move to it's child");
         }
 
-        List<Long> nodeIds = domainNodeMapper.getDomainNodeIds(domainNode);
+        List<Long> nodeIds = getDomainNodeMapper().getDomainNodeIds(domainNode);
 
         int sign = (domainNode.getLeft() - parentDomainNode.getRight()) > 0 ? 1 : -1;
         long start = sign > 0 ? parentDomainNode.getRight() - 1 : domainNode.getRight();
         long stop = sign > 0 ? domainNode.getLeft() : parentDomainNode.getRight();
         long delta = (long) (nodeIds.size() * 2);
 
-        domainNodeMapper.updateDomainNodeMove(domainNode.getEntityName(), sign*delta, start, stop);
+        try {
+            getDomainNodeMapper().lockTablesWrite(domainNode.getEntityName());
 
-        long nodeDelta = stop - start - 1;
-        int nodeSign = sign > 0 ? -1 : 1;
-        long levelMod = parentDomainNode.getLevel() + 1 - domainNode.getLevel();
+            getDomainNodeMapper().updateDomainNodeMove(domainNode.getEntityName(), sign*delta, start, stop);
 
-        domainNodeMapper.updateDomainNodeMove(domainNode.getEntityName(), nodeIds, nodeSign*nodeDelta, levelMod);
+            long nodeDelta = stop - start - 1;
+            int nodeSign = sign > 0 ? -1 : 1;
+            long levelMod = parentDomainNode.getLevel() + 1 - domainNode.getLevel();
+
+            getDomainNodeMapper().updateDomainNodeMove(domainNode.getEntityName(), nodeIds, nodeSign*nodeDelta, levelMod);
+        } finally {
+            getDomainNodeMapper().unlockTables();
+        }
     }
 }

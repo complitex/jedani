@@ -4,6 +4,7 @@ import ru.complitex.common.mybatis.BaseMapper;
 import ru.complitex.common.util.MapUtil;
 import ru.complitex.domain.entity.DomainNode;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -51,6 +52,14 @@ public class DomainNodeMapper extends BaseMapper {
 
     public List<Long> getDomainNodeIds(DomainNode domainNode) {
         return sqlSession().selectList("selectDomainNodeIds", domainNode);
+    }
+
+    public void lockTablesWrite(String... tables){
+        sqlSession().update("lockTable", Arrays.asList(tables));
+    }
+
+    public void unlockTables(){
+        sqlSession().update("unlockTables");
     }
 
     public void updateDomainNodeMove(String entityName, Long signDelta, Long start, Long stop){

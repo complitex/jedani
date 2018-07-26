@@ -294,10 +294,18 @@ public class WorkerPage extends BasePage {
             }
         });
 
+        //Structure
+        WebMarkupContainer structure = new WebMarkupContainer("structure");
+        structure.setOutputMarkupId(true);
+        structure.setVisible(worker.getObjectId() != null);
+        form.add(structure);
+
         form.add(new IndicatingAjaxButton("save") {
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
                 try {
+                    domainMapper.sqlSession().startManagedSession(false);
+
                     //User
                     if (!Strings.isNullOrEmpty(user.getPassword())){
                         if (!user.getPassword().equals(user.getConfirmPassword())){
@@ -394,7 +402,6 @@ public class WorkerPage extends BasePage {
                         }
 
                         info(getString("info_user_created"));
-                        target.add(feedback);
                     }else{
                         boolean updateIndex = !Objects.equals(worker.getNumber(Worker.MANAGER_ID),
                                 workerMapper.getWorker(worker.getObjectId()).getNumber(Worker.MANAGER_ID)); //todo opt
@@ -406,13 +413,18 @@ public class WorkerPage extends BasePage {
                         }
 
                         info(getString("info_user_updated"));
-                        target.add(feedback);
                     }
+
+                    domainMapper.sqlSession().commit();
+
+                    target.add(feedback, structure);
                 } catch (Exception e) {
                     error("Ошибка: " + e.getMessage());
                     target.add(feedback);
 
                     log.error("error save worker ", e);
+
+                    domainMapper.sqlSession().rollback();
                 }
             }
 
@@ -444,16 +456,10 @@ public class WorkerPage extends BasePage {
         }.setDefaultFormProcessing(false));
 
         WebMarkupContainer back = new WebMarkupContainer("back");
-        back.setVisible(id != null);
+        back.setVisible(worker.getObjectId() == null);
         form.add(back);
 
         back.add(new Label("label", getString(worker.getObjectId() == null ? "cancel" : "back")));
-
-        //Structure
-        WebMarkupContainer structure = new WebMarkupContainer("structure");
-        structure.setOutputMarkupId(true);
-        structure.setVisible(worker.getObjectId() != null);
-        form.add(structure);
 
         List<IColumn<Worker, SortProperty>> columns = new ArrayList<>();
 

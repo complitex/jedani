@@ -69,5 +69,14 @@
         where object_id in (<foreach collection="nodeIds" separator="," item="i">#{i}</foreach>)
     </update>
 
+    <!--suppress SqlResolve -->
+    <update id="lockTable" parameterType="list">
+        lock tables <foreach collection="list" item="i" separator=",">${i} write</foreach>
+    </update>
+
+    <update id="unlockTables">
+        unlock tables
+    </update>
+
 
 </mapper>

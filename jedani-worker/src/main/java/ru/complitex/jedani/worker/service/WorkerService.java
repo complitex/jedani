@@ -1,5 +1,6 @@
 package ru.complitex.jedani.worker.service;
 
+import org.apache.wicket.cdi.NonContextual;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.mapper.DomainMapper;
 import ru.complitex.domain.service.DomainNodeService;
@@ -21,16 +22,26 @@ import java.util.Locale;
 public class WorkerService implements Serializable {
 
     @Inject
-    private UserMapper userMapper;
+    private transient UserMapper userMapper;
 
     @Inject
-    private DomainMapper domainMapper;
+    private transient DomainMapper domainMapper;
 
     @Inject
-    private WorkerMapper workerMapper;
+    private transient WorkerMapper workerMapper;
 
     @Inject
-    private DomainNodeService domainNodeService;
+    private transient DomainNodeService domainNodeService;
+
+    private DomainNodeService getDomainNodeService(){
+        if (domainNodeService == null){
+            NonContextual.of(WorkerService.class).inject(this);
+        }
+
+        return domainNodeService;
+    }
+
+
 
     public Worker getWorker(String login){
         Long userId = userMapper.getUserId(login);
@@ -53,10 +64,10 @@ public class WorkerService implements Serializable {
     }
 
     public void rebuildIndex(){
-        domainNodeService.rebuildRootIndex(Worker.ENTITY_NAME, 1L, Worker.MANAGER_ID);
+        getDomainNodeService().rebuildRootIndex(Worker.ENTITY_NAME, 1L, Worker.MANAGER_ID);
     }
 
     public void moveUpdateIndex(Worker manager, Worker worker){
-        domainNodeService.move(manager, worker);
+        getDomainNodeService().move(manager, worker);
     }
 }
