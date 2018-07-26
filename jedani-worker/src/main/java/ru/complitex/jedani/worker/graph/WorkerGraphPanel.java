@@ -46,7 +46,7 @@ public class WorkerGraphPanel extends Panel {
         if (!workers.isEmpty()) {
             elements += "," + workers.stream()
                     .map(w -> {
-                        int color = Math.max((int) (255 - 32*(w.getLevel() - worker.getLevel())), 128);
+                        int color = Math.max((int) (255 - 16*(w.getLevel() - worker.getLevel())), 128);
 
                         return " {data: {id: '" + w.getObjectId() + "', " +
                                 "label: '" + w.getText(Worker.J_ID) + "\\n" +
