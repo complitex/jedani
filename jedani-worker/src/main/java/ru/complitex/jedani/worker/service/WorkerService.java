@@ -67,7 +67,12 @@ public class WorkerService implements Serializable {
         getDomainNodeService().rebuildRootIndex(Worker.ENTITY_NAME, 1L, Worker.MANAGER_ID);
     }
 
-    public void moveUpdateIndex(Worker manager, Worker worker){
-        getDomainNodeService().move(manager, worker);
+    public void moveIndex(Worker manager, Worker worker){
+        if (!worker.getId().equals(manager.getId()) && (worker.getLeft() >= manager.getLeft() ||
+                worker.getRight() <= manager.getRight())) {
+            getDomainNodeService().move(manager, worker);
+        } else {
+            rebuildIndex();
+        }
     }
 }

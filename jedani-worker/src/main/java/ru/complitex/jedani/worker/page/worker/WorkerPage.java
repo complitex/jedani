@@ -403,13 +403,13 @@ public class WorkerPage extends BasePage {
 
                         info(getString("info_user_created"));
                     }else{
-                        boolean updateIndex = !Objects.equals(worker.getNumber(Worker.MANAGER_ID),
+                        boolean moveIndex = !Objects.equals(worker.getNumber(Worker.MANAGER_ID),
                                 workerMapper.getWorker(worker.getObjectId()).getNumber(Worker.MANAGER_ID)); //todo opt
 
                         domainMapper.updateDomain(worker);
 
-                        if (updateIndex){
-                            workerService.moveUpdateIndex(manager, worker);
+                        if (moveIndex){
+                            workerService.moveIndex(manager, worker);
                         }
 
                         info(getString("info_user_updated"));

@@ -1,12 +1,13 @@
 package ru.complitex.domain.mapper;
 
 import ru.complitex.common.mybatis.BaseMapper;
-import ru.complitex.common.util.MapUtil;
 import ru.complitex.domain.entity.DomainNode;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
+import static ru.complitex.common.util.MapUtil.of;
 
 /**
  * @author Anatoly A. Ivanov
@@ -63,7 +64,7 @@ public class DomainNodeMapper extends BaseMapper {
     }
 
     public void updateDomainNodeMove(String entityName, Long signDelta, Long start, Long stop){
-        Map<String, Object> map =  MapUtil.of("entityName", entityName,
+        Map<String, Object> map =  of("entityName", entityName,
                 "signDelta", signDelta, "start", start, "stop", stop);
 
         sqlSession().update("updateDomainNodeMoveRight", map);
@@ -71,7 +72,27 @@ public class DomainNodeMapper extends BaseMapper {
     }
 
     public void updateDomainNodeMove(String entityName, List<Long> nodeIds, Long nodeSignDelta, Long levelMod){
-        sqlSession().update("updateDomainNodeMove", MapUtil.of("entityName", entityName, "nodeIds", nodeIds,
+        sqlSession().update("updateDomainNodeMove", of("entityName", entityName, "nodeIds", nodeIds,
                 "nodeSignDelta", nodeSignDelta, "levelMod", levelMod));
+    }
+
+    public boolean validateDomainNodeLeftRight(String entityName){
+        return sqlSession().selectOne("validateDomainNodeLeftRight", of("entityName", entityName));
+    }
+
+    public boolean validateDomainNodeMinLeft(String entityName){
+        return sqlSession().selectOne("validateDomainNodeMinLeft", of("entityName", entityName));
+    }
+
+    public boolean validateDomainNodeMaxRight(String entityName){
+        return sqlSession().selectOne("validateDomainNodeMaxRight", of("entityName", entityName));
+    }
+
+    public boolean validateDomainNodeDiff(String entityName){
+        return sqlSession().selectOne("validateDomainNodeDiff", of("entityName", entityName));
+    }
+
+    public boolean validateDomainNodeLevel(String entityName){
+        return sqlSession().selectOne("validateDomainNodeLevel", of("entityName", entityName));
     }
 }

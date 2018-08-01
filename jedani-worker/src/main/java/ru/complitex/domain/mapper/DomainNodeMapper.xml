@@ -78,5 +78,29 @@
         unlock tables
     </update>
 
+    <!--suppress SqlResolve -->
+    <select id="validateDomainNodeLeftRight" parameterType="map" resultType="boolean">
+        select count(id) = 0 from `${entityName}` where `left` >= `right`
+    </select>
+
+    <!--suppress SqlResolve -->
+    <select id="validateDomainNodeMinLeft" parameterType="map" resultType="boolean">
+        select min(`left`) = 1 from `${entityName}`
+    </select>
+
+    <!--suppress SqlResolve -->
+    <select id="validateDomainNodeMaxRight" parameterType="map" resultType="boolean">
+        select max(`right`) = 2*count(id) from `${entityName}`
+    </select>
+
+    <!--suppress SqlResolve -->
+    <select id="validateDomainNodeDiff" parameterType="map" resultType="boolean">
+        select count(id) = 0 from `${entityName}` where (`right` - `left`)%2 = 0
+    </select>
+
+    <!--suppress SqlResolve -->
+    <select id="validateDomainNodeLevel" parameterType="map" resultType="boolean">
+        select count(id) = 0 from `${entityName}` where (`left` - `level` + 2)%2 = 0
+    </select>
 
 </mapper>

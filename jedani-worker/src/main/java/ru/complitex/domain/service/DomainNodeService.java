@@ -42,6 +42,9 @@ public class DomainNodeService implements Serializable {
 
             getDomainNodeMapper().rebuildIndex(root, parentEntityAttributeId);
 
+            if (!validate(entityName)){
+                throw new RuntimeException("Index is not validated");
+            }
         } finally {
             getDomainNodeMapper().unlockTables();
         }
@@ -71,8 +74,20 @@ public class DomainNodeService implements Serializable {
             long levelMod = parentDomainNode.getLevel() + 1 - domainNode.getLevel();
 
             getDomainNodeMapper().updateDomainNodeMove(domainNode.getEntityName(), nodeIds, nodeSign*nodeDelta, levelMod);
+
+            if (!validate(domainNode.getEntityName())){
+                throw new RuntimeException("Index is not validated");
+            }
         } finally {
             getDomainNodeMapper().unlockTables();
         }
+    }
+
+    public boolean validate(String entityName){
+        return getDomainNodeMapper().validateDomainNodeLeftRight(entityName) &&
+                getDomainNodeMapper().validateDomainNodeMinLeft(entityName) &&
+                getDomainNodeMapper().validateDomainNodeMaxRight(entityName) &&
+                getDomainNodeMapper().validateDomainNodeDiff(entityName) &&
+                getDomainNodeMapper().validateDomainNodeLevel(entityName);
     }
 }
