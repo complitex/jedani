@@ -304,8 +304,6 @@ public class WorkerPage extends BasePage {
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
                 try {
-                    domainMapper.sqlSession().startManagedSession(false);
-
                     //User
                     if (!Strings.isNullOrEmpty(user.getPassword())){
                         if (!user.getPassword().equals(user.getConfirmPassword())){
@@ -398,7 +396,7 @@ public class WorkerPage extends BasePage {
                             domainNodeMapper.updateIndex(manager, worker);
                         }else{
 
-                            domainNodeMapper.updateIndex(new Worker(1L, 0L, 0L, 0L), worker);
+                            domainNodeMapper.updateIndex(new Worker(1L, 1L, 2L, 0L), worker);
                         }
 
                         info(getString("info_user_created"));
@@ -410,12 +408,15 @@ public class WorkerPage extends BasePage {
 
                         if (moveIndex){
                             workerService.moveIndex(manager, worker);
+
+                            worker = workerMapper.getWorker(worker.getObjectId());
+                            filterWrapper.getObject().setLeft(worker.getLeft());
+                            filterWrapper.getObject().setRight(worker.getRight());
+                            filterWrapper.getObject().setLevel(worker.getLevel());
                         }
 
                         info(getString("info_user_updated"));
                     }
-
-                    domainMapper.sqlSession().commit();
 
                     target.add(feedback, structure);
                 } catch (Exception e) {
@@ -423,8 +424,6 @@ public class WorkerPage extends BasePage {
                     target.add(feedback);
 
                     log.error("error save worker ", e);
-
-                    domainMapper.sqlSession().rollback();
                 }
             }
 
@@ -455,11 +454,16 @@ public class WorkerPage extends BasePage {
             }
         }.setDefaultFormProcessing(false));
 
-        WebMarkupContainer back = new WebMarkupContainer("back");
-        back.setVisible(worker.getObjectId() == null);
-        form.add(back);
-
-        back.add(new Label("label", getString(worker.getObjectId() == null ? "cancel" : "back")));
+        form.add(new Link<Void>("cancel") {
+            @Override
+            public void onClick() {
+                if (isAdmin()){
+                    setResponsePage(WorkerListPage.class);
+                }else {
+                    setResponsePage(WorkerPage.class);
+                }
+            }
+        });
 
         List<IColumn<Worker, SortProperty>> columns = new ArrayList<>();
 

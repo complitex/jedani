@@ -174,7 +174,7 @@ INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_i
 INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (20, 103, 0);
 INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (20, 104, 0);
 
-INSERT INTO `worker` (`id`, `object_id`, `status`, `left`, `right`, `level`) VALUE (1, 1, 4, 0, 0, 0);
+INSERT INTO `worker` (`id`, `object_id`, `status`, `left`, `right`, `level`) VALUE (1, 1, 4, 1, 2, 0);
 UPDATE `sequence` set `value` = 2 where `name` = 'worker';
 
 /* Admin */

@@ -15,7 +15,7 @@ import java.util.List;
  */
 public class AttributeMapper extends BaseMapper {
     @Inject
-    private transient ValueMapper valueMapper;
+    private ValueMapper valueMapper;
 
     public void insertAttribute(Attribute attribute, Date startDate){
         attribute.setStartDate(startDate);

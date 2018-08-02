@@ -11,6 +11,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.convert.ConversionException;
 import org.apache.wicket.util.convert.IConverter;
+import org.apache.wicket.util.lang.Objects;
 import ru.complitex.jedani.worker.entity.Worker;
 import ru.complitex.jedani.worker.mapper.WorkerMapper;
 import ru.complitex.name.service.NameService;
@@ -105,7 +106,7 @@ public class WorkerAutoComplete extends Panel {
     }
 
     private String getTextValue(Worker worker){
-        return worker.getText(Worker.J_ID) + " " +
+        return Objects.defaultIfNull(worker.getText(Worker.J_ID), "") + " " +
                 nameService.getLastName(worker.getNumber(Worker.LAST_NAME)) + " " +
                 nameService.getFirstName(worker.getNumber(Worker.FIRST_NAME)) + " " +
                 nameService.getMiddleName(worker.getNumber(Worker.MIDDLE_NAME));
