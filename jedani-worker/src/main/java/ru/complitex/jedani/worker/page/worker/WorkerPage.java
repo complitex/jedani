@@ -300,6 +300,80 @@ public class WorkerPage extends BasePage {
         structure.setVisible(worker.getObjectId() != null);
         form.add(structure);
 
+        //History
+        WebMarkupContainer history = new WebMarkupContainer("history");
+        history.setOutputMarkupId(true);
+        form.add(history);
+
+        Entity workerEntity = entityMapper.getEntity(Worker.ENTITY_NAME);
+
+        SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd.MM.yyyy hh:mm:ss");
+
+
+        history.add(new ListView<Attribute>("attributes", new LoadableDetachableModel<List<Attribute>>() {
+            @Override
+            protected List<Attribute> load() {
+                return attributeMapper.getHistoryAttributes(Worker.ENTITY_NAME, worker.getObjectId());
+            }
+        }) {
+            @Override
+            protected void populateItem(ListItem<Attribute> item) {
+                Attribute attribute = item.getModelObject();
+
+                EntityAttribute entityAttribute = workerEntity.getEntityAttribute(attribute.getEntityAttributeId());
+
+                String name = entityAttribute.getValue() != null
+                        ? entityAttribute.getValue().getText()
+                        : entityAttribute.getEntityAttributeId().toString();
+
+                item.add(new Label("date", dateTimeFormat.format(attribute.getStartDate())));
+                item.add(new Label("name", name));
+
+                String value = "";
+
+                switch (entityAttribute.getValueType()){
+                    case TEXT_VALUE:
+                        value = attribute.getValues().stream()
+                                .map(Value::getText)
+                                .collect(Collectors.joining(","));
+
+                        break;
+                    case NUMBER_VALUE:
+                        value = attribute.getValues().stream()
+                                .map(v -> String.valueOf(v.getNumber()))
+                                .collect(Collectors.joining(","));
+
+                        break;
+                    case TEXT:
+                    case BOOLEAN:
+                    case DECIMAL:
+                        value = attribute.getText();
+
+                        break;
+                    case NUMBER:
+                        value = String.valueOf(attribute.getNumber());
+
+                        break;
+                    case DATE:
+                        value = String.valueOf(attribute.getDate());
+
+                        break;
+                    case ENTITY_VALUE:
+                        value = attribute.getValues().stream()
+                                .map(v -> String.valueOf(v.getNumber()))
+                                .collect(Collectors.joining(","));
+
+                        break;
+                    case ENTITY:
+                        value = String.valueOf(attribute.getNumber());
+
+                        break;
+                }
+
+                item.add(new Label("value", value));
+            }
+        }.setVisible(worker.getObjectId() != null));
+
         form.add(new IndicatingAjaxButton("save") {
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
@@ -418,7 +492,7 @@ public class WorkerPage extends BasePage {
                         info(getString("info_user_updated"));
                     }
 
-                    target.add(feedback, structure);
+                    target.add(feedback, structure, history);
                 } catch (Exception e) {
                     error("Ошибка: " + e.getMessage());
                     target.add(feedback);
@@ -540,69 +614,7 @@ public class WorkerPage extends BasePage {
             }
         });
 
-        //History
-        Entity workerEntity = entityMapper.getEntity(Worker.ENTITY_NAME);
 
-        SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd.MM.yyyy hh:mm:ss");
-
-        form.add(new ListView<Attribute>("attributes", attributeMapper.getHistoryAttributes(Worker.ENTITY_NAME, worker.getObjectId())) {
-            @Override
-            protected void populateItem(ListItem<Attribute> item) {
-                Attribute attribute = item.getModelObject();
-
-                EntityAttribute entityAttribute = workerEntity.getEntityAttribute(attribute.getEntityAttributeId());
-
-                String name = entityAttribute.getValue() != null
-                        ? entityAttribute.getValue().getText()
-                        : entityAttribute.getEntityAttributeId().toString();
-
-                item.add(new Label("date", dateTimeFormat.format(attribute.getStartDate())));
-                item.add(new Label("name", name));
-
-                String value = "";
-
-                switch (entityAttribute.getValueType()){
-                    case TEXT_VALUE:
-                        value = attribute.getValues().stream()
-                                .map(Value::getText)
-                                .collect(Collectors.joining(","));
-
-                        break;
-                    case NUMBER_VALUE:
-                        value = attribute.getValues().stream()
-                                .map(v -> String.valueOf(v.getNumber()))
-                                .collect(Collectors.joining(","));
-
-                        break;
-                    case TEXT:
-                    case BOOLEAN:
-                    case DECIMAL:
-                        value = attribute.getText();
-
-                        break;
-                    case NUMBER:
-                        value = String.valueOf(attribute.getNumber());
-
-                        break;
-                    case DATE:
-                        value = String.valueOf(attribute.getDate());
-
-                        break;
-                    case ENTITY_VALUE:
-                        value = attribute.getValues().stream()
-                                .map(v -> String.valueOf(v.getNumber()))
-                                .collect(Collectors.joining(","));
-
-                        break;
-                    case ENTITY:
-                        value = String.valueOf(attribute.getNumber());
-
-                        break;
-                }
-
-                item.add(new Label("value", value));
-            }
-        }.setVisible(worker.getObjectId() != null));
 
 
     }
