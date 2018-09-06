@@ -110,9 +110,12 @@ public class DomainListPage<T extends Domain> extends BasePage{
 
         List<Long> entityAttributeIds = getEntityAttributeIds();
 
-        getEntityAttributes(entity).stream()
-                .filter(a -> entityAttributeIds == null || entityAttributeIds.contains(a.getEntityAttributeId()))
-                .forEach(a -> columns.add(new DomainColumn<>(a)));
+        if (entityAttributeIds != null){
+            entityAttributeIds.forEach(id -> columns.add(new DomainColumn<>(entity.getEntityAttribute(id))));
+
+        }else {
+            getEntityAttributes(entity).forEach(a -> columns.add(new DomainColumn<>(a)));
+        }
 
         onAddColumns(columns);
 

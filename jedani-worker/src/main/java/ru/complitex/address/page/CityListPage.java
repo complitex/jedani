@@ -21,6 +21,6 @@ public class CityListPage extends DomainListPage{
 
     @Override
     protected List<Long> getEntityAttributeIds() {
-        return Arrays.asList(City.NAME, City.SHORT_NAME);
+        return Arrays.asList(City.CITY_TYPE_ID, City.NAME, City.SHORT_NAME);
     }
 }
