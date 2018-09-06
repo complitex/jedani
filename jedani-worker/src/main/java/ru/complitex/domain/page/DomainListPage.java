@@ -33,12 +33,15 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Anatoly A. Ivanov
  * 19.12.2017 3:40
  */
 public class DomainListPage<T extends Domain> extends BasePage{
+    public static final String CURRENT_PAGE_ATTRIBUTE = "_PAGE";
+
     @Inject
     private EntityMapper entityMapper;
 
@@ -48,6 +51,7 @@ public class DomainListPage<T extends Domain> extends BasePage{
     private String entityName;
 
     private Class<? extends Page> editPageClass;
+    private FilterDataTable<T> table;
 
     public <P extends WebPage> DomainListPage(String entityName, String parentEntityName, Long parentEntityAttributeId,
                           Class<P> editPageClass) {
@@ -114,7 +118,7 @@ public class DomainListPage<T extends Domain> extends BasePage{
 
         columns.add(new DomainActionColumn<>(editPageClass));
 
-        FilterDataTable<T> table = new FilterDataTable<T>("table", columns, dataProvider, filterForm, 15){
+        table = new FilterDataTable<T>("table", columns, dataProvider, filterForm, 15){
             @Override
             protected Item<T> newRowItem(String id, int index, IModel<T> model) {
                 Item<T> item = super.newRowItem(id, index, model);
@@ -124,6 +128,8 @@ public class DomainListPage<T extends Domain> extends BasePage{
                 return item;
             }
         };
+        table.setCurrentPage((Long) Optional.ofNullable(getSession().getAttribute(getClass().getName() +
+                CURRENT_PAGE_ATTRIBUTE)).orElse(0L));
         filterForm.add(table);
 
         add(new AjaxLink<Void>("add") {
@@ -138,6 +144,8 @@ public class DomainListPage<T extends Domain> extends BasePage{
         item.add(new AjaxEventBehavior("click") {
             @Override
             protected void onEvent(AjaxRequestTarget target) {
+                getSession().setAttribute(DomainListPage.this.getClass().getName() + CURRENT_PAGE_ATTRIBUTE, table.getCurrentPage());
+
                 setResponsePage(editPageClass, new PageParameters().add("id", item.getModelObject().getObjectId()));
             }
         });
