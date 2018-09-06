@@ -154,7 +154,7 @@ public class ImportPage extends BasePage{
                     WebSocketPushBroadcaster broadcaster = new WebSocketPushBroadcaster(WebSocketSettings.Holder.get(getApplication()).getConnectionRegistry());
 
                     ImportService.Status status =
-                            importService.importWorkers(cityUploadField.getFileUpload().getInputStream(),
+                            importService.importWorkers(userUploadField.getFileUpload().getInputStream(),
                                     p -> broadcaster.broadcastAll(getApplication(), new PushMessage(p)));
 
                     info.setDefaultModelObject("");

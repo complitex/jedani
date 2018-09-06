@@ -166,13 +166,23 @@ public class ImportService implements Serializable {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))){
             String line;
 
+            int row = 0;
+
             while ((line = br.readLine()) != null){
+                row++;
+
+                if (line.trim().isEmpty()){
+                    continue;
+                }
+
                 String[] columns = line.split(";", -1);
 
                 if (columns.length != 26){
-                    status.errorMessage = "Неверное количество колонок в файле: 26 <> " + columns.length;
+                    status.errorMessage = "Неверное количество колонок в файле: 26 <> " + columns.length + " в строке " + row;
 
-                    break;
+                    log.error(status.errorMessage);
+
+                    return status;
                 }
 
                 User user = new User();
