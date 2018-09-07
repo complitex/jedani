@@ -68,11 +68,11 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
                 return new TextFilter<>(componentId, model, form);
             case ENTITY:
             case ENTITY_VALUE:
-                if (entityAttribute.getRefEntityAttribute() != null) {
+                if (entityAttribute.getReferenceEntityAttribute() != null) {
                     Entity entity = getEntityMapper().getEntity(entityAttribute.getReferenceId());
 
                     return new DomainAutoComplete(componentId, entity.getName(),
-                            entityAttribute.getRefEntityAttribute().getEntityAttributeId(),
+                            entityAttribute.getReferenceEntityAttribute().getEntityAttributeId(),
                             new IModel<Long>() {
                                 @Override
                                 public Long getObject() {
@@ -131,6 +131,14 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
                 }
 
                 break;
+            case NUMBER_VALUE:
+                break;
+            case TEXT:
+                break;
+            case BOOLEAN:
+                break;
+            case DECIMAL:
+                break;
             case NUMBER:
                 text = attribute.getNumber() + "";
 
@@ -143,16 +151,37 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
 
             case ENTITY_VALUE:
                 if (attribute.getValues() != null){
-                    EntityAttribute refEA = entityAttribute.getRefEntityAttribute();
+                    EntityAttribute referenceEntityAttribute = entityAttribute.getReferenceEntityAttribute();
 
-                    if (refEA != null){
+                    if (referenceEntityAttribute != null){
                         List<Long> list = attribute.getValues().stream()
                                 .map(Value::getNumber)
                                 .collect(Collectors.toList());
 
+                        EntityAttribute prefixEntityAttribute = referenceEntityAttribute.getPrefixEntityAttribute();
+
                         text = list.stream()
-                                .map(id -> getDomainMapper().getDomain(refEA.getEntityName(), id)
-                                        .getValueText(refEA.getEntityAttributeId()))
+                                .map(id -> {
+                                    Domain domain = getDomainMapper().getDomain(referenceEntityAttribute.getEntityName(), id);
+
+                                    String prefix = "";
+
+                                    if (prefixEntityAttribute != null){
+                                        Long prefixDomainId = domain.getNumber(prefixEntityAttribute.getEntityAttributeId());
+
+                                        if (prefixDomainId != null) {
+                                            Domain prefixDomain = getDomainMapper().getDomain(prefixEntityAttribute
+                                                            .getReferenceEntityAttribute().getEntityName(),
+                                                    prefixDomainId);
+
+                                            prefix = prefixDomain.getValueText(prefixEntityAttribute.getReferenceEntityAttribute().getEntityAttributeId());
+
+                                            prefix = prefix != null ? prefix + " " : "";
+                                        }
+                                    }
+
+                                    return prefix + domain.getValueText(referenceEntityAttribute.getEntityAttributeId());
+                                })
                                 .collect(Collectors.joining(", "));
                     }else{
                         List<String> list = attribute.getValues().stream()

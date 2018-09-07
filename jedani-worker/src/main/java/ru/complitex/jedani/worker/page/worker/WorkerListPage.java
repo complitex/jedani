@@ -12,14 +12,15 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import ru.complitex.address.entity.City;
+import ru.complitex.address.entity.CityType;
 import ru.complitex.address.entity.Region;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
+import ru.complitex.domain.mapper.EntityAttributeMapper;
 import ru.complitex.domain.page.DomainListPage;
-import ru.complitex.domain.service.EntityService;
 import ru.complitex.jedani.worker.entity.Worker;
 import ru.complitex.jedani.worker.mapper.WorkerMapper;
 import ru.complitex.jedani.worker.security.JedaniRoles;
@@ -31,8 +32,6 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ru.complitex.jedani.worker.entity.Worker.*;
-
 /**
  * @author Anatoly A. Ivanov
  * 20.12.2017 7:11
@@ -40,7 +39,7 @@ import static ru.complitex.jedani.worker.entity.Worker.*;
 @AuthorizeInstantiation({JedaniRoles.ADMINISTRATORS, JedaniRoles.STRUCTURE_ADMINISTRATORS})
 public class WorkerListPage extends DomainListPage<Worker>{
     @Inject
-    private EntityService entityService;
+    private EntityAttributeMapper entityAttributeMapper;
 
     @Inject
     private WorkerMapper workerMapper;
@@ -53,26 +52,28 @@ public class WorkerListPage extends DomainListPage<Worker>{
     protected List<EntityAttribute> getEntityAttributes(Entity entity) {
         List<EntityAttribute> list = new ArrayList<>();
 
-        entityService.setRefEntityAttribute(entity, LAST_NAME, LastName.ENTITY_NAME, LastName.NAME);
-        list.add(entity.getEntityAttribute(LAST_NAME));
+        list.add(entity.getEntityAttribute(Worker.LAST_NAME)
+                .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(LastName.ENTITY_NAME, LastName.NAME)));
 
-        entityService.setRefEntityAttribute(entity, FIRST_NAME, FirstName.ENTITY_NAME, FirstName.NAME);
-        list.add(entity.getEntityAttribute(FIRST_NAME));
+        list.add(entity.getEntityAttribute(Worker.FIRST_NAME)
+                .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(FirstName.ENTITY_NAME, FirstName.NAME)));
 
-        entityService.setRefEntityAttribute(entity, MIDDLE_NAME, MiddleName.ENTITY_NAME, MiddleName.NAME);
-        list.add(entity.getEntityAttribute(MIDDLE_NAME));
+        list.add(entity.getEntityAttribute(Worker.MIDDLE_NAME)
+                .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(MiddleName.ENTITY_NAME, MiddleName.NAME)));
 
-        list.add(entity.getEntityAttribute(J_ID));
+        list.add(entity.getEntityAttribute(Worker.J_ID));
 
-        entityService.setRefEntityAttribute(entity, REGION_IDS, Region.ENTITY_NAME, Region.NAME);
-        list.add(entity.getEntityAttribute(REGION_IDS));
+        list.add(entity.getEntityAttribute(Worker.REGION_IDS)
+                .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(Region.ENTITY_NAME, Region.NAME)));
 
-        entityService.setRefEntityAttribute(entity, CITY_IDS, City.ENTITY_NAME, City.NAME);
-        list.add(entity.getEntityAttribute(CITY_IDS));
+        list.add(entity.getEntityAttribute(Worker.CITY_IDS)
+                .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(City.ENTITY_NAME, City.NAME)
+                        .setPrefixEntityAttribute(entityAttributeMapper.getEntityAttribute(City.ENTITY_NAME, City.CITY_TYPE_ID)
+                                .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(CityType.ENTITY_NAME, CityType.SHORT_NAME)))));
 
-        list.add(entity.getEntityAttribute(PHONE));
-        list.add(entity.getEntityAttribute(EMAIL));
-        list.add(entity.getEntityAttribute(INVOLVED_AT));
+        list.add(entity.getEntityAttribute(Worker.PHONE));
+        list.add(entity.getEntityAttribute(Worker.EMAIL));
+        list.add(entity.getEntityAttribute(Worker.INVOLVED_AT));
 
         return list;
     }

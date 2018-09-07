@@ -52,11 +52,7 @@ import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.entity.Value;
-import ru.complitex.domain.mapper.AttributeMapper;
-import ru.complitex.domain.mapper.DomainMapper;
-import ru.complitex.domain.mapper.DomainNodeMapper;
-import ru.complitex.domain.mapper.EntityMapper;
-import ru.complitex.domain.service.EntityService;
+import ru.complitex.domain.mapper.*;
 import ru.complitex.jedani.worker.component.WorkerAutoComplete;
 import ru.complitex.jedani.worker.entity.MkStatus;
 import ru.complitex.jedani.worker.entity.Position;
@@ -113,7 +109,7 @@ public class WorkerPage extends BasePage {
     private WorkerService workerService;
 
     @Inject
-    private EntityService entityService;
+    private EntityAttributeMapper entityAttributeMapper;
 
     @Inject
     private DomainNodeMapper domainNodeMapper;
@@ -624,22 +620,22 @@ public class WorkerPage extends BasePage {
 
         List<EntityAttribute> list = new ArrayList<>();
 
-        entityService.setRefEntityAttribute(entity, LAST_NAME, LastName.ENTITY_NAME, LastName.NAME);
-        list.add(entity.getEntityAttribute(LAST_NAME));
+        list.add(entity.getEntityAttribute(LAST_NAME)
+                .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(LastName.ENTITY_NAME, LastName.NAME)));
 
-        entityService.setRefEntityAttribute(entity, FIRST_NAME, FirstName.ENTITY_NAME, FirstName.NAME);
-        list.add(entity.getEntityAttribute(FIRST_NAME));
+        list.add(entity.getEntityAttribute(FIRST_NAME)
+                .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(FirstName.ENTITY_NAME, FirstName.NAME)));
 
-        entityService.setRefEntityAttribute(entity, MIDDLE_NAME, MiddleName.ENTITY_NAME, MiddleName.NAME);
-        list.add(entity.getEntityAttribute(MIDDLE_NAME));
+        list.add(entity.getEntityAttribute(MIDDLE_NAME)
+                .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(MiddleName.ENTITY_NAME, MiddleName.NAME)));
 
         list.add(entity.getEntityAttribute(J_ID));
 
-        entityService.setRefEntityAttribute(entity, REGION_IDS, Region.ENTITY_NAME, Region.NAME);
-        list.add(entity.getEntityAttribute(REGION_IDS));
+        list.add(entity.getEntityAttribute(REGION_IDS)
+                .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(Region.ENTITY_NAME, Region.NAME)));
 
-        entityService.setRefEntityAttribute(entity, CITY_IDS, City.ENTITY_NAME, City.NAME);
-        list.add(entity.getEntityAttribute(CITY_IDS));
+        list.add(entity.getEntityAttribute(CITY_IDS)
+                .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(City.ENTITY_NAME, City.NAME)));
 
         return list;
     }

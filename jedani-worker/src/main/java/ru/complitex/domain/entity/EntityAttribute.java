@@ -25,7 +25,8 @@ public class EntityAttribute implements Serializable{
 
     private String entityName;
 
-    private EntityAttribute refEntityAttribute;
+    private EntityAttribute referenceEntityAttribute;
+    private EntityAttribute prefixEntityAttribute;
 
     public EntityValue getValue(){
         return values.stream().filter(v -> v.getLocaleId().equals(Locales.getSystemLocaleId())).findAny().orElse(null);
@@ -119,11 +120,23 @@ public class EntityAttribute implements Serializable{
         this.entityName = entityName;
     }
 
-    public EntityAttribute getRefEntityAttribute() {
-        return refEntityAttribute;
+    public EntityAttribute getReferenceEntityAttribute() {
+        return referenceEntityAttribute;
     }
 
-    public void setRefEntityAttribute(EntityAttribute refEntityAttribute) {
-        this.refEntityAttribute = refEntityAttribute;
+    public EntityAttribute setReferenceEntityAttribute(EntityAttribute referenceEntityAttribute) {
+        this.referenceEntityAttribute = referenceEntityAttribute;
+
+        return this;
+    }
+
+    public EntityAttribute getPrefixEntityAttribute() {
+        return prefixEntityAttribute;
+    }
+
+    public EntityAttribute setPrefixEntityAttribute(EntityAttribute prefixEntityAttribute) {
+        this.prefixEntityAttribute = prefixEntityAttribute;
+
+        return this;
     }
 }
