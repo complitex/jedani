@@ -134,7 +134,7 @@
                 </if>
 
                 <if test="a.number != null">
-                    and (a${i}.entity_attribute_id = #{a.entityAttributeId} and (a${i}.number = #{a.number}))
+                    and (a${i}.entity_attribute_id = #{a.entityAttributeId} and (a${i}.number = #{a.number} or v${i}.number = #{a.number}))
                 </if>
             </foreach>
 

@@ -69,9 +69,9 @@ public class DomainAutoComplete extends Panel {
                     protected String getTextValue(Attribute attribute) {
                         switch (entityAttribute.getValueType()){
                             case TEXT_VALUE:
-                                return attribute.getOrCreateValue(Locales.getSystemLocaleId()).getText();
+                                return getPrefix(attribute) + attribute.getOrCreateValue(Locales.getSystemLocaleId()).getText();
                             case TEXT:
-                                return attribute.getText();
+                                return getPrefix(attribute) + attribute.getText();
                             case NUMBER:
                                 return attribute.getNumber() + "";
                         }
@@ -138,9 +138,9 @@ public class DomainAutoComplete extends Panel {
                         public String convertToString(Attribute attribute, Locale locale) {
                             switch (entityAttribute.getValueType()){
                                 case TEXT_VALUE:
-                                    return attribute.getOrCreateValue(Locales.getSystemLocaleId()).getText();
+                                    return getPrefix(attribute) + attribute.getOrCreateValue(Locales.getSystemLocaleId()).getText();
                                 case TEXT:
-                                    return attribute.getText();
+                                    return getPrefix(attribute) + attribute.getText();
                                 case NUMBER:
                                     return attribute.getNumber() + "";
                             }
@@ -161,7 +161,7 @@ public class DomainAutoComplete extends Panel {
         return autoCompleteTextField;
     }
 
-
-
-
+    protected String getPrefix(Attribute attribute){
+        return "";
+    }
 }

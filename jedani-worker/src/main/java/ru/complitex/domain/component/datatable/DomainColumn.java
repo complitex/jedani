@@ -85,7 +85,32 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
                                     ((Domain)((FilterWrapper)form.getDefaultModelObject()).getObject())
                                             .setNumber(entityAttribute.getEntityAttributeId(), object);
                                 }
-                            });
+                            }){
+                        @Override
+                        protected String getPrefix(Attribute attribute) {
+                            String prefix = "";
+
+                            EntityAttribute prefixEntityAttribute = entityAttribute.getPrefixEntityAttribute();
+
+                            if (prefixEntityAttribute != null && attribute.getObjectId() != null){
+                                Domain domain = getDomainMapper().getDomain(entity.getName(), attribute.getObjectId());
+
+                                Long prefixDomainId = domain.getNumber(prefixEntityAttribute.getEntityAttributeId());
+
+                                if (prefixDomainId != null) {
+                                    Domain prefixDomain = getDomainMapper().getDomain(prefixEntityAttribute
+                                                    .getReferenceEntityAttribute().getEntityName(),
+                                            prefixDomainId);
+
+                                    prefix = prefixDomain.getValueText(prefixEntityAttribute.getReferenceEntityAttribute().getEntityAttributeId());
+
+                                    return prefix != null ? prefix + " " : "";
+                                }
+                            }
+
+                            return "";
+                        }
+                    };
                 }
             default:
                 model = new IModel<String>() {
@@ -158,7 +183,7 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
                                 .map(Value::getNumber)
                                 .collect(Collectors.toList());
 
-                        EntityAttribute prefixEntityAttribute = referenceEntityAttribute.getPrefixEntityAttribute();
+                        EntityAttribute prefixEntityAttribute = entityAttribute.getPrefixEntityAttribute();
 
                         text = list.stream()
                                 .map(id -> {

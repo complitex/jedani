@@ -67,9 +67,9 @@ public class WorkerListPage extends DomainListPage<Worker>{
                 .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(Region.ENTITY_NAME, Region.NAME)));
 
         list.add(entity.getEntityAttribute(Worker.CITY_IDS)
-                .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(City.ENTITY_NAME, City.NAME)
-                        .setPrefixEntityAttribute(entityAttributeMapper.getEntityAttribute(City.ENTITY_NAME, City.CITY_TYPE_ID)
-                                .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(CityType.ENTITY_NAME, CityType.SHORT_NAME)))));
+                .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(City.ENTITY_NAME, City.NAME))
+                .setPrefixEntityAttribute(entityAttributeMapper.getEntityAttribute(City.ENTITY_NAME, City.CITY_TYPE_ID)
+                        .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(CityType.ENTITY_NAME, CityType.SHORT_NAME))));
 
         list.add(entity.getEntityAttribute(Worker.PHONE));
         list.add(entity.getEntityAttribute(Worker.EMAIL));
