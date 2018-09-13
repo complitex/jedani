@@ -647,8 +647,10 @@ public class WorkerPage extends BasePage {
         list.add(entity.getEntityAttribute(REGION_IDS)
                 .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(Region.ENTITY_NAME, Region.NAME)));
 
-        list.add(entity.getEntityAttribute(CITY_IDS)
-                .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(City.ENTITY_NAME, City.NAME)));
+        list.add(entity.getEntityAttribute(Worker.CITY_IDS)
+                .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(City.ENTITY_NAME, City.NAME))
+                .setPrefixEntityAttribute(entityAttributeMapper.getEntityAttribute(City.ENTITY_NAME, City.CITY_TYPE_ID)
+                        .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(CityType.ENTITY_NAME, CityType.SHORT_NAME))));
 
         return list;
     }
