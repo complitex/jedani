@@ -156,14 +156,6 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
                 }
 
                 break;
-            case NUMBER_VALUE:
-                break;
-            case TEXT:
-                break;
-            case BOOLEAN:
-                break;
-            case DECIMAL:
-                break;
             case NUMBER:
                 text = attribute.getNumber() + "";
 
