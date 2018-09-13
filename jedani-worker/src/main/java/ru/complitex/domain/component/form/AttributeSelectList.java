@@ -51,7 +51,7 @@ public class AttributeSelectList extends FormComponentPanel<Attribute> {
         domains.sort(Comparator.comparing(d -> d.getAttribute(refEntityAttributeId).getValue(getLocale()).getText()));
 
         Map<Long, String> names = domains.stream().collect(Collectors.toMap(Domain::getId,
-                d -> d.getValueText(refEntityAttributeId, getLocale())));
+                d -> getPrefix(d) + d.getValueText(refEntityAttributeId, getLocale())));
 
         listModel.setObject(model.getObject().getNumberValues());
 
@@ -153,5 +153,9 @@ public class AttributeSelectList extends FormComponentPanel<Attribute> {
     @Override
     public boolean checkRequired() {
         return !isRequired() || !listModel.getObject().isEmpty();
+    }
+
+    protected String getPrefix(Domain domain){
+        return "";
     }
 }

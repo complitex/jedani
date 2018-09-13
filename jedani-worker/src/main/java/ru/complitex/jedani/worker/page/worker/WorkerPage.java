@@ -32,6 +32,7 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.complitex.address.entity.City;
+import ru.complitex.address.entity.CityType;
 import ru.complitex.address.entity.Region;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
@@ -48,10 +49,7 @@ import ru.complitex.domain.component.form.AttributeInputListFormGroup;
 import ru.complitex.domain.component.form.AttributeSelectFormGroup;
 import ru.complitex.domain.component.form.AttributeSelectListFormGroup;
 import ru.complitex.domain.component.form.DomainAutoCompleteFormGroup;
-import ru.complitex.domain.entity.Attribute;
-import ru.complitex.domain.entity.Entity;
-import ru.complitex.domain.entity.EntityAttribute;
-import ru.complitex.domain.entity.Value;
+import ru.complitex.domain.entity.*;
 import ru.complitex.domain.mapper.*;
 import ru.complitex.jedani.worker.component.WorkerAutoComplete;
 import ru.complitex.jedani.worker.entity.MkStatus;
@@ -226,7 +224,22 @@ public class WorkerPage extends BasePage {
         form.add(region = new AttributeSelectListFormGroup("region", Model.of(worker.getOrCreateAttribute(Worker.REGION_IDS)),
                 Region.ENTITY_NAME, Region.NAME).setRequired(true));
         form.add(city = new AttributeSelectListFormGroup("city", Model.of(worker.getOrCreateAttribute(Worker.CITY_IDS)),
-                City.ENTITY_NAME, City.NAME, region.getListModel()).setRequired(true));
+                City.ENTITY_NAME, City.NAME, region.getListModel()){
+            @Override
+            protected String getPrefix(Domain domain) {
+                Long cityTypeId = domain.getNumber(City.CITY_TYPE_ID);
+
+                if (cityTypeId != null){
+                    Domain cityType = domainMapper.getDomain(CityType.ENTITY_NAME, cityTypeId);
+
+                    if (cityType != null){
+                        return cityType.getValueText(CityType.SHORT_NAME) + " ";
+                    }
+                }
+
+                return super.getPrefix(domain);
+            }
+        }.setRequired(true));
         region.onChange(t -> t.add(city));
 
         //User
