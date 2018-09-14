@@ -88,7 +88,7 @@
         </foreach>
 
         <if test="sortProperty != null">
-            <if test="sortProperty.key in {'text', 'number', 'date', 'value'}">
+            <if test="sortProperty.key in {'text', 'number', 'date', 'value', 'entity'}">
                 left join ${object.entityName}_attribute sort_a on sort_a.object_id = d.object_id and
                 sort_a.entity_attribute_id = #{sortProperty.value.entityAttributeId}
 
@@ -96,8 +96,13 @@
                     left join `${object.entityName}_value` sort_v on sort_v.attribute_id = sort_a.id
                 </if>
 
-                <if test="sortProperty.key == 'entity'">
-                    -- todo
+                <if test="sortProperty.key == 'entity' and sortProperty.value != null">
+                    <if test="sortProperty.value.referenceEntityAttribute != null">
+                        left join `${sortProperty.value.referenceEntityAttribute.entityName}_attribute` sort_ra
+                          on sort_ra.object_id = sort_a.number
+                        left join `${sortProperty.value.referenceEntityAttribute.entityName}_value` sort_rv
+                          on sort_rv.attribute_id = sort_ra.id
+                    </if>
                 </if>
             </if>
         </if>
@@ -160,6 +165,7 @@
                 <when test="sortProperty.key == 'number'">, sort_a.number</when>
                 <when test="sortProperty.key == 'date'">, sort_a.date</when>
                 <when test="sortProperty.key == 'value'">, sort_v.text</when>
+                <when test="sortProperty.key == 'entity'">, sort_rv.text</when>
             </choose>
         </if>
     </sql>
@@ -172,6 +178,7 @@
                 <when test="sortProperty.key == 'number'">order by sort_a.number + 0 ${asc}</when>
                 <when test="sortProperty.key == 'date'">order by sort_a.date ${asc}</when>
                 <when test="sortProperty.key == 'value'">order by sort_v.text ${asc}</when>
+                <when test="sortProperty.key == 'entity'">order by sort_rv.text ${asc}</when>
             </choose>
         </if>
     </sql>
