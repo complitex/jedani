@@ -622,10 +622,6 @@ public class WorkerPage extends BasePage {
                         .add("level_depth", filterWrapper.getMap().get("levelDepth")));
             }
         });
-
-
-
-
     }
 
     private List<EntityAttribute> getEntityAttributes() {

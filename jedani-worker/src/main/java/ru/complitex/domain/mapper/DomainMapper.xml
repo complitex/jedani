@@ -81,7 +81,7 @@
         left join `${object.entityName}_value` v on v.attribute_id = a.id
 
         <foreach collection="object.attributes" index="i" item="a">
-            <if test="a.text != null or a.number != null">
+            <if test="a.text != null or a.number != null or a.date != null">
                 left join ${object.entityName}_attribute a${i} on a${i}.object_id = d.object_id
                 left join `${object.entityName}_value` v${i} on v${i}.attribute_id = a${i}.id
             </if>
@@ -135,6 +135,10 @@
 
                 <if test="a.number != null">
                     and (a${i}.entity_attribute_id = #{a.entityAttributeId} and (a${i}.number = #{a.number} or v${i}.number = #{a.number}))
+                </if>
+
+                <if test="a.date != null">
+                    and (a${i}.entity_attribute_id = #{a.entityAttributeId} and a${i}.date = #{a.date})
                 </if>
             </foreach>
 
