@@ -65,6 +65,14 @@ public class Domain implements Serializable{
         return this;
     }
 
+    public Domain setUpperText(Long entityAttributeId, String text){
+        if (text != null){
+            setText(entityAttributeId, text.toUpperCase());
+        }
+
+        return null;
+    }
+
     public Domain setNumber(Long entityAttributeId, Long number){
         getOrCreateAttribute(entityAttributeId).setNumber(number);
 
@@ -151,8 +159,20 @@ public class Domain implements Serializable{
         setTextValue(entityAttributeId, value, Locales.getSystemLocale());
     }
 
+    public void setUpperTextValue(Long entityAttributeId, String value){
+        if (value != null){
+            setTextValue(entityAttributeId, value.toUpperCase());
+        }
+    }
+
     public void addTextValue(Long entityAttributeId, String text){
         getOrCreateAttribute(entityAttributeId).addTextValue(text);
+    }
+
+    public void addUpperTextValue(Long entityAttributeId, String text){
+        if (text != null) {
+            addTextValue(entityAttributeId, text.toUpperCase());
+        }
     }
 
     public void addNumberValue(Long entityAttributeId, Long number){

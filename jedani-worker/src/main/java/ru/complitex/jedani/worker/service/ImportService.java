@@ -79,7 +79,7 @@ public class ImportService implements Serializable {
                 }
 
                 Region region = new Region();
-                region.setTextValue(Region.NAME, columns[1]);
+                region.setUpperTextValue(Region.NAME, columns[1]);
 
                 region.setText(Region.IMPORT_ID, columns[0]);
                 region.setText(Region.IMPORT_MANAGER_ID, columns[2]);
@@ -129,7 +129,7 @@ public class ImportService implements Serializable {
                 }
 
                 City city = new City();
-                city.setTextValue(City.NAME, columns[1]);
+                city.setUpperTextValue(City.NAME, columns[1]);
                 city.setText(City.IMPORT_ID, columns[0]);
                 city.setParentEntityId(Region.ENTITY_ID);
                 city.setParentId(region.getObjectId());
@@ -200,8 +200,8 @@ public class ImportService implements Serializable {
                 Worker worker = new Worker();
 
                 worker.setText(Worker.IMPORT_ID, columns[0]);
-                worker.setText(Worker.J_ID, columns[4]);
-                worker.setText(Worker.EMAIL, columns[1]);
+                worker.setUpperText(Worker.J_ID, columns[4]);
+                worker.setUpperText(Worker.EMAIL, columns[1]);
                 worker.setText(Worker.IMPORT_ANCESTRY, columns[3]);
                 worker.setText(Worker.RESET_PASSWORD_TOKEN, columns[5]);
                 worker.setText(Worker.RESET_PASSWORD_SEND_AT, columns[6]);
@@ -218,10 +218,10 @@ public class ImportService implements Serializable {
                     worker.setNumber(Worker.MK_STATUS_ID, Long.parseLong(columns[10]) + 1);
                 }
 
-                worker.setText(Worker.FIRST_NAME, StringUtils.trim(columns[11]));
-                worker.setText(Worker.MIDDLE_NAME, StringUtils.trim(columns[12]));
-                worker.setText(Worker.LAST_NAME, StringUtils.trim(columns[13]));
-                worker.addTextValue(Worker.PHONE, columns[14]);
+                worker.setUpperText(Worker.FIRST_NAME, StringUtils.trim(columns[11]));
+                worker.setUpperText(Worker.MIDDLE_NAME, StringUtils.trim(columns[12]));
+                worker.setUpperText(Worker.LAST_NAME, StringUtils.trim(columns[13]));
+                worker.addUpperTextValue(Worker.PHONE, columns[14]);
 
                 if (!columns[15].trim().isEmpty()) {
                     Domain city = domainMapper.getDomain("city", City.IMPORT_ID, columns[15]);
