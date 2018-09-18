@@ -1,8 +1,13 @@
 package ru.complitex.name.page;
 
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
+import ru.complitex.domain.entity.Entity;
+import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.page.DomainListPage;
 import ru.complitex.jedani.worker.security.JedaniRoles;
+import ru.complitex.name.entity.FirstName;
+
+import java.util.List;
 
 /**
  * @author Anatoly A. Ivanov
@@ -12,5 +17,12 @@ import ru.complitex.jedani.worker.security.JedaniRoles;
 public class FirstNameListPage extends DomainListPage{
     public FirstNameListPage() {
         super("first_name", FirstNameEditPage.class);
+    }
+
+    @Override
+    protected List<EntityAttribute> getEntityAttributes(Entity entity) {
+        entity.getEntityAttribute(FirstName.NAME).setDisplayCapitalize(true);
+
+        return entity.getAttributes();
     }
 }

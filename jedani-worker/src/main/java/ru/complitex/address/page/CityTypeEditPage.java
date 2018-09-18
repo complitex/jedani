@@ -12,6 +12,6 @@ import ru.complitex.jedani.worker.security.JedaniRoles;
 @AuthorizeInstantiation(JedaniRoles.ADMINISTRATORS)
 public class CityTypeEditPage extends DomainEditPage{
     public CityTypeEditPage(PageParameters parameters) {
-        super("city_type", parameters, CityTypeListPage.class);
+        super("city_type", parameters, CityTypeListPage.class, true);
     }
 }

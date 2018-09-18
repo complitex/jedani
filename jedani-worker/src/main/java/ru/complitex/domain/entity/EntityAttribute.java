@@ -28,6 +28,9 @@ public class EntityAttribute implements Serializable{
     private EntityAttribute referenceEntityAttribute;
     private EntityAttribute prefixEntityAttribute;
 
+    private boolean displayCapitalize;
+    private boolean displayLowerCase;
+
     public EntityValue getValue(){
         return values.stream().filter(v -> v.getLocaleId().equals(Locales.getSystemLocaleId())).findAny().orElse(null);
     }
@@ -136,6 +139,26 @@ public class EntityAttribute implements Serializable{
 
     public EntityAttribute setPrefixEntityAttribute(EntityAttribute prefixEntityAttribute) {
         this.prefixEntityAttribute = prefixEntityAttribute;
+
+        return this;
+    }
+
+    public boolean isDisplayCapitalize() {
+        return displayCapitalize;
+    }
+
+    public EntityAttribute setDisplayCapitalize(boolean displayCapitalize) {
+        this.displayCapitalize = displayCapitalize;
+
+        return this;
+    }
+
+    public boolean isDisplayLowerCase() {
+        return displayLowerCase;
+    }
+
+    public EntityAttribute setDisplayLowerCase(boolean displayLowerCase) {
+        this.displayLowerCase = displayLowerCase;
 
         return this;
     }

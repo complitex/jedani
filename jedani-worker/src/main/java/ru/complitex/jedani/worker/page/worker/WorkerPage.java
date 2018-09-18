@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.google.common.hash.Hashing;
 import de.agilecoders.wicket.core.markup.html.bootstrap.behavior.CssClassNameAppender;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -51,6 +52,7 @@ import ru.complitex.domain.component.form.AttributeSelectListFormGroup;
 import ru.complitex.domain.component.form.DomainAutoCompleteFormGroup;
 import ru.complitex.domain.entity.*;
 import ru.complitex.domain.mapper.*;
+import ru.complitex.domain.model.TextAttributeModel;
 import ru.complitex.jedani.worker.component.WorkerAutoComplete;
 import ru.complitex.jedani.worker.entity.MkStatus;
 import ru.complitex.jedani.worker.entity.Position;
@@ -190,11 +192,11 @@ public class WorkerPage extends BasePage {
         DomainAutoCompleteFormGroup lastName, firstName, middleName;
 
         form.add(lastName = new DomainAutoCompleteFormGroup("lastName", "last_name", LastName.NAME,
-                new PropertyModel<>(worker.getOrCreateAttribute(Worker.LAST_NAME), "number")).setRequired(true));
+                new PropertyModel<>(worker.getOrCreateAttribute(Worker.LAST_NAME), "number"), true).setRequired(true));
         form.add(firstName = new DomainAutoCompleteFormGroup("firstName", "first_name", FirstName.NAME,
-                new PropertyModel<>(worker.getOrCreateAttribute(Worker.FIRST_NAME), "number")).setRequired(true));
+                new PropertyModel<>(worker.getOrCreateAttribute(Worker.FIRST_NAME), "number"), true).setRequired(true));
         form.add(middleName = new DomainAutoCompleteFormGroup("middleName", "middle_name", MiddleName.NAME,
-                new PropertyModel<>(worker.getOrCreateAttribute(Worker.MIDDLE_NAME), "number")));
+                new PropertyModel<>(worker.getOrCreateAttribute(Worker.MIDDLE_NAME), "number"), true));
         form.add(new AttributeSelectFormGroup("position", new PropertyModel<>(worker.getOrCreateAttribute(Worker.POSITION_ID), "number"),
                 Position.ENTITY_NAME, Position.NAME));
 
@@ -218,13 +220,13 @@ public class WorkerPage extends BasePage {
                 MkStatus.ENTITY_NAME, MkStatus.NAME));
         form.add(new DateTextFieldFormGroup("birthday", new PropertyModel<>(worker.getOrCreateAttribute(Worker.BIRTHDAY), "date")));
         form.add(new AttributeInputListFormGroup("phone", Model.of(worker.getOrCreateAttribute(Worker.PHONE))).setRequired(true));
-        form.add(new TextFieldFormGroup<>("email", new PropertyModel<>(worker.getOrCreateAttribute(Worker.EMAIL), "text")));
+        form.add(new TextFieldFormGroup<>("email", new TextAttributeModel(worker, EMAIL, TextAttributeModel.TYPE.LOWER_CASE)));
 
         AttributeSelectListFormGroup city, region;
         form.add(region = new AttributeSelectListFormGroup("region", Model.of(worker.getOrCreateAttribute(Worker.REGION_IDS)),
-                Region.ENTITY_NAME, Region.NAME).setRequired(true));
+                Region.ENTITY_NAME, Region.NAME, true).setRequired(true));
         form.add(city = new AttributeSelectListFormGroup("city", Model.of(worker.getOrCreateAttribute(Worker.CITY_IDS)),
-                City.ENTITY_NAME, City.NAME, region.getListModel()){
+                City.ENTITY_NAME, City.NAME, region.getListModel(), true){
             @Override
             protected String getPrefix(Domain domain) {
                 Long cityTypeId = domain.getNumber(City.CITY_TYPE_ID);
@@ -288,7 +290,7 @@ public class WorkerPage extends BasePage {
         Label managerEmail = new Label("managerEmail", new LoadableDetachableModel<String>() {
             @Override
             protected String load() {
-                return manager != null ? manager.getText(Worker.EMAIL): null;
+                return manager != null ? StringUtils.lowerCase(manager.getText(Worker.EMAIL)): null;
             }
         });
         managerEmail.setOutputMarkupId(true);
@@ -630,23 +632,28 @@ public class WorkerPage extends BasePage {
         List<EntityAttribute> list = new ArrayList<>();
 
         list.add(entity.getEntityAttribute(LAST_NAME)
-                .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(LastName.ENTITY_NAME, LastName.NAME)));
+                .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(LastName.ENTITY_NAME, LastName.NAME))
+                .setDisplayCapitalize(true));
 
         list.add(entity.getEntityAttribute(FIRST_NAME)
-                .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(FirstName.ENTITY_NAME, FirstName.NAME)));
+                .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(FirstName.ENTITY_NAME, FirstName.NAME))
+                .setDisplayCapitalize(true));
 
         list.add(entity.getEntityAttribute(MIDDLE_NAME)
-                .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(MiddleName.ENTITY_NAME, MiddleName.NAME)));
+                .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(MiddleName.ENTITY_NAME, MiddleName.NAME))
+                .setDisplayCapitalize(true));
 
         list.add(entity.getEntityAttribute(J_ID));
 
         list.add(entity.getEntityAttribute(REGION_IDS)
-                .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(Region.ENTITY_NAME, Region.NAME)));
+                .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(Region.ENTITY_NAME, Region.NAME))
+                .setDisplayCapitalize(true));
 
         list.add(entity.getEntityAttribute(Worker.CITY_IDS)
                 .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(City.ENTITY_NAME, City.NAME))
                 .setPrefixEntityAttribute(entityAttributeMapper.getEntityAttribute(City.ENTITY_NAME, City.CITY_TYPE_ID)
-                        .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(CityType.ENTITY_NAME, CityType.SHORT_NAME))));
+                        .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(CityType.ENTITY_NAME, CityType.SHORT_NAME)))
+                .setDisplayCapitalize(true));
 
         return list;
     }

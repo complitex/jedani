@@ -15,6 +15,7 @@ import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.mapper.DomainMapper;
 import ru.complitex.domain.mapper.EntityAttributeMapper;
+import ru.complitex.domain.util.Attributes;
 import ru.complitex.domain.util.Locales;
 
 import javax.inject.Inject;
@@ -36,7 +37,7 @@ public class DomainAutoComplete extends Panel {
 
     private AutoCompleteTextField<Attribute> autoCompleteTextField;
 
-    public DomainAutoComplete(String id, String entityName, Long entityAttributeId, IModel<Long> model) {
+    public DomainAutoComplete(String id, String entityName, Long entityAttributeId, IModel<Long> model, boolean upperCase) {
         super(id);
 
         HiddenField inputId = new HiddenField<>("inputId", model, Long.class);
@@ -69,9 +70,15 @@ public class DomainAutoComplete extends Panel {
                     protected String getTextValue(Attribute attribute) {
                         switch (entityAttribute.getValueType()){
                             case TEXT_VALUE:
-                                return getPrefix(attribute) + attribute.getOrCreateValue(Locales.getSystemLocaleId()).getText();
+                                String textValue = attribute.getOrCreateValue(Locales.getSystemLocaleId()).getText();
+
+                                return getPrefix(attribute) +
+                                        (textValue != null && upperCase ? Attributes.capitalize(textValue) : textValue);
                             case TEXT:
-                                return getPrefix(attribute) + attribute.getText();
+                                String text = attribute.getText();
+
+                                return getPrefix(attribute) +
+                                        (text != null && upperCase ? Attributes.capitalize(text) : text);
                             case NUMBER:
                                 return attribute.getNumber() + "";
                         }
@@ -117,10 +124,10 @@ public class DomainAutoComplete extends Panel {
 
                             switch (entityAttribute.getValueType()){
                                 case TEXT_VALUE:
-                                    attribute.setTextValue(s, Locales.getLocaleId(locale));
+                                    attribute.setTextValue(upperCase ? s.toUpperCase() : s, Locales.getLocaleId(locale));
                                     break;
                                 case TEXT:
-                                    attribute.setText(s);;
+                                    attribute.setText(upperCase ? s.toUpperCase() : s);;
                                     break;
                                 case NUMBER:
                                     try {
@@ -138,9 +145,13 @@ public class DomainAutoComplete extends Panel {
                         public String convertToString(Attribute attribute, Locale locale) {
                             switch (entityAttribute.getValueType()){
                                 case TEXT_VALUE:
-                                    return getPrefix(attribute) + attribute.getOrCreateValue(Locales.getSystemLocaleId()).getText();
+                                    String textValue = attribute.getOrCreateValue(Locales.getSystemLocaleId()).getText();
+
+                                    return getPrefix(attribute) + (upperCase ? Attributes.capitalize(textValue) : textValue);
                                 case TEXT:
-                                    return getPrefix(attribute) + attribute.getText();
+                                    String text = attribute.getText();
+
+                                    return getPrefix(attribute) + (upperCase ? Attributes.capitalize(text) : text);
                                 case NUMBER:
                                     return attribute.getNumber() + "";
                             }

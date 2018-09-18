@@ -19,14 +19,14 @@ public class AttributeSelectListFormGroup extends Panel {
     private AttributeSelectList attributeSelectList;
 
     public AttributeSelectListFormGroup(String id, IModel<String> label, IModel<Attribute> model, String refEntityName,
-                                        Long refEntityAttributeId, IModel<List<Long>> parentListModel) {
+                                        Long refEntityAttributeId, IModel<List<Long>> parentListModel, boolean upperCase) {
         super(id);
 
         setOutputMarkupId(true);
 
         FormGroup group = new FormGroup("group", label);
         group.add(attributeSelectList = new AttributeSelectList("select", model, refEntityName,
-                refEntityAttributeId, parentListModel){
+                refEntityAttributeId, parentListModel, upperCase){
             @Override
             protected String getPrefix(Domain domain) {
                 return AttributeSelectListFormGroup.this.getPrefix(domain);
@@ -39,12 +39,12 @@ public class AttributeSelectListFormGroup extends Panel {
 
 
     public AttributeSelectListFormGroup(String id, IModel<Attribute> model, String refEntityName,
-                                        Long refEntityAttributeId, IModel<List<Long>> parentListModel) {
-        this(id, new ResourceModel(id), model, refEntityName, refEntityAttributeId, parentListModel);
+                                        Long refEntityAttributeId, IModel<List<Long>> parentListModel, boolean upperCase) {
+        this(id, new ResourceModel(id), model, refEntityName, refEntityAttributeId, parentListModel, upperCase);
     }
 
-    public AttributeSelectListFormGroup(String id, IModel<Attribute> model, String refEntityName, Long refEntityAttributeId) {
-        this(id, new ResourceModel(id), model, refEntityName, refEntityAttributeId, null);
+    public AttributeSelectListFormGroup(String id, IModel<Attribute> model, String refEntityName, Long refEntityAttributeId, boolean upperCase) {
+        this(id, new ResourceModel(id), model, refEntityName, refEntityAttributeId, null, upperCase);
     }
 
     public IModel<List<Long>> getListModel(){

@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.mapper.DomainMapper;
+import ru.complitex.domain.util.Attributes;
 import ru.complitex.name.entity.FirstName;
 import ru.complitex.name.entity.LastName;
 import ru.complitex.name.entity.MiddleName;
@@ -62,19 +63,19 @@ public class NameService implements Serializable {
 
     public String getLastName(Long objectId){
         return objectId != null
-                ? domainMapper.getDomain(LastName.ENTITY_NAME, objectId).getValueText(LastName.NAME)
+                ? Attributes.capitalize(domainMapper.getDomain(LastName.ENTITY_NAME, objectId).getValueText(LastName.NAME))
                 : "";
     }
 
     public String getFirstName(Long objectId){
         return objectId != null
-                ? domainMapper.getDomain(FirstName.ENTITY_NAME, objectId).getValueText(FirstName.NAME)
+                ? Attributes.capitalize(domainMapper.getDomain(FirstName.ENTITY_NAME, objectId).getValueText(FirstName.NAME))
                 : "";
     }
 
     public String getMiddleName(Long objectId){
         return objectId != null
-                ? domainMapper.getDomain(MiddleName.ENTITY_NAME, objectId).getValueText(MiddleName.NAME)
+                ? Attributes.capitalize(domainMapper.getDomain(MiddleName.ENTITY_NAME, objectId).getValueText(MiddleName.NAME))
                 : "";
     }
 

@@ -12,6 +12,6 @@ import ru.complitex.jedani.worker.security.JedaniRoles;
 @AuthorizeInstantiation(JedaniRoles.ADMINISTRATORS)
 public class LastNameEditPage extends DomainEditPage{
     public LastNameEditPage(PageParameters parameters) {
-        super("last_name", parameters, LastNameListPage.class);
+        super("last_name", parameters, LastNameListPage.class, true);
     }
 }

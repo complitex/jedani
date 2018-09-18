@@ -12,6 +12,6 @@ import ru.complitex.jedani.worker.security.JedaniRoles;
 @AuthorizeInstantiation(JedaniRoles.ADMINISTRATORS)
 public class MiddleNameEditPage extends DomainEditPage{
     public MiddleNameEditPage(PageParameters parameters) {
-        super("middle_name", parameters, MiddleNameListPage.class);
+        super("middle_name", parameters, MiddleNameListPage.class, true);
     }
 }

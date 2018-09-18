@@ -31,12 +31,15 @@ import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.mapper.DomainMapper;
 import ru.complitex.domain.mapper.EntityAttributeMapper;
 import ru.complitex.domain.mapper.EntityMapper;
+import ru.complitex.domain.model.TextAttributeModel;
 import ru.complitex.domain.util.Locales;
 import ru.complitex.jedani.worker.page.BasePage;
 
 import javax.inject.Inject;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static ru.complitex.domain.model.TextAttributeModel.TYPE.UPPER_CASE;
 
 /**
  * @author Anatoly A. Ivanov
@@ -54,7 +57,7 @@ public abstract class DomainEditPage extends BasePage{
     @Inject
     private DomainMapper domainMapper;
 
-    public DomainEditPage(String entityName, PageParameters parameters, Class<? extends WebPage> backPage) {
+    public DomainEditPage(String entityName, PageParameters parameters, Class<? extends WebPage> backPage, boolean upperCase) {
         Entity entity = entityMapper.getEntity(entityName);
 
         add(new Label("header", entity.getValue().getText()));
@@ -83,7 +86,7 @@ public abstract class DomainEditPage extends BasePage{
             form.add(parentGroup);
 
             parentGroup.add(new DomainAutoComplete("parent", getParentEntityName(),
-                    getParentEntityAttributeId(), new PropertyModel<>(domain, "parentId")));
+                    getParentEntityAttributeId(), new PropertyModel<>(domain, "parentId"), true));
         }else{
             form.add(new EmptyPanel("parentGroup").setVisible(false));
         }
@@ -112,7 +115,7 @@ public abstract class DomainEditPage extends BasePage{
                     case DECIMAL:
                     case BOOLEAN:
                     case ENTITY_VALUE:
-                        input1 = new TextField<>("input1", new PropertyModel<>(attribute, "text"));
+                        input1 = new TextField<>("input1", new TextAttributeModel(attribute, UPPER_CASE));
                         break;
                     case DATE:
                         input1 = new TextField<>("input1", new PropertyModel<>(attribute, "date"));
@@ -121,18 +124,18 @@ public abstract class DomainEditPage extends BasePage{
                         component = new DomainAutoComplete("component", entityMapper.getReferenceEntityName(
                                 entity.getName(), entityAttribute.getEntityAttributeId()),
                                 getRefEntityAttributeId(entityAttribute.getEntityAttributeId()),
-                                new PropertyModel<>(attribute, "number"));
+                                new PropertyModel<>(attribute, "number"), entityAttribute.isDisplayCapitalize());
                         break;
                     case NUMBER:
                         input1 = new TextField<>("input1", new PropertyModel<>(attribute, "number"));
                         break;
                     case TEXT_VALUE:
-                        input1 = new TextField<>("input1", new PropertyModel<>(attribute.getOrCreateValue(
-                                Locales.getLocaleId(Locales.RU)), "text"));
+                        input1 = new TextField<>("input1", new TextAttributeModel(attribute.getOrCreateValue(
+                                Locales.getLocaleId(Locales.RU)), UPPER_CASE));
                         input1.add(new AttributeModifier("placeholder", getString("RU")));
 
-                        input2 = new TextField<>("input2", new PropertyModel<>(attribute.getOrCreateValue(
-                                Locales.getLocaleId(Locales.UA)), "text"));
+                        input2 = new TextField<>("input2", new TextAttributeModel(attribute.getOrCreateValue(
+                                Locales.getLocaleId(Locales.UA)), UPPER_CASE));
                         input2.add(new AttributeModifier("placeholder", getString("UA")));
 
                         break;

@@ -53,26 +53,31 @@ public class WorkerListPage extends DomainListPage<Worker>{
         List<EntityAttribute> list = new ArrayList<>();
 
         list.add(entity.getEntityAttribute(Worker.LAST_NAME)
-                .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(LastName.ENTITY_NAME, LastName.NAME)));
+                .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(LastName.ENTITY_NAME, LastName.NAME))
+                .setDisplayCapitalize(true));
 
         list.add(entity.getEntityAttribute(Worker.FIRST_NAME)
-                .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(FirstName.ENTITY_NAME, FirstName.NAME)));
+                .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(FirstName.ENTITY_NAME, FirstName.NAME))
+                .setDisplayCapitalize(true));
 
         list.add(entity.getEntityAttribute(Worker.MIDDLE_NAME)
-                .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(MiddleName.ENTITY_NAME, MiddleName.NAME)));
+                .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(MiddleName.ENTITY_NAME, MiddleName.NAME))
+                .setDisplayCapitalize(true));
 
         list.add(entity.getEntityAttribute(Worker.J_ID));
 
         list.add(entity.getEntityAttribute(Worker.REGION_IDS)
-                .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(Region.ENTITY_NAME, Region.NAME)));
+                .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(Region.ENTITY_NAME, Region.NAME))
+                .setDisplayCapitalize(true));
 
         list.add(entity.getEntityAttribute(Worker.CITY_IDS)
                 .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(City.ENTITY_NAME, City.NAME))
                 .setPrefixEntityAttribute(entityAttributeMapper.getEntityAttribute(City.ENTITY_NAME, City.CITY_TYPE_ID)
-                        .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(CityType.ENTITY_NAME, CityType.SHORT_NAME))));
+                        .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(CityType.ENTITY_NAME, CityType.SHORT_NAME)))
+                .setDisplayCapitalize(true));
 
         list.add(entity.getEntityAttribute(Worker.PHONE));
-        list.add(entity.getEntityAttribute(Worker.EMAIL));
+        list.add(entity.getEntityAttribute(Worker.EMAIL).setDisplayLowerCase(true));
         list.add(entity.getEntityAttribute(Worker.INVOLVED_AT));
 
         return list;

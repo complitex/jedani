@@ -28,6 +28,7 @@ import ru.complitex.jedani.worker.page.login.LoginPage;
 import ru.complitex.jedani.worker.page.worker.WorkerListPage;
 import ru.complitex.jedani.worker.page.worker.WorkerPage;
 import ru.complitex.jedani.worker.page.worker.WorkerStructurePage;
+import ru.complitex.name.page.*;
 
 /**
  * @author Anatoly A. Ivanov
@@ -83,6 +84,12 @@ public class JedaniWebApplication extends WebApplication{
         mountPage("positions", PositionListPage.class);
         mountPage("position", PositionEditPage.class);
         mountPage("position/${id}", PositionEditPage.class);
+        mountPage("last_name", LastNameListPage.class);
+        mountPage("last_name/${id}", LastNameEditPage.class);
+        mountPage("middle_name", MiddleNameListPage.class);
+        mountPage("middle_name/${id}", MiddleNameEditPage.class);
+        mountPage("first_name", FirstNameListPage.class);
+        mountPage("first_name/${id}", FirstNameEditPage.class);
     }
 
     @Override

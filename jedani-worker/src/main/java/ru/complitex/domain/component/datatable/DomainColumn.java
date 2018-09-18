@@ -23,6 +23,7 @@ import ru.complitex.domain.mapper.EntityMapper;
 import ru.complitex.domain.model.DateAttributeModel;
 import ru.complitex.domain.model.NumberAttributeModel;
 import ru.complitex.domain.model.TextAttributeModel;
+import ru.complitex.domain.util.Attributes;
 import ru.complitex.domain.util.Locales;
 
 import java.text.SimpleDateFormat;
@@ -71,7 +72,7 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
 
                     return new DomainAutoComplete(componentId, entity.getName(),
                             entityAttribute.getReferenceEntityAttribute().getEntityAttributeId(),
-                            new NumberAttributeModel(domain, entityAttributeId)){
+                            new NumberAttributeModel(domain, entityAttributeId), entityAttribute.isDisplayCapitalize()){
                         @Override
                         protected String getPrefix(Attribute attribute) {
                             String prefix = "";
@@ -99,7 +100,7 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
                     };
                 }
             default:
-                return new TextFilter<>(componentId, new TextAttributeModel(domain, entityAttributeId), form);
+                return new TextFilter<>(componentId, new TextAttributeModel(domain, entityAttributeId, TextAttributeModel.TYPE.DEFAULT), form);
         }
     }
 
@@ -114,7 +115,8 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
         switch (entityAttribute.getValueType()){
             case TEXT_VALUE:
                 if (attribute.getValues() != null) {
-                    text = attribute.getValues().stream().map(Value::getText).collect(Collectors.joining(","));
+                    text = attribute.getValues().stream().map(v -> Attributes.displayText(entityAttribute, v.getText()))
+                            .collect(Collectors.joining(","));
                 }
 
                 break;
@@ -126,6 +128,8 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
                     text = domain != null
                             ? domain.getAttributes().get(0).getValue(Locales.getSystemLocaleId()).getText()
                             : attribute.getNumber() + ""; //todo def attribute
+
+                    text = Attributes.displayText(entityAttribute, text);
                 }
 
                 break;
@@ -170,12 +174,14 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
                                         }
                                     }
 
-                                    return prefix + domain.getValueText(referenceEntityAttribute.getEntityAttributeId());
+                                    String valueText = domain.getValueText(referenceEntityAttribute.getEntityAttributeId());
+
+                                    return prefix.toLowerCase() + Attributes.displayText(entityAttribute, valueText);
                                 })
                                 .collect(Collectors.joining(", "));
                     }else{
                         List<String> list = attribute.getValues().stream()
-                                .map(Value::getText)
+                                .map(v -> Attributes.displayText(entityAttribute, v.getText()))
                                 .collect(Collectors.toList());
 
                         text = String.join(", ", list);
@@ -184,7 +190,7 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
 
                 break;
             default:
-                text = attribute.getText();
+                text = Attributes.displayText(entityAttribute, attribute.getText());
         }
 
         cellItem.add(new Label(componentId, text));

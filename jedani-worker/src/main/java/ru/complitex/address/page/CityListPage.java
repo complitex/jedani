@@ -36,6 +36,9 @@ public class CityListPage extends DomainListPage{
         entity.getEntityAttribute(City.CITY_TYPE_ID)
                 .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(CityType.ENTITY_NAME, CityType.NAME));
 
+        entity.getEntityAttribute(City.NAME).setDisplayCapitalize(true);
+        entity.getEntityAttribute(City.SHORT_NAME).setDisplayCapitalize(true);
+
         return entity.getAttributes();
     }
 }

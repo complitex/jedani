@@ -17,6 +17,7 @@ import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.mapper.DomainMapper;
+import ru.complitex.domain.util.Attributes;
 
 import javax.inject.Inject;
 import java.util.Comparator;
@@ -38,7 +39,7 @@ public class AttributeSelectList extends FormComponentPanel<Attribute> {
     private SerializableConsumer<AjaxRequestTarget> onChange;
 
     public AttributeSelectList(String id, IModel<Attribute> model, String refEntityName,
-                               Long refEntityAttributeId, IModel<List<Long>> parentListModel) {
+                               Long refEntityAttributeId, IModel<List<Long>> parentListModel, boolean upperCase) {
         super(id, model);
 
         setOutputMarkupId(true);
@@ -51,7 +52,11 @@ public class AttributeSelectList extends FormComponentPanel<Attribute> {
         domains.sort(Comparator.comparing(d -> d.getAttribute(refEntityAttributeId).getValue(getLocale()).getText()));
 
         Map<Long, String> names = domains.stream().collect(Collectors.toMap(Domain::getId,
-                d -> getPrefix(d) + d.getValueText(refEntityAttributeId, getLocale())));
+                d -> {
+                    String text = d.getValueText(refEntityAttributeId, getLocale());
+
+                    return getPrefix(d) + (upperCase ? Attributes.capitalize(text) : text);
+                }));
 
         listModel.setObject(model.getObject().getNumberValues());
 
@@ -136,8 +141,8 @@ public class AttributeSelectList extends FormComponentPanel<Attribute> {
         return listModel;
     }
 
-    public AttributeSelectList(String id, IModel<Attribute> model, String referenceEntityName, Long referenceEntityAttributeId){
-        this(id, model, referenceEntityName, referenceEntityAttributeId, null);
+    public AttributeSelectList(String id, IModel<Attribute> model, String referenceEntityName, Long referenceEntityAttributeId, boolean upperCase){
+        this(id, model, referenceEntityName, referenceEntityAttributeId, null, upperCase);
     }
 
     protected void onChange(AjaxRequestTarget target){

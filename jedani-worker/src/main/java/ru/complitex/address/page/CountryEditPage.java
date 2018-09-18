@@ -16,7 +16,7 @@ import java.util.List;
 @AuthorizeInstantiation(JedaniRoles.ADMINISTRATORS)
 public class CountryEditPage extends DomainEditPage{
     public CountryEditPage(PageParameters parameters) {
-        super(Country.ENTITY_NAME, parameters, CountryListPage.class);
+        super(Country.ENTITY_NAME, parameters, CountryListPage.class, true);
     }
 
     @Override

@@ -113,6 +113,10 @@ public class DomainMapper extends BaseMapper {
     }
 
     public Domain getDomain(String entityName, Long objectId){
+        if (objectId == null){
+            return null;
+        }
+
         Domain domain = new Domain();
         domain.setEntityName(entityName);
         domain.setObjectId(objectId);

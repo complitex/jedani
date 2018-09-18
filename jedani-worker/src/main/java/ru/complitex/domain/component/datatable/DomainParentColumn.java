@@ -14,6 +14,7 @@ import ru.complitex.domain.component.form.DomainAutoComplete;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.Value;
+import ru.complitex.domain.util.Attributes;
 import ru.complitex.domain.util.Locales;
 
 /**
@@ -34,7 +35,7 @@ public abstract class DomainParentColumn<T extends Domain> extends AbstractDomai
     @Override
     public Component getFilter(String componentId, FilterForm<?> form) {
         return new DomainAutoComplete(componentId, entity.getName(), entityAttributeId,
-                new PropertyModel<>(((FilterWrapper)form.getDefaultModelObject()).getObject(), "parentId"));
+                new PropertyModel<>(((FilterWrapper)form.getDefaultModelObject()).getObject(), "parentId"), true);
     }
 
     @Override
@@ -47,7 +48,7 @@ public abstract class DomainParentColumn<T extends Domain> extends AbstractDomai
             switch (entity.getEntityAttribute(entityAttributeId).getValueType()){
                 case TEXT_VALUE:
                     Value value = domain.getValue(entityAttributeId, Locales.RU);
-                    model = Model.of(value != null ? value.getText() : null);
+                    model = Model.of(value != null ? Attributes.capitalize(value.getText()) : null);
 
                     break;
                 case ENTITY:
@@ -56,7 +57,7 @@ public abstract class DomainParentColumn<T extends Domain> extends AbstractDomai
 
                     break;
                 default:
-                    model = Model.of(domain.getText(entityAttributeId));
+                    model = Model.of(Attributes.capitalize(domain.getText(entityAttributeId)));
             }
         }
 
