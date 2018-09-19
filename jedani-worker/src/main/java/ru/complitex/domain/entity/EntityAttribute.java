@@ -18,8 +18,6 @@ public class EntityAttribute implements Serializable{
     private Date endDate;
     private ValueType valueType;
     private Long referenceId;
-    private Boolean system;
-    private Boolean required;
 
     private List<EntityValue> values;
 
@@ -89,22 +87,6 @@ public class EntityAttribute implements Serializable{
 
     public void setReferenceId(Long referenceId) {
         this.referenceId = referenceId;
-    }
-
-    public Boolean getSystem() {
-        return system;
-    }
-
-    public void setSystem(Boolean system) {
-        this.system = system;
-    }
-
-    public Boolean getRequired() {
-        return required;
-    }
-
-    public void setRequired(Boolean required) {
-        this.required = required;
     }
 
     public List<EntityValue> getValues() {

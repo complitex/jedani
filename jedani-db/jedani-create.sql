@@ -80,8 +80,6 @@ CREATE TABLE `entity_attribute` (
   `end_date` TIMESTAMP NULL default NULL COMMENT 'Дата окончания периода действия атрибута',
   `value_type_id` BIGINT(20) COMMENT  'Тип значения атрибута',
   `reference_id` BIGINT(20) COMMENT  'Внешний ключ',
-  `system` TINYINT(1) default 1 NOT NULL COMMENT 'Является ли тип атрибута системным',
-  `required` TINYINT(1) default 1 NOT NULL COMMENT 'Является ли атрибут обязательным',
   PRIMARY KEY (`id`),
   UNIQUE KEY `key_unique` (`entity_attribute_id`, `entity_id`),
   KEY `key_entity_id` (`entity_id`),

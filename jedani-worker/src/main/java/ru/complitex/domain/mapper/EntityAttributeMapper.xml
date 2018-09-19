@@ -9,8 +9,6 @@
         <result column="end_date" property="endDate"/>
         <result column="value_type_id" property="valueType"/>
         <result column="reference_id" property="referenceId"/>
-        <result column="system" property="system"/>
-        <result column="required" property="required"/>
         <result column="entity_name" property="entityName"/>
         <collection column="entityId = entity_id, entityAttributeId = entity_attribute_id" property="values"
                     select="ru.complitex.domain.mapper.EntityValueMapper.selectEntityValues"/>
