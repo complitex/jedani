@@ -86,7 +86,7 @@ public abstract class DomainEditPage extends BasePage{
             form.add(parentGroup);
 
             parentGroup.add(new DomainAutoComplete("parent", getParentEntityName(),
-                    getParentEntityAttributeId(), new PropertyModel<>(domain, "parentId"), true));
+                    getParentEntityAttributeId(), new PropertyModel<>(domain, "parentId"), upperCase));
         }else{
             form.add(new EmptyPanel("parentGroup").setVisible(false));
         }
@@ -157,6 +157,10 @@ public abstract class DomainEditPage extends BasePage{
                 try {
                     domain.setEntityName(entityName);
                     domain.setUserId(getCurrentUser().getId());
+
+                    if (parentEntity != null){
+                        domain.setParentEntityId(parentEntity.getId());
+                    }
 
                     if (domain.getObjectId() != null){
                         domainMapper.updateDomain(domain);

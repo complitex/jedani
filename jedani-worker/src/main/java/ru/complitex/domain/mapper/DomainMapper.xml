@@ -200,7 +200,8 @@
 
     <!--suppress SqlResolve -->
     <update id="updateDomain" parameterType="ru.complitex.domain.entity.Domain">
-        update ${entityName} set `status` = #{status} where id = #{id}
+        update ${entityName} set `parent_id` = #{parentId}, `parent_entity_id` = #{parentEntityId}, `status` = #{status}
+          where id = #{id}
     </update>
 
 
