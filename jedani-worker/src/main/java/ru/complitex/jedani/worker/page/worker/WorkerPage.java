@@ -133,8 +133,8 @@ public class WorkerPage extends BasePage {
 
             if (id != null) {
                 manager = workerMapper.getWorker(id);
-            }else if (getCurrentWorker().getNumber(MANAGER_ID) != null){
-                manager = workerMapper.getWorker(getCurrentWorker().getNumber(MANAGER_ID));
+            }else if (getCurrentWorker().getObjectId() != null){
+                manager = workerMapper.getWorker(getCurrentWorker().getObjectId());
             }
 
             if (manager != null){
