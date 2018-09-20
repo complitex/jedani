@@ -133,7 +133,11 @@ public class WorkerPage extends BasePage {
 
             if (id != null) {
                 manager = workerMapper.getWorker(id);
+            }else if (getCurrentWorker().getNumber(MANAGER_ID) != null){
+                manager = workerMapper.getWorker(getCurrentWorker().getNumber(MANAGER_ID));
+            }
 
+            if (manager != null){
                 manager.getNumberValues(REGION_IDS).forEach(n -> worker.addNumberValue(REGION_IDS, n));
                 manager.getNumberValues(CITY_IDS).forEach(n -> worker.addNumberValue(CITY_IDS, n));
 
