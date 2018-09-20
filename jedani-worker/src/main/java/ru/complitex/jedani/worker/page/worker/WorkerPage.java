@@ -269,14 +269,22 @@ public class WorkerPage extends BasePage {
 
         //User group
         WebMarkupContainer userGroups = new WebMarkupContainer("userGroups");
-        userGroups.setVisible(isAdmin());
+        userGroups.setVisible(!Objects.equals(getCurrentUser().getId(), user.getId()));
         form.add(userGroups);
 
+        WebMarkupContainer adminRoleLabel = new WebMarkupContainer("adminRoleLabel");
+        adminRoleLabel.setVisible(isAdmin());
+        userGroups.add(adminRoleLabel);
+
         CheckBox adminRole = new CheckBox("adminRole", Model.of(user.hasRole(ADMINISTRATORS)));
-        userGroups.add(adminRole);
+        adminRoleLabel.add(adminRole);
+
+        WebMarkupContainer structureAdminRoleLabel = new WebMarkupContainer("structureAdminRoleLabel");
+        structureAdminRoleLabel.setVisible(isAdmin() || isStructureAdmin());
+        userGroups.add(structureAdminRoleLabel);
 
         CheckBox structureAdminRole = new CheckBox("structureAdminRole", Model.of(user.hasRole(STRUCTURE_ADMINISTRATORS)));
-        userGroups.add(structureAdminRole);
+        structureAdminRoleLabel.add(structureAdminRole);
 
         CheckBox userRole = new CheckBox("userRole", Model.of(user.hasRole(USERS)));
         userGroups.add(userRole);
