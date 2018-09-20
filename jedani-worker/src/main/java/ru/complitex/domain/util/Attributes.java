@@ -22,8 +22,8 @@ public class Attributes {
     }
 
     public static String capitalize(String text){
-        if (text == null){
-            return null;
+        if (text == null || text.isEmpty()){
+            return text;
         }
 
         String[] arr = text.toLowerCase().split(" ");
