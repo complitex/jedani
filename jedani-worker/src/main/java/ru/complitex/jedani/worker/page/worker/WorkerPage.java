@@ -551,14 +551,27 @@ public class WorkerPage extends BasePage {
             }
         }.setDefaultFormProcessing(false));
 
+        boolean currentWorker = Objects.equals(getCurrentWorker().getObjectId(), worker.getObjectId());
+
         form.add(new Link<Void>("cancel") {
             @Override
             public void onClick() {
-                if (isAdmin()){
-                    setResponsePage(WorkerListPage.class);
-                }else {
-                    setResponsePage(WorkerPage.class);
+                if (currentWorker) {
+                    if (isAdmin()){
+                        setResponsePage(WorkerListPage.class);
+                    }else {
+                        setResponsePage(WorkerPage.class);
+                    }
                 }
+            }
+
+            @Override
+            protected CharSequence getOnClickScript(CharSequence url) {
+                if (!currentWorker){
+                    return "history.go(-1); return false;";
+                }
+
+                return null;
             }
         });
 
