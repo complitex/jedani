@@ -151,7 +151,11 @@ public class DomainListPage<T extends Domain> extends BasePage{
             protected void onEvent(AjaxRequestTarget target) {
                 getSession().setAttribute(DomainListPage.this.getClass().getName() + CURRENT_PAGE_ATTRIBUTE, table.getCurrentPage());
 
-                setResponsePage(editPageClass, new PageParameters().add("id", item.getModelObject().getObjectId()));
+                PageParameters pageParameters = new PageParameters().add("id", item.getModelObject().getObjectId());
+
+                DomainListPage.this.onEditPageParameters(pageParameters);
+
+                setResponsePage(editPageClass, pageParameters);
             }
         });
 
@@ -193,5 +197,8 @@ public class DomainListPage<T extends Domain> extends BasePage{
 
     protected List<Long> getEntityAttributeIds(){
         return null;
+    }
+
+    protected void onEditPageParameters(PageParameters pageParameters){
     }
 }

@@ -11,6 +11,7 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import ru.complitex.address.entity.City;
 import ru.complitex.address.entity.CityType;
 import ru.complitex.address.entity.Region;
@@ -129,5 +130,10 @@ public class WorkerListPage extends DomainListPage<Worker>{
     @Override
     protected Long getDomainsCount(FilterWrapper<Worker> filterWrapper) {
         return workerMapper.getWorkersCount(filterWrapper);
+    }
+
+    @Override
+    protected void onEditPageParameters(PageParameters pageParameters) {
+        pageParameters.add("a", "");
     }
 }

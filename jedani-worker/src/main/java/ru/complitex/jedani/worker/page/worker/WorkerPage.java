@@ -125,6 +125,8 @@ public class WorkerPage extends BasePage {
     public WorkerPage(PageParameters parameters) {
         Long id = parameters.get("id").toOptionalLong();
 
+        boolean backToList = !parameters.get("a").isNull();
+
         if (!parameters.get("new").isNull()){
             worker = new Worker();
             worker.init();
@@ -553,27 +555,26 @@ public class WorkerPage extends BasePage {
 
         boolean currentWorker = Objects.equals(getCurrentWorker().getObjectId(), worker.getObjectId());
 
-        form.add(new Link<Void>("cancel") {
+        Link back = new Link<Void>("back") {
             @Override
             public void onClick() {
-                if (currentWorker) {
-                    if (isAdmin()){
-                        setResponsePage(WorkerListPage.class);
-                    }else {
-                        setResponsePage(WorkerPage.class);
+                if (isAdmin() && backToList){
+                    setResponsePage(WorkerListPage.class);
+                }else{
+                    PageParameters pageParameters = new PageParameters();
+
+                    if (manager.getObjectId() != null){
+                        pageParameters.add("id", manager.getObjectId());
                     }
+
+                    setResponsePage(WorkerPage.class, pageParameters);
                 }
             }
+        };
+        back.setVisible(!currentWorker);
+        back.add(new Label("label", getString(worker.getObjectId() != null ? "back" : "cancel")));
 
-            @Override
-            protected CharSequence getOnClickScript(CharSequence url) {
-                if (!currentWorker){
-                    return "history.go(-1); return false;";
-                }
-
-                return null;
-            }
-        });
+        form.add(back);
 
         List<IColumn<Worker, SortProperty>> columns = new ArrayList<>();
 
