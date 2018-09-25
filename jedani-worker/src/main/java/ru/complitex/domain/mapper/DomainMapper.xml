@@ -84,6 +84,20 @@
             <if test="a.text != null or a.number != null or a.date != null">
                 left join ${object.entityName}_attribute a${i} on a${i}.object_id = d.object_id
                 left join `${object.entityName}_value` v${i} on v${i}.attribute_id = a${i}.id
+
+                <if test="a.entityAttribute.referenceEntityAttribute != null and a.entityAttribute.valueType.id in {10, 11}">
+                    left join ${a.entityAttribute.referenceEntityAttribute.entityName}_attribute a${i}_ref
+
+                    <if test="a.entityAttribute.valueType.id == 10">
+                      on (a${i}_ref.object_id = v${i}.number and a${i}.entity_attribute_id = ${a.entityAttributeId})
+                    </if>
+
+                    <if test="a.entityAttribute.valueType.id == 11">
+                      on (a${i}_ref.object_id = a${i}.number and a${i}.entity_attribute_id = ${a.entityAttributeId})
+                    </if>
+
+                    left join ${a.entityAttribute.referenceEntityAttribute.entityName}_value v${i}_ref on v${i}_ref.attribute_id = a${i}_ref.id
+                </if>
             </if>
         </foreach>
 
@@ -125,26 +139,33 @@
             </if>
 
             <foreach collection="object.attributes" index="i" item="a">
-                <if test="a.text != null">
-                    <choose>
-                        <when test="filter == 'equal'">
-                            and (a${i}.entity_attribute_id = #{a.entityAttributeId} and (a${i}.text = #{a.text} or
-                                v${i}.text = #{a.text}))
-                        </when>
-                        <otherwise>
-                            and (a${i}.entity_attribute_id = #{a.entityAttributeId}
-                              and (a${i}.text like concat('%', #{a.text}, '%') or v${i}.text like concat('%', #{a.text}, '%')))
-                        </otherwise>
-                    </choose>
-                </if>
+                <choose>
+                    <when test="a.entityAttribute.referenceEntityAttribute != null and a.text != null">
+                        and v${i}_ref.text like concat('%', #{a.text}, '%')
+                    </when>
+                    <otherwise>
+                        <if test="a.text != null">
+                            <choose>
+                                <when test="filter == 'equal'">
+                                    and (a${i}.entity_attribute_id = #{a.entityAttributeId} and (a${i}.text = #{a.text} or
+                                    v${i}.text = #{a.text}))
+                                </when>
+                                <otherwise>
+                                    and (a${i}.entity_attribute_id = #{a.entityAttributeId}
+                                    and (a${i}.text like concat('%', #{a.text}, '%') or v${i}.text like concat('%', #{a.text}, '%')))
+                                </otherwise>
+                            </choose>
+                        </if>
 
-                <if test="a.number != null">
-                    and (a${i}.entity_attribute_id = #{a.entityAttributeId} and (a${i}.number = #{a.number} or v${i}.number = #{a.number}))
-                </if>
+                        <if test="a.number != null">
+                            and (a${i}.entity_attribute_id = #{a.entityAttributeId} and (a${i}.number = #{a.number} or v${i}.number = #{a.number}))
+                        </if>
 
-                <if test="a.date != null">
-                    and (a${i}.entity_attribute_id = #{a.entityAttributeId} and a${i}.date = #{a.date})
-                </if>
+                        <if test="a.date != null">
+                            and (a${i}.entity_attribute_id = #{a.entityAttributeId} and a${i}.date = #{a.date})
+                        </if>
+                    </otherwise>
+                </choose>
             </foreach>
 
             <choose>

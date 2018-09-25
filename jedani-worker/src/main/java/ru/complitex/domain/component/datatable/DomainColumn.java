@@ -16,8 +16,10 @@ import org.slf4j.LoggerFactory;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
 import ru.complitex.common.wicket.panel.InputPanel;
-import ru.complitex.domain.component.form.DomainAutoComplete;
-import ru.complitex.domain.entity.*;
+import ru.complitex.domain.entity.Attribute;
+import ru.complitex.domain.entity.Domain;
+import ru.complitex.domain.entity.EntityAttribute;
+import ru.complitex.domain.entity.Value;
 import ru.complitex.domain.mapper.DomainMapper;
 import ru.complitex.domain.mapper.EntityMapper;
 import ru.complitex.domain.model.DateAttributeModel;
@@ -58,6 +60,8 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
 
         Domain domain = (Domain)((FilterWrapper)form.getDefaultModelObject()).getObject();
 
+        domain.getOrCreateAttribute(entityAttributeId).setEntityAttribute(entityAttribute);
+
         switch (entityAttribute.getValueType()){
             case NUMBER:
                 return new TextFilter<>(componentId, new NumberAttributeModel(domain, entityAttributeId), form);
@@ -65,40 +69,6 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
                 return new InputPanel(componentId, new DateTextField(InputPanel.INPUT_COMPONENT_ID,
                         new DateAttributeModel(domain, entityAttributeId),
                         new DateTextFieldConfig().withFormat("dd.MM.yyyy").withLanguage("ru")));
-            case ENTITY:
-            case ENTITY_VALUE:
-                if (entityAttribute.getReferenceEntityAttribute() != null) {
-                    Entity entity = getEntityMapper().getEntity(entityAttribute.getReferenceId());
-
-                    return new DomainAutoComplete(componentId, entity.getName(),
-                            entityAttribute.getReferenceEntityAttribute().getEntityAttributeId(),
-                            new NumberAttributeModel(domain, entityAttributeId), entityAttribute.isDisplayCapitalize()){
-                        @Override
-                        protected String getPrefix(Attribute attribute) {
-                            String prefix = "";
-
-                            EntityAttribute prefixEntityAttribute = entityAttribute.getPrefixEntityAttribute();
-
-                            if (prefixEntityAttribute != null && attribute.getObjectId() != null){
-                                Domain domain = getDomainMapper().getDomain(entity.getName(), attribute.getObjectId());
-
-                                Long prefixDomainId = domain.getNumber(prefixEntityAttribute.getEntityAttributeId());
-
-                                if (prefixDomainId != null) {
-                                    Domain prefixDomain = getDomainMapper().getDomain(prefixEntityAttribute
-                                                    .getReferenceEntityAttribute().getEntityName(),
-                                            prefixDomainId);
-
-                                    prefix = prefixDomain.getValueText(prefixEntityAttribute.getReferenceEntityAttribute().getEntityAttributeId());
-
-                                    return prefix != null ? prefix + " " : "";
-                                }
-                            }
-
-                            return "";
-                        }
-                    };
-                }
             default:
                 return new TextFilter<>(componentId, new TextAttributeModel(domain, entityAttributeId, TextAttributeModel.TYPE.DEFAULT), form);
         }

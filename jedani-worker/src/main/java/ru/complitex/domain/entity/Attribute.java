@@ -29,6 +29,8 @@ public class Attribute implements Serializable{
 
     private List<Value> values;
 
+    private EntityAttribute entityAttribute;
+
     public Attribute() {
     }
 
@@ -202,5 +204,13 @@ public class Attribute implements Serializable{
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public EntityAttribute getEntityAttribute() {
+        return entityAttribute;
+    }
+
+    public void setEntityAttribute(EntityAttribute entityAttribute) {
+        this.entityAttribute = entityAttribute;
     }
 }
