@@ -14,8 +14,8 @@
     </modules>
 
     <properties>
-        <wicket.version>8.0.0</wicket.version>
-        <wicket-bootstrap.version>2.0.2</wicket-bootstrap.version>
+        <wicket.version>8.1.0</wicket.version>
+        <wicket-bootstrap.version>2.0.4</wicket-bootstrap.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
