@@ -569,9 +569,9 @@ public class WorkerPage extends BasePage {
 
             @Override
             public boolean isVisible() {
-                return worker.getObjectId() != null;
+                return worker.getObjectId() != null && participant;
             }
-        }.setDefaultFormProcessing(false).setVisible(participant));
+        }.setDefaultFormProcessing(false));
 
         boolean currentWorker = worker.getObjectId() != null && Objects.equals(getCurrentWorker().getObjectId(), worker.getObjectId());
 
