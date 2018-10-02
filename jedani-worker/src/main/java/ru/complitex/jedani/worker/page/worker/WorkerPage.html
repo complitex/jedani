@@ -28,6 +28,7 @@
                     </div>
                     <div class="col-md-2">
                         <span wicket:id="jId"></span>
+                        <span wicket:id="num"></span>
                     </div>
                     <div class="col-md-2">
                         <span wicket:id="mkStatus"></span>
@@ -74,7 +75,7 @@
                         <div wicket:id="city"></div>
                     </div>
                     <div class="col-md-2">
-                        <div class="form-group">
+                        <div class="form-group" wicket:id="manager">
                             <label for="managerFio">Вышестоящий сотрудник</label>
                             <div wicket:id="managerFio" id="managerFio"></div>
                             <div wicket:id="managerPhones" class="form-control form-control-info" id="managerPhones" disabled></div>
@@ -134,7 +135,7 @@
 
                 <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
                     <div class="panel panel-default">
-                        <div class="panel-heading" role="tab" id="headingOne">
+                        <div class="panel-heading" role="tab" id="headingOne" wicket:id="historyHeader">
                             <h4 class="panel-title">
                                 <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
                                     Журнал изменений

@@ -104,7 +104,7 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
 
                 break;
             case NUMBER:
-                text = attribute.getNumber() + "";
+                text = attribute.getNumber() != null ?  attribute.getNumber() + "" : "";
 
                 break;
 

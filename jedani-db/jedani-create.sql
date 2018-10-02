@@ -53,6 +53,19 @@ CREATE TABLE `locale` (
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Локаль';
 
 -- ------------------------------
+-- Update
+-- ------------------------------
+
+DROP TABLE IF EXISTS `update`;
+CREATE TABLE `update` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
+  `version` VARCHAR(64) NOT NULL COMMENT 'Версия',
+  `date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата обновления',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Обновление базы данных';
+
+
+-- ------------------------------
 -- Entity
 -- ------------------------------
 

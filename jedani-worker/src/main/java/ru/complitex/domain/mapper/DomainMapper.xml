@@ -85,7 +85,7 @@
                 left join ${object.entityName}_attribute a${i} on a${i}.object_id = d.object_id
                 left join `${object.entityName}_value` v${i} on v${i}.attribute_id = a${i}.id
 
-                <if test="a.entityAttribute.referenceEntityAttribute != null and a.entityAttribute.valueType.id in {10, 11}">
+                <if test="a.entityAttribute != null and a.entityAttribute.referenceEntityAttribute != null and a.entityAttribute.valueType.id in {10, 11}">
                     left join ${a.entityAttribute.referenceEntityAttribute.entityName}_attribute a${i}_ref
 
                     <if test="a.entityAttribute.valueType.id == 10">
@@ -140,7 +140,7 @@
 
             <foreach collection="object.attributes" index="i" item="a">
                 <choose>
-                    <when test="a.entityAttribute.referenceEntityAttribute != null and a.text != null">
+                    <when test="a.entityAttribute != null and a.entityAttribute.referenceEntityAttribute != null and a.text != null">
                         and v${i}_ref.text like concat('%', #{a.text}, '%')
                     </when>
                     <otherwise>

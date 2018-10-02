@@ -78,7 +78,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
-import static ru.complitex.jedani.worker.entity.Worker.*;
 import static ru.complitex.jedani.worker.security.JedaniRoles.*;
 
 /**
@@ -122,6 +121,8 @@ public class WorkerPage extends BasePage {
 
     private IModel<Boolean> showGraph = Model.of(false);
 
+    private boolean participant = true;
+
     public WorkerPage(PageParameters parameters) {
         Long id = parameters.get("id").toOptionalLong();
 
@@ -131,23 +132,31 @@ public class WorkerPage extends BasePage {
             worker = new Worker();
             worker.init();
 
-            worker.setText(J_ID, workerMapper.getNewJId());
+            participant = !Objects.equals(parameters.get("new").toOptionalString(), "employee");
 
-            if (id != null) {
-                manager = workerMapper.getWorker(id);
-            }else if (getCurrentWorker().getObjectId() != null){
-                manager = workerMapper.getWorker(getCurrentWorker().getObjectId());
-            }
+            if (participant) {
+                worker.setText(Worker.J_ID, workerMapper.getNewJId());
 
-            if (manager != null){
-                manager.getNumberValues(REGION_IDS).forEach(n -> worker.addNumberValue(REGION_IDS, n));
-                manager.getNumberValues(CITY_IDS).forEach(n -> worker.addNumberValue(CITY_IDS, n));
+                if (id != null) {
+                    manager = workerMapper.getWorker(id);
+                }else if (getCurrentWorker().getObjectId() != null){
+                    manager = workerMapper.getWorker(getCurrentWorker().getObjectId());
+                }
 
-                worker.setNumber(Worker.MANAGER_ID, manager.getObjectId());
+                if (manager != null){
+                    manager.getNumberValues(Worker.REGION_IDS).forEach(n -> worker.addNumberValue(Worker.REGION_IDS, n));
+                    manager.getNumberValues(Worker.CITY_IDS).forEach(n -> worker.addNumberValue(Worker.CITY_IDS, n));
+
+                    worker.setNumber(Worker.MANAGER_ID, manager.getObjectId());
+                }
+            }else{
+                worker.setNumber(Worker.EMPLOYEE, 1L);
             }
         }else{
             if (id != null) {
                 worker = workerMapper.getWorker(id);
+
+                participant = !Objects.equals(worker.getNumber(Worker.EMPLOYEE), 1L);
             } else {
                 worker = getCurrentWorker();
             }
@@ -155,6 +164,10 @@ public class WorkerPage extends BasePage {
             if (worker.getNumber(Worker.MANAGER_ID) != null && worker.getNumber(Worker.MANAGER_ID) != 1) {
                 manager = workerMapper.getWorker(worker.getNumber(Worker.MANAGER_ID));
             }
+        }
+
+        if (!participant && !isAdmin()){
+            throw new UnauthorizedInstantiationException(getClass());
         }
 
         if (worker.getObjectId() != null){
@@ -206,31 +219,33 @@ public class WorkerPage extends BasePage {
         form.add(new AttributeSelectFormGroup("position", new PropertyModel<>(worker.getOrCreateAttribute(Worker.POSITION_ID), "number"),
                 Position.ENTITY_NAME, Position.NAME));
 
-
         TextFieldFormGroup<String> jId = new TextFieldFormGroup<>("jId", new PropertyModel<>(worker.getOrCreateAttribute(Worker.J_ID), "text"));
-        jId.setRequired(true);
+        jId.setRequired(participant);
 
         if (worker.getObjectId() == null) {
             jId.onUpdate(target -> {
-                if (workerMapper.isExistJId(jId.getTextField().getInput())) {
+                if (workerMapper.isExistJId(null, jId.getTextField().getInput())) {
                     jId.getTextField().error(getString("error_jid_exist"));
                 }
 
                 target.add(jId);
             });
         }
-
+        jId.setVisible(participant);
         form.add(jId);
 
+        //num
+        form.add(new TextFieldFormGroup<>("num", Model.of("")).setVisible(!participant));
+
         form.add(new AttributeSelectFormGroup("mkStatus", new PropertyModel<>(worker.getOrCreateAttribute(Worker.MK_STATUS_ID), "number"),
-                MkStatus.ENTITY_NAME, MkStatus.NAME));
+                MkStatus.ENTITY_NAME, MkStatus.NAME).setVisible(participant));
         form.add(new DateTextFieldFormGroup("birthday", new PropertyModel<>(worker.getOrCreateAttribute(Worker.BIRTHDAY), "date")));
-        form.add(new AttributeInputListFormGroup("phone", Model.of(worker.getOrCreateAttribute(Worker.PHONE))).setRequired(true));
-        form.add(new TextFieldFormGroup<>("email", new TextAttributeModel(worker, EMAIL, TextAttributeModel.TYPE.LOWER_CASE)));
+        form.add(new AttributeInputListFormGroup("phone", Model.of(worker.getOrCreateAttribute(Worker.PHONE))).setRequired(participant));
+        form.add(new TextFieldFormGroup<>("email", new TextAttributeModel(worker, Worker.EMAIL, TextAttributeModel.TYPE.LOWER_CASE)));
 
         AttributeSelectListFormGroup city, region;
         form.add(region = new AttributeSelectListFormGroup("region", Model.of(worker.getOrCreateAttribute(Worker.REGION_IDS)),
-                Region.ENTITY_NAME, Region.NAME, true).setRequired(true));
+                Region.ENTITY_NAME, Region.NAME, true).setRequired(participant));
         form.add(city = new AttributeSelectListFormGroup("city", Model.of(worker.getOrCreateAttribute(Worker.CITY_IDS)),
                 City.ENTITY_NAME, City.NAME, region.getListModel(), true){
             @Override
@@ -247,11 +262,13 @@ public class WorkerPage extends BasePage {
 
                 return super.getPrefix(domain);
             }
-        }.setRequired(true));
+        }.setRequired(participant));
         region.onChange(t -> t.add(city));
 
         //User
-        User user = worker.getParentId() != null ? userMapper.getUser(worker.getParentId()) : new User(worker.getText(J_ID));
+        User user = worker.getParentId() != null
+                ? userMapper.getUser(worker.getParentId())
+                : new User(participant ? worker.getText(Worker.J_ID) : null);
 
         TextField<String> login = new TextField<>("login", new PropertyModel<>(user, "login"));
         login.setRequired(true);
@@ -267,7 +284,7 @@ public class WorkerPage extends BasePage {
 
         form.add(new DateTextFieldFormGroup("registrationDate", new PropertyModel<>(worker.getOrCreateAttribute(Worker.INVOLVED_AT), "date"))
                 .onUpdate(target -> target.add(get("form:registrationDate")))
-                .setRequired(true));
+                .setRequired(participant));
 
         //User group
         WebMarkupContainer userGroups = new WebMarkupContainer("userGroups");
@@ -291,6 +308,10 @@ public class WorkerPage extends BasePage {
         CheckBox userRole = new CheckBox("userRole", Model.of(user.hasRole(USERS)));
         userGroups.add(userRole);
 
+        WebMarkupContainer managerContainer = new WebMarkupContainer("manager");
+        managerContainer.setVisible(participant);
+        form.add(managerContainer);
+
         //Manager
         Label managerPhone = new Label("managerPhones", new LoadableDetachableModel<String>() {
             @Override
@@ -299,7 +320,7 @@ public class WorkerPage extends BasePage {
             }
         });
         managerPhone.setOutputMarkupId(true);
-        form.add(managerPhone);
+        managerContainer.add(managerPhone);
 
         Label managerEmail = new Label("managerEmail", new LoadableDetachableModel<String>() {
             @Override
@@ -308,9 +329,9 @@ public class WorkerPage extends BasePage {
             }
         });
         managerEmail.setOutputMarkupId(true);
-        form.add(managerEmail);
+        managerContainer.add(managerEmail);
 
-        form.add(new WorkerAutoComplete("managerFio", new PropertyModel<>(worker.getOrCreateAttribute(Worker.MANAGER_ID), "number")){
+        managerContainer.add(new WorkerAutoComplete("managerFio", new PropertyModel<>(worker.getOrCreateAttribute(Worker.MANAGER_ID), "number")){
             @Override
             protected void onChange(AjaxRequestTarget target) {
                 manager = workerMapper.getWorker(worker.getNumber(Worker.MANAGER_ID));
@@ -322,10 +343,14 @@ public class WorkerPage extends BasePage {
         //Structure
         WebMarkupContainer structure = new WebMarkupContainer("structure");
         structure.setOutputMarkupId(true);
-        structure.setVisible(worker.getObjectId() != null);
+        structure.setVisible(worker.getObjectId() != null && participant);
         form.add(structure);
 
         //History
+        WebMarkupContainer historyHeader = new WebMarkupContainer("historyHeader");
+        historyHeader.setVisible(worker.getObjectId() != null);
+        form.add(historyHeader);
+
         WebMarkupContainer history = new WebMarkupContainer("history");
         history.setOutputMarkupId(true);
         form.add(history);
@@ -472,11 +497,11 @@ public class WorkerPage extends BasePage {
                     worker.setParentEntityId(User.ENTITY_ID);
                     worker.setUserId(getCurrentUser().getId());
 
-                    worker.setNumber(LAST_NAME, nameService.getOrCreateLastName(lastName.getInput(), worker.getNumber(LAST_NAME)));
-                    worker.setNumber(FIRST_NAME, nameService.getOrCreateFirstName(firstName.getInput(), worker.getNumber(FIRST_NAME)));
-                    worker.setNumber(MIDDLE_NAME, nameService.getOrCreateMiddleName(middleName.getInput(), worker.getNumber(MIDDLE_NAME)));
+                    worker.setNumber(Worker.LAST_NAME, nameService.getOrCreateLastName(lastName.getInput(), worker.getNumber(Worker.LAST_NAME)));
+                    worker.setNumber(Worker.FIRST_NAME, nameService.getOrCreateFirstName(firstName.getInput(), worker.getNumber(Worker.FIRST_NAME)));
+                    worker.setNumber(Worker.MIDDLE_NAME, nameService.getOrCreateMiddleName(middleName.getInput(), worker.getNumber(Worker.MIDDLE_NAME)));
 
-                    if (worker.getObjectId() == null && workerMapper.isExistJId(jId.getTextField().getInput())) {
+                    if (participant && workerMapper.isExistJId(worker.getObjectId(), jId.getTextField().getInput())) {
                         jId.getTextField().error(getString("error_jid_exist"));
                         target.add(feedback, jId);
                         return;
@@ -551,9 +576,9 @@ public class WorkerPage extends BasePage {
             public boolean isVisible() {
                 return worker.getObjectId() != null;
             }
-        }.setDefaultFormProcessing(false));
+        }.setDefaultFormProcessing(false).setVisible(participant));
 
-        boolean currentWorker = Objects.equals(getCurrentWorker().getObjectId(), worker.getObjectId());
+        boolean currentWorker = worker.getObjectId() != null && Objects.equals(getCurrentWorker().getObjectId(), worker.getObjectId());
 
         Link back = new Link<Void>("back") {
             @Override
@@ -563,7 +588,7 @@ public class WorkerPage extends BasePage {
                 }else{
                     PageParameters pageParameters = new PageParameters();
 
-                    if (manager.getObjectId() != null){
+                    if (manager != null && manager.getObjectId() != null){
                         pageParameters.add("id", manager.getObjectId());
                     }
 
@@ -572,7 +597,7 @@ public class WorkerPage extends BasePage {
             }
         };
         back.setVisible(!currentWorker);
-        back.add(new Label("label", getString(worker.getObjectId() != null ? "back" : "cancel")));
+        back.add(new Label("label", getString("cancel")));
 
         form.add(back);
 
@@ -657,21 +682,21 @@ public class WorkerPage extends BasePage {
 
         List<EntityAttribute> list = new ArrayList<>();
 
-        list.add(entity.getEntityAttribute(LAST_NAME)
+        list.add(entity.getEntityAttribute(Worker.LAST_NAME)
                 .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(LastName.ENTITY_NAME, LastName.NAME))
                 .setDisplayCapitalize(true));
 
-        list.add(entity.getEntityAttribute(FIRST_NAME)
+        list.add(entity.getEntityAttribute(Worker.FIRST_NAME)
                 .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(FirstName.ENTITY_NAME, FirstName.NAME))
                 .setDisplayCapitalize(true));
 
-        list.add(entity.getEntityAttribute(MIDDLE_NAME)
+        list.add(entity.getEntityAttribute(Worker.MIDDLE_NAME)
                 .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(MiddleName.ENTITY_NAME, MiddleName.NAME))
                 .setDisplayCapitalize(true));
 
-        list.add(entity.getEntityAttribute(J_ID));
+        list.add(entity.getEntityAttribute(Worker.J_ID));
 
-        list.add(entity.getEntityAttribute(REGION_IDS)
+        list.add(entity.getEntityAttribute(Worker.REGION_IDS)
                 .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(Region.ENTITY_NAME, Region.NAME))
                 .setDisplayCapitalize(true));
 

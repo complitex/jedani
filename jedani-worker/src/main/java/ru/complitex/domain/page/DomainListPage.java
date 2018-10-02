@@ -140,7 +140,11 @@ public class DomainListPage<T extends Domain> extends BasePage{
         add(new AjaxLink<Void>("add") {
             @Override
             public void onClick(AjaxRequestTarget target) {
-                setResponsePage(editPageClass, new PageParameters().add("new", ""));
+                PageParameters pageParameters = new PageParameters().add("new", "");
+
+                onAddPageParameters(pageParameters);
+
+                setResponsePage(editPageClass, pageParameters);
             }
         });
     }
@@ -200,5 +204,8 @@ public class DomainListPage<T extends Domain> extends BasePage{
     }
 
     protected void onEditPageParameters(PageParameters pageParameters){
+    }
+
+    protected void onAddPageParameters(PageParameters pageParameters){
     }
 }

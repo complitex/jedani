@@ -1,6 +1,8 @@
 package ru.complitex.jedani.worker.page.worker;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
@@ -22,6 +24,7 @@ import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.mapper.EntityAttributeMapper;
 import ru.complitex.domain.page.DomainListPage;
+import ru.complitex.jedani.worker.entity.Position;
 import ru.complitex.jedani.worker.entity.Worker;
 import ru.complitex.jedani.worker.mapper.WorkerMapper;
 import ru.complitex.jedani.worker.security.JedaniRoles;
@@ -47,6 +50,13 @@ public class WorkerListPage extends DomainListPage<Worker>{
 
     public WorkerListPage() {
         super(Worker.ENTITY_NAME, WorkerPage.class);
+
+        add(new AjaxLink<Void>("addEmployee") {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                setResponsePage(WorkerPage.class, new PageParameters().add("new", "employee").add("a", ""));
+            }
+        });
     }
 
     @Override
@@ -80,6 +90,10 @@ public class WorkerListPage extends DomainListPage<Worker>{
         list.add(entity.getEntityAttribute(Worker.PHONE));
         list.add(entity.getEntityAttribute(Worker.EMAIL).setDisplayLowerCase(true));
         list.add(entity.getEntityAttribute(Worker.INVOLVED_AT));
+
+        list.add(entity.getEntityAttribute(Worker.POSITION_ID)
+                .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(Position.ENTITY_NAME, Position.NAME)));
+        list.add(entity.getEntityAttribute(Worker.EMPLOYEE));
 
         return list;
     }
@@ -134,6 +148,11 @@ public class WorkerListPage extends DomainListPage<Worker>{
 
     @Override
     protected void onEditPageParameters(PageParameters pageParameters) {
+        pageParameters.add("a", "");
+    }
+
+    @Override
+    protected void onAddPageParameters(PageParameters pageParameters) {
         pageParameters.add("a", "");
     }
 }

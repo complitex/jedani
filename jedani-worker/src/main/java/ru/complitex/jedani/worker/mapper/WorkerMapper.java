@@ -3,6 +3,7 @@ package ru.complitex.jedani.worker.mapper;
 import org.apache.commons.lang3.StringUtils;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.mybatis.BaseMapper;
+import ru.complitex.common.util.MapUtil;
 import ru.complitex.jedani.worker.entity.Worker;
 
 import java.util.List;
@@ -22,8 +23,8 @@ public class WorkerMapper extends BaseMapper {
         }
     }
 
-    public boolean isExistJId(String jid){
-        return sqlSession().selectOne("selectIsExistJId", jid);
+    public boolean isExistJId(Long objectId, String jId){
+        return sqlSession().selectOne("selectIsExistJId", MapUtil.of("objectId", objectId, "jId", jId));
     }
 
     public Worker getWorker(Long objectId){
