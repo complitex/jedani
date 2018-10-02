@@ -12,6 +12,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import ru.complitex.address.entity.City;
@@ -31,6 +32,7 @@ import ru.complitex.jedani.worker.security.JedaniRoles;
 import ru.complitex.name.entity.FirstName;
 import ru.complitex.name.entity.LastName;
 import ru.complitex.name.entity.MiddleName;
+import ru.complitex.user.mapper.UserMapper;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -47,6 +49,9 @@ public class WorkerListPage extends DomainListPage<Worker>{
 
     @Inject
     private WorkerMapper workerMapper;
+
+    @Inject
+    private UserMapper userMapper;
 
     public WorkerListPage() {
         super(Worker.ENTITY_NAME, WorkerPage.class);
@@ -100,6 +105,21 @@ public class WorkerListPage extends DomainListPage<Worker>{
 
     @Override
     protected void onAddColumns(List<IColumn<Worker, SortProperty>> columns) {
+        columns.add(4, new AbstractDomainColumn<Worker>(new ResourceModel("login"),
+                new SortProperty("login")) {
+            @Override
+            public void populateItem(Item<ICellPopulator<Worker>> cellItem, String componentId, IModel<Worker> rowModel) {
+                Long userId = rowModel.getObject().getParentId();
+
+                cellItem.add(new Label(componentId, userId != null ? userMapper.getUser(userId).getLogin() : ""));
+            }
+
+            @Override
+            public Component getFilter(String componentId, FilterForm<?> form) {
+                return new TextFilter<>(componentId, new PropertyModel<>(form.getModel(), "map.login"), form);
+            }
+        });
+
         columns.add(new AbstractDomainColumn<Worker>(new ResourceModel("subWorkersCount"),
                 new SortProperty("subWorkersCount")) {
             @Override

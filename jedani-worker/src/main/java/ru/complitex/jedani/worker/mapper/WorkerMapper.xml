@@ -49,6 +49,9 @@
         <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromSort"/>
         <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromWhere"/>
         <include refid="selectWorkersWhereNode"/>
+        <if test="map.login != null">
+            and d.parent_id in (select id from `user` u where u.login like concat('%', #{map.login}, '%'))
+        </if>
         <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsOrderSort"/>
         <include refid="selectWorkersOrderNode"/>
         ${limit}
