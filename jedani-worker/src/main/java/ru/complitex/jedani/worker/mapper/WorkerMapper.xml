@@ -42,6 +42,12 @@
 
     </sql>
 
+    <sql id="selectWorkersWhereLogin">
+        <if test="map.login != null">
+            and d.parent_id in (select id from `user` u where u.login like concat('%', #{map.login}, '%'))
+        </if>
+    </sql>
+
     <!--suppress SqlResolve -->
     <select id="selectWorkers" parameterType="ru.complitex.common.entity.FilterWrapper" resultMap="workerResultMap">
         select distinct d.*, '${object.entityName}' entity_name,
@@ -49,9 +55,7 @@
         <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromSort"/>
         <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromWhere"/>
         <include refid="selectWorkersWhereNode"/>
-        <if test="map.login != null">
-            and d.parent_id in (select id from `user` u where u.login like concat('%', #{map.login}, '%'))
-        </if>
+        <include refid="selectWorkersWhereLogin"/>
         <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsOrderSort"/>
         <include refid="selectWorkersOrderNode"/>
         ${limit}
@@ -61,6 +65,7 @@
     <select id="selectWorkersCount" parameterType="ru.complitex.common.entity.FilterWrapper" resultType="long">
         select count(distinct d.object_id)
         <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromWhere"/>
+        <include refid="selectWorkersWhereLogin"/>
         <include refid="selectWorkersWhereNode"/>
     </select>
 
