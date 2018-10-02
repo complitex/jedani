@@ -71,10 +71,7 @@ import ru.complitex.user.mapper.UserMapper;
 import javax.inject.Inject;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
@@ -466,9 +463,7 @@ public class WorkerPage extends BasePage {
                         }
 
                         if (Strings.isNullOrEmpty(user.getPassword())){
-                            password.error(getString("error_empty_password"));
-                            target.add(feedback);
-                            return;
+                            user.setPassword(Hashing.sha256().hashString(UUID.randomUUID().toString(), StandardCharsets.UTF_8).toString());
                         }
 
                         userMapper.insertUser(user);
