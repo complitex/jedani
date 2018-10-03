@@ -110,7 +110,7 @@ public class BasePage extends WebPage{
         catalog.add(new BookmarkablePageLink<>("first_name", FirstNameListPage.class).setVisible(isAdmin()));
         catalog.add(new BookmarkablePageLink<>("middle_name", MiddleNameListPage.class).setVisible(isAdmin()));
         catalog.add(new BookmarkablePageLink<>("last_name", LastNameListPage.class).setVisible(isAdmin()));
-        catalog.add(new BookmarkablePageLink<>("position", PositionListPage.class)).setVisible(isAdmin());
+        catalog.add(new BookmarkablePageLink<>("position", PositionListPage.class).setVisible(isAdmin()));
         catalog.add(new BookmarkablePageLink<>("mk_status", MkStatusListPage.class).setVisible(isAdmin()));
         catalog.add(new BookmarkablePageLink<>("workers", WorkerListPage.class).setVisible(isAdmin() || isStructureAdmin()));
 
