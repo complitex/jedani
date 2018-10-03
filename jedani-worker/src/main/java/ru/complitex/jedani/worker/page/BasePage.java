@@ -104,7 +104,7 @@ public class BasePage extends WebPage{
         address.add(new BookmarkablePageLink<>("cities", CityListPage.class).setVisible(isAdmin()));
 
         WebMarkupContainer catalog = new WebMarkupContainer("catalog");
-        catalog.setVisible(isAdmin());
+        catalog.setVisible(isAdmin() || isStructureAdmin());
         add(catalog);
 
         catalog.add(new BookmarkablePageLink<>("first_name", FirstNameListPage.class).setVisible(isAdmin()));

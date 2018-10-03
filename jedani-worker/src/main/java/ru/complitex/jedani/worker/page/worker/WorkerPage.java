@@ -152,22 +152,18 @@ public class WorkerPage extends BasePage {
         }else{
             if (id != null) {
                 worker = workerMapper.getWorker(id);
-
-                participant = !Objects.equals(worker.getNumber(Worker.EMPLOYEE), 1L);
             } else {
                 worker = getCurrentWorker();
             }
+
+            participant = !Objects.equals(worker.getNumber(Worker.EMPLOYEE), 1L);
 
             if (worker.getNumber(Worker.MANAGER_ID) != null && worker.getNumber(Worker.MANAGER_ID) != 1) {
                 manager = workerMapper.getWorker(worker.getNumber(Worker.MANAGER_ID));
             }
         }
 
-        if (!participant && !isAdmin()){
-            throw new UnauthorizedInstantiationException(getClass());
-        }
-
-        if (worker.getObjectId() != null){
+        if (worker.getObjectId() != null && participant){
             if (!isAdmin() && !isStructureAdmin()){
                 if (getCurrentWorker().getRight() < worker.getRight() || getCurrentWorker().getLeft() > worker.getLeft()){
                     throw new UnauthorizedInstantiationException(getClass());
@@ -591,7 +587,6 @@ public class WorkerPage extends BasePage {
                 }
             }
         };
-        back.setVisible(!currentWorker);
         back.add(new Label("label", getString("cancel")));
 
         form.add(back);
