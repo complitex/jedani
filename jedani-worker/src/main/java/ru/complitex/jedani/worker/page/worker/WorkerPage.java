@@ -123,7 +123,7 @@ public class WorkerPage extends BasePage {
     public WorkerPage(PageParameters parameters) {
         Long id = parameters.get("id").toOptionalLong();
 
-        boolean backToList = !parameters.get("a").isNull();
+        boolean backToWorkerList = !parameters.get("a").isNull();
 
         if (!parameters.get("new").isNull()){
             worker = new Worker();
@@ -574,7 +574,7 @@ public class WorkerPage extends BasePage {
         Link back = new Link<Void>("back") {
             @Override
             public void onClick() {
-                if (isAdmin() && backToList){
+                if (backToWorkerList && (isAdmin() || isStructureAdmin())){
                     setResponsePage(WorkerListPage.class);
                 }else{
                     PageParameters pageParameters = new PageParameters();
