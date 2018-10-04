@@ -27,6 +27,8 @@ public class Domain implements Serializable{
 
     private Map<String, Object> map = new HashMap<>();
 
+    private EntityAttribute parentEntityAttribute;
+
     public Domain() {
     }
 
@@ -297,5 +299,13 @@ public class Domain implements Serializable{
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public EntityAttribute getParentEntityAttribute() {
+        return parentEntityAttribute;
+    }
+
+    public void setParentEntityAttribute(EntityAttribute parentEntityAttribute) {
+        this.parentEntityAttribute = parentEntityAttribute;
     }
 }

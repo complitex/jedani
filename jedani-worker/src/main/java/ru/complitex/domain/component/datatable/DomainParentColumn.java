@@ -3,6 +3,7 @@ package ru.complitex.domain.component.datatable;
 import org.apache.wicket.Component;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.TextFilter;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
@@ -10,9 +11,9 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
-import ru.complitex.domain.component.form.DomainAutoComplete;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.Entity;
+import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.entity.Value;
 import ru.complitex.domain.util.Attributes;
 import ru.complitex.domain.util.Locales;
@@ -34,8 +35,14 @@ public abstract class DomainParentColumn<T extends Domain> extends AbstractDomai
 
     @Override
     public Component getFilter(String componentId, FilterForm<?> form) {
-        return new DomainAutoComplete(componentId, entity.getName(), entityAttributeId,
-                new PropertyModel<>(((FilterWrapper)form.getDefaultModelObject()).getObject(), "parentId"), true);
+        EntityAttribute parentEntityAttribute = new EntityAttribute();
+        parentEntityAttribute.setEntityName(entity.getName());
+        parentEntityAttribute.setEntityAttributeId(entityAttributeId);
+
+        Domain domain = (Domain) ((FilterWrapper)form.getDefaultModelObject()).getObject();
+        domain.setParentEntityAttribute(parentEntityAttribute);
+
+        return new TextFilter<String>(componentId, new PropertyModel<>(form.getModel(), "map.parentName"), form);
     }
 
     @Override

@@ -80,6 +80,11 @@
         left join ${object.entityName}_attribute a on a.object_id = d.object_id
         left join `${object.entityName}_value` v on v.attribute_id = a.id
 
+        <if test="object.parentEntityAttribute != null">
+            left join ${object.parentEntityAttribute.entityName}_attribute p_a on p_a.object_id = d.parent_id
+            left join `${object.parentEntityAttribute.entityName}_value` p_v on p_v.attribute_id = p_a.id
+        </if>
+
         <foreach collection="object.attributes" index="i" item="a">
             <if test="a.text != null or a.number != null or a.date != null">
                 left join ${object.entityName}_attribute a${i} on a${i}.object_id = d.object_id
@@ -136,6 +141,10 @@
 
             <if test="object.parentId != null">
                 and (d.parent_id = #{object.parentId})
+            </if>
+
+            <if test="object.parentEntityAttribute != null">
+                and (p_a.text like concat('%', #{map.parentName}, '%') or p_v.text like concat('%', #{map.parentName}, '%'))
             </if>
 
             <foreach collection="object.attributes" index="i" item="a">
