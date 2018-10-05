@@ -39,9 +39,11 @@ public class WorkerGraphPanel extends Panel {
 
         elements =  " {data: {id: '" + worker.getObjectId() + "', " +
                 "label: '" + worker.getText(Worker.J_ID) + "\\n" +
-                nameService.getLastName(worker.getNumber(Worker.LAST_NAME)) + "\\n" +
-                nameService.getFirstName(worker.getNumber(Worker.FIRST_NAME)) + "\\n" +
-                nameService.getMiddleName(worker.getNumber(Worker.MIDDLE_NAME)) + "'}}";
+                nameService.getLastName(worker.getNumber(Worker.LAST_NAME))
+//                + "\\n" +
+//                nameService.getFirstName(worker.getNumber(Worker.FIRST_NAME)) + "\\n" +
+//                nameService.getMiddleName(worker.getNumber(Worker.MIDDLE_NAME))
+                + "'}}";
 
         if (!workers.isEmpty()) {
             elements += "," + workers.stream()
@@ -50,9 +52,11 @@ public class WorkerGraphPanel extends Panel {
 
                         return " {data: {id: '" + w.getObjectId() + "', " +
                                 "label: '" + w.getText(Worker.J_ID) + "\\n" +
-                                nameService.getLastName(w.getNumber(Worker.LAST_NAME)) + "\\n" +
-                                nameService.getFirstName(w.getNumber(Worker.FIRST_NAME)) + "\\n" +
-                                nameService.getMiddleName(w.getNumber(Worker.MIDDLE_NAME)) + "'}, " +
+                                nameService.getLastName(w.getNumber(Worker.LAST_NAME))
+//                                + "\\n" +
+//                                nameService.getFirstName(w.getNumber(Worker.FIRST_NAME)) + "\\n" +
+//                                nameService.getMiddleName(w.getNumber(Worker.MIDDLE_NAME))
+                                + "'}, " +
                                 "style: {'background-color': 'rgb("+color+", "+color+", "+color+")'}}";
                     })
                     .collect(Collectors.joining(","));
