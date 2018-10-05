@@ -156,22 +156,23 @@
                         <if test="a.text != null">
                             <choose>
                                 <when test="filter == 'equal'">
-                                    and (a${i}.entity_attribute_id = #{a.entityAttributeId} and (a${i}.text = #{a.text} or
-                                    v${i}.text = #{a.text}))
+                                    and (a${i}.entity_attribute_id = #{a.entityAttributeId} and a${i}.status = 1
+                                    and (a${i}.text = #{a.text} or v${i}.text = #{a.text}))
                                 </when>
                                 <otherwise>
-                                    and (a${i}.entity_attribute_id = #{a.entityAttributeId}
+                                    and (a${i}.entity_attribute_id = #{a.entityAttributeId}  and a${i}.status = 1
                                     and (a${i}.text like concat('%', #{a.text}, '%') or v${i}.text like concat('%', #{a.text}, '%')))
                                 </otherwise>
                             </choose>
                         </if>
 
                         <if test="a.number != null">
-                            and (a${i}.entity_attribute_id = #{a.entityAttributeId} and (a${i}.number = #{a.number} or v${i}.number = #{a.number}))
+                            and (a${i}.entity_attribute_id = #{a.entityAttributeId}  and a${i}.status = 1
+                            and (a${i}.number = #{a.number} or v${i}.number = #{a.number}))
                         </if>
 
                         <if test="a.date != null">
-                            and (a${i}.entity_attribute_id = #{a.entityAttributeId} and a${i}.date = #{a.date})
+                            and (a${i}.entity_attribute_id = #{a.entityAttributeId} and a${i}.status = 1 and a${i}.date = #{a.date})
                         </if>
                     </otherwise>
                 </choose>
