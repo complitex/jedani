@@ -27,7 +27,7 @@ public class Attribute implements Serializable{
 
     private String entityName;
 
-    private List<Value> values;
+    private List<Value> values = new ArrayList<>();
 
     private EntityAttribute entityAttribute;
 

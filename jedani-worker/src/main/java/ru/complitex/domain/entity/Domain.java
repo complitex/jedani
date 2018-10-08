@@ -21,6 +21,9 @@ public class Domain implements Serializable{
     private Long permissionId;
     private Long userId;
 
+    private boolean useDateAttribute;
+    private boolean useNumberValue;
+
     private String entityName;
 
     private List<Attribute> attributes = new ArrayList<>();
@@ -307,5 +310,21 @@ public class Domain implements Serializable{
 
     public void setParentEntityAttribute(EntityAttribute parentEntityAttribute) {
         this.parentEntityAttribute = parentEntityAttribute;
+    }
+
+    public boolean isUseDateAttribute() {
+        return useDateAttribute;
+    }
+
+    public void setUseDateAttribute(boolean useDateAttribute) {
+        this.useDateAttribute = useDateAttribute;
+    }
+
+    public boolean isUseNumberValue() {
+        return useNumberValue;
+    }
+
+    public void setUseNumberValue(boolean useNumberValue) {
+        this.useNumberValue = useNumberValue;
     }
 }

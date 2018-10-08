@@ -105,4 +105,14 @@ public class Worker extends DomainNode {
     public void setSubWorkerCount(Long subWorkerCount) {
         this.subWorkerCount = subWorkerCount;
     }
+
+    @Override
+    public boolean isUseDateAttribute() {
+        return true;
+    }
+
+    @Override
+    public boolean isUseNumberValue() {
+        return true;
+    }
 }

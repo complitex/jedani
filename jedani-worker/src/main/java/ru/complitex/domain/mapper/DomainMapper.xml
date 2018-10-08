@@ -20,7 +20,7 @@
                     select="ru.complitex.domain.mapper.AttributeMapper.selectAttributes"/>
     </resultMap>
 
-    <resultMap id="domainResultMapOpt" type="ru.complitex.domain.entity.Domain">
+    <resultMap id="domainResultMapJoin" type="ru.complitex.domain.entity.Domain">
         <id column="id" property="id"/>
         <result column="object_id" property="objectId"/>
         <result column="parent_id" property="parentId"/>
@@ -32,8 +32,26 @@
         <result column="external_id" property="externalId"/>
         <result column="entity_name" property="entityName"/>
         <result column="user_id" property="userId"/>
-        <collection column="entityName=entity_name, objectId=id" property="attributes"
-                    select="ru.complitex.domain.mapper.AttributeMapper.selectAttributesOpt"/>
+        <collection property="attributes" ofType="ru.complitex.domain.entity.Attribute">
+            <id column="a_id" property="id"/>
+            <result column="a_object_id" property="objectId"/>
+            <result column="a_entity_attribute_id" property="entityAttributeId"/>
+            <result column="a_text" property="text"/>
+            <result column="a_number" property="number"/>
+            <result column="a_date" property="date"/>
+            <result column="a_start_date" property="startDate"/>
+            <result column="a_end_date" property="endDate"/>
+            <result column="a_status" property="status"/>
+            <result column="a_user_id" property="userId"/>
+            <result column="a_entity_name" property="entityName"/>
+            <collection property="values" ofType="ru.complitex.domain.entity.Value">
+                <id column="v_id" property="id"/>
+                <result column="v_attribute_id" property="attributeId"/>
+                <result column="v_locale_id" property="localeId"/>
+                <result column="v_text" property="text"/>
+                <result column="v_number" property="number"/>
+            </collection>
+        </collection>
     </resultMap>
 
     <!--suppress SqlResolve -->
@@ -44,8 +62,22 @@
           #{userId})
     </insert>
 
+
+    <sql id="selectDomainSelect">
+        a.id a_id, a.object_id a_object_id, a.entity_attribute_id a_entity_attribute_id, a.text a_text,
+        a.number a_number, <if test="useDateAttribute">a.date a_date,</if> a.start_date a_start_date, a.end_date a_end_date, a.status a_status,
+        a.user_id a_user_id, '${entityName}' a_entity_name, v.id v_id, v.attribute_id v_attribute_id,
+        v.locale_id v_locale_id, v.text v_text <if test="useNumberValue">, v.number v_number</if>
+    </sql>
+
     <sql id="selectDomainSql">
-        select distinct d.*, '${entityName}' entity_name from ${entityName} d
+        select d.*, '${entityName}' entity_name,
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainSelect"/>
+
+        from ${entityName} d
+          left join ${entityName}_attribute a on a.object_id = d.object_id
+          left join `${entityName}_value` v on v.attribute_id = a.id
+
         <if test="attributes != null and !attributes.isEmpty">
             <foreach collection="attributes" index="i" item="a">
                 <if test="a.text != null or a.number != null">
@@ -54,6 +86,7 @@
                 </if>
             </foreach>
         </if>
+
         <where>
             <if test="parentId != null">and d.parent_id = #{parentId} and d.`status` in (1, 3, 4)</if>
             <if test="objectId != null">and d.object_id = #{objectId} and d.`status` in (1, 3, 4)</if>
@@ -67,7 +100,7 @@
     </sql>
 
     <!--suppress SqlResolve -->
-    <select id="selectDomain" parameterType="ru.complitex.domain.entity.Domain" resultMap="domainResultMap">
+    <select id="selectDomain" parameterType="ru.complitex.domain.entity.Domain" resultMap="domainResultMapJoin">
         <include refid="selectDomainSql"/>
     </select>
 
@@ -93,9 +126,11 @@
         limit 1
     </select>
 
-    <sql id="selectDomainsFromWhere">
+    <sql id="selectDomainsFrom">
         from ${object.entityName} d
+    </sql>
 
+    <sql id="selectDomainsFromFilter">
         <if test="object.parentEntityAttribute != null">
             left join ${object.parentEntityAttribute.entityName}_attribute p_a on p_a.object_id = d.parent_id
             left join `${object.parentEntityAttribute.entityName}_value` p_v on p_v.attribute_id = p_a.id
@@ -141,7 +176,9 @@
                 </if>
             </if>
         </if>
+    </sql>
 
+    <sql id="selectDomainsWhere">
         <where>
             <if test="object.objectId != null">
                 <choose>
@@ -205,7 +242,7 @@
         </where>
     </sql>
 
-    <sql id="selectDomainsFromSort">
+    <sql id="selectDomainsSelectSort">
         <if test="sortProperty != null">
             <choose>
                 <when test="sortProperty.key == 'text'">, sort_a.text</when>
@@ -230,19 +267,43 @@
         </if>
     </sql>
 
+    <sql id="selectDomainsSelect">
+        a.id a_id, a.object_id a_object_id, a.entity_attribute_id a_entity_attribute_id, a.text a_text,
+        a.number a_number, <if test="object.useDateAttribute">a.date a_date,</if> a.start_date a_start_date, a.end_date a_end_date, a.status a_status,
+        a.user_id a_user_id, '${object.entityName}' a_entity_name, v.id v_id, v.attribute_id v_attribute_id,
+        v.locale_id v_locale_id, v.text v_text <if test="object.useNumberValue">, v.number v_number</if>
+    </sql>
+
     <!--suppress SqlResolve -->
-    <select id="selectDomains" parameterType="ru.complitex.common.entity.FilterWrapper" resultMap="domainResultMap">
-        select distinct d.object_id, '${object.entityName}' entity_name, d.*
-        <include refid="selectDomainsFromSort"/>
-        <include refid="selectDomainsFromWhere"/>
-        <include refid="selectDomainsOrderSort"/>
-        ${limit}
+    <select id="selectDomains" parameterType="ru.complitex.common.entity.FilterWrapper" resultMap="domainResultMapJoin">
+        select '${object.entityName}' entity_name, d.*,
+        <include refid="selectDomainsSelect"/>
+        from (
+          select dd.object_id object_id
+          from (
+            select distinct(d.object_id) object_id
+            <include refid="selectDomainsFrom"/>
+            <include refid="selectDomainsSelectSort"/>
+            <include refid="selectDomainsFromFilter"/>
+            <include refid="selectDomainsWhere"/>
+            <include refid="selectDomainsOrderSort"/>
+          ) dd
+          ${limit}
+        ) o
+        left join ${object.entityName} d on d.object_id = o.object_id
+        left join ${object.entityName}_attribute a on a.object_id = d.object_id
+        left join ${object.entityName}_value v on v.attribute_id = a.id
     </select>
 
     <!--suppress SqlResolve -->
     <select id="selectDomainsCount" parameterType="ru.complitex.common.entity.FilterWrapper" resultType="long">
-        select count(distinct d.object_id)
-        <include refid="selectDomainsFromWhere"/>
+        select count(distinct dd.object_id)
+        from (
+          select d.object_id object_id
+          <include refid="selectDomainsFrom"/>
+          <include refid="selectDomainsFromFilter"/>
+          <include refid="selectDomainsWhere"/>
+        ) dd
     </select>
 
     <!--suppress SqlResolve -->

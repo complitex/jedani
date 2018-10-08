@@ -11,29 +11,13 @@
         <result column="text" property="text"/>
         <result column="number" property="number"/>
         <result column="date" property="date"/>
-        <result column="json" property="json"/>
         <result column="start_date" property="startDate"/>
         <result column="end_date" property="endDate"/>
         <result column="status" property="status"/>
         <result column="user_id" property="userId"/>
         <result column="entity_name" property="entityName"/>
-        <collection column="entityName=entity_name, attributeId=id" property="values" select="ru.complitex.domain.entity.Value.selectValues"/>
-    </resultMap>
-
-    <resultMap id="attributeResultMapOpt" type="ru.complitex.domain.entity.Attribute">
-        <id column="id" property="id"/>
-        <result column="object_id" property="objectId"/>
-        <result column="entity_attribute_id" property="entityAttributeId"/>
-        <result column="text" property="text"/>
-        <result column="number" property="number"/>
-        <result column="date" property="date"/>
-        <result column="json" property="json"/>
-        <result column="start_date" property="startDate"/>
-        <result column="end_date" property="endDate"/>
-        <result column="status" property="status"/>
-        <result column="user_id" property="userId"/>
-        <result column="entity_name" property="entityName"/>
-        <collection columnPrefix="v_" property="values" resultMap="ru.complitex.domain.entity.Value.valueResultMap"/>
+        <collection column="entityName=entity_name, attributeId=id" property="values"
+                    select="ru.complitex.domain.entity.Value.selectValues"/>
     </resultMap>
 
     <!--suppress SqlResolve -->
@@ -54,14 +38,6 @@
     <!--suppress SqlResolve -->
     <select id="selectAttributes" parameterType="map" resultMap="attributeResultMap">
         select '${entityName}' entity_name, a.* from ${entityName}_attribute a where a.object_id = #{objectId} and a.status = 1
-    </select>
-
-    <!--suppress SqlResolve -->
-    <select id="selectAttributesOpt" parameterType="map" resultMap="attributeResultMapOpt">
-        select '${entityName}' entity_name, a.*, v.id v_id, v.attribute_id v_attribute_id, v.locale_id v_locale_id,
-          v.text v_text, v.number v_number
-        from ${entityName}_attribute a left join ${entityName}_value v on v.attribute_id = a.id
-          where a.object_id = #{objectId} and a.status = 1
     </select>
 
     <!--suppress SqlResolve -->

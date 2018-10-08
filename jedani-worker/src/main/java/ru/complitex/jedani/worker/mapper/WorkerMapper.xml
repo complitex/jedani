@@ -4,7 +4,7 @@
     <!--<cache/>-->
 
     <resultMap id="workerResultMap" type="ru.complitex.jedani.worker.entity.Worker"
-               extends="ru.complitex.domain.mapper.DomainMapper.domainResultMapOpt">
+               extends="ru.complitex.domain.mapper.DomainMapper.domainResultMapJoin">
         <result column="left" property="left"/>
         <result column="right" property="right"/>
         <result column="level" property="level"/>
@@ -40,35 +40,62 @@
         </if>
     </sql>
 
-    <sql id="selectWorkersOrderNode">
-
+    <sql id="selectWorkersFromLogin">
+        <if test="map.login != null">
+            left join `user` u on u.id = d.parent_id
+        </if>
     </sql>
 
     <sql id="selectWorkersWhereLogin">
         <if test="map.login != null">
-            and d.parent_id in (select id from `user` u where u.login like concat('%', #{map.login}, '%'))
+            and u.login like concat('%', #{map.login}, '%')
+        </if>
+    </sql>
+
+    <sql id="selectWorkersOrderSort">
+        <if test="sortProperty != null">
+            <choose>
+                <when test="sortProperty.key == 'login'">order by u.login</when>
+                <when test="sortProperty.key == 'level'">order by d.level</when>
+                <when test="sortProperty.key == 'subWorkersCount'">order by sub_worker_count</when>
+            </choose>
         </if>
     </sql>
 
     <!--suppress SqlResolve -->
     <select id="selectWorkers" parameterType="ru.complitex.common.entity.FilterWrapper" resultMap="workerResultMap">
-        select distinct d.*, '${object.entityName}' entity_name,
-          (select count(w.object_id) from worker w where w.left > d.left and d.right > w.right and w.status = 1) sub_worker_count
-        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromSort"/>
-        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromWhere"/>
-        <include refid="selectWorkersWhereNode"/>
-        <include refid="selectWorkersWhereLogin"/>
-        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsOrderSort"/>
-        <include refid="selectWorkersOrderNode"/>
-        ${limit}
+        select d.*, '${object.entityName}' entity_name,
+            (select count(w.object_id) from worker w where w.left > d.left and d.right > w.right and w.status = 1)
+              sub_worker_count,
+            <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsSelect"/>
+        from (
+            select dd.object_id object_id
+            from (
+                select distinct (d.object_id) object_id
+                <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsSelectSort"/>
+                <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFrom"/>
+                <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromFilter"/>
+                <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsWhere"/>
+                <include refid="selectWorkersWhereNode"/>
+                <include refid="selectWorkersWhereLogin"/>
+                <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsOrderSort"/>
+                <include refid="selectWorkersOrderSort"/>
+            ) dd
+            ${limit}
+        ) o
+        left join worker d on d.object_id = o.object_id
+        left join worker_attribute a on a.object_id = d.object_id
+        left join worker_value v on v.attribute_id = a.id
     </select>
 
     <!--suppress SqlResolve -->
     <select id="selectWorkersCount" parameterType="ru.complitex.common.entity.FilterWrapper" resultType="long">
-        select count(distinct d.object_id)
-        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromWhere"/>
+        select count(distinct w.object_id) from (select d.object_id
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFrom"/>
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromFilter"/>
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsWhere"/>
         <include refid="selectWorkersWhereLogin"/>
-        <include refid="selectWorkersWhereNode"/>
+        <include refid="selectWorkersWhereNode"/>) w
     </select>
 
     <select id="selectWorker" parameterType="long" resultMap="workerResultMap">
@@ -76,7 +103,13 @@
     </select>
 
     <select id="selectWorkersByString" parameterType="string" resultMap="workerResultMap">
-        select *, 'worker' entity_name from worker w
+        select 'worker' entity_name, w.*,
+          <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsSelect"/>
+
+          from worker w
+
+          left join worker_attribute a on a.object_id = w.object_id
+          left join worker_value v on v.attribute_id = a.id
 
           left join worker_attribute wa_jid on w.object_id = wa_jid.object_id and wa_jid.entity_attribute_id = 1 and wa_jid.status = 1
 
