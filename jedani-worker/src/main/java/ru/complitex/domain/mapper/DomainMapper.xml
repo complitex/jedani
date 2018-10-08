@@ -18,6 +18,22 @@
                     select="ru.complitex.domain.mapper.AttributeMapper.selectAttributes"/>
     </resultMap>
 
+    <resultMap id="domainResultMapOpt" type="ru.complitex.domain.entity.Domain">
+        <id column="id" property="id"/>
+        <result column="object_id" property="objectId"/>
+        <result column="parent_id" property="parentId"/>
+        <result column="parent_entity_id" property="parentEntityId"/>
+        <result column="start_date" property="startDate"/>
+        <result column="end_date" property="endDate"/>
+        <result column="status" property="status"/>
+        <result column="permission_id" property="permissionId"/>
+        <result column="external_id" property="externalId"/>
+        <result column="entity_name" property="entityName"/>
+        <result column="user_id" property="userId"/>
+        <collection column="entityName=entity_name, objectId=id" property="attributes"
+                    select="ru.complitex.domain.mapper.AttributeMapper.selectAttributesOpt"/>
+    </resultMap>
+
     <!--suppress SqlResolve -->
     <insert id="insertDomain" parameterType="ru.complitex.domain.entity.Domain" useGeneratedKeys="false" keyProperty="id">
         insert into ${entityName} (object_id, parent_id, parent_entity_id, start_date, end_date, `status`, permission_id,
@@ -77,8 +93,6 @@
 
     <sql id="selectDomainsFromWhere">
         from ${object.entityName} d
-        left join ${object.entityName}_attribute a on a.object_id = d.object_id
-        left join `${object.entityName}_value` v on v.attribute_id = a.id
 
         <if test="object.parentEntityAttribute != null">
             left join ${object.parentEntityAttribute.entityName}_attribute p_a on p_a.object_id = d.parent_id

@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="ru.complitex.jedani.worker.mapper.WorkerMapper">
     <resultMap id="workerResultMap" type="ru.complitex.jedani.worker.entity.Worker"
-               extends="ru.complitex.domain.mapper.DomainMapper.domainResultMap">
+               extends="ru.complitex.domain.mapper.DomainMapper.domainResultMapOpt">
         <result column="left" property="left"/>
         <result column="right" property="right"/>
         <result column="level" property="level"/>

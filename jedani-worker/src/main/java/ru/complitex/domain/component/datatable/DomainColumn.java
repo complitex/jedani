@@ -21,10 +21,10 @@ import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.entity.Value;
 import ru.complitex.domain.mapper.DomainMapper;
-import ru.complitex.domain.mapper.EntityMapper;
 import ru.complitex.domain.model.DateAttributeModel;
 import ru.complitex.domain.model.NumberAttributeModel;
 import ru.complitex.domain.model.TextAttributeModel;
+import ru.complitex.domain.service.EntityService;
 import ru.complitex.domain.util.Attributes;
 import ru.complitex.domain.util.Locales;
 
@@ -41,7 +41,7 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
 
     private EntityAttribute entityAttribute;
 
-    private EntityMapper entityMapper;
+    private EntityService entityService;
 
     private DomainMapper domainMapper;
 
@@ -92,7 +92,7 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
                 break;
             case ENTITY:
                 if (attribute.getNumber() != null) {
-                    Domain domain = getDomainMapper().getDomain(getEntityMapper()
+                    Domain domain = getDomainMapper().getDomain(getEntityService()
                             .getEntity(entityAttribute.getReferenceId()).getName(), attribute.getNumber());
 
                     text = domain != null
@@ -166,14 +166,14 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
         cellItem.add(new Label(componentId, text));
     }
 
-    private EntityMapper getEntityMapper(){
-        if (entityMapper == null){
-            entityMapper = new EntityMapper();
+    private EntityService getEntityService(){
+        if (entityService == null){
+            entityService = new EntityService();
 
-            NonContextual.of(EntityMapper.class).inject(entityMapper);
+            NonContextual.of(EntityService.class).inject(entityService);
         }
 
-        return entityMapper;
+        return entityService;
     }
 
     private DomainMapper getDomainMapper(){
