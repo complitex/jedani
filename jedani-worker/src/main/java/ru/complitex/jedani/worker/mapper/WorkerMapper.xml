@@ -41,7 +41,7 @@
     </sql>
 
     <sql id="selectWorkersFromLogin">
-        <if test="map.login != null">
+        <if test="map.login != null or (sortProperty != null and sortProperty.key == 'login')">
             left join `user` u on u.id = d.parent_id
         </if>
     </sql>
@@ -52,12 +52,25 @@
         </if>
     </sql>
 
+    <sql id="selectWorkersSelectSort">
+        <if test="sortProperty != null">
+            <choose>
+                <when test="sortProperty.key == 'login'">, u.login login</when>
+                <when test="sortProperty.key == 'level'">, d.level level</when>
+                <when test="sortProperty.key == 'subWorkersCount'">
+                    , (select count(w.object_id) from worker w where w.left > d.left and d.right > w.right
+                    and w.status = 1) sub_worker_count
+                </when>
+            </choose>
+        </if>
+    </sql>
+
     <sql id="selectWorkersOrderSort">
         <if test="sortProperty != null">
             <choose>
-                <when test="sortProperty.key == 'login'">order by u.login</when>
-                <when test="sortProperty.key == 'level'">order by d.level</when>
-                <when test="sortProperty.key == 'subWorkersCount'">order by sub_worker_count</when>
+                <when test="sortProperty.key == 'login'">order by u.login + 0 ${asc}</when>
+                <when test="sortProperty.key == 'level'">order by d.level ${asc}</when>
+                <when test="sortProperty.key == 'subWorkersCount'">order by sub_worker_count ${asc}</when>
             </choose>
         </if>
     </sql>
@@ -73,8 +86,10 @@
             from (
                 select distinct (d.object_id) object_id
                 <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsSelectSort"/>
+                <include refid="selectWorkersSelectSort"/>
                 <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFrom"/>
                 <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromFilter"/>
+                <include refid="selectWorkersFromLogin"/>
                 <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsWhere"/>
                 <include refid="selectWorkersWhereNode"/>
                 <include refid="selectWorkersWhereLogin"/>
@@ -93,6 +108,7 @@
         select count(distinct w.object_id) from (select d.object_id
         <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFrom"/>
         <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromFilter"/>
+        <include refid="selectWorkersFromLogin"/>
         <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsWhere"/>
         <include refid="selectWorkersWhereLogin"/>
         <include refid="selectWorkersWhereNode"/>) w
