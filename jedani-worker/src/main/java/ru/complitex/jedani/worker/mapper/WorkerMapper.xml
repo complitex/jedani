@@ -118,7 +118,10 @@
 
     <select id="selectWorkersByString" parameterType="string" resultMap="workerResultMap">
         select 'worker' entity_name, w.*,
-          <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsSelect"/>
+            a.id a_id, a.object_id a_object_id, a.entity_attribute_id a_entity_attribute_id, a.text a_text,
+            a.number a_number, a.date a_date, a.start_date a_start_date, a.end_date a_end_date, a.status a_status,
+            a.user_id a_user_id, 'worker' a_entity_name, v.id v_id, v.attribute_id v_attribute_id,
+            v.locale_id v_locale_id, v.text v_text, v.number v_number
 
           from worker w
 
