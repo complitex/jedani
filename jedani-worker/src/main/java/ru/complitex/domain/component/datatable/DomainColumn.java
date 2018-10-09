@@ -64,7 +64,10 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
 
         switch (entityAttribute.getValueType()){
             case NUMBER:
-                return new TextFilter<>(componentId, new NumberAttributeModel(domain, entityAttributeId), form);
+                TextFilter<Long> textFilter = new TextFilter<>(componentId, new NumberAttributeModel(domain, entityAttributeId), form);
+                textFilter.getFilter().setType(Long.class);
+
+                return textFilter;
             case DATE:
                 return new InputPanel(componentId, new DateTextField(InputPanel.INPUT_COMPONENT_ID,
                         new DateAttributeModel(domain, entityAttributeId),
