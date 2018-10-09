@@ -3,13 +3,18 @@
 <!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
 
 <configuration>
+    <settings>
+        <setting name="autoMappingBehavior" value="NONE"/>
+        <setting name="defaultExecutorType" value="REUSE"/>
+    </settings>
+
     <typeHandlers>
         <typeHandler handler="ru.complitex.common.mybatis.IdEnumTypeHandler" javaType="ru.complitex.domain.entity.Status"/>
         <typeHandler handler="ru.complitex.common.mybatis.IdEnumTypeHandler" javaType="ru.complitex.domain.entity.ValueType"/>
     </typeHandlers>
 
-    <environments default="local">
-        <environment id="local">
+    <environments default="jedani">
+        <environment id="jedani">
             <transactionManager type="MANAGED"/>
             <dataSource type="JNDI">
                 <property name="data_source" value="jdbc/Jedani"/>

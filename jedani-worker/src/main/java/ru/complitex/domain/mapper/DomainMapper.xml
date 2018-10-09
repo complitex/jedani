@@ -32,7 +32,7 @@
         <result column="external_id" property="externalId"/>
         <result column="entity_name" property="entityName"/>
         <result column="user_id" property="userId"/>
-        <collection property="attributes" ofType="ru.complitex.domain.entity.Attribute">
+        <collection property="attributes" ofType="ru.complitex.domain.entity.Attribute" notNullColumn="a_id">
             <id column="a_id" property="id"/>
             <result column="a_object_id" property="objectId"/>
             <result column="a_entity_attribute_id" property="entityAttributeId"/>
@@ -44,7 +44,7 @@
             <result column="a_status" property="status"/>
             <result column="a_user_id" property="userId"/>
             <result column="a_entity_name" property="entityName"/>
-            <collection property="values" ofType="ru.complitex.domain.entity.Value">
+            <collection property="values" ofType="ru.complitex.domain.entity.Value" notNullColumn="v_id">
                 <id column="v_id" property="id"/>
                 <result column="v_attribute_id" property="attributeId"/>
                 <result column="v_locale_id" property="localeId"/>
