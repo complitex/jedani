@@ -14,7 +14,7 @@
     </select>
 
     <select id="selectIsExistJId" resultType="boolean" parameterType="map">
-        select count(*) > 0 from worker_attribute where entity_attribute_id = 1 and `text` = #{jId}
+        select count(*) > 0 from worker_attribute where entity_attribute_id = 1 and `text` = #{jId} and `status` = 1
         <if test="objectId != null">and object_id != #{objectId}</if>
     </select>
 
