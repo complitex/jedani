@@ -29,7 +29,6 @@ import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.mapper.DomainMapper;
-import ru.complitex.domain.mapper.EntityAttributeMapper;
 import ru.complitex.domain.mapper.EntityMapper;
 import ru.complitex.domain.model.TextAttributeModel;
 import ru.complitex.domain.util.Locales;
@@ -50,9 +49,6 @@ public abstract class DomainEditPage extends BasePage{
 
     @Inject
     private EntityMapper entityMapper;
-
-    @Inject
-    private EntityAttributeMapper entityAttributeMapper;
 
     @Inject
     private DomainMapper domainMapper;

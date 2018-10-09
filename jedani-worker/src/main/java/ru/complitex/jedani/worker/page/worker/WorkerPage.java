@@ -53,6 +53,7 @@ import ru.complitex.domain.component.form.DomainAutoCompleteFormGroup;
 import ru.complitex.domain.entity.*;
 import ru.complitex.domain.mapper.*;
 import ru.complitex.domain.model.TextAttributeModel;
+import ru.complitex.domain.service.EntityService;
 import ru.complitex.jedani.worker.component.WorkerAutoComplete;
 import ru.complitex.jedani.worker.entity.MkStatus;
 import ru.complitex.jedani.worker.entity.Position;
@@ -105,7 +106,7 @@ public class WorkerPage extends BasePage {
     private WorkerService workerService;
 
     @Inject
-    private EntityAttributeMapper entityAttributeMapper;
+    private EntityService entityService;
 
     @Inject
     private DomainNodeMapper domainNodeMapper;
@@ -673,27 +674,27 @@ public class WorkerPage extends BasePage {
         List<EntityAttribute> list = new ArrayList<>();
 
         list.add(entity.getEntityAttribute(Worker.LAST_NAME)
-                .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(LastName.ENTITY_NAME, LastName.NAME))
+                .setReferenceEntityAttribute(entityService.getEntityAttribute(LastName.ENTITY_NAME, LastName.NAME))
                 .setDisplayCapitalize(true));
 
         list.add(entity.getEntityAttribute(Worker.FIRST_NAME)
-                .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(FirstName.ENTITY_NAME, FirstName.NAME))
+                .setReferenceEntityAttribute(entityService.getEntityAttribute(FirstName.ENTITY_NAME, FirstName.NAME))
                 .setDisplayCapitalize(true));
 
         list.add(entity.getEntityAttribute(Worker.MIDDLE_NAME)
-                .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(MiddleName.ENTITY_NAME, MiddleName.NAME))
+                .setReferenceEntityAttribute(entityService.getEntityAttribute(MiddleName.ENTITY_NAME, MiddleName.NAME))
                 .setDisplayCapitalize(true));
 
         list.add(entity.getEntityAttribute(Worker.J_ID));
 
         list.add(entity.getEntityAttribute(Worker.REGION_IDS)
-                .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(Region.ENTITY_NAME, Region.NAME))
+                .setReferenceEntityAttribute(entityService.getEntityAttribute(Region.ENTITY_NAME, Region.NAME))
                 .setDisplayCapitalize(true));
 
         list.add(entity.getEntityAttribute(Worker.CITY_IDS)
-                .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(City.ENTITY_NAME, City.NAME))
-                .setPrefixEntityAttribute(entityAttributeMapper.getEntityAttribute(City.ENTITY_NAME, City.CITY_TYPE_ID)
-                        .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(CityType.ENTITY_NAME, CityType.SHORT_NAME)))
+                .setReferenceEntityAttribute(entityService.getEntityAttribute(City.ENTITY_NAME, City.NAME))
+                .setPrefixEntityAttribute(entityService.getEntityAttribute(City.ENTITY_NAME, City.CITY_TYPE_ID)
+                        .setReferenceEntityAttribute(entityService.getEntityAttribute(CityType.ENTITY_NAME, CityType.SHORT_NAME)))
                 .setDisplayCapitalize(true));
 
         return list;

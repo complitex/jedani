@@ -14,7 +14,7 @@ import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.mapper.DomainMapper;
-import ru.complitex.domain.mapper.EntityAttributeMapper;
+import ru.complitex.domain.service.EntityService;
 import ru.complitex.domain.util.Attributes;
 import ru.complitex.domain.util.Locales;
 
@@ -33,7 +33,7 @@ public class DomainAutoComplete extends Panel {
     private DomainMapper domainMapper;
 
     @Inject
-    private EntityAttributeMapper entityAttributeMapper;
+    private EntityService entityService;
 
     private AutoCompleteTextField<Attribute> autoCompleteTextField;
 
@@ -45,7 +45,7 @@ public class DomainAutoComplete extends Panel {
         inputId.setOutputMarkupId(true);
         add(inputId);
 
-        EntityAttribute entityAttribute = entityAttributeMapper.getEntityAttribute(entityName, entityAttributeId);
+        EntityAttribute entityAttribute = entityService.getEntityAttribute(entityName, entityAttributeId);
 
         IModel<Attribute> attributeModel = new Model<Attribute>(){
             @Override

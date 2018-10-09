@@ -23,8 +23,8 @@ import ru.complitex.common.entity.SortProperty;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
-import ru.complitex.domain.mapper.EntityAttributeMapper;
 import ru.complitex.domain.page.DomainListPage;
+import ru.complitex.domain.service.EntityService;
 import ru.complitex.jedani.worker.entity.Position;
 import ru.complitex.jedani.worker.entity.Worker;
 import ru.complitex.jedani.worker.mapper.WorkerMapper;
@@ -45,7 +45,7 @@ import java.util.List;
 @AuthorizeInstantiation({JedaniRoles.ADMINISTRATORS, JedaniRoles.STRUCTURE_ADMINISTRATORS})
 public class WorkerListPage extends DomainListPage<Worker>{
     @Inject
-    private EntityAttributeMapper entityAttributeMapper;
+    private EntityService entityService;
 
     @Inject
     private WorkerMapper workerMapper;
@@ -69,27 +69,27 @@ public class WorkerListPage extends DomainListPage<Worker>{
         List<EntityAttribute> list = new ArrayList<>();
 
         list.add(entity.getEntityAttribute(Worker.LAST_NAME)
-                .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(LastName.ENTITY_NAME, LastName.NAME))
+                .setReferenceEntityAttribute(entityService.getEntityAttribute(LastName.ENTITY_NAME, LastName.NAME))
                 .setDisplayCapitalize(true));
 
         list.add(entity.getEntityAttribute(Worker.FIRST_NAME)
-                .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(FirstName.ENTITY_NAME, FirstName.NAME))
+                .setReferenceEntityAttribute(entityService.getEntityAttribute(FirstName.ENTITY_NAME, FirstName.NAME))
                 .setDisplayCapitalize(true));
 
         list.add(entity.getEntityAttribute(Worker.MIDDLE_NAME)
-                .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(MiddleName.ENTITY_NAME, MiddleName.NAME))
+                .setReferenceEntityAttribute(entityService.getEntityAttribute(MiddleName.ENTITY_NAME, MiddleName.NAME))
                 .setDisplayCapitalize(true));
 
         list.add(entity.getEntityAttribute(Worker.J_ID));
 
         list.add(entity.getEntityAttribute(Worker.REGION_IDS)
-                .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(Region.ENTITY_NAME, Region.NAME))
+                .setReferenceEntityAttribute(entityService.getEntityAttribute(Region.ENTITY_NAME, Region.NAME))
                 .setDisplayCapitalize(true));
 
         list.add(entity.getEntityAttribute(Worker.CITY_IDS)
-                .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(City.ENTITY_NAME, City.NAME))
-                .setPrefixEntityAttribute(entityAttributeMapper.getEntityAttribute(City.ENTITY_NAME, City.CITY_TYPE_ID)
-                        .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(CityType.ENTITY_NAME, CityType.SHORT_NAME)))
+                .setReferenceEntityAttribute(entityService.getEntityAttribute(City.ENTITY_NAME, City.NAME))
+                .setPrefixEntityAttribute(entityService.getEntityAttribute(City.ENTITY_NAME, City.CITY_TYPE_ID)
+                        .setReferenceEntityAttribute(entityService.getEntityAttribute(CityType.ENTITY_NAME, CityType.SHORT_NAME)))
                 .setDisplayCapitalize(true));
 
         list.add(entity.getEntityAttribute(Worker.PHONE));
@@ -97,7 +97,7 @@ public class WorkerListPage extends DomainListPage<Worker>{
         list.add(entity.getEntityAttribute(Worker.INVOLVED_AT));
 
         list.add(entity.getEntityAttribute(Worker.POSITION_ID)
-                .setReferenceEntityAttribute(entityAttributeMapper.getEntityAttribute(Position.ENTITY_NAME, Position.NAME)));
+                .setReferenceEntityAttribute(entityService.getEntityAttribute(Position.ENTITY_NAME, Position.NAME)));
         list.add(entity.getEntityAttribute(Worker.EMPLOYEE));
 
         return list;

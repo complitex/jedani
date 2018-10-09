@@ -3,9 +3,14 @@
 <mapper namespace="ru.complitex.domain.mapper.EntityMapper">
     <resultMap id="entityResultMap" type="ru.complitex.domain.entity.Entity">
         <id column="id" property="id"/>
+
         <result column="name" property="name"/>
-        <collection column="entityId = id" property="values" select="ru.complitex.domain.mapper.EntityValueMapper.selectEntityValues"/>
-        <collection column="id" property="attributes" select="ru.complitex.domain.mapper.EntityAttributeMapper.selectEntityAttributes"/>
+
+        <collection column="entityId = id" property="values"
+                    select="ru.complitex.domain.mapper.EntityValueMapper.selectEntityValues"/>
+
+        <collection column="entityId = id, entityName = name" property="attributes"
+                    select="ru.complitex.domain.mapper.EntityAttributeMapper.selectEntityAttributes"/>
     </resultMap>
 
     <select id="selectEntity" parameterType="long" resultMap="entityResultMap">

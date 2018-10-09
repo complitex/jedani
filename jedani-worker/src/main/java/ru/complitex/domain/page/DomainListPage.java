@@ -26,7 +26,7 @@ import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.mapper.DomainMapper;
-import ru.complitex.domain.mapper.EntityMapper;
+import ru.complitex.domain.service.EntityService;
 import ru.complitex.jedani.worker.page.BasePage;
 
 import javax.inject.Inject;
@@ -43,7 +43,7 @@ public class DomainListPage<T extends Domain> extends BasePage{
     public static final String CURRENT_PAGE_ATTRIBUTE = "_PAGE";
 
     @Inject
-    private EntityMapper entityMapper;
+    private EntityService entityService;
 
     @Inject
     private DomainMapper domainMapper;
@@ -58,7 +58,7 @@ public class DomainListPage<T extends Domain> extends BasePage{
         this.entityName = entityName;
         this.editPageClass = editPageClass;
 
-        Entity entity = entityMapper.getEntity(entityName);
+        Entity entity = entityService.getEntity(entityName);
 
         add(new Label("header", entity.getValue() != null ? entity.getValue().getText() : "[" + entityName + "]")
                 .setVisible(isShowHeader()));
@@ -100,7 +100,7 @@ public class DomainListPage<T extends Domain> extends BasePage{
         columns.add(new DomainIdColumn<>());
 
         if (parentEntityName != null){
-            columns.add(new DomainParentColumn<T>(entityMapper.getEntity(parentEntityName), parentEntityAttributeId) {
+            columns.add(new DomainParentColumn<T>(entityService.getEntity(parentEntityName), parentEntityAttributeId) {
                 @Override
                 protected Domain getDomain(Long objectId) {
                     return domainMapper.getDomain(parentEntityName, objectId);

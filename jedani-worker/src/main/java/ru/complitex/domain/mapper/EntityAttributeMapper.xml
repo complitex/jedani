@@ -14,8 +14,8 @@
                     select="ru.complitex.domain.mapper.EntityValueMapper.selectEntityValues"/>
     </resultMap>
 
-    <select id="selectEntityAttributes" parameterType="long" resultMap="entityAttributeResultMap">
-        select * from entity_attribute where entity_id = #{entityId}
+    <select id="selectEntityAttributes" parameterType="map" resultMap="entityAttributeResultMap">
+        select a.*, '${entityName}' entity_name from entity_attribute a where entity_id = #{entityId}
     </select>
 
     <select id="selectEntityAttribute" parameterType="map" resultMap="entityAttributeResultMap">
