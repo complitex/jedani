@@ -56,7 +56,11 @@ public abstract class DomainEditPage extends BasePage{
     public DomainEditPage(String entityName, PageParameters parameters, Class<? extends WebPage> backPage, boolean upperCase) {
         Entity entity = entityMapper.getEntity(entityName);
 
-        add(new Label("header", entity.getValue().getText()));
+        String title = entity.getValue().getText();
+
+        add(new Label("title", title));
+
+        add(new Label("header", title));
 
         FeedbackPanel feedback = new NotificationPanel("feedback");
         feedback.setOutputMarkupId(true);

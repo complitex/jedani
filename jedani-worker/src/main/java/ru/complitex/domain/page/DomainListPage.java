@@ -60,8 +60,11 @@ public class DomainListPage<T extends Domain> extends BasePage{
 
         Entity entity = entityService.getEntity(entityName);
 
-        add(new Label("header", entity.getValue() != null ? entity.getValue().getText() : "[" + entityName + "]")
-                .setVisible(isShowHeader()));
+        String title = entity.getValue() != null ? entity.getValue().getText() : "[" + entityName + "]";
+
+        add(new Label("title", title));
+
+        add(new Label("header", title).setVisible(isShowHeader()));
 
         FeedbackPanel feedback = new NotificationPanel("feedback");
         feedback.setOutputMarkupId(true);

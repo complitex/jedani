@@ -24,28 +24,33 @@ public class EntityService implements Serializable {
 
     @SuppressWarnings("Duplicates")
     public Entity getEntity(Long id){
-        Entity entity = idMap.get(id);
+//        todo ref entity attributes configuration
+//        Entity entity = idMap.get(id);
+//
+//        if (entity == null){
+//            entity = entityMapper.getEntity(id);
+//
+//            idMap.put(id, entity);
+//        }
+//
+//        return entity;
 
-        if (entity == null){
-            entity = entityMapper.getEntity(id);
-
-            idMap.put(id, entity);
-        }
-
-        return entity;
+        return entityMapper.getEntity(id);
     }
 
     @SuppressWarnings("Duplicates")
     public Entity getEntity(String entityName){
-        Entity entity = entityNameMap.get(entityName);
+//        Entity entity = entityNameMap.get(entityName);
+//
+//        if (entity == null){
+//            entity = entityMapper.getEntity(entityName);
+//
+//            entityNameMap.put(entityName, entity);
+//        }
+//
+//        return entity;
 
-        if (entity == null){
-            entity = entityMapper.getEntity(entityName);
-
-            entityNameMap.put(entityName, entity);
-        }
-
-        return entity;
+        return entityMapper.getEntity(entityName);
     }
 
     public EntityAttribute getEntityAttribute(String entityName, Long entityAttributeId){

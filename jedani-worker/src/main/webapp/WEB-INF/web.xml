@@ -11,6 +11,12 @@
         <param-value>development</param-value>
     </context-param>
 
+    <session-config>
+        <cookie-config>
+            <name>JSESSIONID</name>
+        </cookie-config>
+    </session-config>
+
     <filter>
         <filter-name>wicket</filter-name>
         <filter-class>org.apache.wicket.protocol.ws.javax.JavaxWebSocketFilter</filter-class>
