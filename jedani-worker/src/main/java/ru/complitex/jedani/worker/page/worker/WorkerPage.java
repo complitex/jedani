@@ -506,7 +506,13 @@ public class WorkerPage extends BasePage {
                     }
 
                     if (worker.getObjectId() == null){
-                        domainMapper.insertDomain(worker);
+                        try {
+                            domainMapper.insertDomain(worker);
+                        } catch (Exception e) {
+                            userMapper.deleteUser(user.getId());
+
+                            throw e;
+                        }
 
                         if (manager != null) {
                             domainNodeMapper.updateIndex(manager, worker);

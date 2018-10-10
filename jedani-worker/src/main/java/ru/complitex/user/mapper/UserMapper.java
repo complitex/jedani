@@ -59,4 +59,9 @@ public class UserMapper extends BaseMapper {
                 .filter(ug -> !dbUser.hasRole(ug.getName()))
                 .forEach(ug -> userGroupMapper.insertUserGroup(ug));
     }
+
+    public void deleteUser(Long id){
+        userGroupMapper.deleteUserGroupsByUserId(id);
+        sqlSession().delete("deleteUser", id);
+    }
 }

@@ -35,4 +35,8 @@
         update `user` set login = #{login} where id = #{id}
     </update>
 
+    <delete id="deleteUser" parameterType="long">
+        delete from `user` where id = #{id}
+    </delete>
+
 </mapper>

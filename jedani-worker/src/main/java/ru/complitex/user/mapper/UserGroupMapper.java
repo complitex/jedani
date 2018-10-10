@@ -17,6 +17,10 @@ public class UserGroupMapper extends BaseMapper {
         sqlSession().delete("deleteUserGroups", login);
     }
 
+    public void deleteUserGroupsByUserId(Long userId){
+        sqlSession().delete("deleteUserGroupsByUserId", userId);
+    }
+
     public void deleteUserGroup(Long userGroupId){
         sqlSession().delete("deleteUserGroup", userGroupId);
     }

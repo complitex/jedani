@@ -16,6 +16,10 @@
         delete from user_group where login = #{login}
     </delete>
 
+    <delete id="deleteUserGroupsByUserId" parameterType="long">
+        delete ug from user_group ug left join `user` u on ug.login = u.login where u.id = #{userId}
+    </delete>
+
     <delete id="deleteUserGroup" parameterType="long">
         delete from user_group where id = #{id}
     </delete>
