@@ -3,7 +3,6 @@ package ru.complitex.domain.component.datatable;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.DateTextField;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.DateTextFieldConfig;
 import org.apache.wicket.Component;
-import org.apache.wicket.cdi.NonContextual;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.TextFilter;
@@ -45,13 +44,16 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
 
     private DomainMapper domainMapper;
 
-    public DomainColumn(EntityAttribute entityAttribute) {
+    public DomainColumn(EntityAttribute entityAttribute, EntityService entityService, DomainMapper domainMapper) {
         super(Model.of(entityAttribute.getValue() != null
                         ? entityAttribute.getValue().getText()
                         : "[" + entityAttribute.getEntityAttributeId() + "]"),
                 new SortProperty(entityAttribute.getValueType().getKey(), entityAttribute));
 
         this.entityAttribute = entityAttribute;
+
+        this.entityService = entityService;
+        this.domainMapper = domainMapper;
     }
 
     @Override
@@ -95,7 +97,7 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
                 break;
             case ENTITY:
                 if (attribute.getNumber() != null) {
-                    Domain domain = getDomainMapper().getDomain(getEntityService()
+                    Domain domain = domainMapper.getDomain(entityService
                             .getEntity(entityAttribute.getReferenceId()).getName(), attribute.getNumber());
 
                     text = domain != null
@@ -129,7 +131,7 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
 
                         text = list.stream()
                                 .map(id -> {
-                                    Domain domain = getDomainMapper().getDomain(referenceEntityAttribute.getEntityName(), id);
+                                    Domain domain = domainMapper.getDomain(referenceEntityAttribute.getEntityName(), id);
 
                                     String prefix = "";
 
@@ -137,7 +139,7 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
                                         Long prefixDomainId = domain.getNumber(prefixEntityAttribute.getEntityAttributeId());
 
                                         if (prefixDomainId != null) {
-                                            Domain prefixDomain = getDomainMapper().getDomain(prefixEntityAttribute
+                                            Domain prefixDomain = domainMapper.getDomain(prefixEntityAttribute
                                                             .getReferenceEntityAttribute().getEntityName(),
                                                     prefixDomainId);
 
@@ -167,25 +169,5 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
         }
 
         cellItem.add(new Label(componentId, text));
-    }
-
-    private EntityService getEntityService(){
-        if (entityService == null){
-            entityService = new EntityService();
-
-            NonContextual.of(EntityService.class).inject(entityService);
-        }
-
-        return entityService;
-    }
-
-    private DomainMapper getDomainMapper(){
-        if (domainMapper == null){
-            domainMapper = new DomainMapper();
-
-            NonContextual.of(DomainMapper.class).inject(domainMapper);
-        }
-
-        return domainMapper;
     }
 }
