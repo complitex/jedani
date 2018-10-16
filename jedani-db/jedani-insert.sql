@@ -14,7 +14,7 @@ INSERT INTO entity_value_type (id, value_type) VALUE (6, 'date');
 INSERT INTO entity_value_type (id, value_type) VALUE (10, 'entity_value');
 INSERT INTO entity_value_type (id, value_type) VALUE (11, 'entity');
 
-/*Address*/
+/* Address */
 
 INSERT INTO `entity`(`id`, `name`) VALUES (1, 'country');
 INSERT INTO `entity_value`(`entity_id`, `locale_id`, `text`) VALUES (1, 1, 'Страна'), (1, 2, 'Країна');
@@ -57,7 +57,7 @@ INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `tex
 INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (4, 100, 0);
 INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (4, 101, 0);
 
-/*User*/
+/* User */
 
 INSERT INTO `entity`(`id`, `name`) VALUES (10, 'user');
 
@@ -103,7 +103,7 @@ INSERT INTO `entity_value`(`entity_id`, `locale_id`, `text`) VALUES (22, 1, 'Д�
 INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (22, 1, 0);
 INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (22, 1, 1, 'Название'), (22, 1, 2, 'Назва');
 
-/*Worker*/
+/* Worker */
 
 INSERT INTO `entity`(`id`, `name`) VALUES (20, 'worker');
 INSERT INTO `entity_value`(`entity_id`, `locale_id`, `text`) VALUES (20, 1, 'Сотрудник'), (20, 2, 'Співробітник');
@@ -185,6 +185,10 @@ UPDATE `sequence` set `value` = 2 where `name` = 'worker';
 INSERT INTO `user`(login, password) value ('admin', sha2('admin', 256));
 INSERT INTO `user_group` (login, name) value ('admin', 'AUTHORIZED');
 INSERT INTO `user_group` (login, name) value ('admin', 'ADMINISTRATORS');
+
+-- Update
+
+INSERT INTO `update` (`version`) VALUE ('20181016_1.0.1');
 
 
 
