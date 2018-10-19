@@ -15,4 +15,13 @@ public class Storage extends Domain {
     public Storage() {
         super(ENTITY_NAME);
     }
+
+    public Storage(Domain domain) {
+        super(domain, ENTITY_NAME);
+    }
+
+    @Override
+    public boolean isUseNumberValue() {
+        return true;
+    }
 }
