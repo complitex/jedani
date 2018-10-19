@@ -2,6 +2,7 @@ package ru.complitex.jedani.worker.page.catalog;
 
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import ru.complitex.domain.page.DomainListPage;
+import ru.complitex.jedani.worker.entity.MkStatus;
 import ru.complitex.jedani.worker.security.JedaniRoles;
 
 /**
@@ -11,6 +12,6 @@ import ru.complitex.jedani.worker.security.JedaniRoles;
 @AuthorizeInstantiation(JedaniRoles.ADMINISTRATORS)
 public class MkStatusListPage extends DomainListPage {
     public MkStatusListPage() {
-        super("mk_status", MkStatusEditPage.class);
+        super(MkStatus.ENTITY_NAME, MkStatusEditPage.class);
     }
 }

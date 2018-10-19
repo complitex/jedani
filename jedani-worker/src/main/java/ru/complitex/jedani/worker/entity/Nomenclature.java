@@ -11,5 +11,5 @@ public class Nomenclature extends Domain {
 
     public static final long NAME = 1;
     public static final long CODE = 2;
-    public static final long CITY_IDS = 3;
+    public static final long COUNTRY_IDS = 3;
 }

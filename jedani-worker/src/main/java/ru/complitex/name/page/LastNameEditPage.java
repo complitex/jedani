@@ -4,6 +4,7 @@ import org.apache.wicket.authroles.authorization.strategies.role.annotations.Aut
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import ru.complitex.domain.page.DomainEditPage;
 import ru.complitex.jedani.worker.security.JedaniRoles;
+import ru.complitex.name.entity.LastName;
 
 /**
  * @author Anatoly A. Ivanov
@@ -12,6 +13,6 @@ import ru.complitex.jedani.worker.security.JedaniRoles;
 @AuthorizeInstantiation(JedaniRoles.ADMINISTRATORS)
 public class LastNameEditPage extends DomainEditPage{
     public LastNameEditPage(PageParameters parameters) {
-        super("last_name", parameters, LastNameListPage.class, true);
+        super(LastName.ENTITY_NAME, parameters, LastNameListPage.class);
     }
 }

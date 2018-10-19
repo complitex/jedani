@@ -3,6 +3,7 @@ package ru.complitex.jedani.worker.page.catalog;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import ru.complitex.domain.page.DomainEditPage;
+import ru.complitex.jedani.worker.entity.MkStatus;
 import ru.complitex.jedani.worker.security.JedaniRoles;
 
 /**
@@ -12,6 +13,6 @@ import ru.complitex.jedani.worker.security.JedaniRoles;
 @AuthorizeInstantiation(JedaniRoles.ADMINISTRATORS)
 public class MkStatusEditPage extends DomainEditPage {
     public MkStatusEditPage(PageParameters parameters) {
-        super("mk_status", parameters, MkStatusListPage.class, true);
+        super(MkStatus.ENTITY_NAME, parameters, MkStatusListPage.class);
     }
 }

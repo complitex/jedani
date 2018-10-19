@@ -2,6 +2,7 @@ package ru.complitex.address.page;
 
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import ru.complitex.address.entity.CityType;
 import ru.complitex.domain.page.DomainEditPage;
 import ru.complitex.jedani.worker.security.JedaniRoles;
 
@@ -12,6 +13,6 @@ import ru.complitex.jedani.worker.security.JedaniRoles;
 @AuthorizeInstantiation(JedaniRoles.ADMINISTRATORS)
 public class CityTypeEditPage extends DomainEditPage{
     public CityTypeEditPage(PageParameters parameters) {
-        super("city_type", parameters, CityTypeListPage.class, true);
+        super(CityType.ENTITY_NAME, parameters, CityTypeListPage.class);
     }
 }

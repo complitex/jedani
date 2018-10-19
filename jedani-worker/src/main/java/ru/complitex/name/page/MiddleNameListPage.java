@@ -16,7 +16,7 @@ import java.util.List;
 @AuthorizeInstantiation(JedaniRoles.ADMINISTRATORS)
 public class MiddleNameListPage extends DomainListPage {
     public MiddleNameListPage() {
-        super("middle_name", MiddleNameEditPage.class);
+        super(MiddleName.ENTITY_NAME, MiddleNameEditPage.class);
     }
 
     @Override

@@ -53,7 +53,7 @@ public abstract class DomainEditPage extends BasePage{
     @Inject
     private DomainMapper domainMapper;
 
-    public DomainEditPage(String entityName, PageParameters parameters, Class<? extends WebPage> backPage, boolean upperCase) {
+    public DomainEditPage(String entityName, PageParameters parameters, Class<? extends WebPage> backPage) {
         Entity entity = entityMapper.getEntity(entityName);
 
         String title = entity.getValue().getText();
@@ -86,7 +86,7 @@ public abstract class DomainEditPage extends BasePage{
             form.add(parentGroup);
 
             parentGroup.add(new DomainAutoComplete("parent", getParentEntityName(),
-                    getParentEntityAttributeId(), new PropertyModel<>(domain, "parentId"), upperCase));
+                    getParentEntityAttributeId(), new PropertyModel<>(domain, "parentId"), true));
         }else{
             form.add(new EmptyPanel("parentGroup").setVisible(false));
         }
@@ -214,5 +214,9 @@ public abstract class DomainEditPage extends BasePage{
 
     protected Long getRefEntityAttributeId(Long entityAttributeId){
         return null;
+    }
+
+    protected boolean isUpperCaseNames(){
+        return true;
     }
 }

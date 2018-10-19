@@ -115,7 +115,8 @@ CREATE TABLE `entity_value` (
   KEY `key_locale` (`locale_id`),
   KEY `key_value` (`text`(128)),
   CONSTRAINT `fk_entity_value__entity` FOREIGN KEY (`entity_id`) REFERENCES `entity` (`id`),
-  CONSTRAINT `fk_entity_value__entity_attribute` FOREIGN KEY (`entity_attribute_id`) REFERENCES `entity_attribute` (`entity_attribute_id`),
+  CONSTRAINT `fk_entity_value__entity_attribute` FOREIGN KEY (`entity_attribute_id`, `entity_id`)
+    REFERENCES `entity_attribute` (`entity_attribute_id`, `entity_id`),
   CONSTRAINT `fk_entity_value__locale` FOREIGN KEY (`locale_id`) REFERENCES `locale` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Локализация';
 

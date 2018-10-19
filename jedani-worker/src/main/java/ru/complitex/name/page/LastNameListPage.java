@@ -16,7 +16,7 @@ import java.util.List;
 @AuthorizeInstantiation(JedaniRoles.ADMINISTRATORS)
 public class LastNameListPage extends DomainListPage{
     public LastNameListPage() {
-        super("last_name", LastNameEditPage.class);
+        super(LastName.ENTITY_NAME, LastNameEditPage.class);
     }
 
     @Override

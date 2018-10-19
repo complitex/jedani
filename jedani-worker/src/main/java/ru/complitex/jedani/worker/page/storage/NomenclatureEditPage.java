@@ -1,18 +1,18 @@
-package ru.complitex.name.page;
+package ru.complitex.jedani.worker.page.storage;
 
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import ru.complitex.domain.page.DomainEditPage;
+import ru.complitex.jedani.worker.entity.Nomenclature;
 import ru.complitex.jedani.worker.security.JedaniRoles;
-import ru.complitex.name.entity.MiddleName;
 
 /**
  * @author Anatoly A. Ivanov
- * 28.12.2017 17:33
+ * 18.10.2018 16:11
  */
 @AuthorizeInstantiation(JedaniRoles.ADMINISTRATORS)
-public class MiddleNameEditPage extends DomainEditPage{
-    public MiddleNameEditPage(PageParameters parameters) {
-        super(MiddleName.ENTITY_NAME, parameters, MiddleNameListPage.class);
+public class NomenclatureEditPage extends DomainEditPage {
+    public NomenclatureEditPage(PageParameters parameters) {
+        super(Nomenclature.ENTITY_NAME, parameters, NomenclatureListPage.class);
     }
 }

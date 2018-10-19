@@ -1,4 +1,11 @@
--- ------------------------------
+-- Fix entity value foreign key
+
+ALTER TABLE entity_value DROP FOREIGN KEY fk_entity_value__entity_attribute;
+
+ALTER TABLE entity_value  ADD CONSTRAINT fk_entity_value__entity_attribute
+  FOREIGN KEY (entity_attribute_id, entity_id) REFERENCES entity_attribute (entity_attribute_id, entity_id);
+
+-- ---------------------------
 -- Nomenclature
 -- ---------------------------
 
@@ -219,17 +226,11 @@ INSERT INTO `sequence` (`name`) VALUE ('storage');
 INSERT INTO `entity` (`id`, `name`) VALUE (24, 'storage');
 INSERT INTO `entity_value`(`entity_id`, `locale_id`, `text`) VALUES (24, 1, 'Склад'), (24, 2, 'Склад');
 
-INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (24, 1, 0);
-INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (24, 1, 1, 'Название'), (24, 1, 2, 'Назва');
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`, `reference_id`) VALUES (24, 1, 11, 4);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (24, 1, 1, 'Населенный пункт'), (24, 1, 2, 'Населений пункт');
 
-INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (24, 2, 2);
-INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (24, 2, 1, 'Код'), (24, 2, 2, 'Код');
-
-INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`, `reference_id`) VALUES (24, 3, 11, 4);
-INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (24, 3, 1, 'Населенный пункт'), (24, 3, 2, 'Населений пункт');
-
-INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`, `reference_id`) VALUES (24, 4, 10, 20);
-INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (24, 4, 1, 'Ответственные'), (24, 4, 2, 'Відповідальні');
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`, `reference_id`) VALUES (24, 2, 10, 20);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (24, 2, 1, 'Ответственные'), (24, 2, 2, 'Відповідальні');
 
 /* Product */
 

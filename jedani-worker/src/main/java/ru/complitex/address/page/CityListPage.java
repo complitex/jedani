@@ -24,7 +24,7 @@ public class CityListPage extends DomainListPage{
     private EntityService entityService;
 
     public CityListPage() {
-        super("city", "region", Region.NAME, CityEditPage.class);
+        super(City.ENTITY_NAME, Region.ENTITY_NAME, Region.NAME, CityEditPage.class);
     }
 
     @Override

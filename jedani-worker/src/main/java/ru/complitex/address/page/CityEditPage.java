@@ -18,7 +18,7 @@ import java.util.List;
 @AuthorizeInstantiation(JedaniRoles.ADMINISTRATORS)
 public class CityEditPage extends DomainEditPage{
     public CityEditPage(PageParameters parameters) {
-        super("city", parameters, CityListPage.class, true);
+        super(City.ENTITY_NAME, parameters, CityListPage.class);
     }
 
     @Override
