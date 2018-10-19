@@ -25,6 +25,10 @@ import ru.complitex.jedani.worker.page.catalog.MkStatusListPage;
 import ru.complitex.jedani.worker.page.catalog.PositionEditPage;
 import ru.complitex.jedani.worker.page.catalog.PositionListPage;
 import ru.complitex.jedani.worker.page.login.LoginPage;
+import ru.complitex.jedani.worker.page.storage.NomenclatureEditPage;
+import ru.complitex.jedani.worker.page.storage.NomenclatureListPage;
+import ru.complitex.jedani.worker.page.storage.StorageEditPage;
+import ru.complitex.jedani.worker.page.storage.StorageListPage;
 import ru.complitex.jedani.worker.page.worker.WorkerListPage;
 import ru.complitex.jedani.worker.page.worker.WorkerPage;
 import ru.complitex.jedani.worker.page.worker.WorkerStructurePage;
@@ -90,6 +94,10 @@ public class JedaniWebApplication extends WebApplication{
         mountPage("middle_name/${id}", MiddleNameEditPage.class);
         mountPage("first_name", FirstNameListPage.class);
         mountPage("first_name/${id}", FirstNameEditPage.class);
+        mountPage("nomenclature", NomenclatureListPage.class);
+        mountPage("nomenclature/${id}", NomenclatureEditPage.class);
+        mountPage("storage", StorageListPage.class);
+        mountPage("storage/${id}", StorageEditPage.class);
     }
 
     @Override

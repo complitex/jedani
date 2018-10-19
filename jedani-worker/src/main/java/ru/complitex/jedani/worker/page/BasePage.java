@@ -22,6 +22,8 @@ import ru.complitex.jedani.worker.page.catalog.PositionListPage;
 import ru.complitex.jedani.worker.page.resource.JedaniCssResourceReference;
 import ru.complitex.jedani.worker.page.resource.JedaniJsResourceReference;
 import ru.complitex.jedani.worker.page.resource.MenuCssResourceReference;
+import ru.complitex.jedani.worker.page.storage.NomenclatureListPage;
+import ru.complitex.jedani.worker.page.storage.StorageListPage;
 import ru.complitex.jedani.worker.page.worker.WorkerListPage;
 import ru.complitex.jedani.worker.page.worker.WorkerPage;
 import ru.complitex.jedani.worker.security.JedaniRoles;
@@ -114,7 +116,12 @@ public class BasePage extends WebPage{
         catalog.add(new BookmarkablePageLink<>("mk_status", MkStatusListPage.class).setVisible(isAdmin()));
         catalog.add(new BookmarkablePageLink<>("workers", WorkerListPage.class).setVisible(isAdmin() || isStructureAdmin()));
 
-        add(new WebMarkupContainer("nomenclature").setVisible(isAdmin()));
+        WebMarkupContainer repository = new WebMarkupContainer("repository");
+        repository.setVisible(isAdmin() || isStructureAdmin());
+        add(repository);
+
+        repository.add(new BookmarkablePageLink<>("nomenclature", NomenclatureListPage.class).setVisible(isAdmin()));
+        repository.add(new BookmarkablePageLink<>("storage", StorageListPage.class).setVisible(isAdmin() || isStructureAdmin()));
     }
 
     @Override
