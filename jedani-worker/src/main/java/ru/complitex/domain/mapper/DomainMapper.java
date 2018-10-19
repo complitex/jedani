@@ -51,7 +51,8 @@ public class DomainMapper extends BaseMapper {
     public void updateDomain(Domain domain){
         Date date = new Date();
 
-        Domain dbDomain = getDomain(domain.getEntityName(), domain.getObjectId());
+        Domain dbDomain = getDomain(domain.getEntityName(), domain.getObjectId(),
+                domain.isUseDateAttribute(), domain.isUseNumberValue());
 
         domain.getAttributes().forEach(a -> {
             a.setEntityName(domain.getEntityName());
@@ -112,7 +113,7 @@ public class DomainMapper extends BaseMapper {
         return sqlSession().selectOne("hasDomain", domain);
     }
 
-    public Domain getDomain(String entityName, Long objectId){
+    public Domain getDomain(String entityName, Long objectId, boolean useDateAttribute, boolean useNumberValue){
         if (objectId == null){
             return null;
         }
@@ -120,8 +121,14 @@ public class DomainMapper extends BaseMapper {
         Domain domain = new Domain();
         domain.setEntityName(entityName);
         domain.setObjectId(objectId);
+        domain.setUseDateAttribute(useDateAttribute);
+        domain.setUseNumberValue(useNumberValue);
 
         return getDomain(domain);
+    }
+
+    public Domain getDomain(String entityName, Long objectId){
+        return getDomain(entityName, objectId, false, false);
     }
 
     public Domain getDomainByParentId(String entityName, Long parentId){
