@@ -15,9 +15,9 @@ import java.util.List;
  * 18.12.2017 0:21
  */
 @AuthorizeInstantiation(JedaniRoles.ADMINISTRATORS)
-public class RegionEditPage extends DomainEditPage{
+public class RegionEditPage extends DomainEditPage<Region>{
     public RegionEditPage(PageParameters parameters) {
-        super(Region.ENTITY_NAME, parameters, RegionListPage.class);
+        super(Region.class, parameters, RegionListPage.class);
     }
 
     @Override

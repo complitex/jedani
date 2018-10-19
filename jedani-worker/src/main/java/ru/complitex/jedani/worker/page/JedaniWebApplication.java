@@ -88,15 +88,20 @@ public class JedaniWebApplication extends WebApplication{
         mountPage("positions", PositionListPage.class);
         mountPage("position", PositionEditPage.class);
         mountPage("position/${id}", PositionEditPage.class);
-        mountPage("last_name", LastNameListPage.class);
+        mountPage("last_names", LastNameListPage.class);
+        mountPage("last_name", LastNameEditPage.class);
         mountPage("last_name/${id}", LastNameEditPage.class);
-        mountPage("middle_name", MiddleNameListPage.class);
+        mountPage("middle_names", MiddleNameListPage.class);
+        mountPage("middle_name", MiddleNameEditPage.class);
         mountPage("middle_name/${id}", MiddleNameEditPage.class);
-        mountPage("first_name", FirstNameListPage.class);
+        mountPage("first_names", FirstNameListPage.class);
+        mountPage("first_name", FirstNameEditPage.class);
         mountPage("first_name/${id}", FirstNameEditPage.class);
-        mountPage("nomenclature", NomenclatureListPage.class);
+        mountPage("nomenclatures", NomenclatureListPage.class);
+        mountPage("nomenclature", NomenclatureEditPage.class);
         mountPage("nomenclature/${id}", NomenclatureEditPage.class);
-        mountPage("storage", StorageListPage.class);
+        mountPage("storages", StorageListPage.class);
+        mountPage("storage", StorageEditPage.class);
         mountPage("storage/${id}", StorageEditPage.class);
     }
 

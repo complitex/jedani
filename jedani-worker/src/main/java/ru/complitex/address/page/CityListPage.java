@@ -19,12 +19,12 @@ import java.util.List;
  * 19.12.2017 9:32
  */
 @AuthorizeInstantiation(JedaniRoles.ADMINISTRATORS)
-public class CityListPage extends DomainListPage{
+public class CityListPage extends DomainListPage<City>{
     @Inject
     private EntityService entityService;
 
     public CityListPage() {
-        super(City.ENTITY_NAME, Region.ENTITY_NAME, Region.NAME, CityEditPage.class);
+        super(City.class, Region.ENTITY_NAME, Region.NAME, CityEditPage.class);
     }
 
     @Override

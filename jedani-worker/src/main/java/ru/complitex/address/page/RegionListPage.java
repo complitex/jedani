@@ -16,9 +16,9 @@ import java.util.List;
  * 19.12.2017 3:40
  */
 @AuthorizeInstantiation(JedaniRoles.ADMINISTRATORS)
-public class RegionListPage extends DomainListPage{
+public class RegionListPage extends DomainListPage<Region>{
     public RegionListPage() {
-        super(Region.ENTITY_NAME, Country.ENTITY_NAME, Country.NAME, RegionEditPage.class);
+        super(Region.class, Country.ENTITY_NAME, Country.NAME, RegionEditPage.class);
     }
 
     @Override

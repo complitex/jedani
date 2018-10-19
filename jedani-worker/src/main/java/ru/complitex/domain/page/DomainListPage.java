@@ -3,6 +3,7 @@ package ru.complitex.domain.page;
 import de.agilecoders.wicket.core.markup.html.bootstrap.behavior.CssClassNameAppender;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
 import org.apache.wicket.Page;
+import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -48,19 +49,24 @@ public class DomainListPage<T extends Domain> extends BasePage{
     @Inject
     private DomainMapper domainMapper;
 
-    private String entityName;
-
     private Class<? extends Page> editPageClass;
     private FilterDataTable<T> table;
 
-    public <P extends WebPage> DomainListPage(String entityName, String parentEntityName, Long parentEntityAttributeId,
+    public <P extends WebPage> DomainListPage(Class<T> domainClass, String parentEntityName, Long parentEntityAttributeId,
                           Class<P> editPageClass) {
-        this.entityName = entityName;
+        T domainInstance;
+
+        try {
+            domainInstance = domainClass.newInstance();
+        } catch (Exception e) {
+            throw new WicketRuntimeException(e);
+        }
+
         this.editPageClass = editPageClass;
 
-        Entity entity = entityService.getEntity(entityName);
+        Entity entity = entityService.getEntity(domainInstance.getEntityName());
 
-        String title = entity.getValue() != null ? entity.getValue().getText() : "[" + entityName + "]";
+        String title = entity.getValue() != null ? entity.getValue().getText() : "[" + domainInstance.getEntityName() + "]";
 
         add(new Label("title", title));
 
@@ -70,7 +76,7 @@ public class DomainListPage<T extends Domain> extends BasePage{
         feedback.setOutputMarkupId(true);
         add(feedback);
 
-        DataProvider<T> dataProvider = new DataProvider<T>(getNewFilterWrapper()) {
+        DataProvider<T> dataProvider = new DataProvider<T>( FilterWrapper.of(domainInstance)) {
             @Override
             public Iterator<? extends T> iterator(long first, long count) {
                 FilterWrapper<T> filterWrapper = getFilterState().limit(first, count);
@@ -171,12 +177,6 @@ public class DomainListPage<T extends Domain> extends BasePage{
     }
 
     @SuppressWarnings("unchecked")
-    protected FilterWrapper<T> getNewFilterWrapper(){
-        return (FilterWrapper<T>) FilterWrapper.of(new Domain(entityName)); //todo abstract
-    }
-
-
-    @SuppressWarnings("unchecked")
     protected List<T> getDomains(FilterWrapper<T> filterWrapper) {
         return (List<T>) domainMapper.getDomains(filterWrapper);
     }
@@ -185,8 +185,8 @@ public class DomainListPage<T extends Domain> extends BasePage{
         return domainMapper.getDomainsCount(filterWrapper);
     }
 
-    public DomainListPage(String entityName, Class<? extends WebPage> editPageClass) {
-        this(entityName, null, null, editPageClass);
+    public DomainListPage(Class<T> domainInstance, Class<? extends WebPage> editPageClass) {
+        this(domainInstance, null, null, editPageClass);
     }
 
     protected List<EntityAttribute> getEntityAttributes(Entity entity){

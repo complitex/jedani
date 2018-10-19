@@ -10,8 +10,8 @@ import ru.complitex.jedani.worker.security.JedaniRoles;
  * 05.05.2018 8:49
  */
 @AuthorizeInstantiation(JedaniRoles.ADMINISTRATORS)
-public class MkStatusListPage extends DomainListPage {
+public class MkStatusListPage extends DomainListPage<MkStatus> {
     public MkStatusListPage() {
-        super(MkStatus.ENTITY_NAME, MkStatusEditPage.class);
+        super(MkStatus.class, MkStatusEditPage.class);
     }
 }

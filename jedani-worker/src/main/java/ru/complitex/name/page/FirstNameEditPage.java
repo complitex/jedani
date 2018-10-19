@@ -11,8 +11,8 @@ import ru.complitex.name.entity.FirstName;
  * 28.12.2017 17:33
  */
 @AuthorizeInstantiation(JedaniRoles.ADMINISTRATORS)
-public class FirstNameEditPage extends DomainEditPage{
+public class FirstNameEditPage extends DomainEditPage<FirstName>{
     public FirstNameEditPage(PageParameters parameters) {
-        super(FirstName.ENTITY_NAME, parameters, FirstNameListPage.class);
+        super(FirstName.class, parameters, FirstNameListPage.class);
     }
 }

@@ -54,7 +54,7 @@ public class WorkerListPage extends DomainListPage<Worker>{
     private UserMapper userMapper;
 
     public WorkerListPage() {
-        super(Worker.ENTITY_NAME, WorkerPage.class);
+        super(Worker.class, WorkerPage.class);
 
         add(new AjaxLink<Void>("addEmployee") {
             @Override
@@ -149,11 +149,6 @@ public class WorkerListPage extends DomainListPage<Worker>{
     @Override
     protected boolean isShowHeader() {
         return false;
-    }
-
-    @Override
-    protected FilterWrapper<Worker> getNewFilterWrapper() {
-        return FilterWrapper.of(new Worker());
     }
 
     @Override

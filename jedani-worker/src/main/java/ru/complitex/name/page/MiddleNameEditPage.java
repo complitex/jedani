@@ -11,8 +11,8 @@ import ru.complitex.name.entity.MiddleName;
  * 28.12.2017 17:33
  */
 @AuthorizeInstantiation(JedaniRoles.ADMINISTRATORS)
-public class MiddleNameEditPage extends DomainEditPage{
+public class MiddleNameEditPage extends DomainEditPage<MiddleName>{
     public MiddleNameEditPage(PageParameters parameters) {
-        super(MiddleName.ENTITY_NAME, parameters, MiddleNameListPage.class);
+        super(MiddleName.class, parameters, MiddleNameListPage.class);
     }
 }

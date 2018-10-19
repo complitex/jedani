@@ -15,9 +15,9 @@ import java.util.List;
  * 21.12.2017 1:06
  */
 @AuthorizeInstantiation(JedaniRoles.ADMINISTRATORS)
-public class CountryListPage extends DomainListPage{
+public class CountryListPage extends DomainListPage<Country>{
     public CountryListPage() {
-        super(Country.ENTITY_NAME, CountryEditPage.class);
+        super(Country.class, CountryEditPage.class);
     }
 
     @Override

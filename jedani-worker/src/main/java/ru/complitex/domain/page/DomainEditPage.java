@@ -44,8 +44,10 @@ import static ru.complitex.domain.model.TextAttributeModel.TYPE.UPPER_CASE;
  * @author Anatoly A. Ivanov
  * 17.12.2017 21:51
  */
-public abstract class DomainEditPage extends BasePage{
+public abstract class DomainEditPage<T extends Domain> extends BasePage{
     private Logger log = LoggerFactory.getLogger(getClass());
+
+    public static final String COMPONENT_WICKET_ID = "component";
 
     @Inject
     private EntityMapper entityMapper;
@@ -53,8 +55,16 @@ public abstract class DomainEditPage extends BasePage{
     @Inject
     private DomainMapper domainMapper;
 
-    public DomainEditPage(String entityName, PageParameters parameters, Class<? extends WebPage> backPage) {
-        Entity entity = entityMapper.getEntity(entityName);
+    public DomainEditPage(Class<T> domainClass, PageParameters parameters, Class<? extends WebPage> backPage) {
+        T domainInstance;
+
+        try {
+            domainInstance = domainClass.newInstance();
+        } catch (Exception e) {
+            throw new WicketRuntimeException(e);
+        }
+
+        Entity entity = entityMapper.getEntity(domainInstance.getEntityName());
 
         String title = entity.getValue().getText();
 
@@ -71,7 +81,8 @@ public abstract class DomainEditPage extends BasePage{
 
         Long objectId = parameters.get("id").toOptionalLong();
 
-        Domain domain = objectId != null ? domainMapper.getDomain(entityName, objectId) : new Domain();
+        Domain domain = objectId != null ? domainMapper.getDomain(domainInstance.getEntityName(), objectId,
+                domainInstance.isUseDateAttribute(), domainInstance.isUseNumberValue()) : domainInstance;
 
         if (domain == null){
             throw new WicketRuntimeException("domain not found");
@@ -103,47 +114,51 @@ public abstract class DomainEditPage extends BasePage{
             @Override
             protected void populateItem(ListItem<EntityAttribute> item) {
                 EntityAttribute entityAttribute = item.getModelObject();
+
                 Attribute attribute = domain.getOrCreateAttribute(entityAttribute.getEntityAttributeId());
+                attribute.setEntityAttribute(entityAttribute);
 
                 FormGroup group = new FormGroup("group", Model.of(entityAttribute.getValue().getText()));
                 FormComponent input1 = null;
                 FormComponent input2 = null;
-                Component component = null;
+                Component component = getComponent(attribute);
 
-                switch (entityAttribute.getValueType()){
-                    case TEXT:
-                    case DECIMAL:
-                    case BOOLEAN:
-                    case ENTITY_VALUE:
-                        input1 = new TextField<>("input1", new TextAttributeModel(attribute, UPPER_CASE));
-                        break;
-                    case DATE:
-                        input1 = new TextField<>("input1", new PropertyModel<>(attribute, "date"));
-                        break;
-                    case ENTITY:
-                        component = new DomainAutoComplete("component", entityMapper.getReferenceEntityName(
-                                entity.getName(), entityAttribute.getEntityAttributeId()),
-                                getRefEntityAttributeId(entityAttribute.getEntityAttributeId()),
-                                new PropertyModel<>(attribute, "number"), entityAttribute.isDisplayCapitalize());
-                        break;
-                    case NUMBER:
-                        input1 = new TextField<>("input1", new PropertyModel<>(attribute, "number"));
-                        break;
-                    case TEXT_VALUE:
-                        input1 = new TextField<>("input1", new TextAttributeModel(attribute.getOrCreateValue(
-                                Locales.getLocaleId(Locales.RU)), UPPER_CASE));
-                        input1.add(new AttributeModifier("placeholder", getString("RU")));
+                if (component == null) {
+                    switch (entityAttribute.getValueType()){
+                        case TEXT:
+                        case DECIMAL:
+                        case BOOLEAN:
+                        case ENTITY_VALUE:
+                            input1 = new TextField<>("input1", new TextAttributeModel(attribute, UPPER_CASE));
+                            break;
+                        case DATE:
+                            input1 = new TextField<>("input1", new PropertyModel<>(attribute, "date"));
+                            break;
+                        case ENTITY:
+                            component = new DomainAutoComplete(COMPONENT_WICKET_ID, entityMapper.getReferenceEntityName(
+                                    entity.getName(), entityAttribute.getEntityAttributeId()),
+                                    getRefEntityAttributeId(entityAttribute.getEntityAttributeId()),
+                                    new PropertyModel<>(attribute, "number"), entityAttribute.isDisplayCapitalize());
+                            break;
+                        case NUMBER:
+                            input1 = new TextField<>("input1", new PropertyModel<>(attribute, "number"));
+                            break;
+                        case TEXT_VALUE:
+                            input1 = new TextField<>("input1", new TextAttributeModel(attribute.getOrCreateValue(
+                                    Locales.getLocaleId(Locales.RU)), UPPER_CASE));
+                            input1.add(new AttributeModifier("placeholder", getString("RU")));
 
-                        input2 = new TextField<>("input2", new TextAttributeModel(attribute.getOrCreateValue(
-                                Locales.getLocaleId(Locales.UA)), UPPER_CASE));
-                        input2.add(new AttributeModifier("placeholder", getString("UA")));
+                            input2 = new TextField<>("input2", new TextAttributeModel(attribute.getOrCreateValue(
+                                    Locales.getLocaleId(Locales.UA)), UPPER_CASE));
+                            input2.add(new AttributeModifier("placeholder", getString("UA")));
 
-                        break;
+                            break;
+                    }
                 }
 
                 group.add(input1 != null ? input1 : new EmptyPanel("input1").setVisible(false));
                 group.add(input2 != null ? input2 : new EmptyPanel("input2").setVisible(false));
-                group.add(component != null ? component : new EmptyPanel("component").setVisible(false));
+                group.add(component != null ? component : new EmptyPanel(COMPONENT_WICKET_ID).setVisible(false));
 
                 item.add(group);
             }
@@ -155,7 +170,7 @@ public abstract class DomainEditPage extends BasePage{
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
                 try {
-                    domain.setEntityName(entityName);
+                    domain.setEntityName(domainInstance.getEntityName());
                     domain.setUserId(getCurrentUser().getId());
 
                     if (parentEntity != null){
@@ -218,5 +233,9 @@ public abstract class DomainEditPage extends BasePage{
 
     protected boolean isUpperCaseNames(){
         return true;
+    }
+
+    protected Component getComponent(Attribute attribute){
+        return null;
     }
 }

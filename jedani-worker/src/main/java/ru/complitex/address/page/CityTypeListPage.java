@@ -1,7 +1,6 @@
 package ru.complitex.address.page;
 
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
-import ru.complitex.address.entity.City;
 import ru.complitex.address.entity.CityType;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
@@ -16,9 +15,9 @@ import java.util.List;
  * 22.12.2017 5:20
  */
 @AuthorizeInstantiation(JedaniRoles.ADMINISTRATORS)
-public class CityTypeListPage extends DomainListPage{
+public class CityTypeListPage extends DomainListPage<CityType>{
     public CityTypeListPage() {
-        super(City.ENTITY_NAME, CityTypeEditPage.class);
+        super(CityType.class, CityTypeEditPage.class);
     }
 
     @Override
