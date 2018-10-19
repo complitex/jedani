@@ -117,6 +117,7 @@ public abstract class DomainEditPage<T extends Domain> extends BasePage{
 
                 Attribute attribute = domain.getOrCreateAttribute(entityAttribute.getEntityAttributeId());
                 attribute.setEntityAttribute(entityAttribute);
+                onAttribute(attribute);
 
                 FormGroup group = new FormGroup("group", Model.of(entityAttribute.getValue().getText()));
                 FormComponent input1 = null;
@@ -135,9 +136,9 @@ public abstract class DomainEditPage<T extends Domain> extends BasePage{
                             input1 = new TextField<>("input1", new PropertyModel<>(attribute, "date"));
                             break;
                         case ENTITY:
-                            component = new DomainAutoComplete(COMPONENT_WICKET_ID, entityMapper.getReferenceEntityName(
-                                    entity.getName(), entityAttribute.getEntityAttributeId()),
-                                    getRefEntityAttributeId(entityAttribute.getEntityAttributeId()),
+                            component = new DomainAutoComplete(COMPONENT_WICKET_ID,
+                                    attribute.getEntityAttribute().getReferenceEntityAttribute().getEntityName(),
+                                    attribute.getEntityAttribute().getReferenceEntityAttribute().getEntityAttributeId(),
                                     new PropertyModel<>(attribute, "number"), entityAttribute.isDisplayCapitalize());
                             break;
                         case NUMBER:
@@ -227,12 +228,12 @@ public abstract class DomainEditPage<T extends Domain> extends BasePage{
         return null;
     }
 
-    protected Long getRefEntityAttributeId(Long entityAttributeId){
-        return null;
-    }
-
     protected boolean isUpperCaseNames(){
         return true;
+    }
+
+    protected void onAttribute(Attribute attribute){
+
     }
 
     protected Component getComponent(Attribute attribute){

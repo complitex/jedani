@@ -2,7 +2,6 @@ package ru.complitex.domain.component.form;
 
 import de.agilecoders.wicket.core.markup.html.bootstrap.form.FormGroup;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
@@ -25,7 +24,7 @@ public class AttributeSelectListFormGroup extends Panel {
 
         setOutputMarkupId(true);
 
-        WebMarkupContainer group = label != null ? new FormGroup("group", label) : new WebMarkupContainer("group");
+        FormGroup group = new FormGroup("group", label);
         group.add(attributeSelectList = new AttributeSelectList("select", model, refEntityName,
                 refEntityAttributeId, parentListModel, upperCase){
             @Override

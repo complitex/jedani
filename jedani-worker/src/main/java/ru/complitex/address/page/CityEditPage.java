@@ -5,9 +5,12 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import ru.complitex.address.entity.City;
 import ru.complitex.address.entity.CityType;
 import ru.complitex.address.entity.Region;
+import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.page.DomainEditPage;
+import ru.complitex.domain.service.EntityService;
 import ru.complitex.jedani.worker.security.JedaniRoles;
 
+import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.List;
 
@@ -17,6 +20,9 @@ import java.util.List;
  */
 @AuthorizeInstantiation(JedaniRoles.ADMINISTRATORS)
 public class CityEditPage extends DomainEditPage<City>{
+    @Inject
+    private EntityService entityService;
+
     public CityEditPage(PageParameters parameters) {
         super(City.class, parameters, CityListPage.class);
     }
@@ -37,11 +43,10 @@ public class CityEditPage extends DomainEditPage<City>{
     }
 
     @Override
-    protected Long getRefEntityAttributeId(Long entityAttributeId) {
-        if (entityAttributeId == City.CITY_TYPE_ID){
-            return CityType.NAME;
+    protected void onAttribute(Attribute attribute) {
+        if (attribute.getEntityAttributeId().equals(City.CITY_TYPE_ID)){
+            attribute.getEntityAttribute().setDisplayCapitalize(true);
+            attribute.getEntityAttribute().setReferenceEntityAttribute(entityService.getEntityAttribute(CityType.ENTITY_NAME, CityType.NAME));
         }
-
-        return null;
     }
 }

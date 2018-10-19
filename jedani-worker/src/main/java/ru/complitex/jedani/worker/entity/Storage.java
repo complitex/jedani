@@ -11,4 +11,8 @@ public class Storage extends Domain {
 
     public static final long CITY_ID = 1;
     public static final long WORKER_IDS = 2;
+
+    public Storage() {
+        super(ENTITY_NAME);
+    }
 }
