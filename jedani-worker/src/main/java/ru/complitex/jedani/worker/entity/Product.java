@@ -12,4 +12,8 @@ public class Product extends Domain {
     public static final long NOMENCLATURE_ID = 1;
     public static final long STORAGE_ID = 2;
     public static final long STORAGE_INTO_ID = 3;
+
+    public Product() {
+        super(ENTITY_NAME);
+    }
 }

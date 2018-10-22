@@ -122,3 +122,7 @@ li.disabled a, li.disabled span{
     margin-right: 7px;
     content: "";
 }
+
+.alert{
+    padding: 8px 28px 5px 8px;
+}

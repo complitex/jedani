@@ -139,7 +139,12 @@ public abstract class DomainEditPage<T extends Domain> extends BasePage{
                             component = new DomainAutoComplete(COMPONENT_WICKET_ID,
                                     attribute.getEntityAttribute().getReferenceEntityAttribute().getEntityName(),
                                     attribute.getEntityAttribute().getReferenceEntityAttribute().getEntityAttributeId(),
-                                    new PropertyModel<>(attribute, "number"), entityAttribute.isDisplayCapitalize());
+                                    new PropertyModel<>(attribute, "number"), entityAttribute.isDisplayCapitalize()){
+                                @Override
+                                protected String getPrefix(Domain d) {
+                                    return DomainEditPage.this.getPrefix(entityAttribute, d);
+                                }
+                            };
                             break;
                         case NUMBER:
                             input1 = new TextField<>("input1", new PropertyModel<>(attribute, "number"));
@@ -238,5 +243,9 @@ public abstract class DomainEditPage<T extends Domain> extends BasePage{
 
     protected Component getComponent(Attribute attribute){
         return null;
+    }
+
+    protected String getPrefix(EntityAttribute entityAttribute, Domain domain){
+        return "";
     }
 }

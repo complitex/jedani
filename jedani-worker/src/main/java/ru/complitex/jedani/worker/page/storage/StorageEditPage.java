@@ -11,6 +11,7 @@ import ru.complitex.jedani.worker.component.WorkerAutoCompleteList;
 import ru.complitex.jedani.worker.entity.Storage;
 
 import javax.inject.Inject;
+import java.util.Objects;
 
 /**
  * @author Anatoly A. Ivanov
@@ -26,7 +27,7 @@ public class StorageEditPage extends DomainEditPage<Storage> {
 
     @Override
     protected void onAttribute(Attribute attribute) {
-        if (attribute.getEntityAttributeId().equals(Storage.CITY_ID)){
+        if (Objects.equals(attribute.getEntityAttributeId(), Storage.CITY_ID)){
             attribute.getEntityAttribute().setDisplayCapitalize(true);
             attribute.getEntityAttribute().setReferenceEntityAttribute(entityService.getEntityAttribute(City.ENTITY_NAME, City.NAME));
         }
@@ -34,7 +35,7 @@ public class StorageEditPage extends DomainEditPage<Storage> {
 
     @Override
     protected Component getComponent(Attribute attribute) {
-        if (attribute.getEntityAttributeId().equals(Storage.WORKER_IDS)){
+        if (Objects.equals(attribute.getEntityAttributeId(), Storage.WORKER_IDS)){
             return new WorkerAutoCompleteList(COMPONENT_WICKET_ID, Model.of(attribute));
         }
 
