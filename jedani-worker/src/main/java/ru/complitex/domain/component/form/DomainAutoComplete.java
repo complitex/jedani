@@ -14,12 +14,12 @@ import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.mapper.DomainMapper;
-import ru.complitex.domain.service.EntityService;
 import ru.complitex.domain.util.Attributes;
 import ru.complitex.domain.util.Locales;
 
 import javax.inject.Inject;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -30,20 +30,19 @@ public class DomainAutoComplete extends Panel {
     @Inject
     private DomainMapper domainMapper;
 
-    @Inject
-    private EntityService entityService;
-
     private AutoCompleteTextField<Domain> autoCompleteTextField;
 
-    public DomainAutoComplete(String id, String entityName, Long entityAttributeId, IModel<Long> model, boolean upperCase) {
+    private EntityAttribute entityAttribute;
+
+    public DomainAutoComplete(String id, EntityAttribute entityAttribute, IModel<Long> model) {
         super(id);
+
+        this.entityAttribute = entityAttribute;
 
         HiddenField inputId = new HiddenField<>("inputId", model, Long.class);
         inputId.setConvertEmptyInputStringToNull(true);
         inputId.setOutputMarkupId(true);
         add(inputId);
-
-        EntityAttribute entityAttribute = entityService.getEntityAttribute(entityName, entityAttributeId);
 
         IModel<Domain> domainModel = new Model<Domain>(){
             @Override
@@ -57,7 +56,7 @@ public class DomainAutoComplete extends Panel {
         };
 
         if (model.getObject() != null){
-            domainModel.setObject(domainMapper.getDomain(entityName, model.getObject()));
+            domainModel.setObject(domainMapper.getDomain(entityAttribute.getEntityName(), model.getObject()));
         }
 
         autoCompleteTextField = new AutoCompleteTextField<Domain>("input", domainModel, Domain.class,
@@ -65,24 +64,7 @@ public class DomainAutoComplete extends Panel {
 
                     @Override
                     protected String getTextValue(Domain domain) {
-                        Attribute attribute = domain.getOrCreateAttribute(entityAttributeId);
-
-                        switch (entityAttribute.getValueType()){
-                            case TEXT_VALUE:
-                                String textValue = attribute.getOrCreateValue(Locales.getSystemLocaleId()).getText();
-
-                                return getPrefix(domain) +
-                                        (textValue != null && upperCase ? Attributes.capitalize(textValue) : textValue);
-                            case TEXT:
-                                String text = attribute.getText();
-
-                                return getPrefix(domain) +
-                                        (text != null && upperCase ? Attributes.capitalize(text) : text);
-                            case NUMBER:
-                                return attribute.getNumber() + "";
-                        }
-
-                        return null;
+                        return DomainAutoComplete.this.getTextValue(domain);
                     }
 
                     @Override
@@ -97,10 +79,7 @@ public class DomainAutoComplete extends Panel {
         ) {
             @Override
             protected Iterator<Domain> getChoices(String input) {
-                Domain domain = new Domain(entityName);
-                domain.getOrCreateAttribute(entityAttributeId).setText(input);
-
-                return domainMapper.getDomains(FilterWrapper.of(domain).limit(0L, 10L)).iterator();
+                return getDomains(input).iterator();
             }
 
             @Override
@@ -113,47 +92,12 @@ public class DomainAutoComplete extends Panel {
                                 return null;
                             }
 
-                            Domain domain = new Domain();
-
-                            Attribute attribute = domain.getOrCreateAttribute(entityAttributeId);
-
-                            switch (entityAttribute.getValueType()){
-                                case TEXT_VALUE:
-                                    attribute.setTextValue(upperCase ? s.toUpperCase() : s, Locales.getLocaleId(locale));
-                                    break;
-                                case TEXT:
-                                    attribute.setText(upperCase ? s.toUpperCase() : s);;
-                                    break;
-                                case NUMBER:
-                                    try {
-                                        attribute.setNumber(Long.parseLong(s));
-                                    } catch (NumberFormatException e) {
-                                        //
-                                    }
-                                    break;
-                            }
-
-                            return domain;
+                            return new Domain();
                         }
 
                         @Override
                         public String convertToString(Domain domain, Locale locale) {
-                            Attribute attribute = domain.getOrCreateAttribute(entityAttributeId);
-
-                            switch (entityAttribute.getValueType()){
-                                case TEXT_VALUE:
-                                    String textValue = attribute.getOrCreateValue(Locales.getSystemLocaleId()).getText();
-
-                                    return getPrefix(domain) + (upperCase ? Attributes.capitalize(textValue) : textValue);
-                                case TEXT:
-                                    String text = attribute.getText();
-
-                                    return getPrefix(domain) + (upperCase ? Attributes.capitalize(text) : text);
-                                case NUMBER:
-                                    return attribute.getNumber() + "";
-                            }
-
-                            return null;
+                            return getTextValue(domain);
                         }
                     };
                 }
@@ -165,11 +109,37 @@ public class DomainAutoComplete extends Panel {
         add(autoCompleteTextField);
     }
 
-    public AutoCompleteTextField<Domain> getAutoCompleteTextField() {
-        return autoCompleteTextField;
+    private List<Domain> getDomains(String input) {
+        Domain domain = new Domain(entityAttribute.getEntityName());
+        domain.getOrCreateAttribute(entityAttribute.getEntityAttributeId()).setText(input);
+
+        return domainMapper.getDomains(FilterWrapper.of(domain).limit(0L, 10L));
     }
 
-    protected String getPrefix(Domain domain){
-        return "";
+    private String getTextValue(Domain domain) {
+        Attribute attribute = domain.getOrCreateAttribute(entityAttribute.getEntityAttributeId());
+
+        switch (entityAttribute.getValueType()){
+            case TEXT_VALUE:
+                String textValue = attribute.getOrCreateValue(Locales.getSystemLocaleId()).getText();
+
+                return textValue != null && entityAttribute.isDisplayCapitalize()
+                        ? Attributes.capitalize(textValue)
+                        : textValue;
+            case TEXT:
+                String text = attribute.getText();
+
+                return text != null && entityAttribute.isDisplayCapitalize()
+                        ? Attributes.capitalize(text)
+                        : text;
+            case NUMBER:
+                return attribute.getNumber() + "";
+        }
+
+        return null;
+    }
+
+    AutoCompleteTextField<Domain> getAutoCompleteTextField() {
+        return autoCompleteTextField;
     }
 }

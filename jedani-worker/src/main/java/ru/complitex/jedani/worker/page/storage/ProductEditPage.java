@@ -5,8 +5,6 @@ import org.apache.wicket.authroles.authorization.strategies.role.annotations.Aut
 import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import ru.complitex.domain.entity.Attribute;
-import ru.complitex.domain.entity.Domain;
-import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.page.DomainEditPage;
 import ru.complitex.domain.service.EntityService;
 import ru.complitex.jedani.worker.entity.Nomenclature;
@@ -35,15 +33,6 @@ public class ProductEditPage extends DomainEditPage<Product> {
             attribute.getEntityAttribute().setDisplayCapitalize(true);
             attribute.getEntityAttribute().setReferenceEntityAttribute(entityService.getEntityAttribute(Nomenclature.ENTITY_NAME, Nomenclature.NAME));
         }
-    }
-
-    @Override
-    protected String getPrefix(EntityAttribute entityAttribute, Domain domain) {
-        if (Objects.equals(entityAttribute.getEntityAttributeId(), Product.NOMENCLATURE_ID)){
-            return domain.getText(Nomenclature.CODE) + " ";
-        }
-
-        return "";
     }
 
     @Override

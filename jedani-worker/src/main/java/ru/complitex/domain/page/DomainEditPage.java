@@ -96,8 +96,9 @@ public abstract class DomainEditPage<T extends Domain> extends BasePage{
             FormGroup parentGroup = new FormGroup("parentGroup", Model.of(parentEntity.getValue().getText()));
             form.add(parentGroup);
 
-            parentGroup.add(new DomainAutoComplete("parent", getParentEntityName(),
-                    getParentEntityAttributeId(), new PropertyModel<>(domain, "parentId"), true));
+            parentGroup.add(new DomainAutoComplete("parent",
+                    parentEntity.getEntityAttribute(getParentEntityAttributeId()).setDisplayCapitalize(true),
+                    new PropertyModel<>(domain, "parentId")));
         }else{
             form.add(new EmptyPanel("parentGroup").setVisible(false));
         }
@@ -137,14 +138,8 @@ public abstract class DomainEditPage<T extends Domain> extends BasePage{
                             break;
                         case ENTITY:
                             component = new DomainAutoComplete(COMPONENT_WICKET_ID,
-                                    attribute.getEntityAttribute().getReferenceEntityAttribute().getEntityName(),
-                                    attribute.getEntityAttribute().getReferenceEntityAttribute().getEntityAttributeId(),
-                                    new PropertyModel<>(attribute, "number"), entityAttribute.isDisplayCapitalize()){
-                                @Override
-                                protected String getPrefix(Domain d) {
-                                    return DomainEditPage.this.getPrefix(entityAttribute, d);
-                                }
-                            };
+                                    attribute.getEntityAttribute().getReferenceEntityAttribute(),
+                                    new PropertyModel<>(attribute, "number"));
                             break;
                         case NUMBER:
                             input1 = new TextField<>("input1", new PropertyModel<>(attribute, "number"));
