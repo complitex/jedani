@@ -1,5 +1,6 @@
 package ru.complitex.domain.component.form;
 
+import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AbstractAutoCompleteTextRenderer;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteSettings;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
@@ -26,15 +27,16 @@ import java.util.Locale;
  * @author Anatoly A. Ivanov
  * 22.12.2017 12:45
  */
-public class DomainAutoComplete extends Panel {
+public class DomainAutoComplete<T extends Domain> extends Panel {
     @Inject
     private DomainMapper domainMapper;
 
-    private AutoCompleteTextField<Domain> autoCompleteTextField;
-
+    private Class<T> domainClass;
     private EntityAttribute entityAttribute;
 
-    public DomainAutoComplete(String id, EntityAttribute entityAttribute, IModel<Long> model) {
+    private AutoCompleteTextField<T> autoCompleteTextField;
+
+    public DomainAutoComplete(String id, Class<T> domainClass, EntityAttribute entityAttribute, IModel<Long> model) {
         super(id);
 
         this.entityAttribute = entityAttribute;
@@ -44,9 +46,9 @@ public class DomainAutoComplete extends Panel {
         inputId.setOutputMarkupId(true);
         add(inputId);
 
-        IModel<Domain> domainModel = new Model<Domain>(){
+        IModel<T> domainModel = new Model<T>(){
             @Override
-            public void setObject(Domain domain) {
+            public void setObject(T domain) {
                 if (domain == null){
                     model.setObject(null);
                 }
@@ -56,19 +58,19 @@ public class DomainAutoComplete extends Panel {
         };
 
         if (model.getObject() != null){
-            domainModel.setObject(domainMapper.getDomain(entityAttribute.getEntityName(), model.getObject()));
+            domainModel.setObject(getDomain(model));
         }
 
-        autoCompleteTextField = new AutoCompleteTextField<Domain>("input", domainModel, Domain.class,
-                new AbstractAutoCompleteTextRenderer<Domain>() {
+        autoCompleteTextField = new AutoCompleteTextField<T>("input", domainModel, domainClass,
+                new AbstractAutoCompleteTextRenderer<T>() {
 
                     @Override
-                    protected String getTextValue(Domain domain) {
+                    protected String getTextValue(T domain) {
                         return DomainAutoComplete.this.getTextValue(domain);
                     }
 
                     @Override
-                    protected CharSequence getOnSelectJavaScriptExpression(Domain item) {
+                    protected CharSequence getOnSelectJavaScriptExpression(T item) {
                         return "$('#" + inputId.getMarkupId() + "').val('" + item.getObjectId() + "'); input";
                     }
                 },
@@ -78,45 +80,51 @@ public class DomainAutoComplete extends Panel {
                         .setPreselect(true)
         ) {
             @Override
-            protected Iterator<Domain> getChoices(String input) {
+            protected Iterator<T> getChoices(String input) {
                 return getDomains(input).iterator();
             }
 
             @Override
             protected IConverter<?> createConverter(Class<?> type) {
-                if (Domain.class.equals(type)) {
-                    return new IConverter<Domain>() {
-                        @Override
-                        public Domain convertToObject(String s, Locale locale) throws ConversionException {
-                            if (s == null || s.isEmpty()){
-                                return null;
-                            }
-
-                            return new Domain();
+                return new IConverter<T>() {
+                    @Override
+                    public T convertToObject(String s, Locale locale) throws ConversionException {
+                        if (s == null || s.isEmpty()){
+                            return null;
                         }
 
-                        @Override
-                        public String convertToString(Domain domain, Locale locale) {
-                            return getTextValue(domain);
+                        try {
+                            return domainClass.newInstance();
+                        } catch (Exception e) {
+                            throw new WicketRuntimeException(e);
                         }
-                    };
-                }
+                    }
 
-                return super.createConverter(type);
+                    @Override
+                    public String convertToString(T domain, Locale locale) {
+                        return getTextValue(domain);
+                    }
+                };
             }
         };
 
         add(autoCompleteTextField);
     }
 
-    private List<Domain> getDomains(String input) {
+    @SuppressWarnings("unchecked")
+    protected T getDomain(IModel<Long> model) {
+        return (T) domainMapper.getDomain(entityAttribute.getEntityName(), model.getObject());
+    }
+
+    @SuppressWarnings("unchecked")
+    protected List<T> getDomains(String input) {
         Domain domain = new Domain(entityAttribute.getEntityName());
         domain.getOrCreateAttribute(entityAttribute.getEntityAttributeId()).setText(input);
 
-        return domainMapper.getDomains(FilterWrapper.of(domain).limit(0L, 10L));
+        return (List<T>) domainMapper.getDomains(FilterWrapper.of(domain).limit(0L, 10L));
     }
 
-    private String getTextValue(Domain domain) {
+    protected String getTextValue(T domain) {
         Attribute attribute = domain.getOrCreateAttribute(entityAttribute.getEntityAttributeId());
 
         switch (entityAttribute.getValueType()){
@@ -139,7 +147,7 @@ public class DomainAutoComplete extends Panel {
         return null;
     }
 
-    AutoCompleteTextField<Domain> getAutoCompleteTextField() {
+    public AutoCompleteTextField<T> getAutoCompleteTextField() {
         return autoCompleteTextField;
     }
 }

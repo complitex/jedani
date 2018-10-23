@@ -4,6 +4,7 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.form.FormGroup;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
+import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.service.EntityService;
 
 import javax.inject.Inject;
@@ -30,7 +31,7 @@ public class DomainAutoCompleteFormGroup extends Panel{
         setOutputMarkupId(true);
 
         FormGroup group = new FormGroup("group", label);
-        group.add(domainAutoComplete = new DomainAutoComplete("input",
+        group.add(domainAutoComplete = new DomainAutoComplete<>("input", Domain.class,
                 entityService.getEntityAttribute(entityName, entityAttributeId).setDisplayCapitalize(capitalize), model));
         domainAutoComplete.getAutoCompleteTextField().setLabel(label);
 
