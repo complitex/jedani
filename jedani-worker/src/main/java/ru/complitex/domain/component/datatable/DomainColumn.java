@@ -25,7 +25,6 @@ import ru.complitex.domain.model.NumberAttributeModel;
 import ru.complitex.domain.model.TextAttributeModel;
 import ru.complitex.domain.service.EntityService;
 import ru.complitex.domain.util.Attributes;
-import ru.complitex.domain.util.Locales;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -100,9 +99,9 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
                     Domain domain = domainMapper.getDomain(entityService
                             .getEntity(entityAttribute.getReferenceId()).getName(), attribute.getNumber());
 
-                    text = domain != null
-                            ? domain.getAttributes().get(0).getValue(Locales.getSystemLocaleId()).getText()
-                            : attribute.getNumber() + ""; //todo def attribute
+                    text = domain != null && entityAttribute.getReferenceEntityAttribute() != null
+                            ? domain.getValueText(entityAttribute.getReferenceEntityAttribute().getEntityAttributeId())
+                            : attribute.getNumber() + "";
 
                     text = Attributes.displayText(entityAttribute, text);
                 }
