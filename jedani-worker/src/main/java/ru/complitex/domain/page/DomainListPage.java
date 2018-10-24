@@ -3,7 +3,6 @@ package ru.complitex.domain.page;
 import de.agilecoders.wicket.core.markup.html.bootstrap.behavior.CssClassNameAppender;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
 import org.apache.wicket.Page;
-import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -26,7 +25,7 @@ import ru.complitex.domain.component.datatable.DomainParentColumn;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
-import ru.complitex.domain.mapper.DomainMapper;
+import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
 import ru.complitex.jedani.worker.page.BasePage;
 
@@ -47,22 +46,20 @@ public class DomainListPage<T extends Domain> extends BasePage{
     private EntityService entityService;
 
     @Inject
-    private DomainMapper domainMapper;
+    private DomainService domainService;
+
+    private Class<T> domainClass;
 
     private Class<? extends Page> editPageClass;
     private FilterDataTable<T> table;
 
     public <P extends WebPage> DomainListPage(Class<T> domainClass, String parentEntityName, Long parentEntityAttributeId,
                           Class<P> editPageClass) {
-        T domainInstance;
-
-        try {
-            domainInstance = domainClass.newInstance();
-        } catch (Exception e) {
-            throw new WicketRuntimeException(e);
-        }
+        this.domainClass = domainClass;
 
         this.editPageClass = editPageClass;
+
+        T domainInstance = domainService.newObject(domainClass);
 
         Entity entity = entityService.getEntity(domainInstance.getEntityName());
 
@@ -112,7 +109,7 @@ public class DomainListPage<T extends Domain> extends BasePage{
             columns.add(new DomainParentColumn<T>(entityService.getEntity(parentEntityName), parentEntityAttributeId) {
                 @Override
                 protected Domain getDomain(Long objectId) {
-                    return domainMapper.getDomain(parentEntityName, objectId);
+                    return domainService.getDomain(parentEntityName, objectId);
                 }
             });
         }
@@ -123,10 +120,10 @@ public class DomainListPage<T extends Domain> extends BasePage{
 
         if (entityAttributeIds != null){
             entityAttributeIds.forEach(id -> columns.add(new DomainColumn<>(entity.getEntityAttribute(id),
-                    entityService, domainMapper)));
+                    entityService, domainService)));
 
         }else {
-            entityAttributes.forEach(a -> columns.add(new DomainColumn<>(a, entityService, domainMapper)));
+            entityAttributes.forEach(a -> columns.add(new DomainColumn<>(a, entityService, domainService)));
         }
 
         onAddColumns(columns);
@@ -176,13 +173,12 @@ public class DomainListPage<T extends Domain> extends BasePage{
         item.add(new CssClassNameAppender("pointer"));
     }
 
-    @SuppressWarnings("unchecked")
     protected List<T> getDomains(FilterWrapper<T> filterWrapper) {
-        return (List<T>) domainMapper.getDomains(filterWrapper);
+        return domainService.getDomains(domainClass, filterWrapper);
     }
 
     protected Long getDomainsCount(FilterWrapper<T> filterWrapper) {
-        return domainMapper.getDomainsCount(filterWrapper);
+        return domainService.getDomainsCount(filterWrapper);
     }
 
     public DomainListPage(Class<T> domainInstance, Class<? extends WebPage> editPageClass) {

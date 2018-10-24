@@ -6,13 +6,13 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import ru.complitex.address.entity.City;
-import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.domain.component.form.DomainAutoComplete;
 import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.mapper.DomainMapper;
 import ru.complitex.domain.page.DomainEditPage;
 import ru.complitex.domain.service.EntityService;
+import ru.complitex.domain.util.Attributes;
 import ru.complitex.jedani.worker.entity.Nomenclature;
 import ru.complitex.jedani.worker.entity.Product;
 import ru.complitex.jedani.worker.entity.Storage;
@@ -21,7 +21,6 @@ import ru.complitex.jedani.worker.security.JedaniRoles;
 import ru.complitex.name.service.NameService;
 
 import javax.inject.Inject;
-import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -47,35 +46,33 @@ public class ProductEditPage extends DomainEditPage<Product> {
     @Override
     protected Component getComponent(Attribute attribute) {
         if (Objects.equals(attribute.getEntityAttributeId(), Product.NOMENCLATURE_ID)){
-           return new DomainAutoComplete<Domain>(COMPONENT_WICKET_ID, Domain.class,
+           return new DomainAutoComplete(COMPONENT_WICKET_ID,
                    entityService.getEntityAttribute(Nomenclature.ENTITY_NAME, Nomenclature.NAME),
                    new PropertyModel<>(attribute, "number")){
                @Override
-               protected List<Domain> getDomains(String input) {
+               protected Domain getFilterObject(String input) {
                    Nomenclature nomenclature = new Nomenclature();
 
                    nomenclature.getOrCreateAttribute(Nomenclature.CODE).setText(input);
                    nomenclature.getOrCreateAttribute(Nomenclature.NAME).setText(input);
 
-                   return domainMapper.getDomains(FilterWrapper.of(nomenclature)
-                           .setFilter("search")
-                           .limit(0L, 10L));
+                   return nomenclature;
                }
 
                @Override
                protected String getTextValue(Domain domain) {
-                   return domain.getText(Nomenclature.CODE) + " " + domain.getValueText(Nomenclature.NAME);
+                   return domain.getText(Nomenclature.CODE) + " " + Attributes.capitalize(domain.getValueText(Nomenclature.NAME));
                }
            };
         }
 
         if (attribute.getEntityAttributeId().equals(Product.STORAGE_ID) ||
                 attribute.getEntityAttributeId().equals(Product.STORAGE_INTO_ID)){
-            return new DomainAutoComplete<Domain>(COMPONENT_WICKET_ID, Domain.class,
+            return new DomainAutoComplete(COMPONENT_WICKET_ID,
                     entityService.getEntityAttribute(Storage.ENTITY_NAME, Storage.CITY_ID),
                     new PropertyModel<>(attribute, "number")){
                 @Override
-                protected List<Domain> getDomains(String input) {
+                protected Domain getFilterObject(String input) {
                     Storage storage = new Storage();
 
                     Attribute cityId = storage.getOrCreateAttribute(Storage.CITY_ID);
@@ -88,21 +85,28 @@ public class ProductEditPage extends DomainEditPage<Product> {
                     workerIds.getEntityAttribute().setReferenceEntityAttribute(entityService.getEntityAttribute(Worker.ENTITY_NAME, Worker.J_ID));
                     workerIds.setText(input);
 
-                    return domainMapper.getDomains(FilterWrapper.of(storage)
-                            .setFilter("search")
-                            .limit(0L, 10L));
+                    return storage;
                 }
 
                 @Override
                 protected String getTextValue(Domain domain) {
+                    String textValue = "" + domain.getObjectId();
+
                     Domain city = domainMapper.getDomain(City.ENTITY_NAME, domain.getNumber(Storage.CITY_ID));
 
-                    String workers = domain.getNumberValues(Storage.WORKER_IDS).stream()
+                    if (city != null){
+                        textValue += " " + Attributes.capitalize(city.getValueText(City.NAME));
+                    }
+
+                    textValue += " " + domain.getNumberValues(Storage.WORKER_IDS).stream()
                             .map(id -> domainMapper.getDomain(Worker.ENTITY_NAME, id))
-                            .map(w -> w.getText(Worker.J_ID) + " " + nameService.getLastName(w.getNumber(Worker.LAST_NAME)))
+                            .map(w -> w.getText(Worker.J_ID) + " " +
+                                    nameService.getLastName(w.getNumber(Worker.LAST_NAME)) + " " +
+                                    nameService.getFirstName(w.getNumber(Worker.FIRST_NAME)) + " " +
+                                    nameService.getMiddleName(w.getNumber(Worker.MIDDLE_NAME)))
                             .collect(Collectors.joining(", "));
 
-                    return domain.getObjectId() + " "  + city.getValueText(City.NAME) + " " + workers;
+                    return textValue;
                 }
 
                 @Override

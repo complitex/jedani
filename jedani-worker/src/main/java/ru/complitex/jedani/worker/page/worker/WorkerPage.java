@@ -51,8 +51,12 @@ import ru.complitex.domain.component.form.AttributeSelectFormGroup;
 import ru.complitex.domain.component.form.AttributeSelectListFormGroup;
 import ru.complitex.domain.component.form.DomainAutoCompleteFormGroup;
 import ru.complitex.domain.entity.*;
-import ru.complitex.domain.mapper.*;
+import ru.complitex.domain.mapper.AttributeMapper;
+import ru.complitex.domain.mapper.DomainMapper;
+import ru.complitex.domain.mapper.DomainNodeMapper;
+import ru.complitex.domain.mapper.EntityMapper;
 import ru.complitex.domain.model.TextAttributeModel;
+import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
 import ru.complitex.jedani.worker.component.WorkerAutoComplete;
 import ru.complitex.jedani.worker.entity.MkStatus;
@@ -92,6 +96,9 @@ public class WorkerPage extends BasePage {
 
     @Inject
     private DomainMapper domainMapper;
+
+    @Inject
+    private DomainService domainService;
 
     @Inject
     private UserMapper userMapper;
@@ -601,7 +608,7 @@ public class WorkerPage extends BasePage {
         List<IColumn<Worker, SortProperty>> columns = new ArrayList<>();
 
         columns.add(new DomainIdColumn<>());
-        getEntityAttributes().forEach(a -> columns.add(new DomainColumn<>(a, entityService, domainMapper)));
+        getEntityAttributes().forEach(a -> columns.add(new DomainColumn<>(a, entityService, domainService)));
 
         columns.add(new AbstractDomainColumn<Worker>(new ResourceModel("subWorkersCount"),
                 new SortProperty("subWorkersCount")) {

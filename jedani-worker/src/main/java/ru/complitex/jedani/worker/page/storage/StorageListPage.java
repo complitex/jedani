@@ -9,15 +9,15 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
-import ru.complitex.domain.mapper.DomainMapper;
 import ru.complitex.domain.page.DomainListPage;
+import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
 import ru.complitex.jedani.worker.entity.Storage;
+import ru.complitex.jedani.worker.entity.Worker;
 import ru.complitex.name.service.NameService;
 
 import javax.inject.Inject;
@@ -37,7 +37,7 @@ public class StorageListPage extends DomainListPage<Storage> {
     private NameService nameService;
 
     @Inject
-    private DomainMapper domainMapper;
+    private DomainService domainService;
 
     public StorageListPage() {
         super(Storage.class, StorageEditPage.class);
@@ -53,23 +53,21 @@ public class StorageListPage extends DomainListPage<Storage> {
     }
 
     @Override
-    protected List<Storage> getDomains(FilterWrapper<Storage> filterWrapper) {
-        return domainMapper.getDomains(filterWrapper).stream().map(Storage::new).collect(Collectors.toList());
-    }
-
-    @Override
     protected void onAddColumns(List<IColumn<Storage, SortProperty>> columns) {
         String label = entityService.getEntityAttribute(Storage.ENTITY_NAME, Storage.WORKER_IDS).getValue().getText();
 
         columns.add(new AbstractDomainColumn<Storage>(Model.of(label), new SortProperty("workerIds")) {
             @Override
             public void populateItem(Item<ICellPopulator<Storage>> cellItem, String componentId, IModel<Storage> rowModel) {
-                String s = rowModel.getObject().getOrCreateAttribute(Storage.WORKER_IDS).getNumberValues().stream()
-                        .map(id -> nameService.getLastName(id) + " " + nameService.getFirstName(id) + " " +
-                                nameService.getMiddleName(id))
+                String workers = rowModel.getObject().getNumberValues(Storage.WORKER_IDS).stream()
+                        .map(id -> domainService.getDomain(Worker.ENTITY_NAME, id))
+                        .map(w -> w.getText(Worker.J_ID) + " " +
+                                nameService.getLastName(w.getNumber(Worker.LAST_NAME)) + " " +
+                                nameService.getFirstName(w.getNumber(Worker.FIRST_NAME)) + " " +
+                                nameService.getMiddleName(w.getNumber(Worker.MIDDLE_NAME)))
                         .collect(Collectors.joining(", "));
 
-                cellItem.add(new Label(componentId, s));
+                cellItem.add(new Label(componentId, workers));
             }
 
             @Override

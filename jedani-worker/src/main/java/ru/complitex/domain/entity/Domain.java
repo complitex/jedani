@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
  */
 public class Domain implements Serializable{
     private Long id;
-    private Long objectId; //todo rename to domainId?
+    private Long objectId;
     private Long parentId;
     private Long parentEntityId;
     private Date startDate;
@@ -40,6 +40,10 @@ public class Domain implements Serializable{
     }
 
     public Domain(Domain domain){
+        wrap(domain);
+    }
+
+    public void wrap(Domain domain){
         this.id = domain.id;
         this.objectId = domain.objectId;
         this.parentId = domain.parentId;
@@ -75,7 +79,7 @@ public class Domain implements Serializable{
             setText(entityAttributeId, text.toUpperCase());
         }
 
-        return null;
+        return this;
     }
 
     public Domain setNumber(Long entityAttributeId, Long number){

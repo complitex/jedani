@@ -19,10 +19,10 @@ import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.entity.Value;
-import ru.complitex.domain.mapper.DomainMapper;
 import ru.complitex.domain.model.DateAttributeModel;
 import ru.complitex.domain.model.NumberAttributeModel;
 import ru.complitex.domain.model.TextAttributeModel;
+import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
 import ru.complitex.domain.util.Attributes;
 
@@ -41,9 +41,9 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
 
     private EntityService entityService;
 
-    private DomainMapper domainMapper;
+    private DomainService domainService;
 
-    public DomainColumn(EntityAttribute entityAttribute, EntityService entityService, DomainMapper domainMapper) {
+    public DomainColumn(EntityAttribute entityAttribute, EntityService entityService, DomainService domainService) {
         super(Model.of(entityAttribute.getValue() != null
                         ? entityAttribute.getValue().getText()
                         : "[" + entityAttribute.getEntityAttributeId() + "]"),
@@ -52,7 +52,7 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
         this.entityAttribute = entityAttribute;
 
         this.entityService = entityService;
-        this.domainMapper = domainMapper;
+        this.domainService = domainService;
     }
 
     @Override
@@ -96,7 +96,7 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
                 break;
             case ENTITY:
                 if (attribute.getNumber() != null) {
-                    Domain domain = domainMapper.getDomain(entityService
+                    Domain domain = domainService.getDomain(entityService
                             .getEntity(entityAttribute.getReferenceId()).getName(), attribute.getNumber());
 
                     text = domain != null && entityAttribute.getReferenceEntityAttribute() != null
@@ -130,7 +130,7 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
 
                         text = list.stream()
                                 .map(id -> {
-                                    Domain domain = domainMapper.getDomain(referenceEntityAttribute.getEntityName(), id);
+                                    Domain domain = domainService.getDomain(referenceEntityAttribute.getEntityName(), id);
 
                                     String prefix = "";
 
@@ -138,7 +138,7 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
                                         Long prefixDomainId = domain.getNumber(prefixEntityAttribute.getEntityAttributeId());
 
                                         if (prefixDomainId != null) {
-                                            Domain prefixDomain = domainMapper.getDomain(prefixEntityAttribute
+                                            Domain prefixDomain = domainService.getDomain(prefixEntityAttribute
                                                             .getReferenceEntityAttribute().getEntityName(),
                                                     prefixDomainId);
 
