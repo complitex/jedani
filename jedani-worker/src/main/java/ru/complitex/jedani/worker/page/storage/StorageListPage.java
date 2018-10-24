@@ -9,6 +9,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import ru.complitex.address.entity.City;
 import ru.complitex.common.entity.SortProperty;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.entity.Entity;
@@ -47,7 +48,9 @@ public class StorageListPage extends DomainListPage<Storage> {
     protected List<EntityAttribute> getEntityAttributes(Entity entity) {
         List<EntityAttribute> list = new ArrayList<>();
 
-        list.add(entity.getEntityAttribute(Storage.CITY_ID).setDisplayCapitalize(true));
+        list.add(entity.getEntityAttribute(Storage.CITY_ID)
+                .setReferenceEntityAttribute(entityService.getEntityAttribute(City.ENTITY_NAME, City.NAME))
+                .setDisplayCapitalize(true));
 
         return list;
     }
