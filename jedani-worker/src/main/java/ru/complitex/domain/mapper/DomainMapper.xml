@@ -230,12 +230,23 @@
                         </if>
 
                         <if test="a.number != null">
-                            and (a${i}.entity_attribute_id = #{a.entityAttributeId}  and a${i}.status = 1
-                            and (a${i}.number = #{a.number} or v${i}.number = #{a.number}))
+                           <choose>
+                               <when test="a.number == -1">
+                                   and a${i}.number is null
+                               </when>
+                               <when test="a.number == -2">
+                                   and a${i}.number is not null
+                               </when>
+                               <otherwise>
+                                   and (a${i}.number = #{a.number}
+                                       <if test="object.useNumberValue">or v${i}.number = #{a.number}</if>
+                                   )
+                               </otherwise>
+                           </choose>
                         </if>
 
                         <if test="a.date != null">
-                            and (a${i}.entity_attribute_id = #{a.entityAttributeId} and a${i}.status = 1 and a${i}.date = #{a.date})
+                            and (a${i}.date = #{a.date})
                         </if>
                     </otherwise>
                 </choose>

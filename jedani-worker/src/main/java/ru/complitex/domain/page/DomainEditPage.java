@@ -11,6 +11,7 @@ import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -55,6 +56,8 @@ public abstract class DomainEditPage<T extends Domain> extends BasePage{
     @Inject
     private DomainMapper domainMapper;
 
+    private Form form;
+
     public DomainEditPage(Class<T> domainClass, PageParameters parameters, Class<? extends WebPage> backPage) {
         T domainInstance;
 
@@ -76,7 +79,7 @@ public abstract class DomainEditPage<T extends Domain> extends BasePage{
         feedback.setOutputMarkupId(true);
         add(feedback);
 
-        BootstrapForm form = new BootstrapForm("form");
+        form = new BootstrapForm("form");
         add(form);
 
         Long objectId = parameters.get("id").toOptionalLong();
@@ -232,7 +235,6 @@ public abstract class DomainEditPage<T extends Domain> extends BasePage{
     }
 
     protected void onAttribute(Attribute attribute){
-
     }
 
     protected Component getComponent(Attribute attribute){
@@ -241,5 +243,9 @@ public abstract class DomainEditPage<T extends Domain> extends BasePage{
 
     protected String getPrefix(EntityAttribute entityAttribute, Domain domain){
         return "";
+    }
+
+    public Form getForm() {
+        return form;
     }
 }

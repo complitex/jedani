@@ -5,6 +5,7 @@ import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.mapper.DomainMapper;
 
 import javax.inject.Inject;
+import java.io.Serializable;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -12,7 +13,7 @@ import java.util.stream.Collectors;
  * @author Anatoly A. Ivanov
  * 29.11.2017 17:54
  */
-public class DomainService {
+public class DomainService implements Serializable {
     @Inject
     private DomainMapper domainMapper;
 
