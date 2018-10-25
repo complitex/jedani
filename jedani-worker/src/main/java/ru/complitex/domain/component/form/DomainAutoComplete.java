@@ -129,15 +129,9 @@ public class DomainAutoComplete extends Panel {
             case TEXT_VALUE:
                 String textValue = attribute.getOrCreateValue(Locales.getSystemLocaleId()).getText();
 
-                return textValue != null && entityAttribute.isDisplayCapitalize()
-                        ? Attributes.capitalize(textValue)
-                        : textValue;
+                return Attributes.displayText(entityAttribute, textValue);
             case TEXT:
-                String text = attribute.getText();
-
-                return text != null && entityAttribute.isDisplayCapitalize()
-                        ? Attributes.capitalize(text)
-                        : text;
+                return attribute.getText();
             case NUMBER:
                 return attribute.getNumber() + "";
         }

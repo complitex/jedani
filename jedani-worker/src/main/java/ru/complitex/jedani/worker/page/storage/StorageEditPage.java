@@ -29,8 +29,7 @@ public class StorageEditPage extends DomainEditPage<Storage> {
     protected void onAttribute(Attribute attribute) {
         if (Objects.equals(attribute.getEntityAttributeId(), Storage.CITY_ID)){
             attribute.getEntityAttribute()
-                    .setReferenceEntityAttribute(entityService.getEntityAttribute(City.ENTITY_NAME, City.NAME)
-                            .setDisplayCapitalize(true));
+                    .setReferenceEntityAttribute(entityService.getEntityAttribute(City.ENTITY_NAME, City.NAME));
         }
     }
 

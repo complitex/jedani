@@ -30,14 +30,12 @@ public class NomenclatureListPage extends DomainListPage<Nomenclature> {
     protected List<EntityAttribute> getEntityAttributes(Entity entity) {
         List<EntityAttribute> list = new ArrayList<>();
 
-        list.add(entity.getEntityAttribute(Nomenclature.NAME)
-                .setDisplayCapitalize(true));
+        list.add(entity.getEntityAttribute(Nomenclature.NAME));
 
         list.add(entity.getEntityAttribute(Nomenclature.CODE));
 
         list.add(entity.getEntityAttribute(Nomenclature.COUNTRY_IDS)
-                .setReferenceEntityAttribute(entityService.getEntityAttribute(Country.ENTITY_NAME, Country.NAME))
-                .setDisplayCapitalize(true));
+                .setReferenceEntityAttribute(entityService.getEntityAttribute(Country.ENTITY_NAME, Country.NAME)));
 
         return list;
     }

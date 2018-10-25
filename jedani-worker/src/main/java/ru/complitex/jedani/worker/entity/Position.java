@@ -10,4 +10,8 @@ public class Position extends Domain {
     public static final String ENTITY_NAME = "position";
 
     public static final long NAME = 1;
+
+    public Position() {
+        super(ENTITY_NAME);
+    }
 }

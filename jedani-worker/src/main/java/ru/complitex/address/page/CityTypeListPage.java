@@ -27,7 +27,6 @@ public class CityTypeListPage extends DomainListPage<CityType>{
 
     @Override
     protected List<EntityAttribute> getEntityAttributes(Entity entity) {
-        entity.getEntityAttribute(CityType.NAME).setDisplayCapitalize(true);
         entity.getEntityAttribute(CityType.SHORT_NAME).setDisplayLowerCase(true);
 
         return entity.getAttributes();

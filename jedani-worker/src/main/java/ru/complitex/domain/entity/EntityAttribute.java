@@ -26,7 +26,6 @@ public class EntityAttribute implements Serializable{
     private EntityAttribute referenceEntityAttribute;
     private EntityAttribute prefixEntityAttribute;
 
-    private boolean displayCapitalize;
     private boolean displayLowerCase;
 
     public EntityValue getValue(){
@@ -121,16 +120,6 @@ public class EntityAttribute implements Serializable{
 
     public EntityAttribute setPrefixEntityAttribute(EntityAttribute prefixEntityAttribute) {
         this.prefixEntityAttribute = prefixEntityAttribute;
-
-        return this;
-    }
-
-    public boolean isDisplayCapitalize() {
-        return displayCapitalize;
-    }
-
-    public EntityAttribute setDisplayCapitalize(boolean displayCapitalize) {
-        this.displayCapitalize = displayCapitalize;
 
         return this;
     }

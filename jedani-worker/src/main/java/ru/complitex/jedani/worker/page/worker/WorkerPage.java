@@ -257,7 +257,7 @@ public class WorkerPage extends BasePage {
                     Domain cityType = domainMapper.getDomain(CityType.ENTITY_NAME, cityTypeId);
 
                     if (cityType != null){
-                        return cityType.getValueText(CityType.SHORT_NAME) + " ";
+                        return cityType.getValueText(CityType.SHORT_NAME).toLowerCase() + " ";
                     }
                 }
 
@@ -687,28 +687,23 @@ public class WorkerPage extends BasePage {
         List<EntityAttribute> list = new ArrayList<>();
 
         list.add(entity.getEntityAttribute(Worker.LAST_NAME)
-                .setReferenceEntityAttribute(entityService.getEntityAttribute(LastName.ENTITY_NAME, LastName.NAME))
-                .setDisplayCapitalize(true));
+                .setReferenceEntityAttribute(entityService.getEntityAttribute(LastName.ENTITY_NAME, LastName.NAME)));
 
         list.add(entity.getEntityAttribute(Worker.FIRST_NAME)
-                .setReferenceEntityAttribute(entityService.getEntityAttribute(FirstName.ENTITY_NAME, FirstName.NAME))
-                .setDisplayCapitalize(true));
+                .setReferenceEntityAttribute(entityService.getEntityAttribute(FirstName.ENTITY_NAME, FirstName.NAME)));
 
         list.add(entity.getEntityAttribute(Worker.MIDDLE_NAME)
-                .setReferenceEntityAttribute(entityService.getEntityAttribute(MiddleName.ENTITY_NAME, MiddleName.NAME))
-                .setDisplayCapitalize(true));
+                .setReferenceEntityAttribute(entityService.getEntityAttribute(MiddleName.ENTITY_NAME, MiddleName.NAME)));
 
         list.add(entity.getEntityAttribute(Worker.J_ID));
 
         list.add(entity.getEntityAttribute(Worker.REGION_IDS)
-                .setReferenceEntityAttribute(entityService.getEntityAttribute(Region.ENTITY_NAME, Region.NAME))
-                .setDisplayCapitalize(true));
+                .setReferenceEntityAttribute(entityService.getEntityAttribute(Region.ENTITY_NAME, Region.NAME)));
 
         list.add(entity.getEntityAttribute(Worker.CITY_IDS)
                 .setReferenceEntityAttribute(entityService.getEntityAttribute(City.ENTITY_NAME, City.NAME))
                 .setPrefixEntityAttribute(entityService.getEntityAttribute(City.ENTITY_NAME, City.CITY_TYPE_ID)
-                        .setReferenceEntityAttribute(entityService.getEntityAttribute(CityType.ENTITY_NAME, CityType.SHORT_NAME)))
-                .setDisplayCapitalize(true));
+                        .setReferenceEntityAttribute(entityService.getEntityAttribute(CityType.ENTITY_NAME, CityType.SHORT_NAME))));
 
         return list;
     }

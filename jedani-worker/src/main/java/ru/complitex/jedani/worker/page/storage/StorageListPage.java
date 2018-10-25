@@ -49,8 +49,7 @@ public class StorageListPage extends DomainListPage<Storage> {
         List<EntityAttribute> list = new ArrayList<>();
 
         list.add(entity.getEntityAttribute(Storage.CITY_ID)
-                .setReferenceEntityAttribute(entityService.getEntityAttribute(City.ENTITY_NAME, City.NAME))
-                .setDisplayCapitalize(true));
+                .setReferenceEntityAttribute(entityService.getEntityAttribute(City.ENTITY_NAME, City.NAME)));
 
         return list;
     }

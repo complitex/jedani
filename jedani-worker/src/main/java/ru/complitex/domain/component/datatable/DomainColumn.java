@@ -3,6 +3,7 @@ package ru.complitex.domain.component.datatable;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.DateTextField;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.DateTextFieldConfig;
 import org.apache.wicket.Component;
+import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.TextFilter;
@@ -103,7 +104,7 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
                             ? domain.getValueText(entityAttribute.getReferenceEntityAttribute().getEntityAttributeId())
                             : attribute.getNumber() + "";
 
-                    text = Attributes.displayText(entityAttribute, text);
+                    text = Attributes.displayText(entityAttribute.getReferenceEntityAttribute(), text);
                 }
 
                 break;
@@ -150,7 +151,7 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
 
                                     String valueText = domain.getValueText(referenceEntityAttribute.getEntityAttributeId());
 
-                                    return prefix.toLowerCase() + Attributes.displayText(entityAttribute, valueText);
+                                    return prefix.toLowerCase() + Attributes.displayText(referenceEntityAttribute, valueText);
                                 })
                                 .collect(Collectors.joining(", "));
                     }else{
@@ -167,6 +168,12 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
                 text = Attributes.displayText(entityAttribute, attribute.getText());
         }
 
-        cellItem.add(new Label(componentId, text));
+        Label label = new Label(componentId, text);
+
+        if (entityAttribute.getPrefixEntityAttribute() != null){
+            label.add(AttributeAppender.append("style", "white-space: nowrap"));
+        }
+
+        cellItem.add(label);
     }
 }

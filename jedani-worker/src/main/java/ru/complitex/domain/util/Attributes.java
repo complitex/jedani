@@ -1,6 +1,7 @@
 package ru.complitex.domain.util;
 
 import ru.complitex.domain.entity.EntityAttribute;
+import ru.complitex.domain.entity.ValueType;
 
 /**
  * @author Anatoly A. Ivanov
@@ -12,10 +13,12 @@ public class Attributes {
             return null;
         }
 
-        if (entityAttribute.isDisplayCapitalize()){
-            return capitalize(text);
-        }else if (entityAttribute.isDisplayLowerCase()){
-            return text.toLowerCase();
+        if (entityAttribute != null) {
+            if (entityAttribute.isDisplayLowerCase()){
+                return text.toLowerCase();
+            }else if (entityAttribute.getValueType().equals(ValueType.TEXT_VALUE)){
+                return capitalize(text);
+            }
         }
 
         return text;

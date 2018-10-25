@@ -96,8 +96,7 @@ public abstract class DomainEditPage<T extends Domain> extends BasePage{
             FormGroup parentGroup = new FormGroup("parentGroup", Model.of(parentEntity.getValue().getText()));
             form.add(parentGroup);
 
-            parentGroup.add(new DomainAutoComplete("parent",
-                    parentEntity.getEntityAttribute(getParentEntityAttributeId()).setDisplayCapitalize(true),
+            parentGroup.add(new DomainAutoComplete("parent", parentEntity.getEntityAttribute(getParentEntityAttributeId()),
                     new PropertyModel<>(domain, "parentId")));
         }else{
             form.add(new EmptyPanel("parentGroup").setVisible(false));

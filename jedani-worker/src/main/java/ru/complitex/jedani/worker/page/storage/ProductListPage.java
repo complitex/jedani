@@ -56,8 +56,7 @@ public class ProductListPage extends DomainListPage<Product> {
         List<EntityAttribute> list = new ArrayList<>();
 
         list.add(entity.getEntityAttribute(Product.NOMENCLATURE_ID)
-                .setReferenceEntityAttribute(entityService.getEntityAttribute(Nomenclature.ENTITY_NAME, Nomenclature.NAME))
-                .setDisplayCapitalize(true));
+                .setReferenceEntityAttribute(entityService.getEntityAttribute(Nomenclature.ENTITY_NAME, Nomenclature.NAME)));
 
         return list;
     }

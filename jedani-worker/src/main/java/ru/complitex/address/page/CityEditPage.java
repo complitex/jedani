@@ -45,7 +45,6 @@ public class CityEditPage extends DomainEditPage<City>{
     @Override
     protected void onAttribute(Attribute attribute) {
         if (attribute.getEntityAttributeId().equals(City.CITY_TYPE_ID)){
-            attribute.getEntityAttribute().setDisplayCapitalize(true);
             attribute.getEntityAttribute().setReferenceEntityAttribute(entityService.getEntityAttribute(CityType.ENTITY_NAME, CityType.NAME));
         }
     }

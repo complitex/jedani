@@ -10,4 +10,8 @@ public class MkStatus extends Domain {
     public static final String ENTITY_NAME = "mk_status";
 
     public static final long NAME = 1;
+
+    public MkStatus() {
+        super(ENTITY_NAME);
+    }
 }
