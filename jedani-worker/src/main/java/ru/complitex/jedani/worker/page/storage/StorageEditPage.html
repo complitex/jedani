@@ -4,14 +4,10 @@
 <wicket:extend xmlns:wicket="http://wicket.apache.org">
     <div>
         <div wicket:id="productContainer">
-            <div>
-                <strong>На складе: </strong><span wicket:id="productCount"></span>
-            </div>
-            <div>
-                <strong>Перемещается в склад: </strong><span wicket:id="productIntoCount"></span>
-            </div>
-            <div>
-                <strong>Перемещается из склада: </strong><span wicket:id="productFromCount"></span>
+            <div class="pull-right">
+                <strong>На складе: </strong><span wicket:id="productCount" ></span>.
+                <strong>Перемещается в этот склад: </strong><span wicket:id="productIntoCount" ></span>.
+                <strong>Перемещается из этого склада: </strong><span wicket:id="productFromCount" ></span>.
             </div>
 
             <br/>

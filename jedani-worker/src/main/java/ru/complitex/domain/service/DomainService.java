@@ -3,6 +3,7 @@ package ru.complitex.domain.service;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.mapper.DomainMapper;
+import ru.complitex.domain.util.Domains;
 
 import javax.inject.Inject;
 import java.io.Serializable;
@@ -17,29 +18,9 @@ public class DomainService implements Serializable {
     @Inject
     private DomainMapper domainMapper;
 
-    public <T extends Domain> T newObject(Class<T> domainClass){
-        try {
-            return domainClass.newInstance();
-        } catch (Exception e) {
-            throw new RuntimeException("error create new object " + e);
-        }
-    }
-
-    public <T extends Domain> T newObject(Class<T> domainClass, Domain domain){
-        try {
-            T domainInstance = domainClass.newInstance();
-
-            domainInstance.wrap(domain);
-
-            return domainInstance;
-        } catch (Exception e) {
-            throw new RuntimeException("error create new object " + e);
-        }
-    }
-
     public <T extends Domain> List<T> getDomains(Class<T> domainClass, FilterWrapper<T> filterWrapper){
         return domainMapper.getDomains(filterWrapper).stream()
-                .map(d -> newObject(domainClass, d))
+                .map(d -> Domains.newObject(domainClass, d))
                 .collect(Collectors.toList());
     }
 
@@ -53,5 +34,9 @@ public class DomainService implements Serializable {
 
     public Domain getDomainWithNumberValues(String entityName, Long objectId){
         return domainMapper.getDomain(entityName, objectId, false, true);
+    }
+
+    public <T extends Domain> T getDomain(Class<T> domainClass, Long objectId){
+        return Domains.newObject(domainClass, domainMapper.getDomain(Domains.getEntityName(domainClass), objectId));
     }
 }

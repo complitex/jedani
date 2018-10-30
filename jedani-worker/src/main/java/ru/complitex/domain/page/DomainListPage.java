@@ -27,6 +27,7 @@ import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
+import ru.complitex.domain.util.Domains;
 import ru.complitex.jedani.worker.page.BasePage;
 
 import javax.inject.Inject;
@@ -59,7 +60,7 @@ public class DomainListPage<T extends Domain> extends BasePage{
 
         this.editPageClass = editPageClass;
 
-        T domainInstance = domainService.newObject(domainClass);
+        T domainInstance = Domains.newObject(domainClass);
 
         Entity entity = entityService.getEntity(domainInstance.getEntityName());
 

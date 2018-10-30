@@ -95,10 +95,6 @@ li.disabled a, li.disabled span{
     display: inline-block;
 }
 
-.domain-edit-input{
-    max-width: 350px;
-}
-
 .form-control[disabled]{
     background-color: #fff;
     border: 1px solid #d9d9d9;

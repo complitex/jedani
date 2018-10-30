@@ -55,6 +55,7 @@ import ru.complitex.domain.mapper.AttributeMapper;
 import ru.complitex.domain.mapper.DomainMapper;
 import ru.complitex.domain.mapper.DomainNodeMapper;
 import ru.complitex.domain.mapper.EntityMapper;
+import ru.complitex.domain.model.NumberAttributeModel;
 import ru.complitex.domain.model.TextAttributeModel;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
@@ -211,13 +212,13 @@ public class WorkerPage extends BasePage {
 
         DomainAutoCompleteFormGroup lastName, firstName, middleName;
 
-        form.add(lastName = new DomainAutoCompleteFormGroup("lastName", "last_name", LastName.NAME,
-                new PropertyModel<>(worker.getOrCreateAttribute(Worker.LAST_NAME), "number"), true).setRequired(true));
-        form.add(firstName = new DomainAutoCompleteFormGroup("firstName", "first_name", FirstName.NAME,
-                new PropertyModel<>(worker.getOrCreateAttribute(Worker.FIRST_NAME), "number"), true).setRequired(true));
-        form.add(middleName = new DomainAutoCompleteFormGroup("middleName", "middle_name", MiddleName.NAME,
-                new PropertyModel<>(worker.getOrCreateAttribute(Worker.MIDDLE_NAME), "number"), true));
-        form.add(new AttributeSelectFormGroup("position", new PropertyModel<>(worker.getOrCreateAttribute(Worker.POSITION_ID), "number"),
+        form.add(lastName = new DomainAutoCompleteFormGroup("lastName", LastName.ENTITY_NAME, LastName.NAME,
+                new NumberAttributeModel(worker, Worker.LAST_NAME), true).setRequired(true));
+        form.add(firstName = new DomainAutoCompleteFormGroup("firstName", FirstName.ENTITY_NAME, FirstName.NAME,
+                new NumberAttributeModel(worker, Worker.FIRST_NAME), true).setRequired(true));
+        form.add(middleName = new DomainAutoCompleteFormGroup("middleName", MiddleName.ENTITY_NAME, MiddleName.NAME,
+                new NumberAttributeModel(worker, Worker.MIDDLE_NAME), true));
+        form.add(new AttributeSelectFormGroup("position", new NumberAttributeModel(worker, Worker.POSITION_ID),
                 Position.ENTITY_NAME, Position.NAME));
 
         TextFieldFormGroup<String> jId = new TextFieldFormGroup<>("jId", new PropertyModel<>(worker.getOrCreateAttribute(Worker.J_ID), "text"));
@@ -238,7 +239,7 @@ public class WorkerPage extends BasePage {
         //num
         form.add(new TextFieldFormGroup<>("num", Model.of("")).setVisible(!participant));
 
-        form.add(new AttributeSelectFormGroup("mkStatus", new PropertyModel<>(worker.getOrCreateAttribute(Worker.MK_STATUS_ID), "number"),
+        form.add(new AttributeSelectFormGroup("mkStatus", new NumberAttributeModel(worker, Worker.MK_STATUS_ID),
                 MkStatus.ENTITY_NAME, MkStatus.NAME).setVisible(participant));
         form.add(new DateTextFieldFormGroup("birthday", new PropertyModel<>(worker.getOrCreateAttribute(Worker.BIRTHDAY), "date")));
         form.add(new AttributeInputListFormGroup("phone", Model.of(worker.getOrCreateAttribute(Worker.PHONE))).setRequired(participant));
