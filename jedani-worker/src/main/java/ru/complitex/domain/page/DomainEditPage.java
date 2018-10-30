@@ -56,9 +56,14 @@ public abstract class DomainEditPage<T extends Domain> extends BasePage{
     @Inject
     private DomainMapper domainMapper;
 
+    private Class<? extends WebPage> backPage;
+    private PageParameters backPageParameters;
+
     private Form form;
 
     public DomainEditPage(Class<T> domainClass, PageParameters parameters, Class<? extends WebPage> backPage) {
+        this.backPage = backPage;
+
         T domainInstance;
 
         try {
@@ -188,8 +193,8 @@ public abstract class DomainEditPage<T extends Domain> extends BasePage{
 
                     getSession().info(entity.getValue().getText() + " " + getString("info_saved"));
 
-                    if (backPage != null) {
-                        setResponsePage(backPage);
+                    if (getBackPage() != null) {
+                        setResponsePage(getBackPage(), getBackPageParameters());
                     }else {
                         target.add(feedback);
                     }
@@ -208,7 +213,7 @@ public abstract class DomainEditPage<T extends Domain> extends BasePage{
         BootstrapAjaxButton cancel = new BootstrapAjaxButton("cancel", Buttons.Type.Default) {
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
-                setResponsePage(backPage);
+                setResponsePage(getBackPage(), getBackPageParameters());
             }
         };
         cancel.setLabel(new ResourceModel("cancel"));
@@ -243,6 +248,22 @@ public abstract class DomainEditPage<T extends Domain> extends BasePage{
 
     protected String getPrefix(EntityAttribute entityAttribute, Domain domain){
         return "";
+    }
+
+    public Class<? extends WebPage> getBackPage() {
+        return backPage;
+    }
+
+    public void setBackPage(Class<? extends WebPage> backPage) {
+        this.backPage = backPage;
+    }
+
+    public PageParameters getBackPageParameters() {
+        return backPageParameters;
+    }
+
+    public void setBackPageParameters(PageParameters backPageParameters) {
+        this.backPageParameters = backPageParameters;
     }
 
     public Form getForm() {

@@ -64,9 +64,7 @@ public class StorageListPage extends DomainListPage<Storage> {
                 String workers = rowModel.getObject().getNumberValues(Storage.WORKER_IDS).stream()
                         .map(id -> domainService.getDomain(Worker.ENTITY_NAME, id))
                         .map(w -> w.getText(Worker.J_ID) + " " +
-                                nameService.getLastName(w.getNumber(Worker.LAST_NAME)) + " " +
-                                nameService.getFirstName(w.getNumber(Worker.FIRST_NAME)) + " " +
-                                nameService.getMiddleName(w.getNumber(Worker.MIDDLE_NAME)))
+                                nameService.getLastName(w.getNumber(Worker.LAST_NAME)))
                         .collect(Collectors.joining(", "));
 
                 cellItem.add(new Label(componentId, workers));

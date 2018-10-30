@@ -23,12 +23,19 @@ import ru.complitex.domain.entity.Domain;
 public class DomainActionColumn<T extends Domain> extends AbstractDomainColumn<T> {
     private Class<? extends WebPage> editPageClass;
 
+    private PageParameters editPageParameters;
+
     private AjaxIndicatorAppender ajaxIndicatorAppender = new AjaxIndicatorAppender(){
         @Override
         protected String getSpanClass() {
             return super.getSpanClass() + " btn-sm";
         }
     };
+
+    public DomainActionColumn(Class<? extends WebPage> editPageClass, PageParameters editPageParameters) {
+        this.editPageClass = editPageClass;
+        this.editPageParameters = editPageParameters;
+    }
 
     public DomainActionColumn(Class<? extends WebPage> editPageClass) {
         this.editPageClass = editPageClass;
@@ -51,9 +58,11 @@ public class DomainActionColumn<T extends Domain> extends AbstractDomainColumn<T
 
     @Override
     public void populateItem(Item<ICellPopulator<T>> cellItem, String componentId, IModel<T> rowModel) {
+        PageParameters pageParameters = new PageParameters().add("id", rowModel.getObject().getId());
+        pageParameters.mergeWith(editPageParameters);
+
         cellItem.add(new LinkPanel(componentId, new BootstrapBookmarkablePageLink<>(LinkPanel.LINK_COMPONENT_ID,
-                editPageClass, new PageParameters().add("id", rowModel.getObject().getId()),
-                Buttons.Type.Link).setIconType(GlyphIconType.edit).setSize(Buttons.Size.Small)));
+                editPageClass, pageParameters, Buttons.Type.Link).setIconType(GlyphIconType.edit).setSize(Buttons.Size.Small)));
     }
 
     @Override

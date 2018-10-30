@@ -9,8 +9,8 @@ import ru.complitex.address.entity.City;
 import ru.complitex.domain.component.form.DomainAutoComplete;
 import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Domain;
-import ru.complitex.domain.mapper.DomainMapper;
 import ru.complitex.domain.page.DomainEditPage;
+import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
 import ru.complitex.domain.util.Attributes;
 import ru.complitex.jedani.worker.entity.Nomenclature;
@@ -18,11 +18,11 @@ import ru.complitex.jedani.worker.entity.Product;
 import ru.complitex.jedani.worker.entity.Storage;
 import ru.complitex.jedani.worker.entity.Worker;
 import ru.complitex.jedani.worker.security.JedaniRoles;
+import ru.complitex.jedani.worker.util.Storages;
 import ru.complitex.name.service.NameService;
 
 import javax.inject.Inject;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * @author Anatoly A. Ivanov
@@ -34,7 +34,7 @@ public class ProductEditPage extends DomainEditPage<Product> {
     private EntityService entityService;
 
     @Inject
-    private DomainMapper domainMapper;
+    private DomainService domainService;
 
     @Inject
     private NameService nameService;
@@ -90,28 +90,12 @@ public class ProductEditPage extends DomainEditPage<Product> {
 
                 @Override
                 protected String getTextValue(Domain domain) {
-                    String textValue = "" + domain.getObjectId();
-
-                    Domain city = domainMapper.getDomain(City.ENTITY_NAME, domain.getNumber(Storage.CITY_ID));
-
-                    if (city != null){
-                        textValue += " " + Attributes.capitalize(city.getValueText(City.NAME));
-                    }
-
-                    textValue += " " + domain.getNumberValues(Storage.WORKER_IDS).stream()
-                            .map(id -> domainMapper.getDomain(Worker.ENTITY_NAME, id))
-                            .map(w -> w.getText(Worker.J_ID) + " " +
-                                    nameService.getLastName(w.getNumber(Worker.LAST_NAME)) + " " +
-                                    nameService.getFirstName(w.getNumber(Worker.FIRST_NAME)) + " " +
-                                    nameService.getMiddleName(w.getNumber(Worker.MIDDLE_NAME)))
-                            .collect(Collectors.joining(", "));
-
-                    return textValue;
+                    return Storages.getStorageLabel(domain, domainService, nameService);
                 }
 
                 @Override
                 protected Domain getDomain(IModel<Long> model) {
-                    return domainMapper.getDomain(Storage.ENTITY_NAME, model.getObject(), false, true);
+                    return domainService.getDomain(Storage.class, model.getObject());
                 }
             };
 

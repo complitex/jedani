@@ -39,8 +39,9 @@ import ru.complitex.jedani.worker.component.WorkerAutoCompleteList;
 import ru.complitex.jedani.worker.entity.Nomenclature;
 import ru.complitex.jedani.worker.entity.Product;
 import ru.complitex.jedani.worker.entity.Storage;
+import ru.complitex.jedani.worker.mapper.ProductMapper;
 import ru.complitex.jedani.worker.page.BasePage;
-import ru.complitex.jedani.worker.util.ProductUtil;
+import ru.complitex.jedani.worker.util.Storages;
 import ru.complitex.name.service.NameService;
 
 import javax.inject.Inject;
@@ -65,6 +66,9 @@ public class StoragePage extends BasePage {
     @Inject
     private NameService nameService;
 
+    @Inject
+    private ProductMapper productMapper;
+
     public StoragePage(PageParameters pageParameters) {
         Long id = pageParameters.get("id").toOptionalLong();
 
@@ -74,15 +78,15 @@ public class StoragePage extends BasePage {
         feedback.setOutputMarkupId(true);
         add(feedback);
 
-        DataProvider<Product> dataProvider = new DataProvider<Product>(FilterWrapper.of(new Product())) {
+        DataProvider<Product> dataProvider = new DataProvider<Product>(FilterWrapper.of(new Product()).add("storageId", id)) {
             @Override
             public Iterator<? extends Product> iterator(long first, long count) {
-                return null;
+                return productMapper.getProducts(getFilterState().limit(first, count)).iterator();
             }
 
             @Override
             public long size() {
-                return 0;
+                return productMapper.getProductsCount(getFilterState());
             }
         };
 
@@ -93,7 +97,7 @@ public class StoragePage extends BasePage {
                 new NumberAttributeModel(storage, Storage.CITY_ID), true));
 
         form.add(new FormGroupPanel("workers", new WorkerAutoCompleteList(FormGroupPanel.COMPONENT_ID,
-                Model.of(storage.getAttribute(Storage.WORKER_IDS)))));
+                Model.of(storage.getOrCreateAttribute(Storage.WORKER_IDS)))));
 
         form.add(new FormGroupPanel("productCount", new Label(FormGroupPanel.COMPONENT_ID,
                 new LoadableDetachableModel<Long>() {
@@ -133,7 +137,7 @@ public class StoragePage extends BasePage {
                 entityService, domainService));
 
 
-        columns.add(new AbstractDomainColumn<Product>(Model.of("Перемещается из склада"), null) {
+        columns.add(new AbstractDomainColumn<Product>(Model.of("Перемещается из склада"), new SortProperty("id")) {
             @Override
             public void populateItem(Item<ICellPopulator<Product>> cellItem, String componentId, IModel<Product> rowModel) {
                 String label = "";
@@ -141,7 +145,7 @@ public class StoragePage extends BasePage {
                 if (Objects.equals(rowModel.getObject().getNumber(Product.STORAGE_INTO_ID), id)){
                     Domain storage = domainService.getDomain(Storage.class, rowModel.getObject().getNumber(Product.STORAGE_ID));
 
-                    label = ProductUtil.getStorageLabel(storage, domainService, nameService);
+                    label = Storages.getStorageLabel(storage, domainService, nameService);
                 }
 
                 cellItem.add(new Label(componentId, label));
@@ -153,7 +157,7 @@ public class StoragePage extends BasePage {
             }
         });
 
-        columns.add(new AbstractDomainColumn<Product>(Model.of("Перемещается в склад"), null) {
+        columns.add(new AbstractDomainColumn<Product>(Model.of("Перемещается в склад"), new SortProperty("id")) {
             @Override
             public void populateItem(Item<ICellPopulator<Product>> cellItem, String componentId, IModel<Product> rowModel) {
                 String label = "";
@@ -161,7 +165,7 @@ public class StoragePage extends BasePage {
                 if (Objects.equals(rowModel.getObject().getNumber(Product.STORAGE_ID), id)){
                     Domain storage = domainService.getDomain(Storage.class, rowModel.getObject().getNumber(Product.STORAGE_INTO_ID));
 
-                    label = ProductUtil.getStorageLabel(storage, domainService, nameService);
+                    label = Storages.getStorageLabel(storage, domainService, nameService);
                 }
 
                 cellItem.add(new Label(componentId, label));
@@ -173,7 +177,7 @@ public class StoragePage extends BasePage {
             }
         });
 
-        columns.add(new DomainActionColumn<>(ProductEditPage.class));
+        columns.add(new DomainActionColumn<>(StorageProductPage.class, new PageParameters().add("storage_id", id)));
 
         FilterDataTable<Product> table = new FilterDataTable<Product>("table", columns, dataProvider, form, 7){
             @Override
@@ -188,7 +192,9 @@ public class StoragePage extends BasePage {
                 rowItem.add(new AjaxEventBehavior("click") {
                     @Override
                     protected void onEvent(AjaxRequestTarget target) {
-                        setResponsePage(ProductEditPage.class, new PageParameters().add("id", model.getObject().getObjectId()));
+                        setResponsePage(StorageProductPage.class, new PageParameters()
+                                .add("id", model.getObject().getObjectId())
+                                .add("storage_id", id));
                     }
                 });
 

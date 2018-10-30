@@ -26,19 +26,24 @@ import java.util.stream.Collectors;
 
 /**
  * @author Anatoly A. Ivanov
- * 25.10.2018 18:07
+ * 30.10.2018 18:45
  */
-public class ProductUtil {
+public class Storages {
     public static void addStorageColumn(List<IColumn<Product, SortProperty>> columns, EntityAttribute entityAttribute,
-                                  DomainService domainService, NameService nameService) {
+                                        DomainService domainService, NameService nameService) {
         columns.add(new AbstractDomainColumn<Product>(Model.of(entityAttribute.getValue().getText()),
                 new SortProperty(entityAttribute.getValueType().getKey(), entityAttribute)) {
             @Override
             public void populateItem(Item<ICellPopulator<Product>> cellItem, String componentId, IModel<Product> rowModel) {
-                Domain storage = domainService.getDomain(Storage.class,
-                        rowModel.getObject().getNumber(entityAttribute.getEntityAttributeId()));
+                String label = "";
 
-                cellItem.add(new Label(componentId, getStorageLabel(storage, domainService, nameService)));
+                Long storageId = rowModel.getObject().getNumber(entityAttribute.getEntityAttributeId());
+
+                if (storageId != null){
+                    label = getStorageLabel(domainService.getDomain(Storage.class, storageId), domainService, nameService);
+                }
+
+                cellItem.add(new Label(componentId, label));
             }
 
             @Override
@@ -52,21 +57,21 @@ public class ProductUtil {
         String label = "";
 
         if (storage != null){
+            label += storage.getObjectId();
+
             Domain city = domainService.getDomain(City.ENTITY_NAME, storage.getNumber(Storage.CITY_ID));
 
             if (city != null){
-                label += Attributes.capitalize(city.getValueText(City.NAME));
+                label += ", " + Attributes.capitalize(city.getValueText(City.NAME));
             }
 
             String workers = storage.getOrCreateAttribute(Storage.WORKER_IDS).getNumberValues().stream()
                     .map(id -> domainService.getDomain(Worker.ENTITY_NAME, id))
                     .map(w -> w.getText(Worker.J_ID) + " " +
-                            nameService.getLastName(w.getNumber(Worker.LAST_NAME)) + " " +
-                            nameService.getFirstName(w.getNumber(Worker.FIRST_NAME)) + " " +
-                            nameService.getMiddleName(w.getNumber(Worker.MIDDLE_NAME)))
+                            nameService.getLastName(w.getNumber(Worker.LAST_NAME)))
                     .collect(Collectors.joining(", "));
 
-            label += " " + workers;
+            label += ", " + workers;
         }
 
         return label;

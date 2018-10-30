@@ -21,6 +21,10 @@ public class Domains {
     }
 
     public static <T extends Domain> T newObject(Class<T> domainClass, Domain domain){
+        if (domain == null){
+            return null;
+        }
+
         try {
             T domainInstance = domainClass.newInstance();
 

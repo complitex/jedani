@@ -11,7 +11,7 @@ import ru.complitex.domain.service.EntityService;
 import ru.complitex.jedani.worker.entity.Nomenclature;
 import ru.complitex.jedani.worker.entity.Product;
 import ru.complitex.jedani.worker.security.JedaniRoles;
-import ru.complitex.jedani.worker.util.ProductUtil;
+import ru.complitex.jedani.worker.util.Storages;
 import ru.complitex.name.service.NameService;
 
 import javax.inject.Inject;
@@ -49,9 +49,9 @@ public class ProductListPage extends DomainListPage<Product> {
 
     @Override
     protected void onAddColumns(List<IColumn<Product, SortProperty>> columns) {
-        ProductUtil.addStorageColumn(columns, entityService.getEntityAttribute(Product.ENTITY_NAME, Product.STORAGE_ID),
+        Storages.addStorageColumn(columns, entityService.getEntityAttribute(Product.ENTITY_NAME, Product.STORAGE_ID),
                 domainService, nameService);
-        ProductUtil.addStorageColumn(columns, entityService.getEntityAttribute(Product.ENTITY_NAME, Product.STORAGE_INTO_ID),
+        Storages.addStorageColumn(columns, entityService.getEntityAttribute(Product.ENTITY_NAME, Product.STORAGE_INTO_ID),
                 domainService, nameService);
     }
 
