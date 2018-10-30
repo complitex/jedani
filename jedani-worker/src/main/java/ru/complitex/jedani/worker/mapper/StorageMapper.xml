@@ -45,13 +45,14 @@
         from (
           select dd.object_id object_id
         from (
-            select distinct (d.object_id) object_id
-                <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsSelectSort"/>
+            select d.object_id object_id
                 <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFrom"/>
                 <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromFilter"/>
+                <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromSort"/>
                 <include refid="selectStorageFrom"/>
                 <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsWhere"/>
                 <include refid="selectStorageWhere"/>
+                group by d.object_id
                 <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsOrderSort"/>
             ) dd
             ${limit}
@@ -59,6 +60,9 @@
         left join `storage` d on d.object_id = o.object_id
         left join storage_attribute a on a.object_id = d.object_id
         left join storage_value v on v.attribute_id = a.id
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromSort"/>
+        group by d.id, a.id, v.id
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsOrderSort"/>
     </select>
 
     <!--suppress SqlResolve -->

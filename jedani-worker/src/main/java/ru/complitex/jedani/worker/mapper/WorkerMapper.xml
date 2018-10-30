@@ -53,8 +53,6 @@
     <sql id="selectWorkersSelectSort">
         <if test="sortProperty != null">
             <choose>
-                <when test="sortProperty.key == 'login'">, u.login login</when>
-                <when test="sortProperty.key == 'level'">, d.level level</when>
                 <when test="sortProperty.key == 'subWorkersCount'">
                     , (select count(w.object_id) from worker w where w.left > d.left and d.right > w.right
                     and w.status = 1) sub_worker_count
@@ -66,9 +64,9 @@
     <sql id="selectWorkersOrderSort">
         <if test="sortProperty != null">
             <choose>
-                <when test="sortProperty.key == 'login'">order by u.login + 0 ${asc}</when>
-                <when test="sortProperty.key == 'level'">order by d.level ${asc}</when>
-                <when test="sortProperty.key == 'subWorkersCount'">order by sub_worker_count ${asc}</when>
+                <when test="sortProperty.key == 'login'">order by max(u.login + 0) ${asc}</when>
+                <when test="sortProperty.key == 'level'">order by max(d.level) ${asc}</when>
+                <when test="sortProperty.key == 'subWorkersCount'">order by max(sub_worker_count) ${asc}</when>
             </choose>
         </if>
     </sql>
@@ -80,17 +78,18 @@
               sub_worker_count,
             <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsSelect"/>
         from (
-            select dd.object_id object_id
+            select (dd.object_id) object_id
             from (
-                select distinct (d.object_id) object_id
-                <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsSelectSort"/>
+                select d.object_id object_id
                 <include refid="selectWorkersSelectSort"/>
                 <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFrom"/>
                 <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromFilter"/>
+                <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromSort"/>
                 <include refid="selectWorkersFromLogin"/>
                 <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsWhere"/>
                 <include refid="selectWorkersWhereNode"/>
                 <include refid="selectWorkersWhereLogin"/>
+                group by d.object_id
                 <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsOrderSort"/>
                 <include refid="selectWorkersOrderSort"/>
             ) dd
@@ -99,6 +98,11 @@
         left join worker d on d.object_id = o.object_id
         left join worker_attribute a on a.object_id = d.object_id
         left join worker_value v on v.attribute_id = a.id
+        <include refid="selectWorkersFromLogin"/>
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromSort"/>
+        group by d.id, a.id, v.id
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsOrderSort"/>
+        <include refid="selectWorkersOrderSort"/>
     </select>
 
     <!--suppress SqlResolve -->

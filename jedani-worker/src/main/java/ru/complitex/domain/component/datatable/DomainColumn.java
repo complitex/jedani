@@ -91,7 +91,7 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
             case TEXT_VALUE:
                 if (attribute.getValues() != null) {
                     text = attribute.getValues().stream().map(v -> Attributes.displayText(entityAttribute, v.getText()))
-                            .collect(Collectors.joining(","));
+                            .collect(Collectors.joining(", "));
                 }
 
                 break;

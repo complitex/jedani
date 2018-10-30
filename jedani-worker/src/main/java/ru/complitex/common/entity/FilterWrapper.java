@@ -81,6 +81,14 @@ public class FilterWrapper<T extends Serializable> implements Serializable {
         return "order by `" + getSortProperty().getKey() + "` " + getAsc() + getLimit();
     }
 
+    public String getOrderByAgr(String column){
+        if (ascending){
+            return "order by min(" + column +") asc";
+        }else{
+            return "order by max(" + column +") desc";
+        }
+    }
+
     public T getObject() {
         return object;
     }

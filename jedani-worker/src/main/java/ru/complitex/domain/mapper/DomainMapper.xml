@@ -158,26 +158,6 @@
                 </if>
             </if>
         </foreach>
-
-        <if test="sortProperty != null">
-            <if test="sortProperty.key in {'text', 'number', 'date', 'value', 'entity'}">
-                left join ${object.entityName}_attribute sort_a on sort_a.object_id = d.object_id and
-                sort_a.entity_attribute_id = #{sortProperty.value.entityAttributeId}
-
-                <if test="sortProperty.key == 'value'">
-                    left join `${object.entityName}_value` sort_v on sort_v.attribute_id = sort_a.id
-                </if>
-
-                <if test="sortProperty.key == 'entity' and sortProperty.value != null">
-                    <if test="sortProperty.value.referenceEntityAttribute != null">
-                        left join `${sortProperty.value.referenceEntityAttribute.entityName}_attribute` sort_ra
-                          on sort_ra.object_id = sort_a.number
-                        left join `${sortProperty.value.referenceEntityAttribute.entityName}_value` sort_rv
-                          on sort_rv.attribute_id = sort_ra.id
-                    </if>
-                </if>
-            </if>
-        </if>
     </sql>
 
     <sql id="selectDomainsWhere">
@@ -275,15 +255,39 @@
         </if>
     </sql>
 
+    <sql id="selectDomainsFromSort">
+        <if test="sortProperty != null">
+            <if test="sortProperty.key in {'text', 'number', 'date', 'value', 'entity'}">
+                left join ${object.entityName}_attribute sort_a on sort_a.object_id = d.object_id and
+                sort_a.entity_attribute_id = #{sortProperty.value.entityAttributeId} and sort_a.status=1
+
+                <if test="sortProperty.key == 'value'">
+                    left join `${object.entityName}_value` sort_v on sort_v.attribute_id = sort_a.id
+                </if>
+
+                <if test="sortProperty.key == 'entity' and sortProperty.value != null">
+                    <if test="sortProperty.value.referenceEntityAttribute != null">
+                        left join `${sortProperty.value.referenceEntityAttribute.entityName}_attribute` sort_ra
+                        on sort_ra.object_id = sort_a.number and sort_ra.status = 1
+                        left join `${sortProperty.value.referenceEntityAttribute.entityName}_value` sort_rv
+                        on sort_rv.attribute_id = sort_ra.id
+                    </if>
+                </if>
+            </if>
+        </if>
+    </sql>
+
     <sql id="selectDomainsOrderSort">
         <if test="sortProperty != null">
             <choose>
                 <when test="sortProperty.key == 'id'">order by d.object_id ${asc}</when>
-                <when test="sortProperty.key == 'text'">order by sort_a.text ${asc}</when>
-                <when test="sortProperty.key == 'number'">order by sort_a.number + 0 ${asc}</when>
-                <when test="sortProperty.key == 'date'">order by sort_a.date ${asc}</when>
-                <when test="sortProperty.key == 'value'">order by sort_v.text ${asc}</when>
-                <when test="sortProperty.key == 'entity'">order by sort_rv.text ${asc}</when>
+                <when test="sortProperty.key == 'text'">order by group_concat(sort_a.text order by sort_a.text ${asc}) ${asc}</when>
+                <when test="sortProperty.key == 'number'">order by group_concat(sort_a.number order by sort_a.number + 0 ${asc}) ${asc}</when>
+                <when test="sortProperty.key == 'date'">order by group_concat(sort_a.date order by sort_a.date ${asc}) ${asc}</when>
+                <when test="sortProperty.key == 'value'">order by group_concat(sort_v.text order by sort_v.text  ${asc}) ${asc}</when>
+                <when test="sortProperty.key == 'entity' and sortProperty.value != null and sortProperty.value.referenceEntityAttribute != null">
+                    order by group_concat(sort_rv.text order by sort_rv.text ${asc}) ${asc}
+                </when>
             </choose>
         </if>
     </sql>
@@ -300,13 +304,14 @@
         select '${object.entityName}' entity_name, d.*,
         <include refid="selectDomainsSelect"/>
         from (
-          select dd.object_id object_id
+          select (dd.object_id) object_id
           from (
-            select distinct(d.object_id) object_id
+            select d.object_id object_id
             <include refid="selectDomainsFrom"/>
-            <include refid="selectDomainsSelectSort"/>
             <include refid="selectDomainsFromFilter"/>
+            <include refid="selectDomainsFromSort"/>
             <include refid="selectDomainsWhere"/>
+            group by d.object_id
             <include refid="selectDomainsOrderSort"/>
           ) dd
           ${limit}
@@ -314,6 +319,9 @@
         left join ${object.entityName} d on d.object_id = o.object_id
         left join ${object.entityName}_attribute a on a.object_id = d.object_id
         left join ${object.entityName}_value v on v.attribute_id = a.id
+        <include refid="selectDomainsFromSort"/>
+        group by d.id, a.id, v.id
+        <include refid="selectDomainsOrderSort"/>
     </select>
 
     <!--suppress SqlResolve -->
