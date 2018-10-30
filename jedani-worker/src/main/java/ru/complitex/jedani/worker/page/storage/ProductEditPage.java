@@ -103,4 +103,15 @@ public class ProductEditPage extends DomainEditPage<Product> {
 
         return null;
     }
+
+    @Override
+    protected boolean validate(Product product) {
+        if (Objects.equals(product.getNumber(Product.STORAGE_ID), product.getNumber(Product.STORAGE_INTO_ID))){
+            error(getString("error_equal_storage"));
+
+            return false;
+        }
+
+        return true;
+    }
 }

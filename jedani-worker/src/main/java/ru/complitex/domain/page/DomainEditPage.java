@@ -29,9 +29,10 @@ import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
-import ru.complitex.domain.mapper.DomainMapper;
 import ru.complitex.domain.mapper.EntityMapper;
 import ru.complitex.domain.model.TextAttributeModel;
+import ru.complitex.domain.service.DomainService;
+import ru.complitex.domain.util.Domains;
 import ru.complitex.domain.util.Locales;
 import ru.complitex.jedani.worker.page.BasePage;
 
@@ -54,7 +55,7 @@ public abstract class DomainEditPage<T extends Domain> extends BasePage{
     private EntityMapper entityMapper;
 
     @Inject
-    private DomainMapper domainMapper;
+    private DomainService domainService;
 
     private Class<? extends WebPage> backPage;
     private PageParameters backPageParameters;
@@ -64,15 +65,15 @@ public abstract class DomainEditPage<T extends Domain> extends BasePage{
     public DomainEditPage(Class<T> domainClass, PageParameters parameters, Class<? extends WebPage> backPage) {
         this.backPage = backPage;
 
-        T domainInstance;
+        Long objectId = parameters.get("id").toOptionalLong();
 
-        try {
-            domainInstance = domainClass.newInstance();
-        } catch (Exception e) {
-            throw new WicketRuntimeException(e);
+        T domain = objectId != null ? domainService.getDomain(domainClass, objectId) : Domains.newObject(domainClass);
+
+        if (domain == null){
+            throw new WicketRuntimeException("domain not found");
         }
 
-        Entity entity = entityMapper.getEntity(domainInstance.getEntityName());
+        Entity entity = entityMapper.getEntity(domain.getEntityName());
 
         String title = entity.getValue().getText();
 
@@ -86,15 +87,6 @@ public abstract class DomainEditPage<T extends Domain> extends BasePage{
 
         form = new BootstrapForm("form");
         add(form);
-
-        Long objectId = parameters.get("id").toOptionalLong();
-
-        Domain domain = objectId != null ? domainMapper.getDomain(domainInstance.getEntityName(), objectId,
-                domainInstance.isUseDateAttribute(), domainInstance.isUseNumberValue()) : domainInstance;
-
-        if (domain == null){
-            throw new WicketRuntimeException("domain not found");
-        }
 
         //Parent
 
@@ -178,18 +170,19 @@ public abstract class DomainEditPage<T extends Domain> extends BasePage{
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
                 try {
-                    domain.setEntityName(domainInstance.getEntityName());
+                    if (!DomainEditPage.this.validate(domain)){
+                        target.add(feedback);
+
+                        return;
+                    }
+
                     domain.setUserId(getCurrentUser().getId());
 
                     if (parentEntity != null){
                         domain.setParentEntityId(parentEntity.getId());
                     }
 
-                    if (domain.getObjectId() != null){
-                        domainMapper.updateDomain(domain);
-                    }else{
-                        domainMapper.insertDomain(domain);
-                    }
+                    domainService.save(domain);
 
                     getSession().info(entity.getValue().getText() + " " + getString("info_saved"));
 
@@ -248,6 +241,10 @@ public abstract class DomainEditPage<T extends Domain> extends BasePage{
 
     protected String getPrefix(EntityAttribute entityAttribute, Domain domain){
         return "";
+    }
+
+    protected boolean validate(T domain){
+        return true;
     }
 
     public Class<? extends WebPage> getBackPage() {
