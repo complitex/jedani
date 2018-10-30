@@ -41,7 +41,7 @@ public class StorageListPage extends DomainListPage<Storage> {
     private DomainService domainService;
 
     public StorageListPage() {
-        super(Storage.class, StorageEditPage.class);
+        super(Storage.class, StoragePage.class);
     }
 
     @Override

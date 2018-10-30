@@ -32,11 +32,16 @@ public class DomainService implements Serializable {
         return domainMapper.getDomain(entityName, objectId);
     }
 
-    public Domain getDomainWithNumberValues(String entityName, Long objectId){
-        return domainMapper.getDomain(entityName, objectId, false, true);
+    public <T extends Domain> T getDomain(Class<T> domainClass, Long objectId){
+        return Domains.newObject(domainClass, domainMapper.getDomain(Domains.getEntityName(domainClass), objectId,
+                Domains.isUseDateAttribute(domainClass), Domains.isUseNumberValue(domainClass)));
     }
 
-    public <T extends Domain> T getDomain(Class<T> domainClass, Long objectId){
-        return Domains.newObject(domainClass, domainMapper.getDomain(Domains.getEntityName(domainClass), objectId));
+    public void save(Domain domain){
+        if (domain.getObjectId() != null){
+            domainMapper.updateDomain(domain);
+        }else{
+            domainMapper.insertDomain(domain);
+        }
     }
 }

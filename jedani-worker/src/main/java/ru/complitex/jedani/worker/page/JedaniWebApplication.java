@@ -101,8 +101,8 @@ public class JedaniWebApplication extends WebApplication{
         mountPage("product", ProductEditPage.class);
         mountPage("product/${id}", ProductEditPage.class);
         mountPage("storages", StorageListPage.class);
-        mountPage("storage", StorageEditPage.class);
-        mountPage("storage/${id}", StorageEditPage.class);
+        mountPage("storage", StoragePage.class);
+        mountPage("storage/${id}", StoragePage.class);
     }
 
     @Override

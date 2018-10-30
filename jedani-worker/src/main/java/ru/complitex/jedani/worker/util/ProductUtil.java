@@ -35,7 +35,7 @@ public class ProductUtil {
                 new SortProperty(entityAttribute.getValueType().getKey(), entityAttribute)) {
             @Override
             public void populateItem(Item<ICellPopulator<Product>> cellItem, String componentId, IModel<Product> rowModel) {
-                Domain storage = domainService.getDomainWithNumberValues(Storage.ENTITY_NAME,
+                Domain storage = domainService.getDomain(Storage.class,
                         rowModel.getObject().getNumber(entityAttribute.getEntityAttributeId()));
 
                 cellItem.add(new Label(componentId, getStorageLabel(storage, domainService, nameService)));

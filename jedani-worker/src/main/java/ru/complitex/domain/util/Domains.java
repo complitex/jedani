@@ -10,7 +10,7 @@ import java.util.Map;
  * 30.10.2018 15:03
  */
 public class Domains {
-    private static Map<Class, String> entityNameMap = new HashMap<>();
+    private static Map<Class, Domain> domainMap = new HashMap<>();
 
     public static <T extends Domain> T newObject(Class<T> domainClass){
         try {
@@ -32,16 +32,27 @@ public class Domains {
         }
     }
 
-    public static <T extends Domain> String getEntityName(Class<T> domainClass){
-        String entityName = entityNameMap.get(domainClass);
+    private static <T extends Domain> Domain getDomain(Class<T> domainClass){
+        Domain domain = domainMap.get(domainClass);
 
-        if (entityName == null){
-            entityName = newObject(domainClass).getEntityName();
+        if (domain == null){
+            domain = newObject(domainClass);
 
-            entityNameMap.put(domainClass, entityName);
+            domainMap.put(domainClass, domain);
         }
 
-        return entityName;
+        return domain;
     }
 
+    public static <T extends Domain> String getEntityName(Class<T> domainClass){
+        return getDomain(domainClass).getEntityName();
+    }
+
+    public static <T extends Domain> boolean isUseNumberValue(Class<T> domainClass){
+        return getDomain(domainClass).isUseNumberValue();
+    }
+
+    public static <T extends Domain> boolean isUseDateAttribute(Class<T> domainClass){
+        return getDomain(domainClass).isUseDateAttribute();
+    }
 }
