@@ -12,6 +12,10 @@ public class Storage extends Domain {
     public static final long CITY_ID = 1;
     public static final long WORKER_IDS = 2;
 
+    private Long productCount;
+    private Long productIntoCount;
+    private Long productFromCount;
+
     public Storage() {
         super(ENTITY_NAME);
     }
@@ -23,5 +27,29 @@ public class Storage extends Domain {
     @Override
     public boolean isUseNumberValue() {
         return true;
+    }
+
+    public Long getProductCount() {
+        return productCount;
+    }
+
+    public void setProductCount(Long productCount) {
+        this.productCount = productCount;
+    }
+
+    public Long getProductIntoCount() {
+        return productIntoCount;
+    }
+
+    public void setProductIntoCount(Long productIntoCount) {
+        this.productIntoCount = productIntoCount;
+    }
+
+    public Long getProductFromCount() {
+        return productFromCount;
+    }
+
+    public void setProductFromCount(Long productFromCount) {
+        this.productFromCount = productFromCount;
     }
 }

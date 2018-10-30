@@ -64,6 +64,7 @@ public class WorkerListPage extends DomainListPage<Worker>{
         });
     }
 
+    @SuppressWarnings("Duplicates")
     @Override
     protected List<EntityAttribute> getEntityAttributes(Entity entity) {
         List<EntityAttribute> list = new ArrayList<>();

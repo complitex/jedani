@@ -9,7 +9,9 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.ResourceModel;
 import ru.complitex.address.entity.City;
+import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.entity.Entity;
@@ -19,6 +21,7 @@ import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
 import ru.complitex.jedani.worker.entity.Storage;
 import ru.complitex.jedani.worker.entity.Worker;
+import ru.complitex.jedani.worker.mapper.StorageMapper;
 import ru.complitex.name.service.NameService;
 
 import javax.inject.Inject;
@@ -39,6 +42,9 @@ public class StorageListPage extends DomainListPage<Storage> {
 
     @Inject
     private DomainService domainService;
+
+    @Inject
+    private StorageMapper storageMapper;
 
     public StorageListPage() {
         super(Storage.class, StoragePage.class);
@@ -75,5 +81,54 @@ public class StorageListPage extends DomainListPage<Storage> {
                 return new TextFilter<>(componentId, Model.of(""), form);
             }
         });
+
+        columns.add(new AbstractDomainColumn<Storage>(new ResourceModel("productCount"),
+                new SortProperty("productCount")) {
+            @Override
+            public void populateItem(Item<ICellPopulator<Storage>> cellItem, String componentId, IModel<Storage> rowModel) {
+                cellItem.add(new Label(componentId, rowModel.getObject().getProductCount()));
+            }
+
+            @Override
+            public Component getFilter(String componentId, FilterForm<?> form) {
+                return new TextFilter<>(componentId, Model.of(""), form);
+            }
+        });
+
+        columns.add(new AbstractDomainColumn<Storage>(new ResourceModel("productIntoCount"),
+                new SortProperty("productIntoCount")) {
+            @Override
+            public void populateItem(Item<ICellPopulator<Storage>> cellItem, String componentId, IModel<Storage> rowModel) {
+                cellItem.add(new Label(componentId, rowModel.getObject().getProductIntoCount()));
+            }
+
+            @Override
+            public Component getFilter(String componentId, FilterForm<?> form) {
+                return new TextFilter<>(componentId, Model.of(""), form);
+            }
+        });
+
+        columns.add(new AbstractDomainColumn<Storage>(new ResourceModel("productFromCount"),
+                new SortProperty("productFromCount")) {
+            @Override
+            public void populateItem(Item<ICellPopulator<Storage>> cellItem, String componentId, IModel<Storage> rowModel) {
+                cellItem.add(new Label(componentId, rowModel.getObject().getProductFromCount()));
+            }
+
+            @Override
+            public Component getFilter(String componentId, FilterForm<?> form) {
+                return new TextFilter<>(componentId, Model.of(""), form);
+            }
+        });
+    }
+
+    @Override
+    protected List<Storage> getDomains(FilterWrapper<Storage> filterWrapper) {
+        return storageMapper.getStorages(filterWrapper);
+    }
+
+    @Override
+    protected Long getDomainsCount(FilterWrapper<Storage> filterWrapper) {
+        return storageMapper.getStoragesCount(filterWrapper);
     }
 }

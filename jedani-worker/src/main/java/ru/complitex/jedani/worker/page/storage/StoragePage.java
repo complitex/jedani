@@ -25,6 +25,7 @@ import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
 import ru.complitex.common.wicket.datatable.DataProvider;
 import ru.complitex.common.wicket.datatable.FilterDataTable;
+import ru.complitex.common.wicket.form.TextFieldFormGroup;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.component.datatable.DomainActionColumn;
 import ru.complitex.domain.component.datatable.DomainColumn;
@@ -99,85 +100,87 @@ public class StoragePage extends BasePage {
         form.add(new FormGroupPanel("workers", new WorkerAutoCompleteList(FormGroupPanel.COMPONENT_ID,
                 Model.of(storage.getOrCreateAttribute(Storage.WORKER_IDS)))));
 
-        form.add(new FormGroupPanel("productCount", new Label(FormGroupPanel.COMPONENT_ID,
-                new LoadableDetachableModel<Long>() {
-                    @Override
-                    protected Long load() {
-                        return domainService.getDomainsCount(FilterWrapper.of(new Product()
-                                .setNumber(Product.STORAGE_ID, id)
-                                .setNumber(Product.STORAGE_INTO_ID, -1L)));
-                    }
-                })).setVisible(id != null));
 
-        form.add(new FormGroupPanel("productIntoCount", new Label(FormGroupPanel.COMPONENT_ID,
-                new LoadableDetachableModel<Long>() {
-                    @Override
-                    protected Long load() {
-                        return domainService.getDomainsCount(FilterWrapper.of(new Product()
-                                .setNumber(Product.STORAGE_INTO_ID, id)));
-                    }
-                })).setVisible(id != null));
+        form.add(new TextFieldFormGroup<>("productCount",  new LoadableDetachableModel<Long>() {
+            @Override
+            protected Long load() {
+                return domainService.getDomainsCount(FilterWrapper.of(new Product()
+                        .setNumber(Product.STORAGE_ID, id)
+                        .setNumber(Product.STORAGE_INTO_ID, -1L)));
+            }
+        }).setEnabled(false).setVisible(id != null));
 
-        form.add(new FormGroupPanel("productFromCount", new Label(FormGroupPanel.COMPONENT_ID,
-                new LoadableDetachableModel<Long>() {
-                    @Override
-                    protected Long load() {
-                        return domainService.getDomainsCount(FilterWrapper.of(new Product()
-                                .setNumber(Product.STORAGE_ID, id)
-                                .setNumber(Product.STORAGE_INTO_ID, -2L)));
-                    }
-                })).setVisible(id != null));
+        form.add(new TextFieldFormGroup<>("productIntoCount",  new LoadableDetachableModel<Long>() {
+            @Override
+            protected Long load() {
+                return domainService.getDomainsCount(FilterWrapper.of(new Product()
+                        .setNumber(Product.STORAGE_INTO_ID, id)
+                ));
+            }
+        }).setEnabled(false).setVisible(id != null));
+
+        form.add(new TextFieldFormGroup<>("productFromCount",  new LoadableDetachableModel<Long>() {
+            @Override
+            protected Long load() {
+                return domainService.getDomainsCount(FilterWrapper.of(new Product()
+                        .setNumber(Product.STORAGE_ID, id)
+                        .setNumber(Product.STORAGE_INTO_ID, -2L)));
+            }
+        }).setEnabled(false).setVisible(id != null));
+
 
         List<IColumn<Product, SortProperty>> columns = new ArrayList<>();
 
-        columns.add(new DomainIdColumn<>());
+        if (id != null) {
+            columns.add(new DomainIdColumn<>());
 
-        columns.add(new DomainColumn<>(entityService.getEntityAttribute(Product.ENTITY_NAME, Product.NOMENCLATURE_ID)
-                .setReferenceEntityAttribute(entityService.getEntityAttribute(Nomenclature.ENTITY_NAME, Nomenclature.NAME)),
-                entityService, domainService));
+            columns.add(new DomainColumn<>(entityService.getEntityAttribute(Product.ENTITY_NAME, Product.NOMENCLATURE_ID)
+                    .setReferenceEntityAttribute(entityService.getEntityAttribute(Nomenclature.ENTITY_NAME, Nomenclature.NAME)),
+                    entityService, domainService));
 
 
-        columns.add(new AbstractDomainColumn<Product>(Model.of("Перемещается из склада"), new SortProperty("id")) {
-            @Override
-            public void populateItem(Item<ICellPopulator<Product>> cellItem, String componentId, IModel<Product> rowModel) {
-                String label = "";
+            columns.add(new AbstractDomainColumn<Product>(Model.of("Перемещается из склада"), new SortProperty("id")) {
+                @Override
+                public void populateItem(Item<ICellPopulator<Product>> cellItem, String componentId, IModel<Product> rowModel) {
+                    String label = "";
 
-                if (Objects.equals(rowModel.getObject().getNumber(Product.STORAGE_INTO_ID), id)){
-                    Domain storage = domainService.getDomain(Storage.class, rowModel.getObject().getNumber(Product.STORAGE_ID));
+                    if (Objects.equals(rowModel.getObject().getNumber(Product.STORAGE_INTO_ID), id)){
+                        Domain storage = domainService.getDomain(Storage.class, rowModel.getObject().getNumber(Product.STORAGE_ID));
 
-                    label = Storages.getStorageLabel(storage, domainService, nameService);
+                        label = Storages.getStorageLabel(storage, domainService, nameService);
+                    }
+
+                    cellItem.add(new Label(componentId, label));
                 }
 
-                cellItem.add(new Label(componentId, label));
-            }
+                @Override
+                public Component getFilter(String componentId, FilterForm<?> form) {
+                    return new TextFilter<>(componentId, Model.of(""), form);
+                }
+            });
 
-            @Override
-            public Component getFilter(String componentId, FilterForm<?> form) {
-                return new TextFilter<>(componentId, Model.of(""), form);
-            }
-        });
+            columns.add(new AbstractDomainColumn<Product>(Model.of("Перемещается в склад"), new SortProperty("id")) {
+                @Override
+                public void populateItem(Item<ICellPopulator<Product>> cellItem, String componentId, IModel<Product> rowModel) {
+                    String label = "";
 
-        columns.add(new AbstractDomainColumn<Product>(Model.of("Перемещается в склад"), new SortProperty("id")) {
-            @Override
-            public void populateItem(Item<ICellPopulator<Product>> cellItem, String componentId, IModel<Product> rowModel) {
-                String label = "";
+                    if (Objects.equals(rowModel.getObject().getNumber(Product.STORAGE_ID), id)){
+                        Domain storage = domainService.getDomain(Storage.class, rowModel.getObject().getNumber(Product.STORAGE_INTO_ID));
 
-                if (Objects.equals(rowModel.getObject().getNumber(Product.STORAGE_ID), id)){
-                    Domain storage = domainService.getDomain(Storage.class, rowModel.getObject().getNumber(Product.STORAGE_INTO_ID));
+                        label = Storages.getStorageLabel(storage, domainService, nameService);
+                    }
 
-                    label = Storages.getStorageLabel(storage, domainService, nameService);
+                    cellItem.add(new Label(componentId, label));
                 }
 
-                cellItem.add(new Label(componentId, label));
-            }
+                @Override
+                public Component getFilter(String componentId, FilterForm<?> form) {
+                    return new TextFilter<>(componentId, Model.of(""), form);
+                }
+            });
 
-            @Override
-            public Component getFilter(String componentId, FilterForm<?> form) {
-                return new TextFilter<>(componentId, Model.of(""), form);
-            }
-        });
-
-        columns.add(new DomainActionColumn<>(StorageProductPage.class, new PageParameters().add("storage_id", id)));
+            columns.add(new DomainActionColumn<>(StorageProductPage.class, new PageParameters().add("storage_id", id)));
+        }
 
         FilterDataTable<Product> table = new FilterDataTable<Product>("table", columns, dataProvider, form, 7){
             @Override
@@ -231,8 +234,7 @@ public class StoragePage extends BasePage {
         form.add(new AjaxLink<Void>("cancel") {
             @Override
             public void onClick(AjaxRequestTarget target) {
-//                setResponsePage(backPage);
-
+                setResponsePage(StorageListPage.class);
             }
         });
 

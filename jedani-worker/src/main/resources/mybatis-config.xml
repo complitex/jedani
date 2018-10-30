@@ -37,5 +37,6 @@
 
         <mapper resource="ru/complitex/jedani/worker/mapper/WorkerMapper.xml"/>
         <mapper resource="ru/complitex/jedani/worker/mapper/ProductMapper.xml"/>
+        <mapper resource="ru/complitex/jedani/worker/mapper/StorageMapper.xml"/>
     </mappers>
 </configuration>
