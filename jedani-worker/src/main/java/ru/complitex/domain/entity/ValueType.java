@@ -40,6 +40,8 @@ public enum ValueType implements IdEnum {
                 return "number";
             case DATE:
                 return "date";
+            case ENTITY_VALUE:
+                return "entity_value";
             case ENTITY:
                 return "entity";
         }
