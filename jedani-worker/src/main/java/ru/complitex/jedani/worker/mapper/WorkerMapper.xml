@@ -96,7 +96,7 @@
             ${limit}
         ) o
         left join worker d on d.object_id = o.object_id
-        left join worker_attribute a on a.object_id = d.object_id
+        left join worker_attribute a on a.object_id = d.object_id and a.status = 1
         left join worker_value v on v.attribute_id = a.id
         <include refid="selectWorkersFromLogin"/>
         <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromSort"/>

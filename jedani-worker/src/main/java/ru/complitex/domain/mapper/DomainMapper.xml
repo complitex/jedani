@@ -70,12 +70,13 @@
         v.locale_id v_locale_id, v.text v_text <if test="useNumberValue">, v.number v_number</if>
     </sql>
 
+    <!--suppress SqlResolve -->
     <sql id="selectDomainSql">
         select d.*, '${entityName}' entity_name,
         <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainSelect"/>
 
         from ${entityName} d
-          left join ${entityName}_attribute a on a.object_id = d.object_id
+          left join ${entityName}_attribute a on a.object_id = d.object_id and a.status = 1
           left join `${entityName}_value` v on v.attribute_id = a.id
 
         <if test="attributes != null and !attributes.isEmpty">
@@ -317,7 +318,7 @@
           ${limit}
         ) o
         left join ${object.entityName} d on d.object_id = o.object_id
-        left join ${object.entityName}_attribute a on a.object_id = d.object_id
+        left join ${object.entityName}_attribute a on a.object_id = d.object_id and a.status = 1
         left join ${object.entityName}_value v on v.attribute_id = a.id
         <include refid="selectDomainsFromSort"/>
         group by d.id, a.id, v.id

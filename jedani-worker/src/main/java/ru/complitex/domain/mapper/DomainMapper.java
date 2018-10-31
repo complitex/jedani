@@ -40,12 +40,12 @@ public class DomainMapper extends BaseMapper {
         sqlSession().insert("insertDomain", domain);
 
         domain.getAttributes().forEach(a -> {
-                    a.setEntityName(domain.getEntityName());
-                    a.setObjectId(domain.getObjectId());
-                    a.setUserId(domain.getUserId());
+            a.setEntityName(domain.getEntityName());
+            a.setObjectId(domain.getObjectId());
+            a.setUserId(domain.getUserId());
 
-                    attributeMapper.insertAttribute(a, domain.getStartDate());
-                });
+            attributeMapper.insertAttribute(a, domain.getStartDate());
+        });
     }
 
     public void updateDomain(Domain domain){
@@ -71,17 +71,18 @@ public class DomainMapper extends BaseMapper {
                 if (!update){
                     if (a.getValues() != null){
                         if (dbAttribute.getValues() != null) {
-                            update = a.getValues().stream().anyMatch(v -> {
-                                if (v.getLocaleId() != null) {
-                                    Value dbValue = dbAttribute.getValue(v.getLocaleId());
+                            update = a.getValues().size() != dbAttribute.getValues().size() ||
+                                    a.getValues().stream().anyMatch(v -> {
+                                        if (v.getLocaleId() != null) {
+                                            Value dbValue = dbAttribute.getValue(v.getLocaleId());
 
-                                    return !Objects.equals(v.getText(), dbValue != null ? dbValue.getText() : null);
-                                }else{
-                                    return dbAttribute.getValues().stream()
-                                            .noneMatch(dbV -> Objects.equals(v.getText(), dbV.getText()) &&
-                                                    Objects.equals(v.getNumber(), dbV.getNumber()));
-                                }
-                            });
+                                            return !Objects.equals(v.getText(), dbValue != null ? dbValue.getText() : null);
+                                        }else{
+                                            return dbAttribute.getValues().stream()
+                                                    .noneMatch(dbV -> Objects.equals(v.getText(), dbV.getText()) &&
+                                                            Objects.equals(v.getNumber(), dbV.getNumber()));
+                                        }
+                                    });
                         }else {
                             update = true;
                         }

@@ -34,7 +34,7 @@
             ${limit}
         ) o
         left join product d on d.object_id = o.object_id
-        left join product_attribute a on a.object_id = d.object_id
+        left join product_attribute a on a.object_id = d.object_id and a.status = 1
         left join product_value v on v.attribute_id = a.id
         <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromSort"/>
         group by d.id, a.id, v.id
