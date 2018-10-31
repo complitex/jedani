@@ -13,6 +13,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
@@ -107,7 +108,10 @@ public class DomainListPage<T extends Domain> extends BasePage{
         columns.add(new DomainIdColumn<>());
 
         if (parentEntityName != null){
-            columns.add(new DomainParentColumn<T>(entityService.getEntity(parentEntityName), parentEntityAttributeId) {
+            Entity parentEntity = entityService.getEntity(parentEntityName);
+
+            columns.add(new DomainParentColumn<T>(Model.of(parentEntity.getValue().getText()),
+                    parentEntity.getEntityAttribute(parentEntityAttributeId)) {
                 @Override
                 protected Domain getDomain(Long objectId) {
                     return domainService.getDomain(parentEntityName, objectId);

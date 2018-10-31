@@ -12,7 +12,6 @@ import org.apache.wicket.model.PropertyModel;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
 import ru.complitex.domain.entity.Domain;
-import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.entity.Value;
 import ru.complitex.domain.util.Attributes;
@@ -23,24 +22,19 @@ import ru.complitex.domain.util.Locales;
  * 22.12.2017 13:12
  */
 public abstract class DomainParentColumn<T extends Domain> extends AbstractDomainColumn<T>{
-    private Entity entity;
-    private Long entityAttributeId;
 
-    public DomainParentColumn(Entity entity, Long entityAttributeId) {
-        super(Model.of(entity.getValue().getText()), new SortProperty("parentEntityId", entity.getId()));
+    private EntityAttribute entityAttribute;
 
-        this.entity = entity;
-        this.entityAttributeId = entityAttributeId;
+    public DomainParentColumn(IModel<String> displayModel, EntityAttribute entityAttribute) {
+        super(displayModel, new SortProperty("parent", entityAttribute));
+
+        this.entityAttribute = entityAttribute;
     }
 
     @Override
     public Component getFilter(String componentId, FilterForm<?> form) {
-        EntityAttribute parentEntityAttribute = new EntityAttribute();
-        parentEntityAttribute.setEntityName(entity.getName());
-        parentEntityAttribute.setEntityAttributeId(entityAttributeId);
-
         Domain domain = (Domain) ((FilterWrapper)form.getDefaultModelObject()).getObject();
-        domain.setParentEntityAttribute(parentEntityAttribute);
+        domain.setParentEntityAttribute(entityAttribute);
 
         return new TextFilter<String>(componentId, new PropertyModel<>(form.getModel(), "map.parentName"), form);
     }
@@ -52,19 +46,19 @@ public abstract class DomainParentColumn<T extends Domain> extends AbstractDomai
         Domain domain = getDomain(rowModel.getObject().getParentId());
 
         if (domain != null) {
-            switch (entity.getEntityAttribute(entityAttributeId).getValueType()){
+            switch (entityAttribute.getValueType()){
                 case TEXT_VALUE:
-                    Value value = domain.getValue(entityAttributeId, Locales.RU);
+                    Value value = domain.getValue(entityAttribute.getEntityAttributeId(), Locales.RU);
                     model = Model.of(value != null ? Attributes.capitalize(value.getText()) : null);
 
                     break;
                 case ENTITY:
                 case NUMBER:
-                    model = Model.of(domain.getNumber(entityAttributeId));
+                    model = Model.of(domain.getNumber(entityAttribute.getEntityAttributeId()));
 
                     break;
                 default:
-                    model = Model.of(Attributes.capitalize(domain.getText(entityAttributeId)));
+                    model = Model.of(Attributes.capitalize(domain.getText(entityAttribute.getEntityAttributeId())));
             }
         }
 
