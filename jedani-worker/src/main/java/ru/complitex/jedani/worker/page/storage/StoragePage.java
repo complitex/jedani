@@ -71,15 +71,16 @@ public class StoragePage extends BasePage {
     private ProductMapper productMapper;
 
     public StoragePage(PageParameters pageParameters) {
-        Long id = pageParameters.get("id").toOptionalLong();
+        Long storageId = pageParameters.get("id").toOptionalLong();
 
-        Storage storage = id != null ? domainService.getDomain(Storage.class, id) : new Storage();
+        Storage storage = storageId != null ? domainService.getDomain(Storage.class, storageId) : new Storage();
 
         FeedbackPanel feedback = new NotificationPanel("feedback");
         feedback.setOutputMarkupId(true);
         add(feedback);
 
-        DataProvider<Product> dataProvider = new DataProvider<Product>(FilterWrapper.of(new Product()).add("storageId", id)) {
+        DataProvider<Product> dataProvider = new DataProvider<Product>(FilterWrapper.of(
+                new Product()).add("storageId", storageId)) {
             @Override
             public Iterator<? extends Product> iterator(long first, long count) {
                 return productMapper.getProducts(getFilterState().limit(first, count)).iterator();
@@ -105,33 +106,33 @@ public class StoragePage extends BasePage {
             @Override
             protected Long load() {
                 return domainService.getDomainsCount(FilterWrapper.of(new Product()
-                        .setNumber(Product.STORAGE_ID, id)
+                        .setNumber(Product.STORAGE_ID, storageId)
                         .setNumber(Product.STORAGE_INTO_ID, -1L)));
             }
-        }).setEnabled(false).setVisible(id != null));
+        }).setEnabled(false).setVisible(storageId != null));
 
         form.add(new TextFieldFormGroup<>("productIntoCount",  new LoadableDetachableModel<Long>() {
             @Override
             protected Long load() {
                 return domainService.getDomainsCount(FilterWrapper.of(new Product()
-                        .setNumber(Product.STORAGE_INTO_ID, id)
+                        .setNumber(Product.STORAGE_INTO_ID, storageId)
                 ));
             }
-        }).setEnabled(false).setVisible(id != null));
+        }).setEnabled(false).setVisible(storageId != null));
 
         form.add(new TextFieldFormGroup<>("productFromCount",  new LoadableDetachableModel<Long>() {
             @Override
             protected Long load() {
                 return domainService.getDomainsCount(FilterWrapper.of(new Product()
-                        .setNumber(Product.STORAGE_ID, id)
+                        .setNumber(Product.STORAGE_ID, storageId)
                         .setNumber(Product.STORAGE_INTO_ID, -2L)));
             }
-        }).setEnabled(false).setVisible(id != null));
+        }).setEnabled(false).setVisible(storageId != null));
 
 
         List<IColumn<Product, SortProperty>> columns = new ArrayList<>();
 
-        if (id != null) {
+        if (storageId != null) {
             columns.add(new DomainIdColumn<>());
 
             columns.add(new DomainColumn<>(entityService.getEntityAttribute(Product.ENTITY_NAME, Product.NOMENCLATURE_ID)
@@ -144,7 +145,7 @@ public class StoragePage extends BasePage {
                 public void populateItem(Item<ICellPopulator<Product>> cellItem, String componentId, IModel<Product> rowModel) {
                     String label = "";
 
-                    if (Objects.equals(rowModel.getObject().getNumber(Product.STORAGE_INTO_ID), id)){
+                    if (Objects.equals(rowModel.getObject().getNumber(Product.STORAGE_INTO_ID), storageId)){
                         Domain storage = domainService.getDomain(Storage.class, rowModel.getObject().getNumber(Product.STORAGE_ID));
 
                         label = Storages.getStorageLabel(storage, domainService, nameService);
@@ -164,7 +165,7 @@ public class StoragePage extends BasePage {
                 public void populateItem(Item<ICellPopulator<Product>> cellItem, String componentId, IModel<Product> rowModel) {
                     String label = "";
 
-                    if (Objects.equals(rowModel.getObject().getNumber(Product.STORAGE_ID), id)){
+                    if (Objects.equals(rowModel.getObject().getNumber(Product.STORAGE_ID), storageId)){
                         Domain storage = domainService.getDomain(Storage.class, rowModel.getObject().getNumber(Product.STORAGE_INTO_ID));
 
                         label = Storages.getStorageLabel(storage, domainService, nameService);
@@ -179,13 +180,14 @@ public class StoragePage extends BasePage {
                 }
             });
 
-            columns.add(new DomainActionColumn<>(StorageProductPage.class, new PageParameters().add("storage_id", id)));
+            columns.add(new DomainActionColumn<>(StorageProductPage.class,
+                    new PageParameters().add("storage_id", storageId)));
         }
 
         FilterDataTable<Product> table = new FilterDataTable<Product>("table", columns, dataProvider, form, 7){
             @Override
             public boolean isVisible() {
-                return id != null;
+                return storageId != null;
             }
 
             @Override
@@ -197,7 +199,7 @@ public class StoragePage extends BasePage {
                     protected void onEvent(AjaxRequestTarget target) {
                         setResponsePage(StorageProductPage.class, new PageParameters()
                                 .add("id", model.getObject().getObjectId())
-                                .add("storage_id", id));
+                                .add("storage_id", storageId));
                     }
                 });
 
@@ -207,7 +209,7 @@ public class StoragePage extends BasePage {
 
             }
         };
-        table.setVisible(id != null);
+        table.setVisible(storageId != null);
         form.add(table);
 
         form.add(new AjaxButton("save") {
