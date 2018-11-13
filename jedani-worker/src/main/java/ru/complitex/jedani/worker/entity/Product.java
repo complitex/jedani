@@ -10,8 +10,9 @@ public class Product extends Domain {
     public static final String ENTITY_NAME = "product";
 
     public static final long NOMENCLATURE_ID = 1;
-    public static final long STORAGE_ID = 2;
-    public static final long STORAGE_INTO_ID = 3;
+    public static final long QUANTITY = 2;
+    public static final long SENT = 3;
+    public static final long RECEIVED = 4;
 
     public Product() {
         super(ENTITY_NAME);

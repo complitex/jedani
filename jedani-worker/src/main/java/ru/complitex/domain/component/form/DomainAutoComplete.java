@@ -87,11 +87,7 @@ public class DomainAutoComplete extends Panel {
                 return new IConverter<Domain>() {
                     @Override
                     public Domain convertToObject(String s, Locale locale) throws ConversionException {
-                        if (s == null || s.isEmpty()){
-                            return null;
-                        }
-
-                       return new Domain();
+                       return null;
                     }
 
                     @Override

@@ -47,14 +47,23 @@ public class Worker extends DomainNode {
 
     public Worker() {
         super(ENTITY_NAME);
+
+        setUseDateAttribute(true);
+        setUseNumberValue(true);
     }
 
     public Worker(Long objectId) {
         super(ENTITY_NAME, objectId);
+
+        setUseDateAttribute(true);
+        setUseNumberValue(true);
     }
 
     public Worker(Domain domain) {
         super(domain, ENTITY_NAME);
+
+        setUseDateAttribute(true);
+        setUseNumberValue(true);
     }
 
     public Worker(Long left, Long right){
@@ -104,15 +113,5 @@ public class Worker extends DomainNode {
 
     public void setSubWorkerCount(Long subWorkerCount) {
         this.subWorkerCount = subWorkerCount;
-    }
-
-    @Override
-    public boolean isUseDateAttribute() {
-        return true;
-    }
-
-    @Override
-    public boolean isUseNumberValue() {
-        return true;
     }
 }

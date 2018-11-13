@@ -9,6 +9,7 @@ import ru.complitex.address.entity.City;
 import ru.complitex.domain.component.form.DomainAutoComplete;
 import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Domain;
+import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.page.DomainEditPage;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
@@ -44,61 +45,64 @@ public class ProductEditPage extends DomainEditPage<Product> {
     }
 
     @Override
-    protected Component getComponent(Attribute attribute) {
+    protected String getParentEntityName() {
+        return Storage.ENTITY_NAME;
+    }
+
+    @Override
+    protected DomainAutoComplete getParentComponent(String componentId, Entity parentEntity, Product product) {
+        return new DomainAutoComplete(componentId, entityService.getEntityAttribute(Storage.ENTITY_NAME, Storage.CITY_ID),
+                new PropertyModel<>(product, "parentId")){
+            @Override
+            protected Domain getFilterObject(String input) {
+                Storage storage = new Storage();
+
+                Attribute cityId = storage.getOrCreateAttribute(Storage.CITY_ID);
+                cityId.setEntityAttribute(entityService.getEntityAttribute(Storage.ENTITY_NAME, Storage.CITY_ID));
+                cityId.getEntityAttribute().setReferenceEntityAttribute(entityService.getEntityAttribute(City.ENTITY_NAME, City.NAME));
+                cityId.setText(input);
+
+                Attribute workerIds = storage.getOrCreateAttribute(Storage.WORKER_IDS);
+                workerIds.setEntityAttribute(entityService.getEntityAttribute(Storage.ENTITY_NAME, Storage.WORKER_IDS));
+                workerIds.getEntityAttribute().setReferenceEntityAttribute(entityService.getEntityAttribute(Worker.ENTITY_NAME, Worker.J_ID));
+                workerIds.setText(input);
+
+                return storage;
+            }
+
+            @Override
+            protected String getTextValue(Domain domain) {
+                return Storages.getStorageLabel(domain, domainService, nameService);
+            }
+
+            @Override
+            protected Domain getDomain(IModel<Long> model) {
+                return domainService.getDomain(Storage.class, model.getObject());
+            }
+        };
+    }
+
+    @Override
+    protected Component getComponent(String componentId, Attribute attribute) {
         if (Objects.equals(attribute.getEntityAttributeId(), Product.NOMENCLATURE_ID)){
-           return new DomainAutoComplete(COMPONENT_WICKET_ID,
-                   entityService.getEntityAttribute(Nomenclature.ENTITY_NAME, Nomenclature.NAME),
-                   new PropertyModel<>(attribute, "number")){
-               @Override
-               protected Domain getFilterObject(String input) {
-                   Nomenclature nomenclature = new Nomenclature();
-
-                   nomenclature.getOrCreateAttribute(Nomenclature.CODE).setText(input);
-                   nomenclature.getOrCreateAttribute(Nomenclature.NAME).setText(input);
-
-                   return nomenclature;
-               }
-
-               @Override
-               protected String getTextValue(Domain domain) {
-                   return domain.getText(Nomenclature.CODE) + " " + Attributes.capitalize(domain.getValueText(Nomenclature.NAME));
-               }
-           };
-        }
-
-        if (attribute.getEntityAttributeId().equals(Product.STORAGE_ID) ||
-                attribute.getEntityAttributeId().equals(Product.STORAGE_INTO_ID)){
-            return new DomainAutoComplete(COMPONENT_WICKET_ID,
-                    entityService.getEntityAttribute(Storage.ENTITY_NAME, Storage.CITY_ID),
+            return new DomainAutoComplete(componentId,
+                    entityService.getEntityAttribute(Nomenclature.ENTITY_NAME, Nomenclature.NAME),
                     new PropertyModel<>(attribute, "number")){
                 @Override
                 protected Domain getFilterObject(String input) {
-                    Storage storage = new Storage();
+                    Nomenclature nomenclature = new Nomenclature();
 
-                    Attribute cityId = storage.getOrCreateAttribute(Storage.CITY_ID);
-                    cityId.setEntityAttribute(entityService.getEntityAttribute(Storage.ENTITY_NAME, Storage.CITY_ID));
-                    cityId.getEntityAttribute().setReferenceEntityAttribute(entityService.getEntityAttribute(City.ENTITY_NAME, City.NAME));
-                    cityId.setText(input);
+                    nomenclature.getOrCreateAttribute(Nomenclature.CODE).setText(input);
+                    nomenclature.getOrCreateAttribute(Nomenclature.NAME).setText(input);
 
-                    Attribute workerIds = storage.getOrCreateAttribute(Storage.WORKER_IDS);
-                    workerIds.setEntityAttribute(entityService.getEntityAttribute(Storage.ENTITY_NAME, Storage.WORKER_IDS));
-                    workerIds.getEntityAttribute().setReferenceEntityAttribute(entityService.getEntityAttribute(Worker.ENTITY_NAME, Worker.J_ID));
-                    workerIds.setText(input);
-
-                    return storage;
+                    return nomenclature;
                 }
 
                 @Override
                 protected String getTextValue(Domain domain) {
-                    return Storages.getStorageLabel(domain, domainService, nameService);
-                }
-
-                @Override
-                protected Domain getDomain(IModel<Long> model) {
-                    return domainService.getDomain(Storage.class, model.getObject());
+                    return domain.getText(Nomenclature.CODE) + " " + Attributes.capitalize(domain.getValueText(Nomenclature.NAME));
                 }
             };
-
         }
 
         return null;
@@ -106,11 +110,7 @@ public class ProductEditPage extends DomainEditPage<Product> {
 
     @Override
     protected boolean validate(Product product) {
-        if (Objects.equals(product.getNumber(Product.STORAGE_ID), product.getNumber(Product.STORAGE_INTO_ID))){
-            error(getString("error_equal_storage"));
 
-            return false;
-        }
 
         return true;
     }

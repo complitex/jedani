@@ -49,8 +49,6 @@ import static ru.complitex.domain.model.TextAttributeModel.TYPE.UPPER_CASE;
 public abstract class DomainEditPage<T extends Domain> extends BasePage{
     private Logger log = LoggerFactory.getLogger(getClass());
 
-    public static final String COMPONENT_WICKET_ID = "component";
-
     @Inject
     private EntityMapper entityMapper;
 
@@ -96,8 +94,7 @@ public abstract class DomainEditPage<T extends Domain> extends BasePage{
             FormGroup parentGroup = new FormGroup("parentGroup", Model.of(parentEntity.getValue().getText()));
             form.add(parentGroup);
 
-            parentGroup.add(new DomainAutoComplete("parent", parentEntity.getEntityAttribute(getParentEntityAttributeId()),
-                    new PropertyModel<>(domain, "parentId")));
+            parentGroup.add(getParentComponent("parent", parentEntity, domain));
         }else{
             form.add(new EmptyPanel("parentGroup").setVisible(false));
         }
@@ -122,7 +119,7 @@ public abstract class DomainEditPage<T extends Domain> extends BasePage{
                 FormGroup group = new FormGroup("group", Model.of(entityAttribute.getValue().getText()));
                 FormComponent input1 = null;
                 FormComponent input2 = null;
-                Component component = getComponent(attribute);
+                Component component = getComponent("component", attribute);
 
                 if (component == null) {
                     switch (entityAttribute.getValueType()){
@@ -136,7 +133,7 @@ public abstract class DomainEditPage<T extends Domain> extends BasePage{
                             input1 = new TextField<>("input1", new PropertyModel<>(attribute, "date"));
                             break;
                         case ENTITY:
-                            component = new DomainAutoComplete(COMPONENT_WICKET_ID,
+                            component = new DomainAutoComplete("component",
                                     attribute.getEntityAttribute().getReferenceEntityAttribute(),
                                     new PropertyModel<>(attribute, "number"));
                             break;
@@ -158,7 +155,7 @@ public abstract class DomainEditPage<T extends Domain> extends BasePage{
 
                 group.add(input1 != null ? input1 : new EmptyPanel("input1").setVisible(false));
                 group.add(input2 != null ? input2 : new EmptyPanel("input2").setVisible(false));
-                group.add(component != null ? component : new EmptyPanel(COMPONENT_WICKET_ID).setVisible(false));
+                group.add(component != null ? component : new EmptyPanel("component").setVisible(false));
 
                 item.add(group);
             }
@@ -216,6 +213,12 @@ public abstract class DomainEditPage<T extends Domain> extends BasePage{
         //todo validate -> entity select
     }
 
+    protected DomainAutoComplete getParentComponent(String componentId, Entity parentEntity, T domain) {
+        return new DomainAutoComplete(componentId,
+                parentEntity.getEntityAttribute(getParentEntityAttributeId()),
+                new PropertyModel<>(domain, "parentId"));
+    }
+
     protected String getParentEntityName(){
         return null;
     }
@@ -235,7 +238,7 @@ public abstract class DomainEditPage<T extends Domain> extends BasePage{
     protected void onAttribute(Attribute attribute){
     }
 
-    protected Component getComponent(Attribute attribute){
+    protected Component getComponent(String componentId, Attribute attribute){
         return null;
     }
 

@@ -191,7 +191,6 @@ CREATE TABLE `country_attribute` (
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
   CONSTRAINT `fk_country_attribute__country` FOREIGN KEY (`object_id`) REFERENCES `country`(`object_id`),
-  CONSTRAINT `fk_country_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`) REFERENCES entity_attribute (`entity_attribute_id`),
   CONSTRAINT `fk_country_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты страны';
 
@@ -258,7 +257,6 @@ CREATE TABLE `region_attribute` (
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
   CONSTRAINT `fk_region_attribute__region` FOREIGN KEY (`object_id`) REFERENCES `region`(`object_id`),
-  CONSTRAINT `fk_region_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`) REFERENCES entity_attribute (`entity_attribute_id`),
   CONSTRAINT `fk_region_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты региона';
 
@@ -326,8 +324,6 @@ CREATE TABLE `city_type_attribute` (
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
   CONSTRAINT `fk_city_type_attribute__city_type` FOREIGN KEY (`object_id`) REFERENCES `city_type`(`object_id`),
-  CONSTRAINT `fk_city_type_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`)
-    REFERENCES entity_attribute (`entity_attribute_id`),
   CONSTRAINT `fk_city_type_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты типа населенного пункта';
 
@@ -394,8 +390,6 @@ CREATE TABLE `city_attribute` (
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
   CONSTRAINT `fk_city_attribute__city` FOREIGN KEY (`object_id`) REFERENCES `city`(`object_id`),
-  CONSTRAINT `fk_city_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`)
-    REFERENCES entity_attribute (`entity_attribute_id`),
   CONSTRAINT `fk_city_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты населенного пункта';
 
@@ -467,8 +461,6 @@ CREATE TABLE `last_name_attribute` (
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
   CONSTRAINT `fk_last_name_attribute__city` FOREIGN KEY (`object_id`) REFERENCES `last_name`(`object_id`),
-  CONSTRAINT `fk_last_name_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`)
-    REFERENCES entity_attribute (`entity_attribute_id`),
   CONSTRAINT `fk_last_name_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты фамилии';
 
@@ -536,8 +528,6 @@ CREATE TABLE `first_name_attribute` (
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
   CONSTRAINT `fk_first_name_attribute__city` FOREIGN KEY (`object_id`) REFERENCES `first_name`(`object_id`),
-  CONSTRAINT `fk_first_name_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`)
-    REFERENCES entity_attribute (`entity_attribute_id`),
   CONSTRAINT `fk_first_name_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты имени';
 
@@ -605,8 +595,6 @@ CREATE TABLE `middle_name_attribute` (
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
   CONSTRAINT `fk_middle_name_attribute__city` FOREIGN KEY (`object_id`) REFERENCES `middle_name`(`object_id`),
-  CONSTRAINT `fk_middle_name_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`)
-    REFERENCES entity_attribute (`entity_attribute_id`),
   CONSTRAINT `fk_middle_name_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты отчества';
 
@@ -681,8 +669,6 @@ CREATE TABLE `worker_attribute` (
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
   CONSTRAINT `fk_worker_attribute__city` FOREIGN KEY (`object_id`) REFERENCES `worker`(`object_id`),
-  CONSTRAINT `fk_worker_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`)
-    REFERENCES entity_attribute (`entity_attribute_id`),
   CONSTRAINT `fk_worker_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты сотрудника';
 
@@ -752,8 +738,6 @@ CREATE TABLE `mk_status_attribute` (
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
   CONSTRAINT `fk_mk_status_attribute__mk_status` FOREIGN KEY (`object_id`) REFERENCES `mk_status`(`object_id`),
-  CONSTRAINT `fk_mk_status_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`)
-    REFERENCES entity_attribute (`entity_attribute_id`),
   CONSTRAINT `fk_mk_status_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты МК статуса';
 
@@ -821,8 +805,6 @@ CREATE TABLE `position_attribute` (
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
   CONSTRAINT `fk_position_attribute__position` FOREIGN KEY (`object_id`) REFERENCES `position`(`object_id`),
-  CONSTRAINT `fk_position_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`)
-    REFERENCES entity_attribute (`entity_attribute_id`),
   CONSTRAINT `fk_position_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты должности';
 
@@ -841,7 +823,7 @@ CREATE TABLE `position_value` (
   CONSTRAINT `fk_position_value__locale` FOREIGN KEY (`locale_id`) REFERENCES `locale` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Локализация атрибутов должности';
     
--- ------------------------------
+-- ---------------------------
 -- Nomenclature
 -- ---------------------------
 
@@ -890,8 +872,6 @@ CREATE TABLE `nomenclature_attribute` (
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
   CONSTRAINT `fk_nomenclature_attribute__nomenclature` FOREIGN KEY (`object_id`) REFERENCES `nomenclature`(`object_id`),
-  CONSTRAINT `fk_nomenclature_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`)
-    REFERENCES entity_attribute (`entity_attribute_id`),
   CONSTRAINT `fk_nomenclature_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты номенклатуры';
 
@@ -912,7 +892,7 @@ CREATE TABLE `nomenclature_value` (
   CONSTRAINT `fk_nomenclature_value__locale` FOREIGN KEY (`locale_id`) REFERENCES `locale` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Локализация атрибутов номенклатуры';
     
--- ------------------------------
+-- ---------------------------
 -- Storage
 -- ---------------------------
 
@@ -961,8 +941,6 @@ CREATE TABLE `storage_attribute` (
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
   CONSTRAINT `fk_storage_attribute__storage` FOREIGN KEY (`object_id`) REFERENCES `storage`(`object_id`),
-  CONSTRAINT `fk_storage_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`)
-    REFERENCES entity_attribute (`entity_attribute_id`),
   CONSTRAINT `fk_storage_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты склада';
 
@@ -983,7 +961,7 @@ CREATE TABLE `storage_value` (
   CONSTRAINT `fk_storage_value__locale` FOREIGN KEY (`locale_id`) REFERENCES `locale` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Локализация атрибутов склада';    
     
--- ------------------------------
+-- ---------------------------
 -- Product
 -- ---------------------------
 
@@ -1032,8 +1010,6 @@ CREATE TABLE `product_attribute` (
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
   CONSTRAINT `fk_product_attribute__product` FOREIGN KEY (`object_id`) REFERENCES `product`(`object_id`),
-  CONSTRAINT `fk_product_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`)
-    REFERENCES entity_attribute (`entity_attribute_id`),
   CONSTRAINT `fk_product_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты товара';
 
@@ -1050,9 +1026,76 @@ CREATE TABLE `product_value` (
   KEY `key_value` (`text`(128)),
   CONSTRAINT `fk_product_value__product_attribute` FOREIGN KEY (`attribute_id`) REFERENCES `product_attribute` (`id`),
   CONSTRAINT `fk_product_value__locale` FOREIGN KEY (`locale_id`) REFERENCES `locale` (`id`)
-) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Локализация атрибутов товара';        
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Локализация атрибутов товара';
 
+-- ---------------------------
+-- Transaction
+-- ---------------------------
 
+DROP TABLE IF EXISTS `transaction`;
+CREATE TABLE `transaction` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
+  `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
+  `parent_id` BIGINT(20) COMMENT 'Идентификатор родительского объекта',
+  `parent_entity_id` BIGINT(20) COMMENT 'Идентификатор сущности родительского объекта',
+  `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия объекта',
+  `end_date` TIMESTAMP NULL DEFAULT NULL COMMENT 'Дата окончания периода действия объекта',
+  `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
+  `permission_id` BIGINT(20) NULL COMMENT 'Ключ прав доступа к объекту',
+  `user_id` BIGINT(20) NULL COMMENT 'Идентифитактор пользователя',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_object_id__status` (`object_id`,`status`),
+  KEY `key_object_id` (`object_id`),
+  KEY `key_parent_id` (`parent_id`),
+  KEY `key_parent_entity_id` (`parent_entity_id`),
+  KEY `key_start_date` (`start_date`),
+  KEY `key_end_date` (`end_date`),
+  KEY `key_status` (`status`),
+  KEY `key_permission_id` (`permission_id`),
+  CONSTRAINT `ft_transaction__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
+  CONSTRAINT `fk_transaction__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`),
+  CONSTRAINT `fk_transaction__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Транзакция';
+
+DROP TABLE IF EXISTS `transaction_attribute`;
+CREATE TABLE `transaction_attribute` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
+  `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
+  `entity_attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор типа атрибута',
+  `text` VARCHAR(255) COMMENT 'Текст',
+  `number` BIGINT(20) COMMENT 'Число',
+  `date` BIGINT(20) COMMENT 'Дата',
+  `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия атрибута',
+  `end_date` TIMESTAMP NULL DEFAULT NULL COMMENT 'Дата окончания периода действия атрибута',
+  `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
+  `user_id` BIGINT(20) NULL COMMENT 'Идентифитактор пользователя',
+  PRIMARY KEY  (`id`),
+  KEY `key_object_id` (`object_id`),
+  KEY `key_entity_attribute_id` (`entity_attribute_id`),
+  KEY `key_text` (`text`),
+  KEY `key_number` (`number`),
+  KEY `key_date` (`date`),
+  KEY `key_start_date` (`start_date`),
+  KEY `key_end_date` (`end_date`),
+  KEY `key_status` (`status`),
+  CONSTRAINT `fk_transaction_attribute__transaction` FOREIGN KEY (`object_id`) REFERENCES `transaction`(`object_id`),
+  CONSTRAINT `fk_transaction_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты транзакции';
+
+DROP TABLE IF EXISTS `transaction_value`;
+CREATE TABLE `transaction_value` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
+  `attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор атрибута',
+  `locale_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор локали',
+  `text` VARCHAR(1000) COMMENT 'Текстовое значение',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_id__locale` (`attribute_id`,`locale_id`),
+  KEY `key_attribute_id` (`attribute_id`),
+  KEY `key_locale` (`locale_id`),
+  KEY `key_value` (`text`(128)),
+  CONSTRAINT `fk_transaction_value__transaction_attribute` FOREIGN KEY (`attribute_id`) REFERENCES `transaction_attribute` (`id`),
+  CONSTRAINT `fk_transaction_value__locale` FOREIGN KEY (`locale_id`) REFERENCES `locale` (`id`)
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Значения атрибутов транзакции';
 
 
 

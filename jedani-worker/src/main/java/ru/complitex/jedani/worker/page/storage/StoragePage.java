@@ -1,9 +1,11 @@
 package ru.complitex.jedani.worker.page.storage;
 
 import de.agilecoders.wicket.core.markup.html.bootstrap.behavior.CssClassNameAppender;
+import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxLink;
+import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
+import de.agilecoders.wicket.core.markup.html.bootstrap.image.GlyphIconType;
 import org.apache.wicket.Component;
-import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
@@ -26,13 +28,13 @@ import ru.complitex.common.entity.SortProperty;
 import ru.complitex.common.wicket.datatable.DataProvider;
 import ru.complitex.common.wicket.datatable.FilterDataTable;
 import ru.complitex.common.wicket.form.TextFieldFormGroup;
+import ru.complitex.common.wicket.panel.LinkPanel;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.component.datatable.DomainActionColumn;
 import ru.complitex.domain.component.datatable.DomainColumn;
 import ru.complitex.domain.component.datatable.DomainIdColumn;
 import ru.complitex.domain.component.form.DomainAutoCompleteFormGroup;
 import ru.complitex.domain.component.form.FormGroupPanel;
-import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.model.NumberAttributeModel;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
@@ -42,14 +44,12 @@ import ru.complitex.jedani.worker.entity.Product;
 import ru.complitex.jedani.worker.entity.Storage;
 import ru.complitex.jedani.worker.mapper.ProductMapper;
 import ru.complitex.jedani.worker.page.BasePage;
-import ru.complitex.jedani.worker.util.Storages;
 import ru.complitex.name.service.NameService;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author Anatoly A. Ivanov
@@ -105,30 +105,51 @@ public class StoragePage extends BasePage {
         form.add(new TextFieldFormGroup<>("productCount",  new LoadableDetachableModel<Long>() {
             @Override
             protected Long load() {
-                return domainService.getDomainsCount(FilterWrapper.of(new Product()
-                        .setNumber(Product.STORAGE_ID, storageId)
-                        .setNumber(Product.STORAGE_INTO_ID, -1L)));
+                return domainService.getDomainsCount(FilterWrapper.of(new Product()));
             }
         }).setEnabled(false).setVisible(storageId != null));
 
         form.add(new TextFieldFormGroup<>("productIntoCount",  new LoadableDetachableModel<Long>() {
             @Override
             protected Long load() {
-                return domainService.getDomainsCount(FilterWrapper.of(new Product()
-                        .setNumber(Product.STORAGE_INTO_ID, storageId)
-                ));
+                return domainService.getDomainsCount(FilterWrapper.of(new Product()));
             }
         }).setEnabled(false).setVisible(storageId != null));
 
         form.add(new TextFieldFormGroup<>("productFromCount",  new LoadableDetachableModel<Long>() {
             @Override
             protected Long load() {
-                return domainService.getDomainsCount(FilterWrapper.of(new Product()
-                        .setNumber(Product.STORAGE_ID, storageId)
-                        .setNumber(Product.STORAGE_INTO_ID, -2L)));
+                return domainService.getDomainsCount(FilterWrapper.of(new Product()));
             }
         }).setEnabled(false).setVisible(storageId != null));
 
+        //Accept Modal
+
+        StorageAcceptModal acceptModal = new StorageAcceptModal("acceptModal", storageId);
+        acceptModal.addAjaxUpdate(feedback);
+        form.add(acceptModal);
+
+        form.add(new AjaxLink<Void>("accept") {
+
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                acceptModal.open(target);
+            }
+        });
+
+
+        //Send Modal
+
+
+        //Receive Modal
+
+        //Withdraw Modal
+
+        StorageWithdrawModal withdrawModal = new StorageWithdrawModal("withdrawModal");
+        withdrawModal.addAjaxUpdate(feedback);
+        form.add(withdrawModal);
+
+        //Datatable
 
         List<IColumn<Product, SortProperty>> columns = new ArrayList<>();
 
@@ -145,11 +166,6 @@ public class StoragePage extends BasePage {
                 public void populateItem(Item<ICellPopulator<Product>> cellItem, String componentId, IModel<Product> rowModel) {
                     String label = "";
 
-                    if (Objects.equals(rowModel.getObject().getNumber(Product.STORAGE_INTO_ID), storageId)){
-                        Domain storage = domainService.getDomain(Storage.class, rowModel.getObject().getNumber(Product.STORAGE_ID));
-
-                        label = Storages.getStorageLabel(storage, domainService, nameService);
-                    }
 
                     cellItem.add(new Label(componentId, label));
                 }
@@ -165,11 +181,6 @@ public class StoragePage extends BasePage {
                 public void populateItem(Item<ICellPopulator<Product>> cellItem, String componentId, IModel<Product> rowModel) {
                     String label = "";
 
-                    if (Objects.equals(rowModel.getObject().getNumber(Product.STORAGE_ID), storageId)){
-                        Domain storage = domainService.getDomain(Storage.class, rowModel.getObject().getNumber(Product.STORAGE_INTO_ID));
-
-                        label = Storages.getStorageLabel(storage, domainService, nameService);
-                    }
 
                     cellItem.add(new Label(componentId, label));
                 }
@@ -180,8 +191,22 @@ public class StoragePage extends BasePage {
                 }
             });
 
-            columns.add(new DomainActionColumn<>(StorageProductPage.class,
-                    new PageParameters().add("storage_id", storageId)));
+            columns.add(new DomainActionColumn<Product>(StorageProductPage.class,
+                    new PageParameters().add("storage_id", storageId)){
+                @Override
+                public void populateItem(Item<ICellPopulator<Product>> cellItem, String componentId, IModel<Product> rowModel) {
+                    PageParameters pageParameters = new PageParameters().add("id", rowModel.getObject().getId());
+                    pageParameters.mergeWith(getEditPageParameters());
+
+                    cellItem.add(new LinkPanel(componentId, new BootstrapAjaxLink<Void>(LinkPanel.LINK_COMPONENT_ID,
+                            Buttons.Type.Link) {
+                        @Override
+                        public void onClick(AjaxRequestTarget target) {
+                            withdrawModal.open(rowModel.getObject().getObjectId(), target);
+                        }
+                    }.setIconType(GlyphIconType.minus).setSize(Buttons.Size.Small)));
+                }
+            });
         }
 
         FilterDataTable<Product> table = new FilterDataTable<Product>("table", columns, dataProvider, form, 7){
@@ -194,14 +219,14 @@ public class StoragePage extends BasePage {
             protected Item<Product> newRowItem(String id, int index, final IModel<Product> model) {
                 Item<Product> rowItem = super.newRowItem(id, index, model);
 
-                rowItem.add(new AjaxEventBehavior("click") {
-                    @Override
-                    protected void onEvent(AjaxRequestTarget target) {
-                        setResponsePage(StorageProductPage.class, new PageParameters()
-                                .add("id", model.getObject().getObjectId())
-                                .add("storage_id", storageId));
-                    }
-                });
+//                rowItem.add(new AjaxEventBehavior("click") {
+//                    @Override
+//                    protected void onEvent(AjaxRequestTarget target) {
+//                        setResponsePage(StorageProductPage.class, new PageParameters()
+//                                .add("id", model.getObject().getObjectId())
+//                                .add("storage_id", storageId));
+//                    }
+//                });
 
                 rowItem.add(new CssClassNameAppender("pointer"));
 
@@ -239,6 +264,8 @@ public class StoragePage extends BasePage {
                 setResponsePage(StorageListPage.class);
             }
         });
+
+
 
 
     }

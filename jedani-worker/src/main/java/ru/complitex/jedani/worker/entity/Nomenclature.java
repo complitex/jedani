@@ -15,10 +15,7 @@ public class Nomenclature extends Domain {
 
     public Nomenclature() {
         super(ENTITY_NAME);
-    }
 
-    @Override
-    public boolean isUseNumberValue() {
-        return true;
+        setUseNumberValue(true);
     }
 }

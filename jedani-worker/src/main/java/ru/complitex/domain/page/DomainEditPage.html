@@ -14,9 +14,13 @@
         <div>
             <div wicket:id="feedback"></div>
 
-            <form wicket:id="form">
-                <div wicket:id="parentGroup">
-                    <div wicket:id="parent" class="domain-edit-input"></div>
+            <form wicket:id="form" >
+                <div class="row">
+                    <div class="col-md-3">
+                        <div wicket:id="parentGroup">
+                            <div wicket:id="parent" class="domain-edit-input"></div>
+                        </div>
+                    </div>
                 </div>
 
                 <div wicket:id="attributes" class="row">
@@ -25,7 +29,6 @@
                         <input wicket:id="input2" class="form-control"/>
                         <div wicket:id="component"></div>
                     </div>
-                    <div class="col-md-9"></div>
                 </div>
 
                 <wicket:child/>

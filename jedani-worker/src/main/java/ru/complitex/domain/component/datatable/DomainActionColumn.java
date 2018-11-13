@@ -73,4 +73,8 @@ public class DomainActionColumn<T extends Domain> extends AbstractDomainColumn<T
     public AjaxIndicatorAppender getAjaxIndicatorAppender() {
         return ajaxIndicatorAppender;
     }
+
+    public PageParameters getEditPageParameters() {
+        return editPageParameters;
+    }
 }
