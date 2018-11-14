@@ -23,6 +23,8 @@ public class TextAttributeModel implements IModel<String> {
 
     private TYPE type;
 
+    private IModel<? extends Domain> domainModel;
+
     public TextAttributeModel(Domain domain, Long entityAttributeId, TYPE type) {
         this.domain = domain;
         this.entityAttributeId = entityAttributeId;
@@ -40,12 +42,18 @@ public class TextAttributeModel implements IModel<String> {
         this.type = type;
     }
 
+    public TextAttributeModel(IModel<? extends Domain> domainModel, Long entityAttributeId, TYPE type) {
+        this.domainModel = domainModel;
+        this.entityAttributeId = entityAttributeId;
+
+        this.type = type;
+    }
+
     @Override
     public String getObject() {
-        String text = domain != null
-                ? domain.getText(entityAttributeId)
-                : attribute != null
-                ? attribute.getText()
+        String text = domainModel != null ? domainModel.getObject().getText(entityAttributeId)
+                : domain != null ? domain.getText(entityAttributeId)
+                : attribute != null ? attribute.getText()
                 : value.getText();
 
         switch (type){
@@ -64,7 +72,9 @@ public class TextAttributeModel implements IModel<String> {
             text = text.toUpperCase();
         }
 
-        if (domain != null) {
+        if (domainModel != null){
+            domainModel.getObject().setText(entityAttributeId, text);
+        }else if (domain != null) {
             domain.setText(entityAttributeId, text);
         } else if (attribute != null) {
             attribute.setText(text);

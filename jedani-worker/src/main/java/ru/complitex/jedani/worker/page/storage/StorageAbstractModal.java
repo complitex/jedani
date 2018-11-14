@@ -21,17 +21,21 @@ import java.util.List;
 abstract class StorageAbstractModal extends Modal<Transaction> {
     private List<Component> ajaxUpdateComponents = new ArrayList<>();
 
+    private FeedbackPanel feedback;
+
+    private BootstrapAjaxButton actionButton;
+
     StorageAbstractModal(String markupId) {
         super(markupId, Model.of(new Transaction()));
 
         header(Model.of(getString("header")));
         setVisible(false);
 
-        FeedbackPanel feedback = new NotificationPanel("feedback");
+        feedback = new NotificationPanel("feedback");
         feedback.setOutputMarkupId(true);
         add(feedback);
 
-        addButton(new BootstrapAjaxButton(Modal.BUTTON_MARKUP_ID, Buttons.Type.Primary) {
+        addButton(actionButton = new BootstrapAjaxButton(Modal.BUTTON_MARKUP_ID, Buttons.Type.Primary) {
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
                 StorageAbstractModal.this.action();
@@ -69,9 +73,15 @@ abstract class StorageAbstractModal extends Modal<Transaction> {
 
     abstract void action();
 
-    StorageAbstractModal addAjaxUpdate(Component component){
+    void addAjaxUpdate(Component component){
         ajaxUpdateComponents.add(component);
+    }
 
-        return this;
+    public FeedbackPanel getFeedback() {
+        return feedback;
+    }
+
+    public BootstrapAjaxButton getActionButton() {
+        return actionButton;
     }
 }

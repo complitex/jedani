@@ -53,7 +53,7 @@ public class DomainActionColumn<T extends Domain> extends AbstractDomainColumn<T
             protected void onSubmit(AjaxRequestTarget target) {
                 target.add(form);
             }
-        }.setSize(Buttons.Size.Small).setIconType(GlyphIconType.search));
+        }.setIconType(GlyphIconType.search));
     }
 
     @Override
@@ -62,7 +62,7 @@ public class DomainActionColumn<T extends Domain> extends AbstractDomainColumn<T
         pageParameters.mergeWith(editPageParameters);
 
         cellItem.add(new LinkPanel(componentId, new BootstrapBookmarkablePageLink<>(LinkPanel.LINK_COMPONENT_ID,
-                editPageClass, pageParameters, Buttons.Type.Link).setIconType(GlyphIconType.edit).setSize(Buttons.Size.Small)));
+                editPageClass, pageParameters, Buttons.Type.Link).setIconType(GlyphIconType.edit)));
     }
 
     @Override

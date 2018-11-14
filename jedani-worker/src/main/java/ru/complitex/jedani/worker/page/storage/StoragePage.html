@@ -17,11 +17,17 @@
                     <div class="col-md-2" wicket:id="city"></div>
                     <div class="col-md-2" wicket:id="workers"></div>
                     <div class="col-md-2" wicket:id="productCount"></div>
-                    <div class="col-md-2" wicket:id="productIntoCount"></div>
                     <div class="col-md-2" wicket:id="productFromCount"></div>
+                    <div class="col-md-2" wicket:id="productIntoCount"></div>
                 </div>
 
-                <table wicket:id="table" class="table table-hover table-condensed"></table>
+                <form wicket:id="productForm">
+                    <table wicket:id="table" class="table table-hover table-condensed"></table>
+                </form>
+
+                <form wicket:id="transactionForm">
+                    <table wicket:id="table" class="table table-hover table-condensed"></table>
+                </form>
 
                 <br/>
 
@@ -32,8 +38,18 @@
                 </div>
 
                 <div>
-                    <div wicket:id="acceptModal"></div>
-                    <div wicket:id="withdrawModal"></div>
+                    <form wicket:id="acceptForm">
+                        <div wicket:id="acceptModal"></div>
+                    </form>
+
+                    <form wicket:id="transferForm">
+                        <div wicket:id="transferModal"></div>
+                    </form>
+
+                    <form wicket:id="receiveForm">
+
+                    </form>
+
                 </div>
             </form>
         </div>

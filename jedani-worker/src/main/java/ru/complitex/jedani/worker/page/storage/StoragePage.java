@@ -5,15 +5,13 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxLink
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
 import de.agilecoders.wicket.core.markup.html.bootstrap.image.GlyphIconType;
-import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.TextFilter;
-import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
@@ -29,12 +27,12 @@ import ru.complitex.common.wicket.datatable.DataProvider;
 import ru.complitex.common.wicket.datatable.FilterDataTable;
 import ru.complitex.common.wicket.form.TextFieldFormGroup;
 import ru.complitex.common.wicket.panel.LinkPanel;
-import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.component.datatable.DomainActionColumn;
 import ru.complitex.domain.component.datatable.DomainColumn;
 import ru.complitex.domain.component.datatable.DomainIdColumn;
 import ru.complitex.domain.component.form.DomainAutoCompleteFormGroup;
 import ru.complitex.domain.component.form.FormGroupPanel;
+import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.model.NumberAttributeModel;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
@@ -42,12 +40,14 @@ import ru.complitex.jedani.worker.component.WorkerAutoCompleteList;
 import ru.complitex.jedani.worker.entity.Nomenclature;
 import ru.complitex.jedani.worker.entity.Product;
 import ru.complitex.jedani.worker.entity.Storage;
+import ru.complitex.jedani.worker.entity.Transaction;
 import ru.complitex.jedani.worker.mapper.ProductMapper;
 import ru.complitex.jedani.worker.page.BasePage;
 import ru.complitex.name.service.NameService;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -79,20 +79,8 @@ public class StoragePage extends BasePage {
         feedback.setOutputMarkupId(true);
         add(feedback);
 
-        DataProvider<Product> dataProvider = new DataProvider<Product>(FilterWrapper.of(
-                new Product()).add("storageId", storageId)) {
-            @Override
-            public Iterator<? extends Product> iterator(long first, long count) {
-                return productMapper.getProducts(getFilterState().limit(first, count)).iterator();
-            }
 
-            @Override
-            public long size() {
-                return productMapper.getProductsCount(getFilterState());
-            }
-        };
-
-        FilterForm<FilterWrapper<Product>> form = new FilterForm<>("form", dataProvider);
+        Form form = new Form<>("form");
         add(form);
 
         form.add(new DomainAutoCompleteFormGroup("city", City.ENTITY_NAME, City.NAME,
@@ -123,11 +111,20 @@ public class StoragePage extends BasePage {
             }
         }).setEnabled(false).setVisible(storageId != null));
 
+
         //Accept Modal
+
+        Form acceptForm = new Form<Transaction>("acceptForm"){
+            @Override
+            protected boolean wantSubmitOnParentFormSubmit() {
+                return false;
+            }
+        };
+        form.add(acceptForm);
 
         StorageAcceptModal acceptModal = new StorageAcceptModal("acceptModal", storageId);
         acceptModal.addAjaxUpdate(feedback);
-        form.add(acceptModal);
+        acceptForm.add(acceptModal);
 
         form.add(new AjaxLink<Void>("accept") {
 
@@ -140,76 +137,94 @@ public class StoragePage extends BasePage {
 
         //Send Modal
 
+        Form transferForm = new Form<Transaction>("transferForm"){
+            @Override
+            protected boolean wantSubmitOnParentFormSubmit() {
+                return false;
+            }
+        };
+        form.add(transferForm);
+
+        StorageTransferModal transferModal = new StorageTransferModal("transferModal");
+        transferModal.addAjaxUpdate(feedback);
+        transferForm.add(transferModal);
+
 
         //Receive Modal
 
-        //Withdraw Modal
+        Form receiveForm = new Form<Transaction>("receiveForm"){
+            @Override
+            protected boolean wantSubmitOnParentFormSubmit() {
+                return false;
+            }
+        };
+        form.add(receiveForm);
 
-        StorageWithdrawModal withdrawModal = new StorageWithdrawModal("withdrawModal");
-        withdrawModal.addAjaxUpdate(feedback);
-        form.add(withdrawModal);
+        //Products
 
-        //Datatable
+        DataProvider<Product> productDataProvider = new DataProvider<Product>(FilterWrapper.of(
+                new Product()).add("storageId", storageId)) {
+            @Override
+            public Iterator<? extends Product> iterator(long first, long count) {
+                return productMapper.getProducts(getFilterState().limit(first, count)).iterator();
+            }
 
-        List<IColumn<Product, SortProperty>> columns = new ArrayList<>();
+            @Override
+            public long size() {
+                return productMapper.getProductsCount(getFilterState());
+            }
+        };
+
+        FilterForm<FilterWrapper<Product>> productForm = new FilterForm<FilterWrapper<Product>>("productForm",
+                productDataProvider){
+            @Override
+            protected boolean wantSubmitOnParentFormSubmit() {
+                return false;
+            }
+        };
+        form.add(productForm);
+
+        List<IColumn<Product, SortProperty>> productColumns = new ArrayList<>();
 
         if (storageId != null) {
-            columns.add(new DomainIdColumn<>());
+            productColumns.add(new DomainIdColumn<>());
 
-            columns.add(new DomainColumn<>(entityService.getEntityAttribute(Product.ENTITY_NAME, Product.NOMENCLATURE_ID)
+            Entity productEntity = entityService.getEntity(Product.ENTITY_NAME);
+
+            productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.NOMENCLATURE_ID)
                     .setReferenceEntityAttribute(entityService.getEntityAttribute(Nomenclature.ENTITY_NAME, Nomenclature.NAME)),
                     entityService, domainService));
 
+            productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.QUANTITY),
+                    entityService, domainService));
 
-            columns.add(new AbstractDomainColumn<Product>(Model.of("Перемещается из склада"), new SortProperty("id")) {
-                @Override
-                public void populateItem(Item<ICellPopulator<Product>> cellItem, String componentId, IModel<Product> rowModel) {
-                    String label = "";
+            productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.SENT),
+                    entityService, domainService));
 
-
-                    cellItem.add(new Label(componentId, label));
-                }
-
-                @Override
-                public Component getFilter(String componentId, FilterForm<?> form) {
-                    return new TextFilter<>(componentId, Model.of(""), form);
-                }
-            });
-
-            columns.add(new AbstractDomainColumn<Product>(Model.of("Перемещается в склад"), new SortProperty("id")) {
-                @Override
-                public void populateItem(Item<ICellPopulator<Product>> cellItem, String componentId, IModel<Product> rowModel) {
-                    String label = "";
+            productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.RECEIVED),
+                    entityService, domainService));
 
 
-                    cellItem.add(new Label(componentId, label));
-                }
-
-                @Override
-                public Component getFilter(String componentId, FilterForm<?> form) {
-                    return new TextFilter<>(componentId, Model.of(""), form);
-                }
-            });
-
-            columns.add(new DomainActionColumn<Product>(StorageProductPage.class,
+            productColumns.add(new DomainActionColumn<Product>(StorageProductPage.class,
                     new PageParameters().add("storage_id", storageId)){
                 @Override
                 public void populateItem(Item<ICellPopulator<Product>> cellItem, String componentId, IModel<Product> rowModel) {
-                    PageParameters pageParameters = new PageParameters().add("id", rowModel.getObject().getId());
+                    PageParameters pageParameters = new PageParameters().add("id", rowModel.getObject().getObjectId());
                     pageParameters.mergeWith(getEditPageParameters());
 
                     cellItem.add(new LinkPanel(componentId, new BootstrapAjaxLink<Void>(LinkPanel.LINK_COMPONENT_ID,
                             Buttons.Type.Link) {
                         @Override
                         public void onClick(AjaxRequestTarget target) {
-                            withdrawModal.open(rowModel.getObject().getObjectId(), target);
+                            transferModal.open(1L, target);
                         }
-                    }.setIconType(GlyphIconType.minus).setSize(Buttons.Size.Small)));
+                    }.setIconType(GlyphIconType.share)));
                 }
             });
         }
 
-        FilterDataTable<Product> table = new FilterDataTable<Product>("table", columns, dataProvider, form, 7){
+        FilterDataTable<Product> productTable = new FilterDataTable<Product>("table", productColumns, productDataProvider,
+                productForm, 7){
             @Override
             public boolean isVisible() {
                 return storageId != null;
@@ -234,8 +249,96 @@ public class StoragePage extends BasePage {
 
             }
         };
-        table.setVisible(storageId != null);
-        form.add(table);
+        productTable.setVisible(storageId != null);
+        productForm.add(productTable);
+
+        //Transactions
+
+        DataProvider<Transaction> transactionDataProvider = new DataProvider<Transaction>(FilterWrapper.of(
+                new Transaction())) {
+            @Override
+            public Iterator<? extends Transaction> iterator(long first, long count) {
+                return Collections.singletonList(new Transaction(){{setObjectId(2018L);}}).iterator();
+            }
+
+            @Override
+            public long size() {
+                return 1;
+            }
+        };
+
+        FilterForm<FilterWrapper<Transaction>> transactionForm = new FilterForm<FilterWrapper<Transaction>>(
+                "transactionForm", transactionDataProvider){
+            @Override
+            protected boolean wantSubmitOnParentFormSubmit() {
+                return false;
+            }
+        };
+        form.add(transactionForm);
+
+        List<IColumn<Transaction, SortProperty>> transactionColumns = new ArrayList<>();
+
+        if (storageId != null) {
+            transactionColumns.add(new DomainIdColumn<>());
+
+            Entity transactionEntity = entityService.getEntity(Transaction.ENTITY_NAME);
+
+            transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.NOMENCLATURE_ID),
+                    entityService, domainService));
+            transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.QUANTITY),
+                    entityService, domainService));
+            transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.STORAGE_ID_FROM),
+                    entityService, domainService));
+            transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.STORAGE_ID_TO),
+                    entityService, domainService));
+            transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.WORKER_ID_TO),
+                    entityService, domainService));
+            transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.TYPE),
+                    entityService, domainService));
+            transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.SERIAL_NUMBER),
+                    entityService, domainService));
+            transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.COMMENTS),
+                    entityService, domainService));
+
+            transactionColumns.add(new DomainActionColumn<Transaction>(null,
+                    new PageParameters().add("storage_id", storageId)){
+                @Override
+                public void populateItem(Item<ICellPopulator<Transaction>> cellItem, String componentId, IModel<Transaction> rowModel) {
+                    PageParameters pageParameters = new PageParameters().add("id", rowModel.getObject().getObjectId());
+                    pageParameters.mergeWith(getEditPageParameters());
+
+                    cellItem.add(new LinkPanel(componentId, new BootstrapAjaxLink<Void>(LinkPanel.LINK_COMPONENT_ID,
+                            Buttons.Type.Link) {
+                        @Override
+                        public void onClick(AjaxRequestTarget target) {
+
+                        }
+                    }.setIconType(GlyphIconType.check)));
+                }
+            });
+        }
+
+        FilterDataTable<Transaction> transactionDataTable = new FilterDataTable<Transaction>("table", transactionColumns,
+                transactionDataProvider, transactionForm, 7){
+            @Override
+            public boolean isVisible() {
+                return storageId != null;
+            }
+
+            @Override
+            protected Item<Transaction> newRowItem(String id, int index, final IModel<Transaction> model) {
+                Item<Transaction> rowItem = super.newRowItem(id, index, model);
+
+                rowItem.add(new CssClassNameAppender("pointer"));
+
+                return rowItem;
+
+            }
+        };
+        transactionDataTable.setVisible(storageId != null);
+        transactionForm.add(transactionDataTable);
+
+        //Action
 
         form.add(new AjaxButton("save") {
             @Override
