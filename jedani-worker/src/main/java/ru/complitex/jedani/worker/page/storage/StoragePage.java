@@ -250,6 +250,7 @@ public class StoragePage extends BasePage {
             }
         };
         productTable.setVisible(storageId != null);
+        productTable.setHideOnEmpty(true);
         productForm.add(productTable);
 
         //Transactions
@@ -336,6 +337,7 @@ public class StoragePage extends BasePage {
             }
         };
         transactionDataTable.setVisible(storageId != null);
+        transactionDataTable.setHideOnEmpty(true);
         transactionForm.add(transactionDataTable);
 
         //Action
