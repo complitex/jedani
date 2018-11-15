@@ -63,8 +63,9 @@ public class FilterWrapper<T extends Serializable> implements Serializable {
         return this;
     }
 
-    public FilterWrapper<T> asc(){
-        ascending = true;
+    public FilterWrapper<T> sort(String key, Object value, boolean ascending){
+        this.sortProperty = new SortProperty(key, value);
+        this.ascending = ascending;
 
         return this;
     }
@@ -79,14 +80,6 @@ public class FilterWrapper<T extends Serializable> implements Serializable {
 
     public String getOrderLimit(){
         return "order by `" + getSortProperty().getKey() + "` " + getAsc() + getLimit();
-    }
-
-    public String getOrderByAgr(String column){
-        if (ascending){
-            return "order by min(" + column +") asc";
-        }else{
-            return "order by max(" + column +") desc";
-        }
     }
 
     public T getObject() {

@@ -230,8 +230,10 @@ public class Domain implements Serializable{
         return parentId;
     }
 
-    public void setParentId(Long parentId) {
+    public Domain setParentId(Long parentId) {
         this.parentId = parentId;
+
+        return this;
     }
 
     public Long getParentEntityId() {

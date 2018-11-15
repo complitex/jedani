@@ -11,6 +11,7 @@ import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
@@ -41,13 +42,11 @@ import ru.complitex.jedani.worker.entity.Nomenclature;
 import ru.complitex.jedani.worker.entity.Product;
 import ru.complitex.jedani.worker.entity.Storage;
 import ru.complitex.jedani.worker.entity.Transaction;
-import ru.complitex.jedani.worker.mapper.ProductMapper;
 import ru.complitex.jedani.worker.page.BasePage;
-import ru.complitex.name.service.NameService;
+import ru.complitex.jedani.worker.service.StorageService;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -65,10 +64,7 @@ public class StoragePage extends BasePage {
     private DomainService domainService;
 
     @Inject
-    private NameService nameService;
-
-    @Inject
-    private ProductMapper productMapper;
+    private StorageService storageService;
 
     public StoragePage(PageParameters pageParameters) {
         Long storageId = pageParameters.get("id").toOptionalLong();
@@ -112,6 +108,10 @@ public class StoragePage extends BasePage {
         }).setEnabled(false).setVisible(storageId != null));
 
 
+        WebMarkupContainer tables = new WebMarkupContainer("tables");
+        tables.setOutputMarkupId(true);
+        form.add(tables);
+
         //Accept Modal
 
         Form acceptForm = new Form<Transaction>("acceptForm"){
@@ -122,8 +122,29 @@ public class StoragePage extends BasePage {
         };
         form.add(acceptForm);
 
-        StorageAcceptModal acceptModal = new StorageAcceptModal("acceptModal", storageId);
-        acceptModal.addAjaxUpdate(feedback);
+        StorageAcceptModal acceptModal = new StorageAcceptModal("acceptModal") {
+            @Override
+            void action(AjaxRequestTarget target) {
+                Transaction t = getModelObject();
+
+                Transaction transaction = new Transaction();
+
+                transaction.setNumber(Transaction.STORAGE_ID_TO, storageId);
+                transaction.setNumber(Transaction.NOMENCLATURE_ID, t.getNumber(Transaction.NOMENCLATURE_ID));
+                transaction.setNumber(Transaction.QUANTITY, t.getNumber(Transaction.QUANTITY));
+                transaction.setNumber(Transaction.TYPE, 0L);
+
+                try {
+                    storageService.accept(transaction);
+
+                    info(getString("info_accepted"));
+                } catch (Exception e) {
+                    error(getString("error_accepted"));
+                } finally {
+                    target.add(feedback, tables);
+                }
+            }
+        };
         acceptForm.add(acceptModal);
 
         form.add(new AjaxLink<Void>("accept") {
@@ -146,7 +167,6 @@ public class StoragePage extends BasePage {
         form.add(transferForm);
 
         StorageTransferModal transferModal = new StorageTransferModal("transferModal");
-        transferModal.addAjaxUpdate(feedback);
         transferForm.add(transferModal);
 
 
@@ -163,15 +183,22 @@ public class StoragePage extends BasePage {
         //Products
 
         DataProvider<Product> productDataProvider = new DataProvider<Product>(FilterWrapper.of(
-                new Product()).add("storageId", storageId)) {
+                new Product(){{setParentId(storageId);}})) {
             @Override
             public Iterator<? extends Product> iterator(long first, long count) {
-                return productMapper.getProducts(getFilterState().limit(first, count)).iterator();
+                FilterWrapper<Product> filterWrapper = getFilterState().limit(first, count);
+
+                if (getSort() != null){
+                    filterWrapper.setSortProperty(getSort().getProperty());
+                    filterWrapper.setAscending(getSort().isAscending());
+                }
+
+                return domainService.getDomains(Product.class, filterWrapper).iterator();
             }
 
             @Override
             public long size() {
-                return productMapper.getProductsCount(getFilterState());
+                return domainService.getDomainsCount(getFilterState());
             }
         };
 
@@ -182,7 +209,7 @@ public class StoragePage extends BasePage {
                 return false;
             }
         };
-        form.add(productForm);
+        tables.add(productForm);
 
         List<IColumn<Product, SortProperty>> productColumns = new ArrayList<>();
 
@@ -224,7 +251,7 @@ public class StoragePage extends BasePage {
         }
 
         FilterDataTable<Product> productTable = new FilterDataTable<Product>("table", productColumns, productDataProvider,
-                productForm, 7){
+                productForm, 3){
             @Override
             public boolean isVisible() {
                 return storageId != null;
@@ -256,15 +283,22 @@ public class StoragePage extends BasePage {
         //Transactions
 
         DataProvider<Transaction> transactionDataProvider = new DataProvider<Transaction>(FilterWrapper.of(
-                new Transaction())) {
+                new Transaction()).sort("id", null, false)) {
             @Override
             public Iterator<? extends Transaction> iterator(long first, long count) {
-                return Collections.singletonList(new Transaction(){{setObjectId(2018L);}}).iterator();
+                FilterWrapper<Transaction> filterWrapper = getFilterState().limit(first, count);
+
+                if (getSort() != null){
+                    filterWrapper.setSortProperty(getSort().getProperty());
+                    filterWrapper.setAscending(getSort().isAscending());
+                }
+
+                return domainService.getDomains(Transaction.class, filterWrapper).iterator();
             }
 
             @Override
             public long size() {
-                return 1;
+                return domainService.getDomainsCount(getFilterState());
             }
         };
 
@@ -275,7 +309,7 @@ public class StoragePage extends BasePage {
                 return false;
             }
         };
-        form.add(transactionForm);
+        tables.add(transactionForm);
 
         List<IColumn<Transaction, SortProperty>> transactionColumns = new ArrayList<>();
 
@@ -284,7 +318,8 @@ public class StoragePage extends BasePage {
 
             Entity transactionEntity = entityService.getEntity(Transaction.ENTITY_NAME);
 
-            transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.NOMENCLATURE_ID),
+            transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.NOMENCLATURE_ID)
+                    .setReferenceEntityAttribute(entityService.getEntityAttribute(Nomenclature.ENTITY_NAME, Nomenclature.NAME)),
                     entityService, domainService));
             transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.QUANTITY),
                     entityService, domainService));
@@ -320,7 +355,7 @@ public class StoragePage extends BasePage {
         }
 
         FilterDataTable<Transaction> transactionDataTable = new FilterDataTable<Transaction>("table", transactionColumns,
-                transactionDataProvider, transactionForm, 7){
+                transactionDataProvider, transactionForm, 5){
             @Override
             public boolean isVisible() {
                 return storageId != null;

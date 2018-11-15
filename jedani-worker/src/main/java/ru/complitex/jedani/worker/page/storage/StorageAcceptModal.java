@@ -16,16 +16,12 @@ import javax.inject.Inject;
  * @author Anatoly A. Ivanov
  * 06.11.2018 11:50
  */
-class StorageAcceptModal extends StorageAbstractModal {
+abstract class StorageAcceptModal extends StorageAbstractModal {
     @Inject
     private EntityService entityService;
 
-    private Long storageId;
-
-    StorageAcceptModal(String markupId, Long storageId) {
+    StorageAcceptModal(String markupId) {
         super(markupId);
-
-        this.storageId = storageId;
 
         add(new FormGroupPanel("nomenclature", new DomainAutoComplete(FormGroupPanel.COMPONENT_ID,
                 entityService.getEntityAttribute(Nomenclature.ENTITY_NAME, Nomenclature.NAME),
@@ -54,10 +50,5 @@ class StorageAcceptModal extends StorageAbstractModal {
                 Transaction.QUANTITY));
         quantity.getTextField().setType(Long.class);
         add(quantity);
-    }
-
-    @Override
-    void action() {
-        getSession().info(getModelObject().getNumber(Transaction.NOMENCLATURE_ID) + " " + getModelObject().getNumber(Transaction.QUANTITY));
     }
 }

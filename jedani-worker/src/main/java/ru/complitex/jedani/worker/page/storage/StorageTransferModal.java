@@ -116,7 +116,7 @@ public class StorageTransferModal extends StorageAbstractModal{
     }
 
     @Override
-    void action() {
+    void action(AjaxRequestTarget target) {
         getSession().info(tabIndexModel.getObject());
         getSession().info(getModelObject().getNumber(Transaction.QUANTITY) + " " + getModelObject().getText(Transaction.COMMENTS));
     }
