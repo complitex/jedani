@@ -9,6 +9,7 @@ import ru.complitex.domain.service.EntityService;
 import ru.complitex.domain.util.Attributes;
 import ru.complitex.jedani.worker.entity.Nomenclature;
 import ru.complitex.jedani.worker.entity.Transaction;
+import ru.complitex.jedani.worker.entity.TransactionType;
 
 import javax.inject.Inject;
 
@@ -16,12 +17,16 @@ import javax.inject.Inject;
  * @author Anatoly A. Ivanov
  * 06.11.2018 11:50
  */
-abstract class StorageAcceptModal extends StorageAbstractModal {
+abstract class AcceptModal extends StorageModal {
     @Inject
     private EntityService entityService;
 
-    StorageAcceptModal(String markupId) {
+    private Long storageId;
+
+    AcceptModal(String markupId, Long storageId) {
         super(markupId);
+
+        this.storageId = storageId;
 
         add(new FormGroupPanel("nomenclature", new DomainAutoComplete(FormGroupPanel.COMPONENT_ID,
                 entityService.getEntityAttribute(Nomenclature.ENTITY_NAME, Nomenclature.NAME),
@@ -50,5 +55,13 @@ abstract class StorageAcceptModal extends StorageAbstractModal {
                 Transaction.QUANTITY));
         quantity.getTextField().setType(Long.class);
         add(quantity);
+    }
+
+    @Override
+    protected void beforeAction() {
+        Transaction transaction = getModelObject();
+
+        transaction.setNumber(Transaction.STORAGE_ID_TO, storageId);
+        transaction.setNumber(Transaction.TYPE, TransactionType.ACCEPT);
     }
 }

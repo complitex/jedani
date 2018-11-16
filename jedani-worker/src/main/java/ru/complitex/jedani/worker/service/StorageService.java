@@ -52,4 +52,14 @@ public class StorageService implements Serializable {
             domainMapper.insertDomain(product);
         }
     }
+
+    @Transactional
+    public void transfer(Transaction transaction) {
+
+    }
+
+    @Transactional
+    public void receive(Transaction transaction) {
+
+    }
 }

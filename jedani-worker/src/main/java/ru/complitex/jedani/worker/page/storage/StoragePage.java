@@ -5,6 +5,7 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxLink
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
 import de.agilecoders.wicket.core.markup.html.bootstrap.image.GlyphIconType;
+import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
@@ -38,10 +39,7 @@ import ru.complitex.domain.model.NumberAttributeModel;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
 import ru.complitex.jedani.worker.component.WorkerAutoCompleteList;
-import ru.complitex.jedani.worker.entity.Nomenclature;
-import ru.complitex.jedani.worker.entity.Product;
-import ru.complitex.jedani.worker.entity.Storage;
-import ru.complitex.jedani.worker.entity.Transaction;
+import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.page.BasePage;
 import ru.complitex.jedani.worker.service.StorageService;
 
@@ -49,6 +47,7 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Anatoly A. Ivanov
@@ -75,7 +74,6 @@ public class StoragePage extends BasePage {
         feedback.setOutputMarkupId(true);
         add(feedback);
 
-
         Form form = new Form<>("form");
         add(form);
 
@@ -84,7 +82,6 @@ public class StoragePage extends BasePage {
 
         form.add(new FormGroupPanel("workers", new WorkerAutoCompleteList(FormGroupPanel.COMPONENT_ID,
                 Model.of(storage.getOrCreateAttribute(Storage.WORKER_IDS)))));
-
 
         form.add(new TextFieldFormGroup<>("productCount",  new LoadableDetachableModel<Long>() {
             @Override
@@ -107,7 +104,6 @@ public class StoragePage extends BasePage {
             }
         }).setEnabled(false).setVisible(storageId != null));
 
-
         WebMarkupContainer tables = new WebMarkupContainer("tables");
         tables.setOutputMarkupId(true);
         form.add(tables);
@@ -122,20 +118,11 @@ public class StoragePage extends BasePage {
         };
         form.add(acceptForm);
 
-        StorageAcceptModal acceptModal = new StorageAcceptModal("acceptModal") {
+        AcceptModal acceptModal = new AcceptModal("acceptModal", storageId) {
             @Override
             void action(AjaxRequestTarget target) {
-                Transaction t = getModelObject();
-
-                Transaction transaction = new Transaction();
-
-                transaction.setNumber(Transaction.STORAGE_ID_TO, storageId);
-                transaction.setNumber(Transaction.NOMENCLATURE_ID, t.getNumber(Transaction.NOMENCLATURE_ID));
-                transaction.setNumber(Transaction.QUANTITY, t.getNumber(Transaction.QUANTITY));
-                transaction.setNumber(Transaction.TYPE, 0L);
-
                 try {
-                    storageService.accept(transaction);
+                    storageService.accept(getModelObject());
 
                     info(getString("info_accepted"));
                 } catch (Exception e) {
@@ -155,8 +142,7 @@ public class StoragePage extends BasePage {
             }
         });
 
-
-        //Send Modal
+        //Transfer Modal
 
         Form transferForm = new Form<Transaction>("transferForm"){
             @Override
@@ -166,9 +152,37 @@ public class StoragePage extends BasePage {
         };
         form.add(transferForm);
 
-        StorageTransferModal transferModal = new StorageTransferModal("transferModal");
-        transferForm.add(transferModal);
+        TransferModal transferModal = new TransferModal("transferModal", storageId) {
+            @Override
+            void action(AjaxRequestTarget target) {
+                Transaction transaction = getModelObject();
 
+                String actionKey = "";
+
+                switch (transaction.getNumber(Transaction.TYPE).intValue()){
+                    case (int) TransactionType.SELL:
+                        actionKey = "sold";
+                        break;
+                    case (int) TransactionType.TRANSFER:
+                        actionKey = "transferred";
+                        break;
+                    case (int) TransactionType.WITHDRAW:
+                        actionKey = "withdrew";
+                        break;
+                }
+
+                try {
+                    storageService.transfer(transaction);
+
+                    info(getString("info_" + actionKey));
+                } catch (Exception e) {
+                    error(getString("error_" + actionKey));
+                } finally {
+                    target.add(feedback, tables);
+                }
+            }
+        };
+        transferForm.add(transferModal);
 
         //Receive Modal
 
@@ -179,6 +193,22 @@ public class StoragePage extends BasePage {
             }
         };
         form.add(receiveForm);
+
+        ReceiveModal receiveModal = new ReceiveModal("receiveModal") {
+            @Override
+            void action(AjaxRequestTarget target) {
+                try {
+                    storageService.receive(getTransaction());
+
+                    info(getString("info_received"));
+                } catch (Exception e) {
+                    error(getString("error_received"));
+                } finally {
+                    target.add(feedback, tables);
+                }
+            }
+        };
+        receiveForm.add(receiveModal);
 
         //Products
 
@@ -243,7 +273,7 @@ public class StoragePage extends BasePage {
                             Buttons.Type.Link) {
                         @Override
                         public void onClick(AjaxRequestTarget target) {
-                            transferModal.open(1L, target);
+                            transferModal.open(rowModel.getObject().getObjectId(), target);
                         }
                     }.setIconType(GlyphIconType.share)));
                 }
@@ -261,14 +291,12 @@ public class StoragePage extends BasePage {
             protected Item<Product> newRowItem(String id, int index, final IModel<Product> model) {
                 Item<Product> rowItem = super.newRowItem(id, index, model);
 
-//                rowItem.add(new AjaxEventBehavior("click") {
-//                    @Override
-//                    protected void onEvent(AjaxRequestTarget target) {
-//                        setResponsePage(StorageProductPage.class, new PageParameters()
-//                                .add("id", model.getObject().getObjectId())
-//                                .add("storage_id", storageId));
-//                    }
-//                });
+                rowItem.add(new AjaxEventBehavior("click") {
+                    @Override
+                    protected void onEvent(AjaxRequestTarget target) {
+                        transferModal.open(model.getObject().getObjectId(), target);
+                    }
+                });
 
                 rowItem.add(new CssClassNameAppender("pointer"));
 
@@ -343,13 +371,18 @@ public class StoragePage extends BasePage {
                     PageParameters pageParameters = new PageParameters().add("id", rowModel.getObject().getObjectId());
                     pageParameters.mergeWith(getEditPageParameters());
 
+                    Transaction transaction = rowModel.getObject();
+
+                    boolean receive = Objects.equals(transaction.getNumber(Transaction.TYPE), TransactionType.TRANSFER) &&
+                            Objects.equals(transaction.getNumber(Transaction.STORAGE_ID_TO), storageId);
+
                     cellItem.add(new LinkPanel(componentId, new BootstrapAjaxLink<Void>(LinkPanel.LINK_COMPONENT_ID,
                             Buttons.Type.Link) {
                         @Override
                         public void onClick(AjaxRequestTarget target) {
-
+                            receiveModal.open(rowModel.getObject(), target);
                         }
-                    }.setIconType(GlyphIconType.check)));
+                    }.setIconType(GlyphIconType.check)).setVisible(receive));
                 }
             });
         }
@@ -364,6 +397,14 @@ public class StoragePage extends BasePage {
             @Override
             protected Item<Transaction> newRowItem(String id, int index, final IModel<Transaction> model) {
                 Item<Transaction> rowItem = super.newRowItem(id, index, model);
+
+                rowItem.add(new AjaxEventBehavior("click") {
+                    @Override
+                    protected void onEvent(AjaxRequestTarget target) {
+                        receiveModal.open(model.getObject(), target);
+                    }
+                });
+
 
                 rowItem.add(new CssClassNameAppender("pointer"));
 
@@ -404,9 +445,5 @@ public class StoragePage extends BasePage {
                 setResponsePage(StorageListPage.class);
             }
         });
-
-
-
-
     }
 }

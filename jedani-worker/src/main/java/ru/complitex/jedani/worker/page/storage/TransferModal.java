@@ -8,6 +8,7 @@ import org.apache.wicket.extensions.markup.html.tabs.ITab;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import ru.complitex.common.wicket.form.TextFieldFormGroup;
 import ru.complitex.domain.component.form.FormGroupPanel;
@@ -16,6 +17,7 @@ import ru.complitex.domain.model.TextAttributeModel;
 import ru.complitex.jedani.worker.component.StorageAutoCompete;
 import ru.complitex.jedani.worker.component.WorkerAutoComplete;
 import ru.complitex.jedani.worker.entity.Transaction;
+import ru.complitex.jedani.worker.entity.TransactionType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,21 +27,24 @@ import java.util.Optional;
  * @author Anatoly A. Ivanov
  * 07.11.2018 17:18
  */
-public class StorageTransferModal extends StorageAbstractModal{
+public abstract class TransferModal extends StorageModal {
+    private Long storageId;
     private Long productId;
 
     private IModel<Integer> tabIndexModel = Model.of(0);
 
-    StorageTransferModal(String markupId) {
+    TransferModal(String markupId, Long storageId) {
         super(markupId);
+
+        this.storageId = storageId;
 
         List<ITab> tabs = new ArrayList<>();
 
-        tabs.add(new AbstractTab(Model.of(getString("sell"))){
+        tabs.add(new AbstractTab(LoadableDetachableModel.of(() -> getString("sell"))){
 
             @Override
             public WebMarkupContainer getPanel(String panelId) {
-                Fragment fragment = new Fragment(panelId, "sellFragment", StorageTransferModal.this);
+                Fragment fragment = new Fragment(panelId, "sellFragment", TransferModal.this);
 
                 fragment.add(new FormGroupPanel("worker", new WorkerAutoComplete(FormGroupPanel.COMPONENT_ID,
                         new NumberAttributeModel(getModel(), Transaction.WORKER_ID_TO))));
@@ -57,11 +62,11 @@ public class StorageTransferModal extends StorageAbstractModal{
         });
 
 
-        tabs.add(new AbstractTab(Model.of(getString("move"))){
+        tabs.add(new AbstractTab(LoadableDetachableModel.of(() -> getString("transfer"))){
 
             @Override
             public WebMarkupContainer getPanel(String panelId) {
-                Fragment fragment = new Fragment(panelId, "moveFragment", StorageTransferModal.this);
+                Fragment fragment = new Fragment(panelId, "transferFragment", TransferModal.this);
 
                 fragment.add(new FormGroupPanel("storage", new StorageAutoCompete(FormGroupPanel.COMPONENT_ID,
                         new NumberAttributeModel(getModel(), Transaction.STORAGE_ID_TO))));
@@ -82,11 +87,11 @@ public class StorageTransferModal extends StorageAbstractModal{
         });
 
 
-        tabs.add(new AbstractTab(Model.of(getString("withdraw"))){
+        tabs.add(new AbstractTab(LoadableDetachableModel.of(() -> getString("withdraw"))){
 
             @Override
             public WebMarkupContainer getPanel(String panelId) {
-                Fragment fragment = new Fragment(panelId, "withdrawFragment", StorageTransferModal.this);
+                Fragment fragment = new Fragment(panelId, "withdrawFragment", TransferModal.this);
 
                 TextFieldFormGroup<Long> quantity = new TextFieldFormGroup<>("quantity", new NumberAttributeModel(getModel(),
                         Transaction.QUANTITY));
@@ -115,12 +120,6 @@ public class StorageTransferModal extends StorageAbstractModal{
         open(target);
     }
 
-    @Override
-    void action(AjaxRequestTarget target) {
-        getSession().info(tabIndexModel.getObject());
-        getSession().info(getModelObject().getNumber(Transaction.QUANTITY) + " " + getModelObject().getText(Transaction.COMMENTS));
-    }
-
     private void updateActionLabel(AjaxRequestTarget target){
         String label;
 
@@ -129,7 +128,7 @@ public class StorageTransferModal extends StorageAbstractModal{
                 label = getString("sellAction");
                 break;
             case 1:
-                label = getString("moveAction");
+                label = getString("transferAction");
                 break;
             case 2:
                 label = getString("withdrawAction");
@@ -142,5 +141,32 @@ public class StorageTransferModal extends StorageAbstractModal{
 
         actionButton.setLabel(Model.of(label));
         target.add(actionButton);
+    }
+
+    @Override
+    protected void beforeAction() {
+        Transaction transaction = getModelObject();
+
+        transaction.setNumber(Transaction.STORAGE_ID_TO, storageId);
+
+        switch (tabIndexModel.getObject()){
+            case 0:
+                transaction.setNumber(Transaction.TYPE, TransactionType.SELL);
+                break;
+            case 1:
+                transaction.setNumber(Transaction.TYPE, TransactionType.TRANSFER);
+                break;
+            case 2:
+                transaction.setNumber(Transaction.TYPE, TransactionType.WITHDRAW);
+                break;
+        }
+    }
+
+    public Long getProductId() {
+        return productId;
+    }
+
+    public IModel<Integer> getTabIndexModel() {
+        return tabIndexModel;
     }
 }

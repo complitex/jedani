@@ -7,6 +7,7 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel
 import de.agilecoders.wicket.core.markup.html.bootstrap.dialog.Modal;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
+import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import ru.complitex.jedani.worker.entity.Transaction;
 
@@ -14,15 +15,15 @@ import ru.complitex.jedani.worker.entity.Transaction;
  * @author Anatoly A. Ivanov
  * 06.11.2018 14:10
  */
-abstract class StorageAbstractModal extends Modal<Transaction> {
+abstract class StorageModal extends Modal<Transaction> {
     private FeedbackPanel feedback;
 
     private BootstrapAjaxButton actionButton;
 
-    StorageAbstractModal(String markupId) {
+    StorageModal(String markupId) {
         super(markupId, Model.of(new Transaction()));
 
-        header(Model.of(getString("header")));
+        header(LoadableDetachableModel.of(() -> getString("header")));
         setVisible(false);
 
         feedback = new NotificationPanel("feedback");
@@ -32,7 +33,8 @@ abstract class StorageAbstractModal extends Modal<Transaction> {
         addButton(actionButton = new BootstrapAjaxButton(Modal.BUTTON_MARKUP_ID, Buttons.Type.Primary) {
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
-                StorageAbstractModal.this.action(target);
+                StorageModal.this.beforeAction();
+                StorageModal.this.action(target);
 
                 appendCloseDialogJavaScript(target);
             }
@@ -41,14 +43,14 @@ abstract class StorageAbstractModal extends Modal<Transaction> {
             protected void onError(AjaxRequestTarget target) {
                 target.add(feedback);
             }
-        }.setLabel(Model.of(getString("action"))));
+        }.setLabel(LoadableDetachableModel.of(() -> getString("action"))));
 
         addButton(new BootstrapAjaxLink<Void>(Modal.BUTTON_MARKUP_ID, Buttons.Type.Default) {
             @Override
             public void onClick(AjaxRequestTarget target) {
-                StorageAbstractModal.this.close(target);
+                StorageModal.this.close(target);
             }
-        }.setLabel(Model.of(getString("cancel"))));
+        }.setLabel(LoadableDetachableModel.of(() -> getString("cancel"))));
     }
 
     void open(AjaxRequestTarget target){
@@ -57,6 +59,9 @@ abstract class StorageAbstractModal extends Modal<Transaction> {
         setVisible(true);
         target.add(this);
         appendShowDialogJavaScript(target);
+    }
+
+    protected void beforeAction(){
     }
 
     abstract void action(AjaxRequestTarget target);
