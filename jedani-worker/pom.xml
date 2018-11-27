@@ -57,11 +57,6 @@
 
         <dependency>
             <groupId>de.agilecoders.wicket</groupId>
-            <artifactId>wicket-bootstrap-less</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>de.agilecoders.wicket</groupId>
             <artifactId>wicket-bootstrap-themes</artifactId>
         </dependency>
 

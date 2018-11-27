@@ -4,7 +4,6 @@ import de.agilecoders.wicket.core.Bootstrap;
 import de.agilecoders.wicket.core.settings.BootstrapSettings;
 import de.agilecoders.wicket.core.settings.IBootstrapSettings;
 import de.agilecoders.wicket.core.settings.SingleThemeProvider;
-import de.agilecoders.wicket.less.BootstrapLess;
 import de.agilecoders.wicket.themes.markup.html.google.GoogleTheme;
 import org.apache.wicket.Page;
 import org.apache.wicket.Session;
@@ -59,7 +58,7 @@ public class JedaniWebApplication extends WebApplication{
 
         settings.setThemeProvider(new SingleThemeProvider(new GoogleTheme()));
 
-        BootstrapLess.install(this);
+        Bootstrap.install(this);
     }
 
     private void configureMount() {

@@ -5,6 +5,8 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxLink
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
 import de.agilecoders.wicket.core.markup.html.bootstrap.image.GlyphIconType;
+import org.apache.commons.lang3.time.DateFormatUtils;
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -12,13 +14,15 @@ import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.TextFilter;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,8 +31,8 @@ import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
 import ru.complitex.common.wicket.datatable.DataProvider;
 import ru.complitex.common.wicket.datatable.FilterDataTable;
-import ru.complitex.common.wicket.form.TextFieldFormGroup;
 import ru.complitex.common.wicket.panel.LinkPanel;
+import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.component.datatable.DomainActionColumn;
 import ru.complitex.domain.component.datatable.DomainColumn;
 import ru.complitex.domain.component.datatable.DomainIdColumn;
@@ -82,27 +86,6 @@ public class StoragePage extends BasePage {
 
         form.add(new FormGroupPanel("workers", new WorkerAutoCompleteList(FormGroupPanel.COMPONENT_ID,
                 Model.of(storage.getOrCreateAttribute(Storage.WORKER_IDS)))));
-
-        form.add(new TextFieldFormGroup<>("productCount",  new LoadableDetachableModel<Long>() {
-            @Override
-            protected Long load() {
-                return domainService.getDomainsCount(FilterWrapper.of(new Product()));
-            }
-        }).setEnabled(false).setVisible(storageId != null));
-
-        form.add(new TextFieldFormGroup<>("productIntoCount",  new LoadableDetachableModel<Long>() {
-            @Override
-            protected Long load() {
-                return domainService.getDomainsCount(FilterWrapper.of(new Product()));
-            }
-        }).setEnabled(false).setVisible(storageId != null));
-
-        form.add(new TextFieldFormGroup<>("productFromCount",  new LoadableDetachableModel<Long>() {
-            @Override
-            protected Long load() {
-                return domainService.getDomainsCount(FilterWrapper.of(new Product()));
-            }
-        }).setEnabled(false).setVisible(storageId != null));
 
         WebMarkupContainer tables = new WebMarkupContainer("tables");
         tables.setOutputMarkupId(true);
@@ -343,6 +326,21 @@ public class StoragePage extends BasePage {
 
         if (storageId != null) {
             transactionColumns.add(new DomainIdColumn<>());
+
+            transactionColumns.add(new AbstractDomainColumn<Transaction>(new ResourceModel("startDate"),
+                    new SortProperty("startDate")) {
+                @Override
+                public Component getFilter(String componentId, FilterForm<?> form) {
+                    return new TextFilter<>(componentId, Model.of(""), form);
+                }
+
+                @Override
+                public void populateItem(Item<ICellPopulator<Transaction>> cellItem, String componentId,
+                                         IModel<Transaction> rowModel) {
+                    cellItem.add(new Label(componentId, DateFormatUtils.format(rowModel.getObject().getStartDate(),
+                            "dd.MM.yyyy HH:mm:ss")));
+                }
+            });
 
             Entity transactionEntity = entityService.getEntity(Transaction.ENTITY_NAME);
 
