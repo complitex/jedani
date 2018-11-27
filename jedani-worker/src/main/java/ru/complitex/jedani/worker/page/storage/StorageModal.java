@@ -56,6 +56,8 @@ abstract class StorageModal extends Modal<Transaction> {
     void open(AjaxRequestTarget target){
         getModelObject().getAttributes().clear();
 
+        getModelObject().setNumber(Transaction.QUANTITY, 1L);
+
         setVisible(true);
         target.add(this);
         appendShowDialogJavaScript(target);

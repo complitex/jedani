@@ -77,10 +77,9 @@ public abstract class TransferModal extends StorageModal {
                 fragment.add(quantity);
 
                 TextFieldFormGroup<Long> type = new TextFieldFormGroup<>("type", new NumberAttributeModel(getModel(),
-                        Transaction.TYPE));
+                        Transaction.TRANSFER_TYPE));
                 type.getTextField().setType(Long.class);
                 fragment.add(type);
-
 
                 return fragment;
             }

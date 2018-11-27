@@ -15,8 +15,9 @@ public class Transaction extends Domain {
     public static final long STORAGE_ID_TO = 4;
     public static final long WORKER_ID_TO = 5;
     public static final long TYPE = 6;
-    public static final long SERIAL_NUMBER = 7;
-    public static final long COMMENTS = 8;
+    public static final long TRANSFER_TYPE = 7;
+    public static final long SERIAL_NUMBER = 8;
+    public static final long COMMENTS = 9;
 
     public Transaction() {
         super(ENTITY_NAME);

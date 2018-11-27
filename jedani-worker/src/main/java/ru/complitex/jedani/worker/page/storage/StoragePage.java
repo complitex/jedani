@@ -375,19 +375,53 @@ public class StoragePage extends BasePage {
                                          IModel<Transaction> rowModel) {
                     String resourceKey = null;
 
-                    switch (rowModel.getObject().getNumber(Transaction.TYPE).intValue()){
-                        case 1:
-                            resourceKey = "accept";
-                            break;
-                        case 2:
-                            resourceKey = "sell";
-                            break;
-                        case 3:
-                            resourceKey = "transfer";
-                            break;
-                        case 4:
-                            resourceKey = "withdraw";
-                            break;
+                    Long transactionType = rowModel.getObject().getNumber(Transaction.TYPE);
+
+                    if (transactionType != null) {
+                        switch (transactionType.intValue()){
+                            case 1:
+                                resourceKey = "accept";
+                                break;
+                            case 2:
+                                resourceKey = "sell";
+                                break;
+                            case 3:
+                                resourceKey = "transfer";
+                                break;
+                            case 4:
+                                resourceKey = "withdraw";
+                                break;
+                        }
+                    }
+
+                    cellItem.add(new Label(componentId, resourceKey != null ? new ResourceModel(resourceKey) : Model.of("")));
+                }
+            });
+
+            transactionColumns.add(new AbstractDomainColumn<Transaction>(Model.of(transactionEntity
+                    .getEntityAttribute(Transaction.TRANSFER_TYPE).getValue().getText()),
+                    new SortProperty("transferType")) {
+                @Override
+                public Component getFilter(String componentId, FilterForm<?> form) {
+                    return new TextFilter<>(componentId, Model.of(""), form);
+                }
+
+                @Override
+                public void populateItem(Item<ICellPopulator<Transaction>> cellItem, String componentId,
+                                         IModel<Transaction> rowModel) {
+                    String resourceKey = null;
+
+                    Long transferType = rowModel.getObject().getNumber(Transaction.TRANSFER_TYPE);
+
+                    if (transferType != null) {
+                        switch (transferType.intValue()){
+                            case 1:
+                                resourceKey = "transfer";
+                                break;
+                            case 2:
+                                resourceKey = "gift";
+                                break;
+                        }
                     }
 
                     cellItem.add(new Label(componentId, resourceKey != null ? new ResourceModel(resourceKey) : Model.of("")));
