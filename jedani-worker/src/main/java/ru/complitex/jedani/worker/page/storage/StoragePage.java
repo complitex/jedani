@@ -31,6 +31,7 @@ import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
 import ru.complitex.common.wicket.datatable.DataProvider;
 import ru.complitex.common.wicket.datatable.FilterDataTable;
+import ru.complitex.common.wicket.form.TextFieldFormGroup;
 import ru.complitex.common.wicket.panel.LinkPanel;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.component.datatable.DomainActionColumn;
@@ -80,6 +81,11 @@ public class StoragePage extends BasePage {
 
         Form form = new Form<>("form");
         add(form);
+
+        TextFieldFormGroup storageIdFormGroup = new TextFieldFormGroup<>("storageId", Model.of(storageId));
+        storageIdFormGroup.getTextField().setEnabled(false);
+        storageIdFormGroup.setVisible(storageId != null);
+        form.add(storageIdFormGroup);
 
         form.add(new DomainAutoCompleteFormGroup("city", City.ENTITY_NAME, City.NAME,
                 new NumberAttributeModel(storage, Storage.CITY_ID), true));
@@ -355,8 +361,39 @@ public class StoragePage extends BasePage {
                     entityService, domainService));
             transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.WORKER_ID_TO),
                     entityService, domainService));
-            transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.TYPE),
-                    entityService, domainService));
+
+            transactionColumns.add(new AbstractDomainColumn<Transaction>(Model.of(transactionEntity
+                    .getEntityAttribute(Transaction.TYPE).getValue().getText()),
+                    new SortProperty("type")) {
+                @Override
+                public Component getFilter(String componentId, FilterForm<?> form) {
+                    return new TextFilter<>(componentId, Model.of(""), form);
+                }
+
+                @Override
+                public void populateItem(Item<ICellPopulator<Transaction>> cellItem, String componentId,
+                                         IModel<Transaction> rowModel) {
+                    String resourceKey = null;
+
+                    switch (rowModel.getObject().getNumber(Transaction.TYPE).intValue()){
+                        case 1:
+                            resourceKey = "accept";
+                            break;
+                        case 2:
+                            resourceKey = "sell";
+                            break;
+                        case 3:
+                            resourceKey = "transfer";
+                            break;
+                        case 4:
+                            resourceKey = "withdraw";
+                            break;
+                    }
+
+                    cellItem.add(new Label(componentId, resourceKey != null ? new ResourceModel(resourceKey) : Model.of("")));
+                }
+            });
+
             transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.SERIAL_NUMBER),
                     entityService, domainService));
             transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.COMMENTS),

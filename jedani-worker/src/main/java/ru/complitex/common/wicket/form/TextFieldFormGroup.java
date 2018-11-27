@@ -38,6 +38,12 @@ public class TextFieldFormGroup<T> extends Panel{
         return this;
     }
 
+    public TextFieldFormGroup<T> disable(){
+        textField.setEnabled(false);
+
+        return this;
+    }
+
     public void onUpdate(SerializableConsumer<AjaxRequestTarget> onUpdate){
         textField.add(AjaxFormComponentUpdatingBehavior.onUpdate("blur", onUpdate));
     }
