@@ -33,7 +33,7 @@ abstract class StorageModal extends Modal<Transaction> {
         addButton(actionButton = new BootstrapAjaxButton(Modal.BUTTON_MARKUP_ID, Buttons.Type.Primary) {
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
-                StorageModal.this.beforeAction();
+                //todo validate
                 StorageModal.this.action(target);
 
                 appendCloseDialogJavaScript(target);
@@ -54,16 +54,13 @@ abstract class StorageModal extends Modal<Transaction> {
     }
 
     void open(AjaxRequestTarget target){
-        getModelObject().getAttributes().clear();
-
-        getModelObject().setNumber(Transaction.QUANTITY, 1L);
+        Transaction transaction = new Transaction();
+        transaction.setNumber(Transaction.QUANTITY, 1L);
+        setModelObject(transaction);
 
         setVisible(true);
         target.add(this);
         appendShowDialogJavaScript(target);
-    }
-
-    protected void beforeAction(){
     }
 
     abstract void action(AjaxRequestTarget target);

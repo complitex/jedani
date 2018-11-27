@@ -107,11 +107,16 @@ public class StoragePage extends BasePage {
         };
         form.add(acceptForm);
 
-        AcceptModal acceptModal = new AcceptModal("acceptModal", storageId) {
+        AcceptModal acceptModal = new AcceptModal("acceptModal") {
             @Override
             void action(AjaxRequestTarget target) {
+                Transaction transaction = getModelObject();
+
+                transaction.setNumber(Transaction.STORAGE_ID_TO, storageId);
+                transaction.setNumber(Transaction.TYPE, TransactionType.ACCEPT);
+
                 try {
-                    storageService.accept(getModelObject());
+                    storageService.accept(transaction);
 
                     info(getString("info_accepted"));
                 } catch (Exception e) {
@@ -141,10 +146,24 @@ public class StoragePage extends BasePage {
         };
         form.add(transferForm);
 
-        TransferModal transferModal = new TransferModal("transferModal", storageId) {
+        TransferModal transferModal = new TransferModal("transferModal") {
             @Override
             void action(AjaxRequestTarget target) {
                 Transaction transaction = getModelObject();
+
+                transaction.setNumber(Transaction.STORAGE_ID_TO, storageId);
+
+                switch (getTabIndexModel().getObject()){
+                    case 0:
+                        transaction.setNumber(Transaction.TYPE, TransactionType.SELL);
+                        break;
+                    case 1:
+                        transaction.setNumber(Transaction.TYPE, TransactionType.TRANSFER);
+                        break;
+                    case 2:
+                        transaction.setNumber(Transaction.TYPE, TransactionType.WITHDRAW);
+                        break;
+                }
 
                 String actionKey = "";
 

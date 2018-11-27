@@ -17,7 +17,6 @@ import ru.complitex.domain.model.TextAttributeModel;
 import ru.complitex.jedani.worker.component.StorageAutoCompete;
 import ru.complitex.jedani.worker.component.WorkerAutoComplete;
 import ru.complitex.jedani.worker.entity.Transaction;
-import ru.complitex.jedani.worker.entity.TransactionType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,15 +27,12 @@ import java.util.Optional;
  * 07.11.2018 17:18
  */
 public abstract class TransferModal extends StorageModal {
-    private Long storageId;
     private Long productId;
 
     private IModel<Integer> tabIndexModel = Model.of(0);
 
-    TransferModal(String markupId, Long storageId) {
+    TransferModal(String markupId) {
         super(markupId);
-
-        this.storageId = storageId;
 
         List<ITab> tabs = new ArrayList<>();
 
@@ -140,25 +136,6 @@ public abstract class TransferModal extends StorageModal {
 
         actionButton.setLabel(Model.of(label));
         target.add(actionButton);
-    }
-
-    @Override
-    protected void beforeAction() {
-        Transaction transaction = getModelObject();
-
-        transaction.setNumber(Transaction.STORAGE_ID_TO, storageId);
-
-        switch (tabIndexModel.getObject()){
-            case 0:
-                transaction.setNumber(Transaction.TYPE, TransactionType.SELL);
-                break;
-            case 1:
-                transaction.setNumber(Transaction.TYPE, TransactionType.TRANSFER);
-                break;
-            case 2:
-                transaction.setNumber(Transaction.TYPE, TransactionType.WITHDRAW);
-                break;
-        }
     }
 
     public Long getProductId() {
