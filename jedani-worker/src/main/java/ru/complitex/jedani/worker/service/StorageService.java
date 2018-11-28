@@ -8,6 +8,7 @@ import ru.complitex.domain.service.EntityService;
 import ru.complitex.jedani.worker.entity.Product;
 import ru.complitex.jedani.worker.entity.Storage;
 import ru.complitex.jedani.worker.entity.Transaction;
+import ru.complitex.jedani.worker.entity.TransactionType;
 
 import javax.inject.Inject;
 import java.io.Serializable;
@@ -54,7 +55,20 @@ public class StorageService implements Serializable {
     }
 
     @Transactional
+    public void sell(Transaction transaction) {
+        transaction.setNumber(Transaction.TYPE, TransactionType.SELL);
+
+    }
+
+    @Transactional
     public void transfer(Transaction transaction) {
+        transaction.setNumber(Transaction.TYPE, TransactionType.TRANSFER);
+
+    }
+
+    @Transactional
+    public void withdraw(Transaction transaction) {
+        transaction.setNumber(Transaction.TYPE, TransactionType.WITHDRAW);
 
     }
 

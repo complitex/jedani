@@ -222,7 +222,7 @@ public class WorkerPage extends BasePage {
                 Position.ENTITY_NAME, Position.NAME));
 
         TextFieldFormGroup<String> jId = new TextFieldFormGroup<>("jId", new PropertyModel<>(worker.getOrCreateAttribute(Worker.J_ID), "text"));
-        jId.setRequired(participant);
+        jId.getTextField().setRequired(participant);
 
         if (worker.getObjectId() == null) {
             jId.onUpdate(target -> {

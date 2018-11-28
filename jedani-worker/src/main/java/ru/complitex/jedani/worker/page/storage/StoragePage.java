@@ -155,39 +155,53 @@ public class StoragePage extends BasePage {
 
                 switch (getTabIndexModel().getObject()){
                     case 0:
-                        transaction.setNumber(Transaction.TYPE, TransactionType.SELL);
+                        try {
+                            if (transaction.getNumber(Transaction.WORKER_ID_TO) == null){
+                                getFeedback().error(getString("error_empty_worker"));
+
+                                target.add(getFeedback());
+
+                                return;
+                            }
+
+                            storageService.sell(transaction);
+
+                            info(getString("info_sold"));
+                        } catch (Exception e) {
+                            log.error("error sell ", e);
+
+                            error(getString("error_sell"));
+                        }
+
                         break;
                     case 1:
-                        transaction.setNumber(Transaction.TYPE, TransactionType.TRANSFER);
+                        try {
+                            storageService.transfer(transaction);
+
+                            info(getString("info_transferred"));
+                        } catch (Exception e) {
+                            log.error("error transfer ", e);
+
+                            error(getString("error_transfer"));
+                        }
+
                         break;
                     case 2:
-                        transaction.setNumber(Transaction.TYPE, TransactionType.WITHDRAW);
+                        try {
+                            storageService.transfer(transaction);
+
+                            info(getString("info_withdrew"));
+                        } catch (Exception e) {
+                            log.error("error withdraw ", e);
+
+                            error(getString("error_withdraw"));
+                        }
+
                         break;
                 }
 
-                String actionKey = "";
-
-                switch (transaction.getNumber(Transaction.TYPE).intValue()){
-                    case (int) TransactionType.SELL:
-                        actionKey = "sold";
-                        break;
-                    case (int) TransactionType.TRANSFER:
-                        actionKey = "transferred";
-                        break;
-                    case (int) TransactionType.WITHDRAW:
-                        actionKey = "withdrew";
-                        break;
-                }
-
-                try {
-                    storageService.transfer(transaction);
-
-                    info(getString("info_" + actionKey));
-                } catch (Exception e) {
-                    error(getString("error_" + actionKey));
-                } finally {
-                    target.add(feedback, tables);
-                }
+                appendCloseDialogJavaScript(target);
+                target.add(feedback, tables);
             }
         };
         transferForm.add(transferModal);

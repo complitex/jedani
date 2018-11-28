@@ -32,18 +32,6 @@ public class TextFieldFormGroup<T> extends Panel{
         add(group);
     }
 
-    public TextFieldFormGroup<T> setRequired(boolean required){
-        textField.setRequired(required);
-
-        return this;
-    }
-
-    public TextFieldFormGroup<T> disable(){
-        textField.setEnabled(false);
-
-        return this;
-    }
-
     public void onUpdate(SerializableConsumer<AjaxRequestTarget> onUpdate){
         textField.add(AjaxFormComponentUpdatingBehavior.onUpdate("blur", onUpdate));
     }

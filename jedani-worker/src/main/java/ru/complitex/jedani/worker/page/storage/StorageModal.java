@@ -33,10 +33,7 @@ abstract class StorageModal extends Modal<Transaction> {
         addButton(actionButton = new BootstrapAjaxButton(Modal.BUTTON_MARKUP_ID, Buttons.Type.Primary) {
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
-                //todo validate
                 StorageModal.this.action(target);
-
-                appendCloseDialogJavaScript(target);
             }
 
             @Override
@@ -65,11 +62,11 @@ abstract class StorageModal extends Modal<Transaction> {
 
     abstract void action(AjaxRequestTarget target);
 
-    public FeedbackPanel getFeedback() {
+    FeedbackPanel getFeedback() {
         return feedback;
     }
 
-    public BootstrapAjaxButton getActionButton() {
+    BootstrapAjaxButton getActionButton() {
         return actionButton;
     }
 }
