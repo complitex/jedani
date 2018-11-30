@@ -39,4 +39,17 @@ public class TextFieldFormGroup<T> extends Panel{
     public TextField<T> getTextField() {
         return textField;
     }
+
+
+    public TextFieldFormGroup<T> setRequired(boolean required){
+        textField.setRequired(required);
+
+        return this;
+    }
+
+    public TextFieldFormGroup<T> setType(Class<?> type){
+        textField.setType(type);
+
+        return this;
+    }
 }

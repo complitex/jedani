@@ -53,7 +53,7 @@ public class StorageListPage extends DomainListPage<Storage> {
     protected List<EntityAttribute> getEntityAttributes(Entity entity) {
         List<EntityAttribute> list = new ArrayList<>();
 
-        list.add(entity.getEntityAttribute(Storage.CITY_ID)
+        list.add(entity.getEntityAttribute(Storage.CITY)
                 .setReferenceEntityAttribute(entityService.getEntityAttribute(City.ENTITY_NAME, City.NAME)));
 
         return list;
@@ -61,12 +61,12 @@ public class StorageListPage extends DomainListPage<Storage> {
 
     @Override
     protected void onAddColumns(List<IColumn<Storage, SortProperty>> columns) {
-        String label = entityService.getEntityAttribute(Storage.ENTITY_NAME, Storage.WORKER_IDS).getValue().getText();
+        String label = entityService.getEntityAttribute(Storage.ENTITY_NAME, Storage.WORKERS).getValue().getText();
 
         columns.add(new AbstractDomainColumn<Storage>(Model.of(label), new SortProperty("workerIds")) {
             @Override
             public void populateItem(Item<ICellPopulator<Storage>> cellItem, String componentId, IModel<Storage> rowModel) {
-                String workers = rowModel.getObject().getNumberValues(Storage.WORKER_IDS).stream()
+                String workers = rowModel.getObject().getNumberValues(Storage.WORKERS).stream()
                         .map(id -> domainService.getDomain(Worker.ENTITY_NAME, id))
                         .map(w -> w.getText(Worker.J_ID) + " " +
                                 nameService.getLastName(w.getNumber(Worker.LAST_NAME)))

@@ -53,7 +53,7 @@ public class ProductEditPage extends DomainEditPage<Product> {
 
     @Override
     protected Component getComponent(String componentId, Attribute attribute) {
-        if (Objects.equals(attribute.getEntityAttributeId(), Product.NOMENCLATURE_ID)){
+        if (Objects.equals(attribute.getEntityAttributeId(), Product.NOMENCLATURE)){
             return new DomainAutoComplete(componentId,
                     entityService.getEntityAttribute(Nomenclature.ENTITY_NAME, Nomenclature.NAME),
                     new PropertyModel<>(attribute, "number")){

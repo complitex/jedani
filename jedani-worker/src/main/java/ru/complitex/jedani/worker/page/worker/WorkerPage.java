@@ -150,8 +150,8 @@ public class WorkerPage extends BasePage {
                 }
 
                 if (manager != null){
-                    manager.getNumberValues(Worker.REGION_IDS).forEach(n -> worker.addNumberValue(Worker.REGION_IDS, n));
-                    manager.getNumberValues(Worker.CITY_IDS).forEach(n -> worker.addNumberValue(Worker.CITY_IDS, n));
+                    manager.getNumberValues(Worker.REGIONS).forEach(n -> worker.addNumberValue(Worker.REGIONS, n));
+                    manager.getNumberValues(Worker.CITIES).forEach(n -> worker.addNumberValue(Worker.CITIES, n));
 
                     worker.setNumber(Worker.MANAGER_ID, manager.getObjectId());
                 }
@@ -218,7 +218,7 @@ public class WorkerPage extends BasePage {
                 new NumberAttributeModel(worker, Worker.FIRST_NAME), true).setRequired(true));
         form.add(middleName = new DomainAutoCompleteFormGroup("middleName", MiddleName.ENTITY_NAME, MiddleName.NAME,
                 new NumberAttributeModel(worker, Worker.MIDDLE_NAME), true));
-        form.add(new AttributeSelectFormGroup("position", new NumberAttributeModel(worker, Worker.POSITION_ID),
+        form.add(new AttributeSelectFormGroup("position", new NumberAttributeModel(worker, Worker.POSITION),
                 Position.ENTITY_NAME, Position.NAME));
 
         TextFieldFormGroup<String> jId = new TextFieldFormGroup<>("jId", new PropertyModel<>(worker.getOrCreateAttribute(Worker.J_ID), "text"));
@@ -239,20 +239,20 @@ public class WorkerPage extends BasePage {
         //num
         form.add(new TextFieldFormGroup<>("num", Model.of("")).setVisible(!participant));
 
-        form.add(new AttributeSelectFormGroup("mkStatus", new NumberAttributeModel(worker, Worker.MK_STATUS_ID),
+        form.add(new AttributeSelectFormGroup("mkStatus", new NumberAttributeModel(worker, Worker.MK_STATUS),
                 MkStatus.ENTITY_NAME, MkStatus.NAME).setVisible(participant));
         form.add(new DateTextFieldFormGroup("birthday", new PropertyModel<>(worker.getOrCreateAttribute(Worker.BIRTHDAY), "date")));
         form.add(new AttributeInputListFormGroup("phone", Model.of(worker.getOrCreateAttribute(Worker.PHONE))).setRequired(participant));
         form.add(new TextFieldFormGroup<>("email", new TextAttributeModel(worker, Worker.EMAIL, TextAttributeModel.TYPE.LOWER_CASE)));
 
         AttributeSelectListFormGroup city, region;
-        form.add(region = new AttributeSelectListFormGroup("region", Model.of(worker.getOrCreateAttribute(Worker.REGION_IDS)),
+        form.add(region = new AttributeSelectListFormGroup("region", Model.of(worker.getOrCreateAttribute(Worker.REGIONS)),
                 Region.ENTITY_NAME, Region.NAME, true).setRequired(participant));
-        form.add(city = new AttributeSelectListFormGroup("city", Model.of(worker.getOrCreateAttribute(Worker.CITY_IDS)),
+        form.add(city = new AttributeSelectListFormGroup("city", Model.of(worker.getOrCreateAttribute(Worker.CITIES)),
                 City.ENTITY_NAME, City.NAME, region.getListModel(), true){
             @Override
             protected String getPrefix(Domain domain) {
-                Long cityTypeId = domain.getNumber(City.CITY_TYPE_ID);
+                Long cityTypeId = domain.getNumber(City.CITY_TYPE);
 
                 if (cityTypeId != null){
                     Domain cityType = domainMapper.getDomain(CityType.ENTITY_NAME, cityTypeId);
@@ -698,12 +698,12 @@ public class WorkerPage extends BasePage {
 
         list.add(entity.getEntityAttribute(Worker.J_ID));
 
-        list.add(entity.getEntityAttribute(Worker.REGION_IDS)
+        list.add(entity.getEntityAttribute(Worker.REGIONS)
                 .setReferenceEntityAttribute(entityService.getEntityAttribute(Region.ENTITY_NAME, Region.NAME)));
 
-        list.add(entity.getEntityAttribute(Worker.CITY_IDS)
+        list.add(entity.getEntityAttribute(Worker.CITIES)
                 .setReferenceEntityAttribute(entityService.getEntityAttribute(City.ENTITY_NAME, City.NAME))
-                .setPrefixEntityAttribute(entityService.getEntityAttribute(City.ENTITY_NAME, City.CITY_TYPE_ID)
+                .setPrefixEntityAttribute(entityService.getEntityAttribute(City.ENTITY_NAME, City.CITY_TYPE)
                         .setReferenceEntityAttribute(entityService.getEntityAttribute(CityType.ENTITY_NAME, CityType.SHORT_NAME))));
 
         return list;

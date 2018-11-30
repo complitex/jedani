@@ -45,15 +45,29 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
     private DomainService domainService;
 
     public DomainColumn(EntityAttribute entityAttribute, EntityService entityService, DomainService domainService) {
-        super(Model.of(entityAttribute.getValue() != null
-                        ? entityAttribute.getValue().getText()
-                        : "[" + entityAttribute.getEntityAttributeId() + "]"),
-                new SortProperty(entityAttribute.getValueType().getKey(), entityAttribute));
+        super(displayModel(entityAttribute), sortProperty(entityAttribute));
 
         this.entityAttribute = entityAttribute;
 
         this.entityService = entityService;
         this.domainService = domainService;
+    }
+
+    private static Model<String> displayModel(EntityAttribute entityAttribute) {
+        if (entityAttribute != null){
+            return Model.of(entityAttribute.getValueText());
+
+        }
+
+        return Model.of("");
+    }
+
+    private static SortProperty sortProperty(EntityAttribute entityAttribute){
+        if (entityAttribute != null){
+            return new SortProperty(entityAttribute.getValueType().getKey(), entityAttribute);
+        }
+
+        return null;
     }
 
     @Override

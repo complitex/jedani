@@ -80,19 +80,19 @@ public class WorkerListPage extends DomainListPage<Worker>{
 
         list.add(entity.getEntityAttribute(Worker.J_ID));
 
-        list.add(entity.getEntityAttribute(Worker.REGION_IDS)
+        list.add(entity.getEntityAttribute(Worker.REGIONS)
                 .setReferenceEntityAttribute(entityService.getEntityAttribute(Region.ENTITY_NAME, Region.NAME)));
 
-        list.add(entity.getEntityAttribute(Worker.CITY_IDS)
+        list.add(entity.getEntityAttribute(Worker.CITIES)
                 .setReferenceEntityAttribute(entityService.getEntityAttribute(City.ENTITY_NAME, City.NAME))
-                .setPrefixEntityAttribute(entityService.getEntityAttribute(City.ENTITY_NAME, City.CITY_TYPE_ID)
+                .setPrefixEntityAttribute(entityService.getEntityAttribute(City.ENTITY_NAME, City.CITY_TYPE)
                         .setReferenceEntityAttribute(entityService.getEntityAttribute(CityType.ENTITY_NAME, CityType.SHORT_NAME))));
 
         list.add(entity.getEntityAttribute(Worker.PHONE));
         list.add(entity.getEntityAttribute(Worker.EMAIL).setDisplayLowerCase(true));
         list.add(entity.getEntityAttribute(Worker.INVOLVED_AT));
 
-        list.add(entity.getEntityAttribute(Worker.POSITION_ID)
+        list.add(entity.getEntityAttribute(Worker.POSITION)
                 .setReferenceEntityAttribute(entityService.getEntityAttribute(Position.ENTITY_NAME, Position.NAME)));
         list.add(entity.getEntityAttribute(Worker.EMPLOYEE));
 

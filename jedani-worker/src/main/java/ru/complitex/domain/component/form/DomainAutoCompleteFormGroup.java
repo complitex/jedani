@@ -46,7 +46,7 @@ public class DomainAutoCompleteFormGroup extends Panel{
     }
 
     public DomainAutoCompleteFormGroup setRequired(boolean required){
-        domainAutoComplete.getAutoCompleteTextField().setRequired(required);
+        domainAutoComplete.setRequired(required);
 
         return this;
     }

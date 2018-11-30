@@ -88,10 +88,10 @@ public class StoragePage extends BasePage {
         form.add(storageIdFormGroup);
 
         form.add(new DomainAutoCompleteFormGroup("city", City.ENTITY_NAME, City.NAME,
-                new NumberAttributeModel(storage, Storage.CITY_ID), true));
+                new NumberAttributeModel(storage, Storage.CITY), true));
 
         form.add(new FormGroupPanel("workers", new WorkerAutoCompleteList(FormGroupPanel.COMPONENT_ID,
-                Model.of(storage.getOrCreateAttribute(Storage.WORKER_IDS)))));
+                Model.of(storage.getOrCreateAttribute(Storage.WORKERS)))));
 
         WebMarkupContainer tables = new WebMarkupContainer("tables");
         tables.setOutputMarkupId(true);
@@ -112,7 +112,12 @@ public class StoragePage extends BasePage {
             void action(AjaxRequestTarget target) {
                 Transaction transaction = getModelObject();
 
-                transaction.setNumber(Transaction.STORAGE_ID_TO, storageId);
+                if (transaction.getNumber(Transaction.NOMENCLATURE) == null){
+                    info(getString("error_empty_nomenclature"));
+
+                }
+
+                transaction.setNumber(Transaction.STORAGE_TO, storageId);
                 transaction.setNumber(Transaction.TYPE, TransactionType.ACCEPT);
 
                 try {
@@ -123,6 +128,7 @@ public class StoragePage extends BasePage {
                     error(getString("error_accepted"));
                 } finally {
                     target.add(feedback, tables);
+                    appendCloseDialogJavaScript(target);
                 }
             }
         };
@@ -151,12 +157,12 @@ public class StoragePage extends BasePage {
             void action(AjaxRequestTarget target) {
                 Transaction transaction = getModelObject();
 
-                transaction.setNumber(Transaction.STORAGE_ID_TO, storageId);
+                transaction.setNumber(Transaction.STORAGE_TO, storageId);
 
                 switch (getTabIndexModel().getObject()){
                     case 0:
                         try {
-                            if (transaction.getNumber(Transaction.WORKER_ID_TO) == null){
+                            if (transaction.getNumber(Transaction.WORKER_TO) == null){
                                 getFeedback().error(getString("error_empty_worker"));
 
                                 target.add(getFeedback());
@@ -270,19 +276,23 @@ public class StoragePage extends BasePage {
 
             Entity productEntity = entityService.getEntity(Product.ENTITY_NAME);
 
-            productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.NOMENCLATURE_ID)
+            productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.NOMENCLATURE)
                     .setReferenceEntityAttribute(entityService.getEntityAttribute(Nomenclature.ENTITY_NAME, Nomenclature.NAME)),
                     entityService, domainService));
 
             productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.QUANTITY),
                     entityService, domainService));
-
             productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.SENT),
                     entityService, domainService));
-
             productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.RECEIVED),
                     entityService, domainService));
 
+            productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.GIFT_QUANTITY),
+                    entityService, domainService));
+            productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.GIFT_SENT),
+                    entityService, domainService));
+            productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.GIFT_RECEIVED),
+                    entityService, domainService));
 
             productColumns.add(new DomainActionColumn<Product>(StorageProductPage.class,
                     new PageParameters().add("storage_id", storageId)){
@@ -383,16 +393,16 @@ public class StoragePage extends BasePage {
 
             Entity transactionEntity = entityService.getEntity(Transaction.ENTITY_NAME);
 
-            transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.NOMENCLATURE_ID)
+            transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.NOMENCLATURE)
                     .setReferenceEntityAttribute(entityService.getEntityAttribute(Nomenclature.ENTITY_NAME, Nomenclature.NAME)),
                     entityService, domainService));
             transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.QUANTITY),
                     entityService, domainService));
-            transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.STORAGE_ID_FROM),
+            transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.STORAGE_FROM),
                     entityService, domainService));
-            transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.STORAGE_ID_TO),
+            transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.STORAGE_TO),
                     entityService, domainService));
-            transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.WORKER_ID_TO),
+            transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.WORKER_TO),
                     entityService, domainService));
 
             transactionColumns.add(new AbstractDomainColumn<Transaction>(Model.of(transactionEntity
@@ -476,7 +486,7 @@ public class StoragePage extends BasePage {
                     Transaction transaction = rowModel.getObject();
 
                     boolean receive = Objects.equals(transaction.getNumber(Transaction.TYPE), TransactionType.TRANSFER) &&
-                            Objects.equals(transaction.getNumber(Transaction.STORAGE_ID_TO), storageId);
+                            Objects.equals(transaction.getNumber(Transaction.STORAGE_TO), storageId);
 
                     cellItem.add(new LinkPanel(componentId, new BootstrapAjaxLink<Void>(LinkPanel.LINK_COMPONENT_ID,
                             Buttons.Type.Link) {

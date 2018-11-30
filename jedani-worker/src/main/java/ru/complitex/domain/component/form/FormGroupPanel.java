@@ -15,6 +15,8 @@ public class FormGroupPanel extends Panel {
     public FormGroupPanel(String id, Component component) {
         super(id);
 
+        setOutputMarkupId(true);
+
         FormGroup group = new FormGroup("group", new ResourceModel(id));
         add(group);
 

@@ -32,6 +32,16 @@ public class EntityAttribute implements Serializable{
         return values.stream().filter(v -> v.getLocaleId().equals(Locales.getSystemLocaleId())).findAny().orElse(null);
     }
 
+    public String getValueText(){
+        EntityValue entityValue = getValue();
+
+        if (entityValue != null){
+            return entityValue.getText();
+        }
+
+        return "[" + entityAttributeId + "]";
+    }
+
     public Long getId() {
         return id;
     }

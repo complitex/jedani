@@ -29,7 +29,7 @@ public class CityEditPage extends DomainEditPage<City>{
 
     @Override
     protected List<Long> getEntityAttributeIds() {
-        return Arrays.asList(City.CITY_TYPE_ID, City.NAME, City.SHORT_NAME);
+        return Arrays.asList(City.CITY_TYPE, City.NAME, City.SHORT_NAME);
     }
 
     @Override
@@ -44,7 +44,7 @@ public class CityEditPage extends DomainEditPage<City>{
 
     @Override
     protected void onAttribute(Attribute attribute) {
-        if (attribute.getEntityAttributeId().equals(City.CITY_TYPE_ID)){
+        if (attribute.getEntityAttributeId().equals(City.CITY_TYPE)){
             attribute.getEntityAttribute().setReferenceEntityAttribute(entityService.getEntityAttribute(CityType.ENTITY_NAME, CityType.NAME));
         }
     }

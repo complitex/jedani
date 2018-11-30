@@ -9,6 +9,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
+import ru.complitex.common.wicket.util.ComponentUtil;
 import ru.complitex.jedani.worker.entity.Transaction;
 
 /**
@@ -38,7 +39,13 @@ abstract class StorageModal extends Modal<Transaction> {
 
             @Override
             protected void onError(AjaxRequestTarget target) {
-                target.add(feedback);
+                StorageModal.this.visitChildren(((object, visit) -> {
+                    if (object.hasErrorMessage()){
+                        target.add(ComponentUtil.getAjaxParent(object));
+                    }
+                }));
+
+//                target.add(feedback);
             }
         }.setLabel(LoadableDetachableModel.of(() -> getString("action"))));
 

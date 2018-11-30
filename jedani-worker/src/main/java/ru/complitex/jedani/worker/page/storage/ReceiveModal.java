@@ -26,7 +26,7 @@ public abstract class ReceiveModal extends StorageModal {
             @Override
             protected String load() {
                 if (transaction != null){
-                    return domainService.getDomain(Nomenclature.class, transaction.getNumber(Transaction.NOMENCLATURE_ID))
+                    return domainService.getDomain(Nomenclature.class, transaction.getNumber(Transaction.NOMENCLATURE))
                             .getValueText(Nomenclature.NAME);
                 }
 

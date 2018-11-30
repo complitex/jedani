@@ -30,8 +30,8 @@ public class StorageService implements Serializable {
         domainMapper.insertDomain(transaction);
 
         List<Domain> products = domainMapper.getDomains(FilterWrapper.of(new Product()
-                .setParentId(transaction.getNumber(Transaction.STORAGE_ID_TO))
-                .setNumber(Product.NOMENCLATURE_ID, transaction.getNumber(Transaction.NOMENCLATURE_ID))));
+                .setParentId(transaction.getNumber(Transaction.STORAGE_TO))
+                .setNumber(Product.NOMENCLATURE, transaction.getNumber(Transaction.NOMENCLATURE))));
 
         if (products.size() > 1){
             throw new RuntimeException("Nomenclature product not unique for storage");
@@ -45,9 +45,9 @@ public class StorageService implements Serializable {
         }else {
             Product product = new Product();
 
-            product.setParentId(transaction.getNumber(Transaction.STORAGE_ID_TO));
+            product.setParentId(transaction.getNumber(Transaction.STORAGE_TO));
             product.setParentEntityId(entityService.getEntity(Storage.ENTITY_NAME).getId());
-            product.setNumber(Product.NOMENCLATURE_ID, transaction.getNumber(Transaction.NOMENCLATURE_ID));
+            product.setNumber(Product.NOMENCLATURE, transaction.getNumber(Transaction.NOMENCLATURE));
             product.setNumber(Product.QUANTITY, transaction.getNumber(Transaction.QUANTITY));
 
             domainMapper.insertDomain(product);

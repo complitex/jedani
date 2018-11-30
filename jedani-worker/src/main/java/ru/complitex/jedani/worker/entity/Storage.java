@@ -9,8 +9,8 @@ import ru.complitex.domain.entity.Domain;
 public class Storage extends Domain {
     public static final String ENTITY_NAME = "storage";
 
-    public static final long CITY_ID = 1;
-    public static final long WORKER_IDS = 2;
+    public static final long CITY = 1;
+    public static final long WORKERS = 2;
 
     private Long productCount;
     private Long productIntoCount;

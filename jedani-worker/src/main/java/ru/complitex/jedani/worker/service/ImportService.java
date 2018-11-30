@@ -215,7 +215,7 @@ public class ImportService implements Serializable {
                 }
 
                 if (!Strings.isNullOrEmpty(columns[10])) {
-                    worker.setNumber(Worker.MK_STATUS_ID, Long.parseLong(columns[10]) + 1);
+                    worker.setNumber(Worker.MK_STATUS, Long.parseLong(columns[10]) + 1);
                 }
 
                 worker.setUpperText(Worker.FIRST_NAME, StringUtils.trim(columns[11]));
@@ -225,8 +225,8 @@ public class ImportService implements Serializable {
 
                 if (!columns[15].trim().isEmpty()) {
                     Domain city = domainMapper.getDomain("city", City.IMPORT_ID, columns[15]);
-                    worker.addNumberValue(Worker.CITY_IDS, city.getObjectId());
-                    worker.addNumberValue(Worker.REGION_IDS, city.getParentId());
+                    worker.addNumberValue(Worker.CITIES, city.getObjectId());
+                    worker.addNumberValue(Worker.REGIONS, city.getParentId());
                 }
 
                 worker.setText(Worker.IMPORT_MANAGER_RANK_ID, columns[16]);

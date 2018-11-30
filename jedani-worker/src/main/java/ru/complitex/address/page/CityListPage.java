@@ -29,11 +29,11 @@ public class CityListPage extends DomainListPage<City>{
 
     @Override
     protected List<Long> getEntityAttributeIds() {
-        return Arrays.asList(City.CITY_TYPE_ID, City.NAME, City.SHORT_NAME);
+        return Arrays.asList(City.CITY_TYPE, City.NAME, City.SHORT_NAME);
     }
 
     protected List<EntityAttribute> getEntityAttributes(Entity entity){
-        entity.getEntityAttribute(City.CITY_TYPE_ID)
+        entity.getEntityAttribute(City.CITY_TYPE)
                 .setReferenceEntityAttribute(entityService.getEntityAttribute(CityType.ENTITY_NAME, CityType.NAME));
 
         return entity.getAttributes();

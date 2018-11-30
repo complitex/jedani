@@ -23,7 +23,7 @@ public class NomenclatureEditPage extends DomainEditPage<Nomenclature> {
 
     @Override
     protected Component getComponent(String componentId, Attribute attribute) {
-        if (attribute.getEntityAttributeId().equals(Nomenclature.COUNTRY_IDS)) {
+        if (attribute.getEntityAttributeId().equals(Nomenclature.COUNTRIES)) {
             return new AttributeSelectList(componentId, Model.of(attribute), Country.ENTITY_NAME, Country.NAME,  true);
         }
 

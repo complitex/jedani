@@ -43,12 +43,10 @@ public abstract class TransferModal extends StorageModal {
                 Fragment fragment = new Fragment(panelId, "sellFragment", TransferModal.this);
 
                 fragment.add(new FormGroupPanel("worker", new WorkerAutoComplete(FormGroupPanel.COMPONENT_ID,
-                        new NumberAttributeModel(getModel(), Transaction.WORKER_ID_TO))));
+                        new NumberAttributeModel(getModel(), Transaction.WORKER_TO))));
 
-                TextFieldFormGroup<Long> quantity = new TextFieldFormGroup<>("quantity", new NumberAttributeModel(getModel(),
-                        Transaction.QUANTITY));
-                quantity.getTextField().setType(Long.class);
-                fragment.add(quantity);
+                fragment.add(new TextFieldFormGroup<>("quantity", new NumberAttributeModel(getModel(),
+                        Transaction.QUANTITY)).setType(Long.class));
 
                 fragment.add(new TextFieldFormGroup<>("serialNumber", new TextAttributeModel(getModel(), Transaction.SERIAL_NUMBER,
                         TextAttributeModel.TYPE.DEFAULT)));
@@ -65,17 +63,13 @@ public abstract class TransferModal extends StorageModal {
                 Fragment fragment = new Fragment(panelId, "transferFragment", TransferModal.this);
 
                 fragment.add(new FormGroupPanel("storage", new StorageAutoCompete(FormGroupPanel.COMPONENT_ID,
-                        new NumberAttributeModel(getModel(), Transaction.STORAGE_ID_TO))));
+                        new NumberAttributeModel(getModel(), Transaction.STORAGE_TO))));
 
-                TextFieldFormGroup<Long> quantity = new TextFieldFormGroup<>("quantity", new NumberAttributeModel(getModel(),
-                        Transaction.QUANTITY));
-                quantity.getTextField().setType(Long.class);
-                fragment.add(quantity);
+                fragment.add(new TextFieldFormGroup<>("quantity", new NumberAttributeModel(getModel(),
+                        Transaction.QUANTITY)).setType(Long.class));
 
-                TextFieldFormGroup<Long> type = new TextFieldFormGroup<>("type", new NumberAttributeModel(getModel(),
-                        Transaction.TRANSFER_TYPE));
-                type.getTextField().setType(Long.class);
-                fragment.add(type);
+                fragment.add(new TextFieldFormGroup<>("type", new NumberAttributeModel(getModel(),
+                        Transaction.TRANSFER_TYPE)).setType(Long.class));
 
                 return fragment;
             }
@@ -88,10 +82,8 @@ public abstract class TransferModal extends StorageModal {
             public WebMarkupContainer getPanel(String panelId) {
                 Fragment fragment = new Fragment(panelId, "withdrawFragment", TransferModal.this);
 
-                TextFieldFormGroup<Long> quantity = new TextFieldFormGroup<>("quantity", new NumberAttributeModel(getModel(),
-                        Transaction.QUANTITY));
-                quantity.getTextField().setType(Long.class);
-                fragment.add(quantity);
+                fragment.add(new TextFieldFormGroup<>("quantity", new NumberAttributeModel(getModel(),
+                        Transaction.QUANTITY)).setType(Long.class));
 
                 fragment.add(new TextFieldFormGroup<>("comments", new TextAttributeModel(getModel(), Transaction.COMMENTS,
                         TextAttributeModel.TYPE.DEFAULT)));

@@ -32,6 +32,7 @@ public class DomainAutoComplete extends Panel {
 
     private EntityAttribute entityAttribute;
 
+    private HiddenField inputId;
     private AutoCompleteTextField<Domain> autoCompleteTextField;
 
     public DomainAutoComplete(String id, EntityAttribute entityAttribute, IModel<Long> model) {
@@ -39,7 +40,7 @@ public class DomainAutoComplete extends Panel {
 
         this.entityAttribute = entityAttribute;
 
-        HiddenField inputId = new HiddenField<>("inputId", model, Long.class);
+        inputId = new HiddenField<>("inputId", model, Long.class);
         inputId.setConvertEmptyInputStringToNull(true);
         inputId.setOutputMarkupId(true);
         add(inputId);
@@ -137,5 +138,18 @@ public class DomainAutoComplete extends Panel {
 
     public AutoCompleteTextField<Domain> getAutoCompleteTextField() {
         return autoCompleteTextField;
+    }
+
+    public DomainAutoComplete setRequired(boolean required){
+        autoCompleteTextField.setRequired(required);
+//        inputId.setRequired(true);
+
+        return this;
+    }
+
+    public DomainAutoComplete setLabel(IModel<String> labelModel){
+        autoCompleteTextField.setLabel(labelModel);
+
+        return this;
     }
 }
