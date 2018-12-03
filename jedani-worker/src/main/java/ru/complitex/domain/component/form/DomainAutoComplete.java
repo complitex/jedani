@@ -6,7 +6,6 @@ import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTe
 import org.apache.wicket.markup.html.form.HiddenField;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
 import org.apache.wicket.util.convert.ConversionException;
 import org.apache.wicket.util.convert.IConverter;
 import ru.complitex.common.entity.FilterWrapper;
@@ -45,38 +44,33 @@ public class DomainAutoComplete extends Panel {
         inputId.setOutputMarkupId(true);
         add(inputId);
 
-        IModel<Domain> domainModel = new Model<Domain>(){
+        autoCompleteTextField = new AutoCompleteTextField<Domain>("input", new IModel<Domain>() {
             @Override
-            public void setObject(Domain domain) {
-                if (domain == null){
-                    model.setObject(null);
+            public Domain getObject() {
+                if (model.getObject() != null){
+                    return domainMapper.getDomain(entityAttribute.getEntityName(), model.getObject());
                 }
 
-                super.setObject(domain);
+                return null;
             }
-        };
 
-        if (model.getObject() != null){
-            domainModel.setObject(getDomain(model));
-        }
+            @Override
+            public void setObject(Domain object) {
+            }
+        }, Domain.class, new AbstractAutoCompleteTextRenderer<Domain>() {
+            @Override
+            protected String getTextValue(Domain domain) {
+                return DomainAutoComplete.this.getTextValue(domain);
+            }
 
-        autoCompleteTextField = new AutoCompleteTextField<Domain>("input", domainModel, Domain.class,
-                new AbstractAutoCompleteTextRenderer<Domain>() {
-
-                    @Override
-                    protected String getTextValue(Domain domain) {
-                        return DomainAutoComplete.this.getTextValue(domain);
-                    }
-
-                    @Override
-                    protected CharSequence getOnSelectJavaScriptExpression(Domain item) {
-                        return "$('#" + inputId.getMarkupId() + "').val('" + item.getObjectId() + "'); input";
-                    }
-                },
-                new AutoCompleteSettings()
-                        .setAdjustInputWidth(true)
-                        .setShowListOnFocusGain(true)
-                        .setPreselect(true)
+            @Override
+            protected CharSequence getOnSelectJavaScriptExpression(Domain item) {
+                return "$('#" + inputId.getMarkupId() + "').val('" + item.getObjectId() + "'); input";
+            }
+        }, new AutoCompleteSettings()
+                .setAdjustInputWidth(true)
+                .setShowListOnFocusGain(true)
+                .setPreselect(true)
         ) {
             @Override
             protected Iterator<Domain> getChoices(String input) {
@@ -88,11 +82,15 @@ public class DomainAutoComplete extends Panel {
                 return new IConverter<Domain>() {
                     @Override
                     public Domain convertToObject(String s, Locale locale) throws ConversionException {
-                       return null;
+                        return null;
                     }
 
                     @Override
                     public String convertToString(Domain domain, Locale locale) {
+                        if (domain == null){
+                            return null;
+                        }
+
                         return getTextValue(domain);
                     }
                 };

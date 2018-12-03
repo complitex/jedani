@@ -52,54 +52,6 @@ INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `tex
 INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (25, 7, 5);
 INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (25, 7, 1, 'Принимается подарков'), (25, 7, 2, 'Приймається подарунків');
 
-
-/* Transaction */
-
-INSERT INTO `sequence` (`name`) VALUE ('transaction');
-
-INSERT INTO `entity` (`id`, `name`) VALUE (26, 'transaction');
-INSERT INTO `entity_value`(`entity_id`, `locale_id`, `text`) VALUES (26, 1, 'Транзакция'), (26, 2, 'Транзакція');
-
-INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`, `reference_id`) VALUES (26, 1, 11, 23);
-INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (26, 1, 1, 'Номенклатура'), (26, 1, 2, 'Номенклатура');
-
-INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (26, 2, 5);
-INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (26, 2, 1, 'Количество'), (26, 2, 2, 'Кількість');
-
-INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (26, 3, 5);
-INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (26, 3, 1, 'Тип транзакции'), (26, 3, 2, 'Тип транзакції');
-
-INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (26, 4, 5);
-INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (26, 4, 1, 'Тип перемещения'), (26, 4, 2, 'Тип переміщення');
-
-INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (26, 5, 5);
-INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (26, 5, 1, 'Тип получателя'), (26, 5, 2, 'Тип одержувача');
-
-INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`, `reference_id`) VALUES (26, 6, 11, 24);
-INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (26, 6, 1, 'Из склада'), (26, 6, 2, 'Зі складу');
-
-INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`, `reference_id`) VALUES (26, 7, 11, 24);
-INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (26, 7, 1, 'В склад'), (26, 7, 2, 'В склад');
-
-INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`, `reference_id`) VALUES (26, 8, 11, 20);
-INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (26, 8, 1, 'Сотрудник'), (26, 8, 2, 'Співробітник');
-
-INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`, reference_id) VALUES (26, 9, 11, 11);
-INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (26, 9, 1, 'Имя'), (26, 9, 2, 'Ім''я');
-
-INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`, `reference_id`) VALUES (26, 10, 11, 12);
-INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (26, 10, 1, 'Отчество'), (26, 10, 2, 'По батькові');
-
-INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`, `reference_id`) VALUES (26, 11, 11, 13);
-INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (26, 11, 1, 'Фамилия'), (26, 11, 2, 'Прізвище');
-
-INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (26, 12, 2);
-INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (26, 12, 1, 'Серийный номер'), (26, 12, 2, 'Серійний номер');
-
-INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (26, 13, 2);
-INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (26, 13, 1, 'Комментарии'), (26, 13, 2, 'Комментарии');
-
-
 -- ---------------------------
 -- Transaction
 -- ---------------------------
@@ -170,6 +122,109 @@ CREATE TABLE `transaction_value` (
   CONSTRAINT `fk_transaction_value__transaction_attribute` FOREIGN KEY (`attribute_id`) REFERENCES `transaction_attribute` (`id`),
   CONSTRAINT `fk_transaction_value__locale` FOREIGN KEY (`locale_id`) REFERENCES `locale` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Значения атрибутов транзакции';
+
+/* Transaction */
+
+INSERT INTO `sequence` (`name`) VALUE ('transaction');
+
+INSERT INTO `entity` (`id`, `name`) VALUE (26, 'transaction');
+INSERT INTO `entity_value`(`entity_id`, `locale_id`, `text`) VALUES (26, 1, 'Транзакция'), (26, 2, 'Транзакція');
+
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`, `reference_id`) VALUES (26, 1, 11, 23);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (26, 1, 1, 'Номенклатура'), (26, 1, 2, 'Номенклатура');
+
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (26, 2, 5);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (26, 2, 1, 'Количество'), (26, 2, 2, 'Кількість');
+
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (26, 3, 5);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (26, 3, 1, 'Тип транзакции'), (26, 3, 2, 'Тип транзакції');
+
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (26, 4, 5);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (26, 4, 1, 'Тип перемещения'), (26, 4, 2, 'Тип переміщення');
+
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (26, 5, 5);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (26, 5, 1, 'Тип получателя'), (26, 5, 2, 'Тип одержувача');
+
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`, `reference_id`) VALUES (26, 6, 11, 24);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (26, 6, 1, 'Из склада'), (26, 6, 2, 'Зі складу');
+
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`, `reference_id`) VALUES (26, 7, 11, 24);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (26, 7, 1, 'В склад'), (26, 7, 2, 'В склад');
+
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`, `reference_id`) VALUES (26, 8, 11, 20);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (26, 8, 1, 'Сотрудник'), (26, 8, 2, 'Співробітник');
+
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`, reference_id) VALUES (26, 9, 11, 11);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (26, 9, 1, 'Имя'), (26, 9, 2, 'Ім''я');
+
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`, `reference_id`) VALUES (26, 10, 11, 12);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (26, 10, 1, 'Отчество'), (26, 10, 2, 'По батькові');
+
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`, `reference_id`) VALUES (26, 11, 11, 13);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (26, 11, 1, 'Фамилия'), (26, 11, 2, 'Прізвище');
+
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (26, 12, 2);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (26, 12, 1, 'Серийный номер'), (26, 12, 2, 'Серійний номер');
+
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (26, 13, 2);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (26, 13, 1, 'Комментарии'), (26, 13, 2, 'Комментарии');
+
+-- ---------------------------
+-- Storage Type
+-- ---------------------------
+
+DROP TABLE IF EXISTS storage_type;
+CREATE TABLE storage_type (
+  id BIGINT(20) NOT NULL COMMENT 'Идентификатор',
+  `type` VARCHAR(100) NOT NULL COMMENT 'Тип',
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Тип склада';
+
+-- ---------------------------
+-- Transaction Type
+-- ---------------------------
+
+DROP TABLE IF EXISTS transaction_type;
+CREATE TABLE transaction_type (
+  id BIGINT(20) NOT NULL COMMENT 'Идентификатор',
+  `type` VARCHAR(100) NOT NULL COMMENT 'Тип',
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Тип транзакции';
+
+-- ---------------------------
+-- Transfer Type
+-- ---------------------------
+
+DROP TABLE IF EXISTS transaction_transfer_type;
+CREATE TABLE transaction_transfer_type (
+  id BIGINT(20) NOT NULL COMMENT 'Идентификатор',
+  `type` VARCHAR(100) NOT NULL COMMENT 'Тип',
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Тип перемещения';
+
+-- ---------------------------
+-- Recipient Type
+-- ---------------------------
+
+DROP TABLE IF EXISTS transaction_recipient_type;
+CREATE TABLE transaction_recipient_type (
+  id BIGINT(20) NOT NULL COMMENT 'Идентификатор',
+  `type` VARCHAR(100) NOT NULL COMMENT 'Тип',
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Тип получателя';
+
+/*TYPES*/
+
+INSERT INTO storage_type (id, type) VALUES (1, 'real'), (2, 'virtual');
+INSERT INTO transaction_type (id, type) VALUES (1, 'accept'), (2, 'sell'), (3, 'transfer'), (4, 'withdraw');
+INSERT INTO transaction_transfer_type (id, type) VALUES (1, 'transfer'), (2, 'gift');
+INSERT INTO transaction_recipient_type (id, type) VALUES (1, 'storage'), (2, 'worker'), (3, 'client');
+
+
+
+
+
+
 
 
 -- Update

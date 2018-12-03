@@ -959,8 +959,19 @@ CREATE TABLE `storage_value` (
   KEY `key_number` (`number`),
   CONSTRAINT `fk_storage_value__storage_attribute` FOREIGN KEY (`attribute_id`) REFERENCES `storage_attribute` (`id`),
   CONSTRAINT `fk_storage_value__locale` FOREIGN KEY (`locale_id`) REFERENCES `locale` (`id`)
-) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Локализация атрибутов склада';    
-    
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Локализация атрибутов склада';
+
+-- ---------------------------
+-- Storage Type
+-- ---------------------------
+
+DROP TABLE IF EXISTS storage_type;
+CREATE TABLE storage_type (
+                            id BIGINT(20) NOT NULL COMMENT 'Идентификатор',
+                            `type` VARCHAR(100) NOT NULL COMMENT 'Тип',
+                            PRIMARY KEY  (`id`)
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Тип склада';
+
 -- ---------------------------
 -- Product
 -- ---------------------------
@@ -1098,12 +1109,35 @@ CREATE TABLE `transaction_value` (
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Значения атрибутов транзакции';
 
 
+-- ---------------------------
+-- Transaction Type
+-- ---------------------------
 
+DROP TABLE IF EXISTS transaction_type;
+CREATE TABLE transaction_type (
+  id BIGINT(20) NOT NULL COMMENT 'Идентификатор',
+  `type` VARCHAR(100) NOT NULL COMMENT 'Тип',
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Тип транзакции';
 
+-- ---------------------------
+-- Transfer Type
+-- ---------------------------
 
+DROP TABLE IF EXISTS transfer_type;
+CREATE TABLE transfer_type (
+  id BIGINT(20) NOT NULL COMMENT 'Идентификатор',
+  `type` VARCHAR(100) NOT NULL COMMENT 'Тип',
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Тип перемещения';
 
+-- ---------------------------
+-- Recipient Type
+-- ---------------------------
 
-
-
-
-
+DROP TABLE IF EXISTS recipient_type;
+CREATE TABLE recipient_type (
+  id BIGINT(20) NOT NULL COMMENT 'Идентификатор',
+  `type` VARCHAR(100) NOT NULL COMMENT 'Тип',
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Тип получателя';

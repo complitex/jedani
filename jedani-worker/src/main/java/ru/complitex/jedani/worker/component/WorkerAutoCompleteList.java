@@ -10,6 +10,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.util.ListModel;
 import ru.complitex.domain.entity.Attribute;
 
+import java.util.Objects;
+
 
 /**
  * @author Anatoly A. Ivanov
@@ -70,5 +72,14 @@ public class WorkerAutoCompleteList extends FormComponentPanel<Attribute> {
         }
 
         setConvertedInput(attribute);
+    }
+
+    @Override
+    public boolean checkRequired() {
+        if (isRequired()){
+            return listModel.getObject().stream().anyMatch(Objects::nonNull);
+        }
+
+        return true;
     }
 }

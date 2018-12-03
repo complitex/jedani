@@ -8,7 +8,6 @@ import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTe
 import org.apache.wicket.markup.html.form.HiddenField;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
 import org.apache.wicket.util.convert.ConversionException;
 import org.apache.wicket.util.convert.IConverter;
 import ru.complitex.jedani.worker.entity.Worker;
@@ -33,31 +32,42 @@ public class WorkerAutoComplete extends Panel {
 
     private AutoCompleteTextField<Worker> autoCompleteTextField;
 
-    public WorkerAutoComplete(String id, IModel<Long> workerIdModel) {
+    public WorkerAutoComplete(String id, IModel<Long> model) {
         super(id);
 
-        HiddenField inputId = new HiddenField<>("inputId", workerIdModel, Long.class);
+        HiddenField inputId = new HiddenField<>("inputId", model, Long.class);
         inputId.setConvertEmptyInputStringToNull(true);
         inputId.setOutputMarkupId(true);
         inputId.add(OnChangeAjaxBehavior.onChange(this::onChange));
         add(inputId);
 
-        autoCompleteTextField = new AutoCompleteTextField<Worker>("input", new Model<>(new Worker()), Worker.class,
-                new AbstractAutoCompleteTextRenderer<Worker>() {
-                    @Override
-                    protected String getTextValue(Worker worker) {
-                        return Workers.getWorkerLabel(worker, nameService);
-                    }
+        autoCompleteTextField = new AutoCompleteTextField<Worker>("input", new IModel<Worker>() {
+            @Override
+            public Worker getObject() {
+                if (model.getObject() != null){
+                    return workerMapper.getWorker(model.getObject());
+                }
 
-                    @Override
-                    protected CharSequence getOnSelectJavaScriptExpression(Worker item) {
-                        return "$('#" + inputId.getMarkupId() + "').val('" + item.getObjectId() + "'); " +
-                                "$('#" + inputId.getMarkupId() + "').change(); input";
-                    }
-                },
-                new AutoCompleteSettings().setAdjustInputWidth(true)
-                        .setShowListOnFocusGain(true)
-                        .setPreselect(true)) {
+                return null;
+            }
+
+            @Override
+            public void setObject(Worker object) {
+            }
+        }, Worker.class, new AbstractAutoCompleteTextRenderer<Worker>() {
+            @Override
+            protected String getTextValue(Worker worker) {
+                return Workers.getWorkerLabel(worker, nameService);
+            }
+
+            @Override
+            protected CharSequence getOnSelectJavaScriptExpression(Worker item) {
+                return "$('#" + inputId.getMarkupId() + "').val('" + item.getObjectId() + "'); " +
+                        "$('#" + inputId.getMarkupId() + "').change(); input";
+            }
+        }, new AutoCompleteSettings().setAdjustInputWidth(true)
+                .setShowListOnFocusGain(true)
+                .setPreselect(true)) {
             @Override
             protected Iterator<Worker> getChoices(String s) {
                 return workerMapper.getWorkers(s).iterator();
@@ -68,17 +78,13 @@ public class WorkerAutoComplete extends Panel {
                 return new IConverter<Worker>() {
                     @Override
                     public Worker convertToObject(String s, Locale locale) throws ConversionException {
-                        if (workerIdModel.getObject() != null){
-                            return workerMapper.getWorker(workerIdModel.getObject());
-                        }
-
                         return null;
                     }
 
                     @Override
                     public String convertToString(Worker worker, Locale locale) {
-                        if (workerIdModel.getObject() != null){
-                            return Workers.getWorkerLabel(workerMapper.getWorker(workerIdModel.getObject()), nameService);
+                        if (worker != null){
+                            return Workers.getWorkerLabel(worker, nameService);
                         }
 
                         return null;

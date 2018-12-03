@@ -135,7 +135,7 @@ public class StorageService implements Serializable {
 
                     storage.setParentEntityId(entityService.getEntity(Worker.ENTITY_NAME).getId());
                     storage.setParentId(t.getNumber(Transaction.WORKER_TO));
-                    storage.setNumber(Storage.TYPE, StorageType.WORKER);
+                    storage.setNumber(Storage.TYPE, StorageType.VIRTUAL);
 
                     domainService.save(storage);
                 } else {

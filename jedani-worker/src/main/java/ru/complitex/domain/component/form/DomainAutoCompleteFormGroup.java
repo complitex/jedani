@@ -27,6 +27,7 @@ public class DomainAutoCompleteFormGroup extends Panel{
         super(id);
 
         setOutputMarkupId(true);
+        setOutputMarkupPlaceholderTag(true);
 
         FormGroup group = new FormGroup("group", label);
         group.add(domainAutoComplete = new DomainAutoComplete("input",

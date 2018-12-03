@@ -5,10 +5,12 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxLink
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
 import de.agilecoders.wicket.core.markup.html.bootstrap.image.GlyphIconType;
+import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.select.BootstrapSelect;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
@@ -18,6 +20,7 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.TextF
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
@@ -33,6 +36,7 @@ import ru.complitex.common.entity.SortProperty;
 import ru.complitex.common.wicket.datatable.DataProvider;
 import ru.complitex.common.wicket.datatable.FilterDataTable;
 import ru.complitex.common.wicket.form.FormGroupPanel;
+import ru.complitex.common.wicket.form.FormGroupSelectPanel;
 import ru.complitex.common.wicket.form.TextFieldFormGroup;
 import ru.complitex.common.wicket.panel.LinkPanel;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
@@ -53,10 +57,7 @@ import ru.complitex.jedani.worker.util.Workers;
 import ru.complitex.name.service.NameService;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author Anatoly A. Ivanov
@@ -80,7 +81,15 @@ public class StoragePage extends BasePage {
     public StoragePage(PageParameters pageParameters) {
         Long storageId = pageParameters.get("id").toOptionalLong();
 
-        Storage storage = storageId != null ? domainService.getDomain(Storage.class, storageId) : new Storage();
+        Storage storage;
+
+        if (storageId != null) {
+            storage = domainService.getDomain(Storage.class, storageId);
+        } else {
+            storage = new Storage();
+
+            storage.setNumber(Storage.TYPE, StorageType.REAL);
+        }
 
         FeedbackPanel feedback = new NotificationPanel("feedback");
         feedback.setOutputMarkupId(true);
@@ -94,14 +103,61 @@ public class StoragePage extends BasePage {
         storageIdFormGroup.setVisible(storageId != null);
         form.add(storageIdFormGroup);
 
-        form.add(new DomainAutoCompleteFormGroup("city", City.ENTITY_NAME, City.NAME,
-                new NumberAttributeModel(storage, Storage.CITY)));
+        Component city, workers, worker;
 
-        form.add(new FormGroupPanel("workers", new WorkerAutoCompleteList(FormGroupPanel.COMPONENT_ID,
-                Model.of(storage.getOrCreateAttribute(Storage.WORKERS)))));
+        form.add(city = new DomainAutoCompleteFormGroup("city", City.ENTITY_NAME, City.NAME,
+                new NumberAttributeModel(storage, Storage.CITY)){
+            @Override
+            public boolean isVisible() {
+                return Objects.equals(storage.getNumber(Storage.TYPE), StorageType.REAL);
+            }
+        }.setRequired(true));
 
-        form.add(new FormGroupPanel("worker", new WorkerAutoComplete(FormGroupPanel.COMPONENT_ID,
-                new PropertyModel<>(storage, "parentId"))));
+        form.add(workers = new FormGroupPanel("workers", new WorkerAutoCompleteList(FormGroupPanel.COMPONENT_ID,
+                Model.of(storage.getOrCreateAttribute(Storage.WORKERS))).setRequired(true)
+                .setLabel(new ResourceModel("workers"))){
+            @Override
+            public boolean isVisible() {
+                return Objects.equals(storage.getNumber(Storage.TYPE), StorageType.REAL);
+            }
+        });
+
+        form.add(worker = new FormGroupPanel("worker", new WorkerAutoComplete(FormGroupPanel.COMPONENT_ID,
+                new PropertyModel<>(storage, "parentId")).setRequired(true)
+                .setLabel(new ResourceModel("worker"))){
+            @Override
+            public boolean isVisible() {
+                return Objects.equals(storage.getNumber(Storage.TYPE), StorageType.VIRTUAL);
+            }
+        });
+
+        form.add(new FormGroupSelectPanel("type", new BootstrapSelect<>(FormGroupPanel.COMPONENT_ID,
+                new NumberAttributeModel(storage, Storage.TYPE), Arrays.asList(StorageType.REAL, StorageType.VIRTUAL),
+                new IChoiceRenderer<Long>() {
+                    @Override
+                    public Object getDisplayValue(Long object) {
+                        switch (object.intValue()){
+                            case (int) StorageType.REAL:
+                                return getString("real");
+
+                            case (int) StorageType.VIRTUAL:
+                                return getString("virtual");
+                        }
+
+                        return null;
+                    }
+
+                    @Override
+                    public String getIdValue(Long object, int index) {
+                        return object + "";
+                    }
+
+                    @Override
+                    public Long getObject(String id, IModel<? extends List<? extends Long>> choices) {
+                        return Long.valueOf(id);
+                    }
+                }).setNullValid(false).add(OnChangeAjaxBehavior.onChange(target -> target.add(city, workers, worker))))
+                .setVisible(storageId == null));
 
         WebMarkupContainer tables = new WebMarkupContainer("tables");
         tables.setOutputMarkupId(true);
@@ -129,14 +185,6 @@ public class StoragePage extends BasePage {
             }
         };
         acceptForm.add(acceptModal);
-
-        form.add(new AjaxLink<Void>("accept") {
-
-            @Override
-            public void onClick(AjaxRequestTarget target) {
-                acceptModal.open(target);
-            }
-        });
 
         //Transfer Modal
 
@@ -560,7 +608,11 @@ public class StoragePage extends BasePage {
 
                     getSession().info(getString("info_saved"));
 
-                    target.add(feedback);
+                    if (storageId == null){
+                        setResponsePage(StorageListPage.class);
+                    }else{
+                        target.add(feedback);
+                    }
                 } catch (Exception e) {
                     log.error("error save domain", e);
 
@@ -569,7 +621,20 @@ public class StoragePage extends BasePage {
                     target.add(feedback);
                 }
             }
+
+            @Override
+            protected void onError(AjaxRequestTarget target) {
+                target.add(feedback);
+            }
         });
+
+        form.add(new AjaxLink<Void>("accept") {
+
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                acceptModal.open(target);
+            }
+        }.setVisible(storageId != null));
 
         form.add(new AjaxLink<Void>("cancel") {
             @Override
