@@ -3,7 +3,7 @@ package ru.complitex.jedani.worker.page.storage;
 import org.apache.wicket.model.ResourceModel;
 import ru.complitex.common.wicket.form.TextFieldFormGroup;
 import ru.complitex.domain.component.form.DomainAutoComplete;
-import ru.complitex.domain.component.form.FormGroupPanel;
+import ru.complitex.common.wicket.form.FormGroupPanel;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.model.NumberAttributeModel;
 import ru.complitex.domain.service.EntityService;
@@ -24,7 +24,7 @@ abstract class AcceptModal extends StorageModal {
     AcceptModal(String markupId) {
         super(markupId);
 
-        add(new FormGroupPanel("nomenclature", new DomainAutoComplete(FormGroupPanel.COMPONENT_ID,
+        getContainer().add(new FormGroupPanel("nomenclature", new DomainAutoComplete(FormGroupPanel.COMPONENT_ID,
                 entityService.getEntityAttribute(Nomenclature.ENTITY_NAME, Nomenclature.NAME),
                 new NumberAttributeModel(getModel(), Transaction.NOMENCLATURE)){
             @Override
@@ -48,7 +48,7 @@ abstract class AcceptModal extends StorageModal {
         }.setRequired(true).setLabel(new ResourceModel("nomenclature"))));
 
 
-        add(new TextFieldFormGroup<>("quantity", new NumberAttributeModel(getModel(), Transaction.QUANTITY))
+        getContainer().add(new TextFieldFormGroup<>("quantity", new NumberAttributeModel(getModel(), Transaction.QUANTITY))
                 .setRequired(true).setType(Long.class));
     }
 }

@@ -22,15 +22,18 @@ public abstract class ReceiveModal extends StorageModal {
     public ReceiveModal(String markupId) {
         super(markupId);
 
-        add(new Label("nomenclature", new LoadableDetachableModel<String>() {
+        getContainer().add(new Label("nomenclature", new LoadableDetachableModel<String>() {
             @Override
             protected String load() {
-                if (transaction != null){
-                    return domainService.getDomain(Nomenclature.class, transaction.getNumber(Transaction.NOMENCLATURE))
-                            .getValueText(Nomenclature.NAME);
-                }
+                return domainService.getDomain(Nomenclature.class, transaction.getNumber(Transaction.NOMENCLATURE))
+                        .getValueText(Nomenclature.NAME);
+            }
+        }));
 
-                return "";
+        getContainer().add(new Label("quantity", new LoadableDetachableModel<String>() {
+            @Override
+            protected String load() {
+                return transaction.getNumber(Transaction.QUANTITY) + "";
             }
         }));
     }

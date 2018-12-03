@@ -1,7 +1,8 @@
 package ru.complitex.domain.component.form;
 
 import com.google.common.base.Strings;
-import org.apache.wicket.markup.html.form.DropDownChoice;
+import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.select.BootstrapSelect;
+import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.select.BootstrapSelectConfig;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.model.IModel;
 import ru.complitex.common.entity.FilterWrapper;
@@ -18,7 +19,7 @@ import java.util.stream.Collectors;
  * @author Anatoly A. Ivanov
  * 02.05.2018 7:56
  */
-public class AttributeSelect extends DropDownChoice<Long> {
+public class AttributeSelect extends BootstrapSelect<Long> {
     @Inject
     private DomainMapper domainMapper;
 
@@ -48,6 +49,8 @@ public class AttributeSelect extends DropDownChoice<Long> {
                 return !Strings.isNullOrEmpty(id) ? Long.parseLong(id) : null;
             }
         });
+
+        with(new BootstrapSelectConfig().withNoneSelectedText(""));
     }
 
     @Override

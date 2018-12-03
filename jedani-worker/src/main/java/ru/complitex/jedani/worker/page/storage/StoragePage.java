@@ -22,6 +22,7 @@ import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.slf4j.Logger;
@@ -31,6 +32,7 @@ import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
 import ru.complitex.common.wicket.datatable.DataProvider;
 import ru.complitex.common.wicket.datatable.FilterDataTable;
+import ru.complitex.common.wicket.form.FormGroupPanel;
 import ru.complitex.common.wicket.form.TextFieldFormGroup;
 import ru.complitex.common.wicket.panel.LinkPanel;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
@@ -38,15 +40,17 @@ import ru.complitex.domain.component.datatable.DomainActionColumn;
 import ru.complitex.domain.component.datatable.DomainColumn;
 import ru.complitex.domain.component.datatable.DomainIdColumn;
 import ru.complitex.domain.component.form.DomainAutoCompleteFormGroup;
-import ru.complitex.domain.component.form.FormGroupPanel;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.model.NumberAttributeModel;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
+import ru.complitex.jedani.worker.component.WorkerAutoComplete;
 import ru.complitex.jedani.worker.component.WorkerAutoCompleteList;
 import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.page.BasePage;
 import ru.complitex.jedani.worker.service.StorageService;
+import ru.complitex.jedani.worker.util.Workers;
+import ru.complitex.name.service.NameService;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -70,6 +74,9 @@ public class StoragePage extends BasePage {
     @Inject
     private StorageService storageService;
 
+    @Inject
+    private NameService nameService;
+
     public StoragePage(PageParameters pageParameters) {
         Long storageId = pageParameters.get("id").toOptionalLong();
 
@@ -83,15 +90,18 @@ public class StoragePage extends BasePage {
         add(form);
 
         TextFieldFormGroup storageIdFormGroup = new TextFieldFormGroup<>("storageId", Model.of(storageId));
-        storageIdFormGroup.getTextField().setEnabled(false);
+        storageIdFormGroup.setEnabled(false);
         storageIdFormGroup.setVisible(storageId != null);
         form.add(storageIdFormGroup);
 
         form.add(new DomainAutoCompleteFormGroup("city", City.ENTITY_NAME, City.NAME,
-                new NumberAttributeModel(storage, Storage.CITY), true));
+                new NumberAttributeModel(storage, Storage.CITY)));
 
         form.add(new FormGroupPanel("workers", new WorkerAutoCompleteList(FormGroupPanel.COMPONENT_ID,
                 Model.of(storage.getOrCreateAttribute(Storage.WORKERS)))));
+
+        form.add(new FormGroupPanel("worker", new WorkerAutoComplete(FormGroupPanel.COMPONENT_ID,
+                new PropertyModel<>(storage, "parentId"))));
 
         WebMarkupContainer tables = new WebMarkupContainer("tables");
         tables.setOutputMarkupId(true);
@@ -110,26 +120,12 @@ public class StoragePage extends BasePage {
         AcceptModal acceptModal = new AcceptModal("acceptModal") {
             @Override
             void action(AjaxRequestTarget target) {
-                Transaction transaction = getModelObject();
+                storageService.accept(storageId, getModelObject());
 
-                if (transaction.getNumber(Transaction.NOMENCLATURE) == null){
-                    info(getString("error_empty_nomenclature"));
+                info(getString("info_accepted"));
 
-                }
-
-                transaction.setNumber(Transaction.STORAGE_TO, storageId);
-                transaction.setNumber(Transaction.TYPE, TransactionType.ACCEPT);
-
-                try {
-                    storageService.accept(transaction);
-
-                    info(getString("info_accepted"));
-                } catch (Exception e) {
-                    error(getString("error_accepted"));
-                } finally {
-                    target.add(feedback, tables);
-                    appendCloseDialogJavaScript(target);
-                }
+                close(target);
+                target.add(feedback, tables);
             }
         };
         acceptForm.add(acceptModal);
@@ -157,56 +153,54 @@ public class StoragePage extends BasePage {
             void action(AjaxRequestTarget target) {
                 Transaction transaction = getModelObject();
 
-                transaction.setNumber(Transaction.STORAGE_TO, storageId);
+                Product product = domainService.getDomain(Product.class, getProduct().getObjectId());
+
+                boolean gift = Objects.equals(transaction.getNumber(Transaction.TRANSFER_TYPE), TransferType.GIFT);
+
+                Long tQty = transaction.getNumber(gift ? TransferType.GIFT : Transaction.QUANTITY);
+                Long pQty = product.getNumber(gift ? TransferType.GIFT : Product.QUANTITY);
+
+                if (tQty > pQty){
+                    error(getString("error_quantity") + ": " + tQty + " > " + pQty);
+                    target.add(getFeedback());
+
+                    return;
+                }
+
+                if (tQty < 1){
+                    error(getString("error_quantity") + ": " + tQty + " < 1 ");
+                    target.add(getFeedback());
+
+                    return;
+                }
 
                 switch (getTabIndexModel().getObject()){
                     case 0:
-                        try {
-                            if (transaction.getNumber(Transaction.WORKER_TO) == null){
-                                getFeedback().error(getString("error_empty_worker"));
-
-                                target.add(getFeedback());
-
-                                return;
-                            }
-
-                            storageService.sell(transaction);
-
-                            info(getString("info_sold"));
-                        } catch (Exception e) {
-                            log.error("error sell ", e);
-
-                            error(getString("error_sell"));
-                        }
+                        storageService.sell(product, transaction);
+                        info(getString("info_sold"));
 
                         break;
                     case 1:
-                        try {
-                            storageService.transfer(transaction);
+                        if (Objects.equals(transaction.getNumber(Transaction.RECIPIENT_TYPE), RecipientType.STORAGE)
+                                && Objects.equals(transaction.getNumber(Transaction.STORAGE_TO), storageId)){
+                            error(getString("error_same_storage"));
+                            target.add(getFeedback());
 
-                            info(getString("info_transferred"));
-                        } catch (Exception e) {
-                            log.error("error transfer ", e);
-
-                            error(getString("error_transfer"));
+                            return;
                         }
+
+                        storageService.transfer(product, transaction);
+                        info(getString("info_transferred"));
 
                         break;
                     case 2:
-                        try {
-                            storageService.transfer(transaction);
-
-                            info(getString("info_withdrew"));
-                        } catch (Exception e) {
-                            log.error("error withdraw ", e);
-
-                            error(getString("error_withdraw"));
-                        }
+                        storageService.withdraw(product, transaction);
+                        info(getString("info_withdrew"));
 
                         break;
                 }
 
-                appendCloseDialogJavaScript(target);
+                close(target);
                 target.add(feedback, tables);
             }
         };
@@ -225,15 +219,12 @@ public class StoragePage extends BasePage {
         ReceiveModal receiveModal = new ReceiveModal("receiveModal") {
             @Override
             void action(AjaxRequestTarget target) {
-                try {
-                    storageService.receive(getTransaction());
+                storageService.receive(getTransaction());
 
-                    info(getString("info_received"));
-                } catch (Exception e) {
-                    error(getString("error_received"));
-                } finally {
-                    target.add(feedback, tables);
-                }
+                info(getString("info_received"));
+
+                close(target);
+                target.add(feedback, tables);
             }
         };
         receiveForm.add(receiveModal);
@@ -282,16 +273,16 @@ public class StoragePage extends BasePage {
 
             productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.QUANTITY),
                     entityService, domainService));
-            productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.SENT),
+            productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.SENDING),
                     entityService, domainService));
-            productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.RECEIVED),
+            productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.RECEIVING),
                     entityService, domainService));
 
             productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.GIFT_QUANTITY),
                     entityService, domainService));
-            productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.GIFT_SENT),
+            productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.GIFT_SENDING),
                     entityService, domainService));
-            productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.GIFT_RECEIVED),
+            productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.GIFT_RECEIVING),
                     entityService, domainService));
 
             productColumns.add(new DomainActionColumn<Product>(StorageProductPage.class,
@@ -305,7 +296,7 @@ public class StoragePage extends BasePage {
                             Buttons.Type.Link) {
                         @Override
                         public void onClick(AjaxRequestTarget target) {
-                            transferModal.open(rowModel.getObject().getObjectId(), target);
+                            transferModal.open(rowModel.getObject(), target);
                         }
                     }.setIconType(GlyphIconType.share)));
                 }
@@ -326,7 +317,7 @@ public class StoragePage extends BasePage {
                 rowItem.add(new AjaxEventBehavior("click") {
                     @Override
                     protected void onEvent(AjaxRequestTarget target) {
-                        transferModal.open(model.getObject().getObjectId(), target);
+                        transferModal.open(model.getObject(), target);
                     }
                 });
 
@@ -343,7 +334,9 @@ public class StoragePage extends BasePage {
         //Transactions
 
         DataProvider<Transaction> transactionDataProvider = new DataProvider<Transaction>(FilterWrapper.of(
-                new Transaction()).sort("id", null, false)) {
+                (Transaction) new Transaction().setNumber(Transaction.STORAGE_TO, storageId)
+                        .setNumber(Transaction.STORAGE_FROM, storageId))
+                .setFilter(FilterWrapper.FILTER_SEARCH).sort("id", null, false)) {
             @Override
             public Iterator<? extends Transaction> iterator(long first, long count) {
                 FilterWrapper<Transaction> filterWrapper = getFilterState().limit(first, count);
@@ -402,8 +395,34 @@ public class StoragePage extends BasePage {
                     entityService, domainService));
             transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.STORAGE_TO),
                     entityService, domainService));
-            transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.WORKER_TO),
-                    entityService, domainService));
+
+            transactionColumns.add(new AbstractDomainColumn<Transaction>(transactionEntity.getEntityAttribute(Transaction.WORKER_TO)) {
+                @Override
+                public void populateItem(Item<ICellPopulator<Transaction>> cellItem, String componentId, IModel<Transaction> rowModel) {
+                    cellItem.add(new Label(componentId, Workers.getWorkerLabelSimple(rowModel.getObject().getNumber(Transaction.WORKER_TO),
+                            domainService, nameService)));
+                }
+
+                @Override
+                public Component getFilter(String componentId, FilterForm<?> form) {
+                    return new TextFilter<>(componentId, Model.of(""), form);
+                }
+            });
+
+            transactionColumns.add(new AbstractDomainColumn<Transaction>(new ResourceModel("client"), new SortProperty("client")) {
+                @Override
+                public void populateItem(Item<ICellPopulator<Transaction>> cellItem, String componentId, IModel<Transaction> rowModel) {
+                    Transaction transaction = rowModel.getObject();
+
+                    cellItem.add(new Label(componentId, nameService.getFio(transaction.getNumber(Transaction.LAST_NAME_TO),
+                            transaction.getNumber(Transaction.FIRST_NAME_TO), transaction.getNumber(Transaction.MIDDLE_NAME_TO))));
+                }
+
+                @Override
+                public Component getFilter(String componentId, FilterForm<?> form) {
+                    return new TextFilter<>(componentId, Model.of(""), form);
+                }
+            });
 
             transactionColumns.add(new AbstractDomainColumn<Transaction>(Model.of(transactionEntity
                     .getEntityAttribute(Transaction.TYPE).getValue().getText()),
@@ -486,7 +505,8 @@ public class StoragePage extends BasePage {
                     Transaction transaction = rowModel.getObject();
 
                     boolean receive = Objects.equals(transaction.getNumber(Transaction.TYPE), TransactionType.TRANSFER) &&
-                            Objects.equals(transaction.getNumber(Transaction.STORAGE_TO), storageId);
+                            Objects.equals(transaction.getNumber(Transaction.STORAGE_TO), storageId) &&
+                            transaction.getEndDate() == null;
 
                     cellItem.add(new LinkPanel(componentId, new BootstrapAjaxLink<Void>(LinkPanel.LINK_COMPONENT_ID,
                             Buttons.Type.Link) {

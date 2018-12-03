@@ -3,9 +3,7 @@
 <mapper namespace="ru.complitex.jedani.worker.mapper.StorageMapper">
     <resultMap id="storageResultMap" type="ru.complitex.jedani.worker.entity.Storage"
                extends="ru.complitex.domain.mapper.DomainMapper.domainResultMapJoin">
-        <result column="product_count" property="productCount"/>
-        <result column="product_into_count" property="productIntoCount"/>
-        <result column="product_from_count" property="productFromCount"/>
+
     </resultMap>
 
     <sql id="selectStorageFrom">
@@ -14,33 +12,9 @@
     <sql id="selectStorageWhere">
     </sql>
 
-    <sql id="selectProductSql">
-        select count(distinct p.object_id) from product p
-            left join product_attribute pa_s on pa_s.object_id = p.object_id and pa_s.entity_attribute_id = 2 and pa_s.status = 1
-            left join product_attribute pa_s_into on pa_s_into.object_id = p.object_id and pa_s_into.entity_attribute_id = 3 and pa_s_into.status = 1
-    </sql>
-
-    <sql id="selectProductCount">
-      <include refid="selectProductSql"/>
-      where pa_s.number = d.object_id and pa_s_into.number is null
-    </sql>
-
-    <sql id="selectProductIntoCount">
-        <include refid="selectProductSql"/>
-        where pa_s_into.number = d.object_id
-    </sql>
-
-    <sql id="selectProductFromCount">
-        <include refid="selectProductSql"/>
-        where pa_s.number = d.object_id and pa_s_into.number is not null
-    </sql>
-
     <!--suppress SqlResolve -->
     <select id="selectStorages" parameterType="ru.complitex.common.entity.FilterWrapper" resultMap="storageResultMap">
         select d.*, '${object.entityName}' entity_name,
-          (<include refid="selectProductCount"/>) product_count,
-          (<include refid="selectProductIntoCount"/>) product_into_count,
-          (<include refid="selectProductFromCount"/>) product_from_count,
           <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsSelect"/>
         from (
           select dd.object_id object_id

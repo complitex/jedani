@@ -18,7 +18,7 @@ import ru.complitex.domain.entity.Domain;
  */
 public class DomainIdColumn<T extends Domain> extends AbstractDomainColumn<T>{
     public DomainIdColumn() {
-        super(Model.of("#"), new SortProperty("id"));
+        super(Model.of("№"), new SortProperty("id"));
     }
 
     @Override

@@ -6,11 +6,14 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
 import de.agilecoders.wicket.core.markup.html.bootstrap.dialog.Modal;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import ru.complitex.common.wicket.util.ComponentUtil;
+import ru.complitex.jedani.worker.entity.RecipientType;
 import ru.complitex.jedani.worker.entity.Transaction;
+import ru.complitex.jedani.worker.entity.TransferType;
 
 /**
  * @author Anatoly A. Ivanov
@@ -18,6 +21,7 @@ import ru.complitex.jedani.worker.entity.Transaction;
  */
 abstract class StorageModal extends Modal<Transaction> {
     private FeedbackPanel feedback;
+    private WebMarkupContainer container;
 
     private BootstrapAjaxButton actionButton;
 
@@ -25,11 +29,16 @@ abstract class StorageModal extends Modal<Transaction> {
         super(markupId, Model.of(new Transaction()));
 
         header(LoadableDetachableModel.of(() -> getString("header")));
-        setVisible(false);
+
+        container = new WebMarkupContainer("container");
+        container.setOutputMarkupId(true);
+        container.setOutputMarkupPlaceholderTag(true);
+        container.setVisible(false);
+        add(container);
 
         feedback = new NotificationPanel("feedback");
         feedback.setOutputMarkupId(true);
-        add(feedback);
+        container.add(feedback);
 
         addButton(actionButton = new BootstrapAjaxButton(Modal.BUTTON_MARKUP_ID, Buttons.Type.Primary) {
             @Override
@@ -39,13 +48,11 @@ abstract class StorageModal extends Modal<Transaction> {
 
             @Override
             protected void onError(AjaxRequestTarget target) {
-                StorageModal.this.visitChildren(((object, visit) -> {
+                container.visitChildren(((object, visit) -> {
                     if (object.hasErrorMessage()){
                         target.add(ComponentUtil.getAjaxParent(object));
                     }
                 }));
-
-//                target.add(feedback);
             }
         }.setLabel(LoadableDetachableModel.of(() -> getString("action"))));
 
@@ -58,16 +65,28 @@ abstract class StorageModal extends Modal<Transaction> {
     }
 
     void open(AjaxRequestTarget target){
-        Transaction transaction = new Transaction();
-        transaction.setNumber(Transaction.QUANTITY, 1L);
-        setModelObject(transaction);
+        Transaction transaction = getModelObject();
 
-        setVisible(true);
-        target.add(this);
+        transaction.getAttributes().clear();
+
+        transaction.setNumber(Transaction.QUANTITY, 1L);
+        transaction.setNumber(Transaction.TRANSFER_TYPE, TransferType.TRANSFER);
+        transaction.setNumber(Transaction.RECIPIENT_TYPE, RecipientType.WORKER);
+
+        container.setVisible(true);
+        target.add(container);
         appendShowDialogJavaScript(target);
     }
 
+    void close(AjaxRequestTarget target){
+        appendCloseDialogJavaScript(target);
+    }
+
     abstract void action(AjaxRequestTarget target);
+
+    public WebMarkupContainer getContainer() {
+        return container;
+    }
 
     FeedbackPanel getFeedback() {
         return feedback;

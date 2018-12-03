@@ -1,10 +1,11 @@
 package ru.complitex.domain.component.form;
 
+import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.select.BootstrapSelect;
+import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.select.BootstrapSelectConfig;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -63,7 +64,7 @@ public class AttributeSelectList extends FormComponentPanel<Attribute> {
         ListView<Long> listView = new ListView<Long>("selects", listModel) {
             @Override
             protected void populateItem(ListItem<Long> item) {
-                item.add(new DropDownChoice<Long>("select", item.getModel(),
+                item.add(new BootstrapSelect<Long>("select", item.getModel(),
                         new LoadableDetachableModel<List<Long>>() {
                             @Override
                             protected List<Long> load() {
@@ -94,7 +95,8 @@ public class AttributeSelectList extends FormComponentPanel<Attribute> {
                     protected String getNullKeyDisplayValue() {
                         return "";
                     }
-                }.add(OnChangeAjaxBehavior.onChange(AttributeSelectList.this::onChange)));
+                }.with(new BootstrapSelectConfig().withNoneSelectedText("")).add(OnChangeAjaxBehavior.onChange(
+                        AttributeSelectList.this::onChange)));
 
                 item.add(new AjaxLink<Void>("remove") {
                     @Override

@@ -38,6 +38,29 @@ public class Attribute implements Serializable{
         this.entityAttributeId = entityAttributeId;
     }
 
+    public Attribute(Attribute attribute){
+        copy(attribute);
+    }
+
+    public void copy(Attribute attribute){
+        id = attribute.id;
+        objectId = attribute.objectId;
+        entityAttributeId = attribute.entityAttributeId;
+        text = attribute.text;
+        number = attribute.number;
+        date = attribute.date;
+        startDate = attribute.startDate;
+        endDate = attribute.endDate;
+        status = attribute.status;
+        userId = attribute.userId;
+
+        entityName = attribute.entityName;
+
+        attribute.values.forEach(v -> values.add(new Value(v)));
+
+        entityAttribute = attribute.entityAttribute;
+    }
+
     public Value getValue(Long localeId){
         if (values != null){
             return values.stream().filter(sc -> localeId.equals(sc.getLocaleId()))

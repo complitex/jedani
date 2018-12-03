@@ -219,9 +219,12 @@
                                    and a${i}.number is not null
                                </when>
                                <otherwise>
-                                   and (a${i}.number = #{a.number}
-                                       <if test="object.useNumberValue">or v${i}.number = #{a.number}</if>
-                                   )
+                                   <choose>
+                                       <when test="filter == 'search'"> or </when>
+                                       <otherwise> and </otherwise>
+                                   </choose>
+                                   (a${i}.number = #{a.number}
+                                   <if test="object.useNumberValue">or v${i}.number = #{a.number}</if>)
                                </otherwise>
                            </choose>
                         </if>
@@ -361,7 +364,8 @@
 
     <!--suppress SqlResolve -->
     <update id="updateDomain" parameterType="ru.complitex.domain.entity.Domain">
-        update ${entityName} set `parent_id` = #{parentId}, `parent_entity_id` = #{parentEntityId}, `status` = #{status}
+        update ${entityName} set `parent_id` = #{parentId}, `parent_entity_id` = #{parentEntityId}, `status` = #{status},
+               end_date = #{endDate}
           where id = #{id}
     </update>
 

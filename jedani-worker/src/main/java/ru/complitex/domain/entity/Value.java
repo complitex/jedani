@@ -27,6 +27,20 @@ public class Value implements Serializable{
         this.text = text;
     }
 
+    public Value(Value value){
+        copy(value);
+    }
+
+    public void copy(Value value){
+       id = value.id;
+       attributeId = value.attributeId;
+       localeId = value.localeId;
+       text = value.text;
+       number = value.number;
+
+       entityName = value.entityName;
+    }
+
     public Long getId() {
         return id;
     }

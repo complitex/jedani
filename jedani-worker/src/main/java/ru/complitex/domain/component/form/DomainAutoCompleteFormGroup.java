@@ -18,13 +18,12 @@ public class DomainAutoCompleteFormGroup extends Panel{
 
     private DomainAutoComplete domainAutoComplete;
 
-    public DomainAutoCompleteFormGroup(String id, String entityName, Long entityAttributeId, IModel<Long> model,
-                                       boolean capitalize) {
-        this(id, new ResourceModel(id), entityName, entityAttributeId, model, capitalize);
+    public DomainAutoCompleteFormGroup(String id, String entityName, Long entityAttributeId, IModel<Long> model) {
+        this(id, new ResourceModel(id), entityName, entityAttributeId, model);
     }
 
     public DomainAutoCompleteFormGroup(String id, IModel<String> label, String entityName, Long entityAttributeId,
-                                       IModel<Long> model, boolean capitalize) {
+                                       IModel<Long> model) {
         super(id);
 
         setOutputMarkupId(true);

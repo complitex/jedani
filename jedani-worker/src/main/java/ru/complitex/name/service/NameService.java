@@ -79,5 +79,10 @@ public class NameService implements Serializable {
                 : "";
     }
 
+    public String getFio(Long lastNameId, Long firstNameId, Long middleNameId){
+        return getLastName(lastNameId) + " " + getFirstName(firstNameId) + " " + getMiddleName(middleNameId);
+
+    }
+
 
 }

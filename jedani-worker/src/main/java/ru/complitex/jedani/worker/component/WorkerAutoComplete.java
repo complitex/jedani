@@ -11,10 +11,9 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.convert.ConversionException;
 import org.apache.wicket.util.convert.IConverter;
-import org.apache.wicket.util.lang.Objects;
-import ru.complitex.domain.util.Attributes;
 import ru.complitex.jedani.worker.entity.Worker;
 import ru.complitex.jedani.worker.mapper.WorkerMapper;
+import ru.complitex.jedani.worker.util.Workers;
 import ru.complitex.name.service.NameService;
 
 import javax.inject.Inject;
@@ -43,26 +42,11 @@ public class WorkerAutoComplete extends Panel {
         inputId.add(OnChangeAjaxBehavior.onChange(this::onChange));
         add(inputId);
 
-        IModel<Worker> workerModel = new Model<Worker>(){
-            @Override
-            public void setObject(Worker worker) {
-                super.setObject(worker);
-
-                if (worker != null){
-                    workerIdModel.setObject(worker.getObjectId());
-                }
-            }
-        };
-
-        if (workerIdModel.getObject() != null){
-            workerModel.setObject(workerMapper.getWorker(workerIdModel.getObject()));
-        }
-
-        autoCompleteTextField = new AutoCompleteTextField<Worker>("input", workerModel, Worker.class,
+        autoCompleteTextField = new AutoCompleteTextField<Worker>("input", new Model<>(new Worker()), Worker.class,
                 new AbstractAutoCompleteTextRenderer<Worker>() {
                     @Override
                     protected String getTextValue(Worker worker) {
-                        return WorkerAutoComplete.this.getTextValue(worker);
+                        return Workers.getWorkerLabel(worker, nameService);
                     }
 
                     @Override
@@ -93,8 +77,8 @@ public class WorkerAutoComplete extends Panel {
 
                     @Override
                     public String convertToString(Worker worker, Locale locale) {
-                        if (worker != null){
-                            return getTextValue(worker);
+                        if (workerIdModel.getObject() != null){
+                            return Workers.getWorkerLabel(workerMapper.getWorker(workerIdModel.getObject()), nameService);
                         }
 
                         return null;
@@ -106,18 +90,23 @@ public class WorkerAutoComplete extends Panel {
         add(autoCompleteTextField);
     }
 
-    private String getTextValue(Worker worker){
-        return Objects.defaultIfNull(worker.getText(Worker.J_ID), "") + " " +
-                Attributes.capitalize(nameService.getLastName(worker.getNumber(Worker.LAST_NAME))) + " " +
-                Attributes.capitalize(nameService.getFirstName(worker.getNumber(Worker.FIRST_NAME))) + " " +
-                        Attributes.capitalize(nameService.getMiddleName(worker.getNumber(Worker.MIDDLE_NAME)));
-    }
-
     public AutoCompleteTextField<Worker> getAutoCompleteTextField() {
         return autoCompleteTextField;
     }
 
     protected void onChange(AjaxRequestTarget target){
 
+    }
+
+    public WorkerAutoComplete setRequired(boolean required){
+        autoCompleteTextField.setRequired(true);
+
+        return this;
+    }
+
+    public WorkerAutoComplete setLabel(IModel<String> labelModel){
+        autoCompleteTextField.setLabel(labelModel);
+
+        return this;
     }
 }

@@ -6,6 +6,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import ru.complitex.common.entity.SortProperty;
 import ru.complitex.domain.entity.Domain;
+import ru.complitex.domain.entity.EntityAttribute;
 
 /**
  * @author Anatoly A. Ivanov
@@ -20,5 +21,26 @@ public abstract class AbstractDomainColumn<T extends Domain>  extends AbstractCo
 
     public AbstractDomainColumn(IModel<String> displayModel, SortProperty sortProperty) {
         super(displayModel, sortProperty);
+    }
+
+    public AbstractDomainColumn(EntityAttribute entityAttribute){
+        super(displayModel(entityAttribute), sortProperty(entityAttribute));
+    }
+
+    protected static Model<String> displayModel(EntityAttribute entityAttribute) {
+        if (entityAttribute != null){
+            return Model.of(entityAttribute.getValueText());
+
+        }
+
+        return Model.of("");
+    }
+
+    protected static SortProperty sortProperty(EntityAttribute entityAttribute){
+        if (entityAttribute != null){
+            return new SortProperty(entityAttribute.getValueType().getKey(), entityAttribute);
+        }
+
+        return null;
     }
 }

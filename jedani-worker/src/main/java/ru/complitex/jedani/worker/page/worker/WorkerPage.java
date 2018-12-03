@@ -213,16 +213,16 @@ public class WorkerPage extends BasePage {
         DomainAutoCompleteFormGroup lastName, firstName, middleName;
 
         form.add(lastName = new DomainAutoCompleteFormGroup("lastName", LastName.ENTITY_NAME, LastName.NAME,
-                new NumberAttributeModel(worker, Worker.LAST_NAME), true).setRequired(true));
+                new NumberAttributeModel(worker, Worker.LAST_NAME)).setRequired(true));
         form.add(firstName = new DomainAutoCompleteFormGroup("firstName", FirstName.ENTITY_NAME, FirstName.NAME,
-                new NumberAttributeModel(worker, Worker.FIRST_NAME), true).setRequired(true));
+                new NumberAttributeModel(worker, Worker.FIRST_NAME)).setRequired(true));
         form.add(middleName = new DomainAutoCompleteFormGroup("middleName", MiddleName.ENTITY_NAME, MiddleName.NAME,
-                new NumberAttributeModel(worker, Worker.MIDDLE_NAME), true));
+                new NumberAttributeModel(worker, Worker.MIDDLE_NAME)));
         form.add(new AttributeSelectFormGroup("position", new NumberAttributeModel(worker, Worker.POSITION),
                 Position.ENTITY_NAME, Position.NAME));
 
         TextFieldFormGroup<String> jId = new TextFieldFormGroup<>("jId", new PropertyModel<>(worker.getOrCreateAttribute(Worker.J_ID), "text"));
-        jId.getTextField().setRequired(participant);
+        jId.setRequired(participant);
 
         if (worker.getObjectId() == null) {
             jId.onUpdate(target -> {

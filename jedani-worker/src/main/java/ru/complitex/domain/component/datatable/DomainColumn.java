@@ -10,11 +10,9 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.TextF
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.complitex.common.entity.FilterWrapper;
-import ru.complitex.common.entity.SortProperty;
 import ru.complitex.common.wicket.panel.InputPanel;
 import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Domain;
@@ -45,29 +43,12 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
     private DomainService domainService;
 
     public DomainColumn(EntityAttribute entityAttribute, EntityService entityService, DomainService domainService) {
-        super(displayModel(entityAttribute), sortProperty(entityAttribute));
+        super(entityAttribute);
 
         this.entityAttribute = entityAttribute;
 
         this.entityService = entityService;
         this.domainService = domainService;
-    }
-
-    private static Model<String> displayModel(EntityAttribute entityAttribute) {
-        if (entityAttribute != null){
-            return Model.of(entityAttribute.getValueText());
-
-        }
-
-        return Model.of("");
-    }
-
-    private static SortProperty sortProperty(EntityAttribute entityAttribute){
-        if (entityAttribute != null){
-            return new SortProperty(entityAttribute.getValueType().getKey(), entityAttribute);
-        }
-
-        return null;
     }
 
     @Override

@@ -20,7 +20,7 @@ public class Domains {
         }
     }
 
-    public static <T extends Domain> T newObject(Class<T> domainClass, Domain domain){
+    public static <T extends Domain> T newObject(Class<T> domainClass, Domain domain, boolean wrapAttributes){
         if (domain == null){
             return null;
         }
@@ -28,7 +28,7 @@ public class Domains {
         try {
             T domainInstance = domainClass.newInstance();
 
-            domainInstance.wrap(domain);
+            domainInstance.copy(domain, wrapAttributes);
 
             return domainInstance;
         } catch (Exception e) {

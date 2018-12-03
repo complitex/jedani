@@ -40,21 +40,27 @@ public class Domain implements Serializable{
     }
 
     public Domain(Domain domain){
-        wrap(domain);
+        copy(domain, false);
     }
 
-    public void wrap(Domain domain){
-        this.id = domain.id;
-        this.objectId = domain.objectId;
-        this.parentId = domain.parentId;
-        this.parentEntityId = domain.parentEntityId;
-        this.startDate = domain.startDate;
-        this.endDate = domain.endDate;
-        this.status = domain.status;
-        this.permissionId = domain.permissionId;
-        this.entityName = domain.entityName;
-        this.attributes = domain.attributes;
-        this.map = domain.map;
+    public void copy(Domain domain, boolean wrapAttributes){
+       id = domain.id;
+       objectId = domain.objectId;
+       parentId = domain.parentId;
+       parentEntityId = domain.parentEntityId;
+       startDate = domain.startDate;
+       endDate = domain.endDate;
+       status = domain.status;
+       permissionId = domain.permissionId;
+       entityName = domain.entityName;
+
+        if (wrapAttributes) {
+            domain.attributes.forEach(a -> attributes.add(new Attribute(a)));
+        }else{
+            attributes = domain.attributes;
+        }
+
+        map.putAll(domain.map);
     }
 
     public Domain(Domain domain, String entityName){
@@ -74,6 +80,10 @@ public class Domain implements Serializable{
         return this;
     }
 
+    public void copyText(Long entityAttributeId, Domain domain){
+        setText(entityAttributeId, domain.getText(entityAttributeId));
+    }
+
     public Domain setUpperText(Long entityAttributeId, String text){
         if (text != null){
             setText(entityAttributeId, text.toUpperCase());
@@ -86,6 +96,10 @@ public class Domain implements Serializable{
         getOrCreateAttribute(entityAttributeId).setNumber(number);
 
         return this;
+    }
+
+    public void copyNumber(Long entityAttributeId, Domain domain){
+        setNumber(entityAttributeId, domain.getNumber(entityAttributeId));
     }
 
     public void setDate(Long entityAttributeId, Date date){
@@ -135,6 +149,12 @@ public class Domain implements Serializable{
         Attribute attribute = getAttribute(entityAttributeId);
 
         return attribute != null ? attribute.getNumber() : null;
+    }
+
+    public Long getNumber(Long entityAttributeId, Long defaultNumber){
+        Attribute attribute = getAttribute(entityAttributeId);
+
+        return attribute != null ? attribute.getNumber() != null ? attribute.getNumber() : defaultNumber : defaultNumber;
     }
 
     public Date getDate(Long entityAttributeId){

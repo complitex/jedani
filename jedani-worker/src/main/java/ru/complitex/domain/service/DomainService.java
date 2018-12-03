@@ -18,10 +18,14 @@ public class DomainService implements Serializable {
     @Inject
     private DomainMapper domainMapper;
 
-    public <T extends Domain> List<T> getDomains(Class<T> domainClass, FilterWrapper<T> filterWrapper){
+    public <T extends Domain> List<T> getDomains(Class<T> domainClass, FilterWrapper<T> filterWrapper, boolean wrapAttributes){
         return domainMapper.getDomains(filterWrapper).stream()
-                .map(d -> Domains.newObject(domainClass, d))
+                .map(d -> Domains.newObject(domainClass, d, wrapAttributes))
                 .collect(Collectors.toList());
+    }
+
+    public <T extends Domain> List<T> getDomains(Class<T> domainClass, FilterWrapper<T> filterWrapper){
+        return getDomains(domainClass, filterWrapper, false);
     }
 
     public <T extends Domain> Long getDomainsCount(FilterWrapper<T> filterWrapper){
@@ -32,9 +36,13 @@ public class DomainService implements Serializable {
         return domainMapper.getDomain(entityName, objectId);
     }
 
-    public <T extends Domain> T getDomain(Class<T> domainClass, Long objectId){
+    public <T extends Domain> T getDomain(Class<T> domainClass, Long objectId, boolean wrapAttributes){
         return Domains.newObject(domainClass, domainMapper.getDomain(Domains.getEntityName(domainClass), objectId,
-                Domains.isUseDateAttribute(domainClass), Domains.isUseNumberValue(domainClass)));
+                Domains.isUseDateAttribute(domainClass), Domains.isUseNumberValue(domainClass)), wrapAttributes);
+    }
+
+    public <T extends Domain> T getDomain(Class<T> domainClass, Long objectId){
+        return getDomain(domainClass, objectId, false);
     }
 
     public void save(Domain domain){

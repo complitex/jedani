@@ -1,4 +1,4 @@
-package ru.complitex.domain.component.form;
+package ru.complitex.common.wicket.form;
 
 import de.agilecoders.wicket.core.markup.html.bootstrap.form.FormGroup;
 import org.apache.wicket.Component;
@@ -16,6 +16,7 @@ public class FormGroupPanel extends Panel {
         super(id);
 
         setOutputMarkupId(true);
+        setOutputMarkupPlaceholderTag(true);
 
         FormGroup group = new FormGroup("group", new ResourceModel(id));
         add(group);

@@ -9,6 +9,9 @@ import java.util.Map;
  * 29.11.2017 16:46
  */
 public class FilterWrapper<T extends Serializable> implements Serializable {
+    public static final String FILTER_EQUAL = "equal";
+    public static final String FILTER_SEARCH = "search";
+
     private T object;
     private Long first = 0L;
     private Long count = 0L;
