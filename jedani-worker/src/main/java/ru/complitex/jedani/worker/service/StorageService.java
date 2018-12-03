@@ -33,11 +33,13 @@ public class StorageService implements Serializable {
 
         domainService.save(t);
 
-        Product product = getProduct(storageId, t.getNumber(Transaction.NOMENCLATURE));
+        Product product;
 
-        if (product != null){
+        if (isProductExist(storageId, t.getNumber(Transaction.NOMENCLATURE))){
+            product = getProduct(storageId, t.getNumber(Transaction.NOMENCLATURE));
+
             product.setNumber(Product.QUANTITY, product.getNumber(Product.QUANTITY) +
-                    t.getNumber(Transaction.QUANTITY)); //todo sql transaction update
+                    t.getNumber(Transaction.QUANTITY));
         }else {
             product = new Product();
 
@@ -233,7 +235,7 @@ public class StorageService implements Serializable {
             case (int) TransferType.GIFT:
                 pFrom.setNumber(Product.GIFT_SENDING, pFrom.getNumber(Product.GIFT_SENDING, 0L) - qty);
                 pTo.setNumber(Product.GIFT_RECEIVING, pTo.getNumber(Product.GIFT_RECEIVING, 0L) - qty);
-                pTo.setNumber(Product.GIFT_QUANTITY, pTo.getNumber(Product.GIFT_QUANTITY) + qty);
+                pTo.setNumber(Product.GIFT_QUANTITY, pTo.getNumber(Product.GIFT_QUANTITY, 0L) + qty);
 
                 break;
         }

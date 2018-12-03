@@ -48,7 +48,7 @@ public class DomainAutoComplete extends Panel {
             @Override
             public Domain getObject() {
                 if (model.getObject() != null){
-                    return domainMapper.getDomain(entityAttribute.getEntityName(), model.getObject());
+                    return domainMapper.getDomain(getEntityName(), model.getObject());
                 }
 
                 return null;
@@ -98,6 +98,10 @@ public class DomainAutoComplete extends Panel {
         };
 
         add(autoCompleteTextField);
+    }
+
+    public String getEntityName(){
+        return entityAttribute.getEntityName();
     }
 
     protected Domain getDomain(IModel<Long> model) {

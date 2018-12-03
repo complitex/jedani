@@ -1,9 +1,10 @@
 package ru.complitex.jedani.worker.page.storage;
 
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.util.string.Strings;
+import ru.complitex.common.wicket.form.FormGroupPanel;
 import ru.complitex.common.wicket.form.TextFieldFormGroup;
 import ru.complitex.domain.component.form.DomainAutoComplete;
-import ru.complitex.common.wicket.form.FormGroupPanel;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.model.NumberAttributeModel;
 import ru.complitex.domain.service.EntityService;
@@ -43,7 +44,8 @@ abstract class AcceptModal extends StorageModal {
                     return "";
                 }
 
-                return domain.getText(Nomenclature.CODE) + " " + Attributes.capitalize(domain.getValueText(Nomenclature.NAME));
+                return Strings.defaultIfEmpty(domain.getText(Nomenclature.CODE), "") + " " +
+                        Attributes.capitalize(domain.getValueText(Nomenclature.NAME));
             }
         }.setRequired(true).setLabel(new ResourceModel("nomenclature"))));
 

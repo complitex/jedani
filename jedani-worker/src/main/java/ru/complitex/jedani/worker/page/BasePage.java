@@ -23,7 +23,6 @@ import ru.complitex.jedani.worker.page.resource.JedaniCssResourceReference;
 import ru.complitex.jedani.worker.page.resource.JedaniJsResourceReference;
 import ru.complitex.jedani.worker.page.resource.MenuCssResourceReference;
 import ru.complitex.jedani.worker.page.storage.NomenclatureListPage;
-import ru.complitex.jedani.worker.page.storage.ProductListPage;
 import ru.complitex.jedani.worker.page.storage.StorageListPage;
 import ru.complitex.jedani.worker.page.worker.WorkerListPage;
 import ru.complitex.jedani.worker.page.worker.WorkerPage;
@@ -122,7 +121,6 @@ public class BasePage extends WebPage{
         add(repository);
 
         repository.add(new BookmarkablePageLink<>("nomenclature", NomenclatureListPage.class).setVisible(isAdmin()));
-        repository.add(new BookmarkablePageLink<>("product", ProductListPage.class).setVisible(isAdmin()));
         repository.add(new BookmarkablePageLink<>("storage", StorageListPage.class).setVisible(isAdmin() || isStructureAdmin()));
     }
 

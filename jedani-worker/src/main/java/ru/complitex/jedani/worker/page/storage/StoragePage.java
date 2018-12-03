@@ -333,8 +333,7 @@ public class StoragePage extends BasePage {
             productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.GIFT_RECEIVING),
                     entityService, domainService));
 
-            productColumns.add(new DomainActionColumn<Product>(StorageProductPage.class,
-                    new PageParameters().add("storage_id", storageId)){
+            productColumns.add(new DomainActionColumn<Product>(null, new PageParameters().add("storage_id", storageId)){
                 @Override
                 public void populateItem(Item<ICellPopulator<Product>> cellItem, String componentId, IModel<Product> rowModel) {
                     PageParameters pageParameters = new PageParameters().add("id", rowModel.getObject().getObjectId());
@@ -526,7 +525,7 @@ public class StoragePage extends BasePage {
                     if (transferType != null) {
                         switch (transferType.intValue()){
                             case 1:
-                                resourceKey = "transfer";
+                                resourceKey = null;
                                 break;
                             case 2:
                                 resourceKey = "gift";

@@ -30,7 +30,7 @@ public class NomenclatureListPage extends DomainListPage<Nomenclature> {
     protected List<EntityAttribute> getEntityAttributes(Entity entity) {
         List<EntityAttribute> list = new ArrayList<>();
 
-        list.add(entity.getEntityAttribute(Nomenclature.NAME));
+        list.add(entity.getEntityAttribute(Nomenclature.NAME)); //todo required
 
         list.add(entity.getEntityAttribute(Nomenclature.CODE));
 

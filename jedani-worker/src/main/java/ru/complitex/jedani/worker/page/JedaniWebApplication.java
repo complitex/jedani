@@ -24,7 +24,10 @@ import ru.complitex.jedani.worker.page.catalog.MkStatusListPage;
 import ru.complitex.jedani.worker.page.catalog.PositionEditPage;
 import ru.complitex.jedani.worker.page.catalog.PositionListPage;
 import ru.complitex.jedani.worker.page.login.LoginPage;
-import ru.complitex.jedani.worker.page.storage.*;
+import ru.complitex.jedani.worker.page.storage.NomenclatureEditPage;
+import ru.complitex.jedani.worker.page.storage.NomenclatureListPage;
+import ru.complitex.jedani.worker.page.storage.StorageListPage;
+import ru.complitex.jedani.worker.page.storage.StoragePage;
 import ru.complitex.jedani.worker.page.worker.WorkerListPage;
 import ru.complitex.jedani.worker.page.worker.WorkerPage;
 import ru.complitex.jedani.worker.page.worker.WorkerStructurePage;
@@ -96,13 +99,9 @@ public class JedaniWebApplication extends WebApplication{
         mountPage("nomenclatures", NomenclatureListPage.class);
         mountPage("nomenclature", NomenclatureEditPage.class);
         mountPage("nomenclature/${id}", NomenclatureEditPage.class);
-        mountPage("products", ProductListPage.class);
-        mountPage("product", ProductEditPage.class);
-        mountPage("product/${id}", ProductEditPage.class);
         mountPage("storages", StorageListPage.class);
         mountPage("storage", StoragePage.class);
         mountPage("storage/${id}", StoragePage.class);
-        mountPage("product/${storage_id}/${id}", StorageProductPage.class);
     }
 
     @Override

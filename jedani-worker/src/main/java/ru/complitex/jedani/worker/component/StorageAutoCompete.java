@@ -50,6 +50,11 @@ public class StorageAutoCompete extends DomainAutoComplete {
     }
 
     @Override
+    public String getEntityName() {
+        return Storage.ENTITY_NAME;
+    }
+
+    @Override
     protected String getTextValue(Domain domain) {
         return Storages.getStorageLabel(domain, domainService, nameService);
     }

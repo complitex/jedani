@@ -15,6 +15,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.util.string.Strings;
 import ru.complitex.common.wicket.form.FormGroupPanel;
 import ru.complitex.common.wicket.form.FormGroupSelectPanel;
 import ru.complitex.common.wicket.form.TextFieldFormGroup;
@@ -290,7 +291,7 @@ public abstract class TransferModal extends StorageModal {
         this.product = product;
 
         Nomenclature nomenclature = domainService.getDomain(Nomenclature.class, product.getNumber(Product.NOMENCLATURE));
-        nomenclatureLabel = nomenclature.getText(Nomenclature.CODE) + " "
+        nomenclatureLabel = Strings.defaultIfEmpty(nomenclature.getText(Nomenclature.CODE), "") + " "
                 + Attributes.capitalize(nomenclature.getValueText(Nomenclature.NAME));
 
         open(target);
