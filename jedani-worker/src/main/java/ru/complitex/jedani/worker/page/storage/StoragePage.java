@@ -577,15 +577,22 @@ public class StoragePage extends BasePage {
             protected Item<Transaction> newRowItem(String id, int index, final IModel<Transaction> model) {
                 Item<Transaction> rowItem = super.newRowItem(id, index, model);
 
-                rowItem.add(new AjaxEventBehavior("click") {
-                    @Override
-                    protected void onEvent(AjaxRequestTarget target) {
-                        receiveModal.open(model.getObject(), target);
-                    }
-                });
+                Transaction transaction = model.getObject();
 
+                boolean receive = Objects.equals(transaction.getNumber(Transaction.TYPE), TransactionType.TRANSFER) &&
+                        Objects.equals(transaction.getNumber(Transaction.STORAGE_TO), storageId) &&
+                        transaction.getEndDate() == null;
 
-                rowItem.add(new CssClassNameAppender("pointer"));
+                if (receive) {
+                    rowItem.add(new AjaxEventBehavior("click") {
+                        @Override
+                        protected void onEvent(AjaxRequestTarget target) {
+                            receiveModal.open(model.getObject(), target);
+                        }
+                    });
+
+                    rowItem.add(new CssClassNameAppender("pointer"));
+                }
 
                 return rowItem;
 
