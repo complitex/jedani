@@ -52,8 +52,13 @@ li.disabled a, li.disabled span{
     width: 55px;
 }
 
+.domain-id-column .btn{
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
 .btn{
-    cursor: pointer; !important;
+    cursor: pointer !important;
 }
 
 .wicket-aa-container{
