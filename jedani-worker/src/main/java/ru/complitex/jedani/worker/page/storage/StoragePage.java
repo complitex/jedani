@@ -131,7 +131,7 @@ public class StoragePage extends BasePage {
             }
         });
 
-        form.add(new FormGroupSelectPanel("type", new BootstrapSelect<>(FormGroupPanel.COMPONENT_ID,
+        form.add(new FormGroupSelectPanel("storageType", new BootstrapSelect<>(FormGroupPanel.COMPONENT_ID,
                 new NumberAttributeModel(storage, Storage.TYPE), Arrays.asList(StorageType.REAL, StorageType.VIRTUAL),
                 new IChoiceRenderer<Long>() {
                     @Override
