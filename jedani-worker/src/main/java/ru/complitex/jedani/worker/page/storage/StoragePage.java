@@ -446,7 +446,7 @@ public class StoragePage extends BasePage {
             transactionColumns.add(new AbstractDomainColumn<Transaction>(transactionEntity.getEntityAttribute(Transaction.WORKER_TO)) {
                 @Override
                 public void populateItem(Item<ICellPopulator<Transaction>> cellItem, String componentId, IModel<Transaction> rowModel) {
-                    cellItem.add(new Label(componentId, Workers.getWorkerLabelSimple(rowModel.getObject().getNumber(Transaction.WORKER_TO),
+                    cellItem.add(new Label(componentId, Workers.getSimpleWorkerLabel(rowModel.getObject().getNumber(Transaction.WORKER_TO),
                             domainService, nameService)));
                 }
 

@@ -26,15 +26,15 @@ public class Workers {
                 Attributes.capitalize(nameService.getMiddleName(worker.getNumber(Worker.MIDDLE_NAME)));
     }
 
-    public static String getWorkerLabelSimple(Long workerId, DomainService domainService, NameService nameService){
+    public static String getSimpleWorkerLabel(Long workerId, DomainService domainService, NameService nameService){
         if (workerId == null){
             return "";
         }
 
-        return getWorkerLabelSimple(domainService.getDomain(Worker.class, workerId), nameService);
+        return getSimpleWorkerLabel(domainService.getDomain(Worker.class, workerId), nameService);
     }
 
-    public static String getWorkerLabelSimple(Worker worker, NameService nameService){
+    public static String getSimpleWorkerLabel(Worker worker, NameService nameService){
         return Objects.defaultIfNull(worker.getText(Worker.J_ID), "") + " " +
                 Attributes.capitalize(nameService.getLastName(worker.getNumber(Worker.LAST_NAME)));
     }

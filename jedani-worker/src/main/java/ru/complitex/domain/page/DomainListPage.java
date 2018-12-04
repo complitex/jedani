@@ -75,7 +75,7 @@ public class DomainListPage<T extends Domain> extends BasePage{
         feedback.setOutputMarkupId(true);
         add(feedback);
 
-        DataProvider<T> dataProvider = new DataProvider<T>( FilterWrapper.of(domainInstance)) {
+        DataProvider<T> dataProvider = new DataProvider<T>(FilterWrapper.of(domainInstance)) {
             @Override
             public Iterator<? extends T> iterator(long first, long count) {
                 FilterWrapper<T> filterWrapper = getFilterState().limit(first, count);

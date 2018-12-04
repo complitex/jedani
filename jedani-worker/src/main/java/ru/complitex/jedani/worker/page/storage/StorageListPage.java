@@ -9,6 +9,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import ru.complitex.address.entity.City;
 import ru.complitex.common.entity.FilterWrapper;
@@ -19,10 +20,7 @@ import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.page.DomainListPage;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
-import ru.complitex.jedani.worker.entity.Product;
 import ru.complitex.jedani.worker.entity.Storage;
-import ru.complitex.jedani.worker.entity.Transaction;
-import ru.complitex.jedani.worker.entity.Worker;
 import ru.complitex.jedani.worker.mapper.StorageMapper;
 import ru.complitex.jedani.worker.util.Workers;
 import ru.complitex.name.service.NameService;
@@ -67,13 +65,11 @@ public class StorageListPage extends DomainListPage<Storage> {
     protected void onAddColumns(List<IColumn<Storage, SortProperty>> columns) {
         String label = entityService.getEntityAttribute(Storage.ENTITY_NAME, Storage.WORKERS).getValue().getText();
 
-        columns.add(new AbstractDomainColumn<Storage>(Model.of(label), new SortProperty("workerIds")) {
+        columns.add(new AbstractDomainColumn<Storage>(Model.of(label), new SortProperty("workers")) {
             @Override
             public void populateItem(Item<ICellPopulator<Storage>> cellItem, String componentId, IModel<Storage> rowModel) {
                 String workers = rowModel.getObject().getNumberValues(Storage.WORKERS).stream()
-                        .map(id -> domainService.getDomain(Worker.ENTITY_NAME, id))
-                        .map(w -> w.getText(Worker.J_ID) + " " +
-                                nameService.getLastName(w.getNumber(Worker.LAST_NAME)))
+                        .map(id -> Workers.getWorkerLabel(id, domainService, nameService))
                         .collect(Collectors.joining(", "));
 
                 cellItem.add(new Label(componentId, workers));
@@ -81,11 +77,11 @@ public class StorageListPage extends DomainListPage<Storage> {
 
             @Override
             public Component getFilter(String componentId, FilterForm<?> form) {
-                return new TextFilter<>(componentId, Model.of(""), form);
+                return new TextFilter<>(componentId, new PropertyModel<>(form.getModel(), "map.workers"), form);
             }
         });
 
-        columns.add(new AbstractDomainColumn<Storage>(new ResourceModel("worker"), new SortProperty("workerId")) {
+        columns.add(new AbstractDomainColumn<Storage>(new ResourceModel("worker"), new SortProperty("worker")) {
             @Override
             public void populateItem(Item<ICellPopulator<Storage>> cellItem, String componentId, IModel<Storage> rowModel) {
                 cellItem.add(new Label(componentId, Workers.getWorkerLabel(rowModel.getObject().getParentId(),
@@ -94,23 +90,20 @@ public class StorageListPage extends DomainListPage<Storage> {
 
             @Override
             public Component getFilter(String componentId, FilterForm<?> form) {
-                return new TextFilter<>(componentId, Model.of(""), form);
+                return new TextFilter<>(componentId, new PropertyModel<>(form.getModel(), "map.worker"), form);
             }
         });
 
-        columns.add(new AbstractDomainColumn<Storage>(new ResourceModel("productCount"),
-                new SortProperty("productCount")) {
+        columns.add(new AbstractDomainColumn<Storage>(new ResourceModel("nomenclatureCount"),
+                new SortProperty("nomenclatureCount")) {
             @Override
             public void populateItem(Item<ICellPopulator<Storage>> cellItem, String componentId, IModel<Storage> rowModel) {
-                Long storageId = rowModel.getObject().getObjectId();
-
-                cellItem.add(new Label(componentId, domainService.getDomainsCount(FilterWrapper.of(new Product()
-                        .setParentId(storageId)))));
+                cellItem.add(new Label(componentId, rowModel.getObject().getNomenclatureCount()));
             }
 
             @Override
             public Component getFilter(String componentId, FilterForm<?> form) {
-                return new TextFilter<>(componentId, Model.of(""), form);
+                return new TextFilter<>(componentId, new PropertyModel<>(form.getModel(), "map.nomenclatureCount"), form);
             }
         });
 
@@ -118,20 +111,14 @@ public class StorageListPage extends DomainListPage<Storage> {
                 new SortProperty("transactionCount")) {
             @Override
             public void populateItem(Item<ICellPopulator<Storage>> cellItem, String componentId, IModel<Storage> rowModel) {
-                Long storageId = rowModel.getObject().getObjectId();
-
-                cellItem.add(new Label(componentId, domainService.getDomainsCount(FilterWrapper.of(new Transaction()
-                        .setNumber(Transaction.STORAGE_TO, storageId).setNumber(Transaction.STORAGE_FROM, storageId))
-                        .setFilter(FilterWrapper.FILTER_SEARCH))));
+                cellItem.add(new Label(componentId, rowModel.getObject().getTransactionCount()));
             }
 
             @Override
             public Component getFilter(String componentId, FilterForm<?> form) {
-                return new TextFilter<>(componentId, Model.of(""), form);
+                return new TextFilter<>(componentId, new PropertyModel<>(form.getModel(), "map.transactionCount"), form);
             }
         });
-
-
     }
 
     @Override

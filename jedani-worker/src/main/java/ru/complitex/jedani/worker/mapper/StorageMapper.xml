@@ -3,19 +3,112 @@
 <mapper namespace="ru.complitex.jedani.worker.mapper.StorageMapper">
     <resultMap id="storageResultMap" type="ru.complitex.jedani.worker.entity.Storage"
                extends="ru.complitex.domain.mapper.DomainMapper.domainResultMapJoin">
-
+        <result column="nomenclature_count" property="nomenclatureCount"/>
+        <result column="transaction_count" property="transactionCount"/>
     </resultMap>
 
-    <sql id="selectStorageFrom">
+    <sql id="selectStorageWorkerSql">
+
     </sql>
 
-    <sql id="selectStorageWhere">
+    <!--suppress SqlResolve -->
+    <sql id="selectStoragesWorkers">
+        (select concat(wa_id.text, ln_v.text, fn_v.text, mn_v.text) w_name
+            from storage_attribute sa
+            left join storage_value sv on sa.id = sv.attribute_id
+
+            left join worker_attribute wa_id on wa_id.object_id = sv.number and wa_id.entity_attribute_id = 1 and wa_id.status = 1
+
+            left join worker_attribute wa_fn on wa_fn.object_id = sv.number and wa_fn.entity_attribute_id = 2 and wa_fn.status = 1
+            left join first_name_attribute fn_a on fn_a.object_id = wa_fn.number and fn_a.status = 1
+            left join first_name_value fn_v on fn_a.id = fn_v.attribute_id
+
+            left join worker_attribute wa_mn on wa_mn.object_id = sv.number and wa_mn.entity_attribute_id = 3 and wa_mn.status = 1
+            left join middle_name_attribute mn_a on mn_a.object_id = wa_mn.number and mn_a.status = 1
+            left join middle_name_value mn_v on mn_a.id = mn_v.attribute_id
+
+            left join worker_attribute wa_ln on wa_ln.object_id = sv.number and wa_ln.entity_attribute_id = 4 and wa_ln.status = 1
+            left join last_name_attribute ln_a on ln_a.object_id = wa_ln.number and ln_a.status = 1
+            left join last_name_value ln_v on ln_a.id = ln_v.attribute_id
+
+          where sa.object_id = d.object_id and sa.entity_attribute_id = 2 and sa.status = 1
+          )
+    </sql>
+
+    <!--suppress SqlResolve -->
+    <sql id="selectStoragesWorker">
+        (select concat(wa_id.text, ln_v.text, fn_v.text, mn_v.text) w_name
+            from `storage` s
+
+            left join worker_attribute wa_id on wa_id.object_id = s.parent_id and wa_id.entity_attribute_id = 1 and wa_id.status = 1
+
+            left join worker_attribute wa_fn on wa_fn.object_id = s.parent_id and wa_fn.entity_attribute_id = 2 and wa_fn.status = 1
+            left join first_name_attribute fn_a on fn_a.object_id = wa_fn.number and fn_a.status = 1
+            left join first_name_value fn_v on fn_a.id = fn_v.attribute_id
+
+            left join worker_attribute wa_mn on wa_mn.object_id = s.parent_id and wa_mn.entity_attribute_id = 3 and wa_mn.status = 1
+            left join middle_name_attribute mn_a on mn_a.object_id = wa_mn.number and mn_a.status = 1
+            left join middle_name_value mn_v on mn_a.id = mn_v.attribute_id
+
+            left join worker_attribute wa_ln on wa_ln.object_id = s.parent_id and wa_ln.entity_attribute_id = 4 and wa_ln.status = 1
+            left join last_name_attribute ln_a on ln_a.object_id = wa_ln.number and ln_a.status = 1
+            left join last_name_value ln_v on ln_a.id = ln_v.attribute_id
+
+          where s.object_id = d.object_id and s.parent_id is not null
+          )
+    </sql>
+
+    <!--suppress SqlResolve -->
+    <sql id="selectStoragesNomenclatureCount">
+        (select count(p.object_id) from product p where p.parent_id = d.object_id)
+    </sql>
+
+    <!--suppress SqlResolve -->
+    <sql id="selectStoragesTransactionCount">
+        (select count(ta.object_id) from transaction_attribute ta where ta.number = d.object_id
+          and ta.entity_attribute_id in (6, 7) and ta.status = 1)
+    </sql>
+
+    <!--suppress SqlResolve -->
+    <sql id="selectStoragesSelect">
+         <include refid="selectStoragesNomenclatureCount"/> nomenclature_count,
+         <include refid="selectStoragesTransactionCount"/>transaction_count
+    </sql>
+
+    <sql id="selectStoragesFrom">
+    </sql>
+
+    <sql id="selectStoragesWhere">
+      <if test="map.workers != null">
+        and <include refid="selectStoragesWorkers"/> like concat('%', #{map.workers}, '%')
+      </if>
+      <if test="map.worker != null">
+        and <include refid="selectStoragesWorker"/> like concat('%', #{map.worker}, '%')
+      </if>
+      <if test="map.nomenclatureCount != null">
+          and <include refid="selectStoragesNomenclatureCount"/> = #{map.nomenclatureCount}
+      </if>
+      <if test="map.transactionCount != null">
+        and <include refid="selectStoragesTransactionCount"/> = #{map.transactionCount}
+      </if>
+    </sql>
+
+    <sql id="selectStoragesOrderSort">
+        <if test="sortProperty != null">
+            <choose>
+                <when test="sortProperty.key == 'workers'">order by <include refid="selectStoragesWorkers"/> ${asc}</when>
+                <when test="sortProperty.key == 'worker'">order by <include refid="selectStoragesWorker"/> ${asc}</when>
+                <when test="sortProperty.key == 'nomenclatureCount'">order by <include refid="selectStoragesNomenclatureCount"/> ${asc}</when>
+                <when test="sortProperty.key == 'transactionCount'">order by <include refid="selectStoragesTransactionCount"/> ${asc}</when>
+            </choose>
+        </if>
     </sql>
 
     <!--suppress SqlResolve -->
     <select id="selectStorages" parameterType="ru.complitex.common.entity.FilterWrapper" resultMap="storageResultMap">
         select d.*, '${object.entityName}' entity_name,
-          <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsSelect"/>
+          <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsSelect"/>,
+          <include refid="selectStoragesSelect"/>
         from (
           select dd.object_id object_id
         from (
@@ -23,11 +116,12 @@
                 <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFrom"/>
                 <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromFilter"/>
                 <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromSort"/>
-                <include refid="selectStorageFrom"/>
+                <include refid="selectStoragesFrom"/>
                 <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsWhere"/>
-                <include refid="selectStorageWhere"/>
+                <include refid="selectStoragesWhere"/>
                 group by d.object_id
                 <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsOrderSort"/>
+                <include refid="selectStoragesOrderSort"/>
             ) dd
             ${limit}
         ) o
@@ -37,6 +131,7 @@
         <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromSort"/>
         group by d.id, a.id, v.id
         <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsOrderSort"/>
+        <include refid="selectStoragesOrderSort"/>
     </select>
 
     <!--suppress SqlResolve -->
@@ -44,10 +139,9 @@
         select count(distinct w.object_id) from (select d.object_id
             <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFrom"/>
             <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromFilter"/>
-            <include refid="selectStorageFrom"/>
+            <include refid="selectStoragesFrom"/>
             <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsWhere"/>
-            <include refid="selectStorageWhere"/>
+            <include refid="selectStoragesWhere"/>
         ) w
     </select>
-
 </mapper>

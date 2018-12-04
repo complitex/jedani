@@ -25,6 +25,13 @@ public class TextAttributeModel implements IModel<String> {
 
     private IModel<? extends Domain> domainModel;
 
+    public TextAttributeModel(Domain domain, Long entityAttributeId) {
+        this.domain = domain;
+        this.entityAttributeId = entityAttributeId;
+
+        this.type = TYPE.DEFAULT;
+    }
+
     public TextAttributeModel(Domain domain, Long entityAttributeId, TYPE type) {
         this.domain = domain;
         this.entityAttributeId = entityAttributeId;

@@ -13,9 +13,28 @@ public class Storage extends Domain {
     public static final long WORKERS = 2;
     public static final long TYPE = 3;
 
+    private Long nomenclatureCount;
+    private Long transactionCount;
+
     public Storage() {
         super(ENTITY_NAME);
 
         setUseNumberValue(true);
+    }
+
+    public Long getNomenclatureCount() {
+        return nomenclatureCount;
+    }
+
+    public void setNomenclatureCount(Long nomenclatureCount) {
+        this.nomenclatureCount = nomenclatureCount;
+    }
+
+    public Long getTransactionCount() {
+        return transactionCount;
+    }
+
+    public void setTransactionCount(Long transactionCount) {
+        this.transactionCount = transactionCount;
     }
 }

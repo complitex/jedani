@@ -55,7 +55,7 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
     public Component getFilter(String componentId, FilterForm<?> form) {
         Long entityAttributeId = entityAttribute.getEntityAttributeId();
 
-        Domain domain = (Domain)((FilterWrapper)form.getDefaultModelObject()).getObject();
+        Domain domain = (Domain)((FilterWrapper)form.getModelObject()).getObject();
 
         domain.getOrCreateAttribute(entityAttributeId).setEntityAttribute(entityAttribute);
 
