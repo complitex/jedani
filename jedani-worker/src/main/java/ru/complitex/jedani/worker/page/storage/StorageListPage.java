@@ -130,4 +130,9 @@ public class StorageListPage extends DomainListPage<Storage> {
     protected Long getDomainsCount(FilterWrapper<Storage> filterWrapper) {
         return storageMapper.getStoragesCount(filterWrapper);
     }
+
+    @Override
+    protected boolean isShowHeader() {
+        return false;
+    }
 }

@@ -49,7 +49,11 @@ li.disabled a, li.disabled span{
     cursor: default !important;
 }
 .domain-id-column{
-    width: 55px;
+    width: 55px
+}
+
+td.domain-id-column{
+    vertical-align: middle !important;
 }
 
 .domain-id-column .btn{
@@ -126,4 +130,12 @@ li.disabled a, li.disabled span{
 
 .alert{
     padding: 8px 28px 5px 8px;
+}
+
+.wicket_orderUp {
+    text-decoration: underline;
+}
+
+.wicket_orderDown {
+    text-decoration: underline;
 }
