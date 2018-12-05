@@ -12,6 +12,50 @@
             and ta_s_to.entity_attribute_id = 7 and ta_s_to.status = 1
     </sql>
 
+    <!--suppress SqlResolve -->
+    <sql id="selectTransactionsWorker">
+       (select concat(wa_id.text, ln_v.text, fn_v.text, mn_v.text) w_name
+            from transaction_attribute ta
+
+            left join worker_attribute wa_id on wa_id.object_id = ta.number and wa_id.entity_attribute_id = 1 and wa_id.status = 1
+
+            left join worker_attribute wa_fn on wa_fn.object_id = ta.number and wa_fn.entity_attribute_id = 2 and wa_fn.status = 1
+            left join first_name_attribute fn_a on fn_a.object_id = wa_fn.number and fn_a.status = 1
+            left join first_name_value fn_v on fn_a.id = fn_v.attribute_id
+
+            left join worker_attribute wa_mn on wa_mn.object_id = ta.number and wa_mn.entity_attribute_id = 3 and wa_mn.status = 1
+            left join middle_name_attribute mn_a on mn_a.object_id = wa_mn.number and mn_a.status = 1
+            left join middle_name_value mn_v on mn_a.id = mn_v.attribute_id
+
+            left join worker_attribute wa_ln on wa_ln.object_id = ta.number and wa_ln.entity_attribute_id = 4 and wa_ln.status = 1
+            left join last_name_attribute ln_a on ln_a.object_id = wa_ln.number and ln_a.status = 1
+            left join last_name_value ln_v on ln_a.id = ln_v.attribute_id
+
+          where ta.object_id = d.object_id and ta.entity_attribute_id = 8 and ta.status = 1
+          )
+    </sql>
+
+    <!--suppress SqlResolve -->
+    <sql id="selectTransactionsClient">
+        (select concat(ln_v.text, fn_v.text, mn_v.text) c_name
+            from `transaction` t
+
+            left join transaction_attribute ta_fn on ta_fn.object_id = t.object_id and ta_fn.entity_attribute_id = 9 and ta_fn.status = 1
+            left join first_name_attribute fn_a on fn_a.object_id = ta_fn.number and fn_a.status = 1
+            left join first_name_value fn_v on fn_a.id = fn_v.attribute_id
+
+            left join transaction_attribute ta_mn on ta_mn.object_id = t.object_id and ta_mn.entity_attribute_id = 10 and ta_mn.status = 1
+            left join middle_name_attribute mn_a on mn_a.object_id = ta_mn.number and mn_a.status = 1
+            left join middle_name_value mn_v on mn_a.id = mn_v.attribute_id
+
+            left join transaction_attribute ta_ln on ta_ln.object_id = t.object_id and ta_ln.entity_attribute_id = 11 and ta_ln.status = 1
+            left join last_name_attribute ln_a on ln_a.object_id = ta_ln.number and ln_a.status = 1
+            left join last_name_value ln_v on ln_a.id = ln_v.attribute_id
+
+          where t.object_id = d.object_id
+          )
+    </sql>
+
      <sql id="selectTransactionsWhere">
          <if test="map.storageId != null">
              and (ta_s_from.number = #{map.storageId} or ta_s_to.number = #{map.storageId})
@@ -19,13 +63,20 @@
          <if test="object.startDate != null">
              and date(d.start_date) = date(#{object.startDate})
          </if>
+         <if test="map.worker != null">
+             and <include refid="selectTransactionsWorker"/> like concat('%', #{map.worker}, '%')
+         </if>
+         <if test="map.client != null">
+             and <include refid="selectTransactionsClient"/> like concat('%', #{map.client}, '%')
+         </if>
     </sql>
 
     <sql id="selectTransactionsOrderSort">
         <if test="sortProperty != null">
             <choose>
                 <when test="sortProperty.key == 'startDate'">order by d.start_date ${asc}</when>
-                <!--<when test="sortProperty.key == 'worker'">order by <include refid="selectTransactionsWorker"/> ${asc}</when>-->
+                <when test="sortProperty.key == 'worker'">order by <include refid="selectTransactionsWorker"/> ${asc}</when>
+                <when test="sortProperty.key == 'client'">order by <include refid="selectTransactionsClient"/> ${asc}</when>
             </choose>
         </if>
     </sql>

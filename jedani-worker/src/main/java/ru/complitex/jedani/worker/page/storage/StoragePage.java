@@ -448,20 +448,23 @@ public class StoragePage extends BasePage {
             transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.STORAGE_TO)
                     .setValueType(ValueType.NUMBER), entityService, domainService));
 
-            transactionColumns.add(new AbstractDomainColumn<Transaction>(transactionEntity.getEntityAttribute(Transaction.WORKER_TO)) {
+            transactionColumns.add(new AbstractDomainColumn<Transaction>(new ResourceModel("worker"),
+                    new SortProperty("worker")) {
                 @Override
-                public void populateItem(Item<ICellPopulator<Transaction>> cellItem, String componentId, IModel<Transaction> rowModel) {
-                    cellItem.add(new Label(componentId, Workers.getSimpleWorkerLabel(rowModel.getObject().getNumber(Transaction.WORKER_TO),
-                            domainService, nameService)));
+                public void populateItem(Item<ICellPopulator<Transaction>> cellItem, String componentId,
+                                         IModel<Transaction> rowModel) {
+                    cellItem.add(new Label(componentId, Workers.getSimpleWorkerLabel(rowModel.getObject()
+                                    .getNumber(Transaction.WORKER_TO), domainService, nameService)));
                 }
 
                 @Override
                 public Component getFilter(String componentId, FilterForm<?> form) {
-                    return new TextFilter<>(componentId, Model.of(""), form);
+                    return new TextFilter<>(componentId, new PropertyModel<>(form.getModel(), "map.worker"), form);
                 }
             });
 
-            transactionColumns.add(new AbstractDomainColumn<Transaction>(new ResourceModel("client"), new SortProperty("client")) {
+            transactionColumns.add(new AbstractDomainColumn<Transaction>(new ResourceModel("client"),
+                    new SortProperty("client")) {
                 @Override
                 public void populateItem(Item<ICellPopulator<Transaction>> cellItem, String componentId, IModel<Transaction> rowModel) {
                     Transaction transaction = rowModel.getObject();
@@ -472,7 +475,7 @@ public class StoragePage extends BasePage {
 
                 @Override
                 public Component getFilter(String componentId, FilterForm<?> form) {
-                    return new TextFilter<>(componentId, Model.of(""), form);
+                    return new TextFilter<>(componentId, new PropertyModel<>(form.getModel(), "map.client"), form);
                 }
             });
 
@@ -481,9 +484,8 @@ public class StoragePage extends BasePage {
             transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.COMMENTS),
                     entityService, domainService));
 
-            transactionColumns.add(new AbstractDomainColumn<Transaction>(Model.of(transactionEntity
-                    .getEntityAttribute(Transaction.TRANSFER_TYPE).getValue().getText()),
-                    new SortProperty("transferType")) {
+            transactionColumns.add(new AbstractDomainColumn<Transaction>(transactionEntity
+                    .getEntityAttribute(Transaction.TRANSFER_TYPE)) {
                 @Override
                 public Component getFilter(String componentId, FilterForm<?> form) {
                     Transaction transaction = (Transaction)((FilterWrapper)form.getModelObject()).getObject();
@@ -547,8 +549,8 @@ public class StoragePage extends BasePage {
                 }
             });
 
-            transactionColumns.add(new AbstractDomainColumn<Transaction>(Model.of(transactionEntity
-                    .getEntityAttribute(Transaction.TYPE).getValue().getText()), new SortProperty("type")) {
+            transactionColumns.add(new AbstractDomainColumn<Transaction>(transactionEntity
+                    .getEntityAttribute(Transaction.TYPE)) {
                 @Override
                 public Component getFilter(String componentId, FilterForm<?> form) {
                     Transaction transaction = (Transaction)((FilterWrapper)form.getModelObject()).getObject();
