@@ -86,8 +86,10 @@ public class EntityAttribute implements Serializable{
         return valueType;
     }
 
-    public void setValueType(ValueType valueType) {
+    public EntityAttribute setValueType(ValueType valueType) {
         this.valueType = valueType;
+
+        return this;
     }
 
     public Long getReferenceId() {

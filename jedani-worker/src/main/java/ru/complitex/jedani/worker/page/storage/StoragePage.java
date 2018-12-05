@@ -48,6 +48,7 @@ import ru.complitex.domain.component.datatable.DomainColumn;
 import ru.complitex.domain.component.datatable.DomainIdColumn;
 import ru.complitex.domain.component.form.DomainAutoCompleteFormGroup;
 import ru.complitex.domain.entity.Entity;
+import ru.complitex.domain.entity.ValueType;
 import ru.complitex.domain.model.NumberAttributeModel;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
@@ -442,10 +443,10 @@ public class StoragePage extends BasePage {
                     entityService, domainService));
             transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.QUANTITY),
                     entityService, domainService));
-            transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.STORAGE_FROM),
-                    entityService, domainService));
-            transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.STORAGE_TO),
-                    entityService, domainService));
+            transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.STORAGE_FROM)
+                    .setValueType(ValueType.NUMBER), entityService, domainService));
+            transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.STORAGE_TO)
+                    .setValueType(ValueType.NUMBER), entityService, domainService));
 
             transactionColumns.add(new AbstractDomainColumn<Transaction>(transactionEntity.getEntityAttribute(Transaction.WORKER_TO)) {
                 @Override

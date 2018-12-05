@@ -306,7 +306,7 @@
             <choose>
                 <when test="sortProperty.key == 'id'">order by d.object_id ${asc}</when>
                 <when test="sortProperty.key == 'text'">order by group_concat(sort_a.text order by sort_a.text ${asc}) ${asc}</when>
-                <when test="sortProperty.key == 'number'">order by group_concat(sort_a.number order by sort_a.number + 0 ${asc}) ${asc}</when>
+                <when test="sortProperty.key == 'number'">order by max(sort_a.number) + 0 ${asc}</when>
                 <when test="sortProperty.key == 'date'">order by group_concat(sort_a.date order by sort_a.date ${asc}) ${asc}</when>
                 <when test="sortProperty.key == 'value'">order by group_concat(sort_v.text order by sort_v.text  ${asc}) ${asc}</when>
                 <when test="sortProperty.key == 'parent' and sortProperty.value != null">
