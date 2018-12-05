@@ -7,10 +7,6 @@
         <result column="transaction_count" property="transactionCount"/>
     </resultMap>
 
-    <sql id="selectStorageWorkerSql">
-
-    </sql>
-
     <!--suppress SqlResolve -->
     <sql id="selectStoragesWorkers">
         (select concat(wa_id.text, ln_v.text, fn_v.text, mn_v.text) w_name

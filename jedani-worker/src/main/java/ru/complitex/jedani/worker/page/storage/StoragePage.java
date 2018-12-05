@@ -6,6 +6,8 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
 import de.agilecoders.wicket.core.markup.html.bootstrap.image.GlyphIconType;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.select.BootstrapSelect;
+import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.select.BootstrapSelectConfig;
+import de.agilecoders.wicket.extensions.markup.html.bootstrap.table.filter.BootstrapSelectFilter;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxEventBehavior;
@@ -51,6 +53,7 @@ import ru.complitex.domain.service.EntityService;
 import ru.complitex.jedani.worker.component.WorkerAutoComplete;
 import ru.complitex.jedani.worker.component.WorkerAutoCompleteList;
 import ru.complitex.jedani.worker.entity.*;
+import ru.complitex.jedani.worker.mapper.TransactionMapper;
 import ru.complitex.jedani.worker.page.BasePage;
 import ru.complitex.jedani.worker.service.StorageService;
 import ru.complitex.jedani.worker.util.Workers;
@@ -74,6 +77,9 @@ public class StoragePage extends BasePage {
 
     @Inject
     private StorageService storageService;
+
+    @Inject
+    private TransactionMapper transactionMapper;
 
     @Inject
     private NameService nameService;
@@ -375,15 +381,12 @@ public class StoragePage extends BasePage {
             }
         };
         productTable.setVisible(storageId != null);
-        productTable.setHideOnEmpty(true);
         productForm.add(productTable);
 
         //Transactions
 
         DataProvider<Transaction> transactionDataProvider = new DataProvider<Transaction>(FilterWrapper.of(
-                (Transaction) new Transaction().setNumber(Transaction.STORAGE_TO, storageId)
-                        .setNumber(Transaction.STORAGE_FROM, storageId))
-                .setFilter(FilterWrapper.FILTER_SEARCH).sort("id", null, false)) {
+                new Transaction()).add("storageId", storageId)) {
             @Override
             public Iterator<? extends Transaction> iterator(long first, long count) {
                 FilterWrapper<Transaction> filterWrapper = getFilterState().limit(first, count);
@@ -393,12 +396,12 @@ public class StoragePage extends BasePage {
                     filterWrapper.setAscending(getSort().isAscending());
                 }
 
-                return domainService.getDomains(Transaction.class, filterWrapper).iterator();
+                return transactionMapper.getTransactions(filterWrapper).iterator();
             }
 
             @Override
             public long size() {
-                return domainService.getDomainsCount(getFilterState());
+                return transactionMapper.getTransactionsCount(getFilterState());
             }
         };
 
@@ -471,12 +474,123 @@ public class StoragePage extends BasePage {
                 }
             });
 
+            transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.SERIAL_NUMBER),
+                    entityService, domainService));
+            transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.COMMENTS),
+                    entityService, domainService));
+
             transactionColumns.add(new AbstractDomainColumn<Transaction>(Model.of(transactionEntity
-                    .getEntityAttribute(Transaction.TYPE).getValue().getText()),
-                    new SortProperty("type")) {
+                    .getEntityAttribute(Transaction.TRANSFER_TYPE).getValue().getText()),
+                    new SortProperty("transferType")) {
                 @Override
                 public Component getFilter(String componentId, FilterForm<?> form) {
-                    return new TextFilter<>(componentId, Model.of(""), form);
+                    Transaction transaction = (Transaction)((FilterWrapper)form.getModelObject()).getObject();
+
+                    return new BootstrapSelectFilter<Long>(componentId, new NumberAttributeModel(transaction,
+                            Transaction.TRANSFER_TYPE), form, Arrays.asList(TransferType.TRANSFER, TransferType.GIFT),
+                            new IChoiceRenderer<Long>() {
+                                @Override
+                                public Object getDisplayValue(Long object) {
+                                    if (object != null) {
+                                        switch (object.intValue()){
+                                            case 1:
+                                                return getString("transfer");
+                                            case 2:
+                                                return getString("gift");
+                                        }
+                                    }
+
+                                    return null;
+                                }
+
+                                @Override
+                                public String getIdValue(Long object, int index) {
+                                    return object + "";
+                                }
+
+                                @Override
+                                public Long getObject(String id, IModel<? extends List<? extends Long>> choices) {
+                                    return !id.isEmpty() ? Long.valueOf(id) : null;
+                                }
+                            }, false){
+                        @Override
+                        protected BootstrapSelect<Long> newDropDownChoice(String id, IModel<Long> model,
+                                                                          IModel<? extends List<? extends Long>> choices,
+                                                                          IChoiceRenderer<? super Long> renderer) {
+                            return super.newDropDownChoice(id, model, choices, renderer)
+                                    .with(new BootstrapSelectConfig().withNoneSelectedText(""));
+                        }
+                    };
+                }
+
+                @Override
+                public void populateItem(Item<ICellPopulator<Transaction>> cellItem, String componentId,
+                                         IModel<Transaction> rowModel) {
+                    String resourceKey = null;
+
+                    Long transferType = rowModel.getObject().getNumber(Transaction.TRANSFER_TYPE);
+
+                    if (transferType != null) {
+                        switch (transferType.intValue()){
+                            case 1:
+                                resourceKey = null;
+                                break;
+                            case 2:
+                                resourceKey = "gift";
+                                break;
+                        }
+                    }
+
+                    cellItem.add(new Label(componentId, resourceKey != null ? new ResourceModel(resourceKey) : Model.of("")));
+                }
+            });
+
+            transactionColumns.add(new AbstractDomainColumn<Transaction>(Model.of(transactionEntity
+                    .getEntityAttribute(Transaction.TYPE).getValue().getText()), new SortProperty("type")) {
+                @Override
+                public Component getFilter(String componentId, FilterForm<?> form) {
+                    Transaction transaction = (Transaction)((FilterWrapper)form.getModelObject()).getObject();
+
+                    return new BootstrapSelectFilter<Long>(componentId, new NumberAttributeModel(transaction,
+                            Transaction.TYPE), form, Arrays.asList(TransactionType.ACCEPT, TransactionType.SELL,
+                            TransactionType.TRANSFER, TransactionType.WITHDRAW),
+                            new IChoiceRenderer<Long>() {
+                                @Override
+                                public Object getDisplayValue(Long object) {
+                                    if (object != null) {
+                                        switch (object.intValue()){
+                                            case 1:
+                                                return getString("accept");
+                                            case 2:
+                                                return getString("sell");
+                                            case 3:
+                                                return getString("transfer");
+                                            case 4:
+                                                return getString("withdraw");
+                                        }
+                                    }
+
+                                    return null;
+                                }
+
+                                @Override
+                                public String getIdValue(Long object, int index) {
+                                    return object + "";
+                                }
+
+                                @Override
+                                public Long getObject(String id, IModel<? extends List<? extends Long>> choices) {
+                                    return !id.isEmpty() ? Long.valueOf(id) : null;
+                                }
+                            }, false){
+                        @Override
+                        protected BootstrapSelect<Long> newDropDownChoice(String id, IModel<Long> model,
+                                                                          IModel<? extends List<? extends Long>> choices,
+                                                                          IChoiceRenderer<? super Long> renderer) {
+                            return super.newDropDownChoice(id, model, choices, renderer)
+                                    .with(new BootstrapSelectConfig().withNoneSelectedText(""));
+                        }
+                    };
                 }
 
                 @Override
@@ -506,41 +620,6 @@ public class StoragePage extends BasePage {
                     cellItem.add(new Label(componentId, resourceKey != null ? new ResourceModel(resourceKey) : Model.of("")));
                 }
             });
-
-            transactionColumns.add(new AbstractDomainColumn<Transaction>(Model.of(transactionEntity
-                    .getEntityAttribute(Transaction.TRANSFER_TYPE).getValue().getText()),
-                    new SortProperty("transferType")) {
-                @Override
-                public Component getFilter(String componentId, FilterForm<?> form) {
-                    return new TextFilter<>(componentId, Model.of(""), form);
-                }
-
-                @Override
-                public void populateItem(Item<ICellPopulator<Transaction>> cellItem, String componentId,
-                                         IModel<Transaction> rowModel) {
-                    String resourceKey = null;
-
-                    Long transferType = rowModel.getObject().getNumber(Transaction.TRANSFER_TYPE);
-
-                    if (transferType != null) {
-                        switch (transferType.intValue()){
-                            case 1:
-                                resourceKey = null;
-                                break;
-                            case 2:
-                                resourceKey = "gift";
-                                break;
-                        }
-                    }
-
-                    cellItem.add(new Label(componentId, resourceKey != null ? new ResourceModel(resourceKey) : Model.of("")));
-                }
-            });
-
-            transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.SERIAL_NUMBER),
-                    entityService, domainService));
-            transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.COMMENTS),
-                    entityService, domainService));
 
             transactionColumns.add(new DomainActionColumn<Transaction>(null,
                     new PageParameters().add("storage_id", storageId)){
@@ -599,7 +678,6 @@ public class StoragePage extends BasePage {
             }
         };
         transactionDataTable.setVisible(storageId != null);
-        transactionDataTable.setHideOnEmpty(true);
         transactionForm.add(transactionDataTable);
 
         //Action
