@@ -16,11 +16,15 @@
          <if test="map.storageId != null">
              and (ta_s_from.number = #{map.storageId} or ta_s_to.number = #{map.storageId})
          </if>
+         <if test="object.startDate != null">
+             and date(d.start_date) = date(#{object.startDate})
+         </if>
     </sql>
 
     <sql id="selectTransactionsOrderSort">
         <if test="sortProperty != null">
             <choose>
+                <when test="sortProperty.key == 'startDate'">order by d.start_date ${asc}</when>
                 <!--<when test="sortProperty.key == 'worker'">order by <include refid="selectTransactionsWorker"/> ${asc}</when>-->
             </choose>
         </if>

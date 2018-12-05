@@ -36,6 +36,7 @@ import ru.complitex.address.entity.City;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
 import ru.complitex.common.wicket.datatable.DataProvider;
+import ru.complitex.common.wicket.datatable.DateFilter;
 import ru.complitex.common.wicket.datatable.FilterDataTable;
 import ru.complitex.common.wicket.form.FormGroupPanel;
 import ru.complitex.common.wicket.form.FormGroupSelectPanel;
@@ -423,7 +424,7 @@ public class StoragePage extends BasePage {
                     new SortProperty("startDate")) {
                 @Override
                 public Component getFilter(String componentId, FilterForm<?> form) {
-                    return new TextFilter<>(componentId, Model.of(""), form);
+                    return new DateFilter(componentId, new PropertyModel<>(form.getModel(),"object.startDate"), form);
                 }
 
                 @Override
