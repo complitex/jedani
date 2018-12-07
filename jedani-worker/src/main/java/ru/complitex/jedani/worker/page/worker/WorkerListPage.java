@@ -56,7 +56,7 @@ public class WorkerListPage extends DomainListPage<Worker>{
     public WorkerListPage() {
         super(Worker.class, WorkerPage.class);
 
-        add(new AjaxLink<Void>("addEmployee") {
+        getContainer().add(new AjaxLink<Void>("addEmployee") {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 setResponsePage(WorkerPage.class, new PageParameters().add("new", "employee").add("a", ""));

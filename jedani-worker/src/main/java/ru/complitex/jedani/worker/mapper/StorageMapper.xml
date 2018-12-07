@@ -75,6 +75,17 @@
     </sql>
 
     <sql id="selectStoragesWhere">
+      <if test="map.cities != null">
+          and (
+              <if test="map.currentWorker != null">
+                  d.parent_id = #{map.currentWorker} or
+              </if>
+              exists(select sa_c.id from storage_attribute sa_c
+                left join city c on sa_c.entity_attribute_id = 1 and sa_c.status = 1 and c.object_id = sa_c.number
+                left join city rc on c.parent_id = rc.parent_id
+                where sa_c.object_id = d.object_id and (c.object_id in (${map.cities}) or rc.object_id in (${map.cities})))
+          )
+      </if>
       <if test="map.workers != null">
         and <include refid="selectStoragesWorkers"/> like concat('%', #{map.workers}, '%')
       </if>

@@ -89,6 +89,7 @@ public class BasePage extends WebPage{
         });
 
         add(new BookmarkablePageLink<>("worker", WorkerPage.class));
+        add(new BookmarkablePageLink<>("storage", StorageListPage.class).setVisible(isUser()));
 
         WebMarkupContainer settings = new WebMarkupContainer("settings");
         settings.setVisible(isAdmin());
@@ -117,11 +118,11 @@ public class BasePage extends WebPage{
         catalog.add(new BookmarkablePageLink<>("workers", WorkerListPage.class).setVisible(isAdmin() || isStructureAdmin()));
 
         WebMarkupContainer repository = new WebMarkupContainer("repository");
-        repository.setVisible(isAdmin() || isStructureAdmin());
+        repository.setVisible(isAdmin());
         add(repository);
 
-        repository.add(new BookmarkablePageLink<>("nomenclature", NomenclatureListPage.class).setVisible(isAdmin()));
-        repository.add(new BookmarkablePageLink<>("storage", StorageListPage.class).setVisible(isAdmin() || isStructureAdmin()));
+        repository.add(new BookmarkablePageLink<>("nomenclature", NomenclatureListPage.class));
+        repository.add(new BookmarkablePageLink<>("storage", StorageListPage.class));
     }
 
     @Override

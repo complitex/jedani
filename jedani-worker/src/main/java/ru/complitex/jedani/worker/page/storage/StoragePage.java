@@ -15,6 +15,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
@@ -57,6 +58,7 @@ import ru.complitex.jedani.worker.component.WorkerAutoCompleteList;
 import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.mapper.TransactionMapper;
 import ru.complitex.jedani.worker.page.BasePage;
+import ru.complitex.jedani.worker.security.JedaniRoles;
 import ru.complitex.jedani.worker.service.StorageService;
 import ru.complitex.jedani.worker.util.Workers;
 import ru.complitex.name.service.NameService;
@@ -68,6 +70,7 @@ import java.util.*;
  * @author Anatoly A. Ivanov
  * 30.10.2018 14:58
  */
+@AuthorizeInstantiation(JedaniRoles.AUTHORIZED)
 public class StoragePage extends BasePage {
     private Logger log = LoggerFactory.getLogger(StoragePage.class);
 
@@ -91,8 +94,12 @@ public class StoragePage extends BasePage {
 
         Storage storage;
 
+        boolean edit = isAdmin();
+
         if (storageId != null) {
             storage = domainService.getDomain(Storage.class, storageId);
+
+            edit |= Objects.equals(getCurrentWorker().getObjectId(), storage.getParentId());
         } else {
             storage = new Storage();
 
@@ -165,7 +172,7 @@ public class StoragePage extends BasePage {
                         return Long.valueOf(id);
                     }
                 }).setNullValid(false).add(OnChangeAjaxBehavior.onChange(target -> target.add(city, workers, worker))))
-                .setVisible(storageId == null));
+                .setVisible(storageId == null && isAdmin()));
 
         WebMarkupContainer tables = new WebMarkupContainer("tables");
         tables.setOutputMarkupId(true);
@@ -418,7 +425,7 @@ public class StoragePage extends BasePage {
 
         List<IColumn<Transaction, SortProperty>> transactionColumns = new ArrayList<>();
 
-        if (storageId != null) {
+        if (storageId != null && edit) {
             transactionColumns.add(new DomainIdColumn<>());
 
             transactionColumns.add(new AbstractDomainColumn<Transaction>(new ResourceModel("startDate"),
@@ -681,7 +688,7 @@ public class StoragePage extends BasePage {
 
             }
         };
-        transactionDataTable.setVisible(storageId != null);
+        transactionDataTable.setVisible(storageId != null && edit);
         transactionForm.add(transactionDataTable);
 
         //Action
@@ -714,7 +721,7 @@ public class StoragePage extends BasePage {
             protected void onError(AjaxRequestTarget target) {
                 target.add(feedback);
             }
-        });
+        }.setVisible(edit));
 
         form.add(new AjaxLink<Void>("accept") {
 
@@ -722,7 +729,7 @@ public class StoragePage extends BasePage {
             public void onClick(AjaxRequestTarget target) {
                 acceptModal.open(target);
             }
-        }.setVisible(storageId != null));
+        }.setVisible(storageId != null && edit));
 
         form.add(new AjaxLink<Void>("cancel") {
             @Override

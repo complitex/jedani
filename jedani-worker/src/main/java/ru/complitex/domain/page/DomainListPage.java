@@ -8,9 +8,9 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -55,6 +55,12 @@ public class DomainListPage<T extends Domain> extends BasePage{
     private Class<? extends Page> editPageClass;
     private FilterDataTable<T> table;
 
+    private FilterWrapper<T> filterWrapper;
+
+    private boolean addVisible = true;
+
+    private WebMarkupContainer container;
+
     public <P extends WebPage> DomainListPage(Class<T> domainClass, String parentEntityName, Long parentEntityAttributeId,
                           Class<P> editPageClass) {
         this.domainClass = domainClass;
@@ -67,15 +73,21 @@ public class DomainListPage<T extends Domain> extends BasePage{
 
         String title = entity.getValue() != null ? entity.getValue().getText() : "[" + domainInstance.getEntityName() + "]";
 
+        container = new WebMarkupContainer("container");
+        container.setOutputMarkupId(true);
+        add(container);
+
         add(new Label("title", title));
 
-        add(new Label("header", title).setVisible(isShowHeader()));
+        container.add(new Label("header", title).setVisible(isShowHeader()));
 
-        FeedbackPanel feedback = new NotificationPanel("feedback");
+        NotificationPanel feedback = new NotificationPanel("feedback");
         feedback.setOutputMarkupId(true);
-        add(feedback);
+        container.add(feedback);
 
-        DataProvider<T> dataProvider = new DataProvider<T>(FilterWrapper.of(domainInstance)) {
+        filterWrapper = FilterWrapper.of(domainInstance);
+
+        DataProvider<T> dataProvider = new DataProvider<T>(filterWrapper) {
             @Override
             public Iterator<? extends T> iterator(long first, long count) {
                 FilterWrapper<T> filterWrapper = getFilterState().limit(first, count);
@@ -101,7 +113,7 @@ public class DomainListPage<T extends Domain> extends BasePage{
 
         FilterForm<FilterWrapper<T>> filterForm = new FilterForm<>("form", dataProvider);
         filterForm.setOutputMarkupId(true);
-        add(filterForm);
+        container.add(filterForm);
 
         List<IColumn<T, SortProperty>> columns = new ArrayList<>();
 
@@ -149,16 +161,29 @@ public class DomainListPage<T extends Domain> extends BasePage{
                 CURRENT_PAGE_ATTRIBUTE)).orElse(0L));
         filterForm.add(table);
 
-        add(new AjaxLink<Void>("add") {
+        container.add(new AjaxLink<Void>("add") {
             @Override
             public void onClick(AjaxRequestTarget target) {
-                PageParameters pageParameters = new PageParameters().add("new", "");
+                onAdd(target);
+            }
 
-                onAddPageParameters(pageParameters);
-
-                setResponsePage(editPageClass, pageParameters);
+            @Override
+            public boolean isVisible() {
+                return addVisible;
             }
         });
+    }
+
+    public void setAddVisible(boolean addVisible) {
+        this.addVisible = addVisible;
+    }
+
+    protected void onAdd(AjaxRequestTarget target) {
+        PageParameters pageParameters = new PageParameters().add("new", "");
+
+        onAddPageParameters(pageParameters);
+
+        setResponsePage(editPageClass, pageParameters);
     }
 
     protected void onRowItem(Item<T> item){
@@ -212,5 +237,13 @@ public class DomainListPage<T extends Domain> extends BasePage{
     }
 
     protected void onAddPageParameters(PageParameters pageParameters){
+    }
+
+    public FilterWrapper<T> getFilterWrapper() {
+        return filterWrapper;
+    }
+
+    public WebMarkupContainer getContainer() {
+        return container;
     }
 }

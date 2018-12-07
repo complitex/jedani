@@ -212,6 +212,11 @@ public class Domain implements Serializable{
         return getOrCreateAttribute(entityAttributeId).getNumberValues();
     }
 
+    public String getNumberValuesString(Long entityAttributeId){
+        return getNumberValues(entityAttributeId).stream().map(Object::toString).collect(Collectors.joining(","));
+    }
+
+
     public List<String> getTextValues(Long entityAttributeId){
         return getOrCreateAttribute(entityAttributeId).getTextValues();
     }

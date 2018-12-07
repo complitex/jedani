@@ -1,6 +1,8 @@
 package ru.complitex.jedani.worker.page.storage;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
@@ -14,6 +16,7 @@ import org.apache.wicket.model.ResourceModel;
 import ru.complitex.address.entity.City;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
+import ru.complitex.common.model.FilterMapModel;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
@@ -21,7 +24,10 @@ import ru.complitex.domain.page.DomainListPage;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
 import ru.complitex.jedani.worker.entity.Storage;
+import ru.complitex.jedani.worker.entity.StorageType;
+import ru.complitex.jedani.worker.entity.Worker;
 import ru.complitex.jedani.worker.mapper.StorageMapper;
+import ru.complitex.jedani.worker.security.JedaniRoles;
 import ru.complitex.jedani.worker.util.Workers;
 import ru.complitex.name.service.NameService;
 
@@ -34,6 +40,7 @@ import java.util.stream.Collectors;
  * @author Anatoly A. Ivanov
  * 18.10.2018 20:47
  */
+@AuthorizeInstantiation(JedaniRoles.AUTHORIZED)
 public class StorageListPage extends DomainListPage<Storage> {
     @Inject
     private EntityService entityService;
@@ -49,6 +56,34 @@ public class StorageListPage extends DomainListPage<Storage> {
 
     public StorageListPage() {
         super(Storage.class, StoragePage.class);
+
+        if (!isAdmin()) {
+            getFilterWrapper()
+                    .add(Storage.FILTER_CURRENT_WORKER, getCurrentWorker().getObjectId())
+                    .add(Storage.FILTER_CITIES, getCurrentWorker().getNumberValuesString(Worker.CITIES));
+
+            boolean hasStorage = storageMapper.getStoragesCount(FilterWrapper.of((Storage) new Storage()
+                    .setParentId(getCurrentWorker().getObjectId()))) == 0;
+
+            setAddVisible(hasStorage);
+        }
+    }
+
+    @Override
+    protected void onAdd(AjaxRequestTarget target) {
+        Storage storage = new Storage();
+
+        storage.setParentEntityId(entityService.getEntity(Worker.ENTITY_NAME).getId());
+        storage.setParentId(getCurrentWorker().getObjectId());
+        storage.setNumber(Storage.TYPE, StorageType.VIRTUAL);
+
+        domainService.save(storage);
+
+        setAddVisible(false);
+
+        info(getString("info_virtual_storage_added"));
+
+        target.add(getContainer());
     }
 
     @Override
@@ -103,7 +138,7 @@ public class StorageListPage extends DomainListPage<Storage> {
 
             @Override
             public Component getFilter(String componentId, FilterForm<?> form) {
-                return new TextFilter<>(componentId, new PropertyModel<>(form.getModel(), "map.nomenclatureCount"), form);
+                return new TextFilter<>(componentId,  FilterMapModel.of(form.getModel(), Storage.FILTER_NOMENCLATURE_COUNT), form);
             }
         });
 
@@ -116,7 +151,7 @@ public class StorageListPage extends DomainListPage<Storage> {
 
             @Override
             public Component getFilter(String componentId, FilterForm<?> form) {
-                return new TextFilter<>(componentId, new PropertyModel<>(form.getModel(), "map.transactionCount"), form);
+                return new TextFilter<>(componentId, FilterMapModel.of(form.getModel(), Storage.FILTER_TRANSACTION_COUNT), form);
             }
         });
     }

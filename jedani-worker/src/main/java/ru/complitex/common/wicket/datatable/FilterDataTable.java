@@ -81,7 +81,7 @@ public class FilterDataTable<T extends Serializable> extends DataTable<T, SortPr
 
     @Override
     public String getAjaxIndicatorMarkupId() {
-        return ajaxIndicatorAppender.getMarkupId();
+        return ajaxIndicatorAppender != null ? ajaxIndicatorAppender.getMarkupId() : "none";
     }
 
     public AjaxIndicatorAppender getAjaxIndicatorAppender() {

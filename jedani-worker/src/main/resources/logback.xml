@@ -6,9 +6,9 @@
         </encoder>
     </appender>
 
-    <!--<logger name="ru.complitex.jedani.worker.mapper.ProductMapper" level="DEBUG" additivity="false">
+    <logger name="ru.complitex.jedani.worker.mapper.StorageMapper" level="DEBUG" additivity="false">
         <appender-ref ref="STDOUT" />
-    </logger>-->
+    </logger>
 
   <logger name="ru.complitex.domain.mapper.DomainMapper" level="DEBUG" additivity="false" >
         <appender-ref ref="STDOUT" />
