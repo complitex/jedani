@@ -75,8 +75,12 @@ public class TextAttributeModel implements IModel<String> {
 
     @Override
     public void setObject(String text) {
-        if (text != null && !type.equals(TYPE.DEFAULT)){
-            text = text.toUpperCase();
+        if (text != null){
+            text = text.trim();
+
+            if (!type.equals(TYPE.DEFAULT)) {
+                text = text.toUpperCase();
+            }
         }
 
         if (domainModel != null){
