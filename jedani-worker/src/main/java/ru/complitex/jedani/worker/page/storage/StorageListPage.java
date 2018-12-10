@@ -71,19 +71,23 @@ public class StorageListPage extends DomainListPage<Storage> {
 
     @Override
     protected void onAdd(AjaxRequestTarget target) {
-        Storage storage = new Storage();
+        if (isAdmin()){
+            super.onAdd(target);
+        }else {
+            Storage storage = new Storage();
 
-        storage.setParentEntityId(entityService.getEntity(Worker.ENTITY_NAME).getId());
-        storage.setParentId(getCurrentWorker().getObjectId());
-        storage.setNumber(Storage.TYPE, StorageType.VIRTUAL);
+            storage.setParentEntityId(entityService.getEntity(Worker.ENTITY_NAME).getId());
+            storage.setParentId(getCurrentWorker().getObjectId());
+            storage.setNumber(Storage.TYPE, StorageType.VIRTUAL);
 
-        domainService.save(storage);
+            domainService.save(storage);
 
-        setAddVisible(false);
+            setAddVisible(false);
 
-        info(getString("info_virtual_storage_added"));
+            info(getString("info_virtual_storage_added"));
 
-        target.add(getContainer());
+            target.add(getContainer());
+        }
     }
 
     @Override
