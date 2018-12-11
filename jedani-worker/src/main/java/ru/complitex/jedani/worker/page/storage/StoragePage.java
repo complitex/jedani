@@ -99,7 +99,12 @@ public class StoragePage extends BasePage {
         if (storageId != null) {
             storage = domainService.getDomain(Storage.class, storageId);
 
-            edit |= Objects.equals(getCurrentWorker().getObjectId(), storage.getParentId());
+            Long currentWorkerId = getCurrentWorker().getObjectId();
+
+            boolean workers = storage.getNumberValues(Storage.WORKERS).stream()
+                    .anyMatch(id -> Objects.equals(id, currentWorkerId));
+
+            edit |= Objects.equals(currentWorkerId, storage.getParentId()) || workers;
         } else {
             storage = new Storage();
 
@@ -126,11 +131,13 @@ public class StoragePage extends BasePage {
             public boolean isVisible() {
                 return Objects.equals(storage.getNumber(Storage.TYPE), StorageType.REAL);
             }
-        }.setRequired(true));
+        }.setRequired(true).setEnabled(edit));
 
         form.add(workers = new FormGroupPanel("workers", new WorkerAutoCompleteList(FormGroupPanel.COMPONENT_ID,
-                Model.of(storage.getOrCreateAttribute(Storage.WORKERS))).setRequired(true)
-                .setLabel(new ResourceModel("workers"))){
+                Model.of(storage.getOrCreateAttribute(Storage.WORKERS)))
+                .setRequired(true)
+                .setLabel(new ResourceModel("workers"))
+                .setEnabled(edit)){
             @Override
             public boolean isVisible() {
                 return Objects.equals(storage.getNumber(Storage.TYPE), StorageType.REAL);

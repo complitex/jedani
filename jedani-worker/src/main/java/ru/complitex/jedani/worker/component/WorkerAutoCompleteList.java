@@ -44,6 +44,11 @@ public class WorkerAutoCompleteList extends FormComponentPanel<Attribute> {
 
                         target.add(container);
                     }
+
+                    @Override
+                    public boolean isVisible() {
+                        return WorkerAutoCompleteList.this.isEnabled();
+                    }
                 });
 
             }
@@ -57,6 +62,11 @@ public class WorkerAutoCompleteList extends FormComponentPanel<Attribute> {
                 listModel.getObject().add(null);
 
                 target.add(container);
+            }
+
+            @Override
+            public boolean isVisible() {
+                return WorkerAutoCompleteList.this.isEnabled();
             }
         });
     }
