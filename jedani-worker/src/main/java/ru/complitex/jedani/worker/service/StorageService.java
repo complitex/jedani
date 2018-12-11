@@ -22,6 +22,18 @@ public class StorageService implements Serializable {
     @Inject
     private EntityService entityService;
 
+    public Storage createVirtualStorage(Long workerId){
+        Storage storage = new Storage();
+
+        storage.setParentEntityId(entityService.getEntity(Worker.ENTITY_NAME).getId());
+        storage.setParentId(workerId);
+        storage.setNumber(Storage.TYPE, StorageType.VIRTUAL);
+
+        domainService.save(storage);
+
+        return storage;
+    }
+
     @Transactional
     public void accept(Long storageId, Transaction transaction){
         Transaction t = new Transaction();

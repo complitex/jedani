@@ -1,5 +1,6 @@
 package ru.complitex.domain.entity;
 
+import com.google.common.base.Strings;
 import ru.complitex.domain.util.Locales;
 
 import java.io.Serializable;
@@ -213,9 +214,9 @@ public class Domain implements Serializable{
     }
 
     public String getNumberValuesString(Long entityAttributeId){
-        return getNumberValues(entityAttributeId).stream().map(Object::toString).collect(Collectors.joining(","));
+        return Strings.emptyToNull(getNumberValues(entityAttributeId).stream().map(Object::toString)
+                .collect(Collectors.joining(",")));
     }
-
 
     public List<String> getTextValues(Long entityAttributeId){
         return getOrCreateAttribute(entityAttributeId).getTextValues();

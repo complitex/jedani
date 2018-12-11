@@ -1,5 +1,6 @@
 package ru.complitex.jedani.worker.page;
 
+import de.agilecoders.wicket.core.markup.html.bootstrap.list.BootstrapListView;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
@@ -9,13 +10,22 @@ import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.link.Link;
+import org.apache.wicket.markup.html.list.ListItem;
+import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import ru.complitex.address.entity.City;
 import ru.complitex.address.page.CityListPage;
 import ru.complitex.address.page.CityTypeListPage;
 import ru.complitex.address.page.CountryListPage;
 import ru.complitex.address.page.RegionListPage;
+import ru.complitex.common.entity.FilterWrapper;
+import ru.complitex.domain.service.DomainService;
+import ru.complitex.domain.util.Attributes;
+import ru.complitex.jedani.worker.entity.Storage;
 import ru.complitex.jedani.worker.entity.Worker;
+import ru.complitex.jedani.worker.mapper.StorageMapper;
 import ru.complitex.jedani.worker.page.admin.ImportPage;
 import ru.complitex.jedani.worker.page.catalog.MkStatusListPage;
 import ru.complitex.jedani.worker.page.catalog.PositionListPage;
@@ -24,9 +34,11 @@ import ru.complitex.jedani.worker.page.resource.JedaniJsResourceReference;
 import ru.complitex.jedani.worker.page.resource.MenuCssResourceReference;
 import ru.complitex.jedani.worker.page.storage.NomenclatureListPage;
 import ru.complitex.jedani.worker.page.storage.StorageListPage;
+import ru.complitex.jedani.worker.page.storage.StoragePage;
 import ru.complitex.jedani.worker.page.worker.WorkerListPage;
 import ru.complitex.jedani.worker.page.worker.WorkerPage;
 import ru.complitex.jedani.worker.security.JedaniRoles;
+import ru.complitex.jedani.worker.service.StorageService;
 import ru.complitex.jedani.worker.service.WorkerService;
 import ru.complitex.name.page.FirstNameListPage;
 import ru.complitex.name.page.LastNameListPage;
@@ -37,6 +49,8 @@ import ru.complitex.user.mapper.UserMapper;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Anatoly A. Ivanov
@@ -52,6 +66,15 @@ public class BasePage extends WebPage{
 
     @Inject
     private NameService nameService;
+
+    @Inject
+    private StorageMapper storageMapper;
+
+    @Inject
+    private StorageService storageService;
+
+    @Inject
+    private DomainService domainService;
 
     private User currentUser;
 
@@ -89,7 +112,35 @@ public class BasePage extends WebPage{
         });
 
         add(new BookmarkablePageLink<>("worker", WorkerPage.class));
-        add(new BookmarkablePageLink<>("storage", StorageListPage.class).setVisible(isUser()));
+
+        WebMarkupContainer storages = new WebMarkupContainer("storages");
+        storages.setVisible(isUser() && !isAdmin());
+        add(storages);
+
+        storages.add(new BookmarkablePageLink<>("storage", StoragePage.class,
+                new PageParameters().add("id", getCurrentStorage().getObjectId())));
+
+        storages.add(new BootstrapListView<Storage>("storages", new LoadableDetachableModel<List<Storage>>() {
+            @Override
+            protected List<Storage> load() {
+                return storageMapper.getStorages(new FilterWrapper<>(new Storage())
+                        .add(Storage.FILTER_CURRENT_WORKER, getCurrentWorker().getObjectId())
+                        .add(Storage.FILTER_CITIES, getCurrentWorker().getNumberValuesString(Worker.CITIES)))
+                        .stream().filter(s -> s.getNumber(Storage.CITY) != null).collect(Collectors.toList());
+            }
+        }) {
+            @Override
+            protected void populateItem(ListItem<Storage> item) {
+                Storage storage = item.getModelObject();
+
+                String label = Attributes.capitalize(domainService.getDomain(City.class, storage.getNumber(Storage.CITY))
+                        .getValueText(City.NAME)); //todo get value text sql
+
+                item.add(new BookmarkablePageLink<>("link", StoragePage.class,
+                        new PageParameters().add("id", storage.getObjectId()))
+                        .add(new Label("label", label)));
+            }
+        }.setVisible(isUser() && !isAdmin()));
 
         WebMarkupContainer settings = new WebMarkupContainer("settings");
         settings.setVisible(isAdmin());
@@ -167,5 +218,16 @@ public class BasePage extends WebPage{
         }
 
         return currentWorker;
+    }
+
+    protected Storage getCurrentStorage(){
+        List<Storage> storages = storageMapper.getStorages(FilterWrapper.of((Storage) new Storage()
+                .setParentId(getCurrentWorker().getObjectId())));
+
+        if (storages.isEmpty()){
+            return storageService.createVirtualStorage(getCurrentWorker().getObjectId());
+        }
+
+        return storages.get(0);
     }
 }

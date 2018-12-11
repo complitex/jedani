@@ -41,7 +41,17 @@
             <div class="sidebar-nav navbar-collapse">
                 <ul id="menu" class="nav metismenu">
                     <li><a wicket:id="worker">Личный кабинет</a></li>
-                    <li><a wicket:id="storage">Склады</a></li>
+                    <li class="active" wicket:id="storages">
+                        <a href="#" class="has-arrow" aria-expanded="true">Склады</a>
+                        <ul  class="nav" aria-expanded="true">
+                            <li><a wicket:id="storage">Личный склад</a></li>
+                            <wicket:container wicket:id="storages">
+                                <li>
+                                    <a wicket:id="link"><span wicket:id="label"></span></a>
+                                </li>
+                            </wicket:container>
+                        </ul>
+                    </li>
                     <li class="active"  wicket:id="address">
                         <a href="#" class="has-arrow" aria-expanded="true">Адресный справочник</a>
                         <ul class="nav" aria-expanded="true">

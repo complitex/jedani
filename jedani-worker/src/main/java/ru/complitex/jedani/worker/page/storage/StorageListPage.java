@@ -1,7 +1,6 @@
 package ru.complitex.jedani.worker.page.storage;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
@@ -24,7 +23,6 @@ import ru.complitex.domain.page.DomainListPage;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
 import ru.complitex.jedani.worker.entity.Storage;
-import ru.complitex.jedani.worker.entity.StorageType;
 import ru.complitex.jedani.worker.entity.Worker;
 import ru.complitex.jedani.worker.mapper.StorageMapper;
 import ru.complitex.jedani.worker.security.JedaniRoles;
@@ -66,27 +64,6 @@ public class StorageListPage extends DomainListPage<Storage> {
                     .setParentId(getCurrentWorker().getObjectId()))) == 0;
 
             setAddVisible(hasStorage);
-        }
-    }
-
-    @Override
-    protected void onAdd(AjaxRequestTarget target) {
-        if (isAdmin()){
-            super.onAdd(target);
-        }else {
-            Storage storage = new Storage();
-
-            storage.setParentEntityId(entityService.getEntity(Worker.ENTITY_NAME).getId());
-            storage.setParentId(getCurrentWorker().getObjectId());
-            storage.setNumber(Storage.TYPE, StorageType.VIRTUAL);
-
-            domainService.save(storage);
-
-            setAddVisible(false);
-
-            info(getString("info_virtual_storage_added"));
-
-            target.add(getContainer());
         }
     }
 
