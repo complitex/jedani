@@ -145,8 +145,10 @@ public class StoragePage extends BasePage {
         });
 
         form.add(worker = new FormGroupPanel("worker", new WorkerAutoComplete(FormGroupPanel.COMPONENT_ID,
-                new PropertyModel<>(storage, "parentId")).setRequired(true)
-                .setLabel(new ResourceModel("worker"))){
+                new PropertyModel<>(storage, "parentId"))
+                .setRequired(true)
+                .setLabel(new ResourceModel("worker"))
+                .setEnabled(storageId == null)){
             @Override
             public boolean isVisible() {
                 return Objects.equals(storage.getNumber(Storage.TYPE), StorageType.VIRTUAL);
@@ -341,19 +343,93 @@ public class StoragePage extends BasePage {
                     .setReferenceEntityAttribute(entityService.getEntityAttribute(Nomenclature.ENTITY_NAME, Nomenclature.NAME)),
                     entityService, domainService));
 
-            productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.QUANTITY),
-                    entityService, domainService));
+            productColumns.add(new DomainColumn<Product>(productEntity.getEntityAttribute(Product.QUANTITY),
+                    entityService, domainService){
+                @Override
+                public void populateItem(Item<ICellPopulator<Product>> cellItem, String componentId, IModel<Product> rowModel) {
+                    super.populateItem(cellItem, componentId, rowModel);
+
+                    Product product = rowModel.getObject();
+
+                    if (product.getNumber(Product.QUANTITY, 0L) > 0) {
+                        cellItem.add(new CssClassNameAppender("pointer"));
+
+                        cellItem.add(new AjaxEventBehavior("click") {
+                            @Override
+                            protected void onEvent(AjaxRequestTarget target) {
+                                transferModal.open(rowModel.getObject(), TransferType.TRANSFER, target);
+                            }
+                        });
+                    }
+                }
+            });
             productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.SENDING),
                     entityService, domainService));
-            productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.RECEIVING),
-                    entityService, domainService));
 
-            productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.GIFT_QUANTITY),
-                    entityService, domainService));
+            productColumns.add(new DomainColumn<Product>(productEntity.getEntityAttribute(Product.RECEIVING),
+                    entityService, domainService){
+                @Override
+                public void populateItem(Item<ICellPopulator<Product>> cellItem, String componentId, IModel<Product> rowModel) {
+                    super.populateItem(cellItem, componentId, rowModel);
+
+                    Product product = rowModel.getObject();
+
+                    if (product.getNumber(Product.RECEIVING, 0L) > 0){
+                        cellItem.add(new CssClassNameAppender("pointer"));
+
+                        cellItem.add(new AjaxEventBehavior("click") {
+                            @Override
+                            protected void onEvent(AjaxRequestTarget target) {
+                                receiveModal.open(product, TransferType.TRANSFER, target);
+                            }
+                        });
+                    }
+                }
+            });
+
+            productColumns.add(new DomainColumn<Product>(productEntity.getEntityAttribute(Product.GIFT_QUANTITY),
+                    entityService, domainService){
+                @Override
+                public void populateItem(Item<ICellPopulator<Product>> cellItem, String componentId, IModel<Product> rowModel) {
+                    super.populateItem(cellItem, componentId, rowModel);
+
+                    Product product = rowModel.getObject();
+
+                    if (product.getNumber(Product.GIFT_QUANTITY, 0L) > 0) {
+                        cellItem.add(new CssClassNameAppender("pointer"));
+
+                        cellItem.add(new AjaxEventBehavior("click") {
+                            @Override
+                            protected void onEvent(AjaxRequestTarget target) {
+                                transferModal.open(product, TransferType.GIFT, target);
+                            }
+                        });
+                    }
+                }
+            });
             productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.GIFT_SENDING),
                     entityService, domainService));
-            productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.GIFT_RECEIVING),
-                    entityService, domainService));
+
+            productColumns.add(new DomainColumn<Product>(productEntity.getEntityAttribute(Product.GIFT_RECEIVING),
+                    entityService, domainService){
+                @Override
+                public void populateItem(Item<ICellPopulator<Product>> cellItem, String componentId, IModel<Product> rowModel) {
+                    super.populateItem(cellItem, componentId, rowModel);
+
+                    Product product = rowModel.getObject();
+
+                    if (product.getNumber(Product.RECEIVING, 0L) > 0){
+                        cellItem.add(new CssClassNameAppender("pointer"));
+
+                        cellItem.add(new AjaxEventBehavior("click") {
+                            @Override
+                            protected void onEvent(AjaxRequestTarget target) {
+                                receiveModal.open(product, TransferType.GIFT, target);
+                            }
+                        });
+                    }
+                }
+            });
 
             productColumns.add(new DomainActionColumn<Product>(null, new PageParameters().add("storage_id", storageId)){
                 @Override
@@ -365,7 +441,7 @@ public class StoragePage extends BasePage {
                             Buttons.Type.Link) {
                         @Override
                         public void onClick(AjaxRequestTarget target) {
-                            transferModal.open(rowModel.getObject(), target);
+                            transferModal.open(rowModel.getObject(), null, target);
                         }
                     }.setIconType(GlyphIconType.share)));
                 }
@@ -373,27 +449,10 @@ public class StoragePage extends BasePage {
         }
 
         FilterDataTable<Product> productTable = new FilterDataTable<Product>("table", productColumns, productDataProvider,
-                productForm, 5){
+                productForm, 7){
             @Override
             public boolean isVisible() {
                 return storageId != null;
-            }
-
-            @Override
-            protected Item<Product> newRowItem(String id, int index, final IModel<Product> model) {
-                Item<Product> rowItem = super.newRowItem(id, index, model);
-
-                rowItem.add(new AjaxEventBehavior("click") {
-                    @Override
-                    protected void onEvent(AjaxRequestTarget target) {
-                        transferModal.open(model.getObject(), target);
-                    }
-                });
-
-                rowItem.add(new CssClassNameAppender("pointer"));
-
-                return rowItem;
-
             }
         };
         productTable.setVisible(storageId != null);
@@ -401,8 +460,12 @@ public class StoragePage extends BasePage {
 
         //Transactions
 
+        WebMarkupContainer transactionHeader = new WebMarkupContainer("transactionHeader");
+        transactionHeader.setVisible(storageId != null && edit);
+        tables.add(transactionHeader);
+
         DataProvider<Transaction> transactionDataProvider = new DataProvider<Transaction>(FilterWrapper.of(
-                new Transaction()).add("storageId", storageId)) {
+                new Transaction()).add("storageId", storageId).sort("id", null, false)) {
             @Override
             public Iterator<? extends Transaction> iterator(long first, long count) {
                 FilterWrapper<Transaction> filterWrapper = getFilterState().limit(first, count);
@@ -468,7 +531,7 @@ public class StoragePage extends BasePage {
                 public void populateItem(Item<ICellPopulator<Transaction>> cellItem, String componentId,
                                          IModel<Transaction> rowModel) {
                     cellItem.add(new Label(componentId, Workers.getSimpleWorkerLabel(rowModel.getObject()
-                                    .getNumber(Transaction.WORKER_TO), domainService, nameService)));
+                            .getNumber(Transaction.WORKER_TO), domainService, nameService)));
                 }
 
                 @Override
@@ -664,7 +727,7 @@ public class StoragePage extends BasePage {
         }
 
         FilterDataTable<Transaction> transactionDataTable = new FilterDataTable<Transaction>("table", transactionColumns,
-                transactionDataProvider, transactionForm, 5){
+                transactionDataProvider, transactionForm, 7){
             @Override
             public boolean isVisible() {
                 return storageId != null;

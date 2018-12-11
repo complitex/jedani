@@ -10,6 +10,10 @@
         <appender-ref ref="STDOUT" />
     </logger>
 
+    <logger name="ru.complitex.jedani.worker.mapper.TransactionMapper" level="DEBUG" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+
   <logger name="ru.complitex.domain.mapper.DomainMapper" level="DEBUG" additivity="false" >
         <appender-ref ref="STDOUT" />
     </logger>

@@ -13,7 +13,6 @@ import org.apache.wicket.model.Model;
 import ru.complitex.common.wicket.util.ComponentUtil;
 import ru.complitex.jedani.worker.entity.RecipientType;
 import ru.complitex.jedani.worker.entity.Transaction;
-import ru.complitex.jedani.worker.entity.TransferType;
 
 /**
  * @author Anatoly A. Ivanov
@@ -70,7 +69,6 @@ abstract class StorageModal extends Modal<Transaction> {
         transaction.getAttributes().clear();
 
         transaction.setNumber(Transaction.QUANTITY, 1L);
-        transaction.setNumber(Transaction.TRANSFER_TYPE, TransferType.TRANSFER);
         transaction.setNumber(Transaction.RECIPIENT_TYPE, RecipientType.WORKER);
 
         container.setVisible(true);

@@ -60,6 +60,9 @@
          <if test="map.storageId != null">
              and (ta_s_from.number = #{map.storageId} or ta_s_to.number = #{map.storageId})
          </if>
+         <if test="map.storageToId != null">
+             and (ta_s_to.number = #{map.storageToId})
+         </if>
          <if test="object.startDate != null">
              and date(d.start_date) = date(#{object.startDate})
          </if>
@@ -68,6 +71,20 @@
          </if>
          <if test="map.client != null">
              and <include refid="selectTransactionsClient"/> like concat('%', #{map.client}, '%')
+         </if>
+         <if test="map.receiving != null">
+             and (exists(select ta.id from transaction_attribute ta
+                 left join transaction_attribute ta_tt on ta.object_id = ta_tt.object_id and ta_tt.status = 1
+                     and ta_tt.entity_attribute_id = 4
+                 where ta.object_id = d.object_id and ta.status = 1 and ta.entity_attribute_id = 3
+                     and ta.number = 3 and ta_tt.number = 1 and d.end_date is null))
+         </if>
+         <if test="map.receivingGift != null">
+             and (exists(select ta.id from transaction_attribute ta
+                 left join transaction_attribute ta_tt on ta.object_id = ta_tt.object_id and ta_tt.status = 1
+                     and ta_tt.entity_attribute_id = 4
+                 where ta.object_id = d.object_id and ta.status = 1 and ta.entity_attribute_id = 3
+                     and ta.number = 3 and ta_tt.number = 2 and d.end_date is null))
          </if>
     </sql>
 

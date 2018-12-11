@@ -9,6 +9,10 @@ import ru.complitex.domain.entity.Domain;
 public class Transaction extends Domain {
     public static final String ENTITY_NAME = "transaction";
 
+    public static final String FILTER_STORAGE_TO_ID = "storageToId";
+    public static final String FILTER_RECEIVING = "receiving";
+    public static final String FILTER_RECEIVING_GIFT = "receivingGift";
+
     public static final long NOMENCLATURE = 1;
     public static final long QUANTITY = 2;
     public static final long TYPE = 3;

@@ -44,8 +44,6 @@ public abstract class TransferModal extends StorageModal {
 
     private Product product;
 
-    private String nomenclatureLabel;
-
     private IModel<Integer> tabIndexModel = Model.of(0);
 
     TransferModal(String markupId) {
@@ -230,7 +228,7 @@ public abstract class TransferModal extends StorageModal {
 
                 fragment.add(getNomenclature());
 
-                fragment.add(new FormGroupSelectPanel("type", new BootstrapSelect<>(FormGroupPanel.COMPONENT_ID,
+                fragment.add(new FormGroupSelectPanel("withdrawType", new BootstrapSelect<>(FormGroupPanel.COMPONENT_ID,
                         new NumberAttributeModel(getModel(), Transaction.TRANSFER_TYPE),
                         Arrays.asList(TransferType.TRANSFER, TransferType.GIFT),
                         new IChoiceRenderer<Long>() {
@@ -238,7 +236,7 @@ public abstract class TransferModal extends StorageModal {
                             public Object getDisplayValue(Long object) {
                                 switch (object.intValue()){
                                     case (int) TransferType.TRANSFER:
-                                        return getString("transfer");
+                                        return getString("good");
 
                                     case (int) TransferType.GIFT:
                                         return getString("gift");
@@ -282,19 +280,22 @@ public abstract class TransferModal extends StorageModal {
                 new LoadableDetachableModel<String>() {
                     @Override
                     protected String load() {
-                        return nomenclatureLabel;
+                        Nomenclature nomenclature = domainService.getDomain(Nomenclature.class, product.getNumber(Product.NOMENCLATURE));
+
+                        return Strings.defaultIfEmpty(nomenclature.getText(Nomenclature.CODE), "") + " "
+                                + Attributes.capitalize(nomenclature.getValueText(Nomenclature.NAME));
                     }
                 }).setEnabled(false);
     }
 
-    void open(Product product, AjaxRequestTarget target){
+    void open(Product product, Long transferType, AjaxRequestTarget target){
         this.product = product;
 
-        Nomenclature nomenclature = domainService.getDomain(Nomenclature.class, product.getNumber(Product.NOMENCLATURE));
-        nomenclatureLabel = Strings.defaultIfEmpty(nomenclature.getText(Nomenclature.CODE), "") + " "
-                + Attributes.capitalize(nomenclature.getValueText(Nomenclature.NAME));
+        tabIndexModel.setObject(0);
 
         open(target);
+
+        getModelObject().setNumber(Transaction.TRANSFER_TYPE, transferType);
     }
 
     private void updateTabs(AjaxRequestTarget target){

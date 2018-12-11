@@ -26,9 +26,24 @@
                         <table wicket:id="table" class="table table-hover"></table>
                     </form>
 
-                    <form wicket:id="transactionForm">
-                        <table wicket:id="table" class="table table-hover"></table>
-                    </form>
+                    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                        <div class="panel panel-default">
+                            <div class="panel-heading" role="tab" id="headingOne" wicket:id="transactionHeader">
+                                <h4 class="panel-title">
+                                    <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                                        Журнал изменений
+                                    </a>
+                                </h4>
+                            </div>
+                            <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+                                <div class="panel-body">
+                                    <form wicket:id="transactionForm">
+                                        <table wicket:id="table" class="table table-hover"></table>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <br/>

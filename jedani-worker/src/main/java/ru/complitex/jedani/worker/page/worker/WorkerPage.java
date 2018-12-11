@@ -361,7 +361,6 @@ public class WorkerPage extends BasePage {
 
         SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd.MM.yyyy hh:mm:ss");
 
-
         history.add(new ListView<Attribute>("attributes", new LoadableDetachableModel<List<Attribute>>() {
             @Override
             protected List<Attribute> load() {

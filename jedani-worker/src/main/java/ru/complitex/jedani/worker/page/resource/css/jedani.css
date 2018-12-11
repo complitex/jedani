@@ -139,3 +139,7 @@ td.domain-id-column{
 .wicket_orderDown {
     text-decoration: underline;
 }
+
+.panel-group .panel-heading {
+    padding: 0;
+}
