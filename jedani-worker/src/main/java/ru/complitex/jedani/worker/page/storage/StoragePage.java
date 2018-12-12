@@ -517,9 +517,15 @@ public class StoragePage extends BasePage {
 
             Entity transactionEntity = entityService.getEntity(Transaction.ENTITY_NAME);
 
-            transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.NOMENCLATURE)
+            transactionColumns.add(new DomainColumn<Transaction>(transactionEntity.getEntityAttribute(Transaction.NOMENCLATURE)
                     .setReferenceEntityAttribute(entityService.getEntityAttribute(Nomenclature.ENTITY_NAME, Nomenclature.NAME)),
-                    entityService, domainService));
+                    entityService, domainService){
+                @Override
+                protected String displayEntity(EntityAttribute entityAttribute, Attribute attribute, Domain refDomain) {
+                    return refDomain.getText(Nomenclature.CODE) + " " + super.displayEntity(entityAttribute, attribute, refDomain);
+                }
+            });
+
             transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.QUANTITY),
                     entityService, domainService));
             transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.STORAGE_FROM)
