@@ -5,14 +5,14 @@ import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.DateTextField
 import org.apache.wicket.Component;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.TextFilter;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.complitex.common.entity.FilterWrapper;
+import ru.complitex.common.wicket.datatable.FilterDataForm;
+import ru.complitex.common.wicket.datatable.TextDataFilter;
 import ru.complitex.common.wicket.panel.InputPanel;
 import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Domain;
@@ -52,7 +52,7 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
     }
 
     @Override
-    public Component getFilter(String componentId, FilterForm<?> form) {
+    public Component getFilter(String componentId, FilterDataForm<?> form) {
         Long entityAttributeId = entityAttribute.getEntityAttributeId();
 
         Domain domain = (Domain)((FilterWrapper)form.getModelObject()).getObject();
@@ -61,7 +61,7 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
 
         switch (entityAttribute.getValueType()){
             case NUMBER:
-                TextFilter<Long> textFilter = new TextFilter<>(componentId, new NumberAttributeModel(domain, entityAttributeId), form);
+                TextDataFilter<Long> textFilter = new TextDataFilter<>(componentId, new NumberAttributeModel(domain, entityAttributeId), form);
                 textFilter.getFilter().setType(Long.class);
 
                 return textFilter;
@@ -70,7 +70,7 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
                         new DateAttributeModel(domain, entityAttributeId),
                         new DateTextFieldConfig().withFormat("dd.MM.yyyy").withLanguage("ru")));
             default:
-                return new TextFilter<>(componentId, new TextAttributeModel(domain, entityAttributeId, TextAttributeModel.TYPE.DEFAULT), form);
+                return new TextDataFilter<>(componentId, new TextAttributeModel(domain, entityAttributeId, TextAttributeModel.TYPE.DEFAULT), form);
         }
     }
 

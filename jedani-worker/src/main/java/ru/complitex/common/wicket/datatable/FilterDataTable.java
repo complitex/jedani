@@ -9,8 +9,6 @@ import org.apache.wicket.extensions.ajax.markup.html.AjaxIndicatorAppender;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackHeadersToolbar;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterToolbar;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -31,7 +29,7 @@ public class FilterDataTable<T extends Serializable> extends DataTable<T, SortPr
     private boolean hideOnEmpty = false;
 
     public FilterDataTable(String id, List<? extends IColumn<T, SortProperty>> columns, DataProvider<T> dataProvider,
-                           FilterForm<FilterWrapper<T>> filterForm, long rowsPerPage) {
+                           FilterDataForm<FilterWrapper<T>> filterDataForm, long rowsPerPage) {
         super(id, columns, dataProvider, rowsPerPage);
 
         ajaxIndicatorAppender = getColumns().stream().filter(c -> c instanceof DomainActionColumn)
@@ -46,7 +44,7 @@ public class FilterDataTable<T extends Serializable> extends DataTable<T, SortPr
             }
         });
 
-        addTopToolbar(new FilterToolbar(this, filterForm){
+        addTopToolbar(new FilterDataToolbar(this, filterDataForm){
             @Override
             protected void onBeforeRender() {
                 super.onBeforeRender();

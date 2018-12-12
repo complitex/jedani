@@ -7,7 +7,6 @@ import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
@@ -18,6 +17,7 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
 import ru.complitex.common.wicket.datatable.DataProvider;
+import ru.complitex.common.wicket.datatable.FilterDataForm;
 import ru.complitex.common.wicket.datatable.FilterDataTable;
 import ru.complitex.domain.component.datatable.DomainActionColumn;
 import ru.complitex.domain.component.datatable.DomainColumn;
@@ -111,9 +111,9 @@ public class DomainListPage<T extends Domain> extends BasePage{
 
         };
 
-        FilterForm<FilterWrapper<T>> filterForm = new FilterForm<>("form", dataProvider);
-        filterForm.setOutputMarkupId(true);
-        container.add(filterForm);
+        FilterDataForm<FilterWrapper<T>> form = new FilterDataForm<>("form", dataProvider);
+        form.setOutputMarkupId(true);
+        container.add(form);
 
         List<IColumn<T, SortProperty>> columns = new ArrayList<>();
 
@@ -147,7 +147,7 @@ public class DomainListPage<T extends Domain> extends BasePage{
 
         columns.add(new DomainActionColumn<>(editPageClass));
 
-        table = new FilterDataTable<T>("table", columns, dataProvider, filterForm, 15){
+        table = new FilterDataTable<T>("table", columns, dataProvider, form, 15){
             @Override
             protected Item<T> newRowItem(String id, int index, IModel<T> model) {
                 Item<T> item = super.newRowItem(id, index, model);
@@ -159,7 +159,7 @@ public class DomainListPage<T extends Domain> extends BasePage{
         };
         table.setCurrentPage((Long) Optional.ofNullable(getSession().getAttribute(getClass().getName() +
                 CURRENT_PAGE_ATTRIBUTE)).orElse(0L));
-        filterForm.add(table);
+        form.add(table);
 
         container.add(new AjaxLink<Void>("add") {
             @Override

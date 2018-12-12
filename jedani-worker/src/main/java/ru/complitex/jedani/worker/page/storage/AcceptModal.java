@@ -22,10 +22,12 @@ abstract class AcceptModal extends StorageModal {
     @Inject
     private EntityService entityService;
 
+    private DomainAutoComplete nomenclature;
+
     AcceptModal(String markupId) {
         super(markupId);
 
-        getContainer().add(new FormGroupPanel("nomenclature", new DomainAutoComplete(FormGroupPanel.COMPONENT_ID,
+        getContainer().add(new FormGroupPanel("nomenclature", nomenclature = new DomainAutoComplete(FormGroupPanel.COMPONENT_ID,
                 entityService.getEntityAttribute(Nomenclature.ENTITY_NAME, Nomenclature.NAME),
                 new NumberAttributeModel(getModel(), Transaction.NOMENCLATURE)){
             @Override
@@ -52,5 +54,10 @@ abstract class AcceptModal extends StorageModal {
 
         getContainer().add(new TextFieldFormGroup<>("quantity", new NumberAttributeModel(getModel(), Transaction.QUANTITY))
                 .setRequired(true).setType(Long.class));
+    }
+
+    @Override
+    protected String getFocusMarkupId() {
+        return nomenclature.getAutoCompleteTextField().getMarkupId(true);
     }
 }

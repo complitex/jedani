@@ -2,14 +2,14 @@ package ru.complitex.domain.component.datatable;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.TextFilter;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import ru.complitex.common.entity.SortProperty;
+import ru.complitex.common.wicket.datatable.FilterDataForm;
+import ru.complitex.common.wicket.datatable.TextDataFilter;
 import ru.complitex.domain.entity.Domain;
 
 /**
@@ -22,8 +22,8 @@ public class DomainIdColumn<T extends Domain> extends AbstractDomainColumn<T>{
     }
 
     @Override
-    public Component getFilter(String componentId, FilterForm<?> form) {
-        return new TextFilter<>(componentId, new PropertyModel<>(form.getDefaultModel(), "object.objectId"), form);
+    public Component getFilter(String componentId, FilterDataForm<?> form) {
+        return new TextDataFilter<>(componentId, new PropertyModel<>(form.getDefaultModel(), "object.objectId"), form);
     }
 
     @Override

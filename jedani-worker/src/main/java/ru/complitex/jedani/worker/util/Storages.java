@@ -3,14 +3,14 @@ package ru.complitex.jedani.worker.util;
 import org.apache.wicket.Component;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.TextFilter;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import ru.complitex.address.entity.City;
 import ru.complitex.common.entity.SortProperty;
+import ru.complitex.common.wicket.datatable.FilterDataForm;
+import ru.complitex.common.wicket.datatable.TextDataFilter;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.EntityAttribute;
@@ -47,8 +47,8 @@ public class Storages {
             }
 
             @Override
-            public Component getFilter(String componentId, FilterForm<?> form) {
-                return new TextFilter<>(componentId, Model.of(""), form);
+            public Component getFilter(String componentId, FilterDataForm<?> form) {
+                return new TextDataFilter<>(componentId, Model.of(""), form);
             }
         });
     }

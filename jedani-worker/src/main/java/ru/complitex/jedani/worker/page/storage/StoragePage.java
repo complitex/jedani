@@ -7,7 +7,6 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel
 import de.agilecoders.wicket.core.markup.html.bootstrap.image.GlyphIconType;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.select.BootstrapSelect;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.select.BootstrapSelectConfig;
-import de.agilecoders.wicket.extensions.markup.html.bootstrap.table.filter.BootstrapSelectFilter;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxEventBehavior;
@@ -18,8 +17,6 @@ import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.TextFilter;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
@@ -36,13 +33,12 @@ import org.slf4j.LoggerFactory;
 import ru.complitex.address.entity.City;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
-import ru.complitex.common.wicket.datatable.DataProvider;
-import ru.complitex.common.wicket.datatable.DateFilter;
-import ru.complitex.common.wicket.datatable.FilterDataTable;
+import ru.complitex.common.wicket.datatable.*;
 import ru.complitex.common.wicket.form.FormGroupPanel;
 import ru.complitex.common.wicket.form.FormGroupSelectPanel;
 import ru.complitex.common.wicket.form.TextFieldFormGroup;
 import ru.complitex.common.wicket.panel.LinkPanel;
+import ru.complitex.common.wicket.panel.SelectPanel;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.component.datatable.DomainActionColumn;
 import ru.complitex.domain.component.datatable.DomainColumn;
@@ -195,7 +191,7 @@ public class StoragePage extends BasePage {
                 return false;
             }
         };
-        form.add(acceptForm);
+        add(acceptForm);
 
         AcceptModal acceptModal = new AcceptModal("acceptModal") {
             @Override
@@ -218,7 +214,7 @@ public class StoragePage extends BasePage {
                 return false;
             }
         };
-        form.add(transferForm);
+        add(transferForm);
 
         TransferModal transferModal = new TransferModal("transferModal") {
             @Override
@@ -286,7 +282,7 @@ public class StoragePage extends BasePage {
                 return false;
             }
         };
-        form.add(receiveForm);
+        add(receiveForm);
 
         ReceiveModal receiveModal = new ReceiveModal("receiveModal") {
             @Override
@@ -323,7 +319,7 @@ public class StoragePage extends BasePage {
             }
         };
 
-        FilterForm<FilterWrapper<Product>> productForm = new FilterForm<FilterWrapper<Product>>("productForm",
+        FilterDataForm<FilterWrapper<Product>> productForm = new FilterDataForm<FilterWrapper<Product>>("productForm",
                 productDataProvider){
             @Override
             protected boolean wantSubmitOnParentFormSubmit() {
@@ -484,7 +480,7 @@ public class StoragePage extends BasePage {
             }
         };
 
-        FilterForm<FilterWrapper<Transaction>> transactionForm = new FilterForm<FilterWrapper<Transaction>>(
+        FilterDataForm<FilterWrapper<Transaction>> transactionForm = new FilterDataForm<FilterWrapper<Transaction>>(
                 "transactionForm", transactionDataProvider){
             @Override
             protected boolean wantSubmitOnParentFormSubmit() {
@@ -501,7 +497,7 @@ public class StoragePage extends BasePage {
             transactionColumns.add(new AbstractDomainColumn<Transaction>(new ResourceModel("startDate"),
                     new SortProperty("startDate")) {
                 @Override
-                public Component getFilter(String componentId, FilterForm<?> form) {
+                public Component getFilter(String componentId, FilterDataForm<?> form) {
                     return new DateFilter(componentId, new PropertyModel<>(form.getModel(),"object.startDate"), form);
                 }
 
@@ -535,8 +531,8 @@ public class StoragePage extends BasePage {
                 }
 
                 @Override
-                public Component getFilter(String componentId, FilterForm<?> form) {
-                    return new TextFilter<>(componentId, new PropertyModel<>(form.getModel(), "map.worker"), form);
+                public Component getFilter(String componentId, FilterDataForm<?> form) {
+                    return new TextDataFilter<>(componentId, new PropertyModel<>(form.getModel(), "map.worker"), form);
                 }
             });
 
@@ -551,8 +547,8 @@ public class StoragePage extends BasePage {
                 }
 
                 @Override
-                public Component getFilter(String componentId, FilterForm<?> form) {
-                    return new TextFilter<>(componentId, new PropertyModel<>(form.getModel(), "map.client"), form);
+                public Component getFilter(String componentId, FilterDataForm<?> form) {
+                    return new TextDataFilter<>(componentId, new PropertyModel<>(form.getModel(), "map.client"), form);
                 }
             });
 
@@ -564,11 +560,12 @@ public class StoragePage extends BasePage {
             transactionColumns.add(new AbstractDomainColumn<Transaction>(transactionEntity
                     .getEntityAttribute(Transaction.TRANSFER_TYPE)) {
                 @Override
-                public Component getFilter(String componentId, FilterForm<?> form) {
+                public Component getFilter(String componentId, FilterDataForm<?> form) {
                     Transaction transaction = (Transaction)((FilterWrapper)form.getModelObject()).getObject();
 
-                    return new BootstrapSelectFilter<Long>(componentId, new NumberAttributeModel(transaction,
-                            Transaction.TRANSFER_TYPE), form, Arrays.asList(TransferType.TRANSFER, TransferType.GIFT),
+                    return new SelectPanel(componentId, new BootstrapSelect<>(SelectPanel.SELECT_COMPONENT_ID,
+                            new NumberAttributeModel(transaction,
+                                    Transaction.TRANSFER_TYPE), Arrays.asList(TransferType.TRANSFER, TransferType.GIFT),
                             new IChoiceRenderer<Long>() {
                                 @Override
                                 public Object getDisplayValue(Long object) {
@@ -593,15 +590,7 @@ public class StoragePage extends BasePage {
                                 public Long getObject(String id, IModel<? extends List<? extends Long>> choices) {
                                     return !id.isEmpty() ? Long.valueOf(id) : null;
                                 }
-                            }, false){
-                        @Override
-                        protected BootstrapSelect<Long> newDropDownChoice(String id, IModel<Long> model,
-                                                                          IModel<? extends List<? extends Long>> choices,
-                                                                          IChoiceRenderer<? super Long> renderer) {
-                            return super.newDropDownChoice(id, model, choices, renderer)
-                                    .with(new BootstrapSelectConfig().withNoneSelectedText(""));
-                        }
-                    };
+                            }).with(new BootstrapSelectConfig().withNoneSelectedText("")));
                 }
 
                 @Override
@@ -629,11 +618,12 @@ public class StoragePage extends BasePage {
             transactionColumns.add(new AbstractDomainColumn<Transaction>(transactionEntity
                     .getEntityAttribute(Transaction.TYPE)) {
                 @Override
-                public Component getFilter(String componentId, FilterForm<?> form) {
+                public Component getFilter(String componentId, FilterDataForm<?> form) {
                     Transaction transaction = (Transaction)((FilterWrapper)form.getModelObject()).getObject();
 
-                    return new BootstrapSelectFilter<Long>(componentId, new NumberAttributeModel(transaction,
-                            Transaction.TYPE), form, Arrays.asList(TransactionType.ACCEPT, TransactionType.SELL,
+                    return new SelectPanel(componentId, new BootstrapSelect<>(SelectPanel.SELECT_COMPONENT_ID,
+                            new NumberAttributeModel(transaction,
+                                    Transaction.TYPE), Arrays.asList(TransactionType.ACCEPT, TransactionType.SELL,
                             TransactionType.TRANSFER, TransactionType.WITHDRAW),
                             new IChoiceRenderer<Long>() {
                                 @Override
@@ -663,15 +653,7 @@ public class StoragePage extends BasePage {
                                 public Long getObject(String id, IModel<? extends List<? extends Long>> choices) {
                                     return !id.isEmpty() ? Long.valueOf(id) : null;
                                 }
-                            }, false){
-                        @Override
-                        protected BootstrapSelect<Long> newDropDownChoice(String id, IModel<Long> model,
-                                                                          IModel<? extends List<? extends Long>> choices,
-                                                                          IChoiceRenderer<? super Long> renderer) {
-                            return super.newDropDownChoice(id, model, choices, renderer)
-                                    .with(new BootstrapSelectConfig().withNoneSelectedText(""));
-                        }
-                    };
+                            }).with(new BootstrapSelectConfig().withNoneSelectedText("")));
                 }
 
                 @Override

@@ -15,8 +15,6 @@ import org.apache.wicket.authroles.authorization.strategies.role.annotations.Aut
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.TextFilter;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
@@ -38,7 +36,9 @@ import ru.complitex.address.entity.Region;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
 import ru.complitex.common.wicket.datatable.DataProvider;
+import ru.complitex.common.wicket.datatable.FilterDataForm;
 import ru.complitex.common.wicket.datatable.FilterDataTable;
+import ru.complitex.common.wicket.datatable.TextDataFilter;
 import ru.complitex.common.wicket.form.DateTextFieldFormGroup;
 import ru.complitex.common.wicket.form.TextFieldFormGroup;
 import ru.complitex.common.wicket.util.ComponentUtil;
@@ -207,7 +207,7 @@ public class WorkerPage extends BasePage {
         };
 
         //Worker
-        FilterForm<FilterWrapper<Worker>> form = new FilterForm<>("form", dataProvider);
+        FilterDataForm<FilterWrapper<Worker>> form = new FilterDataForm<>("form", dataProvider);
         add(form);
 
         DomainAutoCompleteFormGroup lastName, firstName, middleName;
@@ -583,8 +583,6 @@ public class WorkerPage extends BasePage {
             }
         }.setDefaultFormProcessing(false));
 
-        boolean currentWorker = worker.getObjectId() != null && Objects.equals(getCurrentWorker().getObjectId(), worker.getObjectId());
-
         Link back = new Link<Void>("back") {
             @Override
             public void onClick() {
@@ -618,8 +616,8 @@ public class WorkerPage extends BasePage {
             }
 
             @Override
-            public Component getFilter(String componentId, FilterForm<?> form) {
-                return new TextFilter<>(componentId, Model.of(""), form);
+            public Component getFilter(String componentId, FilterDataForm<?> form) {
+                return new TextDataFilter<>(componentId, Model.of(""), form);
             }
         });
 
@@ -630,8 +628,8 @@ public class WorkerPage extends BasePage {
             }
 
             @Override
-            public Component getFilter(String componentId, FilterForm<?> form) {
-                return new TextFilter<>(componentId, Model.of(""), form);
+            public Component getFilter(String componentId, FilterDataForm<?> form) {
+                return new TextDataFilter<>(componentId, Model.of(""), form);
             }
         });
 

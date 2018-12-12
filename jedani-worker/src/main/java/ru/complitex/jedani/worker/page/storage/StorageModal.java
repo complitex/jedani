@@ -93,4 +93,22 @@ abstract class StorageModal extends Modal<Transaction> {
     BootstrapAjaxButton getActionButton() {
         return actionButton;
     }
+
+    @Override
+    protected String createBasicInitializerScript(String markupId) {
+        if (getFocusMarkupId() != null) {
+            String focus = "; " +
+                    "$('#"+ markupId + "').on('shown.bs.modal', function () {" +
+                    "  $('#" + getFocusMarkupId() + "').focus();" +
+                    "})";
+
+            return super.createBasicInitializerScript(markupId) + focus;
+        }
+
+        return super.createBasicInitializerScript(markupId);
+    }
+
+    protected String getFocusMarkupId() {
+        return null;
+    }
 }

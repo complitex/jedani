@@ -1,10 +1,10 @@
 package ru.complitex.domain.component.datatable;
 
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.IFilteredColumn;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import ru.complitex.common.entity.SortProperty;
+import ru.complitex.common.wicket.datatable.IFilterDataColumn;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.EntityAttribute;
 
@@ -13,7 +13,7 @@ import ru.complitex.domain.entity.EntityAttribute;
  * 20.12.2017 3:20
  */
 public abstract class AbstractDomainColumn<T extends Domain>  extends AbstractColumn<T, SortProperty>
-        implements IFilteredColumn<T, SortProperty> {
+        implements IFilterDataColumn<T, SortProperty> {
 
     public AbstractDomainColumn() {
         super(Model.of(""), null);
