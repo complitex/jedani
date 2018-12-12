@@ -38,17 +38,17 @@ public class NavigationToolbar extends AbstractToolbar {
             getSession().setMetaData(ITEMS_PER_PAGE, map);
         }
 
-        Long itemPerPages = map.get(tableKey);
+        Long itemsPerPages = map.get(tableKey);
 
-        if (itemPerPages == null){
-            itemPerPages = table.getItemsPerPage();
+        if (itemsPerPages == null){
+            itemsPerPages = table.getItemsPerPage();
 
-            map.put(tableKey, itemPerPages);
+            map.put(tableKey, itemsPerPages);
         }else{
-            table.setItemsPerPage(itemPerPages);
+            table.setItemsPerPage(itemsPerPages);
         }
 
-        IModel<Long> itemsPerPageModel = Model.of(itemPerPages);
+        IModel<Long> itemsPerPageModel = Model.of(itemsPerPages);
 
         span.add(new BootstrapSelect<>("size", itemsPerPageModel, Arrays.asList(5L, 10L, 15L, 20L, 25L, 50L, 100L))
                 .add(new OnChangeAjaxBehavior() {
@@ -61,11 +61,5 @@ public class NavigationToolbar extends AbstractToolbar {
                         target.add(table);
                     }
                 }));
-    }
-
-    @Override
-    protected void onConfigure() {
-        super.onConfigure();
-        setVisible(getTable().getPageCount() > 1);
     }
 }
