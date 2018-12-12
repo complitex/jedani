@@ -451,7 +451,7 @@ public class StoragePage extends BasePage {
         }
 
         FilterDataTable<Product> productTable = new FilterDataTable<Product>("table", productColumns, productDataProvider,
-                productForm, 7){
+                productForm, 5, "storagePageProduct"){
             @Override
             public boolean isVisible() {
                 return storageId != null;
@@ -715,7 +715,7 @@ public class StoragePage extends BasePage {
         }
 
         FilterDataTable<Transaction> transactionDataTable = new FilterDataTable<Transaction>("table", transactionColumns,
-                transactionDataProvider, transactionForm, 7){
+                transactionDataProvider, transactionForm, 5, "storagePageTransaction"){
             @Override
             public boolean isVisible() {
                 return storageId != null;

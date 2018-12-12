@@ -635,7 +635,7 @@ public class WorkerPage extends BasePage {
 
         columns.add(new DomainActionColumn<>(WorkerPage.class));
 
-        FilterDataTable<Worker> table = new FilterDataTable<Worker>("table", columns, dataProvider, form, 7){
+        FilterDataTable<Worker> table = new FilterDataTable<Worker>("table", columns, dataProvider, form, 7, "workerPage"){
             @Override
             public boolean isVisible() {
                 return !showGraph.getObject();
@@ -679,6 +679,7 @@ public class WorkerPage extends BasePage {
         });
     }
 
+    @SuppressWarnings("Duplicates")
     private List<EntityAttribute> getEntityAttributes() {
         Entity entity = entityMapper.getEntity(Worker.ENTITY_NAME);
 

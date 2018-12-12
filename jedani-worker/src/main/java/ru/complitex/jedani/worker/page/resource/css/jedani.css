@@ -143,3 +143,8 @@ td.domain-id-column{
 .panel-group .panel-heading {
     padding: 0;
 }
+
+.navigation .bootstrap-select{
+    width: 55px !important;
+    vertical-align: inherit;
+}

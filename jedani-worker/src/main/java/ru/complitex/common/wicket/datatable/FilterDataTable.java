@@ -1,8 +1,5 @@
 package ru.complitex.common.wicket.datatable;
 
-import de.agilecoders.wicket.core.markup.html.bootstrap.navigation.BootstrapPagingNavigator;
-import de.agilecoders.wicket.core.markup.html.bootstrap.navigation.ajax.BootstrapAjaxPagingNavigator;
-import de.agilecoders.wicket.extensions.markup.html.bootstrap.table.toolbars.BootstrapNavigationToolbar;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.IAjaxIndicatorAware;
 import org.apache.wicket.extensions.ajax.markup.html.AjaxIndicatorAppender;
@@ -10,8 +7,6 @@ import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFal
 import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.markup.html.panel.EmptyPanel;
-import org.apache.wicket.markup.html.panel.Panel;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
 import ru.complitex.domain.component.datatable.DomainActionColumn;
@@ -29,7 +24,7 @@ public class FilterDataTable<T extends Serializable> extends DataTable<T, SortPr
     private boolean hideOnEmpty = false;
 
     public FilterDataTable(String id, List<? extends IColumn<T, SortProperty>> columns, DataProvider<T> dataProvider,
-                           FilterDataForm<FilterWrapper<T>> filterDataForm, long rowsPerPage) {
+                           FilterDataForm<FilterWrapper<T>> filterDataForm, long rowsPerPage, String tableKey) {
         super(id, columns, dataProvider, rowsPerPage);
 
         ajaxIndicatorAppender = getColumns().stream().filter(c -> c instanceof DomainActionColumn)
@@ -59,22 +54,7 @@ public class FilterDataTable<T extends Serializable> extends DataTable<T, SortPr
             }
         });
 
-        addBottomToolbar(new BootstrapNavigationToolbar(this){
-            @Override
-            protected BootstrapPagingNavigator newPagingNavigator(String navigatorId, DataTable<?, ?> table, BootstrapPagingNavigator.Size size) {
-                return new BootstrapAjaxPagingNavigator(navigatorId, table){
-                    @Override
-                    public Size getSize() {
-                        return size;
-                    }
-                };
-            }
-
-            @Override
-            protected Panel newNavigatorLabel(String navigatorId, DataTable<?, ?> table, BootstrapPagingNavigator.Size size) {
-                return new EmptyPanel(navigatorId);
-            }
-        });
+        addBottomToolbar(new NavigationToolbar(this, tableKey));
     }
 
     @Override
