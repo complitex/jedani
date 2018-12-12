@@ -5,6 +5,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.LoadableDetachableModel;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.domain.service.DomainService;
+import ru.complitex.domain.util.Attributes;
 import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.mapper.TransactionMapper;
 
@@ -31,8 +32,8 @@ public abstract class ReceiveModal extends StorageModal {
         getContainer().add(new Label("nomenclature", new LoadableDetachableModel<String>() {
             @Override
             protected String load() {
-                return domainService.getDomain(Nomenclature.class, transaction.getNumber(Transaction.NOMENCLATURE))
-                        .getValueText(Nomenclature.NAME);
+                return Attributes.capitalize(domainService.getDomain(Nomenclature.class, transaction.getNumber(Transaction.NOMENCLATURE))
+                        .getValueText(Nomenclature.NAME));
             }
         }));
 

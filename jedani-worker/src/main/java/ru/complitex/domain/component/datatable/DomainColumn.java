@@ -92,14 +92,10 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
                 break;
             case ENTITY:
                 if (attribute.getNumber() != null) {
-                    Domain domain = domainService.getDomain(entityService
+                    Domain refDomain = domainService.getDomain(entityService
                             .getEntity(entityAttribute.getReferenceId()).getName(), attribute.getNumber());
 
-                    text = domain != null && entityAttribute.getReferenceEntityAttribute() != null
-                            ? domain.getValueText(entityAttribute.getReferenceEntityAttribute().getEntityAttributeId())
-                            : attribute.getNumber() + "";
-
-                    text = Attributes.displayText(entityAttribute.getReferenceEntityAttribute(), text);
+                    text = displayEntity(entityAttribute, attribute, refDomain);
                 }
 
                 break;
@@ -170,5 +166,29 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
         }
 
         cellItem.add(label);
+    }
+
+    protected String displayEntity(EntityAttribute entityAttribute, Attribute attribute, Domain refDomain){
+        String text;
+
+        if (refDomain != null && entityAttribute.getReferenceEntityAttribute() != null){
+            switch (entityAttribute.getReferenceEntityAttribute().getValueType()){
+                case TEXT_VALUE:
+                    text = refDomain.getValueText(entityAttribute.getReferenceEntityAttribute().getEntityAttributeId());
+                    break;
+                case TEXT:
+                    text = refDomain.getText(entityAttribute.getReferenceEntityAttribute().getEntityAttributeId());
+                    break;
+                case NUMBER:
+                    text = refDomain.getNumber(entityAttribute.getReferenceEntityAttribute().getEntityAttributeId()) + "";
+                    break;
+                default:
+                    text = "[" + entityAttribute.getReferenceEntityAttribute().getEntityAttributeId() + "]";
+            }
+        }else{
+            text = attribute.getNumber() + "";
+        }
+
+        return Attributes.displayText(entityAttribute.getReferenceEntityAttribute(), text);
     }
 }

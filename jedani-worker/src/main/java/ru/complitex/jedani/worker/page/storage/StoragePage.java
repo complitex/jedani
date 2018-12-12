@@ -44,8 +44,7 @@ import ru.complitex.domain.component.datatable.DomainActionColumn;
 import ru.complitex.domain.component.datatable.DomainColumn;
 import ru.complitex.domain.component.datatable.DomainIdColumn;
 import ru.complitex.domain.component.form.DomainAutoCompleteFormGroup;
-import ru.complitex.domain.entity.Entity;
-import ru.complitex.domain.entity.ValueType;
+import ru.complitex.domain.entity.*;
 import ru.complitex.domain.model.NumberAttributeModel;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
@@ -335,9 +334,16 @@ public class StoragePage extends BasePage {
 
             Entity productEntity = entityService.getEntity(Product.ENTITY_NAME);
 
-            productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.NOMENCLATURE)
+            //todo multi ref filter
+
+            productColumns.add(new DomainColumn<Product>(productEntity.getEntityAttribute(Product.NOMENCLATURE)
                     .setReferenceEntityAttribute(entityService.getEntityAttribute(Nomenclature.ENTITY_NAME, Nomenclature.NAME)),
-                    entityService, domainService));
+                    entityService, domainService){
+                @Override
+                protected String displayEntity(EntityAttribute entityAttribute, Attribute attribute, Domain refDomain) {
+                    return refDomain.getText(Nomenclature.CODE) + " " + super.displayEntity(entityAttribute, attribute, refDomain);
+                }
+            });
 
             productColumns.add(new DomainColumn<Product>(productEntity.getEntityAttribute(Product.QUANTITY),
                     entityService, domainService){
