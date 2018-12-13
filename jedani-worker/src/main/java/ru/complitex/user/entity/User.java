@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * @author Anatoly A. Ivanov
@@ -18,33 +19,32 @@ public class User implements Serializable{
 
     private String confirmPassword;
 
-    private List<UserGroup> userGroups;
+    private List<UserGroup> userGroups = new ArrayList<>();
 
     public User() {
     }
 
     public boolean hasRole(String role){
-        if (userGroups == null) {
-            return false;
-        }
-
         return userGroups.stream().anyMatch(ug -> Objects.equals(ug.getName(), role));
     }
 
     public void addRole(String role){
         if (!hasRole(role)){
-            if (userGroups == null){
-                userGroups = new ArrayList<>();
-            }
-
             userGroups.add(new UserGroup(login, role));
         }
     }
 
     public void removeRole(String role){
-        if (userGroups != null) {
-            userGroups.removeIf(userGroup -> userGroup.getName().equals(role));
-        }
+        userGroups.removeIf(userGroup -> userGroup.getName().equals(role));
+    }
+
+    public List<String> getRoles(){
+        return userGroups.stream().map(UserGroup::getName).collect(Collectors.toList());
+    }
+
+    public void setRoles(List<String> roles){
+        userGroups.removeIf(userGroup -> !roles.contains(userGroup.getName()));
+        roles.forEach(this::addRole);
     }
 
     public User(String login) {

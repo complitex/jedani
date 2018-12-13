@@ -148,3 +148,7 @@ td.domain-id-column{
     width: 55px !important;
     vertical-align: inherit;
 }
+
+.select-list .list-group{
+    margin-bottom: 12px;
+}

@@ -17,7 +17,6 @@ import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulato
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.TextField;
@@ -27,6 +26,7 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.*;
+import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +40,7 @@ import ru.complitex.common.wicket.datatable.FilterDataForm;
 import ru.complitex.common.wicket.datatable.FilterDataTable;
 import ru.complitex.common.wicket.datatable.TextDataFilter;
 import ru.complitex.common.wicket.form.DateTextFieldFormGroup;
+import ru.complitex.common.wicket.form.FormGroupPanel;
 import ru.complitex.common.wicket.form.TextFieldFormGroup;
 import ru.complitex.common.wicket.util.ComponentUtil;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
@@ -59,6 +60,7 @@ import ru.complitex.domain.model.NumberAttributeModel;
 import ru.complitex.domain.model.TextAttributeModel;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
+import ru.complitex.jedani.worker.component.JedaniRoleSelectList;
 import ru.complitex.jedani.worker.component.WorkerAutoComplete;
 import ru.complitex.jedani.worker.entity.MkStatus;
 import ru.complitex.jedani.worker.entity.Position;
@@ -80,8 +82,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
-
-import static ru.complitex.jedani.worker.security.JedaniRoles.*;
 
 /**
  * @author Anatoly A. Ivanov
@@ -272,6 +272,22 @@ public class WorkerPage extends BasePage {
                 ? userMapper.getUser(worker.getParentId())
                 : new User(participant ? worker.getText(Worker.J_ID) : null);
 
+        List<String> roles = new ArrayList<>();
+
+        if (isAdmin()){
+            roles.add(JedaniRoles.ADMINISTRATORS);
+            roles.add(JedaniRoles.STRUCTURE_ADMINISTRATORS);
+            roles.add(JedaniRoles.USERS);
+        }else if (isStructureAdmin()){
+            roles.add(JedaniRoles.STRUCTURE_ADMINISTRATORS);
+            roles.add(JedaniRoles.USERS);
+        }
+
+        IModel<List<String>> userRolesModel = new ListModel<>(user.getRoles());
+
+        form.add(new FormGroupPanel("role", new JedaniRoleSelectList(FormGroupPanel.COMPONENT_ID,
+                userRolesModel, roles)).setVisible(isAdmin() || isStructureAdmin()));
+
         TextField<String> login = new TextField<>("login", new PropertyModel<>(user, "login"));
         login.setRequired(true);
         form.add(login);
@@ -288,33 +304,11 @@ public class WorkerPage extends BasePage {
                 .onUpdate(target -> target.add(get("form:registrationDate")))
                 .setRequired(participant));
 
-        //User group
-        WebMarkupContainer userGroups = new WebMarkupContainer("userGroups");
-        userGroups.setVisible(!Objects.equals(getCurrentUser().getId(), user.getId()));
-        form.add(userGroups);
-
-        WebMarkupContainer adminRoleLabel = new WebMarkupContainer("adminRoleLabel");
-        adminRoleLabel.setVisible(isAdmin());
-        userGroups.add(adminRoleLabel);
-
-        CheckBox adminRole = new CheckBox("adminRole", Model.of(user.hasRole(ADMINISTRATORS)));
-        adminRoleLabel.add(adminRole);
-
-        WebMarkupContainer structureAdminRoleLabel = new WebMarkupContainer("structureAdminRoleLabel");
-        structureAdminRoleLabel.setVisible(isAdmin() || isStructureAdmin());
-        userGroups.add(structureAdminRoleLabel);
-
-        CheckBox structureAdminRole = new CheckBox("structureAdminRole", Model.of(user.hasRole(STRUCTURE_ADMINISTRATORS)));
-        structureAdminRoleLabel.add(structureAdminRole);
-
-        CheckBox userRole = new CheckBox("userRole", Model.of(user.hasRole(USERS)));
-        userGroups.add(userRole);
-
+        //Manager
         WebMarkupContainer managerContainer = new WebMarkupContainer("manager");
         managerContainer.setVisible(participant);
         form.add(managerContainer);
 
-        //Manager
         Label managerPhone = new Label("managerPhones", new LoadableDetachableModel<String>() {
             @Override
             protected String load() {
@@ -440,24 +434,7 @@ public class WorkerPage extends BasePage {
                         user.setPassword(Hashing.sha256().hashString(user.getPassword(), StandardCharsets.UTF_8).toString());
                     }
 
-
-                    if (adminRole.getModelObject()){
-                        user.addRole(ADMINISTRATORS);
-                    }else{
-                        user.removeRole(ADMINISTRATORS);
-                    }
-
-                    if (structureAdminRole.getModelObject()){
-                        user.addRole(STRUCTURE_ADMINISTRATORS);
-                    }else{
-                        user.removeRole(STRUCTURE_ADMINISTRATORS);
-                    }
-
-                    if (userRole.getModelObject()){
-                        user.addRole(USERS);
-                    }else{
-                        user.removeRole(USERS);
-                    }
+                    user.setRoles(userRolesModel.getObject());
 
                     if (user.getId() == null){
                         if (userMapper.getUser(user.getLogin()) != null){

@@ -48,11 +48,12 @@
                         </div>
 
                         <div>
-                            <span wicket:id="registrationDate"></span>
+                            <div wicket:id="role"></div>
                         </div>
                     </div>
                     <div class="col-md-2">
                         <div wicket:id="phone"></div>
+                        <span wicket:id="registrationDate"></span>
                     </div>
                     <div class="col-md-2">
                         <div wicket:id="email"></div>
@@ -72,35 +73,6 @@
                             <span wicket:id="managerEmail" class="form-control form-control-info" id="managerEmail" disabled></span>
                         </div>
                     </div>
-                </div>
-
-                <div wicket:id="userGroups">
-                    <label>Права доступа</label>
-                    <table>
-                        <tr>
-                            <td>
-                                <div class="checkbox">
-                                    <label wicket:id="adminRoleLabel">
-                                        <input type="checkbox" wicket:id="adminRole"> Администатор
-                                    </label>
-                                </div>
-                            </td>
-                            <td style="padding-left: 10px">
-                                <div class="checkbox">
-                                    <label wicket:id="structureAdminRoleLabel">
-                                        <input type="checkbox" wicket:id="structureAdminRole"> Администратор структуры
-                                    </label>
-                                </div>
-                            </td>
-                            <td style="padding-left: 10px">
-                                <div class="checkbox">
-                                    <label>
-                                        <input type="checkbox" wicket:id="userRole"> Пользователь
-                                    </label>
-                                </div>
-                            </td>
-                        </tr>
-                    </table>
                 </div>
 
                 <div wicket:id="structure" style="z-index: 1000">
