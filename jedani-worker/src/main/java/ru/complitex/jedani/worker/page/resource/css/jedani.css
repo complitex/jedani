@@ -146,9 +146,23 @@ td.domain-id-column{
 
 .navigation .bootstrap-select{
     width: 55px !important;
-    vertical-align: inherit;
+    vertical-align: top;
+    font-weight: normal;
+}
+
+.navigation .btn{
+    vertical-align: top;
+    font-weight: normal;
+    line-height: 1.4;
+    color: #333;
+    background-color: #f3f3f3;
+    border: 1px solid #dcdcdc;
 }
 
 .select-list .list-group{
     margin-bottom: 12px;
+}
+
+.btn[disabled]{
+    cursor: default !important;
 }

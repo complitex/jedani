@@ -8,6 +8,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractToolbar;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.NavigatorLabel;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -28,6 +29,7 @@ public class NavigationToolbar extends AbstractToolbar {
         WebMarkupContainer span = new WebMarkupContainer("span");
         add(span);
         span.add(AttributeModifier.replace("colspan", () -> String.valueOf(table.getColumns().size())));
+        span.add(new NavigatorLabel("label", table));
         span.add(new BootstrapAjaxPagingNavigator("navigator", table));
 
         HashMap<String, Long> map = getSession().getMetaData(ITEMS_PER_PAGE);
