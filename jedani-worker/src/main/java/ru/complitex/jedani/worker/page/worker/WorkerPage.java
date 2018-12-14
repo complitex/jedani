@@ -175,7 +175,7 @@ public class WorkerPage extends BasePage {
         if (worker.getObjectId() != null && participant){
             if (!isAdmin() && !isStructureAdmin()){
                 if (getCurrentWorker().getRight() < worker.getRight() || getCurrentWorker().getLeft() > worker.getLeft()){
-                    throw new UnauthorizedInstantiationException(getClass());
+                    throw new UnauthorizedInstantiationException(WorkerPage.class);
                 }
             }
         }

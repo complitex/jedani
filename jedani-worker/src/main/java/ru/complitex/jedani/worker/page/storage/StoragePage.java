@@ -14,6 +14,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.authorization.UnauthorizedInstantiationException;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
@@ -51,6 +52,7 @@ import ru.complitex.domain.service.EntityService;
 import ru.complitex.jedani.worker.component.WorkerAutoComplete;
 import ru.complitex.jedani.worker.component.WorkerAutoCompleteList;
 import ru.complitex.jedani.worker.entity.*;
+import ru.complitex.jedani.worker.mapper.StorageMapper;
 import ru.complitex.jedani.worker.mapper.TransactionMapper;
 import ru.complitex.jedani.worker.page.BasePage;
 import ru.complitex.jedani.worker.security.JedaniRoles;
@@ -76,6 +78,9 @@ public class StoragePage extends BasePage {
     private DomainService domainService;
 
     @Inject
+    private StorageMapper storageMapper;
+
+    @Inject
     private StorageService storageService;
 
     @Inject
@@ -92,14 +97,28 @@ public class StoragePage extends BasePage {
         boolean edit;
 
         if (storageId != null) {
+            if (!isAdmin()){
+                boolean storages = storageMapper.getStorages(new FilterWrapper<>(new Storage())
+                        .add(Storage.FILTER_CURRENT_WORKER, getCurrentWorker().getObjectId())
+                        .add(Storage.FILTER_CITIES, getCurrentWorker().getNumberValuesString(Worker.CITIES)))
+                        .stream().filter(s -> s.getNumber(Storage.CITY) != null)
+                        .anyMatch(s -> Objects.equals(s.getObjectId(), storageId));
+
+                if (!storages) {
+                    throw new UnauthorizedInstantiationException(StoragePage.class);
+                }
+            }
+
             storage = domainService.getDomain(Storage.class, storageId);
 
             Long currentWorkerId = getCurrentWorker().getObjectId();
 
+            boolean worker = Objects.equals(currentWorkerId, storage.getParentId());
+
             boolean workers = storage.getNumberValues(Storage.WORKERS).stream()
                     .anyMatch(id -> Objects.equals(id, currentWorkerId));
 
-            edit = isAdmin() || Objects.equals(currentWorkerId, storage.getParentId()) || workers;
+            edit = isAdmin() || worker || workers;
         } else {
             storage = new Storage();
 

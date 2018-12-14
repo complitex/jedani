@@ -29,7 +29,7 @@ public class User implements Serializable{
     }
 
     public void addRole(String role){
-        if (!hasRole(role)){
+        if (role != null && !hasRole(role)){
             userGroups.add(new UserGroup(login, role));
         }
     }

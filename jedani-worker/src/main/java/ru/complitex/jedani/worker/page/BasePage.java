@@ -140,7 +140,7 @@ public class BasePage extends WebPage{
                         new PageParameters().add("id", storage.getObjectId()))
                         .add(new Label("label", label)));
             }
-        }.setVisible(isUser() && !isAdmin()));
+        }.setVisible(isUser() || isStructureAdmin()));
 
         WebMarkupContainer settings = new WebMarkupContainer("settings");
         settings.setVisible(isAdmin());
