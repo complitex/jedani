@@ -97,18 +97,6 @@ public class StoragePage extends BasePage {
         boolean edit;
 
         if (storageId != null) {
-            if (!isAdmin()){
-                boolean storages = storageMapper.getStorages(new FilterWrapper<>(new Storage())
-                        .add(Storage.FILTER_CURRENT_WORKER, getCurrentWorker().getObjectId())
-                        .add(Storage.FILTER_CITIES, getCurrentWorker().getNumberValuesString(Worker.CITIES)))
-                        .stream().filter(s -> s.getNumber(Storage.CITY) != null)
-                        .anyMatch(s -> Objects.equals(s.getObjectId(), storageId));
-
-                if (!storages) {
-                    throw new UnauthorizedInstantiationException(StoragePage.class);
-                }
-            }
-
             storage = domainService.getDomain(Storage.class, storageId);
 
             Long currentWorkerId = getCurrentWorker().getObjectId();
@@ -119,6 +107,18 @@ public class StoragePage extends BasePage {
                     .anyMatch(id -> Objects.equals(id, currentWorkerId));
 
             edit = isAdmin() || worker || workers;
+
+            if (!isAdmin()){
+                boolean storages = storageMapper.getStorages(new FilterWrapper<>(new Storage())
+                        .add(Storage.FILTER_CURRENT_WORKER, getCurrentWorker().getObjectId())
+                        .add(Storage.FILTER_CITIES, getCurrentWorker().getNumberValuesString(Worker.CITIES)))
+                        .stream().filter(s -> s.getNumber(Storage.CITY) != null)
+                        .anyMatch(s -> Objects.equals(s.getObjectId(), storageId));
+
+                if (!storages && !worker) {
+                    throw new UnauthorizedInstantiationException(StoragePage.class);
+                }
+            }
         } else {
             storage = new Storage();
 
