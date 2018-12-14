@@ -3,6 +3,7 @@ package ru.complitex.jedani.worker.page.storage;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxButton;
 import de.agilecoders.wicket.core.markup.html.bootstrap.tabs.AjaxBootstrapTabbedPanel;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.select.BootstrapSelect;
+import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.select.BootstrapSelectConfig;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
@@ -212,7 +213,7 @@ public abstract class TransferModal extends StorageModal {
                             public Long getObject(String id, IModel<? extends List<? extends Long>> choices) {
                                 return Long.valueOf(id);
                             }
-                        })));
+                        }).with(new BootstrapSelectConfig().withNoneSelectedText(""))));
 
 
                 return fragment;
@@ -254,7 +255,7 @@ public abstract class TransferModal extends StorageModal {
                             public Long getObject(String id, IModel<? extends List<? extends Long>> choices) {
                                 return Long.valueOf(id);
                             }
-                        })));
+                        }).with(new BootstrapSelectConfig().withNoneSelectedText(""))));
 
                 fragment.add(new TextFieldFormGroup<>("quantity", new NumberAttributeModel(getModel(),
                         Transaction.QUANTITY)).setRequired(true).setType(Long.class).setRequired(true));
