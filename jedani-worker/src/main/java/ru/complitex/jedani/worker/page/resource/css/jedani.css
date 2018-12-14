@@ -166,3 +166,7 @@ td.domain-id-column{
 .btn[disabled]{
     cursor: default !important;
 }
+
+.filter-td .bootstrap-select{
+    width: 100% !important;
+}

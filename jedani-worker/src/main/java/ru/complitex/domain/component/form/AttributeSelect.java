@@ -8,6 +8,7 @@ import org.apache.wicket.model.IModel;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.mapper.DomainMapper;
+import ru.complitex.domain.util.Attributes;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -36,7 +37,7 @@ public class AttributeSelect extends BootstrapSelect<Long> {
         setChoiceRenderer(new IChoiceRenderer<Long>() {
             @Override
             public Object getDisplayValue(Long object) {
-                return map.get(object).getValueText(refEntityAttributeId, getLocale());
+                return Attributes.capitalize(map.get(object).getValueText(refEntityAttributeId, getLocale()));
             }
 
             @Override
