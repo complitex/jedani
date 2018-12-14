@@ -49,8 +49,9 @@ abstract class AcceptModal extends StorageModal {
                 return Strings.defaultIfEmpty(domain.getText(Nomenclature.CODE), "") + " " +
                         Attributes.capitalize(domain.getValueText(Nomenclature.NAME));
             }
-        }.setRequired(true).setLabel(new ResourceModel("nomenclature"))));
-
+        }));
+        nomenclature.setRequired(true);
+        nomenclature.setLabel(new ResourceModel("nomenclature"));
 
         getContainer().add(new TextFieldFormGroup<>("quantity", new NumberAttributeModel(getModel(), Transaction.QUANTITY))
                 .setRequired(true).setType(Long.class));

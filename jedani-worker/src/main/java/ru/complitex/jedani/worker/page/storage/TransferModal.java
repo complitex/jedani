@@ -135,15 +135,18 @@ public abstract class TransferModal extends StorageModal {
 
                 fragment.add(getNomenclature());
 
-                FormGroupPanel storage = new FormGroupPanel("storage", new StorageAutoCompete(FormGroupPanel.COMPONENT_ID,
-                        new NumberAttributeModel(getModel(), Transaction.STORAGE_TO)).setRequired(true)
-                        .setLabel(new ResourceModel("storage"))){
+                StorageAutoCompete storage;
+
+                fragment.add( new FormGroupPanel("storage", storage = new StorageAutoCompete(FormGroupPanel.COMPONENT_ID,
+                        new NumberAttributeModel(getModel(), Transaction.STORAGE_TO))
+                        ){
                     @Override
                     public boolean isVisible() {
                         return Objects.equals(getModelObject().getNumber(Transaction.RECIPIENT_TYPE), RecipientType.STORAGE);
                     }
-                };
-                fragment.add(storage);
+                });
+                storage.setRequired(true);
+                storage.setLabel(new ResourceModel("storage"));
 
                 FormGroupPanel worker = new FormGroupPanel("worker", new WorkerAutoComplete(FormGroupPanel.COMPONENT_ID,
                         new NumberAttributeModel(getModel(), Transaction.WORKER_TO)).setRequired(true)

@@ -7,6 +7,7 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel
 import de.agilecoders.wicket.core.markup.html.bootstrap.dialog.Modal;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
@@ -78,6 +79,8 @@ abstract class StorageModal extends Modal<Transaction> {
 
     void close(AjaxRequestTarget target){
         appendCloseDialogJavaScript(target);
+
+        container.visitChildren(FormComponent.class, (c, v) -> ((FormComponent)c).clearInput());
     }
 
     abstract void action(AjaxRequestTarget target);

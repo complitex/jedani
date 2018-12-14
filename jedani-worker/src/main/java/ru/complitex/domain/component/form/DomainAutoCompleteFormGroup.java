@@ -32,7 +32,7 @@ public class DomainAutoCompleteFormGroup extends Panel{
         FormGroup group = new FormGroup("group", label);
         group.add(domainAutoComplete = new DomainAutoComplete("input",
                 entityService.getEntityAttribute(entityName, entityAttributeId), model));
-        domainAutoComplete.getAutoCompleteTextField().setLabel(label);
+        domainAutoComplete.setLabel(label);
 
         add(group);
     }
