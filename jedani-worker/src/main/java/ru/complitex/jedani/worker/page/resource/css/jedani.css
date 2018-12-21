@@ -70,13 +70,16 @@ td.domain-id-column{
 }
 
 .wicket-aa{
-    background-color: #fff;
     -webkit-background-clip: padding-box;
     background-clip: padding-box;
-    border: 1px solid rgb(122, 156, 211);
-    border-radius: 0px;
-    -webkit-box-shadow: 0 6px 12px rgba(0,0,0,.175);
-    box-shadow: 0 6px 12px rgba(0,0,0,.175);
+    padding: 6px 0;
+    margin: 1px 0 0;
+    font-size: 13px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 0;
+    -webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, .2);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, .2);
 }
 
 .wicket-aa ul{
@@ -87,12 +90,13 @@ td.domain-id-column{
 
 .wicket-aa li{
     cursor: pointer;
-    padding: 0 10px;
+    padding: 3px 10px;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .wicket-aa ul li.selected {
-    color: #fff;
-    background-color: rgb(30, 144, 255);
+    background-color: rgb(238, 238, 238);
 }
 
 .form-control-info{
@@ -169,4 +173,8 @@ td.domain-id-column{
 
 .filter-td .bootstrap-select{
     width: 100% !important;
+}
+
+.dropdown-menu > li > a{
+    padding: 3px 10px;
 }

@@ -57,7 +57,7 @@ import ru.complitex.jedani.worker.mapper.TransactionMapper;
 import ru.complitex.jedani.worker.page.BasePage;
 import ru.complitex.jedani.worker.security.JedaniRoles;
 import ru.complitex.jedani.worker.service.StorageService;
-import ru.complitex.jedani.worker.util.Workers;
+import ru.complitex.jedani.worker.service.WorkerService;
 import ru.complitex.name.service.NameService;
 
 import javax.inject.Inject;
@@ -88,6 +88,9 @@ public class StoragePage extends BasePage {
 
     @Inject
     private NameService nameService;
+
+    @Inject
+    private WorkerService workerService;
 
     public StoragePage(PageParameters pageParameters) {
         Long storageId = pageParameters.get("id").toOptionalLong();
@@ -559,8 +562,8 @@ public class StoragePage extends BasePage {
                 @Override
                 public void populateItem(Item<ICellPopulator<Transaction>> cellItem, String componentId,
                                          IModel<Transaction> rowModel) {
-                    cellItem.add(new Label(componentId, Workers.getSimpleWorkerLabel(rowModel.getObject()
-                            .getNumber(Transaction.WORKER_TO), domainService, nameService)));
+                    cellItem.add(new Label(componentId, workerService.getSimpleWorkerLabel(rowModel.getObject()
+                            .getNumber(Transaction.WORKER_TO))));
                 }
 
                 @Override

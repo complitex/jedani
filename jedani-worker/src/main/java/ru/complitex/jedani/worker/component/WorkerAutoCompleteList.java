@@ -35,7 +35,7 @@ public class WorkerAutoCompleteList extends FormComponentPanel<Attribute> {
 
             @Override
             protected void populateItem(ListItem<Long> item) {
-                item.add(new WorkerAutoComplete("item", item.getModel()));
+                item.add(new WorkerAutoComplete("item", item.getModel(), target -> {}));
 
                 item.add(new AjaxLink<Void>("remove") {
                     @Override

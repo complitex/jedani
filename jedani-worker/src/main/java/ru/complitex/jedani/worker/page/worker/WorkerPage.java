@@ -327,14 +327,13 @@ public class WorkerPage extends BasePage {
         managerEmail.setOutputMarkupId(true);
         managerContainer.add(managerEmail);
 
-        managerContainer.add(new WorkerAutoComplete("managerFio", new PropertyModel<>(worker.getOrCreateAttribute(Worker.MANAGER_ID), "number")){
-            @Override
-            protected void onChange(AjaxRequestTarget target) {
-                manager = workerMapper.getWorker(worker.getNumber(Worker.MANAGER_ID));
+        managerContainer.add(new WorkerAutoComplete("managerFio",
+                new PropertyModel<>(worker.getOrCreateAttribute(Worker.MANAGER_ID), "number"),
+                target -> {
+                    manager = workerMapper.getWorker(worker.getNumber(Worker.MANAGER_ID));
 
-                target.add(managerPhone, managerEmail);
-            }
-        });
+                    target.add(managerPhone, managerEmail);
+                }));
 
         //Structure
         WebMarkupContainer structure = new WebMarkupContainer("structure");
@@ -483,10 +482,9 @@ public class WorkerPage extends BasePage {
                         return;
                     }
 
-                    if (manager != null) {
-                        worker.setNumber(Worker.MANAGER_ID, manager.getObjectId());
-                    }else{
+                    if (worker.getNumber(Worker.MANAGER_ID) == null){
                         worker.setNumber(Worker.MANAGER_ID, 1L);
+                        manager = workerMapper.getWorker(1L);
                     }
 
                     if (worker.getObjectId() == null){

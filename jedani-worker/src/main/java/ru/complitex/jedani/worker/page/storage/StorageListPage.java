@@ -26,7 +26,7 @@ import ru.complitex.jedani.worker.entity.Storage;
 import ru.complitex.jedani.worker.entity.Worker;
 import ru.complitex.jedani.worker.mapper.StorageMapper;
 import ru.complitex.jedani.worker.security.JedaniRoles;
-import ru.complitex.jedani.worker.util.Workers;
+import ru.complitex.jedani.worker.service.WorkerService;
 import ru.complitex.name.service.NameService;
 
 import javax.inject.Inject;
@@ -51,6 +51,9 @@ public class StorageListPage extends DomainListPage<Storage> {
 
     @Inject
     private StorageMapper storageMapper;
+
+    @Inject
+    private WorkerService workerService;
 
     public StorageListPage() {
         super(Storage.class, StoragePage.class);
@@ -85,7 +88,7 @@ public class StorageListPage extends DomainListPage<Storage> {
             @Override
             public void populateItem(Item<ICellPopulator<Storage>> cellItem, String componentId, IModel<Storage> rowModel) {
                 String workers = rowModel.getObject().getNumberValues(Storage.WORKERS).stream()
-                        .map(id -> Workers.getWorkerLabel(id, domainService, nameService))
+                        .map(id -> workerService.getWorkerLabel(id))
                         .collect(Collectors.joining(", "));
 
                 cellItem.add(new Label(componentId, workers));
@@ -100,8 +103,7 @@ public class StorageListPage extends DomainListPage<Storage> {
         columns.add(new AbstractDomainColumn<Storage>(new ResourceModel("worker"), new SortProperty("worker")) {
             @Override
             public void populateItem(Item<ICellPopulator<Storage>> cellItem, String componentId, IModel<Storage> rowModel) {
-                cellItem.add(new Label(componentId, Workers.getWorkerLabel(rowModel.getObject().getParentId(),
-                        domainService, nameService)));
+                cellItem.add(new Label(componentId, workerService.getWorkerLabel(rowModel.getObject().getParentId())));
             }
 
             @Override

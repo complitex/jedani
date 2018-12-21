@@ -32,8 +32,11 @@ public abstract class ReceiveModal extends StorageModal {
         getContainer().add(new Label("nomenclature", new LoadableDetachableModel<String>() {
             @Override
             protected String load() {
-                return Attributes.capitalize(domainService.getDomain(Nomenclature.class, transaction.getNumber(Transaction.NOMENCLATURE))
-                        .getValueText(Nomenclature.NAME));
+                Nomenclature nomenclature = domainService.getDomain(Nomenclature.class,
+                        transaction.getNumber(Transaction.NOMENCLATURE));
+
+                return nomenclature.getText(Nomenclature.CODE) + " " +
+                        Attributes.capitalize(nomenclature.getValueText(Nomenclature.NAME));
             }
         }));
 

@@ -2,6 +2,13 @@
 
 <wicket:panel xmlns:wicket="http://wicket.apache.org">
     <wicket:extend>
-        Принять товар "<span wicket:id="nomenclature"></span>" в количестве: <span wicket:id="quantity"></span>?
+        <div class="form-group">
+            <label for="nomenclature">Номенклатура</label>
+            <span id="nomenclature" wicket:id="nomenclature" class="form-control"></span>
+        </div>
+        <div class="form-group">
+            <label for="quantity">Количество</label>
+            <span id="quantity" wicket:id="quantity" class="form-control"></span>
+        </div>
     </wicket:extend>
 </wicket:panel>

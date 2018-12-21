@@ -1,11 +1,13 @@
 package ru.complitex.jedani.worker.mapper;
 
+import com.google.common.base.Strings;
 import org.apache.commons.lang3.StringUtils;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.mybatis.BaseMapper;
 import ru.complitex.common.util.MapUtil;
 import ru.complitex.jedani.worker.entity.Worker;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -28,6 +30,10 @@ public class WorkerMapper extends BaseMapper {
     }
 
     public Worker getWorker(Long objectId){
+        if (objectId == null){
+            return null;
+        }
+
         return sqlSession().selectOne("selectWorker", new Worker(objectId));
     }
 
@@ -47,7 +53,17 @@ public class WorkerMapper extends BaseMapper {
     }
 
     public List<Worker> getWorkers(String s){
-        return sqlSession().selectList("selectWorkersByString", s);
+        if (Strings.isNullOrEmpty(s)){
+            return Collections.emptyList();
+        }
+
+        String[] array = s.split("\\s");
+
+        if (array.length == 0){
+            return Collections.emptyList();
+        }
+
+        return sqlSession().selectList("selectWorkersByString", array);
     }
 
     public Long getWorkerLevelDepth(Long objectId){

@@ -1,5 +1,7 @@
 package ru.complitex.domain.component.form;
 
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AbstractAutoCompleteTextRenderer;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteSettings;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
@@ -9,6 +11,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.util.convert.ConversionException;
 import org.apache.wicket.util.convert.IConverter;
+import org.danekja.java.util.function.serializable.SerializableConsumer;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Domain;
@@ -35,7 +38,8 @@ public class DomainAutoComplete extends FormComponentPanel<Long> {
     private HiddenField<Long> inputId;
     private AutoCompleteTextField<Domain> autoCompleteTextField;
 
-    public DomainAutoComplete(String id, EntityAttribute entityAttribute, IModel<Long> model) {
+    public DomainAutoComplete(String id, EntityAttribute entityAttribute, IModel<Long> model,
+                              SerializableConsumer<AjaxRequestTarget> onChange) {
         super(id, model);
 
         this.entityAttribute = entityAttribute;
@@ -48,12 +52,25 @@ public class DomainAutoComplete extends FormComponentPanel<Long> {
         }, Long.class);
         inputId.setConvertEmptyInputStringToNull(true);
         inputId.setOutputMarkupId(true);
+
+        if (onChange != null){
+            inputId.add(new OnChangeAjaxBehavior(){
+
+                @Override
+                protected void onUpdate(AjaxRequestTarget target) {
+                    setModelObject(inputId.getModelObject());
+
+                    onChange.accept(target);
+                }
+            });
+        }
+
         add(inputId);
 
         autoCompleteTextField = new AutoCompleteTextField<Domain>("input", new LoadableDetachableModel<Domain>() {
             @Override
             protected Domain load() {
-                return model.getObject() != null  ? domainMapper.getDomain(getEntityName(), model.getObject()) : null;
+                return model.getObject() != null  ? getDomain(model.getObject()) : null;
             }
         }, Domain.class,
                 new AbstractAutoCompleteTextRenderer<Domain>() {
@@ -64,7 +81,15 @@ public class DomainAutoComplete extends FormComponentPanel<Long> {
 
                     @Override
                     protected CharSequence getOnSelectJavaScriptExpression(Domain item) {
-                        return "$('#" + inputId.getMarkupId() + "').val('" + item.getObjectId() + "'); input";
+                        String js = "$('#" + inputId.getMarkupId() + "').val('" + item.getObjectId() + "');";
+
+                        if (onChange != null){
+                            js +=  " $('#" + inputId.getMarkupId() + "').change();";
+                        }
+
+                        js += " input";
+
+                        return js;
                     }
                 }, new AutoCompleteSettings()
                 .setAdjustInputWidth(true)
@@ -73,7 +98,7 @@ public class DomainAutoComplete extends FormComponentPanel<Long> {
         ) {
             @Override
             protected Iterator<Domain> getChoices(String input) {
-                return getDomains(input).iterator();
+                return getDomains(input).stream().map(d -> (Domain) d).iterator();
             }
 
             @Override
@@ -85,7 +110,7 @@ public class DomainAutoComplete extends FormComponentPanel<Long> {
                             Long objectId = inputId.getConvertedInput();
 
                             if (objectId != null){
-                                Domain domain =  domainMapper.getDomain(getEntityName(), objectId);
+                                Domain domain =  getDomain(objectId);
 
                                 if (s.equalsIgnoreCase(getTextValue(domain))){
                                     return domain;
@@ -115,6 +140,10 @@ public class DomainAutoComplete extends FormComponentPanel<Long> {
         add(autoCompleteTextField);
     }
 
+    public DomainAutoComplete(String id, EntityAttribute entityAttribute, IModel<Long> model){
+        this(id, entityAttribute, model, null);
+    }
+
     @Override
     public void convertInput() {
         Domain domain = autoCompleteTextField.getConvertedInput();
@@ -126,8 +155,8 @@ public class DomainAutoComplete extends FormComponentPanel<Long> {
         return entityAttribute.getEntityName();
     }
 
-    protected Domain getDomain(IModel<Long> model) {
-        return domainMapper.getDomain(entityAttribute.getEntityName(), model.getObject());
+    protected Domain getDomain(Long objectId) {
+        return domainMapper.getDomain(getEntityName(), objectId);
     }
 
     protected Domain getFilterObject(String input){
@@ -137,7 +166,7 @@ public class DomainAutoComplete extends FormComponentPanel<Long> {
         return domain;
     }
 
-    protected List<Domain> getDomains(String input) {
+    protected List<? extends Domain> getDomains(String input) {
         return domainMapper.getDomains(FilterWrapper.of(getFilterObject(input))
                 .setFilter("search")
                 .limit(0L, 10L));

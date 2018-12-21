@@ -145,8 +145,11 @@
               left join last_name_attribute ln_a on ln_a.object_id = wa_ln.number and ln_a.entity_attribute_id = 1 and ln_a.status = 1
               left join last_name_value ln_v on ln_v.attribute_id = ln_a.id
 
-              where wa_jid.text like concat('%', #{s}) or fn_v.text like concat('%', #{s}, '%') or
-                mn_v.text like concat('%', #{s}, '%') or ln_v.text like concat('%', #{s}, '%')
+              where
+                  <foreach collection="array" item="i" separator="and">
+                      (wa_jid.text like concat('%', #{i}) or fn_v.text like concat('%', #{i}, '%') or
+                      mn_v.text like concat('%', #{i}, '%') or ln_v.text like concat('%', #{i}, '%'))
+                  </foreach>
 
               limit 10
           ) ww
