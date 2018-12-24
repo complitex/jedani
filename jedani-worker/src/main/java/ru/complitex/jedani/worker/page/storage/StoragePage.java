@@ -457,12 +457,9 @@ public class StoragePage extends BasePage {
                 }
             });
 
-            productColumns.add(new DomainActionColumn<Product>(null, new PageParameters().add("storage_id", storageId)){
+            productColumns.add(new DomainActionColumn<Product>(){
                 @Override
                 public void populateItem(Item<ICellPopulator<Product>> cellItem, String componentId, IModel<Product> rowModel) {
-                    PageParameters pageParameters = new PageParameters().add("id", rowModel.getObject().getObjectId());
-                    pageParameters.mergeWith(getEditPageParameters());
-
                     cellItem.add(new LinkPanel(componentId, new BootstrapAjaxLink<Void>(LinkPanel.LINK_COMPONENT_ID,
                             Buttons.Type.Link) {
                         @Override
@@ -720,13 +717,9 @@ public class StoragePage extends BasePage {
                 }
             });
 
-            transactionColumns.add(new DomainActionColumn<Transaction>(null,
-                    new PageParameters().add("storage_id", storageId)){
+            transactionColumns.add(new DomainActionColumn<Transaction>(){
                 @Override
                 public void populateItem(Item<ICellPopulator<Transaction>> cellItem, String componentId, IModel<Transaction> rowModel) {
-                    PageParameters pageParameters = new PageParameters().add("id", rowModel.getObject().getObjectId());
-                    pageParameters.mergeWith(getEditPageParameters());
-
                     Transaction transaction = rowModel.getObject();
 
                     boolean receive = Objects.equals(transaction.getNumber(Transaction.TYPE), TransactionType.TRANSFER) &&

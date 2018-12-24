@@ -1,10 +1,7 @@
 package ru.complitex.jedani.worker.page;
 
-import org.apache.wicket.markup.html.basic.Label;
 import ru.complitex.jedani.worker.page.worker.WorkerListPage;
 import ru.complitex.jedani.worker.page.worker.WorkerPage;
-
-import java.time.LocalDateTime;
 
 /**
  * @author Anatoly A. Ivanov
@@ -13,8 +10,6 @@ import java.time.LocalDateTime;
 public class HomePage extends BasePage{
 
     public HomePage() {
-        add(new Label("test", LocalDateTime.now().toString()));
-
         if (isAdmin()){
             setResponsePage(WorkerListPage.class);
         }else {

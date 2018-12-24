@@ -41,7 +41,7 @@
             <div class="sidebar-nav navbar-collapse">
                 <ul id="menu" class="nav metismenu">
                     <li><a wicket:id="worker">Личный кабинет</a></li>
-                    <li class="active" wicket:id="storages">
+                    <li class="active" wicket:id="userStorages">
                         <a href="#" class="has-arrow" aria-expanded="true">Склады</a>
                         <ul  class="nav" aria-expanded="true">
                             <li><a wicket:id="storage">Личный склад</a></li>
@@ -72,11 +72,17 @@
                             <li><a wicket:id="workers">Сотрудники</a></li>
                         </ul>
                     </li>
-                    <li class="active" wicket:id="repository">
-                        <a href="#" class="has-arrow"  aria-expanded="true" >Склад</a>
+                    <li class="active" wicket:id="storages">
+                        <a href="#" class="has-arrow"  aria-expanded="true">Склад</a>
                         <ul class="nav" aria-expanded="true">
                             <li><a wicket:id="nomenclature">Номенклатура</a></li>
                             <li><a wicket:id="storage">Склады</a></li>
+                        </ul>
+                    </li>
+                    <li class="active" wicket:id="promotions">
+                        <a href="#" class="has-arrow"  aria-expanded="true">Акции</a>
+                        <ul class="nav" aria-expanded="true">
+                            <li><a wicket:id="promotion">Акции</a></li>
                         </ul>
                     </li>
                     <li class="active" wicket:id="settings">

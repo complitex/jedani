@@ -41,6 +41,10 @@ public class DomainActionColumn<T extends Domain> extends AbstractDomainColumn<T
         this.editPageClass = editPageClass;
     }
 
+    public DomainActionColumn() {
+
+    }
+
     @Override
     public Component getHeader(String componentId) {
         return super.getHeader(componentId).add(ajaxIndicatorAppender);

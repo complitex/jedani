@@ -145,7 +145,9 @@ public class DomainListPage<T extends Domain> extends BasePage{
 
         onAddColumns(columns);
 
-        columns.add(new DomainActionColumn<>(editPageClass));
+        if (editPageClass != null) {
+            columns.add(new DomainActionColumn<>(editPageClass));
+        }
 
         table = new FilterDataTable<T>("table", columns, dataProvider, form, 15, "domainListPage" + entity.getName()){
             @Override
@@ -172,6 +174,14 @@ public class DomainListPage<T extends Domain> extends BasePage{
                 return addVisible;
             }
         });
+    }
+
+    public DomainListPage(Class<T> domainInstance, Class<? extends WebPage> editPageClass) {
+        this(domainInstance, null, null, editPageClass);
+    }
+
+    public DomainListPage(Class<T> domainInstance) {
+        this(domainInstance, null, null, null);
     }
 
     public void setAddVisible(boolean addVisible) {
@@ -209,10 +219,6 @@ public class DomainListPage<T extends Domain> extends BasePage{
 
     protected Long getDomainsCount(FilterWrapper<T> filterWrapper) {
         return domainService.getDomainsCount(filterWrapper);
-    }
-
-    public DomainListPage(Class<T> domainInstance, Class<? extends WebPage> editPageClass) {
-        this(domainInstance, null, null, editPageClass);
     }
 
     protected List<EntityAttribute> getEntityAttributes(Entity entity){

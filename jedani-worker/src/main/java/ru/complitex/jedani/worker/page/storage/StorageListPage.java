@@ -20,14 +20,12 @@ import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.page.DomainListPage;
-import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
 import ru.complitex.jedani.worker.entity.Storage;
 import ru.complitex.jedani.worker.entity.Worker;
 import ru.complitex.jedani.worker.mapper.StorageMapper;
 import ru.complitex.jedani.worker.security.JedaniRoles;
 import ru.complitex.jedani.worker.service.WorkerService;
-import ru.complitex.name.service.NameService;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -42,12 +40,6 @@ import java.util.stream.Collectors;
 public class StorageListPage extends DomainListPage<Storage> {
     @Inject
     private EntityService entityService;
-
-    @Inject
-    private NameService nameService;
-
-    @Inject
-    private DomainService domainService;
 
     @Inject
     private StorageMapper storageMapper;

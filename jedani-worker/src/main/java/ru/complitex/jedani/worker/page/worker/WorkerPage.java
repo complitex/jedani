@@ -277,9 +277,11 @@ public class WorkerPage extends BasePage {
         if (isAdmin()){
             roles.add(JedaniRoles.ADMINISTRATORS);
             roles.add(JedaniRoles.STRUCTURE_ADMINISTRATORS);
+            roles.add(JedaniRoles.PROMOTION_ADMINISTRATORS);
             roles.add(JedaniRoles.USERS);
         }else if (isStructureAdmin()){
             roles.add(JedaniRoles.STRUCTURE_ADMINISTRATORS);
+            roles.add(JedaniRoles.PROMOTION_ADMINISTRATORS);
             roles.add(JedaniRoles.USERS);
         }
 

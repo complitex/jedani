@@ -29,6 +29,7 @@ import ru.complitex.jedani.worker.mapper.StorageMapper;
 import ru.complitex.jedani.worker.page.admin.ImportPage;
 import ru.complitex.jedani.worker.page.catalog.MkStatusListPage;
 import ru.complitex.jedani.worker.page.catalog.PositionListPage;
+import ru.complitex.jedani.worker.page.promotion.PromotionListPage;
 import ru.complitex.jedani.worker.page.resource.JedaniCssResourceReference;
 import ru.complitex.jedani.worker.page.resource.JedaniJsResourceReference;
 import ru.complitex.jedani.worker.page.resource.MenuCssResourceReference;
@@ -113,14 +114,14 @@ public class BasePage extends WebPage{
 
         add(new BookmarkablePageLink<>("worker", WorkerPage.class));
 
-        WebMarkupContainer storages = new WebMarkupContainer("storages");
-        storages.setVisible(isUser() && !isAdmin());
-        add(storages);
+        WebMarkupContainer userStorages = new WebMarkupContainer("userStorages");
+        userStorages.setVisible(isUser() && !isAdmin());
+        add(userStorages);
 
-        storages.add(new BookmarkablePageLink<>("storage", StoragePage.class,
+        userStorages.add(new BookmarkablePageLink<>("storage", StoragePage.class,
                 new PageParameters().add("id", getCurrentStorage().getObjectId())));
 
-        storages.add(new BootstrapListView<Storage>("storages", new LoadableDetachableModel<List<Storage>>() {
+        userStorages.add(new BootstrapListView<Storage>("storages", new LoadableDetachableModel<List<Storage>>() {
             @Override
             protected List<Storage> load() {
                 return storageMapper.getStorages(new FilterWrapper<>(new Storage())
@@ -168,12 +169,18 @@ public class BasePage extends WebPage{
         catalog.add(new BookmarkablePageLink<>("mk_status", MkStatusListPage.class).setVisible(isAdmin()));
         catalog.add(new BookmarkablePageLink<>("workers", WorkerListPage.class).setVisible(isAdmin() || isStructureAdmin()));
 
-        WebMarkupContainer repository = new WebMarkupContainer("repository");
-        repository.setVisible(isAdmin());
-        add(repository);
+        WebMarkupContainer storages = new WebMarkupContainer("storages");
+        storages.setVisible(isAdmin());
+        add(storages);
 
-        repository.add(new BookmarkablePageLink<>("nomenclature", NomenclatureListPage.class));
-        repository.add(new BookmarkablePageLink<>("storage", StorageListPage.class));
+        storages.add(new BookmarkablePageLink<>("nomenclature", NomenclatureListPage.class));
+        storages.add(new BookmarkablePageLink<>("storage", StorageListPage.class));
+
+        WebMarkupContainer promotions = new WebMarkupContainer("promotions");
+        promotions.setVisible(isAdmin() || isPromotionAdmin());
+        add(promotions);
+
+        promotions.add(new BookmarkablePageLink<>("promotion", PromotionListPage.class));
     }
 
     @Override
@@ -199,6 +206,10 @@ public class BasePage extends WebPage{
 
     protected boolean isStructureAdmin(){
         return getHttpServletRequest().isUserInRole(JedaniRoles.STRUCTURE_ADMINISTRATORS);
+    }
+
+    protected boolean isPromotionAdmin(){
+        return getHttpServletRequest().isUserInRole(JedaniRoles.PROMOTION_ADMINISTRATORS);
     }
 
     protected boolean isUser(){
