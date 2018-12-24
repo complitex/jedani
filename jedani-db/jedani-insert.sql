@@ -293,17 +293,45 @@ INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `tex
 INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (26, 13, 2);
 INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (26, 13, 1, 'Комментарии'), (26, 13, 2, 'Комментарии');
 
-/*TYPES*/
+/* Type */
 
 INSERT INTO storage_type (id, type) VALUES (1, 'real'), (2, 'virtual');
 INSERT INTO transaction_type (id, type) VALUES (1, 'accept'), (2, 'sell'), (3, 'transfer'), (4, 'withdraw');
 INSERT INTO transfer_type (id, type) VALUES (1, 'transfer'), (2, 'gift');
 INSERT INTO recipient_type (id, type) VALUES (1, 'storage'), (2, 'worker'), (3, 'client');
 
+/* Promotion */
+
+INSERT INTO `sequence` (`name`) VALUE ('promotion');
+
+INSERT INTO `entity` (`id`, `name`) VALUE (27, 'promotion');
+INSERT INTO `entity_value`(`entity_id`, `locale_id`, `text`) VALUES (27, 1, 'Акция'), (27, 2, 'Акція');
+
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (27, 1, 0);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (27, 1, 1, 'Название'), (27, 1, 2, 'Назва');
+
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`, `reference_id`) VALUES (27, 2, 11, 1);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (27, 2, 1, 'Страна'), (27, 2, 2, 'Країна');
+
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (27, 3, 6);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (27, 3, 1, 'Начало'), (27, 3, 2, 'Початок');
+
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (27, 4, 6);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (27, 4, 1, 'Окончание'), (27, 4, 2, 'Закінчення');
+
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (27, 5, 2);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (27, 5, 1, 'Файл'), (27, 5, 2, 'Файл');
+
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`, `reference_id`) VALUES (27, 6, 11, 23);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (27, 6, 1, 'Товары'), (27, 6, 2, 'Товари');
+
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (27, 7, 4);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (27, 7, 1, 'Курс евро'), (27, 7, 2, 'Курс евро');
+
 
 -- Update
 
-INSERT INTO `update` (`version`) VALUE ('20181105_1.0.3');
+INSERT INTO `update` (`version`) VALUE ('20181224_1.0.4');
 
 
 
