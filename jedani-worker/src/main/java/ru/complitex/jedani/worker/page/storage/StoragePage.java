@@ -265,6 +265,17 @@ public class StoragePage extends BasePage {
                     return;
                 }
 
+                if (Objects.equals(transaction.getNumber(Transaction.RECIPIENT_TYPE), RecipientType.WORKER)){
+                    Worker w = domainService.getDomain(Worker.class, transaction.getNumber(Transaction.WORKER_TO));
+
+                    if (Objects.equals(w.getNumber(Worker.EMPLOYEE), 1L)){
+                        error(getString("error_participant"));
+                        target.add(getFeedback());
+
+                        return;
+                    }
+                }
+
                 switch (getTabIndexModel().getObject()){
                     case 0:
                         storageService.sell(product, transaction);

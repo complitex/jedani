@@ -213,9 +213,9 @@ public class WorkerPage extends BasePage {
         DomainAutoCompleteFormGroup lastName, firstName, middleName;
 
         form.add(lastName = new DomainAutoCompleteFormGroup("lastName", LastName.ENTITY_NAME, LastName.NAME,
-                new NumberAttributeModel(worker, Worker.LAST_NAME)).setRequired(true));
+                new NumberAttributeModel(worker, Worker.LAST_NAME)));
         form.add(firstName = new DomainAutoCompleteFormGroup("firstName", FirstName.ENTITY_NAME, FirstName.NAME,
-                new NumberAttributeModel(worker, Worker.FIRST_NAME)).setRequired(true));
+                new NumberAttributeModel(worker, Worker.FIRST_NAME)));
         form.add(middleName = new DomainAutoCompleteFormGroup("middleName", MiddleName.ENTITY_NAME, MiddleName.NAME,
                 new NumberAttributeModel(worker, Worker.MIDDLE_NAME)));
         form.add(new AttributeSelectFormGroup("position", new NumberAttributeModel(worker, Worker.POSITION),

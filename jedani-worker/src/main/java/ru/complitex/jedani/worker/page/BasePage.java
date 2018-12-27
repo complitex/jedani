@@ -51,6 +51,7 @@ import ru.complitex.user.mapper.UserMapper;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -115,7 +116,7 @@ public class BasePage extends WebPage{
         add(new BookmarkablePageLink<>("worker", WorkerPage.class));
 
         WebMarkupContainer userStorages = new WebMarkupContainer("userStorages");
-        userStorages.setVisible(isUser() && !isAdmin());
+        userStorages.setVisible(isUser() && !isAdmin() && !isParticipant());
         add(userStorages);
 
         userStorages.add(new BookmarkablePageLink<>("storage", StoragePage.class,
@@ -216,6 +217,10 @@ public class BasePage extends WebPage{
         return getHttpServletRequest().isUserInRole(JedaniRoles.USERS);
     }
 
+    protected boolean isParticipant(){
+        return Objects.equals(getCurrentWorker().getNumber(Worker.EMPLOYEE), 1L);
+    }
+
     public User getCurrentUser() {
         return currentUser;
     }
@@ -235,7 +240,7 @@ public class BasePage extends WebPage{
         List<Storage> storages = storageMapper.getStorages(FilterWrapper.of((Storage) new Storage()
                 .setParentId(getCurrentWorker().getObjectId())));
 
-        if (storages.isEmpty()){
+        if (storages.isEmpty() && !isParticipant()){
             return storageService.createVirtualStorage(getCurrentWorker().getObjectId());
         }
 
