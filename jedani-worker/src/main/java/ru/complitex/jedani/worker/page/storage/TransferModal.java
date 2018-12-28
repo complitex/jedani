@@ -52,7 +52,7 @@ public abstract class TransferModal extends StorageModal {
 
         List<ITab> tabs = new ArrayList<>();
 
-        tabs.add(new AbstractTab(LoadableDetachableModel.of(() -> getString("sell"))){
+        tabs.add(new AbstractTab(new ResourceModel("sell")){
 
             @Override
             public WebMarkupContainer getPanel(String panelId) {
@@ -127,7 +127,7 @@ public abstract class TransferModal extends StorageModal {
         });
 
 
-        tabs.add(new AbstractTab(LoadableDetachableModel.of(() -> getString("transfer"))){
+        tabs.add(new AbstractTab(new ResourceModel("transfer")){
 
             @Override
             public WebMarkupContainer getPanel(String panelId) {
@@ -225,7 +225,7 @@ public abstract class TransferModal extends StorageModal {
         });
 
 
-        tabs.add(new AbstractTab(LoadableDetachableModel.of(() -> getString("withdraw"))){
+        tabs.add(new AbstractTab(new ResourceModel("withdraw")){
 
             @Override
             public WebMarkupContainer getPanel(String panelId) {

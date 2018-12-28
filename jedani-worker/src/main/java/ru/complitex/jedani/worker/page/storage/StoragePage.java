@@ -268,7 +268,7 @@ public class StoragePage extends BasePage {
                 if (Objects.equals(transaction.getNumber(Transaction.RECIPIENT_TYPE), RecipientType.WORKER)){
                     Worker w = domainService.getDomain(Worker.class, transaction.getNumber(Transaction.WORKER_TO));
 
-                    if (Objects.equals(w.getNumber(Worker.EMPLOYEE), 1L)){
+                    if (Objects.equals(w.getNumber(Worker.TYPE), 1L)){
                         error(getString("error_participant"));
                         target.add(getFeedback());
 

@@ -218,7 +218,7 @@ public class BasePage extends WebPage{
     }
 
     protected boolean isParticipant(){
-        return Objects.equals(getCurrentWorker().getNumber(Worker.EMPLOYEE), 1L);
+        return Objects.equals(getCurrentWorker().getNumber(Worker.TYPE), 1L);
     }
 
     public User getCurrentUser() {

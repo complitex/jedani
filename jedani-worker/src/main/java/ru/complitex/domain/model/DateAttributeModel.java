@@ -13,18 +13,33 @@ public class DateAttributeModel implements IModel<Date> {
     private Domain domain;
     private Long entityAttributeId;
 
+    private IModel<? extends Domain> domainModel;
+
     public DateAttributeModel(Domain domain, Long entityAttributeId) {
         this.domain = domain;
         this.entityAttributeId = entityAttributeId;
     }
 
+    public DateAttributeModel(IModel<? extends Domain> domainModel, Long entityAttributeId) {
+        this.entityAttributeId = entityAttributeId;
+        this.domainModel = domainModel;
+    }
+
     @Override
     public Date getObject() {
+        if (domainModel != null){
+            return domainModel.getObject().getDate(entityAttributeId);
+        }
+
         return domain.getDate(entityAttributeId);
     }
 
     @Override
     public void setObject(Date object) {
-        domain.setDate(entityAttributeId, object);
+        if (domainModel != null){
+            domainModel.getObject().setDate(entityAttributeId, object);
+        }else {
+            domain.setDate(entityAttributeId, object);
+        }
     }
 }

@@ -56,6 +56,7 @@ import ru.complitex.domain.mapper.AttributeMapper;
 import ru.complitex.domain.mapper.DomainMapper;
 import ru.complitex.domain.mapper.DomainNodeMapper;
 import ru.complitex.domain.mapper.EntityMapper;
+import ru.complitex.domain.model.DateAttributeModel;
 import ru.complitex.domain.model.NumberAttributeModel;
 import ru.complitex.domain.model.TextAttributeModel;
 import ru.complitex.domain.service.DomainService;
@@ -156,7 +157,7 @@ public class WorkerPage extends BasePage {
                     worker.setNumber(Worker.MANAGER_ID, manager.getObjectId());
                 }
             }else{
-                worker.setNumber(Worker.EMPLOYEE, 1L);
+                worker.setNumber(Worker.TYPE, 1L);
             }
         }else{
             if (id != null) {
@@ -165,7 +166,7 @@ public class WorkerPage extends BasePage {
                 worker = getCurrentWorker();
             }
 
-            participant = !Objects.equals(worker.getNumber(Worker.EMPLOYEE), 1L);
+            participant = !Objects.equals(worker.getNumber(Worker.TYPE), 1L);
 
             if (worker.getNumber(Worker.MANAGER_ID) != null && worker.getNumber(Worker.MANAGER_ID) != 1) {
                 manager = workerMapper.getWorker(worker.getNumber(Worker.MANAGER_ID));
@@ -241,7 +242,7 @@ public class WorkerPage extends BasePage {
 
         form.add(new AttributeSelectFormGroup("mkStatus", new NumberAttributeModel(worker, Worker.MK_STATUS),
                 MkStatus.ENTITY_NAME, MkStatus.NAME).setVisible(participant));
-        form.add(new DateTextFieldFormGroup("birthday", new PropertyModel<>(worker.getOrCreateAttribute(Worker.BIRTHDAY), "date")));
+        form.add(new DateTextFieldFormGroup("birthday", new DateAttributeModel(worker, Worker.BIRTHDAY)));
         form.add(new AttributeInputListFormGroup("phone", Model.of(worker.getOrCreateAttribute(Worker.PHONE))).setRequired(participant));
         form.add(new TextFieldFormGroup<>("email", new TextAttributeModel(worker, Worker.EMAIL, TextAttributeModel.TYPE.LOWER_CASE)));
 

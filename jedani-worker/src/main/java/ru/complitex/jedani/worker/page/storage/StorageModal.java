@@ -9,8 +9,8 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
-import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.ResourceModel;
 import ru.complitex.common.wicket.util.ComponentUtil;
 import ru.complitex.jedani.worker.entity.RecipientType;
 import ru.complitex.jedani.worker.entity.Transaction;
@@ -28,7 +28,7 @@ abstract class StorageModal extends Modal<Transaction> {
     StorageModal(String markupId) {
         super(markupId, Model.of(new Transaction()));
 
-        header(LoadableDetachableModel.of(() -> getString("header")));
+        header(new ResourceModel("header"));
 
         container = new WebMarkupContainer("container");
         container.setOutputMarkupId(true);
@@ -54,14 +54,14 @@ abstract class StorageModal extends Modal<Transaction> {
                     }
                 }));
             }
-        }.setLabel(LoadableDetachableModel.of(() -> getString("action"))));
+        }.setLabel(new ResourceModel("action")));
 
         addButton(new BootstrapAjaxLink<Void>(Modal.BUTTON_MARKUP_ID, Buttons.Type.Default) {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 StorageModal.this.close(target);
             }
-        }.setLabel(LoadableDetachableModel.of(() -> getString("cancel"))));
+        }.setLabel(new ResourceModel("cancel")));
     }
 
     void open(AjaxRequestTarget target){

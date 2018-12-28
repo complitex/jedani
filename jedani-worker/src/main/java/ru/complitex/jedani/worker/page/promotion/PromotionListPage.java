@@ -7,6 +7,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
+import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import ru.complitex.address.entity.City;
@@ -38,8 +39,11 @@ public class PromotionListPage extends DomainListPage<Promotion> {
     public PromotionListPage() {
         super(Promotion.class);
 
+        Form promotionForm = new Form("promotionForm");
+        getContainer().add(promotionForm);
+
         promotionModal = new PromotionModal("promotion");
-        getContainer().add(promotionModal);
+        promotionForm.add(promotionModal);
     }
 
     @Override
@@ -64,7 +68,7 @@ public class PromotionListPage extends DomainListPage<Promotion> {
                         Buttons.Type.Link) {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
-                        promotionModal.appendShowDialogJavaScript(target);
+                        promotionModal.edit(rowModel.getObject(), target);
                     }
                 }.setIconType(GlyphIconType.edit)));
             }
@@ -79,6 +83,6 @@ public class PromotionListPage extends DomainListPage<Promotion> {
 
     @Override
     protected void onAdd(AjaxRequestTarget target) {
-        promotionModal.appendShowDialogJavaScript(target);
+        promotionModal.create(target);
     }
 }

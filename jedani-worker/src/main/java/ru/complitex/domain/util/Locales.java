@@ -20,17 +20,20 @@ public class Locales {
     public static final Locale RU = new Locale("ru");
     public static final Locale UA = new Locale("uk");
 
+    public static final Long RU_ID = 1L;
+    public static final Long UA_ID = 2L;
+
     private static Locales instance = new Locales();
 
     public Locales() {
-        map.put(RU, 1L);
-        map.put(UA, 2L);
+        map.put(RU, RU_ID);
+        map.put(UA, UA_ID);
 
-        mapId.put(1L, RU);
-        mapId.put(2L, UA);
+        mapId.put(RU_ID, RU);
+        mapId.put(UA_ID, UA);
 
         systemLocale = RU;
-        systemLocaleId = 1L;
+        systemLocaleId = RU_ID;
     }
 
     public static Locale getSystemLocale() {

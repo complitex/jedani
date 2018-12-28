@@ -94,7 +94,7 @@ public class WorkerListPage extends DomainListPage<Worker>{
 
         list.add(entity.getEntityAttribute(Worker.POSITION)
                 .setReferenceEntityAttribute(entityService.getEntityAttribute(Position.ENTITY_NAME, Position.NAME)));
-        list.add(entity.getEntityAttribute(Worker.EMPLOYEE));
+        list.add(entity.getEntityAttribute(Worker.TYPE));
 
         return list;
     }
