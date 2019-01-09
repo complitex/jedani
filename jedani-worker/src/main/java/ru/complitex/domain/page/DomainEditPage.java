@@ -134,6 +134,7 @@ public abstract class DomainEditPage<T extends Domain> extends BasePage{
                             break;
                         case ENTITY:
                             component = new DomainAutoComplete("component",
+                                    attribute.getEntityAttribute().getReferenceEntityAttribute().getEntityName(),
                                     attribute.getEntityAttribute().getReferenceEntityAttribute(),
                                     new PropertyModel<>(attribute, "number"));
                             break;
@@ -215,6 +216,7 @@ public abstract class DomainEditPage<T extends Domain> extends BasePage{
 
     protected DomainAutoComplete getParentComponent(String componentId, Entity parentEntity, T domain) {
         return new DomainAutoComplete(componentId,
+                parentEntity.getName(),
                 parentEntity.getEntityAttribute(getParentEntityAttributeId()),
                 new PropertyModel<>(domain, "parentId"));
     }

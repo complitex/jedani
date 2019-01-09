@@ -40,6 +40,7 @@ public class PromotionListPage extends DomainListPage<Promotion> {
         super(Promotion.class);
 
         Form promotionForm = new Form("promotionForm");
+        promotionForm.setMultiPart(true);
         getContainer().add(promotionForm);
 
         promotionModal = new PromotionModal("promotion");
@@ -73,7 +74,6 @@ public class PromotionListPage extends DomainListPage<Promotion> {
                 }.setIconType(GlyphIconType.edit)));
             }
         });
-
     }
 
     @Override

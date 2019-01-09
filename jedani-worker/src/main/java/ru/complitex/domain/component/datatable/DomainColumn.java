@@ -68,7 +68,7 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
             case DATE:
                 return new InputPanel(componentId, new DateTextField(InputPanel.INPUT_COMPONENT_ID,
                         new DateAttributeModel(domain, entityAttributeId),
-                        new DateTextFieldConfig().withFormat("dd.MM.yyyy").withLanguage("ru")));
+                        new DateTextFieldConfig().withFormat("dd.MM.yyyy").withLanguage("ru").autoClose(true)));
             default:
                 return new TextDataFilter<>(componentId, new TextAttributeModel(domain, entityAttributeId, TextAttributeModel.TYPE.DEFAULT), form);
         }

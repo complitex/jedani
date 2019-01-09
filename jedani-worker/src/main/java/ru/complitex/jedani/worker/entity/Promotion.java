@@ -15,7 +15,7 @@ public class Promotion extends Domain {
     public static final long END = 4;
     public static final long FILE = 5;
     public static final long NOMENCLATURES = 6;
-    public static final long EURO = 7;
+    public static final long EUR = 7;
 
     public Promotion() {
         super(ENTITY_NAME);

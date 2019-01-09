@@ -3,7 +3,7 @@ package ru.complitex.jedani.worker.component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
 import org.danekja.java.util.function.serializable.SerializableConsumer;
-import ru.complitex.domain.component.form.DomainAutoComplete;
+import ru.complitex.domain.component.form.AbstractDomainAutoComplete;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.jedani.worker.mapper.WorkerMapper;
 import ru.complitex.jedani.worker.service.WorkerService;
@@ -15,7 +15,7 @@ import java.util.List;
  * @author Anatoly A. Ivanov
  * 27.06.2018 14:58
  */
-public class WorkerAutoComplete extends DomainAutoComplete {
+public class WorkerAutoComplete extends AbstractDomainAutoComplete {
     @Inject
     private WorkerMapper workerMapper;
 
@@ -33,6 +33,11 @@ public class WorkerAutoComplete extends DomainAutoComplete {
     @Override
     protected Domain getDomain(Long objectId) {
         return workerMapper.getWorker(objectId);
+    }
+
+    @Override
+    protected Domain getFilterObject(String input) {
+        return null;
     }
 
     @Override

@@ -4,31 +4,26 @@ import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.util.string.Strings;
 import ru.complitex.common.wicket.form.FormGroupPanel;
 import ru.complitex.common.wicket.form.TextFieldFormGroup;
-import ru.complitex.domain.component.form.DomainAutoComplete;
+import ru.complitex.domain.component.form.AbstractDomainAutoComplete;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.model.NumberAttributeModel;
-import ru.complitex.domain.service.EntityService;
 import ru.complitex.domain.util.Attributes;
 import ru.complitex.jedani.worker.entity.Nomenclature;
 import ru.complitex.jedani.worker.entity.Transaction;
-
-import javax.inject.Inject;
 
 /**
  * @author Anatoly A. Ivanov
  * 06.11.2018 11:50
  */
 abstract class AcceptModal extends StorageModal {
-    @Inject
-    private EntityService entityService;
-
-    private DomainAutoComplete nomenclature;
+    private AbstractDomainAutoComplete nomenclature;
 
     AcceptModal(String markupId) {
         super(markupId);
 
-        getContainer().add(new FormGroupPanel("nomenclature", nomenclature = new DomainAutoComplete(FormGroupPanel.COMPONENT_ID,
-                entityService.getEntityAttribute(Nomenclature.ENTITY_NAME, Nomenclature.NAME),
+        getContainer().add(new FormGroupPanel("nomenclature",
+                nomenclature = new AbstractDomainAutoComplete(FormGroupPanel.COMPONENT_ID,
+                Nomenclature.ENTITY_NAME,
                 new NumberAttributeModel(getModel(), Transaction.NOMENCLATURE)){
             @Override
             protected Domain getFilterObject(String input) {

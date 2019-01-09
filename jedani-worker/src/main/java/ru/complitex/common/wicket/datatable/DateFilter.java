@@ -17,7 +17,7 @@ public class DateFilter extends AbstractDataFilter {
         super(id, form);
 
         filter =  new DateTextField("filter", model, new DateTextFieldConfig().withFormat("dd.MM.yyyy")
-                .withLanguage("ru"));
+                .withLanguage("ru").autoClose(true));
         add(filter);
     }
 

@@ -8,17 +8,22 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.dialog.Modal;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.FormComponent;
+import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.util.string.Strings;
 import ru.complitex.address.entity.Country;
 import ru.complitex.common.wicket.form.DateTextFieldFormGroup;
+import ru.complitex.common.wicket.form.FormGroupPanel;
 import ru.complitex.common.wicket.form.TextFieldFormGroup;
 import ru.complitex.common.wicket.util.ComponentUtil;
+import ru.complitex.domain.component.form.AbstractDomainAutoCompleteList;
 import ru.complitex.domain.component.form.DomainAutoCompleteFormGroup;
-import ru.complitex.domain.model.DateAttributeModel;
-import ru.complitex.domain.model.NumberAttributeModel;
-import ru.complitex.domain.model.TextValueModel;
+import ru.complitex.domain.entity.Domain;
+import ru.complitex.domain.model.*;
+import ru.complitex.domain.util.Attributes;
 import ru.complitex.domain.util.Locales;
+import ru.complitex.jedani.worker.entity.Nomenclature;
 import ru.complitex.jedani.worker.entity.Promotion;
 
 /**
@@ -29,7 +34,7 @@ public class PromotionModal extends Modal<Promotion> {
     private WebMarkupContainer container;
 
     public PromotionModal(String markupId) {
-        super(markupId, new Model<>());
+        super(markupId, new Model<>(new Promotion()));
 
         header(new ResourceModel("headerCreate"));
 
@@ -49,9 +54,34 @@ public class PromotionModal extends Modal<Promotion> {
                 new NumberAttributeModel(getModel(), Promotion.COUNTRY)).setRequired(true));
         container.add(new TextFieldFormGroup<>("name", new TextValueModel(getModel(), Promotion.NAME,
                 Locales.getSystemLocaleId())).setRequired(true));
-        //todo file, nomenclatures, eur
 
+        FileUploadField file = new FileUploadField("file");
+        container.add(file);
 
+        container.add(new FormGroupPanel("nomenclatures", new AbstractDomainAutoCompleteList(FormGroupPanel.COMPONENT_ID,
+                Nomenclature.ENTITY_NAME, new AttributeModel(getModel(), Promotion.NOMENCLATURES)) {
+            @Override
+            protected String getTextValue(Domain domain) {
+                if (domain == null){
+                    return "";
+                }
+
+                return Strings.defaultIfEmpty(domain.getText(Nomenclature.CODE), "") + " " +
+                        Attributes.capitalize(domain.getValueText(Nomenclature.NAME));
+            }
+
+            @Override
+            protected Domain getFilterObject(String input) {
+                Nomenclature nomenclature = new Nomenclature();
+
+                nomenclature.getOrCreateAttribute(Nomenclature.CODE).setText(input);
+                nomenclature.getOrCreateAttribute(Nomenclature.NAME).setText(input);
+
+                return nomenclature;
+            }
+        }));
+
+        container.add(new TextFieldFormGroup<>("eur", new TextAttributeModel(getModel(), Promotion.EUR, TextAttributeModel.TYPE.DEFAULT)));
 
         addButton(new BootstrapAjaxButton(Modal.BUTTON_MARKUP_ID, Buttons.Type.Primary) {
             @Override

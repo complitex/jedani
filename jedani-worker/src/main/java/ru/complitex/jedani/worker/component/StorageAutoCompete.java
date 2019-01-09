@@ -2,7 +2,7 @@ package ru.complitex.jedani.worker.component;
 
 import org.apache.wicket.model.IModel;
 import ru.complitex.address.entity.City;
-import ru.complitex.domain.component.form.DomainAutoComplete;
+import ru.complitex.domain.component.form.AbstractDomainAutoComplete;
 import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.service.DomainService;
@@ -18,7 +18,7 @@ import javax.inject.Inject;
  * @author Anatoly A. Ivanov
  * 08.11.2018 18:41
  */
-public class StorageAutoCompete extends DomainAutoComplete {
+public class StorageAutoCompete extends AbstractDomainAutoComplete {
     @Inject
     private EntityService entityService;
 
@@ -29,7 +29,7 @@ public class StorageAutoCompete extends DomainAutoComplete {
     private NameService nameService;
 
     public StorageAutoCompete(String id, IModel<Long> model) {
-        super(id, null, model);
+        super(id, Storage.ENTITY_NAME, model, null);
     }
 
     @Override
@@ -47,11 +47,6 @@ public class StorageAutoCompete extends DomainAutoComplete {
         workerIds.setText(input);
 
         return storage;
-    }
-
-    @Override
-    public String getEntityName() {
-        return Storage.ENTITY_NAME;
     }
 
     @Override

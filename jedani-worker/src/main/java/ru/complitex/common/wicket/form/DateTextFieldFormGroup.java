@@ -30,7 +30,7 @@ public class DateTextFieldFormGroup extends Panel{
 
         FormGroup group = new FormGroup("group", label);
         group.add(dateTextField = new DateTextField("input", model,
-                new DateTextFieldConfig().withFormat("dd.MM.yyyy").withLanguage("ru")));
+                new DateTextFieldConfig().withFormat("dd.MM.yyyy").withLanguage("ru").autoClose(true)));
         dateTextField.setLabel(label);
 
         add(group);
