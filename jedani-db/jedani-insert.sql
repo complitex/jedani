@@ -1,7 +1,7 @@
 INSERT INTO `locale`(`id`, `locale`, `system`) VALUES (1, 'RU', 1);
 INSERT INTO `locale`(`id`, `locale`, `system`) VALUES (2, 'UA', 0);
 
-INSERT INTO `sequence` (`name`) VALUES ('city'), ('city_type'), ('region'), ('country'), ('first_name'), ('middle_name'),
+INSERT INTO `sequence` (`name`) VALUES ('setting'), ('city'), ('city_type'), ('region'), ('country'), ('first_name'), ('middle_name'),
   ('last_name'), ('worker'), ('mk_status'), ('position'), ('nomenclature');
 
 INSERT INTO entity_value_type (id, value_type) VALUE (0, 'text_value');
@@ -19,6 +19,19 @@ INSERT INTO entity_value_type (id, value_type) VALUE (11, 'entity');
 INSERT INTO `user`(login, password) value ('admin', sha2('admin', 256));
 INSERT INTO `user_group` (login, name) value ('admin', 'AUTHORIZED');
 INSERT INTO `user_group` (login, name) value ('admin', 'ADMINISTRATORS');
+
+/* Setting */
+INSERT INTO `entity` (`id`, `name`) VALUE (0, 'setting');
+INSERT INTO `entity_value`(`entity_id`, `locale_id`, `text`) VALUES (0, 1, 'Настройки'), (0, 2, 'Налаштування');
+
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (0, 1, 0);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (0, 1, 1, 'Значение'), (0, 1, 2, 'Значення');
+
+-- Setting
+
+INSERT INTO `setting` (`object_id`) VALUE (1);
+INSERT INTO `setting_attribute` (`object_id`, `entity_attribute_id`, `text`) VALUES (1, 1, '/jedani/data/promotion/');
+UPDATE `sequence` SET `value` = 2 WHERE `name` = 'setting';
 
 /* Address */
 
@@ -331,7 +344,7 @@ INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `tex
 
 -- Update
 
-INSERT INTO `update` (`version`) VALUE ('20181224_1.0.4');
+INSERT INTO `update` (`version`) VALUE ('20190110_1.0.5');
 
 
 

@@ -27,6 +27,7 @@ import ru.complitex.jedani.worker.entity.Storage;
 import ru.complitex.jedani.worker.entity.Worker;
 import ru.complitex.jedani.worker.mapper.StorageMapper;
 import ru.complitex.jedani.worker.page.admin.ImportPage;
+import ru.complitex.jedani.worker.page.admin.SettingPage;
 import ru.complitex.jedani.worker.page.catalog.MkStatusListPage;
 import ru.complitex.jedani.worker.page.catalog.PositionListPage;
 import ru.complitex.jedani.worker.page.promotion.PromotionListPage;
@@ -148,6 +149,7 @@ public class BasePage extends WebPage{
         settings.setVisible(isAdmin());
         add(settings);
 
+        settings.add(new BookmarkablePageLink<>("setting", SettingPage.class).setVisible(isAdmin()));
         settings.add(new BookmarkablePageLink<>("import", ImportPage.class).setVisible(isAdmin()));
 
         WebMarkupContainer address = new WebMarkupContainer("address");

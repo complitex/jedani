@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns:wicket="http://wicket.apache.org">
+<wicket:head>
+    <title>Настройки</title>
+</wicket:head>
+<body>
+<wicket:extend>
+    <div><h3>Настройки</h3></div>
+
+    <br/>
+
+    <div>
+        <div wicket:id="feedback"></div>
+
+        <form wicket:id="form">
+            <div class="row">
+                <div class="col-md-3">
+
+                    <div class="form-group">
+                        <label for="promotionDir">Дирректория pdf-файлов акций</label>
+                        <input wicket:id="promotionDir" id="promotionDir" class="form-control"/>
+                    </div>
+                </div>
+            </div>
+
+            <br/>
+
+            <button wicket:id="save" type="submit" class="btn btn-primary">Сохранить</button>
+        </form>
+    </div>
+</wicket:extend>
+</body>
+</html>
