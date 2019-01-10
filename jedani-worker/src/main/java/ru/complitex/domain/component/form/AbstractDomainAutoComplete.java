@@ -5,6 +5,7 @@ import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AbstractAutoCompleteTextRenderer;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteSettings;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
+import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.HiddenField;
 import org.apache.wicket.model.IModel;
@@ -20,6 +21,7 @@ import javax.inject.Inject;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
 /**
  * @author Anatoly A. Ivanov
@@ -92,6 +94,14 @@ public abstract class AbstractDomainAutoComplete extends FormComponentPanel<Long
                 .setShowListOnFocusGain(true)
                 .setPreselect(true)
         ) {
+            @Override
+            protected void onComponentTag(final ComponentTag tag)
+            {
+                super.onComponentTag(tag);
+
+                tag.put("autocomplete", UUID.randomUUID().toString());
+            }
+
             @Override
             protected Iterator<Domain> getChoices(String input) {
                 return getDomains(input).stream().map(d -> (Domain) d).iterator();
