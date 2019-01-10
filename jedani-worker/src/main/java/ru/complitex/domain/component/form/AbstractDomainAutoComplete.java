@@ -21,7 +21,6 @@ import javax.inject.Inject;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.UUID;
 
 /**
  * @author Anatoly A. Ivanov
@@ -99,7 +98,7 @@ public abstract class AbstractDomainAutoComplete extends FormComponentPanel<Long
             {
                 super.onComponentTag(tag);
 
-                tag.put("autocomplete", UUID.randomUUID().toString());
+                tag.put("autocomplete", "off");
             }
 
             @Override

@@ -19,5 +19,8 @@ public class Promotion extends Domain {
 
     public Promotion() {
         super(ENTITY_NAME);
+
+        setUseDateAttribute(true);
+        setUseNumberValue(true);
     }
 }

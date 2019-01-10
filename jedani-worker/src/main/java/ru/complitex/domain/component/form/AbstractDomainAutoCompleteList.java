@@ -30,7 +30,7 @@ public abstract class AbstractDomainAutoCompleteList extends FormComponentPanel<
         container.setOutputMarkupId(true);
         add(container);
 
-        listModel.setObject(model.getObject().getNumberValues());
+        listModel.setObject(model.getObject().getNumberValues()); //todo sync attribute model
 
         ListView<Long> listView = new ListView<Long>("items", listModel){
 

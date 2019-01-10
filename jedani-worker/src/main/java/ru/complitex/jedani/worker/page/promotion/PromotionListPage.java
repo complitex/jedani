@@ -1,8 +1,10 @@
 package ru.complitex.jedani.worker.page.promotion;
 
+import de.agilecoders.wicket.core.markup.html.bootstrap.behavior.CssClassNameAppender;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxLink;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.image.GlyphIconType;
+import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
@@ -43,7 +45,12 @@ public class PromotionListPage extends DomainListPage<Promotion> {
         promotionForm.setMultiPart(true);
         getContainer().add(promotionForm);
 
-        promotionModal = new PromotionModal("promotion");
+        promotionModal = new PromotionModal("promotion"){
+            @Override
+            protected void onAfterAction(AjaxRequestTarget target) {
+                target.add(getFeedback(), getTable());
+            }
+        };
         promotionForm.add(promotionModal);
     }
 
@@ -74,6 +81,17 @@ public class PromotionListPage extends DomainListPage<Promotion> {
                 }.setIconType(GlyphIconType.edit)));
             }
         });
+    }
+
+    protected void onRowItem(Item<Promotion> item){
+        item.add(new AjaxEventBehavior("click") {
+            @Override
+            protected void onEvent(AjaxRequestTarget target) {
+                promotionModal.edit(item.getModel().getObject(), target);
+            }
+        });
+
+        item.add(new CssClassNameAppender("pointer"));
     }
 
     @Override

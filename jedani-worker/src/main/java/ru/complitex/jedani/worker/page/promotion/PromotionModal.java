@@ -7,11 +7,16 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel
 import de.agilecoders.wicket.core.markup.html.bootstrap.dialog.Modal;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
+import org.apache.wicket.markup.html.link.DownloadLink;
+import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.util.string.Strings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.complitex.address.entity.Country;
 import ru.complitex.common.wicket.form.DateTextFieldFormGroup;
 import ru.complitex.common.wicket.form.FormGroupPanel;
@@ -21,20 +26,44 @@ import ru.complitex.domain.component.form.AbstractDomainAutoCompleteList;
 import ru.complitex.domain.component.form.DomainAutoCompleteFormGroup;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.model.*;
+import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.util.Attributes;
 import ru.complitex.domain.util.Locales;
 import ru.complitex.jedani.worker.entity.Nomenclature;
 import ru.complitex.jedani.worker.entity.Promotion;
+import ru.complitex.jedani.worker.entity.Setting;
+
+import javax.inject.Inject;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  * @author Anatoly A. Ivanov
  * 24.12.2018 20:01
  */
 public class PromotionModal extends Modal<Promotion> {
+    private Logger log = LoggerFactory.getLogger(PromotionModal.class);
+
+    public final static String PROMOTION_FILE_PREFIX = "promotion_pdf_";
+
+    @Inject
+    private DomainService domainService;
+
+    private Path promotionPath;
+
     private WebMarkupContainer container;
+
+    private NotificationPanel feedback;
+
+    private FileUploadField file;
 
     public PromotionModal(String markupId) {
         super(markupId, new Model<>(new Promotion()));
+
+        Setting promotionSetting = domainService.getDomain(Setting.class, Setting.PROMOTION);
+
+        promotionPath = new File(promotionSetting.getText(Setting.VALUE)).toPath();
 
         header(new ResourceModel("headerCreate"));
 
@@ -44,7 +73,7 @@ public class PromotionModal extends Modal<Promotion> {
         container.setVisible(false);
         add(container);
 
-        NotificationPanel feedback = new NotificationPanel("feedback");
+        feedback = new NotificationPanel("feedback");
         feedback.setOutputMarkupId(true);
         container.add(feedback);
 
@@ -55,7 +84,30 @@ public class PromotionModal extends Modal<Promotion> {
         container.add(new TextFieldFormGroup<>("name", new TextValueModel(getModel(), Promotion.NAME,
                 Locales.getSystemLocaleId())).setRequired(true));
 
-        FileUploadField file = new FileUploadField("file");
+        container.add(new DownloadLink("downloadFile", new LoadableDetachableModel<File>() {
+            @Override
+            protected File load() {
+                Path filePath = promotionPath.resolve(PROMOTION_FILE_PREFIX + getModel().getObject().getObjectId());
+
+                if (Files.exists(filePath)){
+                    return filePath.toFile();
+                }
+
+                return null;
+            }
+        }, new LoadableDetachableModel<String>() {
+            @Override
+            protected String load() {
+                return getModel().getObject().getText(Promotion.FILE);
+            }
+        }).add(new Label("name", new LoadableDetachableModel<String>() {
+            @Override
+            protected String load() {
+                return getModel().getObject().getText(Promotion.FILE);
+            }
+        })));
+
+        file = new FileUploadField("file");
         container.add(file);
 
         container.add(new FormGroupPanel("nomenclatures", new AbstractDomainAutoCompleteList(FormGroupPanel.COMPONENT_ID,
@@ -110,7 +162,6 @@ public class PromotionModal extends Modal<Promotion> {
     void create(AjaxRequestTarget target){
         setModelObject(new Promotion());
 
-
         open(target);
     }
 
@@ -133,6 +184,50 @@ public class PromotionModal extends Modal<Promotion> {
     }
 
     private void action(AjaxRequestTarget target){
+        Promotion promotion = getModelObject();
+
+        if (file.getFileUpload() != null){
+            promotion.setText(Promotion.FILE, file.getFileUpload().getClientFileName());
+        }
+
+        domainService.save(promotion);
+
+        if (file.getFileUpload() != null) {
+
+
+            if (!Files.exists(promotionPath) || !Files.isWritable(promotionPath)){
+                error(getString("error_promotion_path") +  ": " + promotionPath.toString());
+
+                target.add(feedback);
+
+                return;
+            }
+
+            Path filePath = new File(promotionPath.toFile(), PROMOTION_FILE_PREFIX + promotion.getObjectId()).toPath();
+
+            try {
+                if (Files.exists(filePath)){
+                    Files.move(filePath, new File(filePath.getParent().toFile(), PROMOTION_FILE_PREFIX +
+                            promotion.getObjectId() + "_deleted_" + System.currentTimeMillis()).toPath());
+                }
+
+                Files.copy(file.getFileUpload().getInputStream(), filePath);
+            } catch (Exception e) {
+                log.error("promotion save error ", e);
+
+                target.add(feedback);
+
+                return;
+            }
+        }
+
+        info(getString("info_promotion_saved"));
+
+        close(target);
+        onAfterAction(target);
+    }
+
+    protected void onAfterAction(AjaxRequestTarget target){
 
     }
 }

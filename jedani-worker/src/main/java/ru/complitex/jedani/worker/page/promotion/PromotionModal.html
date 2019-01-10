@@ -12,7 +12,13 @@
 
             <div class="form-group">
                 <label for="file">Файл</label>
-                <input wicket:id="file" id="file" type="file" accept="application/pdf" class="form-control"/>
+                <div class="form-control">
+                    <a wicket:id="downloadFile" style="padding-right: 8px"><span wicket:id="name"></span></a>
+                    <input wicket:id="file" id="file" type="file" accept="application/pdf" style="display: inline"/>
+                </div>
+                <div style="margin-top: 12px">
+
+                </div>
             </div>
 
             <div wicket:id="nomenclatures"></div>

@@ -10,6 +10,7 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -53,13 +54,16 @@ public class DomainListPage<T extends Domain> extends BasePage{
     private Class<T> domainClass;
 
     private Class<? extends Page> editPageClass;
-    private FilterDataTable<T> table;
 
     private FilterWrapper<T> filterWrapper;
 
     private boolean addVisible = true;
 
     private WebMarkupContainer container;
+
+    private FeedbackPanel feedback;
+
+    private FilterDataTable<T> table;
 
     public <P extends WebPage> DomainListPage(Class<T> domainClass, String parentEntityName, Long parentEntityAttributeId,
                           Class<P> editPageClass) {
@@ -81,7 +85,7 @@ public class DomainListPage<T extends Domain> extends BasePage{
 
         container.add(new Label("header", title).setVisible(isShowHeader()));
 
-        NotificationPanel feedback = new NotificationPanel("feedback");
+        feedback = new NotificationPanel("feedback");
         feedback.setOutputMarkupId(true);
         container.add(feedback);
 
@@ -251,5 +255,13 @@ public class DomainListPage<T extends Domain> extends BasePage{
 
     public WebMarkupContainer getContainer() {
         return container;
+    }
+
+    public FeedbackPanel getFeedback() {
+        return feedback;
+    }
+
+    public FilterDataTable<T> getTable() {
+        return table;
     }
 }

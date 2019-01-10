@@ -34,7 +34,7 @@ CREATE TABLE `setting_attribute` (
   `entity_attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор типа атрибута',
   `text` VARCHAR(255) COMMENT 'Текст',
   `number` BIGINT(20) COMMENT 'Число',
-  `date` BIGINT(20) COMMENT 'Дата',
+  `date` DATETIME COMMENT 'Дата',
   `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия атрибута',
   `end_date` TIMESTAMP NULL DEFAULT NULL COMMENT 'Дата окончания периода действия атрибута',
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
@@ -89,6 +89,10 @@ INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `tex
 INSERT INTO `setting` (`object_id`) VALUE (1);
 INSERT INTO `setting_attribute` (`object_id`, `entity_attribute_id`, `text`) VALUES (1, 1, '/jedani/data/promotion/');
 UPDATE `sequence` SET `value` = 2 WHERE `name` = 'setting';
+
+-- fix transaction date column
+
+ALTER TABLE transaction_attribute MODIFY COLUMN `date` DATETIME COMMENT 'Дата';
 
 -- Update
 
