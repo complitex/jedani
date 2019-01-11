@@ -45,12 +45,12 @@ import java.nio.file.Path;
 public class PromotionModal extends Modal<Promotion> {
     private Logger log = LoggerFactory.getLogger(PromotionModal.class);
 
-    public final static String PROMOTION_FILE_PREFIX = "promotion_pdf_";
+    public final static String PROMOTION_FILE_PREFIX = "promotion_file_";
 
     @Inject
     private DomainService domainService;
 
-    private Path promotionPath;
+    private String promotionDir;
 
     private WebMarkupContainer container;
 
@@ -63,7 +63,7 @@ public class PromotionModal extends Modal<Promotion> {
 
         Setting promotionSetting = domainService.getDomain(Setting.class, Setting.PROMOTION);
 
-        promotionPath = new File(promotionSetting.getText(Setting.VALUE)).toPath();
+        promotionDir = promotionSetting.getText(Setting.VALUE);
 
         header(new ResourceModel("headerCreate"));
 
@@ -84,10 +84,11 @@ public class PromotionModal extends Modal<Promotion> {
         container.add(new TextFieldFormGroup<>("name", new TextValueModel(getModel(), Promotion.NAME,
                 Locales.getSystemLocaleId())).setRequired(true));
 
+
         container.add(new DownloadLink("downloadFile", new LoadableDetachableModel<File>() {
             @Override
             protected File load() {
-                Path filePath = promotionPath.resolve(PROMOTION_FILE_PREFIX + getModel().getObject().getObjectId());
+                Path filePath = new File(promotionDir, PROMOTION_FILE_PREFIX + getModel().getObject().getObjectId()).toPath();
 
                 if (Files.exists(filePath)){
                     return filePath.toFile();
@@ -193,7 +194,7 @@ public class PromotionModal extends Modal<Promotion> {
         domainService.save(promotion);
 
         if (file.getFileUpload() != null) {
-
+            Path promotionPath = new File(promotionDir).toPath();
 
             if (!Files.exists(promotionPath) || !Files.isWritable(promotionPath)){
                 error(getString("error_promotion_path") +  ": " + promotionPath.toString());
