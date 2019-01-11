@@ -25,6 +25,7 @@ import ru.complitex.common.wicket.util.ComponentUtil;
 import ru.complitex.domain.component.form.AbstractDomainAutoCompleteList;
 import ru.complitex.domain.component.form.DomainAutoCompleteFormGroup;
 import ru.complitex.domain.entity.Domain;
+import ru.complitex.domain.entity.Status;
 import ru.complitex.domain.model.*;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.util.Attributes;
@@ -139,7 +140,7 @@ public class PromotionModal extends Modal<Promotion> {
         addButton(new BootstrapAjaxButton(Modal.BUTTON_MARKUP_ID, Buttons.Type.Primary) {
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
-                PromotionModal.this.action(target);
+                PromotionModal.this.save(target);
             }
 
             @Override
@@ -150,7 +151,15 @@ public class PromotionModal extends Modal<Promotion> {
                     }
                 }));
             }
-        }.setLabel(new ResourceModel("action")));
+        }.setLabel(new ResourceModel("save")));
+
+        addButton(new BootstrapAjaxLink<Void>(Modal.BUTTON_MARKUP_ID, Buttons.Type.Default) {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                PromotionModal.this.remove(target);
+            }
+        }.setLabel(new ResourceModel("remove")));
+
 
         addButton(new BootstrapAjaxLink<Void>(Modal.BUTTON_MARKUP_ID, Buttons.Type.Default) {
             @Override
@@ -184,7 +193,7 @@ public class PromotionModal extends Modal<Promotion> {
         container.visitChildren(FormComponent.class, (c, v) -> ((FormComponent)c).clearInput());
     }
 
-    private void action(AjaxRequestTarget target){
+    private void save(AjaxRequestTarget target){
         Promotion promotion = getModelObject();
 
         if (file.getFileUpload() != null){
@@ -225,10 +234,22 @@ public class PromotionModal extends Modal<Promotion> {
         info(getString("info_promotion_saved"));
 
         close(target);
-        onAfterAction(target);
+        onUpdate(target);
     }
 
-    protected void onAfterAction(AjaxRequestTarget target){
+    private void remove(AjaxRequestTarget target) {
+        Promotion promotion = PromotionModal.this.getModelObject();
 
+        promotion.setStatus(Status.ARCHIVE);
+
+        domainService.save(promotion);
+
+        info(getString("info_promotion_removed"));
+
+        close(target);
+        onUpdate(target);
+    }
+
+    protected void onUpdate(AjaxRequestTarget target){
     }
 }

@@ -3,24 +3,21 @@ package ru.complitex.domain.component.form;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
+import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.util.ListModel;
+import org.apache.wicket.model.PropertyModel;
 import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Domain;
-
-import java.util.Objects;
+import ru.complitex.domain.entity.Value;
 
 
 /**
  * @author Anatoly A. Ivanov
- * 19.10.2018 23:09
+ * 09.01.2019 21:30
  */
-public abstract class AbstractDomainAutoCompleteList extends FormComponentPanel<Attribute> {
-    private ListModel<Long> listModel = new ListModel<>();
-
+public abstract class AbstractDomainAutoCompleteList extends Panel {
     public AbstractDomainAutoCompleteList(String id, String entityName, IModel<Attribute> model) {
         super(id, model);
 
@@ -30,13 +27,12 @@ public abstract class AbstractDomainAutoCompleteList extends FormComponentPanel<
         container.setOutputMarkupId(true);
         add(container);
 
-        listModel.setObject(model.getObject().getNumberValues()); //todo sync attribute model
-
-        ListView<Long> listView = new ListView<Long>("items", listModel){
+        ListView<Value> listView = new ListView<Value>("items", new PropertyModel<>(model, "values")){
 
             @Override
-            protected void populateItem(ListItem<Long> item) {
-                item.add(new AbstractDomainAutoComplete("item", entityName, item.getModel(), target -> {}){
+            protected void populateItem(ListItem<Value> item) {
+                item.add(new AbstractDomainAutoComplete("item", entityName,
+                        new PropertyModel<>(item.getModel(), "number"), target -> {}){
                     @Override
                     protected Domain getFilterObject(String input) {
                         return AbstractDomainAutoCompleteList.this.getFilterObject(input);
@@ -51,7 +47,7 @@ public abstract class AbstractDomainAutoCompleteList extends FormComponentPanel<
                 item.add(new AjaxLink<Void>("remove") {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
-                        listModel.getObject().remove(item.getIndex());
+                        model.getObject().getValues().remove(item.getIndex());
 
                         target.add(container);
                     }
@@ -70,7 +66,7 @@ public abstract class AbstractDomainAutoCompleteList extends FormComponentPanel<
         add(new AjaxLink<Void>("add") {
             @Override
             public void onClick(AjaxRequestTarget target) {
-                listModel.getObject().add(null);
+                model.getObject().getValues().add(new Value());
 
                 target.add(container);
             }
@@ -85,27 +81,4 @@ public abstract class AbstractDomainAutoCompleteList extends FormComponentPanel<
     protected abstract String getTextValue(Domain domain);
 
     protected abstract Domain getFilterObject(String input);
-
-    @SuppressWarnings("Duplicates")
-    @Override
-    public void convertInput() {
-        Attribute attribute = getModelObject();
-
-        if (attribute != null){
-            attribute.getValues().clear();
-
-            listModel.getObject().forEach(n -> getModelObject().addNumberValue(n));
-        }
-
-        setConvertedInput(attribute);
-    }
-
-    @Override
-    public boolean checkRequired() {
-        if (isRequired()){
-            return listModel.getObject().stream().anyMatch(Objects::nonNull);
-        }
-
-        return true;
-    }
 }

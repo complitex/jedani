@@ -71,15 +71,7 @@ public class Attribute implements Serializable{
         return null;
     }
 
-    public void initValues(){
-        if (values == null){
-            values = new ArrayList<>();
-        }
-    }
-
     public Value getOrCreateValue(Long localeId){
-        initValues();
-
         Value value = getValue(localeId);
 
         if (value == null){
@@ -104,8 +96,6 @@ public class Attribute implements Serializable{
     }
 
     public void addTextValue(String text){
-        initValues();
-
         Value value = new Value();
         value.setText(text);
 
@@ -113,8 +103,6 @@ public class Attribute implements Serializable{
     }
 
     public void addNumberValue(Long number){
-        initValues();
-
         Value value = new Value();
         value.setNumber(number);
 
@@ -122,14 +110,10 @@ public class Attribute implements Serializable{
     }
 
     public List<Long> getNumberValues(){
-        initValues();
-
         return values.stream().map(Value::getNumber).collect(Collectors.toList());
     }
 
     public List<String> getTextValues(){
-        initValues();
-
         return values.stream().map(Value::getText).collect(Collectors.toList());
     }
 
