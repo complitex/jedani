@@ -5,6 +5,7 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxLink
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
 import de.agilecoders.wicket.core.markup.html.bootstrap.dialog.Modal;
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -59,6 +60,8 @@ public class PromotionModal extends Modal<Promotion> {
 
     private FileUploadField file;
 
+    private Component remove;
+
     public PromotionModal(String markupId) {
         super(markupId, new Model<>(new Promotion()));
 
@@ -66,7 +69,7 @@ public class PromotionModal extends Modal<Promotion> {
 
         promotionDir = promotionSetting.getText(Setting.VALUE);
 
-        header(new ResourceModel("headerCreate"));
+        header(new ResourceModel("header"));
 
         container = new WebMarkupContainer("container");
         container.setOutputMarkupId(true);
@@ -153,12 +156,17 @@ public class PromotionModal extends Modal<Promotion> {
             }
         }.setLabel(new ResourceModel("save")));
 
-        addButton(new BootstrapAjaxLink<Void>(Modal.BUTTON_MARKUP_ID, Buttons.Type.Default) {
+        addButton(remove = new BootstrapAjaxLink<Void>(Modal.BUTTON_MARKUP_ID, Buttons.Type.Default) {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 PromotionModal.this.remove(target);
             }
-        }.setLabel(new ResourceModel("remove")));
+
+            @Override
+            public boolean isVisible() {
+                return PromotionModal.this.getModelObject().getObjectId() != null;
+            }
+        }.setLabel(new ResourceModel("remove")).setOutputMarkupId(true).setOutputMarkupPlaceholderTag(true));
 
 
         addButton(new BootstrapAjaxLink<Void>(Modal.BUTTON_MARKUP_ID, Buttons.Type.Default) {
@@ -183,7 +191,7 @@ public class PromotionModal extends Modal<Promotion> {
 
     private void open(AjaxRequestTarget target){
         container.setVisible(true);
-        target.add(container);
+        target.add(container, remove);
         appendShowDialogJavaScript(target);
     }
 
