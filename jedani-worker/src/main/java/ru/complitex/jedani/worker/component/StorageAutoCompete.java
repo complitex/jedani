@@ -50,6 +50,11 @@ public class StorageAutoCompete extends AbstractDomainAutoComplete {
     }
 
     @Override
+    protected Domain getDomain(Long objectId) {
+        return domainService.getDomain(Storage.class, objectId);
+    }
+
+    @Override
     protected String getTextValue(Domain domain) {
         return Storages.getStorageLabel(domain, domainService, nameService);
     }
