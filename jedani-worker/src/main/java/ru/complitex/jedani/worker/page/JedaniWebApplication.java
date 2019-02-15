@@ -1,18 +1,30 @@
 package ru.complitex.jedani.worker.page;
 
 import de.agilecoders.wicket.core.Bootstrap;
+import de.agilecoders.wicket.core.markup.html.references.BootstrapJavaScriptReference;
+import de.agilecoders.wicket.core.markup.html.references.JQueryMigrateJavaScriptReference;
+import de.agilecoders.wicket.core.markup.html.themes.bootstrap.BootstrapCssReference;
 import de.agilecoders.wicket.core.settings.BootstrapSettings;
 import de.agilecoders.wicket.core.settings.IBootstrapSettings;
 import de.agilecoders.wicket.core.settings.SingleThemeProvider;
+import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.select.SelectCSSReference;
+import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.select.SelectJSReference;
+import de.agilecoders.wicket.extensions.markup.html.bootstrap.references.BootstrapDatepickerJsReference;
+import de.agilecoders.wicket.extensions.markup.html.bootstrap.references.BootstrapDatepickerLangJsReference;
+import de.agilecoders.wicket.extensions.markup.html.bootstrap.references.BootstrapDatepickerReference;
+import de.agilecoders.wicket.themes.markup.html.google.GoogleCssReference;
 import de.agilecoders.wicket.themes.markup.html.google.GoogleTheme;
+import de.agilecoders.wicket.webjars.request.resource.WebjarsCssResourceReference;
 import org.apache.wicket.Page;
 import org.apache.wicket.Session;
+import org.apache.wicket.ajax.WicketAjaxJQueryResourceReference;
 import org.apache.wicket.cdi.CdiConfiguration;
 import org.apache.wicket.cdi.ConversationPropagation;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.request.Response;
+import org.apache.wicket.resource.JQueryResourceReference;
 import ru.complitex.address.page.*;
 import ru.complitex.common.wicket.application.ServletAuthorizationStrategy;
 import ru.complitex.common.wicket.application.ServletUnauthorizedListener;
@@ -25,6 +37,10 @@ import ru.complitex.jedani.worker.page.catalog.PositionEditPage;
 import ru.complitex.jedani.worker.page.catalog.PositionListPage;
 import ru.complitex.jedani.worker.page.login.LoginPage;
 import ru.complitex.jedani.worker.page.promotion.PromotionListPage;
+import ru.complitex.jedani.worker.page.resource.JedaniCssResourceReference;
+import ru.complitex.jedani.worker.page.resource.JedaniJsResourceReference;
+import ru.complitex.jedani.worker.page.resource.MenuCssResourceReference;
+import ru.complitex.jedani.worker.page.resource.MenuJsResourceReference;
 import ru.complitex.jedani.worker.page.storage.NomenclatureEditPage;
 import ru.complitex.jedani.worker.page.storage.NomenclatureListPage;
 import ru.complitex.jedani.worker.page.storage.StorageListPage;
@@ -48,24 +64,25 @@ public class JedaniWebApplication extends WebApplication{
         new CdiConfiguration().setPropagation(ConversationPropagation.ALL).configure(this);
 
         configureBootstrap();
-        configureMount();
+        configureMountPage();
+        configureMountResource();
 
         getDebugSettings().setAjaxDebugModeEnabled(false);
 
         getSecuritySettings().setAuthorizationStrategy(new ServletAuthorizationStrategy());
         getSecuritySettings().setUnauthorizedComponentInstantiationListener(new ServletUnauthorizedListener(LoginPage.class));
+
+//        getJavaScriptLibrarySettings().setJQueryReference(JQueryResourceReference.getV3());
     }
 
     private void configureBootstrap() {
         IBootstrapSettings settings = new BootstrapSettings();
-        Bootstrap.builder().withBootstrapSettings(settings).install(this);
-
         settings.setThemeProvider(new SingleThemeProvider(new GoogleTheme()));
 
-        Bootstrap.install(this);
+        Bootstrap.builder().withBootstrapSettings(settings).install(this);
     }
 
-    private void configureMount() {
+    private void configureMountPage() {
         mountPage("login", LoginPage.class);
         mountPage("import", ImportPage.class);
         mountPage("countries", CountryListPage.class);
@@ -104,6 +121,37 @@ public class JedaniWebApplication extends WebApplication{
         mountPage("storage", StoragePage.class);
         mountPage("storage/${id}", StoragePage.class);
         mountPage("promotions", PromotionListPage.class);
+    }
+
+    private void configureMountResource(){
+        mountResource("js/jquery.js", JQueryResourceReference.getV2());
+        mountResource("js/wicket-ajax-jquery.js", WicketAjaxJQueryResourceReference.get());
+
+        mountResource("css/jedani.css", JedaniCssResourceReference.INSTANCE);
+        mountResource("js/jedani.js", JedaniJsResourceReference.INSTANCE);
+
+        mountResource("css/menu.css", MenuCssResourceReference.INSTANCE);
+        mountResource("js/menu.js", MenuJsResourceReference.INSTANCE);
+
+        mountResource("css/bootstrap.css", BootstrapCssReference.instance());
+        mountResource("css/todc-bootstrap.css", GoogleCssReference.instance());
+
+        mountResource("fonts/glyphicons-halflings-regular.woff2", new WebjarsCssResourceReference(
+                "/bootstrap/current/fonts/glyphicons-halflings-regular.woff2"));
+        mountResource("fonts/glyphicons-halflings-regular.woff", new WebjarsCssResourceReference(
+                "/bootstrap/current/fonts/glyphicons-halflings-regular.woff"));
+        mountResource("fonts/glyphicons-halflings-regular.ttf", new WebjarsCssResourceReference(
+                "/bootstrap/current/fonts/glyphicons-halflings-regular.ttf"));
+
+        mountResource("js/jquery-migrate.js", JQueryMigrateJavaScriptReference.instance());
+        mountResource("js/bootstrap.js", BootstrapJavaScriptReference.instance());
+
+        mountResource("css/datepicker3.css", BootstrapDatepickerReference.INSTANCE);
+        mountResource("js/datepicker.js", BootstrapDatepickerJsReference.INSTANCE);
+        mountResource("js/lang/bootstrap-datepicker.ru.js", new BootstrapDatepickerLangJsReference("ru"));
+
+        mountResource("js/bootstrap-select.js", SelectJSReference.instance());
+        mountResource("css/bootstrap-select.css", SelectCSSReference.instance());
     }
 
     @Override

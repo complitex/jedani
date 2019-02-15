@@ -13,6 +13,8 @@ import ru.complitex.jedani.worker.page.resource.JedaniCssResourceReference;
  */
 public class LoginPage extends WebPage{
     public LoginPage(PageParameters parameters) {
+        setVersioned(false);
+
         add(new WebMarkupContainer("error"){
             @Override
             public boolean isVisible() {
