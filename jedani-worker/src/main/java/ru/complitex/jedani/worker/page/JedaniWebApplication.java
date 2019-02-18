@@ -24,6 +24,7 @@ import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.request.Response;
+import org.apache.wicket.request.resource.SharedResourceReference;
 import org.apache.wicket.resource.JQueryResourceReference;
 import ru.complitex.address.page.*;
 import ru.complitex.common.wicket.application.ServletAuthorizationStrategy;
@@ -41,6 +42,7 @@ import ru.complitex.jedani.worker.page.resource.JedaniCssResourceReference;
 import ru.complitex.jedani.worker.page.resource.JedaniJsResourceReference;
 import ru.complitex.jedani.worker.page.resource.MenuCssResourceReference;
 import ru.complitex.jedani.worker.page.resource.MenuJsResourceReference;
+import ru.complitex.jedani.worker.page.sale.SaleListPage;
 import ru.complitex.jedani.worker.page.storage.NomenclatureEditPage;
 import ru.complitex.jedani.worker.page.storage.NomenclatureListPage;
 import ru.complitex.jedani.worker.page.storage.StorageListPage;
@@ -71,8 +73,6 @@ public class JedaniWebApplication extends WebApplication{
 
         getSecuritySettings().setAuthorizationStrategy(new ServletAuthorizationStrategy());
         getSecuritySettings().setUnauthorizedComponentInstantiationListener(new ServletUnauthorizedListener(LoginPage.class));
-
-//        getJavaScriptLibrarySettings().setJQueryReference(JQueryResourceReference.getV3());
     }
 
     private void configureBootstrap() {
@@ -121,6 +121,7 @@ public class JedaniWebApplication extends WebApplication{
         mountPage("storage", StoragePage.class);
         mountPage("storage/${id}", StoragePage.class);
         mountPage("promotions", PromotionListPage.class);
+        mountPage("sales", SaleListPage.class);
     }
 
     private void configureMountResource(){
@@ -135,6 +136,8 @@ public class JedaniWebApplication extends WebApplication{
 
         mountResource("css/bootstrap.css", BootstrapCssReference.instance());
         mountResource("css/todc-bootstrap.css", GoogleCssReference.instance());
+        mountResource("img/checkmark.png", new SharedResourceReference(GoogleCssReference.class,
+                "img/checkmark.png"));
 
         mountResource("fonts/glyphicons-halflings-regular.woff2", new WebjarsCssResourceReference(
                 "/bootstrap/current/fonts/glyphicons-halflings-regular.woff2"));

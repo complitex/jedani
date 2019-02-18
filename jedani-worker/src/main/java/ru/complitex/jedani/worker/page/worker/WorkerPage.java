@@ -386,33 +386,25 @@ public class WorkerPage extends BasePage {
 
                         break;
                     case NUMBER_VALUE:
-                        value = attribute.getValues().stream()
-                                .map(v -> String.valueOf(v.getNumber()))
-                                .collect(Collectors.joining(","));
-
-                        break;
-                    case TEXT:
-                    case BOOLEAN:
-                    case DECIMAL:
-                        value = attribute.getText();
-
-                        break;
-                    case NUMBER:
-                        value = String.valueOf(attribute.getNumber());
-
-                        break;
-                    case DATE:
-                        value = String.valueOf(attribute.getDate());
-
-                        break;
                     case ENTITY_VALUE:
                         value = attribute.getValues().stream()
                                 .map(v -> String.valueOf(v.getNumber()))
                                 .collect(Collectors.joining(","));
 
                         break;
+                    case TEXT:
+                    case DECIMAL:
+                        value = attribute.getText();
+
+                        break;
+                    case BOOLEAN:
+                    case NUMBER:
                     case ENTITY:
                         value = String.valueOf(attribute.getNumber());
+
+                        break;
+                    case DATE:
+                        value = String.valueOf(attribute.getDate());
 
                         break;
                 }
@@ -663,24 +655,17 @@ public class WorkerPage extends BasePage {
 
         List<EntityAttribute> list = new ArrayList<>();
 
-        list.add(entity.getEntityAttribute(Worker.LAST_NAME)
-                .setReferenceEntityAttribute(entityService.getEntityAttribute(LastName.ENTITY_NAME, LastName.NAME)));
-
-        list.add(entity.getEntityAttribute(Worker.FIRST_NAME)
-                .setReferenceEntityAttribute(entityService.getEntityAttribute(FirstName.ENTITY_NAME, FirstName.NAME)));
-
-        list.add(entity.getEntityAttribute(Worker.MIDDLE_NAME)
-                .setReferenceEntityAttribute(entityService.getEntityAttribute(MiddleName.ENTITY_NAME, MiddleName.NAME)));
+        list.add(entity.getEntityAttribute(Worker.LAST_NAME).withReference(LastName.ENTITY_NAME, LastName.NAME));
+        list.add(entity.getEntityAttribute(Worker.FIRST_NAME).withReference(FirstName.ENTITY_NAME, FirstName.NAME));
+        list.add(entity.getEntityAttribute(Worker.MIDDLE_NAME).withReference(MiddleName.ENTITY_NAME, MiddleName.NAME));
 
         list.add(entity.getEntityAttribute(Worker.J_ID));
 
-        list.add(entity.getEntityAttribute(Worker.REGIONS)
-                .setReferenceEntityAttribute(entityService.getEntityAttribute(Region.ENTITY_NAME, Region.NAME)));
+        list.add(entity.getEntityAttribute(Worker.REGIONS).withReference(Region.ENTITY_NAME, Region.NAME));
 
-        list.add(entity.getEntityAttribute(Worker.CITIES)
-                .setReferenceEntityAttribute(entityService.getEntityAttribute(City.ENTITY_NAME, City.NAME))
+        list.add(entity.getEntityAttribute(Worker.CITIES).withReference(City.ENTITY_NAME, City.NAME)
                 .setPrefixEntityAttribute(entityService.getEntityAttribute(City.ENTITY_NAME, City.CITY_TYPE)
-                        .setReferenceEntityAttribute(entityService.getEntityAttribute(CityType.ENTITY_NAME, CityType.SHORT_NAME))));
+                        .withReference(CityType.ENTITY_NAME, CityType.SHORT_NAME)));
 
         return list;
     }

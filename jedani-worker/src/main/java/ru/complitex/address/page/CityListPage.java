@@ -7,10 +7,8 @@ import ru.complitex.address.entity.Region;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.page.DomainListPage;
-import ru.complitex.domain.service.EntityService;
 import ru.complitex.jedani.worker.security.JedaniRoles;
 
-import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.List;
 
@@ -20,9 +18,6 @@ import java.util.List;
  */
 @AuthorizeInstantiation(JedaniRoles.ADMINISTRATORS)
 public class CityListPage extends DomainListPage<City>{
-    @Inject
-    private EntityService entityService;
-
     public CityListPage() {
         super(City.class, Region.ENTITY_NAME, Region.NAME, CityEditPage.class);
     }
@@ -34,7 +29,7 @@ public class CityListPage extends DomainListPage<City>{
 
     protected List<EntityAttribute> getEntityAttributes(Entity entity){
         entity.getEntityAttribute(City.CITY_TYPE)
-                .setReferenceEntityAttribute(entityService.getEntityAttribute(CityType.ENTITY_NAME, CityType.NAME));
+                .withReference(CityType.ENTITY_NAME, CityType.NAME);
 
         return entity.getAttributes();
     }

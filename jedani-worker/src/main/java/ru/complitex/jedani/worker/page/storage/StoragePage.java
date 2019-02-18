@@ -372,8 +372,7 @@ public class StoragePage extends BasePage {
             //todo multi ref filter
 
             productColumns.add(new DomainColumn<Product>(productEntity.getEntityAttribute(Product.NOMENCLATURE)
-                    .setReferenceEntityAttribute(entityService.getEntityAttribute(Nomenclature.ENTITY_NAME, Nomenclature.NAME)),
-                    entityService, domainService){
+                    .withReference(Nomenclature.ENTITY_NAME, Nomenclature.NAME), entityService, domainService){
                 @Override
                 protected String displayEntity(EntityAttribute entityAttribute, Attribute attribute, Domain refDomain) {
                     return refDomain.getText(Nomenclature.CODE) + " " + super.displayEntity(entityAttribute, attribute, refDomain);
@@ -550,8 +549,7 @@ public class StoragePage extends BasePage {
             Entity transactionEntity = entityService.getEntity(Transaction.ENTITY_NAME);
 
             transactionColumns.add(new DomainColumn<Transaction>(transactionEntity.getEntityAttribute(Transaction.NOMENCLATURE)
-                    .setReferenceEntityAttribute(entityService.getEntityAttribute(Nomenclature.ENTITY_NAME, Nomenclature.NAME)),
-                    entityService, domainService){
+                    .withReference(Nomenclature.ENTITY_NAME, Nomenclature.NAME), entityService, domainService){
                 @Override
                 protected String displayEntity(EntityAttribute entityAttribute, Attribute attribute, Domain refDomain) {
                     return refDomain.getText(Nomenclature.CODE) + " " + super.displayEntity(entityAttribute, attribute, refDomain);
@@ -632,7 +630,7 @@ public class StoragePage extends BasePage {
 
                                 @Override
                                 public Long getObject(String id, IModel<? extends List<? extends Long>> choices) {
-                                    return !id.isEmpty() ? Long.valueOf(id) : null;
+                                    return id != null && !id.isEmpty() ? Long.valueOf(id) : null;
                                 }
                             }).with(new BootstrapSelectConfig().withNoneSelectedText("")));
                 }
@@ -695,7 +693,7 @@ public class StoragePage extends BasePage {
 
                                 @Override
                                 public Long getObject(String id, IModel<? extends List<? extends Long>> choices) {
-                                    return !id.isEmpty() ? Long.valueOf(id) : null;
+                                    return id != null && !id.isEmpty() ? Long.valueOf(id) : null;
                                 }
                             }).with(new BootstrapSelectConfig().withNoneSelectedText("")));
                 }

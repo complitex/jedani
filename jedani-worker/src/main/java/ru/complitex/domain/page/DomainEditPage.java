@@ -29,9 +29,9 @@ import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
-import ru.complitex.domain.mapper.EntityMapper;
 import ru.complitex.domain.model.TextAttributeModel;
 import ru.complitex.domain.service.DomainService;
+import ru.complitex.domain.service.EntityService;
 import ru.complitex.domain.util.Domains;
 import ru.complitex.domain.util.Locales;
 import ru.complitex.jedani.worker.page.BasePage;
@@ -50,7 +50,7 @@ public abstract class DomainEditPage<T extends Domain> extends BasePage{
     private Logger log = LoggerFactory.getLogger(getClass());
 
     @Inject
-    private EntityMapper entityMapper;
+    private EntityService entityService;
 
     @Inject
     private DomainService domainService;
@@ -71,7 +71,7 @@ public abstract class DomainEditPage<T extends Domain> extends BasePage{
             throw new WicketRuntimeException("domain not found");
         }
 
-        Entity entity = entityMapper.getEntity(domain.getEntityName());
+        Entity entity = entityService.getEntity(domain.getEntityName());
 
         String title = entity.getValue().getText();
 
@@ -88,7 +88,7 @@ public abstract class DomainEditPage<T extends Domain> extends BasePage{
 
         //Parent
 
-        Entity parentEntity = getParentEntityName() != null ? entityMapper.getEntity(getParentEntityName()) : null;
+        Entity parentEntity = getParentEntityName() != null ? entityService.getEntity(getParentEntityName()) : null;
 
         if (parentEntity != null) {
             FormGroup parentGroup = new FormGroup("parentGroup", Model.of(parentEntity.getValue().getText()));
@@ -115,6 +115,7 @@ public abstract class DomainEditPage<T extends Domain> extends BasePage{
                 Attribute attribute = domain.getOrCreateAttribute(entityAttribute.getEntityAttributeId());
                 attribute.setEntityAttribute(entityAttribute);
                 onAttribute(attribute);
+                entityService.loadReference(attribute.getEntityAttribute());
 
                 FormGroup group = new FormGroup("group", Model.of(entityAttribute.getValue().getText()));
                 FormComponent input1 = null;
@@ -125,7 +126,6 @@ public abstract class DomainEditPage<T extends Domain> extends BasePage{
                     switch (entityAttribute.getValueType()){
                         case TEXT:
                         case DECIMAL:
-                        case BOOLEAN:
                         case ENTITY_VALUE:
                             input1 = new TextField<>("input1", new TextAttributeModel(attribute, UPPER_CASE));
                             break;
@@ -138,6 +138,7 @@ public abstract class DomainEditPage<T extends Domain> extends BasePage{
                                     attribute.getEntityAttribute().getReferenceEntityAttribute(),
                                     new PropertyModel<>(attribute, "number"));
                             break;
+                        case BOOLEAN:
                         case NUMBER:
                             input1 = new TextField<>("input1", new PropertyModel<>(attribute, "number"));
                             break;

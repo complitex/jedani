@@ -34,8 +34,7 @@ public class NomenclatureListPage extends DomainListPage<Nomenclature> {
 
         list.add(entity.getEntityAttribute(Nomenclature.CODE));
 
-        list.add(entity.getEntityAttribute(Nomenclature.COUNTRIES)
-                .setReferenceEntityAttribute(entityService.getEntityAttribute(Country.ENTITY_NAME, Country.NAME)));
+        list.add(entity.getEntityAttribute(Nomenclature.COUNTRIES).withReference(Country.ENTITY_NAME, Country.NAME));
 
         return list;
     }

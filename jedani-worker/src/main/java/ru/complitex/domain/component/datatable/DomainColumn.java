@@ -49,6 +49,8 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
 
         this.entityService = entityService;
         this.domainService = domainService;
+
+        entityService.loadReference(entityAttribute);
     }
 
     @Override

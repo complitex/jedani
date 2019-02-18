@@ -1,6 +1,5 @@
 package ru.complitex.domain.component.form;
 
-import com.google.common.base.Strings;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.select.BootstrapSelect;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.select.BootstrapSelectConfig;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
@@ -47,7 +46,7 @@ public class AttributeSelect extends BootstrapSelect<Long> {
 
             @Override
             public Long getObject(String id, IModel<? extends List<? extends Long>> choices) {
-                return !Strings.isNullOrEmpty(id) ? Long.parseLong(id) : null;
+                return id != null && !id.isEmpty() ? Long.valueOf(id) : null;
             }
         });
 

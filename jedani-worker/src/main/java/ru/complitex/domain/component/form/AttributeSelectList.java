@@ -88,7 +88,7 @@ public class AttributeSelectList extends FormComponentPanel<Attribute> {
 
                             @Override
                             public Long getObject(String id, IModel<? extends List<? extends Long>> choices) {
-                                return Long.parseLong(id);
+                                return id != null && !id.isEmpty() ? Long.valueOf(id) : null;
                             }
                         }){
                     @Override

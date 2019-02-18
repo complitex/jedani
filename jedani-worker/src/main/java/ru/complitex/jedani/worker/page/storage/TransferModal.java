@@ -215,7 +215,7 @@ public abstract class TransferModal extends StorageModal {
 
                             @Override
                             public Long getObject(String id, IModel<? extends List<? extends Long>> choices) {
-                                return Long.valueOf(id);
+                                return id != null && !id.isEmpty() ? Long.valueOf(id) : null;
                             }
                         }).with(new BootstrapSelectConfig().withNoneSelectedText(""))));
 
@@ -257,7 +257,7 @@ public abstract class TransferModal extends StorageModal {
 
                             @Override
                             public Long getObject(String id, IModel<? extends List<? extends Long>> choices) {
-                                return Long.valueOf(id);
+                                return id != null && !id.isEmpty() ? Long.valueOf(id) : null;
                             }
                         }).with(new BootstrapSelectConfig().withNoneSelectedText(""))));
 

@@ -24,6 +24,10 @@ public class EntityAttribute implements Serializable{
     private String entityName;
 
     private EntityAttribute referenceEntityAttribute;
+
+    private String referenceEntityName;
+    private Long referenceEntityAttributeId;
+
     private EntityAttribute prefixEntityAttribute;
 
     private boolean displayLowerCase;
@@ -142,6 +146,29 @@ public class EntityAttribute implements Serializable{
 
     public EntityAttribute setDisplayLowerCase(boolean displayLowerCase) {
         this.displayLowerCase = displayLowerCase;
+
+        return this;
+    }
+
+    public String getReferenceEntityName() {
+        return referenceEntityName;
+    }
+
+    public void setReferenceEntityName(String referenceEntityName) {
+        this.referenceEntityName = referenceEntityName;
+    }
+
+    public Long getReferenceEntityAttributeId() {
+        return referenceEntityAttributeId;
+    }
+
+    public void setReferenceEntityAttributeId(Long referenceEntityAttributeId) {
+        this.referenceEntityAttributeId = referenceEntityAttributeId;
+    }
+
+    public EntityAttribute withReference(String referenceEntityName, Long referenceEntityAttributeId){
+        this.referenceEntityName = referenceEntityName;
+        this.referenceEntityAttributeId = referenceEntityAttributeId;
 
         return this;
     }

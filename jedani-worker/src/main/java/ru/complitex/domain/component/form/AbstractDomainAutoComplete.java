@@ -16,6 +16,7 @@ import org.danekja.java.util.function.serializable.SerializableConsumer;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.mapper.DomainMapper;
+import ru.complitex.domain.service.EntityService;
 
 import javax.inject.Inject;
 import java.util.Iterator;
@@ -29,6 +30,9 @@ import java.util.Locale;
 public abstract class AbstractDomainAutoComplete extends FormComponentPanel<Long> {
     @Inject
     private DomainMapper domainMapper;
+
+    @Inject
+    private EntityService entityService;
 
     private String entityName;
 
@@ -167,9 +171,11 @@ public abstract class AbstractDomainAutoComplete extends FormComponentPanel<Long
     protected abstract Domain getFilterObject(String input);
 
     protected List<? extends Domain> getDomains(String input) {
-        return domainMapper.getDomains(FilterWrapper.of(getFilterObject(input))
-                .setFilter("search")
-                .limit(0L, 10L));
+        Domain domain = getFilterObject(input);
+
+        domain.getAttributes().forEach(a -> entityService.loadReference(a.getEntityAttribute()));
+
+        return domainMapper.getDomains(FilterWrapper.of(domain).setFilter("search").limit(0L, 10L));
     }
 
     protected abstract String getTextValue(Domain domain) ;

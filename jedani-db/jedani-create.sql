@@ -1033,17 +1033,6 @@ CREATE TABLE `storage_value` (
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Локализация атрибутов склада';
 
 -- ---------------------------
--- Storage Type
--- ---------------------------
-
-DROP TABLE IF EXISTS storage_type;
-CREATE TABLE storage_type (
-                            id BIGINT(20) NOT NULL COMMENT 'Идентификатор',
-                            `type` VARCHAR(100) NOT NULL COMMENT 'Тип',
-                            PRIMARY KEY  (`id`)
-) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Тип склада';
-
--- ---------------------------
 -- Product
 -- ---------------------------
 
@@ -1179,6 +1168,17 @@ CREATE TABLE `transaction_value` (
   CONSTRAINT `fk_transaction_value__locale` FOREIGN KEY (`locale_id`) REFERENCES `locale` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Значения атрибутов транзакции';
 
+-- ---------------------------
+-- Storage Type
+-- ---------------------------
+
+DROP TABLE IF EXISTS storage_type;
+CREATE TABLE storage_type (
+  id BIGINT(20) NOT NULL COMMENT 'Идентификатор',
+  `type` VARCHAR(100) NOT NULL COMMENT 'Тип',
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Тип склада';
+
 
 -- ---------------------------
 -- Transaction Type
@@ -1284,3 +1284,165 @@ CREATE TABLE `promotion_value` (
   CONSTRAINT `fk_promotion_value__promotion_attribute` FOREIGN KEY (`attribute_id`) REFERENCES `promotion_attribute` (`id`),
   CONSTRAINT `fk_promotion_value__locale` FOREIGN KEY (`locale_id`) REFERENCES `locale` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Значения атрибутов акции';
+
+-- ---------------------------
+-- Sale
+-- ---------------------------
+
+DROP TABLE IF EXISTS `sale`;
+CREATE TABLE `sale`
+(
+  `id`               BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
+  `object_id`        BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
+  `parent_id`        BIGINT(20) COMMENT 'Идентификатор родительского объекта',
+  `parent_entity_id` BIGINT(20) COMMENT 'Идентификатор сущности родительского объекта',
+  `start_date`       TIMESTAMP  NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия объекта',
+  `end_date`         TIMESTAMP  NULL     DEFAULT NULL COMMENT 'Дата окончания периода действия объекта',
+  `status`           INTEGER    NOT NULL DEFAULT 1 COMMENT 'Статус',
+  `permission_id`    BIGINT(20) NULL COMMENT 'Ключ прав доступа к объекту',
+  `user_id`          BIGINT(20) NULL COMMENT 'Идентифитактор пользователя',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_object_id__status` (`object_id`, `status`),
+  KEY `key_object_id` (`object_id`),
+  KEY `key_parent_id` (`parent_id`),
+  KEY `key_parent_entity_id` (`parent_entity_id`),
+  KEY `key_start_date` (`start_date`),
+  KEY `key_end_date` (`end_date`),
+  KEY `key_status` (`status`),
+  KEY `key_permission_id` (`permission_id`),
+  CONSTRAINT `ft_sale__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
+  CONSTRAINT `fk_sale__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`),
+  CONSTRAINT `fk_sale__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
+) ENGINE = InnoDB
+  CHARSET = utf8
+  COLLATE = utf8_unicode_ci COMMENT 'Продажа';
+
+DROP TABLE IF EXISTS `sale_attribute`;
+CREATE TABLE `sale_attribute`
+(
+  `id`                  BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
+  `object_id`           BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
+  `entity_attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор типа атрибута',
+  `text`                VARCHAR(255) COMMENT 'Текст',
+  `number`              BIGINT(20) COMMENT 'Число',
+  `date`                DATETIME COMMENT 'Дата',
+  `start_date`          TIMESTAMP  NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия атрибута',
+  `end_date`            TIMESTAMP  NULL     DEFAULT NULL COMMENT 'Дата окончания периода действия атрибута',
+  `status`              INTEGER    NOT NULL DEFAULT 1 COMMENT 'Статус',
+  `user_id`             BIGINT(20) NULL COMMENT 'Идентифитактор пользователя',
+  PRIMARY KEY (`id`),
+  KEY `key_object_id` (`object_id`),
+  KEY `key_entity_attribute_id` (`entity_attribute_id`),
+  KEY `key_text` (`text`),
+  KEY `key_number` (`number`),
+  KEY `key_date` (`date`),
+  KEY `key_start_date` (`start_date`),
+  KEY `key_end_date` (`end_date`),
+  KEY `key_status` (`status`),
+  CONSTRAINT `fk_sale_attribute__sale` FOREIGN KEY (`object_id`) REFERENCES `sale` (`object_id`),
+  CONSTRAINT `fk_sale_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`)
+    REFERENCES entity_attribute (`entity_attribute_id`),
+  CONSTRAINT `fk_sale_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
+) ENGINE = InnoDB
+  CHARSET = utf8
+  COLLATE = utf8_unicode_ci COMMENT 'Атрибуты продажи';
+
+DROP TABLE IF EXISTS `sale_value`;
+CREATE TABLE `sale_value`
+(
+  `id`           BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
+  `attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор атрибута',
+  `locale_id`    BIGINT(20) COMMENT 'Идентификатор локали',
+  `text`         VARCHAR(1000) COMMENT 'Текстовое значение',
+  `number`       BIGINT(20) COMMENT 'Числовое значение',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_id__locale` (`attribute_id`, `locale_id`),
+  KEY `key_attribute_id` (`attribute_id`),
+  KEY `key_locale` (`locale_id`),
+  KEY `key_value` (`text`(128)),
+  CONSTRAINT `fk_sale_value__sale_attribute` FOREIGN KEY (`attribute_id`) REFERENCES `sale_attribute` (`id`),
+  CONSTRAINT `fk_sale_value__locale` FOREIGN KEY (`locale_id`) REFERENCES `locale` (`id`)
+) ENGINE = InnoDB
+  CHARSET = utf8
+  COLLATE = utf8_unicode_ci COMMENT 'Значения атрибутов продажи';
+
+-- ---------------------------
+-- Sale Item
+-- ---------------------------
+
+DROP TABLE IF EXISTS `sale_item`;
+CREATE TABLE `sale_item`
+(
+  `id`               BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
+  `object_id`        BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
+  `parent_id`        BIGINT(20) COMMENT 'Идентификатор родительского объекта',
+  `parent_entity_id` BIGINT(20) COMMENT 'Идентификатор сущности родительского объекта',
+  `start_date`       TIMESTAMP  NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия объекта',
+  `end_date`         TIMESTAMP  NULL     DEFAULT NULL COMMENT 'Дата окончания периода действия объекта',
+  `status`           INTEGER    NOT NULL DEFAULT 1 COMMENT 'Статус',
+  `permission_id`    BIGINT(20) NULL COMMENT 'Ключ прав доступа к объекту',
+  `user_id`          BIGINT(20) NULL COMMENT 'Идентифитактор пользователя',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_object_id__status` (`object_id`, `status`),
+  KEY `key_object_id` (`object_id`),
+  KEY `key_parent_id` (`parent_id`),
+  KEY `key_parent_entity_id` (`parent_entity_id`),
+  KEY `key_start_date` (`start_date`),
+  KEY `key_end_date` (`end_date`),
+  KEY `key_status` (`status`),
+  KEY `key_permission_id` (`permission_id`),
+  CONSTRAINT `ft_sale_item__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
+  CONSTRAINT `fk_sale_item__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`),
+  CONSTRAINT `fk_sale_item__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
+) ENGINE = InnoDB
+  CHARSET = utf8
+  COLLATE = utf8_unicode_ci COMMENT 'Позиция продажи';
+
+DROP TABLE IF EXISTS `sale_item_attribute`;
+CREATE TABLE `sale_item_attribute`
+(
+  `id`                  BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
+  `object_id`           BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
+  `entity_attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор типа атрибута',
+  `text`                VARCHAR(255) COMMENT 'Текст',
+  `number`              BIGINT(20) COMMENT 'Число',
+  `date`                DATETIME COMMENT 'Дата',
+  `start_date`          TIMESTAMP  NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия атрибута',
+  `end_date`            TIMESTAMP  NULL     DEFAULT NULL COMMENT 'Дата окончания периода действия атрибута',
+  `status`              INTEGER    NOT NULL DEFAULT 1 COMMENT 'Статус',
+  `user_id`             BIGINT(20) NULL COMMENT 'Идентифитактор пользователя',
+  PRIMARY KEY (`id`),
+  KEY `key_object_id` (`object_id`),
+  KEY `key_entity_attribute_id` (`entity_attribute_id`),
+  KEY `key_text` (`text`),
+  KEY `key_number` (`number`),
+  KEY `key_date` (`date`),
+  KEY `key_start_date` (`start_date`),
+  KEY `key_end_date` (`end_date`),
+  KEY `key_status` (`status`),
+  CONSTRAINT `fk_sale_item_attribute__sale_item` FOREIGN KEY (`object_id`) REFERENCES `sale_item` (`object_id`),
+  CONSTRAINT `fk_sale_item_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`)
+    REFERENCES entity_attribute (`entity_attribute_id`),
+  CONSTRAINT `fk_sale_item_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
+) ENGINE = InnoDB
+  CHARSET = utf8
+  COLLATE = utf8_unicode_ci COMMENT 'Атрибуты позиции продажи';
+
+DROP TABLE IF EXISTS `sale_item_value`;
+CREATE TABLE `sale_item_value`
+(
+  `id`           BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
+  `attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор атрибута',
+  `locale_id`    BIGINT(20) COMMENT 'Идентификатор локали',
+  `text`         VARCHAR(1000) COMMENT 'Текстовое значение',
+  `number`       BIGINT(20) COMMENT 'Числовое значение',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_id__locale` (`attribute_id`, `locale_id`),
+  KEY `key_attribute_id` (`attribute_id`),
+  KEY `key_locale` (`locale_id`),
+  KEY `key_value` (`text`(128)),
+  CONSTRAINT `fk_sale_item_value__sale_item_attribute` FOREIGN KEY (`attribute_id`) REFERENCES `sale_item_attribute` (`id`),
+  CONSTRAINT `fk_sale_item_value__locale` FOREIGN KEY (`locale_id`) REFERENCES `locale` (`id`)
+) ENGINE = InnoDB
+  CHARSET = utf8
+  COLLATE = utf8_unicode_ci COMMENT 'Значения атрибутов позиции продажи';

@@ -28,6 +28,8 @@ abstract class StorageModal extends Modal<Transaction> {
     StorageModal(String markupId) {
         super(markupId, Model.of(new Transaction()));
 
+        setBackdrop(Backdrop.FALSE);
+
         header(new ResourceModel("header"));
 
         container = new WebMarkupContainer("container");
@@ -83,7 +85,7 @@ abstract class StorageModal extends Modal<Transaction> {
         container.visitChildren(FormComponent.class, (c, v) -> ((FormComponent)c).clearInput());
     }
 
-    abstract void action(AjaxRequestTarget target);
+    abstract void action(AjaxRequestTarget target); //todo move action impl
 
     public WebMarkupContainer getContainer() {
         return container;

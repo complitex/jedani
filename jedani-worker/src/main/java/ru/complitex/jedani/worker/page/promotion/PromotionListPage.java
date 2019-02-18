@@ -60,8 +60,7 @@ public class PromotionListPage extends DomainListPage<Promotion> {
 
         list.add(entity.getEntityAttribute(Promotion.BEGIN));
         list.add(entity.getEntityAttribute(Promotion.END));
-        list.add(entity.getEntityAttribute(Promotion.COUNTRY)
-                .setReferenceEntityAttribute(entityService.getEntityAttribute(City.ENTITY_NAME, City.NAME)));
+        list.add(entity.getEntityAttribute(Promotion.COUNTRY).withReference(City.ENTITY_NAME, City.NAME));
         list.add(entity.getEntityAttribute(Promotion.NAME));
 
         return list;

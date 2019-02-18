@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<wicket:panel xmlns:wicket="http://wicket.apache.org">
+    <wicket:extend>
+        <div wicket:id="container" class="container-fluid">
+            <div wicket:id="feedback"></div>
+
+            <div wicket:id="fioContainer" class="row">
+                <span wicket:id="lastName" class="col-md-4"></span>
+                <span wicket:id="firstName" class="col-md-4"></span>
+                <span wicket:id="middleName" class="col-md-4"></span>
+            </div>
+
+            <div class="row">
+                <div wicket:id="saleType" class="col-md-4"></div>
+
+                <div wicket:id="sasRequest" class="col-md-4"></div>
+            </div>
+
+            <div wicket:id="mycookContainer">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>№</th>
+                        <th>Товар</th>
+                        <th>Кол-во</th>
+                        <th>Сумма</th>
+                        <th>%</th>
+                        <th>М</th>
+                        <th>Склад</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td><input class="form-control" style="width: 33px" value="1" disabled></td>
+                        <td><input class="form-control"></td>
+                        <td><input class="form-control" size="2"></td>
+                        <td><input class="form-control" size="6"></td>
+                        <td><input class="form-control" size="3"></td>
+                        <td><input class="form-control" size="2"></td>
+                        <td><input class="form-control"></td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <div class="text-center"><a href="#">Добавить</a></div>
+            </div>
+            <div wicket:id="baseAssortmentContainer">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>№</th>
+                        <th>Товар</th>
+                        <th>Кол-во</th>
+                        <th>Сумма</th>
+                        <th>Склад</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td><input class="form-control" style="width: 33px" value="1" disabled></td>
+                        <td><input class="form-control"></td>
+                        <td><input class="form-control" size="2"></td>
+                        <td><input class="form-control" size="6"></td>
+                        <td><input class="form-control"></td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <div class="text-center"><a href="#">Добавить</a></div>
+            </div>
+        </div>
+    </wicket:extend>
+</wicket:panel>

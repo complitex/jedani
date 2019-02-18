@@ -65,6 +65,8 @@ public class PromotionModal extends Modal<Promotion> {
     public PromotionModal(String markupId) {
         super(markupId, new Model<>(new Promotion()));
 
+        setBackdrop(Backdrop.FALSE);
+
         Setting promotionSetting = domainService.getDomain(Setting.class, Setting.PROMOTION);
 
         promotionDir = promotionSetting.getText(Setting.VALUE);

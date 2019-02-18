@@ -69,31 +69,23 @@ public class WorkerListPage extends DomainListPage<Worker>{
     protected List<EntityAttribute> getEntityAttributes(Entity entity) {
         List<EntityAttribute> list = new ArrayList<>();
 
-        list.add(entity.getEntityAttribute(Worker.LAST_NAME)
-                .setReferenceEntityAttribute(entityService.getEntityAttribute(LastName.ENTITY_NAME, LastName.NAME)));
-
-        list.add(entity.getEntityAttribute(Worker.FIRST_NAME)
-                .setReferenceEntityAttribute(entityService.getEntityAttribute(FirstName.ENTITY_NAME, FirstName.NAME)));
-
-        list.add(entity.getEntityAttribute(Worker.MIDDLE_NAME)
-                .setReferenceEntityAttribute(entityService.getEntityAttribute(MiddleName.ENTITY_NAME, MiddleName.NAME)));
+        list.add(entity.getEntityAttribute(Worker.LAST_NAME).withReference(LastName.ENTITY_NAME, LastName.NAME));
+        list.add(entity.getEntityAttribute(Worker.FIRST_NAME).withReference(FirstName.ENTITY_NAME, FirstName.NAME));
+        list.add(entity.getEntityAttribute(Worker.MIDDLE_NAME).withReference(MiddleName.ENTITY_NAME, MiddleName.NAME));
 
         list.add(entity.getEntityAttribute(Worker.J_ID));
 
-        list.add(entity.getEntityAttribute(Worker.REGIONS)
-                .setReferenceEntityAttribute(entityService.getEntityAttribute(Region.ENTITY_NAME, Region.NAME)));
+        list.add(entity.getEntityAttribute(Worker.REGIONS).withReference(Region.ENTITY_NAME, Region.NAME));
 
-        list.add(entity.getEntityAttribute(Worker.CITIES)
-                .setReferenceEntityAttribute(entityService.getEntityAttribute(City.ENTITY_NAME, City.NAME))
+        list.add(entity.getEntityAttribute(Worker.CITIES).withReference(City.ENTITY_NAME, City.NAME)
                 .setPrefixEntityAttribute(entityService.getEntityAttribute(City.ENTITY_NAME, City.CITY_TYPE)
-                        .setReferenceEntityAttribute(entityService.getEntityAttribute(CityType.ENTITY_NAME, CityType.SHORT_NAME))));
+                        .withReference(CityType.ENTITY_NAME, CityType.SHORT_NAME)));
 
         list.add(entity.getEntityAttribute(Worker.PHONE));
         list.add(entity.getEntityAttribute(Worker.EMAIL).setDisplayLowerCase(true));
         list.add(entity.getEntityAttribute(Worker.INVOLVED_AT));
 
-        list.add(entity.getEntityAttribute(Worker.POSITION)
-                .setReferenceEntityAttribute(entityService.getEntityAttribute(Position.ENTITY_NAME, Position.NAME)));
+        list.add(entity.getEntityAttribute(Worker.POSITION).withReference(Position.ENTITY_NAME, Position.NAME));
         list.add(entity.getEntityAttribute(Worker.TYPE));
 
         return list;

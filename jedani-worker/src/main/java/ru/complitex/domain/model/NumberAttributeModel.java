@@ -38,4 +38,8 @@ public class NumberAttributeModel implements IModel<Long> {
             domain.setNumber(entityAttributeId, object);
         }
     }
+
+    public static NumberAttributeModel of(IModel<? extends Domain> domainModel, Long entityAttributeId){
+        return new NumberAttributeModel(domainModel, entityAttributeId);
+    }
 }

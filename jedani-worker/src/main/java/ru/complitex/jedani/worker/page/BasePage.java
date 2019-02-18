@@ -34,6 +34,7 @@ import ru.complitex.jedani.worker.page.promotion.PromotionListPage;
 import ru.complitex.jedani.worker.page.resource.JedaniCssResourceReference;
 import ru.complitex.jedani.worker.page.resource.JedaniJsResourceReference;
 import ru.complitex.jedani.worker.page.resource.MenuCssResourceReference;
+import ru.complitex.jedani.worker.page.sale.SaleListPage;
 import ru.complitex.jedani.worker.page.storage.NomenclatureListPage;
 import ru.complitex.jedani.worker.page.storage.StorageListPage;
 import ru.complitex.jedani.worker.page.storage.StoragePage;
@@ -184,6 +185,11 @@ public class BasePage extends WebPage{
         add(promotions);
 
         promotions.add(new BookmarkablePageLink<>("promotion", PromotionListPage.class));
+
+        WebMarkupContainer sales = new WebMarkupContainer("sales");
+        add(sales);
+
+        sales.add(new BookmarkablePageLink<>("sale", SaleListPage.class));
     }
 
     @Override

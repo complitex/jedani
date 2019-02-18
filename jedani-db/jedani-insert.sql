@@ -341,12 +341,61 @@ INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `tex
 INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (27, 7, 4);
 INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (27, 7, 1, 'Курс евро'), (27, 7, 2, 'Курс евро');
 
+/* Sale */
+
+INSERT INTO `sequence` (`name`) VALUE ('sale');
+
+INSERT INTO `entity` (`id`, `name`) VALUE (28, 'sale');
+INSERT INTO `entity_value`(`entity_id`, `locale_id`, `text`) VALUES (28, 1, 'Продажа'), (28, 2, 'Продаж');
+
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`, `reference_id`) VALUES (28, 1, 11, 20);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (28, 1, 1, 'Продавец'), (28, 1, 2, 'Продавець');
+
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`, `reference_id`) VALUES (28, 2, 11, 11);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (28, 2, 1, 'Имя покупателя'), (28, 2, 2, 'Ім''я покупця');
+
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`, `reference_id`) VALUES (28, 3, 11, 12);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (28, 3, 1, 'Отчество покупателя'), (28, 3, 2, 'По батькові покупця');
+
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`, `reference_id`) VALUES (28, 4, 11, 13);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (28, 4, 1, 'Фамилия покупателя'), (28, 4, 2, 'Прізвище покупця');
+
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (28, 5, 6);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (28, 5, 1, 'Дата'), (28, 5, 2, 'Дата');
+
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (28, 6, 5);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (28, 6, 1, 'Тип продажи'), (28, 6, 2, 'Тип продажу');
+
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (28, 7, 3);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (28, 7, 1, 'Заявка из САП'), (28, 7, 2, 'Заявка з САП');
+
+/* Sale Item*/
+
+INSERT INTO `sequence` (`name`) VALUE ('sale_item');
+
+INSERT INTO `entity` (`id`, `name`) VALUE (29, 'sale_item');
+INSERT INTO `entity_value`(`entity_id`, `locale_id`, `text`) VALUES (29, 1, 'Позиция продажи'), (29, 2, 'Позиція продажу');
+
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`, `reference_id`) VALUES (29, 1, 11, 23);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (29, 1, 1, 'Номенклатура'), (29, 1, 2, 'Номенклатура');
+
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (29, 2, 5);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (29, 2, 1, 'Количество'), (29, 2, 2, 'Кількість');
+
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (29, 3, 4);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (29, 3, 1, 'Цена'), (29, 3, 2, 'Ціна');
+
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`, `reference_id`) VALUES (29, 4, 11, 24);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (29, 4, 1, 'Склад'), (29, 4, 2, 'Склад');
+
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (29, 5, 5);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (29, 5, 1, 'Процент оплаты'), (29, 5, 2, 'Відсоток оплати');
+
+
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (29, 6, 5);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (29, 6, 1, 'Количество месяцев рассрочки'), (29, 6, 2, 'Кількість місяців розстрочки');
+
 
 -- Update
 
-INSERT INTO `update` (`version`) VALUE ('20190110_1.0.5');
-
-
-
-
-
+INSERT INTO `update` (`version`) VALUE ('20190218_1.0.6');

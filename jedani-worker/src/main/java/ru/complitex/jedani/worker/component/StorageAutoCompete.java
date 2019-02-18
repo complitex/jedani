@@ -37,13 +37,13 @@ public class StorageAutoCompete extends AbstractDomainAutoComplete {
         Storage storage = new Storage();
 
         Attribute cityId = storage.getOrCreateAttribute(Storage.CITY);
-        cityId.setEntityAttribute(entityService.getEntityAttribute(Storage.ENTITY_NAME, Storage.CITY));
-        cityId.getEntityAttribute().setReferenceEntityAttribute(entityService.getEntityAttribute(City.ENTITY_NAME, City.NAME));
+        cityId.setEntityAttribute(entityService.getEntityAttribute(Storage.ENTITY_NAME, Storage.CITY,
+                City.ENTITY_NAME, City.NAME));
         cityId.setText(input);
 
         Attribute workerIds = storage.getOrCreateAttribute(Storage.WORKERS);
-        workerIds.setEntityAttribute(entityService.getEntityAttribute(Storage.ENTITY_NAME, Storage.WORKERS));
-        workerIds.getEntityAttribute().setReferenceEntityAttribute(entityService.getEntityAttribute(Worker.ENTITY_NAME, Worker.J_ID));
+        workerIds.setEntityAttribute(entityService.getEntityAttribute(Storage.ENTITY_NAME, Storage.WORKERS,
+                Worker.ENTITY_NAME, Worker.J_ID));
         workerIds.setText(input);
 
         return storage;

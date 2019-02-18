@@ -264,4 +264,5 @@ public class DomainListPage<T extends Domain> extends BasePage{
     public FilterDataTable<T> getTable() {
         return table;
     }
+
 }
