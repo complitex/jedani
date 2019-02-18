@@ -20,6 +20,7 @@ import org.apache.wicket.Session;
 import org.apache.wicket.ajax.WicketAjaxJQueryResourceReference;
 import org.apache.wicket.cdi.CdiConfiguration;
 import org.apache.wicket.cdi.ConversationPropagation;
+import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteBehavior;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
 import org.apache.wicket.request.Request;
@@ -155,6 +156,8 @@ public class JedaniWebApplication extends WebApplication{
 
         mountResource("js/bootstrap-select.js", SelectJSReference.instance());
         mountResource("css/bootstrap-select.css", SelectCSSReference.instance());
+
+        mountResource("js/wicket-autocomplete.js", AutoCompleteBehavior.AUTOCOMPLETE_JS);
     }
 
     @Override

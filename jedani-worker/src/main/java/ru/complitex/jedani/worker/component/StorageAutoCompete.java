@@ -1,6 +1,8 @@
 package ru.complitex.jedani.worker.component;
 
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
+import org.danekja.java.util.function.serializable.SerializableConsumer;
 import ru.complitex.address.entity.City;
 import ru.complitex.domain.component.form.AbstractDomainAutoComplete;
 import ru.complitex.domain.entity.Attribute;
@@ -27,6 +29,10 @@ public class StorageAutoCompete extends AbstractDomainAutoComplete {
 
     @Inject
     private NameService nameService;
+
+    public StorageAutoCompete(String id, IModel<Long> model, SerializableConsumer<AjaxRequestTarget> onChange) {
+        super(id, Storage.ENTITY_NAME, model, onChange);
+    }
 
     public StorageAutoCompete(String id, IModel<Long> model) {
         super(id, Storage.ENTITY_NAME, model, null);

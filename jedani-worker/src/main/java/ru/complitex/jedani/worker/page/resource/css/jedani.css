@@ -178,3 +178,16 @@ td.domain-id-column{
 .dropdown-menu > li > a{
     padding: 3px 10px;
 }
+
+.sale-id-column{
+    width: 33px;
+    vertical-align: middle !important;
+}
+
+.sale-id-column .btn{
+    padding: 0;
+}
+
+.sale-table .bootstrap-select{
+    width: 100% !important;
+}

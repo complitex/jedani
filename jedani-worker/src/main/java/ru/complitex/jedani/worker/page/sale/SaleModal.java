@@ -6,13 +6,20 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
 import de.agilecoders.wicket.core.markup.html.bootstrap.dialog.Modal;
 import de.agilecoders.wicket.core.markup.html.bootstrap.form.BootstrapCheckbox;
+import de.agilecoders.wicket.core.markup.html.bootstrap.image.GlyphIconType;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.select.BootstrapSelect;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.select.BootstrapSelectConfig;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.list.ListItem;
+import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
@@ -21,7 +28,10 @@ import ru.complitex.common.wicket.form.FormGroupSelectPanel;
 import ru.complitex.common.wicket.util.ComponentUtil;
 import ru.complitex.domain.component.form.DomainAutoCompleteFormGroup;
 import ru.complitex.domain.model.BooleanAttributeModel;
+import ru.complitex.domain.model.DecimalAttributeModel;
 import ru.complitex.domain.model.NumberAttributeModel;
+import ru.complitex.jedani.worker.component.NomenclatureAutoComplete;
+import ru.complitex.jedani.worker.component.StorageAutoCompete;
 import ru.complitex.jedani.worker.entity.Sale;
 import ru.complitex.jedani.worker.entity.SaleItem;
 import ru.complitex.jedani.worker.entity.SaleType;
@@ -29,10 +39,13 @@ import ru.complitex.name.entity.FirstName;
 import ru.complitex.name.entity.LastName;
 import ru.complitex.name.entity.MiddleName;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.LongStream;
 
 /**
  * @author Anatoly A. Ivanov
@@ -143,6 +156,55 @@ public class SaleModal extends Modal<Sale> {
                 .setNullValid(false).add(OnChangeAjaxBehavior.onChange(target -> target.add(
                         mycookContainer, baseAssortmentContainer, sasRequest)))));
 
+        mycookContainer.add(new ListView<SaleItem>("mycooks", mycookModel) {
+            @Override
+            protected void populateItem(ListItem<SaleItem> item) {
+                IModel<SaleItem> model = item.getModel();
+
+                item.add(new Label("index", item.getIndex() + 1));
+
+                item.add(new NomenclatureAutoComplete("nomenclature",
+                        NumberAttributeModel.of(model, SaleItem.NOMENCLATURE), t -> {}));
+
+                item.add(new TextField<>("quantity", NumberAttributeModel.of(model, SaleItem.QUANTITY), Long.class)
+                        .add(AjaxFormComponentUpdatingBehavior.onUpdate("change", t -> {})));
+
+                item.add(new TextField<>("price", DecimalAttributeModel.of(model, SaleItem.PRICE), BigDecimal.class)
+                        .add(AjaxFormComponentUpdatingBehavior.onUpdate("change", t -> {})));
+
+                item.add(new BootstrapSelect<>("percentage",
+                        NumberAttributeModel.of(model, SaleItem.INSTALLMENT_PERCENTAGE),
+                        Arrays.asList(0L, 10L, 20L, 30L, 40L, 50L, 60L, 70L,80L, 90L, 100L))
+                        .add(AjaxFormComponentUpdatingBehavior.onUpdate("change", t -> {})));
+
+                item.add(new BootstrapSelect<>("months",
+                        NumberAttributeModel.of(model, SaleItem.INSTALLMENT_MONTHS),
+                        LongStream.range(1, 25).boxed().collect(Collectors.toList()))
+                        .add(AjaxFormComponentUpdatingBehavior.onUpdate("change", t -> {})));
+
+                item.add(new StorageAutoCompete("storage", NumberAttributeModel.of(model, SaleItem.STORAGE), t -> {}));
+
+                item.add(new BootstrapAjaxLink<SaleItem>("remove", Buttons.Type.Link) {
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        mycookModel.getObject().remove(item.getIndex());
+
+                        target.add(mycookContainer);
+                    }
+                }.setIconType(GlyphIconType.remove));
+
+            }
+        }.setReuseItems(true));
+
+        mycookContainer.add(new AjaxLink<SaleItem>("add") {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                mycookModel.getObject().add(newMycook());
+
+                target.add(mycookContainer);
+            }
+        });
+
 
         addButton(new BootstrapAjaxButton(Modal.BUTTON_MARKUP_ID, Buttons.Type.Primary) {
             @Override
@@ -168,6 +230,24 @@ public class SaleModal extends Modal<Sale> {
         }.setLabel(new ResourceModel("cancel")));
     }
 
+    private SaleItem newMycook() {
+        SaleItem saleItem = new SaleItem();
+
+        saleItem.setNumber(SaleItem.INSTALLMENT_PERCENTAGE, 100L);
+        saleItem.setNumber(SaleItem.INSTALLMENT_MONTHS, 12L);
+
+        return saleItem;
+    }
+
+    private SaleItem newBaseAssortment() {
+        SaleItem saleItem = new SaleItem();
+
+        saleItem.setNumber(SaleItem.INSTALLMENT_PERCENTAGE, 100L);
+        saleItem.setNumber(SaleItem.INSTALLMENT_MONTHS, 12L);
+
+        return saleItem;
+    }
+
     private void open(AjaxRequestTarget target){
         container.setVisible(true);
         target.add(container);
@@ -185,6 +265,9 @@ public class SaleModal extends Modal<Sale> {
         saleModel.setObject(new Sale());
         mycookModel.setObject(new ArrayList<>());
         baseAssortmentModel.setObject(new ArrayList<>());
+
+        mycookModel.getObject().add(newMycook());
+        baseAssortmentModel.getObject().add(newBaseAssortment());
 
         open(target);
     }

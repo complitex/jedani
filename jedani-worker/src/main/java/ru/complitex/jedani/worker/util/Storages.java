@@ -62,16 +62,16 @@ public class Storages {
             Domain city = domainService.getDomain(City.ENTITY_NAME, storage.getNumber(Storage.CITY));
 
             if (city != null){
-                label += ", " + Attributes.capitalize(city.getValueText(City.NAME));
+                label += " " + Attributes.capitalize(city.getValueText(City.NAME));
             }
 
             String workers = storage.getOrCreateAttribute(Storage.WORKERS).getNumberValues().stream()
                     .map(id -> domainService.getDomain(Worker.ENTITY_NAME, id))
                     .map(w -> w.getText(Worker.J_ID) + " " +
                             nameService.getLastName(w.getNumber(Worker.LAST_NAME)))
-                    .collect(Collectors.joining(", "));
+                    .collect(Collectors.joining(" "));
 
-            label += ", " + workers;
+            label += " " + workers;
         }
 
         return label;
