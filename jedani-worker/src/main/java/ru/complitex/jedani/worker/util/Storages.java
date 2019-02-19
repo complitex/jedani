@@ -62,7 +62,7 @@ public class Storages {
             Domain city = domainService.getDomain(City.ENTITY_NAME, storage.getNumber(Storage.CITY));
 
             if (city != null){
-                label += " " + Attributes.capitalize(city.getValueText(City.NAME));
+                label += " " + Attributes.capitalize(city.getTextValue(City.NAME));
             }
 
             String workers = storage.getOrCreateAttribute(Storage.WORKERS).getNumberValues().stream()

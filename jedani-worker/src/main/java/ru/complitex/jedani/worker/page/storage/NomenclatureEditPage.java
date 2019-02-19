@@ -6,11 +6,15 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import ru.complitex.address.entity.Country;
 import ru.complitex.common.entity.FilterWrapper;
+import ru.complitex.common.wicket.panel.SelectPanel;
 import ru.complitex.domain.component.form.AttributeSelectList;
 import ru.complitex.domain.entity.Attribute;
+import ru.complitex.domain.model.NumberAttributeModel;
 import ru.complitex.domain.page.DomainEditPage;
 import ru.complitex.domain.service.DomainService;
+import ru.complitex.jedani.worker.component.TypeSelect;
 import ru.complitex.jedani.worker.entity.Nomenclature;
+import ru.complitex.jedani.worker.entity.NomenclatureType;
 import ru.complitex.jedani.worker.security.JedaniRoles;
 
 import javax.inject.Inject;
@@ -32,6 +36,11 @@ public class NomenclatureEditPage extends DomainEditPage<Nomenclature> {
     protected Component getComponent(String componentId, Attribute attribute) {
         if (attribute.getEntityAttributeId().equals(Nomenclature.COUNTRIES)) {
             return new AttributeSelectList(componentId, Model.of(attribute), Country.ENTITY_NAME, Country.NAME,  true);
+        }
+
+        if (attribute.getEntityAttributeId().equals(Nomenclature.TYPE)){
+            return new SelectPanel(componentId, new TypeSelect(SelectPanel.SELECT_COMPONENT_ID,
+                    NumberAttributeModel.of(attribute), NomenclatureType.MYCOOK, NomenclatureType.BASE_ASSORTMENT));
         }
 
         return null;

@@ -14,7 +14,7 @@ public class Sale extends Domain {
     public static final long BUYER_MIDDLE_NAME = 3;
     public static final long BUYER_LAST_NAME = 4;
     public static final long DATE = 5;
-    public static final long SALE_TYPE = 6;
+    public static final long TYPE = 6;
     public static final long SAS_REQUEST = 7;
 
     public Sale() {

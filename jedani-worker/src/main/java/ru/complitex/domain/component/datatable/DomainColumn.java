@@ -86,9 +86,18 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
 
         switch (entityAttribute.getValueType()){
             case TEXT_VALUE:
-                if (attribute.getValues() != null) {
-                    text = attribute.getValues().stream().map(v -> Attributes.displayText(entityAttribute, v.getText()))
-                            .collect(Collectors.joining(", "));
+                List<Value> values = attribute.getValues();
+
+                if (values != null && !values.isEmpty()) {
+                    if (values.get(0).getLocaleId() != null){
+                        text = Attributes.displayText(entityAttribute,
+                                attribute.getTextValue(entityAttribute.getEntityAttributeId()));
+                    }else{
+                        text = values.stream()
+                                .filter(v -> v.getLocaleId() == null)
+                                .map(v -> Attributes.displayText(entityAttribute, v.getText()))
+                                .collect(Collectors.joining(", "));
+                    }
                 }
 
                 break;
@@ -136,13 +145,13 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
                                                             .getReferenceEntityAttribute().getEntityName(),
                                                     prefixDomainId);
 
-                                            prefix = prefixDomain.getValueText(prefixEntityAttribute.getReferenceEntityAttribute().getEntityAttributeId());
+                                            prefix = prefixDomain.getTextValue(prefixEntityAttribute.getReferenceEntityAttribute().getEntityAttributeId());
 
                                             prefix = prefix != null ? prefix + " " : "";
                                         }
                                     }
 
-                                    String valueText = domain.getValueText(referenceEntityAttribute.getEntityAttributeId());
+                                    String valueText = domain.getTextValue(referenceEntityAttribute.getEntityAttributeId());
 
                                     return prefix.toLowerCase() + Attributes.displayText(referenceEntityAttribute, valueText);
                                 })
@@ -176,7 +185,7 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
         if (refDomain != null && entityAttribute.getReferenceEntityAttribute() != null){
             switch (entityAttribute.getReferenceEntityAttribute().getValueType()){
                 case TEXT_VALUE:
-                    text = refDomain.getValueText(entityAttribute.getReferenceEntityAttribute().getEntityAttributeId());
+                    text = refDomain.getTextValue(entityAttribute.getReferenceEntityAttribute().getEntityAttributeId());
                     break;
                 case TEXT:
                     text = refDomain.getText(entityAttribute.getReferenceEntityAttribute().getEntityAttributeId());

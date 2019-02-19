@@ -259,7 +259,7 @@ public class WorkerPage extends BasePage {
                     Domain cityType = domainMapper.getDomain(CityType.ENTITY_NAME, cityTypeId);
 
                     if (cityType != null){
-                        return cityType.getValueText(CityType.SHORT_NAME).toLowerCase() + " ";
+                        return cityType.getTextValue(CityType.SHORT_NAME).toLowerCase() + " ";
                     }
                 }
 

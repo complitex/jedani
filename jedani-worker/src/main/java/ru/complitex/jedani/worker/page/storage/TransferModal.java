@@ -288,7 +288,7 @@ public abstract class TransferModal extends StorageModal {
                         Nomenclature nomenclature = domainService.getDomain(Nomenclature.class, product.getNumber(Product.NOMENCLATURE));
 
                         return Strings.defaultIfEmpty(nomenclature.getText(Nomenclature.CODE), "") + " "
-                                + Attributes.capitalize(nomenclature.getValueText(Nomenclature.NAME));
+                                + Attributes.capitalize(nomenclature.getTextValue(Nomenclature.NAME));
                     }
                 }).setEnabled(false);
     }

@@ -36,7 +36,7 @@ public abstract class ReceiveModal extends StorageModal {
                         transaction.getNumber(Transaction.NOMENCLATURE));
 
                 return nomenclature.getText(Nomenclature.CODE) + " " +
-                        Attributes.capitalize(nomenclature.getValueText(Nomenclature.NAME));
+                        Attributes.capitalize(nomenclature.getTextValue(Nomenclature.NAME));
             }
         }));
 

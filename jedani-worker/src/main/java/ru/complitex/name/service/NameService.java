@@ -63,19 +63,19 @@ public class NameService implements Serializable {
 
     public String getLastName(Long objectId){
         return objectId != null
-                ? Attributes.capitalize(domainMapper.getDomain(LastName.ENTITY_NAME, objectId).getValueText(LastName.NAME))
+                ? Attributes.capitalize(domainMapper.getDomain(LastName.ENTITY_NAME, objectId).getTextValue(LastName.NAME))
                 : "";
     }
 
     public String getFirstName(Long objectId){
         return objectId != null
-                ? Attributes.capitalize(domainMapper.getDomain(FirstName.ENTITY_NAME, objectId).getValueText(FirstName.NAME))
+                ? Attributes.capitalize(domainMapper.getDomain(FirstName.ENTITY_NAME, objectId).getTextValue(FirstName.NAME))
                 : "";
     }
 
     public String getMiddleName(Long objectId){
         return objectId != null
-                ? Attributes.capitalize(domainMapper.getDomain(MiddleName.ENTITY_NAME, objectId).getValueText(MiddleName.NAME))
+                ? Attributes.capitalize(domainMapper.getDomain(MiddleName.ENTITY_NAME, objectId).getTextValue(MiddleName.NAME))
                 : "";
     }
 

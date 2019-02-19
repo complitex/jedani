@@ -138,7 +138,7 @@ public class BasePage extends WebPage{
                 Storage storage = item.getModelObject();
 
                 String label = Attributes.capitalize(domainService.getDomain(City.class, storage.getNumber(Storage.CITY))
-                        .getValueText(City.NAME)); //todo get value text sql
+                        .getTextValue(City.NAME)); //todo get value text sql
 
                 item.add(new BookmarkablePageLink<>("link", StoragePage.class,
                         new PageParameters().add("id", storage.getObjectId()))

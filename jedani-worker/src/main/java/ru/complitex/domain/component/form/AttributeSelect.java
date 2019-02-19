@@ -36,7 +36,7 @@ public class AttributeSelect extends BootstrapSelect<Long> {
         setChoiceRenderer(new IChoiceRenderer<Long>() {
             @Override
             public Object getDisplayValue(Long object) {
-                return Attributes.capitalize(map.get(object).getValueText(refEntityAttributeId, getLocale()));
+                return Attributes.capitalize(map.get(object).getTextValue(refEntityAttributeId, getLocale()));
             }
 
             @Override

@@ -95,7 +95,7 @@ public class SaleModal extends Modal<Sale> {
         WebMarkupContainer mycookContainer = new WebMarkupContainer("mycookContainer"){
             @Override
             public boolean isVisible() {
-                return Objects.equals(saleModel.getObject().getOrCreateAttribute(Sale.SALE_TYPE).getNumber(),
+                return Objects.equals(saleModel.getObject().getOrCreateAttribute(Sale.TYPE).getNumber(),
                         SaleType.MYCOOK);
             }
         };
@@ -106,7 +106,7 @@ public class SaleModal extends Modal<Sale> {
         WebMarkupContainer baseAssortmentContainer = new WebMarkupContainer("baseAssortmentContainer"){
             @Override
             public boolean isVisible() {
-                return Objects.equals(saleModel.getObject().getOrCreateAttribute(Sale.SALE_TYPE).getNumber(),
+                return Objects.equals(saleModel.getObject().getOrCreateAttribute(Sale.TYPE).getNumber(),
                         SaleType.BASE_ASSORTMENT);
             }
         };
@@ -118,14 +118,14 @@ public class SaleModal extends Modal<Sale> {
                 BooleanAttributeModel.of(saleModel, Sale.SAS_REQUEST), new ResourceModel("sasRequestLabel"))){
             @Override
             public boolean isVisible() {
-                return Objects.equals(saleModel.getObject().getOrCreateAttribute(Sale.SALE_TYPE).getNumber(),
+                return Objects.equals(saleModel.getObject().getOrCreateAttribute(Sale.TYPE).getNumber(),
                         SaleType.BASE_ASSORTMENT);
             }
         };
         container.add(sasRequest);
 
         container.add(new FormGroupSelectPanel("saleType", new BootstrapSelect<>(FormGroupPanel.COMPONENT_ID,
-                NumberAttributeModel.of(saleModel, Sale.SALE_TYPE),
+                NumberAttributeModel.of(saleModel, Sale.TYPE),
                 Arrays.asList(SaleType.MYCOOK, SaleType.BASE_ASSORTMENT),
                 new IChoiceRenderer<Long>() {
                     @Override
@@ -192,7 +192,6 @@ public class SaleModal extends Modal<Sale> {
                         target.add(mycookContainer);
                     }
                 }.setIconType(GlyphIconType.remove));
-
             }
         }.setReuseItems(true));
 
@@ -205,6 +204,43 @@ public class SaleModal extends Modal<Sale> {
             }
         });
 
+        baseAssortmentContainer.add(new ListView<SaleItem>("baseAssortments", baseAssortmentModel) {
+            @Override
+            protected void populateItem(ListItem<SaleItem> item) {
+                IModel<SaleItem> model = item.getModel();
+
+                item.add(new Label("index", item.getIndex() + 1));
+
+                item.add(new NomenclatureAutoComplete("nomenclature",
+                        NumberAttributeModel.of(model, SaleItem.NOMENCLATURE), t -> {}));
+
+                item.add(new TextField<>("quantity", NumberAttributeModel.of(model, SaleItem.QUANTITY), Long.class)
+                        .add(AjaxFormComponentUpdatingBehavior.onUpdate("change", t -> {})));
+
+                item.add(new TextField<>("price", DecimalAttributeModel.of(model, SaleItem.PRICE), BigDecimal.class)
+                        .add(AjaxFormComponentUpdatingBehavior.onUpdate("change", t -> {})));
+
+                item.add(new StorageAutoComplete("storage", NumberAttributeModel.of(model, SaleItem.STORAGE), t -> {}));
+
+                item.add(new BootstrapAjaxLink<SaleItem>("remove", Buttons.Type.Link) {
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        baseAssortmentModel.getObject().remove(item.getIndex());
+
+                        target.add(baseAssortmentContainer);
+                    }
+                }.setIconType(GlyphIconType.remove));
+            }
+        }.setReuseItems(true));
+
+        baseAssortmentContainer.add(new AjaxLink<SaleItem>("add") {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                baseAssortmentModel.getObject().add(newBaseAssortment());
+
+                target.add(baseAssortmentContainer);
+            }
+        });
 
         addButton(new BootstrapAjaxButton(Modal.BUTTON_MARKUP_ID, Buttons.Type.Primary) {
             @Override

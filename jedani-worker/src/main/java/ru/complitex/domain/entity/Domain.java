@@ -170,15 +170,15 @@ public class Domain implements Serializable{
         return attribute != null ? attribute.getValue(locale) : null;
     }
 
-    public String getValueText(Long entityAttributeId, Locale locale){
+    public String getTextValue(Long entityAttributeId, Locale locale){
         return Optional.ofNullable(getAttribute(entityAttributeId))
                 .map(a -> a.getValue(locale))
                 .map(Value::getText)
                 .orElse(null);
     }
 
-    public String getValueText(Long entityAttributeId){
-        return getValueText(entityAttributeId, Locales.getSystemLocale());
+    public String getTextValue(Long entityAttributeId){
+        return getTextValue(entityAttributeId, Locales.getSystemLocale());
     }
 
     public void setTextValue(Long entityAttributeId, String value, Locale locale){

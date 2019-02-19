@@ -3,10 +3,7 @@ package ru.complitex.domain.entity;
 import ru.complitex.domain.util.Locales;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -89,6 +86,14 @@ public class Attribute implements Serializable{
         Value value = localeId != null ? getValue(localeId) : null;
 
         return value != null || Locales.getSystemLocaleId().equals(localeId) ? value : getValue(Locales.getSystemLocaleId());
+    }
+
+    public String getTextValue(Long entityAttributeId, Locale locale){
+        return Optional.ofNullable(getValue(locale)).map(Value::getText).orElse(null);
+    }
+
+    public String getTextValue(Long entityAttributeId){
+        return Optional.ofNullable(getValue(Locales.getSystemLocale())).map(Value::getText).orElse(null);
     }
 
     public void setTextValue(String text, Long localeId){

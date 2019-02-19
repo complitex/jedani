@@ -35,6 +35,6 @@ public class NomenclatureAutoComplete extends AbstractDomainAutoComplete {
         }
 
         return Strings.defaultIfEmpty(domain.getText(Nomenclature.CODE), "") + " " +
-                Attributes.capitalize(domain.getValueText(Nomenclature.NAME));
+                Attributes.capitalize(domain.getTextValue(Nomenclature.NAME));
     }
 }

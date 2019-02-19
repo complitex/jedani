@@ -54,7 +54,7 @@ public class AttributeSelectList extends FormComponentPanel<Attribute> {
 
         Map<Long, String> names = domains.stream().collect(Collectors.toMap(Domain::getId,
                 d -> {
-                    String text = d.getValueText(refEntityAttributeId, getLocale());
+                    String text = d.getTextValue(refEntityAttributeId, getLocale());
 
                     return getPrefix(d) + (upperCase ? Attributes.capitalize(text) : text);
                 }));

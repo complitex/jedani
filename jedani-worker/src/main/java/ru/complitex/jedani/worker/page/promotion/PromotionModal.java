@@ -126,7 +126,7 @@ public class PromotionModal extends Modal<Promotion> {
                 }
 
                 return Strings.defaultIfEmpty(domain.getText(Nomenclature.CODE), "") + " " +
-                        Attributes.capitalize(domain.getValueText(Nomenclature.NAME));
+                        Attributes.capitalize(domain.getTextValue(Nomenclature.NAME));
             }
 
             @Override
