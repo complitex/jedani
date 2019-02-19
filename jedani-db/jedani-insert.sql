@@ -393,7 +393,7 @@ INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `tex
 
 
 INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (29, 6, 5);
-INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (29, 6, 1, 'Количество месяцев рассрочки'), (29, 6, 2, 'Кількість місяців розстрочки');
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (29, 6, 1, 'Рассрочка'), (29, 6, 2, 'Розстрочка');
 
 
 -- Update

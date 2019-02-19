@@ -31,7 +31,7 @@ import ru.complitex.domain.model.BooleanAttributeModel;
 import ru.complitex.domain.model.DecimalAttributeModel;
 import ru.complitex.domain.model.NumberAttributeModel;
 import ru.complitex.jedani.worker.component.NomenclatureAutoComplete;
-import ru.complitex.jedani.worker.component.StorageAutoCompete;
+import ru.complitex.jedani.worker.component.StorageAutoComplete;
 import ru.complitex.jedani.worker.entity.Sale;
 import ru.complitex.jedani.worker.entity.SaleItem;
 import ru.complitex.jedani.worker.entity.SaleType;
@@ -182,7 +182,7 @@ public class SaleModal extends Modal<Sale> {
                         LongStream.range(1, 25).boxed().collect(Collectors.toList()))
                         .add(AjaxFormComponentUpdatingBehavior.onUpdate("change", t -> {})));
 
-                item.add(new StorageAutoCompete("storage", NumberAttributeModel.of(model, SaleItem.STORAGE), t -> {}));
+                item.add(new StorageAutoComplete("storage", NumberAttributeModel.of(model, SaleItem.STORAGE), t -> {}));
 
                 item.add(new BootstrapAjaxLink<SaleItem>("remove", Buttons.Type.Link) {
                     @Override

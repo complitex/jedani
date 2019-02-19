@@ -20,7 +20,7 @@ import javax.inject.Inject;
  * @author Anatoly A. Ivanov
  * 08.11.2018 18:41
  */
-public class StorageAutoCompete extends AbstractDomainAutoComplete {
+public class StorageAutoComplete extends AbstractDomainAutoComplete {
     @Inject
     private EntityService entityService;
 
@@ -30,11 +30,11 @@ public class StorageAutoCompete extends AbstractDomainAutoComplete {
     @Inject
     private NameService nameService;
 
-    public StorageAutoCompete(String id, IModel<Long> model, SerializableConsumer<AjaxRequestTarget> onChange) {
+    public StorageAutoComplete(String id, IModel<Long> model, SerializableConsumer<AjaxRequestTarget> onChange) {
         super(id, Storage.ENTITY_NAME, model, onChange);
     }
 
-    public StorageAutoCompete(String id, IModel<Long> model) {
+    public StorageAutoComplete(String id, IModel<Long> model) {
         super(id, Storage.ENTITY_NAME, model, null);
     }
 

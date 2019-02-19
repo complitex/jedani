@@ -25,7 +25,7 @@ import ru.complitex.domain.model.NumberAttributeModel;
 import ru.complitex.domain.model.TextAttributeModel;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.util.Attributes;
-import ru.complitex.jedani.worker.component.StorageAutoCompete;
+import ru.complitex.jedani.worker.component.StorageAutoComplete;
 import ru.complitex.jedani.worker.component.WorkerAutoComplete;
 import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.name.entity.FirstName;
@@ -137,7 +137,7 @@ public abstract class TransferModal extends StorageModal {
 
                 FormGroupPanel storage;
 
-                fragment.add(storage =  new FormGroupPanel("storage", new StorageAutoCompete(FormGroupPanel.COMPONENT_ID,
+                fragment.add(storage =  new FormGroupPanel("storage", new StorageAutoComplete(FormGroupPanel.COMPONENT_ID,
                         new NumberAttributeModel(getModel(), Transaction.STORAGE_TO))
                         .setRequired(true)
                         .setLabel(new ResourceModel("storage"))
