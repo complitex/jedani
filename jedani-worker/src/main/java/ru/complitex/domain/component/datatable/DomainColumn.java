@@ -25,6 +25,7 @@ import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
 import ru.complitex.domain.util.Attributes;
 
+import javax.inject.Inject;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,21 +37,20 @@ import java.util.stream.Collectors;
 public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
     private static Logger log = LoggerFactory.getLogger(DomainColumn.class);
 
-    private EntityAttribute entityAttribute;
-
+    @Inject
     private EntityService entityService;
 
+    @Inject
     private DomainService domainService;
 
-    public DomainColumn(EntityAttribute entityAttribute, EntityService entityService, DomainService domainService) {
+    private EntityAttribute entityAttribute;
+
+    private boolean loadReference = true;
+
+    public DomainColumn(EntityAttribute entityAttribute) {
         super(entityAttribute);
 
         this.entityAttribute = entityAttribute;
-
-        this.entityService = entityService;
-        this.domainService = domainService;
-
-        entityService.loadReference(entityAttribute);
     }
 
     @Override
@@ -80,6 +80,12 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
 
     @Override
     public void populateItem(Item<ICellPopulator<T>> cellItem, String componentId, IModel<T> rowModel) {
+        if (loadReference){
+            entityService.loadReference(entityAttribute);
+
+            loadReference = false;
+        }
+
         String text = "";
 
         Attribute attribute = rowModel.getObject().getOrCreateAttribute(entityAttribute.getEntityAttributeId());

@@ -2,6 +2,7 @@ package ru.complitex.common.wicket.datatable;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.IAjaxIndicatorAware;
+import org.apache.wicket.cdi.NonContextual;
 import org.apache.wicket.extensions.ajax.markup.html.AjaxIndicatorAppender;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackHeadersToolbar;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
@@ -10,6 +11,7 @@ import org.apache.wicket.markup.html.form.TextField;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
 import ru.complitex.domain.component.datatable.DomainActionColumn;
+import ru.complitex.domain.component.datatable.DomainColumn;
 
 import java.io.Serializable;
 import java.util.List;
@@ -76,5 +78,15 @@ public class FilterDataTable<T extends Serializable> extends DataTable<T, SortPr
 
     public void setHideOnEmpty(boolean hideOnEmpty) {
         this.hideOnEmpty = hideOnEmpty;
+    }
+
+    @Override
+    protected void onInitialize() {
+        super.onInitialize();
+
+        getColumns().stream()
+                .filter(c -> c instanceof DomainColumn)
+                .map(c -> (DomainColumn)c)
+                .forEach(c -> NonContextual.of(DomainColumn.class).inject(c));
     }
 }

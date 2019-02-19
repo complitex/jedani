@@ -372,15 +372,14 @@ public class StoragePage extends BasePage {
             //todo multi ref filter
 
             productColumns.add(new DomainColumn<Product>(productEntity.getEntityAttribute(Product.NOMENCLATURE)
-                    .withReference(Nomenclature.ENTITY_NAME, Nomenclature.NAME), entityService, domainService){
+                    .withReference(Nomenclature.ENTITY_NAME, Nomenclature.NAME)){
                 @Override
                 protected String displayEntity(EntityAttribute entityAttribute, Attribute attribute, Domain refDomain) {
                     return refDomain.getText(Nomenclature.CODE) + " " + super.displayEntity(entityAttribute, attribute, refDomain);
                 }
             });
 
-            productColumns.add(new DomainColumn<Product>(productEntity.getEntityAttribute(Product.QUANTITY),
-                    entityService, domainService){
+            productColumns.add(new DomainColumn<Product>(productEntity.getEntityAttribute(Product.QUANTITY)){
                 @Override
                 public void populateItem(Item<ICellPopulator<Product>> cellItem, String componentId, IModel<Product> rowModel) {
                     super.populateItem(cellItem, componentId, rowModel);
@@ -399,11 +398,9 @@ public class StoragePage extends BasePage {
                     }
                 }
             });
-            productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.SENDING),
-                    entityService, domainService));
+            productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.SENDING)));
 
-            productColumns.add(new DomainColumn<Product>(productEntity.getEntityAttribute(Product.RECEIVING),
-                    entityService, domainService){
+            productColumns.add(new DomainColumn<Product>(productEntity.getEntityAttribute(Product.RECEIVING)){
                 @Override
                 public void populateItem(Item<ICellPopulator<Product>> cellItem, String componentId, IModel<Product> rowModel) {
                     super.populateItem(cellItem, componentId, rowModel);
@@ -423,8 +420,7 @@ public class StoragePage extends BasePage {
                 }
             });
 
-            productColumns.add(new DomainColumn<Product>(productEntity.getEntityAttribute(Product.GIFT_QUANTITY),
-                    entityService, domainService){
+            productColumns.add(new DomainColumn<Product>(productEntity.getEntityAttribute(Product.GIFT_QUANTITY)){
                 @Override
                 public void populateItem(Item<ICellPopulator<Product>> cellItem, String componentId, IModel<Product> rowModel) {
                     super.populateItem(cellItem, componentId, rowModel);
@@ -443,11 +439,29 @@ public class StoragePage extends BasePage {
                     }
                 }
             });
-            productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.GIFT_SENDING),
-                    entityService, domainService));
+            productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.GIFT_SENDING)));
 
-            productColumns.add(new DomainColumn<Product>(productEntity.getEntityAttribute(Product.GIFT_RECEIVING),
-                    entityService, domainService){
+            productColumns.add(new DomainColumn<Product>(productEntity.getEntityAttribute(Product.GIFT_RECEIVING)){
+                @Override
+                public void populateItem(Item<ICellPopulator<Product>> cellItem, String componentId, IModel<Product> rowModel) {
+                    super.populateItem(cellItem, componentId, rowModel);
+
+                    Product product = rowModel.getObject();
+
+                    if (edit && product.getNumber(Product.RECEIVING, 0L) > 0){
+                        cellItem.add(new CssClassNameAppender("pointer"));
+
+                        cellItem.add(new AjaxEventBehavior("click") {
+                            @Override
+                            protected void onEvent(AjaxRequestTarget target) {
+                                receiveModal.open(product, TransferType.GIFT, target);
+                            }
+                        });
+                    }
+                }
+            });
+
+            productColumns.add(new DomainColumn<Product>(productEntity.getEntityAttribute(Product.RESERVE)){
                 @Override
                 public void populateItem(Item<ICellPopulator<Product>> cellItem, String componentId, IModel<Product> rowModel) {
                     super.populateItem(cellItem, componentId, rowModel);
@@ -549,19 +563,18 @@ public class StoragePage extends BasePage {
             Entity transactionEntity = entityService.getEntity(Transaction.ENTITY_NAME);
 
             transactionColumns.add(new DomainColumn<Transaction>(transactionEntity.getEntityAttribute(Transaction.NOMENCLATURE)
-                    .withReference(Nomenclature.ENTITY_NAME, Nomenclature.NAME), entityService, domainService){
+                    .withReference(Nomenclature.ENTITY_NAME, Nomenclature.NAME)){
                 @Override
                 protected String displayEntity(EntityAttribute entityAttribute, Attribute attribute, Domain refDomain) {
                     return refDomain.getText(Nomenclature.CODE) + " " + super.displayEntity(entityAttribute, attribute, refDomain);
                 }
             });
 
-            transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.QUANTITY),
-                    entityService, domainService));
+            transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.QUANTITY)));
             transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.STORAGE_FROM)
-                    .setValueType(ValueType.NUMBER), entityService, domainService));
+                    .setValueType(ValueType.NUMBER)));
             transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.STORAGE_TO)
-                    .setValueType(ValueType.NUMBER), entityService, domainService));
+                    .setValueType(ValueType.NUMBER)));
 
             transactionColumns.add(new AbstractDomainColumn<Transaction>(new ResourceModel("worker"),
                     new SortProperty("worker")) {
@@ -594,10 +607,8 @@ public class StoragePage extends BasePage {
                 }
             });
 
-            transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.SERIAL_NUMBER),
-                    entityService, domainService));
-            transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.COMMENTS),
-                    entityService, domainService));
+            transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.SERIAL_NUMBER)));
+            transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.COMMENTS)));
 
             transactionColumns.add(new AbstractDomainColumn<Transaction>(transactionEntity
                     .getEntityAttribute(Transaction.TRANSFER_TYPE)) {

@@ -576,7 +576,7 @@ public class WorkerPage extends BasePage {
         List<IColumn<Worker, SortProperty>> columns = new ArrayList<>();
 
         columns.add(new DomainIdColumn<>());
-        getEntityAttributes().forEach(a -> columns.add(new DomainColumn<>(a, entityService, domainService)));
+        getEntityAttributes().forEach(a -> columns.add(new DomainColumn<>(a)));
 
         columns.add(new AbstractDomainColumn<Worker>(new ResourceModel("subWorkersCount"),
                 new SortProperty("subWorkersCount")) {
