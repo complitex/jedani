@@ -32,7 +32,7 @@ public class SaleListPage extends DomainListPage<SaleItem> {
         saleModal = new SaleModal("sale"){
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
-                //todo on update
+                target.add(getFeedback(), getTable());
             }
         };
         saleForm.add(saleModal);

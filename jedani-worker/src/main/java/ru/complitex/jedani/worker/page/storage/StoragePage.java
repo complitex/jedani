@@ -465,19 +465,6 @@ public class StoragePage extends BasePage {
                 @Override
                 public void populateItem(Item<ICellPopulator<Product>> cellItem, String componentId, IModel<Product> rowModel) {
                     super.populateItem(cellItem, componentId, rowModel);
-
-                    Product product = rowModel.getObject();
-
-                    if (edit && product.getNumber(Product.RECEIVING, 0L) > 0){
-                        cellItem.add(new CssClassNameAppender("pointer"));
-
-                        cellItem.add(new AjaxEventBehavior("click") {
-                            @Override
-                            protected void onEvent(AjaxRequestTarget target) {
-                                receiveModal.open(product, TransferType.GIFT, target);
-                            }
-                        });
-                    }
                 }
             });
 

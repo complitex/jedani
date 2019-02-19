@@ -16,6 +16,7 @@ public class Product extends Domain {
     public static final long GIFT_QUANTITY = 5;
     public static final long GIFT_SENDING = 6;
     public static final long GIFT_RECEIVING = 7;
+    public static final long RESERVE = 8;
 
     public Product() {
         super(ENTITY_NAME);

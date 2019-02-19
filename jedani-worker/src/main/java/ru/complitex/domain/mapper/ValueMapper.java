@@ -1,5 +1,6 @@
 package ru.complitex.domain.mapper;
 
+import org.mybatis.cdi.Transactional;
 import ru.complitex.common.mybatis.BaseMapper;
 import ru.complitex.domain.entity.Value;
 
@@ -9,6 +10,7 @@ import ru.complitex.domain.entity.Value;
  */
 public class ValueMapper extends BaseMapper {
 
+    @Transactional
     public void insertValue(Value value){
         if (value.getNumber() != null) {
             sqlSession().insert("insertValueWithNumber", value);

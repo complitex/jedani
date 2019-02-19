@@ -262,6 +262,8 @@ INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `tex
 INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (25, 7, 5);
 INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (25, 7, 1, 'Принимается подарков'), (25, 7, 2, 'Приймається подарунків');
 
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (25, 8, 5);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (25, 8, 1, 'Резерв'), (25, 8, 2, 'Резерв');
 
 /* Transaction */
 
@@ -386,7 +388,7 @@ INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_i
 INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (29, 2, 1, 'Количество'), (29, 2, 2, 'Кількість');
 
 INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (29, 3, 4);
-INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (29, 3, 1, 'Цена'), (29, 3, 2, 'Ціна');
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (29, 3, 1, 'Сумма'), (29, 3, 2, 'Сума');
 
 INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`, `reference_id`) VALUES (29, 4, 11, 24);
 INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (29, 4, 1, 'Склад'), (29, 4, 2, 'Склад');

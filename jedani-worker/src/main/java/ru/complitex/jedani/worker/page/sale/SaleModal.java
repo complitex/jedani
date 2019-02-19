@@ -35,10 +35,13 @@ import ru.complitex.jedani.worker.component.StorageAutoComplete;
 import ru.complitex.jedani.worker.entity.Sale;
 import ru.complitex.jedani.worker.entity.SaleItem;
 import ru.complitex.jedani.worker.entity.SaleType;
+import ru.complitex.jedani.worker.exception.SaleException;
+import ru.complitex.jedani.worker.service.SaleService;
 import ru.complitex.name.entity.FirstName;
 import ru.complitex.name.entity.LastName;
 import ru.complitex.name.entity.MiddleName;
 
+import javax.inject.Inject;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,6 +55,9 @@ import java.util.stream.LongStream;
  * 18.02.2019 15:23
  */
 public class SaleModal extends Modal<Sale> {
+    @Inject
+    private SaleService saleService;
+
     private IModel<Sale> saleModel;
     private IModel<List<SaleItem>> mycookModel;
     private IModel<List<SaleItem>> baseAssortmentModel;
@@ -86,9 +92,9 @@ public class SaleModal extends Modal<Sale> {
         container.add(fioContainer);
 
         fioContainer.add(new DomainAutoCompleteFormGroup("lastName", LastName.ENTITY_NAME, LastName.NAME,
-                NumberAttributeModel.of(saleModel, Sale.BUYER_LAST_NAME)));
+                NumberAttributeModel.of(saleModel, Sale.BUYER_LAST_NAME)).setRequired(true));
         fioContainer.add(new DomainAutoCompleteFormGroup("firstName", FirstName.ENTITY_NAME, FirstName.NAME,
-                NumberAttributeModel.of(saleModel, Sale.BUYER_FIRST_NAME)));
+                NumberAttributeModel.of(saleModel, Sale.BUYER_FIRST_NAME)).setRequired(true));
         fioContainer.add(new DomainAutoCompleteFormGroup("middleName", MiddleName.ENTITY_NAME, MiddleName.NAME,
                 NumberAttributeModel.of(saleModel, Sale.BUYER_MIDDLE_NAME)));
 
@@ -153,8 +159,8 @@ public class SaleModal extends Modal<Sale> {
                     }
                 })
                 .with(new BootstrapSelectConfig().withNoneSelectedText(""))
-                .setNullValid(false).add(OnChangeAjaxBehavior.onChange(target -> target.add(
-                        mycookContainer, baseAssortmentContainer, sasRequest)))));
+                .setNullValid(false)
+                .add(OnChangeAjaxBehavior.onChange(target -> target.add(mycookContainer, baseAssortmentContainer, sasRequest)))));
 
         mycookContainer.add(new ListView<SaleItem>("mycooks", mycookModel) {
             @Override
@@ -164,25 +170,31 @@ public class SaleModal extends Modal<Sale> {
                 item.add(new Label("index", item.getIndex() + 1));
 
                 item.add(new NomenclatureAutoComplete("nomenclature",
-                        NumberAttributeModel.of(model, SaleItem.NOMENCLATURE), t -> {}));
+                        NumberAttributeModel.of(model, SaleItem.NOMENCLATURE), t -> {})
+                        .setRequired(true));
 
                 item.add(new TextField<>("quantity", NumberAttributeModel.of(model, SaleItem.QUANTITY), Long.class)
+                        .setRequired(true)
                         .add(AjaxFormComponentUpdatingBehavior.onUpdate("change", t -> {})));
 
                 item.add(new TextField<>("price", DecimalAttributeModel.of(model, SaleItem.PRICE), BigDecimal.class)
+                        .setRequired(true)
                         .add(AjaxFormComponentUpdatingBehavior.onUpdate("change", t -> {})));
 
                 item.add(new BootstrapSelect<>("percentage",
                         NumberAttributeModel.of(model, SaleItem.INSTALLMENT_PERCENTAGE),
                         Arrays.asList(0L, 10L, 20L, 30L, 40L, 50L, 60L, 70L,80L, 90L, 100L))
+                        .setRequired(true)
                         .add(AjaxFormComponentUpdatingBehavior.onUpdate("change", t -> {})));
 
                 item.add(new BootstrapSelect<>("months",
                         NumberAttributeModel.of(model, SaleItem.INSTALLMENT_MONTHS),
-                        LongStream.range(1, 25).boxed().collect(Collectors.toList()))
+                        LongStream.range(0, 25).boxed().collect(Collectors.toList()))
+                        .setRequired(true)
                         .add(AjaxFormComponentUpdatingBehavior.onUpdate("change", t -> {})));
 
-                item.add(new StorageAutoComplete("storage", NumberAttributeModel.of(model, SaleItem.STORAGE), t -> {}));
+                item.add(new StorageAutoComplete("storage", NumberAttributeModel.of(model, SaleItem.STORAGE), t -> {})
+                        .setRequired(true));
 
                 item.add(new BootstrapAjaxLink<SaleItem>("remove", Buttons.Type.Link) {
                     @Override
@@ -212,15 +224,19 @@ public class SaleModal extends Modal<Sale> {
                 item.add(new Label("index", item.getIndex() + 1));
 
                 item.add(new NomenclatureAutoComplete("nomenclature",
-                        NumberAttributeModel.of(model, SaleItem.NOMENCLATURE), t -> {}));
+                        NumberAttributeModel.of(model, SaleItem.NOMENCLATURE), t -> {})
+                        .setRequired(true));
 
                 item.add(new TextField<>("quantity", NumberAttributeModel.of(model, SaleItem.QUANTITY), Long.class)
+                        .setRequired(true)
                         .add(AjaxFormComponentUpdatingBehavior.onUpdate("change", t -> {})));
 
                 item.add(new TextField<>("price", DecimalAttributeModel.of(model, SaleItem.PRICE), BigDecimal.class)
+                        .setRequired(true)
                         .add(AjaxFormComponentUpdatingBehavior.onUpdate("change", t -> {})));
 
-                item.add(new StorageAutoComplete("storage", NumberAttributeModel.of(model, SaleItem.STORAGE), t -> {}));
+                item.add(new StorageAutoComplete("storage", NumberAttributeModel.of(model, SaleItem.STORAGE), t -> {})
+                        .setRequired(true));
 
                 item.add(new BootstrapAjaxLink<SaleItem>("remove", Buttons.Type.Link) {
                     @Override
@@ -255,6 +271,8 @@ public class SaleModal extends Modal<Sale> {
                         target.add(ComponentUtil.getAjaxParent(object));
                     }
                 }));
+
+                target.add(feedback);
             }
         }.setLabel(new ResourceModel("save")));
 
@@ -270,7 +288,7 @@ public class SaleModal extends Modal<Sale> {
         SaleItem saleItem = new SaleItem();
 
         saleItem.setNumber(SaleItem.INSTALLMENT_PERCENTAGE, 100L);
-        saleItem.setNumber(SaleItem.INSTALLMENT_MONTHS, 12L);
+        saleItem.setNumber(SaleItem.INSTALLMENT_MONTHS, 0L);
 
         return saleItem;
     }
@@ -295,6 +313,8 @@ public class SaleModal extends Modal<Sale> {
         appendCloseDialogJavaScript(target);
 
         container.visitChildren(FormComponent.class, (c, v) -> ((FormComponent) c).clearInput());
+
+        onUpdate(target);
     }
 
     void sale(AjaxRequestTarget target){
@@ -313,7 +333,35 @@ public class SaleModal extends Modal<Sale> {
     }
 
     private void save(AjaxRequestTarget target){
+        Sale sale = saleModel.getObject();
 
+        Long type = sale.getNumber(Sale.TYPE);
+
+        List<SaleItem> saleItems = null;
+
+        if (Objects.equals(type, SaleType.MYCOOK)){
+            saleItems = mycookModel.getObject();
+        }else if (Objects.equals(type, SaleType.BASE_ASSORTMENT)){
+            saleItems = baseAssortmentModel.getObject();
+        }
+
+        if (saleItems == null || saleItems.isEmpty()){
+            return;
+        }
+
+        //todo validate quantity
+
+        try {
+            saleService.sale(sale, saleItems);
+
+            getSession().success(getString("info_sold"));
+
+            close(target);
+        } catch (SaleException e) {
+            error(getString("error_sell") + " " + e.getMessage());
+
+            target.add(feedback);
+        }
     }
 
     protected void onUpdate(AjaxRequestTarget target){

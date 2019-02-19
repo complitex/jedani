@@ -9,4 +9,5 @@ public class TransactionType {
     public static final long SELL = 2;
     public static final long TRANSFER = 3;
     public static final long WITHDRAW = 4;
+    public static final long RESERVE = 5;
 }

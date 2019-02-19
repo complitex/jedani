@@ -200,20 +200,22 @@ public class DomainListPage<T extends Domain> extends BasePage{
     }
 
     protected void onRowItem(Item<T> item){
-        item.add(new AjaxEventBehavior("click") {
-            @Override
-            protected void onEvent(AjaxRequestTarget target) {
-                getSession().setAttribute(DomainListPage.this.getClass().getName() + CURRENT_PAGE_ATTRIBUTE, table.getCurrentPage());
+        if (editPageClass != null) {
+            item.add(new AjaxEventBehavior("click") {
+                @Override
+                protected void onEvent(AjaxRequestTarget target) {
+                    getSession().setAttribute(DomainListPage.this.getClass().getName() + CURRENT_PAGE_ATTRIBUTE, table.getCurrentPage());
 
-                PageParameters pageParameters = new PageParameters().add("id", item.getModelObject().getObjectId());
+                    PageParameters pageParameters = new PageParameters().add("id", item.getModelObject().getObjectId());
 
-                DomainListPage.this.onEditPageParameters(pageParameters);
+                    DomainListPage.this.onEditPageParameters(pageParameters);
 
-                setResponsePage(editPageClass, pageParameters);
-            }
-        });
+                    setResponsePage(editPageClass, pageParameters);
+                }
+            });
 
-        item.add(new CssClassNameAppender("pointer"));
+            item.add(new CssClassNameAppender("pointer"));
+        }
     }
 
     protected List<T> getDomains(FilterWrapper<T> filterWrapper) {

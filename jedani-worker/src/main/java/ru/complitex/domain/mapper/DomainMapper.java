@@ -1,5 +1,6 @@
 package ru.complitex.domain.mapper;
 
+import org.mybatis.cdi.Transactional;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.mybatis.BaseMapper;
 import ru.complitex.domain.entity.Attribute;
@@ -27,6 +28,7 @@ public class DomainMapper extends BaseMapper {
     @Inject
     private Principal principal;
 
+    @Transactional
     public void insertDomain(Domain domain){
         domain.setObjectId(sequenceMapper.nextId(domain.getEntityName()));
 

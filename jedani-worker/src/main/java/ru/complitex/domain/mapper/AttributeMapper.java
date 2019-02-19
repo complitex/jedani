@@ -1,5 +1,6 @@
 package ru.complitex.domain.mapper;
 
+import org.mybatis.cdi.Transactional;
 import ru.complitex.common.mybatis.BaseMapper;
 import ru.complitex.common.util.MapUtil;
 import ru.complitex.domain.entity.Attribute;
@@ -17,6 +18,7 @@ public class AttributeMapper extends BaseMapper {
     @Inject
     private ValueMapper valueMapper;
 
+    @Transactional
     public void insertAttribute(Attribute attribute, Date startDate){
         attribute.setStartDate(startDate);
 

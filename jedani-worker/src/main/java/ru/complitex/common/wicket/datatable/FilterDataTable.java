@@ -84,9 +84,10 @@ public class FilterDataTable<T extends Serializable> extends DataTable<T, SortPr
     protected void onInitialize() {
         super.onInitialize();
 
-        getColumns().stream()
-                .filter(c -> c instanceof DomainColumn)
-                .map(c -> (DomainColumn)c)
-                .forEach(c -> NonContextual.of(DomainColumn.class).inject(c));
+        getColumns().forEach(c -> {
+            if (c instanceof DomainColumn){
+                NonContextual.of(DomainColumn.class).inject((DomainColumn) c);
+            }
+        });
     }
 }
