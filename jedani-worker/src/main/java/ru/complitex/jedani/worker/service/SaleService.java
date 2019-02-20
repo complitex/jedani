@@ -26,6 +26,10 @@ public class SaleService implements Serializable {
 
     @Transactional(rollbackFor = SaleException.class)
     public void sale(Sale sale, List<SaleItem> saleItems) throws SaleException {
+        //Init
+        sale.setObjectId(null);
+        saleItems.forEach(s -> s.setObjectId(null));
+
         //Sale
 
         Entity saleEntity = entityService.getEntity(Sale.ENTITY_NAME);

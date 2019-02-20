@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ru.complitex.jedani.worker.mapper.SaleItemMapper">
+    <resultMap id="saleItemResultMap" type="ru.complitex.jedani.worker.entity.SaleItem"
+               extends="ru.complitex.domain.mapper.DomainMapper.domainResultMapJoin">
+    </resultMap>
+
+    <sql id="selectSaleItemsWhere">
+      <if test="map.sellerWorker != null">
+          and exists(select s.id from sale s
+            left join sale_attribute sa on (sa.object_id = s.object_id and sa.status = 1)
+          where s.object_id = d.parent_id and s.status = 1 and sa.entity_attribute_id = 1 and sa.number = #{map.sellerWorker})
+      </if>
+    </sql>
+
+     <!--suppress SqlResolve -->
+    <select id="selectSaleItems" parameterType="ru.complitex.common.entity.FilterWrapper" resultMap="saleItemResultMap">
+        select d.*, '${object.entityName}' entity_name,
+          <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsSelect"/>
+        from (
+          select dd.object_id object_id
+        from (
+            select d.object_id object_id
+                <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFrom"/>
+                <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromFilter"/>
+                <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromSort"/>
+                <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsWhere"/>
+                <include refid="selectSaleItemsWhere"/>
+                group by d.object_id
+                <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsOrderSort"/>
+            ) dd
+            ${limit}
+        ) o
+        left join sale_item d on d.object_id = o.object_id
+        left join sale_item_attribute a on a.object_id = d.object_id and a.status = 1
+        left join sale_item_value v on v.attribute_id = a.id
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromSort"/>
+        group by d.id, a.id, v.id
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsOrderSort"/>
+    </select>
+
+    <!--suppress SqlResolve -->
+    <select id="selectSaleItemsCount" parameterType="ru.complitex.common.entity.FilterWrapper" resultType="long">
+        select count(distinct w.object_id) from (select d.object_id
+            <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFrom"/>
+            <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromFilter"/>
+            <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsWhere"/>
+            <include refid="selectSaleItemsWhere"/>
+        ) w
+    </select>
+
+</mapper>

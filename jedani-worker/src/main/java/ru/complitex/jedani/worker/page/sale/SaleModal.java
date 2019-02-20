@@ -43,10 +43,7 @@ import ru.complitex.name.entity.MiddleName;
 
 import javax.inject.Inject;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
@@ -297,7 +294,7 @@ public class SaleModal extends Modal<Sale> {
         SaleItem saleItem = new SaleItem();
 
         saleItem.setNumber(SaleItem.INSTALLMENT_PERCENTAGE, 100L);
-        saleItem.setNumber(SaleItem.INSTALLMENT_MONTHS, 12L);
+        saleItem.setNumber(SaleItem.INSTALLMENT_MONTHS, 0L);
 
         return saleItem;
     }
@@ -321,6 +318,7 @@ public class SaleModal extends Modal<Sale> {
         Sale sale = new Sale();
         sale.setNumber(Sale.SELLER_WORKER, sellerWorkerId);
         sale.setNumber(Sale.TYPE, SaleType.MYCOOK);
+        sale.setDate(Sale.DATE, new Date());
 
         saleModel.setObject(sale);
 

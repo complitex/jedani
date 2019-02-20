@@ -19,5 +19,7 @@ public class Sale extends Domain {
 
     public Sale() {
         super(ENTITY_NAME);
+
+        setUseDateAttribute(true);
     }
 }
