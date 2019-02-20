@@ -498,7 +498,7 @@ public class WorkerPage extends BasePage {
                             domainNodeMapper.updateIndex(new Worker(1L, 1L, 2L, 0L), worker);
                         }
 
-                        info(getString("info_user_created"));
+                        success(getString("info_user_created"));
                     }else{
                         boolean moveIndex = !Objects.equals(worker.getNumber(Worker.MANAGER_ID),
                                 workerMapper.getWorker(worker.getObjectId()).getNumber(Worker.MANAGER_ID)); //todo opt
@@ -514,7 +514,7 @@ public class WorkerPage extends BasePage {
                             filterWrapper.getObject().setLevel(worker.getLevel());
                         }
 
-                        info(getString("info_user_updated"));
+                        success(getString("info_user_updated"));
                     }
 
                     target.add(feedback, structure, history);

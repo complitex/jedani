@@ -183,7 +183,7 @@ public abstract class DomainEditPage<T extends Domain> extends BasePage{
 
                     domainService.save(domain);
 
-                    getSession().info(entity.getValue().getText() + " " + getString("info_saved"));
+                    getSession().success(entity.getValue().getText() + " " + getString("info_saved"));
 
                     if (getBackPage() != null) {
                         setResponsePage(getBackPage(), getBackPageParameters());

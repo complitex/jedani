@@ -317,8 +317,12 @@ public class SaleModal extends Modal<Sale> {
         onUpdate(target);
     }
 
-    void sale(AjaxRequestTarget target){
-        saleModel.setObject(new Sale());
+    void sale(AjaxRequestTarget target, Long sellerWorkerId){
+        Sale sale = new Sale();
+        sale.setNumber(Sale.SELLER_WORKER, sellerWorkerId);
+
+        saleModel.setObject(sale);
+
         mycookModel.setObject(new ArrayList<>());
         baseAssortmentModel.setObject(new ArrayList<>());
 

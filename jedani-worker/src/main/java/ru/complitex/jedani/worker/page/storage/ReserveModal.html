@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<wicket:panel xmlns:wicket="http://wicket.apache.org">
+    <wicket:extend>
+        <div wicket:id="container">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>№</th>
+                    <th>Продавец</th>
+                    <th>Покупатель</th>
+                    <th>Количество</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr wicket:id="saleItems">
+                    <td><span wicket:id="id"></span></td>
+                    <td><span wicket:id="seller"></span></td>
+                    <td><span wicket:id="buyer"></span></td>
+                    <td><span wicket:id="quantity"></span></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </wicket:extend>
+</wicket:panel>

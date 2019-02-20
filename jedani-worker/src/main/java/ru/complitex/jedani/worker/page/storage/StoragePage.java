@@ -221,7 +221,7 @@ public class StoragePage extends BasePage {
             void action(AjaxRequestTarget target) {
                 storageService.accept(storageId, getModelObject());
 
-                info(getString("info_accepted"));
+                success(getString("info_accepted"));
 
                 close(target);
                 target.add(feedback, tables);
@@ -279,7 +279,7 @@ public class StoragePage extends BasePage {
                 switch (getTabIndexModel().getObject()){
                     case 0:
                         storageService.sell(product, transaction);
-                        info(getString("info_sold"));
+                        success(getString("info_sold"));
 
                         break;
                     case 1:
@@ -292,12 +292,12 @@ public class StoragePage extends BasePage {
                         }
 
                         storageService.transfer(product, transaction);
-                        info(getString("info_transferred"));
+                        success(getString("info_transferred"));
 
                         break;
                     case 2:
                         storageService.withdraw(product, transaction);
-                        info(getString("info_withdrew"));
+                        success(getString("info_withdrew"));
 
                         break;
                 }
@@ -323,13 +323,26 @@ public class StoragePage extends BasePage {
             void action(AjaxRequestTarget target) {
                 storageService.receive(getTransaction());
 
-                info(getString("info_received"));
+                success(getString("info_received"));
 
                 close(target);
                 target.add(feedback, tables);
             }
         };
         receiveForm.add(receiveModal);
+
+        //Reserve Modal
+
+        Form reserveForm = new Form<Transaction>("reserveForm"){
+            @Override
+            protected boolean wantSubmitOnParentFormSubmit() {
+                return false;
+            }
+        };
+        add(reserveForm);
+
+        ReserveModal reserveModal = new ReserveModal("reserveModal");
+        reserveForm.add(reserveModal);
 
         //Products
 
@@ -465,6 +478,19 @@ public class StoragePage extends BasePage {
                 @Override
                 public void populateItem(Item<ICellPopulator<Product>> cellItem, String componentId, IModel<Product> rowModel) {
                     super.populateItem(cellItem, componentId, rowModel);
+
+                    Product product = rowModel.getObject();
+
+                    if (edit && product.getNumber(Product.RESERVE, 0L) > 0){
+                        cellItem.add(new CssClassNameAppender("pointer"));
+
+                        cellItem.add(new AjaxEventBehavior("click") {
+                            @Override
+                            protected void onEvent(AjaxRequestTarget target) {
+                                reserveModal.open(product, target);
+                            }
+                        });
+                    }
                 }
             });
 
@@ -789,7 +815,7 @@ public class StoragePage extends BasePage {
 
                     domainService.save(storage);
 
-                    getSession().info(getString("info_saved"));
+                    getSession().success(getString("info_saved"));
 
                     if (storageId == null){
                         setResponsePage(StorageListPage.class);

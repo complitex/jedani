@@ -241,7 +241,7 @@ public class PromotionModal extends Modal<Promotion> {
             }
         }
 
-        info(getString("info_promotion_saved"));
+        success(getString("info_promotion_saved"));
 
         close(target);
         onUpdate(target);
@@ -254,7 +254,7 @@ public class PromotionModal extends Modal<Promotion> {
 
         domainService.save(promotion);
 
-        info(getString("info_promotion_removed"));
+        success(getString("info_promotion_removed"));
 
         close(target);
         onUpdate(target);

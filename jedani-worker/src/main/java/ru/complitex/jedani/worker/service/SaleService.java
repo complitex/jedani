@@ -44,7 +44,8 @@ public class SaleService implements Serializable {
 
             List<Product> products = domainService.getDomains(Product.class, FilterWrapper.of(filter));
 
-            if (products.isEmpty() || products.get(0).getNumber(Product.QUANTITY) < s.getNumber(SaleItem.QUANTITY)) {
+            if (products.isEmpty() || products.get(0).getNumber(Product.QUANTITY) - Optional.ofNullable(products.get(0)
+                    .getNumber(Product.RESERVE)).orElse(0L) < s.getNumber(SaleItem.QUANTITY)) {
                 throw new SaleException("Количество товара на складе меньше " + s.getNumber(SaleItem.QUANTITY) +
                         " для позиции № " + (i+1));
             }
