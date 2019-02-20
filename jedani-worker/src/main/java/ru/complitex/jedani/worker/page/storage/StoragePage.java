@@ -503,7 +503,7 @@ public class StoragePage extends BasePage {
                         public void onClick(AjaxRequestTarget target) {
                             transferModal.open(rowModel.getObject(), null, target);
                         }
-                    }.setIconType(GlyphIconType.share)));
+                    }.setIconType(GlyphIconType.share)).setVisible(edit));
                 }
             });
         }
