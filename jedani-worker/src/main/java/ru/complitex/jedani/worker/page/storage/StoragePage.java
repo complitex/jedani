@@ -690,7 +690,7 @@ public class StoragePage extends BasePage {
                     return new SelectPanel(componentId, new BootstrapSelect<>(SelectPanel.SELECT_COMPONENT_ID,
                             new NumberAttributeModel(transaction,
                                     Transaction.TYPE), Arrays.asList(TransactionType.ACCEPT, TransactionType.SELL,
-                            TransactionType.TRANSFER, TransactionType.WITHDRAW),
+                            TransactionType.TRANSFER, TransactionType.WITHDRAW, TransactionType.RESERVE),
                             new IChoiceRenderer<Long>() {
                                 @Override
                                 public Object getDisplayValue(Long object) {
@@ -704,6 +704,8 @@ public class StoragePage extends BasePage {
                                                 return getString("transfer");
                                             case 4:
                                                 return getString("withdraw");
+                                            case 5:
+                                                return getString("reserve");
                                         }
                                     }
 
@@ -742,6 +744,9 @@ public class StoragePage extends BasePage {
                                 break;
                             case 4:
                                 resourceKey = "withdraw";
+                                break;
+                            case 5:
+                                resourceKey = "reserve";
                                 break;
                         }
                     }

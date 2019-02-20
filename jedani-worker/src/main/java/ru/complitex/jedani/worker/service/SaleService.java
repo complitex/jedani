@@ -69,7 +69,7 @@ public class SaleService implements Serializable {
 
             t.setNumber(Transaction.NOMENCLATURE, s.getNumber(SaleItem.NOMENCLATURE));
             t.setNumber(Transaction.QUANTITY, s.getNumber(SaleItem.QUANTITY));
-            t.setNumber(Transaction.TYPE, s.getNumber(TransactionType.RESERVE));
+            t.setNumber(Transaction.TYPE, TransactionType.RESERVE);
             t.setNumber(Transaction.STORAGE_FROM, s.getNumber(SaleItem.STORAGE));
             t.setNumber(Transaction.FIRST_NAME_TO, sale.getNumber(Sale.BUYER_FIRST_NAME));
             t.setNumber(Transaction.MIDDLE_NAME_TO, sale.getNumber(Sale.BUYER_MIDDLE_NAME));
