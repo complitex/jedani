@@ -13,11 +13,10 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import ru.complitex.common.entity.FilterWrapper;
+import ru.complitex.common.wicket.form.TextFieldFormGroup;
 import ru.complitex.domain.service.DomainService;
-import ru.complitex.jedani.worker.entity.Product;
-import ru.complitex.jedani.worker.entity.Sale;
-import ru.complitex.jedani.worker.entity.SaleItem;
-import ru.complitex.jedani.worker.entity.Worker;
+import ru.complitex.domain.util.Attributes;
+import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.service.WorkerService;
 import ru.complitex.name.service.NameService;
 
@@ -57,6 +56,26 @@ public class ReserveModal extends Modal<Product> {
         container.setOutputMarkupPlaceholderTag(true);
         container.setOutputMarkupId(true);
         add(container);
+
+        container.add(new TextFieldFormGroup<>("nomenclature",
+                new LoadableDetachableModel<String>() {
+                    @Override
+                    protected String load() {
+                        Nomenclature nomenclature = domainService.getDomain(Nomenclature.class,
+                                productModel.getObject().getNumber(Product.NOMENCLATURE));
+
+                        return nomenclature != null ? nomenclature.getText(Nomenclature.CODE) + " " +
+                                Attributes.capitalize(nomenclature.getTextValue(Nomenclature.NAME)) : "";
+                    }
+                }).setEnabled(false));
+
+        container.add(new TextFieldFormGroup<>("quantity",
+                new LoadableDetachableModel<Long>() {
+                    @Override
+                    protected Long load() {
+                        return productModel.getObject().getNumber(Product.QUANTITY);
+                    }
+                }).setEnabled(false));
 
         container.add(new ListView<SaleItem>("saleItems", new LoadableDetachableModel<List<SaleItem>>() {
             @Override

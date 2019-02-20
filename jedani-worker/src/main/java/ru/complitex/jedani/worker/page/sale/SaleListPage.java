@@ -65,6 +65,6 @@ public class SaleListPage extends DomainListPage<SaleItem> {
 
     @Override
     protected void onAdd(AjaxRequestTarget target) {
-        saleModal.sale(target, getCurrentWorker().getObjectId());
+        saleModal.sale(getCurrentWorker().getObjectId(), target);
     }
 }

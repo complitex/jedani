@@ -43,6 +43,10 @@ public class DomainService implements Serializable {
     }
 
     public <T extends Domain> T getDomain(Class<T> domainClass, Long objectId){
+        if (objectId == null){
+            return null;
+        }
+
         return getDomain(domainClass, objectId, false);
     }
 
