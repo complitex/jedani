@@ -65,6 +65,8 @@ public class DomainListPage<T extends Domain> extends BasePage{
 
     private FilterDataTable<T> table;
 
+    private Label titleLabel;
+
     public <P extends WebPage> DomainListPage(Class<T> domainClass, String parentEntityName, Long parentEntityAttributeId,
                           Class<P> editPageClass) {
         this.domainClass = domainClass;
@@ -81,7 +83,7 @@ public class DomainListPage<T extends Domain> extends BasePage{
         container.setOutputMarkupId(true);
         add(container);
 
-        add(new Label("title", title));
+        add(titleLabel = new Label("title", title));
 
         container.add(new Label("header", title).setVisible(isShowHeader()));
 
@@ -264,6 +266,10 @@ public class DomainListPage<T extends Domain> extends BasePage{
 
     public FilterDataTable<T> getTable() {
         return table;
+    }
+
+    protected void title(IModel<String> titleModel){
+        titleLabel.setDefaultModel(titleModel);
     }
 
 }

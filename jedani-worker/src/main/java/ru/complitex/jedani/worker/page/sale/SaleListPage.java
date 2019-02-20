@@ -51,6 +51,8 @@ public class SaleListPage extends DomainListPage<SaleItem> {
     public SaleListPage() {
         super(SaleItem.class);
 
+        title(new ResourceModel("title"));
+
         Form saleForm = new Form("saleForm");
         getContainer().add(saleForm);
 
