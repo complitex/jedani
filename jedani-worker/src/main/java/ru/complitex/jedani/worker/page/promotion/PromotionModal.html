@@ -5,24 +5,46 @@
         <div wicket:id="container" class="container-fluid">
             <div wicket:id="feedback"></div>
 
-            <div wicket:id="begin"></div>
-            <div wicket:id="end"></div>
-            <div wicket:id="country"></div>
-            <div wicket:id="name"></div>
+            <div class="row">
+                <div wicket:id="begin" class="col-md-4"></div>
+                <div wicket:id="end" class="col-md-4"></div>
+                <div wicket:id="country" class="col-md-4"></div>
+            </div>
+
+            <div wicket:id="name">
+                <textarea wicket:id="name" class="form-control"></textarea>
+            </div>
 
             <div class="form-group">
                 <label for="file">Файл</label>
-                <div class="form-control" style="height: auto">
-                    <a wicket:id="downloadFile" style="padding-right: 8px"><span wicket:id="name"></span></a>
-                    <input wicket:id="file" id="file" type="file" accept="application/pdf" style="display: inline"/>
-                </div>
-                <div style="margin-top: 12px">
+                <div>
+                    <div class="input-group">
 
+                        <span id="downloadFileName" class="form-control" style="overflow: hidden">
+                            <a wicket:id="downloadFile">
+                            <span wicket:id="name"></span>
+                        </a>
+
+                        </span>
+
+                        <span class="input-group-btn">
+                            <label class="btn btn-default btn-file">
+                                Загрузить
+                                <input wicket:id="file" id="file" type="file" accept="application/pdf" style="display: none"
+                                   onchange="$('#downloadFileName').html(this.files[0].name)"/>
+                          </label>
+                        </span>
+                    </div>
                 </div>
             </div>
 
             <div wicket:id="nomenclatures"></div>
-            <div wicket:id="eur"></div>
+
+            <div>
+                <div wicket:id="eur">
+                    <input wicket:id="eur" class="form-control"/>
+                </div>
+            </div>
         </div>
     </wicket:extend>
 </wicket:panel>

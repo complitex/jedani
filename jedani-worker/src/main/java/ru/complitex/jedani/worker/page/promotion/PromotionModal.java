@@ -1,15 +1,17 @@
 package ru.complitex.jedani.worker.page.promotion;
 
-import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxButton;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxLink;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
 import de.agilecoders.wicket.core.markup.html.bootstrap.dialog.Modal;
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.FormComponent;
+import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.markup.html.link.DownloadLink;
 import org.apache.wicket.model.LoadableDetachableModel;
@@ -18,9 +20,10 @@ import org.apache.wicket.model.ResourceModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.complitex.address.entity.Country;
+import ru.complitex.common.wicket.component.FormGroupBorder;
+import ru.complitex.common.wicket.component.MoneyTextField;
 import ru.complitex.common.wicket.form.DateTextFieldFormGroup;
 import ru.complitex.common.wicket.form.FormGroupPanel;
-import ru.complitex.common.wicket.form.TextFieldFormGroup;
 import ru.complitex.common.wicket.util.Wickets;
 import ru.complitex.domain.component.form.AbstractDomainAutoCompleteList;
 import ru.complitex.domain.component.form.DomainAutoCompleteFormGroup;
@@ -86,9 +89,9 @@ public class PromotionModal extends Modal<Promotion> {
         container.add(new DateTextFieldFormGroup("end", new DateAttributeModel(getModel(), Promotion.END)));
         container.add(new DomainAutoCompleteFormGroup("country", Country.ENTITY_NAME, Country.NAME,
                 new NumberAttributeModel(getModel(), Promotion.COUNTRY)).setRequired(true));
-        container.add(new TextFieldFormGroup<>("name", new TextValueModel(getModel(), Promotion.NAME,
-                Locales.getSystemLocaleId())).setRequired(true));
-
+        container.add(new FormGroupBorder("name", new ResourceModel("name"))
+                .add(new TextArea<>("name", new TextValueModel(getModel(), Promotion.NAME,
+                        Locales.getSystemLocaleId())).setRequired(true)));
 
         container.add(new DownloadLink("downloadFile", new LoadableDetachableModel<File>() {
             @Override
@@ -134,9 +137,11 @@ public class PromotionModal extends Modal<Promotion> {
             }
         }));
 
-        container.add(new TextFieldFormGroup<>("eur", new TextAttributeModel(getModel(), Promotion.EUR, TextAttributeModel.TYPE.DEFAULT)));
+        container.add(new FormGroupBorder("eur", new ResourceModel("eur"))
+                .add(new MoneyTextField<>("eur", new TextAttributeModel(getModel(), Promotion.EUR,
+                        TextAttributeModel.TYPE.DEFAULT))));
 
-        addButton(new BootstrapAjaxButton(Modal.BUTTON_MARKUP_ID, Buttons.Type.Primary) {
+        addButton(new IndicatingAjaxButton(Modal.BUTTON_MARKUP_ID, new ResourceModel("save")) {
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
                 PromotionModal.this.save(target);
@@ -150,7 +155,7 @@ public class PromotionModal extends Modal<Promotion> {
                     }
                 }));
             }
-        }.setLabel(new ResourceModel("save")));
+        }.add(AttributeModifier.append("class", "btn btn-primary")));
 
         addButton(remove = new BootstrapAjaxLink<Void>(Modal.BUTTON_MARKUP_ID, Buttons.Type.Default) {
             @Override
