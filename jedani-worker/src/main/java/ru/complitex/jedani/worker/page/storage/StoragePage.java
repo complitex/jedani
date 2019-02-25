@@ -7,7 +7,6 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel
 import de.agilecoders.wicket.core.markup.html.bootstrap.image.GlyphIconType;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.select.BootstrapSelect;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.select.BootstrapSelectConfig;
-import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -34,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import ru.complitex.address.entity.City;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
+import ru.complitex.common.wicket.component.DateTimeLabel;
 import ru.complitex.common.wicket.datatable.*;
 import ru.complitex.common.wicket.form.FormGroupPanel;
 import ru.complitex.common.wicket.form.FormGroupSelectPanel;
@@ -58,6 +58,8 @@ import ru.complitex.jedani.worker.page.BasePage;
 import ru.complitex.jedani.worker.security.JedaniRoles;
 import ru.complitex.jedani.worker.service.StorageService;
 import ru.complitex.jedani.worker.service.WorkerService;
+import ru.complitex.jedani.worker.util.Nomenclatures;
+import ru.complitex.jedani.worker.util.Storages;
 import ru.complitex.name.service.NameService;
 
 import javax.inject.Inject;
@@ -384,11 +386,10 @@ public class StoragePage extends BasePage {
 
             //todo multi ref filter
 
-            productColumns.add(new DomainColumn<Product>(productEntity.getEntityAttribute(Product.NOMENCLATURE)
-                    .withReference(Nomenclature.ENTITY_NAME, Nomenclature.NAME)){
+            productColumns.add(new DomainColumn<Product>(productEntity.getEntityAttribute(Product.NOMENCLATURE)){
                 @Override
                 protected String displayEntity(EntityAttribute entityAttribute, Attribute attribute, Domain refDomain) {
-                    return refDomain.getText(Nomenclature.CODE) + " " + super.displayEntity(entityAttribute, attribute, refDomain);
+                    return Nomenclatures.getNomenclatureLabel(attribute.getNumber(), domainService);
                 }
             });
 
@@ -568,26 +569,32 @@ public class StoragePage extends BasePage {
                 @Override
                 public void populateItem(Item<ICellPopulator<Transaction>> cellItem, String componentId,
                                          IModel<Transaction> rowModel) {
-                    cellItem.add(new Label(componentId, DateFormatUtils.format(rowModel.getObject().getStartDate(),
-                            "dd.MM.yyyy HH:mm:ss")));
+                    cellItem.add(new DateTimeLabel(componentId,rowModel.getObject().getStartDate()));
                 }
             });
 
             Entity transactionEntity = entityService.getEntity(Transaction.ENTITY_NAME);
 
-            transactionColumns.add(new DomainColumn<Transaction>(transactionEntity.getEntityAttribute(Transaction.NOMENCLATURE)
-                    .withReference(Nomenclature.ENTITY_NAME, Nomenclature.NAME)){
+            transactionColumns.add(new DomainColumn<Transaction>(transactionEntity.getEntityAttribute(Transaction.NOMENCLATURE)){
                 @Override
                 protected String displayEntity(EntityAttribute entityAttribute, Attribute attribute, Domain refDomain) {
-                    return refDomain.getText(Nomenclature.CODE) + " " + super.displayEntity(entityAttribute, attribute, refDomain);
+                    return Nomenclatures.getNomenclatureLabel(attribute.getNumber(), domainService);
                 }
             });
 
             transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.QUANTITY)));
-            transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.STORAGE_FROM)
-                    .setValueType(ValueType.NUMBER)));
-            transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.STORAGE_TO)
-                    .setValueType(ValueType.NUMBER)));
+            transactionColumns.add(new DomainColumn<Transaction>(transactionEntity.getEntityAttribute(Transaction.STORAGE_FROM)){
+                @Override
+                protected String displayEntity(EntityAttribute entityAttribute, Attribute attribute, Domain refDomain) {
+                    return Storages.getStorageLabel(attribute.getNumber(), domainService, nameService);
+                }
+            });
+            transactionColumns.add(new DomainColumn<Transaction>(transactionEntity.getEntityAttribute(Transaction.STORAGE_TO)){
+                @Override
+                protected String displayEntity(EntityAttribute entityAttribute, Attribute attribute, Domain refDomain) {
+                    return Storages.getStorageLabel(attribute.getNumber(), domainService, nameService);
+                }
+            });
 
             transactionColumns.add(new AbstractDomainColumn<Transaction>(new ResourceModel("worker"),
                     new SortProperty("worker")) {

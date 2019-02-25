@@ -1,9 +1,9 @@
 package ru.complitex.domain.component.form;
 
-import de.agilecoders.wicket.core.markup.html.bootstrap.form.FormGroup;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
+import ru.complitex.common.wicket.component.FormGroupBorder;
 
 /**
  * @author Anatoly A. Ivanov
@@ -20,7 +20,7 @@ public class AttributeSelectFormGroup extends Panel {
                                     Long refEntityAttributeId) {
         super(id);
 
-        FormGroup group = new FormGroup("group", label);
+        FormGroupBorder group = new FormGroupBorder("group", label);
         group.add(attributeSelect = new AttributeSelect("select", model, refEntityName, refEntityAttributeId));
         attributeSelect.setLabel(label);
 

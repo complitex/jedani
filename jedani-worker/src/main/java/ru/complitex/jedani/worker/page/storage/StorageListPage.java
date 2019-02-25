@@ -80,7 +80,7 @@ public class StorageListPage extends DomainListPage<Storage> {
             public void populateItem(Item<ICellPopulator<Storage>> cellItem, String componentId, IModel<Storage> rowModel) {
                 String workers = rowModel.getObject().getNumberValues(Storage.WORKERS).stream()
                         .map(id -> workerService.getWorkerLabel(id))
-                        .collect(Collectors.joining(", "));
+                        .collect(Collectors.joining("; "));
 
                 cellItem.add(new Label(componentId, workers));
             }

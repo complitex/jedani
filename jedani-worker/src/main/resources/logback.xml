@@ -6,21 +6,23 @@
         </encoder>
     </appender>
 
+    <!--
     <logger name="ru.complitex.jedani.worker.mapper.SaleItemMapper" level="DEBUG" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
 
-    <!--<logger name="ru.complitex.jedani.worker.mapper.StorageMapper" level="DEBUG" additivity="false">
+    <logger name="ru.complitex.jedani.worker.mapper.StorageMapper" level="DEBUG" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
 
     <logger name="ru.complitex.jedani.worker.mapper.TransactionMapper" level="DEBUG" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
+    -->
 
     <logger name="ru.complitex.domain.mapper.DomainMapper" level="DEBUG" additivity="false" >
         <appender-ref ref="STDOUT" />
-    </logger>-->
+    </logger>
 
     <root level="info">
         <appender-ref ref="STDOUT" />

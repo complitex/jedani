@@ -1,9 +1,9 @@
 package ru.complitex.domain.component.form;
 
-import de.agilecoders.wicket.core.markup.html.bootstrap.form.FormGroup;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
+import ru.complitex.common.wicket.component.FormGroupBorder;
 import ru.complitex.domain.service.EntityService;
 
 import javax.inject.Inject;
@@ -29,9 +29,14 @@ public class DomainAutoCompleteFormGroup extends Panel{
         setOutputMarkupId(true);
         setOutputMarkupPlaceholderTag(true);
 
-        FormGroup group = new FormGroup("group", label);
+        FormGroupBorder group = new FormGroupBorder("group", label);
+
         group.add(domainAutoComplete = new DomainAutoComplete("input", entityName,
-                entityService.getEntityAttribute(entityName, entityAttributeId), model));
+                entityService.getEntityAttribute(entityName, entityAttributeId), model, t -> {
+            if (!domainAutoComplete.isError() && domainAutoComplete.isErrorRendered()) {
+                t.appendJavaScript(group.getRemoveErrorJs());
+            }
+        }));
         domainAutoComplete.setLabel(label);
 
         add(group);
@@ -45,9 +50,21 @@ public class DomainAutoCompleteFormGroup extends Panel{
         return domainAutoComplete.getAutoCompleteTextField().getInput();
     }
 
+    public Long getObjectId(){
+        return domainAutoComplete.getModelObject();
+    }
+
     public DomainAutoCompleteFormGroup setRequired(boolean required){
         domainAutoComplete.setRequired(required);
 
         return this;
     }
+
+    public DomainAutoCompleteFormGroup setInputRequired(boolean required){
+        domainAutoComplete.getAutoCompleteTextField().setRequired(required);
+
+        return this;
+    }
+
+
 }

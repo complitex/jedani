@@ -1,9 +1,9 @@
 package ru.complitex.domain.component.form;
 
-import de.agilecoders.wicket.core.markup.html.bootstrap.form.FormGroup;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
+import ru.complitex.common.wicket.component.FormGroupBorder;
 import ru.complitex.domain.entity.Attribute;
 
 /**
@@ -20,7 +20,7 @@ public class AttributeInputListFormGroup extends Panel {
     public AttributeInputListFormGroup(String id, IModel<String> label, IModel<Attribute> model) {
         super(id);
 
-        FormGroup group = new FormGroup("group", label);
+        FormGroupBorder group = new FormGroupBorder("group", label);
         group.add(attributeInputList = new AttributeInputList("input", model));
         attributeInputList.setLabel(label);
 

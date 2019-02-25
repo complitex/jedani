@@ -63,7 +63,7 @@ public class WorkerService implements Serializable {
     }
 
     public String getWorkerLabel(Domain worker){
-        return (Objects.defaultIfNull(worker.getText(Worker.J_ID), "") + " " +
+        return (Objects.defaultIfNull(worker.getText(Worker.J_ID), "") + ", " +
                 Attributes.capitalize(nameService.getLastName(worker.getNumber(Worker.LAST_NAME))) + " " +
                 Attributes.capitalize(nameService.getFirstName(worker.getNumber(Worker.FIRST_NAME))) + " " +
                 Attributes.capitalize(nameService.getMiddleName(worker.getNumber(Worker.MIDDLE_NAME)))).trim();
@@ -78,7 +78,7 @@ public class WorkerService implements Serializable {
     }
 
     public String getSimpleWorkerLabel(Domain worker){
-        return Objects.defaultIfNull(worker.getText(Worker.J_ID), "") + " " +
+        return Objects.defaultIfNull(worker.getText(Worker.J_ID), "") + ", " +
                 Attributes.capitalize(nameService.getLastName(worker.getNumber(Worker.LAST_NAME)));
     }
 }

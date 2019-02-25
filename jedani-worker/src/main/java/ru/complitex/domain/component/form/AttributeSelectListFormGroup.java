@@ -1,11 +1,11 @@
 package ru.complitex.domain.component.form;
 
-import de.agilecoders.wicket.core.markup.html.bootstrap.form.FormGroup;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.danekja.java.util.function.serializable.SerializableConsumer;
+import ru.complitex.common.wicket.component.FormGroupBorder;
 import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Domain;
 
@@ -24,7 +24,7 @@ public class AttributeSelectListFormGroup extends Panel {
 
         setOutputMarkupId(true);
 
-        FormGroup group = new FormGroup("group", label);
+        FormGroupBorder group = new FormGroupBorder("group", label);
         group.add(attributeSelectList = new AttributeSelectList("select", model, refEntityName,
                 refEntityAttributeId, parentListModel, upperCase){
             @Override

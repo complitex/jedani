@@ -7,7 +7,7 @@ import java.util.Map;
  * @author Anatoly A. Ivanov
  * 22.01.2018 21:34
  */
-public class MapUtil {
+public class Maps {
     public static <K, V> Map<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5){
         Map<K,V> map = new HashMap<>(8);
 

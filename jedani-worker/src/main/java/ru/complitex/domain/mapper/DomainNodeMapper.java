@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static ru.complitex.common.util.MapUtil.of;
+import static ru.complitex.common.util.Maps.of;
 
 /**
  * @author Anatoly A. Ivanov

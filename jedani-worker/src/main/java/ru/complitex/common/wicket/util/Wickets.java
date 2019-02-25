@@ -6,7 +6,7 @@ import org.apache.wicket.Component;
  * @author Anatoly A. Ivanov
  * 06.05.2018 23:12
  */
-public class ComponentUtil {
+public class Wickets {
     public static Component getAjaxParent(Component component){
         Component parent = component.getParent();
 

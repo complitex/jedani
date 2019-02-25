@@ -10,7 +10,6 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.image.GlyphIconType;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.select.BootstrapSelect;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.select.BootstrapSelectConfig;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -23,23 +22,28 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
+import org.danekja.java.util.function.serializable.SerializableConsumer;
+import ru.complitex.common.entity.FilterWrapper;
+import ru.complitex.common.wicket.component.AjaxFormInfoBehavior;
 import ru.complitex.common.wicket.form.FormGroupPanel;
 import ru.complitex.common.wicket.form.FormGroupSelectPanel;
-import ru.complitex.common.wicket.util.ComponentUtil;
 import ru.complitex.domain.component.form.DomainAutoCompleteFormGroup;
+import ru.complitex.domain.entity.Attribute;
+import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.model.BooleanAttributeModel;
 import ru.complitex.domain.model.DecimalAttributeModel;
 import ru.complitex.domain.model.NumberAttributeModel;
+import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.component.NomenclatureAutoComplete;
 import ru.complitex.jedani.worker.component.StorageAutoComplete;
-import ru.complitex.jedani.worker.entity.Sale;
-import ru.complitex.jedani.worker.entity.SaleItem;
-import ru.complitex.jedani.worker.entity.SaleType;
+import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.exception.SaleException;
+import ru.complitex.jedani.worker.mapper.StorageMapper;
 import ru.complitex.jedani.worker.service.SaleService;
 import ru.complitex.name.entity.FirstName;
 import ru.complitex.name.entity.LastName;
 import ru.complitex.name.entity.MiddleName;
+import ru.complitex.name.service.NameService;
 
 import javax.inject.Inject;
 import java.math.BigDecimal;
@@ -55,12 +59,25 @@ public class SaleModal extends Modal<Sale> {
     @Inject
     private SaleService saleService;
 
+    @Inject
+    private NameService nameService;
+
+    @Inject
+    private DomainService domainService;
+
+    @Inject
+    private StorageMapper storageMapper;
+
     private IModel<Sale> saleModel;
     private IModel<List<SaleItem>> mycookModel;
     private IModel<List<SaleItem>> baseAssortmentModel;
 
     private WebMarkupContainer container;
     private NotificationPanel feedback;
+
+    private DomainAutoCompleteFormGroup lastName, firstName, middleName;
+
+    private Long defaultStorageId;
 
     public SaleModal(String markupId) {
         super(markupId);
@@ -82,18 +99,19 @@ public class SaleModal extends Modal<Sale> {
 
         feedback = new NotificationPanel("feedback");
         feedback.setOutputMarkupId(true);
+        feedback.showRenderedMessages(false);
         container.add(feedback);
 
         WebMarkupContainer fioContainer = new WebMarkupContainer("fioContainer");
         fioContainer.setOutputMarkupId(true);
         container.add(fioContainer);
 
-        fioContainer.add(new DomainAutoCompleteFormGroup("lastName", LastName.ENTITY_NAME, LastName.NAME,
-                NumberAttributeModel.of(saleModel, Sale.BUYER_LAST_NAME)).setRequired(true));
-        fioContainer.add(new DomainAutoCompleteFormGroup("firstName", FirstName.ENTITY_NAME, FirstName.NAME,
-                NumberAttributeModel.of(saleModel, Sale.BUYER_FIRST_NAME)).setRequired(true));
-        fioContainer.add(new DomainAutoCompleteFormGroup("middleName", MiddleName.ENTITY_NAME, MiddleName.NAME,
-                NumberAttributeModel.of(saleModel, Sale.BUYER_MIDDLE_NAME)));
+        fioContainer.add(lastName = new DomainAutoCompleteFormGroup("lastName", LastName.ENTITY_NAME, LastName.NAME,
+                new Model<>()).setInputRequired(true));
+        fioContainer.add(firstName = new DomainAutoCompleteFormGroup("firstName", FirstName.ENTITY_NAME, FirstName.NAME,
+                new Model<>()).setInputRequired(true));
+        fioContainer.add(middleName = new DomainAutoCompleteFormGroup("middleName", MiddleName.ENTITY_NAME, MiddleName.NAME,
+                new Model<>()));
 
         WebMarkupContainer mycookContainer = new WebMarkupContainer("mycookContainer"){
             @Override
@@ -162,36 +180,50 @@ public class SaleModal extends Modal<Sale> {
         mycookContainer.add(new ListView<SaleItem>("mycooks", mycookModel) {
             @Override
             protected void populateItem(ListItem<SaleItem> item) {
+                item.setOutputMarkupId(true);
+
                 IModel<SaleItem> model = item.getModel();
 
                 item.add(new Label("index", item.getIndex() + 1));
 
-                item.add(new NomenclatureAutoComplete("nomenclature",
-                        NumberAttributeModel.of(model, SaleItem.NOMENCLATURE), t -> {})
-                        .setRequired(true));
+                TextField quantity = new TextField<>("quantity", NumberAttributeModel.of(model, SaleItem.QUANTITY), Long.class);
+                quantity.setRequired(true).setOutputMarkupId(true).add(new AjaxFormInfoBehavior());
+                item.add(quantity);
 
-                item.add(new TextField<>("quantity", NumberAttributeModel.of(model, SaleItem.QUANTITY), Long.class)
-                        .setRequired(true)
-                        .add(AjaxFormComponentUpdatingBehavior.onUpdate("change", t -> {})));
+                SerializableConsumer<AjaxRequestTarget> onChange = newQuantityChange(model, quantity);
+
+                item.add(new NomenclatureAutoComplete("nomenclature",
+                        NumberAttributeModel.of(model, SaleItem.NOMENCLATURE), onChange){
+                    @Override
+                    protected Domain getFilterObject(String input) {
+                        Domain domain = super.getFilterObject(input);
+
+                        Attribute attribute = new Attribute(Nomenclature.TYPE);
+                        attribute.setNumber(NomenclatureType.MYCOOK);
+                        domain.getMap().put("attributes", Collections.singleton(attribute));
+
+                        return domain;
+                    }
+                }.setRequired(true));
+
 
                 item.add(new TextField<>("price", DecimalAttributeModel.of(model, SaleItem.PRICE), BigDecimal.class)
                         .setRequired(true)
-                        .add(AjaxFormComponentUpdatingBehavior.onUpdate("change", t -> {})));
+                        .add(new AjaxFormInfoBehavior()));
 
                 item.add(new BootstrapSelect<>("percentage",
                         NumberAttributeModel.of(model, SaleItem.INSTALLMENT_PERCENTAGE),
                         Arrays.asList(0L, 10L, 20L, 30L, 40L, 50L, 60L, 70L,80L, 90L, 100L))
                         .setRequired(true)
-                        .add(AjaxFormComponentUpdatingBehavior.onUpdate("change", t -> {})));
+                        .add(new AjaxFormInfoBehavior()));
 
                 item.add(new BootstrapSelect<>("months",
                         NumberAttributeModel.of(model, SaleItem.INSTALLMENT_MONTHS),
                         LongStream.range(0, 25).boxed().collect(Collectors.toList()))
                         .setRequired(true)
-                        .add(AjaxFormComponentUpdatingBehavior.onUpdate("change", t -> {})));
+                        .add(new AjaxFormInfoBehavior()));
 
-                item.add(new StorageAutoComplete("storage", NumberAttributeModel.of(model, SaleItem.STORAGE), t -> {})
-                        .setRequired(true));
+                item.add(newRealStorageAutoComplete("storage", model, onChange));
 
                 item.add(new BootstrapAjaxLink<SaleItem>("remove", Buttons.Type.Link) {
                     @Override
@@ -202,6 +234,8 @@ public class SaleModal extends Modal<Sale> {
                     }
                 }.setIconType(GlyphIconType.remove));
             }
+
+
         }.setReuseItems(true));
 
         mycookContainer.add(new AjaxLink<SaleItem>("add") {
@@ -220,20 +254,31 @@ public class SaleModal extends Modal<Sale> {
 
                 item.add(new Label("index", item.getIndex() + 1));
 
-                item.add(new NomenclatureAutoComplete("nomenclature",
-                        NumberAttributeModel.of(model, SaleItem.NOMENCLATURE), t -> {})
-                        .setRequired(true));
+                TextField quantity = new TextField<>("quantity", NumberAttributeModel.of(model, SaleItem.QUANTITY), Long.class);
+                quantity.setRequired(true).setOutputMarkupId(true).add(new AjaxFormInfoBehavior());
+                item.add(quantity);
 
-                item.add(new TextField<>("quantity", NumberAttributeModel.of(model, SaleItem.QUANTITY), Long.class)
-                        .setRequired(true)
-                        .add(AjaxFormComponentUpdatingBehavior.onUpdate("change", t -> {})));
+                SerializableConsumer<AjaxRequestTarget> onChange = newQuantityChange(model, quantity);
+
+                item.add(new NomenclatureAutoComplete("nomenclature",
+                        NumberAttributeModel.of(model, SaleItem.NOMENCLATURE), onChange){
+                    @Override
+                    protected Domain getFilterObject(String input) {
+                        Domain domain = super.getFilterObject(input);
+
+                        Attribute attribute = new Attribute(Nomenclature.TYPE);
+                        attribute.setNumber(NomenclatureType.MYCOOK);
+                        domain.getMap().put("notAttributes", Collections.singleton(attribute));
+
+                        return domain;
+                    }
+                }.setRequired(true));
 
                 item.add(new TextField<>("price", DecimalAttributeModel.of(model, SaleItem.PRICE), BigDecimal.class)
                         .setRequired(true)
-                        .add(AjaxFormComponentUpdatingBehavior.onUpdate("change", t -> {})));
+                        .add(new AjaxFormInfoBehavior()));
 
-                item.add(new StorageAutoComplete("storage", NumberAttributeModel.of(model, SaleItem.STORAGE), t -> {})
-                        .setRequired(true));
+                item.add(newRealStorageAutoComplete("storage", model, onChange));
 
                 item.add(new BootstrapAjaxLink<SaleItem>("remove", Buttons.Type.Link) {
                     @Override
@@ -263,13 +308,7 @@ public class SaleModal extends Modal<Sale> {
 
             @Override
             protected void onError(AjaxRequestTarget target) {
-                container.visitChildren(((object, visit) -> {
-                    if (object.hasErrorMessage()){
-                        target.add(ComponentUtil.getAjaxParent(object));
-                    }
-                }));
-
-                target.add(feedback);
+                target.add(container);
             }
         }.setLabel(new ResourceModel("save")));
 
@@ -281,11 +320,29 @@ public class SaleModal extends Modal<Sale> {
         }.setLabel(new ResourceModel("cancel")));
     }
 
+    private SerializableConsumer<AjaxRequestTarget> newQuantityChange(IModel<SaleItem> model, TextField quantity) {
+        return t -> {
+            Long storageId = model.getObject().getNumber(SaleItem.STORAGE);
+            Long nomenclatureId = model.getObject().getNumber(SaleItem.NOMENCLATURE);
+
+            if (storageId != null || nomenclatureId != null) {
+                List<Product> products = domainService.getDomains(Product.class,
+                        FilterWrapper.of((Product) new Product()
+                                .setParentId(storageId)
+                                .setNumber(Product.NOMENCLATURE, nomenclatureId)));
+
+                t.appendJavaScript("$('#" + quantity.getMarkupId() + "').attr('placeholder', '" +
+                        (!products.isEmpty() ? products.get(0).getAvailableQuantity() : "0") + "')");
+            }
+        };
+    }
+
     private SaleItem newMycook() {
         SaleItem saleItem = new SaleItem();
 
         saleItem.setNumber(SaleItem.INSTALLMENT_PERCENTAGE, 100L);
         saleItem.setNumber(SaleItem.INSTALLMENT_MONTHS, 0L);
+        saleItem.setNumber(SaleItem.STORAGE, defaultStorageId);
 
         return saleItem;
     }
@@ -295,6 +352,7 @@ public class SaleModal extends Modal<Sale> {
 
         saleItem.setNumber(SaleItem.INSTALLMENT_PERCENTAGE, 100L);
         saleItem.setNumber(SaleItem.INSTALLMENT_MONTHS, 0L);
+        saleItem.setNumber(SaleItem.STORAGE, defaultStorageId);
 
         return saleItem;
     }
@@ -315,6 +373,18 @@ public class SaleModal extends Modal<Sale> {
     }
 
     void sale(Long sellerWorkerId, AjaxRequestTarget target){
+
+        List<Long> regions = domainService.getNumberValues(Worker.ENTITY_NAME, sellerWorkerId, Worker.REGIONS);
+
+        if (!regions.isEmpty()){
+            List<Storage> storages = storageMapper.getStorages(FilterWrapper.of(new Storage())
+                    .add("regions", regions.stream().map(Object::toString).collect(Collectors.joining(","))));
+
+            if (!storages.isEmpty()){
+                defaultStorageId = storages.get(0).getObjectId();
+            }
+        }
+
         Sale sale = new Sale();
         sale.setNumber(Sale.SELLER_WORKER, sellerWorkerId);
         sale.setNumber(Sale.TYPE, SaleType.MYCOOK);
@@ -337,6 +407,10 @@ public class SaleModal extends Modal<Sale> {
 
     private void save(AjaxRequestTarget target){
         Sale sale = saleModel.getObject();
+
+        sale.setBuyerLastName(nameService.getOrCreateLastName(lastName.getInput(), lastName.getObjectId()));
+        sale.setBuyerFirstName(nameService.getOrCreateFirstName(firstName.getInput(), firstName.getObjectId()));
+        sale.setBuyerMiddleName(nameService.getOrCreateMiddleName(middleName.getInput(), middleName.getObjectId()));
 
         Long type = sale.getNumber(Sale.TYPE);
 
@@ -369,5 +443,21 @@ public class SaleModal extends Modal<Sale> {
 
     protected void onUpdate(AjaxRequestTarget target){
 
+    }
+
+    private FormComponent<Long> newRealStorageAutoComplete(String markupId, IModel<SaleItem> model, SerializableConsumer<AjaxRequestTarget> onChange) {
+        return new StorageAutoComplete(markupId, NumberAttributeModel.of(model, SaleItem.STORAGE), onChange){
+            @Override
+            protected Domain getFilterObject(String input) {
+                Domain domain = super.getFilterObject(input);
+
+                Attribute attribute = new Attribute(Storage.TYPE);
+                attribute.setNumber(StorageType.REAL);
+
+                domain.getMap().put("attributes", Collections.singleton(attribute));
+
+                return domain;
+            }
+        }.setRequired(true);
     }
 }

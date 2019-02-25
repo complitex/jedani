@@ -13,7 +13,7 @@
 
     <session-config>
         <cookie-config>
-            <name>JSESSIONID</name>
+            <name>jsessionid</name>
         </cookie-config>
     </session-config>
 

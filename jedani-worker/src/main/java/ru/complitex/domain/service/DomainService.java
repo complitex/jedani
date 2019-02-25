@@ -3,6 +3,7 @@ package ru.complitex.domain.service;
 import org.mybatis.cdi.Transactional;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.domain.entity.Domain;
+import ru.complitex.domain.mapper.AttributeMapper;
 import ru.complitex.domain.mapper.DomainMapper;
 import ru.complitex.domain.util.Domains;
 
@@ -18,6 +19,9 @@ import java.util.stream.Collectors;
 public class DomainService implements Serializable {
     @Inject
     private DomainMapper domainMapper;
+
+    @Inject
+    private AttributeMapper attributeMapper;
 
     public <T extends Domain> List<T> getDomains(Class<T> domainClass, FilterWrapper<T> filterWrapper, boolean wrapAttributes){
         return domainMapper.getDomains(filterWrapper).stream()
@@ -57,5 +61,21 @@ public class DomainService implements Serializable {
         }else{
             domainMapper.insertDomain(domain);
         }
+    }
+
+    public Long getNumber(String entityName, Long objectId, Long entityAttributeId){
+        return attributeMapper.getNumber(entityName, objectId, entityAttributeId);
+    }
+
+    public List<Long> getNumberValues(String entityName, Long objectId, Long entityAttributeId){
+        return attributeMapper.getNumberValues(entityName, objectId, entityAttributeId);
+    }
+
+    public String getText(String entityName, Long objectId, Long entityAttributeId){
+        return attributeMapper.getText(entityName, objectId, entityAttributeId);
+    }
+
+    public String getTextValue(String entityName, Long objectId, Long entityAttributeId){
+        return attributeMapper.getTextValue(entityName, objectId, entityAttributeId);
     }
 }

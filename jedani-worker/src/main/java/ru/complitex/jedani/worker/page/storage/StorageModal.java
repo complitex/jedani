@@ -11,7 +11,7 @@ import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
-import ru.complitex.common.wicket.util.ComponentUtil;
+import ru.complitex.common.wicket.util.Wickets;
 import ru.complitex.jedani.worker.entity.RecipientType;
 import ru.complitex.jedani.worker.entity.Transaction;
 
@@ -52,7 +52,7 @@ abstract class StorageModal extends Modal<Transaction> {
             protected void onError(AjaxRequestTarget target) {
                 container.visitChildren(((object, visit) -> {
                     if (object.hasErrorMessage()){
-                        target.add(ComponentUtil.getAjaxParent(object));
+                        target.add(Wickets.getAjaxParent(object));
                     }
                 }));
             }

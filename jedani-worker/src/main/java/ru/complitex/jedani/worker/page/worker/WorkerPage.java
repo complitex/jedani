@@ -13,16 +13,18 @@ import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.authorization.UnauthorizedInstantiationException;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
+import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackHeadersToolbar;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
+import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.Link;
-import org.apache.wicket.markup.html.list.ListItem;
-import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.*;
@@ -35,14 +37,12 @@ import ru.complitex.address.entity.CityType;
 import ru.complitex.address.entity.Region;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
-import ru.complitex.common.wicket.datatable.DataProvider;
-import ru.complitex.common.wicket.datatable.FilterDataForm;
-import ru.complitex.common.wicket.datatable.FilterDataTable;
-import ru.complitex.common.wicket.datatable.TextDataFilter;
+import ru.complitex.common.wicket.component.DateTimeLabel;
+import ru.complitex.common.wicket.datatable.*;
 import ru.complitex.common.wicket.form.DateTextFieldFormGroup;
 import ru.complitex.common.wicket.form.FormGroupPanel;
 import ru.complitex.common.wicket.form.TextFieldFormGroup;
-import ru.complitex.common.wicket.util.ComponentUtil;
+import ru.complitex.common.wicket.util.Wickets;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.component.datatable.DomainActionColumn;
 import ru.complitex.domain.component.datatable.DomainColumn;
@@ -79,7 +79,6 @@ import ru.complitex.user.mapper.UserMapper;
 
 import javax.inject.Inject;
 import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
@@ -181,7 +180,7 @@ public class WorkerPage extends BasePage {
             }
         }
 
-        FeedbackPanel feedback = new NotificationPanel("feedback");
+        FeedbackPanel feedback = new NotificationPanel("feedback").showRenderedMessages(false);
         feedback.setOutputMarkupId(true);
         add(feedback);
 
@@ -214,9 +213,9 @@ public class WorkerPage extends BasePage {
         DomainAutoCompleteFormGroup lastName, firstName, middleName;
 
         form.add(lastName = new DomainAutoCompleteFormGroup("lastName", LastName.ENTITY_NAME, LastName.NAME,
-                new NumberAttributeModel(worker, Worker.LAST_NAME)));
+                new NumberAttributeModel(worker, Worker.LAST_NAME)).setInputRequired(true));
         form.add(firstName = new DomainAutoCompleteFormGroup("firstName", FirstName.ENTITY_NAME, FirstName.NAME,
-                new NumberAttributeModel(worker, Worker.FIRST_NAME)));
+                new NumberAttributeModel(worker, Worker.FIRST_NAME)).setInputRequired(true));
         form.add(middleName = new DomainAutoCompleteFormGroup("middleName", MiddleName.ENTITY_NAME, MiddleName.NAME,
                 new NumberAttributeModel(worker, Worker.MIDDLE_NAME)));
         form.add(new AttributeSelectFormGroup("position", new NumberAttributeModel(worker, Worker.POSITION),
@@ -349,32 +348,32 @@ public class WorkerPage extends BasePage {
         historyHeader.setVisible(worker.getObjectId() != null);
         form.add(historyHeader);
 
-        WebMarkupContainer history = new WebMarkupContainer("history");
-        history.setOutputMarkupId(true);
-        form.add(history);
-
         Entity workerEntity = entityMapper.getEntity(Worker.ENTITY_NAME);
 
-        SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd.MM.yyyy hh:mm:ss");
+        List<IColumn<Attribute, String>> historyColumns = new ArrayList<>();
 
-        history.add(new ListView<Attribute>("attributes", new LoadableDetachableModel<List<Attribute>>() {
+        historyColumns.add(new AbstractColumn<Attribute, String>(new ResourceModel("date"), "date") {
             @Override
-            protected List<Attribute> load() {
-                return attributeMapper.getHistoryAttributes(Worker.ENTITY_NAME, worker.getObjectId());
+            public void populateItem(Item<ICellPopulator<Attribute>> cellItem, String componentId, IModel<Attribute> rowModel) {
+                cellItem.add(new DateTimeLabel(componentId, rowModel.getObject().getStartDate()));
             }
-        }) {
+        });
+        historyColumns.add(new AbstractColumn<Attribute, String>(new ResourceModel("name"), "name") {
             @Override
-            protected void populateItem(ListItem<Attribute> item) {
-                Attribute attribute = item.getModelObject();
+            public void populateItem(Item<ICellPopulator<Attribute>> cellItem, String componentId, IModel<Attribute> rowModel) {
+                EntityAttribute entityAttribute = workerEntity.getEntityAttribute(rowModel.getObject().getEntityAttributeId());
+
+                cellItem.add(new Label(componentId, entityAttribute.getValue() != null
+                        ? entityAttribute.getValue().getText()
+                        : entityAttribute.getEntityAttributeId().toString()));
+            }
+        });
+        historyColumns.add(new AbstractColumn<Attribute, String>(new ResourceModel("value"), "value") {
+            @Override
+            public void populateItem(Item<ICellPopulator<Attribute>> cellItem, String componentId, IModel<Attribute> rowModel) {
+                Attribute attribute = rowModel.getObject();
 
                 EntityAttribute entityAttribute = workerEntity.getEntityAttribute(attribute.getEntityAttributeId());
-
-                String name = entityAttribute.getValue() != null
-                        ? entityAttribute.getValue().getText()
-                        : entityAttribute.getEntityAttributeId().toString();
-
-                item.add(new Label("date", dateTimeFormat.format(attribute.getStartDate())));
-                item.add(new Label("name", name));
 
                 String value = "";
 
@@ -409,9 +408,33 @@ public class WorkerPage extends BasePage {
                         break;
                 }
 
-                item.add(new Label("value", value));
+                cellItem.add(new Label(componentId, value));
             }
-        }.setVisible(worker.getObjectId() != null));
+        });
+
+        SortableDataProvider<Attribute, String> historyDataProvider = new SortableDataProvider<Attribute, String>() {
+            @Override
+            public Iterator<? extends Attribute> iterator(long first, long count) {
+                return attributeMapper.getHistoryAttributes(Worker.ENTITY_NAME, worker.getObjectId(), first, count).iterator();
+            }
+
+            @Override
+            public long size() {
+                return attributeMapper.getHistoryAttributesCount(Worker.ENTITY_NAME, worker.getObjectId());
+            }
+
+            @Override
+            public IModel<Attribute> model(Attribute object) {
+                return Model.of(object);
+            }
+        };
+
+        DataTable<Attribute, String> historyDataTable = new DataTable<>("history", historyColumns, historyDataProvider, 5);
+        historyDataTable.addTopToolbar(new AjaxFallbackHeadersToolbar<>(historyDataTable, historyDataProvider));
+        historyDataTable.addBottomToolbar(new NavigationToolbar(historyDataTable, "workerPage_history"));
+        historyDataTable.setOutputMarkupId(true);
+        historyDataTable.setVisible(worker.getObjectId() != null);
+        form.add(historyDataTable);
 
         form.add(new IndicatingAjaxButton("save") {
             @Override
@@ -517,7 +540,7 @@ public class WorkerPage extends BasePage {
                         success(getString("info_user_updated"));
                     }
 
-                    target.add(feedback, structure, history);
+                    target.add(feedback, structure, historyDataTable);
                 } catch (Exception e) {
                     error("Ошибка: " + e.getMessage());
                     target.add(feedback);
@@ -532,7 +555,7 @@ public class WorkerPage extends BasePage {
 
                 form.visitFormComponents((object, visit) -> {
                     if (object.hasErrorMessage()){
-                        target.add(ComponentUtil.getAjaxParent(object));
+                        target.add(Wickets.getAjaxParent(object));
                     }
                 });
 

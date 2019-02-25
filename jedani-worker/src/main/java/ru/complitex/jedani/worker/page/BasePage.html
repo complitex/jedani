@@ -37,13 +37,13 @@
             </div>
         </div>
 
-        <div class="sidebar" role="navigation">
-            <div class="sidebar-nav navbar-collapse">
-                <ul id="menu" class="nav metismenu">
+        <div  class="sidebar">
+            <div class="sidebar-nav">
+                <ul wicket:id="sidebar" id="menu" class="nav metismenu">
                     <li><a wicket:id="worker">Личный кабинет</a></li>
-                    <li class="active" wicket:id="userStorages">
+                    <li class="mm-active" wicket:id="userStorages" id="userStorages">
                         <a href="#" class="has-arrow" aria-expanded="true">Склады</a>
-                        <ul  class="nav" aria-expanded="true">
+                        <ul class="nav">
                             <li><a wicket:id="storage">Личный склад</a></li>
                             <wicket:container wicket:id="storages">
                                 <li>
@@ -52,18 +52,18 @@
                             </wicket:container>
                         </ul>
                     </li>
-                    <li class="active"  wicket:id="address">
+                    <li class="mm-active"  wicket:id="address" id="address">
                         <a href="#" class="has-arrow" aria-expanded="true">Адресный справочник</a>
-                        <ul class="nav" aria-expanded="true">
+                        <ul class="nav">
                             <li><a wicket:id="countries">Страны</a></li>
                             <li><a wicket:id="regions">Регионы</a></li>
                             <li><a wicket:id="cityTypes">Типы нас.пунктов</a></li>
                             <li><a wicket:id="cities">Нас.пункты</a></li>
                         </ul>
                     </li>
-                    <li class="active"  wicket:id="catalog">
+                    <li class="mm-active"  wicket:id="catalog" id="catalog">
                         <a href="#" class="has-arrow" aria-expanded="true">Учет сотрудников</a>
-                        <ul class="nav" aria-expanded="true">
+                        <ul class="nav">
                             <li><a wicket:id="first_name">Имена</a></li>
                             <li><a wicket:id="middle_name">Отчества</a></li>
                             <li><a wicket:id="last_name">Фамилии</a></li>
@@ -72,28 +72,28 @@
                             <li><a wicket:id="workers">Сотрудники</a></li>
                         </ul>
                     </li>
-                    <li class="active" wicket:id="storages">
-                        <a href="#" class="has-arrow"  aria-expanded="true">Склад</a>
-                        <ul class="nav" aria-expanded="true">
+                    <li class="mm-active"  wicket:id="storages" id="storages">
+                        <a href="#" class="has-arrow" aria-expanded="true">Склад</a>
+                        <ul class="nav">
                             <li><a wicket:id="nomenclature">Номенклатура</a></li>
                             <li><a wicket:id="storage">Склады</a></li>
                         </ul>
                     </li>
-                    <li class="active" wicket:id="promotions">
+                    <li class="mm-active"  wicket:id="promotions" id="promotions">
                         <a href="#" class="has-arrow"  aria-expanded="true">Акция</a>
-                        <ul class="nav" aria-expanded="true">
+                        <ul class="nav">
                             <li><a wicket:id="promotion">Акции</a></li>
                         </ul>
                     </li>
-                    <li class="active" wicket:id="sales">
+                    <li class="mm-active" wicket:id="sales" id="sales">
                         <a href="#" class="has-arrow"  aria-expanded="true">Учет продаж</a>
-                        <ul class="nav" aria-expanded="true">
+                        <ul class="nav">
                             <li><a wicket:id="sale">Продажи</a></li>
                         </ul>
                     </li>
-                    <li class="active" wicket:id="settings">
+                    <li class="mm-active"  wicket:id="settings" id="settings">
                         <a href="#" class="has-arrow" aria-expanded="true">Настройка</a>
-                        <ul class="nav" aria-expanded="true">
+                        <ul class="nav">
                             <li><a wicket:id="setting">Настройки</a></li>
                             <li><a wicket:id="import">Импорт</a></li>
                         </ul>

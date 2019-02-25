@@ -109,8 +109,12 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
                 break;
             case ENTITY:
                 if (attribute.getNumber() != null) {
-                    Domain refDomain = domainService.getDomain(entityService
-                            .getEntity(entityAttribute.getReferenceId()).getName(), attribute.getNumber());
+                    Domain refDomain = null;
+
+                    if (entityAttribute.getReferenceId() != null) {
+                        refDomain = domainService.getDomain(entityService
+                                .getEntity(entityAttribute.getReferenceId()).getName(), attribute.getNumber());
+                    }
 
                     text = displayEntity(entityAttribute, attribute, refDomain);
                 }

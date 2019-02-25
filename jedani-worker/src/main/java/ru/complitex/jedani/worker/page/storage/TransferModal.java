@@ -16,7 +16,6 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
-import org.apache.wicket.util.string.Strings;
 import ru.complitex.common.wicket.form.FormGroupPanel;
 import ru.complitex.common.wicket.form.FormGroupSelectPanel;
 import ru.complitex.common.wicket.form.TextFieldFormGroup;
@@ -24,10 +23,10 @@ import ru.complitex.domain.component.form.DomainAutoCompleteFormGroup;
 import ru.complitex.domain.model.NumberAttributeModel;
 import ru.complitex.domain.model.TextAttributeModel;
 import ru.complitex.domain.service.DomainService;
-import ru.complitex.domain.util.Attributes;
 import ru.complitex.jedani.worker.component.StorageAutoComplete;
 import ru.complitex.jedani.worker.component.WorkerAutoComplete;
 import ru.complitex.jedani.worker.entity.*;
+import ru.complitex.jedani.worker.util.Nomenclatures;
 import ru.complitex.name.entity.FirstName;
 import ru.complitex.name.entity.LastName;
 import ru.complitex.name.entity.MiddleName;
@@ -285,10 +284,7 @@ public abstract class TransferModal extends StorageModal {
                 new LoadableDetachableModel<String>() {
                     @Override
                     protected String load() {
-                        Nomenclature nomenclature = domainService.getDomain(Nomenclature.class, product.getNumber(Product.NOMENCLATURE));
-
-                        return Strings.defaultIfEmpty(nomenclature.getText(Nomenclature.CODE), "") + " "
-                                + Attributes.capitalize(nomenclature.getTextValue(Nomenclature.NAME));
+                        return Nomenclatures.getNomenclatureLabel(product.getNumber(Product.NOMENCLATURE), domainService);
                     }
                 }).setEnabled(false);
     }

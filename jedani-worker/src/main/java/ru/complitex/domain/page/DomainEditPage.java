@@ -4,7 +4,6 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxButt
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
 import de.agilecoders.wicket.core.markup.html.bootstrap.form.BootstrapForm;
-import de.agilecoders.wicket.core.markup.html.bootstrap.form.FormGroup;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
@@ -24,6 +23,7 @@ import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.complitex.common.wicket.component.FormGroupBorder;
 import ru.complitex.domain.component.form.DomainAutoComplete;
 import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Domain;
@@ -91,7 +91,7 @@ public abstract class DomainEditPage<T extends Domain> extends BasePage{
         Entity parentEntity = getParentEntityName() != null ? entityService.getEntity(getParentEntityName()) : null;
 
         if (parentEntity != null) {
-            FormGroup parentGroup = new FormGroup("parentGroup", Model.of(parentEntity.getValue().getText()));
+            FormGroupBorder parentGroup = new FormGroupBorder("parentGroup", Model.of(parentEntity.getValue().getText()));
             form.add(parentGroup);
 
             parentGroup.add(getParentComponent("parent", parentEntity, domain));
@@ -117,7 +117,7 @@ public abstract class DomainEditPage<T extends Domain> extends BasePage{
                 onAttribute(attribute);
                 entityService.loadReference(attribute.getEntityAttribute());
 
-                FormGroup group = new FormGroup("group", Model.of(entityAttribute.getValue().getText()));
+                FormGroupBorder group = new FormGroupBorder("group", Model.of(entityAttribute.getValue().getText()));
                 FormComponent input1 = null;
                 FormComponent input2 = null;
                 Component component = getComponent("component", attribute);

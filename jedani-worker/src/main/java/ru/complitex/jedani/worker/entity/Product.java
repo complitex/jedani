@@ -21,4 +21,8 @@ public class Product extends Domain {
     public Product() {
         super(ENTITY_NAME);
     }
+
+    public Long getAvailableQuantity(){
+        return getNumber(QUANTITY) - getNumber(RESERVE, 0L);
+    }
 }

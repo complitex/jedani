@@ -191,3 +191,8 @@ td.domain-id-column{
 .sale-table .bootstrap-select{
     width: 100% !important;
 }
+
+.nav > li > a.selected{
+    text-decoration: none;
+    background-color: #eee;
+}

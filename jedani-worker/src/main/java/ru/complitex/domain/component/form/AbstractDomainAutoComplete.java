@@ -1,10 +1,13 @@
 package ru.complitex.domain.component.form;
 
+import de.agilecoders.wicket.jquery.JQuery;
+import de.agilecoders.wicket.jquery.function.Function;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AbstractAutoCompleteTextRenderer;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteSettings;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
+import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.HiddenField;
@@ -39,9 +42,14 @@ public abstract class AbstractDomainAutoComplete extends FormComponentPanel<Long
     private HiddenField<Long> inputId;
     private AutoCompleteTextField<Domain> autoCompleteTextField;
 
+    private boolean error;
+    private boolean errorRendered;
+
     public AbstractDomainAutoComplete(String id, String entityName, IModel<Long> model,
                               SerializableConsumer<AjaxRequestTarget> onChange) {
         super(id, model);
+
+        setOutputMarkupId(true);
 
         this.entityName = entityName;
 
@@ -54,17 +62,28 @@ public abstract class AbstractDomainAutoComplete extends FormComponentPanel<Long
         inputId.setConvertEmptyInputStringToNull(true);
         inputId.setOutputMarkupId(true);
 
-        if (onChange != null){
-            inputId.add(new OnChangeAjaxBehavior(){
+        inputId.add(new OnChangeAjaxBehavior(){
 
-                @Override
-                protected void onUpdate(AjaxRequestTarget target) {
-                    setModelObject(inputId.getModelObject());
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                setModelObject(inputId.getModelObject());
 
+                error = false;
+
+                if (errorRendered){
+                    target.appendJavaScript(JQuery.$(AbstractDomainAutoComplete.this)
+                            .closest(".has-error")
+                            .chain(new Function("removeClass", "has-error"))
+                            .build());
+                }
+
+                if (onChange != null) {
                     onChange.accept(target);
                 }
-            });
-        }
+
+                errorRendered = false;
+            }
+        });
 
         add(inputId);
 
@@ -84,9 +103,7 @@ public abstract class AbstractDomainAutoComplete extends FormComponentPanel<Long
                     protected CharSequence getOnSelectJavaScriptExpression(Domain item) {
                         String js = "$('#" + inputId.getMarkupId() + "').val('" + item.getObjectId() + "');";
 
-                        if (onChange != null){
-                            js +=  " $('#" + inputId.getMarkupId() + "').change();";
-                        }
+                        js +=  " $('#" + inputId.getMarkupId() + "').change();";
 
                         js += " input";
 
@@ -182,5 +199,39 @@ public abstract class AbstractDomainAutoComplete extends FormComponentPanel<Long
 
     public AutoCompleteTextField<Domain> getAutoCompleteTextField() {
         return autoCompleteTextField;
+    }
+
+    @Override
+    protected void onConfigure() {
+        super.onConfigure();
+
+        FeedbackMessage feedbackMessage = getFeedbackMessages().first(FeedbackMessage.ERROR);
+
+        if (error = feedbackMessage != null){
+            feedbackMessage.markRendered();
+        }
+
+        if (!error){
+            error = autoCompleteTextField.hasErrorMessage();
+        }
+    }
+
+    @Override
+    protected void onComponentTag(ComponentTag tag) {
+        super.onComponentTag(tag);
+
+        if (error){
+            tag.put("class", "has-error");
+
+            errorRendered = true;
+        }
+    }
+
+    public boolean isError() {
+        return error;
+    }
+
+    public boolean isErrorRendered() {
+        return errorRendered;
     }
 }

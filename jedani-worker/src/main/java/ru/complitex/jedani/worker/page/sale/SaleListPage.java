@@ -13,23 +13,30 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
+import ru.complitex.common.wicket.component.DateTimeLabel;
 import ru.complitex.common.wicket.datatable.FilterDataForm;
 import ru.complitex.common.wicket.datatable.TextDataFilter;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
+import ru.complitex.domain.component.datatable.DomainColumn;
+import ru.complitex.domain.entity.Attribute;
+import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.page.DomainListPage;
 import ru.complitex.domain.service.DomainService;
-import ru.complitex.jedani.worker.entity.Nomenclature;
 import ru.complitex.jedani.worker.entity.Sale;
 import ru.complitex.jedani.worker.entity.SaleItem;
 import ru.complitex.jedani.worker.mapper.SaleItemMapper;
 import ru.complitex.jedani.worker.security.JedaniRoles;
 import ru.complitex.jedani.worker.service.WorkerService;
+import ru.complitex.jedani.worker.util.Nomenclatures;
+import ru.complitex.jedani.worker.util.Storages;
+import ru.complitex.name.service.NameService;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Anatoly A. Ivanov
@@ -45,6 +52,9 @@ public class SaleListPage extends DomainListPage<SaleItem> {
 
     @Inject
     private WorkerService workerService;
+
+    @Inject
+    private NameService nameService;
 
     private SaleModal saleModal;
 
@@ -74,7 +84,7 @@ public class SaleListPage extends DomainListPage<SaleItem> {
     protected List<EntityAttribute> getEntityAttributes(Entity entity) {
         List<EntityAttribute> list = new ArrayList<>();
 
-        list.add(entity.getEntityAttribute(SaleItem.NOMENCLATURE).withReference(Nomenclature.ENTITY_NAME, Nomenclature.NAME));
+        list.add(entity.getEntityAttribute(SaleItem.NOMENCLATURE));
         list.add(entity.getEntityAttribute(SaleItem.QUANTITY));
         list.add(entity.getEntityAttribute(SaleItem.PRICE));
         list.add(entity.getEntityAttribute(SaleItem.STORAGE));
@@ -82,6 +92,27 @@ public class SaleListPage extends DomainListPage<SaleItem> {
         list.add(entity.getEntityAttribute(SaleItem.INSTALLMENT_MONTHS));
 
         return list;
+    }
+
+    @Override
+    protected DomainColumn<SaleItem> newDomainColumn(EntityAttribute a) {
+        if (Objects.equals(a.getEntityAttributeId(), SaleItem.NOMENCLATURE)){
+            return new DomainColumn<SaleItem>(a){
+                @Override
+                protected String displayEntity(EntityAttribute entityAttribute, Attribute attribute, Domain refDomain) {
+                    return Nomenclatures.getNomenclatureLabel(attribute.getNumber(), domainService);
+                }
+            };
+        }else if (Objects.equals(a.getEntityAttributeId(), SaleItem.STORAGE)){
+            return new DomainColumn<SaleItem>(a){
+                @Override
+                protected String displayEntity(EntityAttribute entityAttribute, Attribute attribute, Domain refDomain) {
+                    return Storages.getSimpleStorageLabel(attribute.getNumber(), domainService);
+                }
+            };
+        }
+
+        return super.newDomainColumn(a);
     }
 
     @Override
@@ -96,7 +127,22 @@ public class SaleListPage extends DomainListPage<SaleItem> {
             public void populateItem(Item<ICellPopulator<SaleItem>> cellItem, String componentId, IModel<SaleItem> rowModel) {
                 Sale sale = domainService.getDomain(Sale.class, rowModel.getObject().getParentId());
 
-                cellItem.add(new Label(componentId, sale.getDate(Sale.DATE)));
+                cellItem.add(new DateTimeLabel(componentId, sale.getDate(Sale.DATE)));
+            }
+        });
+
+        columns.add(2, new AbstractDomainColumn<SaleItem>(new ResourceModel("buyer"), new SortProperty("buyer")) {
+            @Override
+            public Component getFilter(String componentId, FilterDataForm<?> form) {
+                return new TextDataFilter<>(componentId, new PropertyModel<>(form.getModel(), "map.buyer"), form);
+            }
+
+            @Override
+            public void populateItem(Item<ICellPopulator<SaleItem>> cellItem, String componentId, IModel<SaleItem> rowModel) {
+                Sale sale = domainService.getDomain(Sale.class, rowModel.getObject().getParentId());
+
+                cellItem.add(new Label(componentId, nameService.getFio(sale.getBuyerLastName(), sale.getBuyerFirstName(),
+                        sale.getBuyerMiddleName())));
             }
         });
 

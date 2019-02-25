@@ -1,7 +1,7 @@
 package ru.complitex.domain.mapper;
 
 import ru.complitex.common.mybatis.BaseMapper;
-import ru.complitex.common.util.MapUtil;
+import ru.complitex.common.util.Maps;
 import ru.complitex.domain.entity.EntityAttribute;
 
 /**
@@ -10,7 +10,7 @@ import ru.complitex.domain.entity.EntityAttribute;
  */
 public class EntityAttributeMapper extends BaseMapper {
     public EntityAttribute getEntityAttribute(String entityName, Long entityAttributeId){
-        return sqlSession().selectOne("selectEntityAttribute", MapUtil.of("entityName", entityName,
+        return sqlSession().selectOne("selectEntityAttribute", Maps.of("entityName", entityName,
                 "entityAttributeId", entityAttributeId));
     }
 }

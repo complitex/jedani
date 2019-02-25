@@ -61,28 +61,33 @@ public class NameService implements Serializable {
         return getOrCreateName(MiddleName.ENTITY_NAME, MiddleName.NAME, middleName, objectId);
     }
 
+    public String getName(Long objectId, String entityName, Long nameId){
+        if (objectId != null){
+            Domain domain = domainMapper.getDomain(entityName, objectId);
+
+            if (domain != null){
+                return Attributes.capitalize(domain.getTextValue(nameId));
+            }
+
+            return "[" + objectId + "]";
+        }
+
+        return "";
+    }
+
     public String getLastName(Long objectId){
-        return objectId != null
-                ? Attributes.capitalize(domainMapper.getDomain(LastName.ENTITY_NAME, objectId).getTextValue(LastName.NAME))
-                : "";
+        return getName(objectId, LastName.ENTITY_NAME, LastName.NAME);
     }
 
     public String getFirstName(Long objectId){
-        return objectId != null
-                ? Attributes.capitalize(domainMapper.getDomain(FirstName.ENTITY_NAME, objectId).getTextValue(FirstName.NAME))
-                : "";
+        return getName(objectId, FirstName.ENTITY_NAME, FirstName.NAME);
     }
 
     public String getMiddleName(Long objectId){
-        return objectId != null
-                ? Attributes.capitalize(domainMapper.getDomain(MiddleName.ENTITY_NAME, objectId).getTextValue(MiddleName.NAME))
-                : "";
+        return getName(objectId, MiddleName.ENTITY_NAME, MiddleName.NAME);
     }
 
     public String getFio(Long lastNameId, Long firstNameId, Long middleNameId){
         return getLastName(lastNameId) + " " + getFirstName(firstNameId) + " " + getMiddleName(middleNameId);
-
     }
-
-
 }

@@ -159,6 +159,22 @@
                 </if>
             </if>
         </foreach>
+        <if test="object.map.attributes != null">
+            <foreach collection="object.map.attributes" index="i" item="b">
+                <if test="b.text != null or b.number != null or b.date != null">
+                    left join ${object.entityName}_attribute b${i} on (b${i}.object_id = d.object_id
+                        and b${i}.entity_attribute_id = #{b.entityAttributeId} and b${i}.status = 1)
+                </if>
+            </foreach>
+        </if>
+        <if test="object.map.notAttributes != null">
+            <foreach collection="object.map.notAttributes" index="i" item="c">
+                <if test="c.text != null or c.number != null or c.date != null">
+                    left join ${object.entityName}_attribute c${i} on (c${i}.object_id = d.object_id
+                        and c${i}.entity_attribute_id = #{c.entityAttributeId} and c${i}.status = 1)
+                </if>
+            </foreach>
+        </if>
     </sql>
 
     <sql id="selectDomainsWhere">
@@ -182,6 +198,13 @@
             <if test="object.parentEntityAttribute != null and map.parentName != null">
                 and (p_a.text like concat('%', #{map.parentName}, '%') or p_v.text like concat('%', #{map.parentName}, '%'))
             </if>
+
+            and (
+
+            <choose>
+                <when test="filter == 'search'"> false </when>
+                <otherwise> true </otherwise>
+            </choose>
 
             <foreach collection="object.attributes" index="i" item="a">
                 <choose>
@@ -235,6 +258,25 @@
                     </otherwise>
                 </choose>
             </foreach>
+            )
+
+            <if test="object.map.attributes != null">
+                <foreach collection="object.map.attributes" index="i" item="b">
+                    <if test="b.number != null">
+                        and b${i}.number = #{b.number}
+                    </if>
+                </foreach>
+            </if>
+
+            <if test="object.map.notAttributes != null">
+                <foreach collection="object.map.notAttributes" index="i" item="c">
+                    <if test="c.number != null">
+                        <![CDATA[
+                            and (c${i}.number <> #{c.number} or c${i}.number is null)
+                        ]]>
+                    </if>
+                </foreach>
+            </if>
 
             <choose>
                 <when test="object.status != null">

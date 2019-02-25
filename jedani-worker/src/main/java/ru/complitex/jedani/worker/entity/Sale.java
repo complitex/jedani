@@ -22,4 +22,28 @@ public class Sale extends Domain {
 
         setUseDateAttribute(true);
     }
+
+    public Long getBuyerFirstName(){
+        return getNumber(BUYER_FIRST_NAME);
+    }
+
+    public void setBuyerFirstName(Long firstNameId){
+        setNumber(BUYER_FIRST_NAME, firstNameId);
+    }
+
+    public Long getBuyerMiddleName(){
+        return getNumber(BUYER_MIDDLE_NAME);
+    }
+
+    public void setBuyerMiddleName(Long middleNameId){
+        setNumber(BUYER_MIDDLE_NAME, middleNameId);
+    }
+
+    public Long getBuyerLastName(){
+        return getNumber(BUYER_LAST_NAME);
+    }
+
+    public void setBuyerLastName(Long lastNameId){
+        setNumber(BUYER_LAST_NAME, lastNameId);
+    }
 }

@@ -35,9 +35,13 @@ public class WorkerAutoCompleteList extends FormComponentPanel<Attribute> {
 
             @Override
             protected void populateItem(ListItem<Long> item) {
-                item.add(new WorkerAutoComplete("item", item.getModel(), target -> {}));
+                WebMarkupContainer inputGroup = new WebMarkupContainer("inputGroup");
+                inputGroup.setRenderBodyOnly(!WorkerAutoCompleteList.this.isEnabled());
+                item.add(inputGroup);
 
-                item.add(new AjaxLink<Void>("remove") {
+                inputGroup.add(new WorkerAutoComplete("item", item.getModel(), target -> {}));
+
+                inputGroup.add(new AjaxLink<Void>("remove") {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         listModel.getObject().remove(item.getIndex());

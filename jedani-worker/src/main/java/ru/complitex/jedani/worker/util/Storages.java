@@ -59,21 +59,44 @@ public class Storages {
         if (storage != null){
             label += storage.getObjectId();
 
-            Domain city = domainService.getDomain(City.ENTITY_NAME, storage.getNumber(Storage.CITY));
+            String city = domainService.getTextValue(City.ENTITY_NAME, storage.getNumber(Storage.CITY), City.NAME);
 
             if (city != null){
-                label += " " + Attributes.capitalize(city.getTextValue(City.NAME));
+                label += ", " + Attributes.capitalize(city);
             }
 
             String workers = storage.getOrCreateAttribute(Storage.WORKERS).getNumberValues().stream()
-                    .map(id -> domainService.getDomain(Worker.ENTITY_NAME, id))
-                    .map(w -> w.getText(Worker.J_ID) + " " +
-                            nameService.getLastName(w.getNumber(Worker.LAST_NAME)))
-                    .collect(Collectors.joining(" "));
+                    .map(objectId -> domainService.getText(Worker.ENTITY_NAME,  objectId, Worker.J_ID) + " " +
+                            nameService.getLastName(domainService.getNumber(Worker.ENTITY_NAME,  objectId, Worker.LAST_NAME)))
+                    .collect(Collectors.joining("; "));
 
-            label += " " + workers;
+            label += ", " + workers;
         }
 
         return label;
+    }
+
+    public static String getStorageLabel(Long storageId, DomainService domainService, NameService nameService) {
+        return getStorageLabel(domainService.getDomain(Storage.class, storageId), domainService, nameService);
+    }
+
+    public static String getSimpleStorageLabel(Domain storage, DomainService domainService) {
+        String label = "";
+
+        if (storage != null){
+            label += storage.getObjectId();
+
+            String city = domainService.getTextValue(City.ENTITY_NAME, storage.getNumber(Storage.CITY), City.NAME);
+
+            if (city != null){
+                label += ", " + Attributes.capitalize(city);
+            }
+        }
+
+        return label;
+    }
+
+    public static String getSimpleStorageLabel(Long storageId, DomainService domainService) {
+        return getSimpleStorageLabel(domainService.getDomain(Storage.class, storageId), domainService);
     }
 }

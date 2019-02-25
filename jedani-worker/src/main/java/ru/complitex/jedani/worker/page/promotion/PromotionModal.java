@@ -15,25 +15,24 @@ import org.apache.wicket.markup.html.link.DownloadLink;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
-import org.apache.wicket.util.string.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.complitex.address.entity.Country;
 import ru.complitex.common.wicket.form.DateTextFieldFormGroup;
 import ru.complitex.common.wicket.form.FormGroupPanel;
 import ru.complitex.common.wicket.form.TextFieldFormGroup;
-import ru.complitex.common.wicket.util.ComponentUtil;
+import ru.complitex.common.wicket.util.Wickets;
 import ru.complitex.domain.component.form.AbstractDomainAutoCompleteList;
 import ru.complitex.domain.component.form.DomainAutoCompleteFormGroup;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.Status;
 import ru.complitex.domain.model.*;
 import ru.complitex.domain.service.DomainService;
-import ru.complitex.domain.util.Attributes;
 import ru.complitex.domain.util.Locales;
 import ru.complitex.jedani.worker.entity.Nomenclature;
 import ru.complitex.jedani.worker.entity.Promotion;
 import ru.complitex.jedani.worker.entity.Setting;
+import ru.complitex.jedani.worker.util.Nomenclatures;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -121,12 +120,7 @@ public class PromotionModal extends Modal<Promotion> {
                 Nomenclature.ENTITY_NAME, new AttributeModel(getModel(), Promotion.NOMENCLATURES)) {
             @Override
             protected String getTextValue(Domain domain) {
-                if (domain == null){
-                    return "";
-                }
-
-                return Strings.defaultIfEmpty(domain.getText(Nomenclature.CODE), "") + " " +
-                        Attributes.capitalize(domain.getTextValue(Nomenclature.NAME));
+                return Nomenclatures.getNomenclatureLabel(domain);
             }
 
             @Override
@@ -152,7 +146,7 @@ public class PromotionModal extends Modal<Promotion> {
             protected void onError(AjaxRequestTarget target) {
                 container.visitChildren(((object, visit) -> {
                     if (object.hasErrorMessage()){
-                        target.add(ComponentUtil.getAjaxParent(object));
+                        target.add(Wickets.getAjaxParent(object));
                     }
                 }));
             }

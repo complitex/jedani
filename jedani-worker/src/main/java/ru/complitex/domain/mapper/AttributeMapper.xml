@@ -46,8 +46,54 @@
     </select>
 
     <!--suppress SqlResolve -->
+    <select id="selectHistoryAttributesLimit" parameterType="map" resultMap="attributeResultMap">
+        select '${entityName}' entity_name, a.* from ${entityName}_attribute a where a.object_id = #{objectId}
+          limit #{first}, #{count}
+    </select>
+
+    <!--suppress SqlResolve -->
+    <select id="selectHistoryAttributesCount" parameterType="map" resultType="long">
+        select count(id) from ${entityName}_attribute where object_id = #{objectId}
+    </select>
+
+    <!--suppress SqlResolve -->
     <update id="archiveAttribute" parameterType="ru.complitex.domain.entity.Attribute">
         update ${entityName}_attribute set end_date = #{endDate}, `status` = 2 where id = #{id}
     </update>
+
+    <!--suppress SqlResolve -->
+    <select id="selectAttributeNumber" parameterType="map" resultType="long">
+        select a.number from ${entityName} o
+          left join ${entityName}_attribute a on a.object_id = o.object_id
+        where o.status = 1 and o.object_id = #{objectId}
+          and a.status = 1 and a.entity_attribute_id = #{entityAttributeId}
+    </select>
+
+    <!--suppress SqlResolve -->
+    <select id="selectAttributeNumberValues" parameterType="map" resultType="long">
+       select v.number from ${entityName} o
+          left join ${entityName}_attribute a on a.object_id = o.object_id
+          left join ${entityName}_value v on v.attribute_id = a.id
+        where o.status = 1 and o.object_id = #{objectId}
+          and a.status = 1 and a.entity_attribute_id = #{entityAttributeId}
+    </select>
+
+    <!--suppress SqlResolve -->
+    <select id="selectAttributeText" parameterType="map" resultType="string">
+        select a.text from ${entityName} o
+          left join ${entityName}_attribute a on a.object_id = o.object_id
+        where o.status = 1 and o.object_id = #{objectId}
+          and a.status = 1 and a.entity_attribute_id = #{entityAttributeId}
+    </select>
+
+    <!--suppress SqlResolve -->
+    <select id="selectAttributeTextValue" parameterType="map" resultType="string">
+        select v.text from ${entityName} o
+          left join ${entityName}_attribute a on a.object_id = o.object_id
+          left join ${entityName}_value v on v.attribute_id = a.id
+        where o.status = 1 and o.object_id = #{objectId}
+          and a.status = 1 and a.entity_attribute_id = #{entityAttributeId}
+          and v.locale_id = 1
+    </select>
 
 </mapper>

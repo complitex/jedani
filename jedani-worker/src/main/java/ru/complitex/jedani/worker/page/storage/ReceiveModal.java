@@ -5,9 +5,12 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.LoadableDetachableModel;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.domain.service.DomainService;
-import ru.complitex.domain.util.Attributes;
-import ru.complitex.jedani.worker.entity.*;
+import ru.complitex.jedani.worker.entity.Product;
+import ru.complitex.jedani.worker.entity.Transaction;
+import ru.complitex.jedani.worker.entity.TransactionType;
+import ru.complitex.jedani.worker.entity.TransferType;
 import ru.complitex.jedani.worker.mapper.TransactionMapper;
+import ru.complitex.jedani.worker.util.Nomenclatures;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -32,11 +35,7 @@ public abstract class ReceiveModal extends StorageModal {
         getContainer().add(new Label("nomenclature", new LoadableDetachableModel<String>() {
             @Override
             protected String load() {
-                Nomenclature nomenclature = domainService.getDomain(Nomenclature.class,
-                        transaction.getNumber(Transaction.NOMENCLATURE));
-
-                return nomenclature.getText(Nomenclature.CODE) + " " +
-                        Attributes.capitalize(nomenclature.getTextValue(Nomenclature.NAME));
+                return Nomenclatures.getNomenclatureLabel(transaction.getNumber(Transaction.NOMENCLATURE), domainService);
             }
         }));
 

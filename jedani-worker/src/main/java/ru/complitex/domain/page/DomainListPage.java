@@ -85,7 +85,7 @@ public class DomainListPage<T extends Domain> extends BasePage{
 
         add(titleLabel = new Label("title", title));
 
-        container.add(new Label("header", title).setVisible(isShowHeader()));
+        container.add(new Label("header", title).setVisible(false));
 
         feedback = new NotificationPanel("feedback");
         feedback.setOutputMarkupId(true);
@@ -142,10 +142,10 @@ public class DomainListPage<T extends Domain> extends BasePage{
         List<Long> entityAttributeIds = getEntityAttributeIds();
 
         if (entityAttributeIds != null){
-            entityAttributeIds.forEach(id -> columns.add(new DomainColumn<>(entity.getEntityAttribute(id))));
+            entityAttributeIds.forEach(id -> columns.add(newDomainColumn(entity.getEntityAttribute(id))));
 
         }else {
-            entityAttributes.forEach(a -> columns.add(new DomainColumn<>(a)));
+            entityAttributes.forEach(a -> columns.add(newDomainColumn(a)));
         }
 
         onAddColumns(columns);
@@ -179,6 +179,10 @@ public class DomainListPage<T extends Domain> extends BasePage{
                 return addVisible;
             }
         });
+    }
+
+    protected DomainColumn<T> newDomainColumn(EntityAttribute a) {
+        return new DomainColumn<>(a);
     }
 
     public DomainListPage(Class<T> domainInstance, Class<? extends WebPage> editPageClass) {

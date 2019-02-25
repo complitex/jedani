@@ -2,12 +2,11 @@ package ru.complitex.jedani.worker.component;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.util.string.Strings;
 import org.danekja.java.util.function.serializable.SerializableConsumer;
 import ru.complitex.domain.component.form.AbstractDomainAutoComplete;
 import ru.complitex.domain.entity.Domain;
-import ru.complitex.domain.util.Attributes;
 import ru.complitex.jedani.worker.entity.Nomenclature;
+import ru.complitex.jedani.worker.util.Nomenclatures;
 
 public class NomenclatureAutoComplete extends AbstractDomainAutoComplete {
     public NomenclatureAutoComplete(String id, IModel<Long> model, SerializableConsumer<AjaxRequestTarget> onChange) {
@@ -30,11 +29,6 @@ public class NomenclatureAutoComplete extends AbstractDomainAutoComplete {
 
     @Override
     protected String getTextValue(Domain domain) {
-        if (domain == null){
-            return "";
-        }
-
-        return Strings.defaultIfEmpty(domain.getText(Nomenclature.CODE), "") + " " +
-                Attributes.capitalize(domain.getTextValue(Nomenclature.NAME));
+        return Nomenclatures.getNomenclatureLabel(domain);
     }
 }

@@ -1,6 +1,5 @@
 package ru.complitex.common.wicket.form;
 
-import de.agilecoders.wicket.core.markup.html.bootstrap.form.FormGroup;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.ComponentTag;
@@ -9,6 +8,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.danekja.java.util.function.serializable.SerializableConsumer;
+import ru.complitex.common.wicket.component.FormGroupBorder;
 
 /**
  * @author Anatoly A. Ivanov
@@ -26,7 +26,7 @@ public class TextFieldFormGroup<T> extends Panel{
 
         setOutputMarkupId(true);
 
-        FormGroup group = new FormGroup("group", label);
+        FormGroupBorder group = new FormGroupBorder("group", label);
         group.add(textField = new TextField<T>("input", model){
             @Override
             protected void onComponentTag(final ComponentTag tag)
