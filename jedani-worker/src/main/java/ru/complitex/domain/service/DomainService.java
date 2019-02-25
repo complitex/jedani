@@ -23,6 +23,9 @@ public class DomainService implements Serializable {
     @Inject
     private AttributeMapper attributeMapper;
 
+    @Inject
+    private EntityService entityService;
+
     public <T extends Domain> List<T> getDomains(Class<T> domainClass, FilterWrapper<T> filterWrapper, boolean wrapAttributes){
         return domainMapper.getDomains(filterWrapper).stream()
                 .map(d -> Domains.newObject(domainClass, d, wrapAttributes))
@@ -52,6 +55,14 @@ public class DomainService implements Serializable {
         }
 
         return getDomain(domainClass, objectId, false);
+    }
+
+    public String getEntityName(Long entityId){
+        return entityService.getEntity(entityId).getName();
+    }
+
+    public Domain getDomainRef(Long referenceId, Long objectId){
+        return domainMapper.getDomain(getEntityName(referenceId), objectId);
     }
 
     @Transactional

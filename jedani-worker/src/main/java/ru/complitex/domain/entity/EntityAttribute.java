@@ -3,6 +3,7 @@ package ru.complitex.domain.entity;
 import ru.complitex.domain.util.Locales;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -23,14 +24,31 @@ public class EntityAttribute implements Serializable{
 
     private String entityName;
 
-    private EntityAttribute referenceEntityAttribute;
-
-    private String referenceEntityName;
-    private Long referenceEntityAttributeId;
+    private List<EntityAttribute> referenceEntityAttributes;
 
     private EntityAttribute prefixEntityAttribute;
 
     private boolean displayLowerCase;
+
+    public EntityAttribute() {
+    }
+
+    public EntityAttribute(String entityName, Long entityAttributeId) {
+        this.entityName = entityName;
+        this.entityAttributeId = entityAttributeId;
+    }
+
+    public void copy(EntityAttribute entityAttribute){
+        this.id = entityAttribute.getId();
+        this.entityId = entityAttribute.getEntityId();
+        this.entityAttributeId = entityAttribute.getEntityAttributeId();
+        this.startDate = entityAttribute.getStartDate();
+        this.endDate = entityAttribute.getEndDate();
+        this.valueType = entityAttribute.getValueType();
+        this.referenceId = entityAttribute.getReferenceId();
+        this.values = entityAttribute.getValues();
+        this.entityName = entityAttribute.getEntityName();
+    }
 
     public EntityValue getValue(){
         return values.stream().filter(v -> v.getLocaleId().equals(Locales.getSystemLocaleId())).findAny().orElse(null);
@@ -120,16 +138,6 @@ public class EntityAttribute implements Serializable{
         this.entityName = entityName;
     }
 
-    public EntityAttribute getReferenceEntityAttribute() {
-        return referenceEntityAttribute;
-    }
-
-    public EntityAttribute setReferenceEntityAttribute(EntityAttribute referenceEntityAttribute) {
-        this.referenceEntityAttribute = referenceEntityAttribute;
-
-        return this;
-    }
-
     public EntityAttribute getPrefixEntityAttribute() {
         return prefixEntityAttribute;
     }
@@ -150,26 +158,31 @@ public class EntityAttribute implements Serializable{
         return this;
     }
 
-    public String getReferenceEntityName() {
-        return referenceEntityName;
-    }
+    public EntityAttribute addReferenceEntityAttribute(EntityAttribute entityAttribute){
+        if (referenceEntityAttributes == null){
+            referenceEntityAttributes = new ArrayList<>();
+        }
 
-    public void setReferenceEntityName(String referenceEntityName) {
-        this.referenceEntityName = referenceEntityName;
-    }
+        referenceEntityAttributes.add(entityAttribute);
 
-    public Long getReferenceEntityAttributeId() {
-        return referenceEntityAttributeId;
-    }
-
-    public void setReferenceEntityAttributeId(Long referenceEntityAttributeId) {
-        this.referenceEntityAttributeId = referenceEntityAttributeId;
+        return this;
     }
 
     public EntityAttribute withReference(String referenceEntityName, Long referenceEntityAttributeId){
-        this.referenceEntityName = referenceEntityName;
-        this.referenceEntityAttributeId = referenceEntityAttributeId;
+        return addReferenceEntityAttribute(new EntityAttribute(referenceEntityName, referenceEntityAttributeId));
+    }
 
-        return this;
+    public EntityAttribute withReferences(String referenceEntityName, Long referenceEntityAttributeId1,
+                                          Long referenceEntityAttributeId2){
+        return addReferenceEntityAttribute(new EntityAttribute(referenceEntityName, referenceEntityAttributeId1))
+                .addReferenceEntityAttribute(new EntityAttribute(referenceEntityName, referenceEntityAttributeId2));
+    }
+
+    public List<EntityAttribute> getReferenceEntityAttributes() {
+        return referenceEntityAttributes;
+    }
+
+    public boolean hasReferenceEntityAttributes(){
+        return referenceEntityAttributes != null && !referenceEntityAttributes.isEmpty();
     }
 }

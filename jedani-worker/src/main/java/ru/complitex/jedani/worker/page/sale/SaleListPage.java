@@ -18,18 +18,16 @@ import ru.complitex.common.wicket.datatable.FilterDataForm;
 import ru.complitex.common.wicket.datatable.TextDataFilter;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.component.datatable.DomainColumn;
-import ru.complitex.domain.entity.Attribute;
-import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.page.DomainListPage;
 import ru.complitex.domain.service.DomainService;
+import ru.complitex.jedani.worker.entity.Nomenclature;
 import ru.complitex.jedani.worker.entity.Sale;
 import ru.complitex.jedani.worker.entity.SaleItem;
 import ru.complitex.jedani.worker.mapper.SaleItemMapper;
 import ru.complitex.jedani.worker.security.JedaniRoles;
 import ru.complitex.jedani.worker.service.WorkerService;
-import ru.complitex.jedani.worker.util.Nomenclatures;
 import ru.complitex.jedani.worker.util.Storages;
 import ru.complitex.name.service.NameService;
 
@@ -84,7 +82,8 @@ public class SaleListPage extends DomainListPage<SaleItem> {
     protected List<EntityAttribute> getEntityAttributes(Entity entity) {
         List<EntityAttribute> list = new ArrayList<>();
 
-        list.add(entity.getEntityAttribute(SaleItem.NOMENCLATURE));
+        list.add(entity.getEntityAttribute(SaleItem.NOMENCLATURE)
+                .withReferences(Nomenclature.ENTITY_NAME, Nomenclature.CODE, Nomenclature.NAME));
         list.add(entity.getEntityAttribute(SaleItem.QUANTITY));
         list.add(entity.getEntityAttribute(SaleItem.PRICE));
         list.add(entity.getEntityAttribute(SaleItem.STORAGE));
@@ -96,18 +95,11 @@ public class SaleListPage extends DomainListPage<SaleItem> {
 
     @Override
     protected DomainColumn<SaleItem> newDomainColumn(EntityAttribute a) {
-        if (Objects.equals(a.getEntityAttributeId(), SaleItem.NOMENCLATURE)){
+        if (Objects.equals(a.getEntityAttributeId(), SaleItem.STORAGE)){
             return new DomainColumn<SaleItem>(a){
                 @Override
-                protected String displayEntity(EntityAttribute entityAttribute, Attribute attribute, Domain refDomain) {
-                    return Nomenclatures.getNomenclatureLabel(attribute.getNumber(), domainService);
-                }
-            };
-        }else if (Objects.equals(a.getEntityAttributeId(), SaleItem.STORAGE)){
-            return new DomainColumn<SaleItem>(a){
-                @Override
-                protected String displayEntity(EntityAttribute entityAttribute, Attribute attribute, Domain refDomain) {
-                    return Storages.getSimpleStorageLabel(attribute.getNumber(), domainService);
+                protected String displayEntity(EntityAttribute entityAttribute, Long objectId) {
+                    return Storages.getSimpleStorageLabel(objectId, domainService);
                 }
             };
         }

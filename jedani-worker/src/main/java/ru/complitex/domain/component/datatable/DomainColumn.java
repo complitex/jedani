@@ -27,6 +27,7 @@ import ru.complitex.domain.util.Attributes;
 
 import javax.inject.Inject;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -109,14 +110,7 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
                 break;
             case ENTITY:
                 if (attribute.getNumber() != null) {
-                    Domain refDomain = null;
-
-                    if (entityAttribute.getReferenceId() != null) {
-                        refDomain = domainService.getDomain(entityService
-                                .getEntity(entityAttribute.getReferenceId()).getName(), attribute.getNumber());
-                    }
-
-                    text = displayEntity(entityAttribute, attribute, refDomain);
+                    text = displayEntity(entityAttribute, attribute.getNumber());
                 }
 
                 break;
@@ -131,8 +125,8 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
                 break;
 
             case ENTITY_VALUE:
-                if (attribute.getValues() != null){
-                    EntityAttribute referenceEntityAttribute = entityAttribute.getReferenceEntityAttribute();
+                if (attribute.getValues() != null && entityAttribute.hasReferenceEntityAttributes()){
+                    EntityAttribute referenceEntityAttribute = entityAttribute.getReferenceEntityAttributes().get(0);
 
                     if (referenceEntityAttribute != null){
                         List<Long> list = attribute.getValues().stream()
@@ -150,12 +144,12 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
                                     if (prefixEntityAttribute != null){
                                         Long prefixDomainId = domain.getNumber(prefixEntityAttribute.getEntityAttributeId());
 
-                                        if (prefixDomainId != null) {
-                                            Domain prefixDomain = domainService.getDomain(prefixEntityAttribute
-                                                            .getReferenceEntityAttribute().getEntityName(),
-                                                    prefixDomainId);
+                                        if (prefixDomainId != null && prefixEntityAttribute.hasReferenceEntityAttributes()) {
+                                            EntityAttribute ea = prefixEntityAttribute.getReferenceEntityAttributes().get(0);
 
-                                            prefix = prefixDomain.getTextValue(prefixEntityAttribute.getReferenceEntityAttribute().getEntityAttributeId());
+                                            Domain prefixDomain = domainService.getDomain(ea.getEntityName(), prefixDomainId);
+
+                                            prefix = prefixDomain.getTextValue(ea.getEntityAttributeId());
 
                                             prefix = prefix != null ? prefix + " " : "";
                                         }
@@ -189,27 +183,42 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
         cellItem.add(label);
     }
 
-    protected String displayEntity(EntityAttribute entityAttribute, Attribute attribute, Domain refDomain){
-        String text;
+    protected String displayEntity(EntityAttribute entityAttribute, Long objectId){
+        if (entityAttribute.getReferenceId() != null) {
+            Domain refDomain = domainService.getDomainRef(entityAttribute.getReferenceId(), objectId);
 
-        if (refDomain != null && entityAttribute.getReferenceEntityAttribute() != null){
-            switch (entityAttribute.getReferenceEntityAttribute().getValueType()){
-                case TEXT_VALUE:
-                    text = refDomain.getTextValue(entityAttribute.getReferenceEntityAttribute().getEntityAttributeId());
-                    break;
-                case TEXT:
-                    text = refDomain.getText(entityAttribute.getReferenceEntityAttribute().getEntityAttributeId());
-                    break;
-                case NUMBER:
-                    text = refDomain.getNumber(entityAttribute.getReferenceEntityAttribute().getEntityAttributeId()) + "";
-                    break;
-                default:
-                    text = "[" + entityAttribute.getReferenceEntityAttribute().getEntityAttributeId() + "]";
+            if (refDomain != null){
+                if (entityAttribute.hasReferenceEntityAttributes()) {
+                    List<String> list = new ArrayList<>();
+
+                    for (EntityAttribute ea : entityAttribute.getReferenceEntityAttributes()){
+                        String text;
+
+                        switch (ea.getValueType()){
+                            case ENTITY:
+                                text = displayEntity(ea, refDomain.getNumber(ea.getEntityAttributeId()));
+                                break;
+                            case TEXT_VALUE:
+                                text = refDomain.getTextValue(ea.getEntityAttributeId());
+                                break;
+                            case TEXT:
+                                text = refDomain.getText(ea.getEntityAttributeId());
+                                break;
+                            case NUMBER:
+                                text = refDomain.getNumber(ea.getEntityAttributeId()) + "";
+                                break;
+                            default:
+                                text = "[" + ea.getEntityAttributeId() + "]";
+                        }
+
+                        list.add(Attributes.displayText(ea, text));
+                    }
+
+                    return String.join(", ", list);
+                }
             }
-        }else{
-            text = attribute.getNumber() + "";
         }
 
-        return Attributes.displayText(entityAttribute.getReferenceEntityAttribute(), text);
+        return entityAttribute.getEntityAttributeId() + ":" + objectId;
     }
 }

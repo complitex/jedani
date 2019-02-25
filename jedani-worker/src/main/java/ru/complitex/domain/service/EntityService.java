@@ -30,15 +30,16 @@ public class EntityService implements Serializable {
     public EntityAttribute getEntityAttribute(String entityName, Long entityAttributeId,
                                               String referenceEntityName, Long referenceEntityAttributeId){
         return getEntity(entityName).getEntityAttribute(entityAttributeId)
-                .setReferenceEntityAttribute(getEntityAttribute(referenceEntityName, referenceEntityAttributeId));
+                .addReferenceEntityAttribute(getEntityAttribute(referenceEntityName, referenceEntityAttributeId));
     }
 
     public void loadReference(EntityAttribute entityAttribute){
-        if (entityAttribute != null) {
-            if (entityAttribute.getReferenceEntityName() != null && entityAttribute.getReferenceEntityAttributeId() != null){
-                entityAttribute.setReferenceEntityAttribute(getEntityAttribute(entityAttribute.getReferenceEntityName(),
-                        entityAttribute.getReferenceEntityAttributeId()));
-            }
+        if (entityAttribute != null && entityAttribute.getReferenceEntityAttributes() != null) {
+            entityAttribute.getReferenceEntityAttributes().forEach(ea -> {
+                if (ea.getId() == null){
+                    ea.copy(getEntityAttribute(ea.getEntityName(), ea.getEntityAttributeId()));
+                }
+            });
 
             if (entityAttribute.getPrefixEntityAttribute() != null){
                 loadReference(entityAttribute.getPrefixEntityAttribute());

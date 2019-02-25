@@ -144,18 +144,22 @@
                 left join `${object.entityName}_value` v${i} on (v${i}.attribute_id = a${i}.id
                     and a${i}.entity_attribute_id = #{a.entityAttributeId} and a${i}.status = 1)
 
-                <if test="a.entityAttribute != null and a.entityAttribute.referenceEntityAttribute != null and a.entityAttribute.valueType.id in {10, 11}">
-                    left join ${a.entityAttribute.referenceEntityAttribute.entityName}_attribute a${i}_ref
+                <if test="a.entityAttribute != null and a.entityAttribute.valueType.id in {10, 11}">
+                    <if test="a.entityAttribute.referenceEntityAttributes != null">
+                        <foreach collection="a.entityAttribute.referenceEntityAttributes" index="j" item="ra">
+                            left join ${ra.entityName}_attribute a${i}_${j}_ref
 
-                    <if test="a.entityAttribute.valueType.id == 10">
-                      on (a${i}_ref.object_id = v${i}.number and a${i}.entity_attribute_id = ${a.entityAttributeId} and a${i}.status = 1)
+                            <if test="a.entityAttribute.valueType.id == 10">
+                                on (a${i}_${j}_ref.object_id = v${i}.number and a${i}.entity_attribute_id = ${a.entityAttributeId} and a${i}.status = 1)
+                            </if>
+
+                            <if test="a.entityAttribute.valueType.id == 11">
+                                on (a${i}_${j}_ref.object_id = a${i}.number and a${i}.entity_attribute_id = ${a.entityAttributeId} and a${i}.status = 1)
+                            </if>
+
+                            left join ${ra.entityName}_value v${i}_${j}_ref on v${i}_${j}_ref.attribute_id = a${i}_${j}_ref.id
+                        </foreach>
                     </if>
-
-                    <if test="a.entityAttribute.valueType.id == 11">
-                      on (a${i}_ref.object_id = a${i}.number and a${i}.entity_attribute_id = ${a.entityAttributeId} and a${i}.status = 1)
-                    </if>
-
-                    left join ${a.entityAttribute.referenceEntityAttribute.entityName}_value v${i}_ref on v${i}_ref.attribute_id = a${i}_ref.id
                 </if>
             </if>
         </foreach>
@@ -208,13 +212,15 @@
 
             <foreach collection="object.attributes" index="i" item="a">
                 <choose>
-                    <when test="a.entityAttribute != null and a.entityAttribute.referenceEntityAttribute != null and a.text != null">
-                        <choose>
-                            <when test="filter == 'search'"> or </when>
-                            <otherwise> and </otherwise>
-                        </choose>
+                    <when test="a.entityAttribute != null and a.entityAttribute.referenceEntityAttributes != null and a.text != null">
+                        <foreach collection="a.entityAttribute.referenceEntityAttributes" index="j" item="ra">
+                            <choose>
+                                <when test="filter == 'search'"> or </when>
+                                <otherwise> and </otherwise>
+                            </choose>
 
-                        (a${i}_ref.text like concat('%', #{a.text}, '%') or v${i}_ref.text like concat('%', #{a.text}, '%'))
+                            (a${i}_${j}_ref.text like concat('%', #{a.text}, '%') or v${i}_${j}_ref.text like concat('%', #{a.text}, '%'))
+                        </foreach>
                     </when>
                     <otherwise>
                         <if test="a.text != null">
@@ -322,6 +328,7 @@
                     left join `${object.entityName}_value` sort_v on sort_v.attribute_id = sort_a.id
                 </if>
 
+                <!--
                 <if test="sortProperty.key == 'entity' and sortProperty.value != null and sortProperty.value.referenceEntityAttribute != null">
                     left join `${sortProperty.value.referenceEntityAttribute.entityName}_attribute` sort_ra
                       on sort_ra.object_id = sort_a.number
@@ -339,6 +346,7 @@
                     left join `${sortProperty.value.referenceEntityAttribute.entityName}_value` sort_rv
                       on sort_rv.attribute_id = sort_ra.id
                 </if>
+                -->
             </if>
         </if>
     </sql>
@@ -354,9 +362,11 @@
                 <when test="sortProperty.key == 'parent' and sortProperty.value != null">
                     order by group_concat(sort_rv.text order by sort_rv.text ${asc}) ${asc}
                 </when>
+                <!--
                 <when test="sortProperty.key in {'entity', 'entity_value'} and sortProperty.value != null and sortProperty.value.referenceEntityAttribute != null">
                     order by group_concat(sort_rv.text order by sort_rv.text ${asc}) ${asc}
                 </when>
+                -->
             </choose>
         </if>
     </sql>

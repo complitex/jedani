@@ -17,7 +17,9 @@ public class Entity implements Serializable {
     private List<EntityAttribute> attributes;
 
     public EntityAttribute getEntityAttribute(Long attributeId){
-        return attributes.stream().filter(a -> a.getEntityAttributeId().equals(attributeId)).findAny().orElse(null);
+        return attributes.stream().filter(a -> a.getEntityAttributeId().equals(attributeId)).findAny()
+                .orElseThrow(() -> new RuntimeException(String.format("EntityAttribute not found by id '%s' for '%s'",
+                        attributeId, name)));
     }
 
     public EntityValue getValue(){

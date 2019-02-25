@@ -45,7 +45,8 @@ import ru.complitex.domain.component.datatable.DomainActionColumn;
 import ru.complitex.domain.component.datatable.DomainColumn;
 import ru.complitex.domain.component.datatable.DomainIdColumn;
 import ru.complitex.domain.component.form.DomainAutoCompleteFormGroup;
-import ru.complitex.domain.entity.*;
+import ru.complitex.domain.entity.Entity;
+import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.model.NumberAttributeModel;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
@@ -58,7 +59,6 @@ import ru.complitex.jedani.worker.page.BasePage;
 import ru.complitex.jedani.worker.security.JedaniRoles;
 import ru.complitex.jedani.worker.service.StorageService;
 import ru.complitex.jedani.worker.service.WorkerService;
-import ru.complitex.jedani.worker.util.Nomenclatures;
 import ru.complitex.jedani.worker.util.Storages;
 import ru.complitex.name.service.NameService;
 
@@ -386,12 +386,8 @@ public class StoragePage extends BasePage {
 
             //todo multi ref filter
 
-            productColumns.add(new DomainColumn<Product>(productEntity.getEntityAttribute(Product.NOMENCLATURE)){
-                @Override
-                protected String displayEntity(EntityAttribute entityAttribute, Attribute attribute, Domain refDomain) {
-                    return Nomenclatures.getNomenclatureLabel(attribute.getNumber(), domainService);
-                }
-            });
+            productColumns.add(new DomainColumn<Product>(productEntity.getEntityAttribute(Product.NOMENCLATURE)
+                    .withReferences(Nomenclature.ENTITY_NAME, Nomenclature.CODE, Nomenclature.NAME)));
 
             productColumns.add(new DomainColumn<Product>(productEntity.getEntityAttribute(Product.QUANTITY)){
                 @Override
@@ -575,24 +571,20 @@ public class StoragePage extends BasePage {
 
             Entity transactionEntity = entityService.getEntity(Transaction.ENTITY_NAME);
 
-            transactionColumns.add(new DomainColumn<Transaction>(transactionEntity.getEntityAttribute(Transaction.NOMENCLATURE)){
-                @Override
-                protected String displayEntity(EntityAttribute entityAttribute, Attribute attribute, Domain refDomain) {
-                    return Nomenclatures.getNomenclatureLabel(attribute.getNumber(), domainService);
-                }
-            });
+            transactionColumns.add(new DomainColumn<Transaction>(transactionEntity.getEntityAttribute(Transaction.NOMENCLATURE)
+                    .withReferences(Nomenclature.ENTITY_NAME, Nomenclature.CODE, Nomenclature.NAME)));
 
             transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.QUANTITY)));
             transactionColumns.add(new DomainColumn<Transaction>(transactionEntity.getEntityAttribute(Transaction.STORAGE_FROM)){
                 @Override
-                protected String displayEntity(EntityAttribute entityAttribute, Attribute attribute, Domain refDomain) {
-                    return Storages.getStorageLabel(attribute.getNumber(), domainService, nameService);
+                protected String displayEntity(EntityAttribute entityAttribute, Long objectId) {
+                    return Storages.getStorageLabel(objectId, domainService, nameService);
                 }
             });
             transactionColumns.add(new DomainColumn<Transaction>(transactionEntity.getEntityAttribute(Transaction.STORAGE_TO)){
                 @Override
-                protected String displayEntity(EntityAttribute entityAttribute, Attribute attribute, Domain refDomain) {
-                    return Storages.getStorageLabel(attribute.getNumber(), domainService, nameService);
+                protected String displayEntity(EntityAttribute entityAttribute, Long objectId) {
+                    return Storages.getStorageLabel(objectId, domainService, nameService);
                 }
             });
 

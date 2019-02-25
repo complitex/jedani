@@ -133,10 +133,11 @@ public abstract class DomainEditPage<T extends Domain> extends BasePage{
                             input1 = new TextField<>("input1", new PropertyModel<>(attribute, "date"));
                             break;
                         case ENTITY:
-                            component = new DomainAutoComplete("component",
-                                    attribute.getEntityAttribute().getReferenceEntityAttribute().getEntityName(),
-                                    attribute.getEntityAttribute().getReferenceEntityAttribute(),
-                                    new PropertyModel<>(attribute, "number"));
+                            EntityAttribute referenceEntityAttribute = attribute.getEntityAttribute()
+                                    .getReferenceEntityAttributes().get(0);
+
+                            component = new DomainAutoComplete("component", referenceEntityAttribute.getEntityName(),
+                                    referenceEntityAttribute, new PropertyModel<>(attribute, "number"));
                             break;
                         case BOOLEAN:
                         case NUMBER:
