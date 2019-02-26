@@ -20,7 +20,7 @@ import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.component.datatable.DomainColumn;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
-import ru.complitex.domain.page.DomainListPage;
+import ru.complitex.domain.page.DomainListModalPage;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.entity.Nomenclature;
 import ru.complitex.jedani.worker.entity.Sale;
@@ -41,7 +41,7 @@ import java.util.Objects;
  * 18.02.2019 15:22
  */
 @AuthorizeInstantiation({JedaniRoles.AUTHORIZED})
-public class SaleListPage extends DomainListPage<SaleItem> {
+public class SaleListPage extends DomainListModalPage<SaleItem> {
     @Inject
     private SaleItemMapper saleItemMapper;
 
@@ -156,13 +156,13 @@ public class SaleListPage extends DomainListPage<SaleItem> {
     }
 
     @Override
-    protected boolean isShowHeader() {
-        return false;
+    protected void onAdd(AjaxRequestTarget target) {
+        saleModal.sale(getCurrentWorker().getObjectId(), target);
     }
 
     @Override
-    protected void onAdd(AjaxRequestTarget target) {
-        saleModal.sale(getCurrentWorker().getObjectId(), target);
+    protected void onActionEdit(SaleItem object, AjaxRequestTarget target) {
+        saleModal.view(object, target);
     }
 
     @Override
@@ -173,5 +173,10 @@ public class SaleListPage extends DomainListPage<SaleItem> {
     @Override
     protected Long getDomainsCount(FilterWrapper<SaleItem> filterWrapper) {
         return saleItemMapper.getSaleItemsCount(filterWrapper);
+    }
+
+    @Override
+    protected boolean isEditModelEnabled() {
+        return false;
     }
 }

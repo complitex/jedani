@@ -6,7 +6,7 @@ import ru.complitex.domain.entity.Domain;
  * @author Anatoly A. Ivanov
  * 16.10.2018 15:27
  */
-public class Nomenclature extends Domain {
+public class Nomenclature extends Domain<Nomenclature> {
     public static final String ENTITY_NAME = "nomenclature";
 
     public static final long NAME = 1;

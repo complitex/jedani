@@ -6,7 +6,7 @@ import ru.complitex.domain.entity.Domain;
  * @author Anatoly A. Ivanov
  * 17.10.2018 16:03
  */
-public class Product extends Domain {
+public class Product extends Domain<Product> {
     public static final String ENTITY_NAME = "product";
 
     public static final long NOMENCLATURE = 1;

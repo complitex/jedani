@@ -29,7 +29,7 @@ public class DomainMapper extends BaseMapper {
     private Principal principal;
 
     @Transactional
-    public void insertDomain(Domain domain){
+    public void insertDomain(Domain<?> domain){
         domain.setObjectId(sequenceMapper.nextId(domain.getEntityName()));
 
         if (domain.getStartDate() == null){
@@ -50,10 +50,10 @@ public class DomainMapper extends BaseMapper {
         });
     }
 
-    public void updateDomain(Domain domain){
+    public void updateDomain(Domain<?> domain){
         Date date = new Date();
 
-        Domain dbDomain = getDomain(domain.getEntityName(), domain.getObjectId(),
+        Domain<?> dbDomain = getDomain(domain.getEntityName(), domain.getObjectId(),
                 domain.isUseDateAttribute(), domain.isUseNumberValue());
 
         domain.getAttributes().forEach(a -> {

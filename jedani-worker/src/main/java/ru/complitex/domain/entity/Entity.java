@@ -4,6 +4,8 @@ import ru.complitex.domain.util.Locales;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author Anatoly A. Ivanov
@@ -16,14 +18,18 @@ public class Entity implements Serializable {
 
     private List<EntityAttribute> attributes;
 
-    public EntityAttribute getEntityAttribute(Long attributeId){
-        return attributes.stream().filter(a -> a.getEntityAttributeId().equals(attributeId)).findAny()
+    public EntityAttribute getEntityAttribute(Long entityAttributesId){
+        return attributes.stream().filter(a -> a.getEntityAttributeId().equals(entityAttributesId)).findAny()
                 .orElseThrow(() -> new RuntimeException(String.format("EntityAttribute not found by id '%s' for '%s'",
-                        attributeId, name)));
+                        entityAttributesId, name)));
     }
 
     public EntityValue getValue(){
         return values.stream().filter(v -> v.getLocaleId().equals(Locales.getSystemLocaleId())).findAny().orElse(null);
+    }
+
+    public List<EntityAttribute> getEntityAttributes(Long... entityAttributesId){
+        return Stream.of(entityAttributesId).map(this::getEntityAttribute).collect(Collectors.toList());
     }
 
     public Long getId() {

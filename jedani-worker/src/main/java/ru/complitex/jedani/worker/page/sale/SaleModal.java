@@ -1,6 +1,5 @@
 package ru.complitex.jedani.worker.page.sale;
 
-import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxButton;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxLink;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
@@ -9,9 +8,12 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.form.BootstrapCheckbox;
 import de.agilecoders.wicket.core.markup.html.bootstrap.image.GlyphIconType;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.select.BootstrapSelect;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.select.BootstrapSelectConfig;
+import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.FormComponent;
@@ -78,6 +80,8 @@ public class SaleModal extends Modal<Sale> {
     private DomainAutoCompleteFormGroup lastName, firstName, middleName;
 
     private Long defaultStorageId;
+
+    private Component saveButton;
 
     public SaleModal(String markupId) {
         super(markupId);
@@ -232,6 +236,11 @@ public class SaleModal extends Modal<Sale> {
 
                         target.add(mycookContainer);
                     }
+
+                    @Override
+                    public boolean isVisible() {
+                        return container.isEnabled();
+                    }
                 }.setIconType(GlyphIconType.remove));
             }
 
@@ -244,6 +253,11 @@ public class SaleModal extends Modal<Sale> {
                 mycookModel.getObject().add(newMycook());
 
                 target.add(mycookContainer);
+            }
+
+            @Override
+            public boolean isVisible() {
+                return container.isEnabled();
             }
         });
 
@@ -287,6 +301,11 @@ public class SaleModal extends Modal<Sale> {
 
                         target.add(baseAssortmentContainer);
                     }
+
+                    @Override
+                    public boolean isVisible() {
+                        return container.isEnabled();
+                    }
                 }.setIconType(GlyphIconType.remove));
             }
         }.setReuseItems(true));
@@ -298,9 +317,14 @@ public class SaleModal extends Modal<Sale> {
 
                 target.add(baseAssortmentContainer);
             }
+
+            @Override
+            public boolean isVisible() {
+                return container.isEnabled();
+            }
         });
 
-        addButton(new BootstrapAjaxButton(Modal.BUTTON_MARKUP_ID, Buttons.Type.Primary) {
+        addButton(saveButton = new IndicatingAjaxButton(Modal.BUTTON_MARKUP_ID, new ResourceModel("save")) {
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
                 SaleModal.this.save(target);
@@ -310,7 +334,13 @@ public class SaleModal extends Modal<Sale> {
             protected void onError(AjaxRequestTarget target) {
                 target.add(container);
             }
-        }.setLabel(new ResourceModel("save")));
+
+            @Override
+            public boolean isVisible() {
+                return container.isEnabled();
+            }
+        }.setOutputMarkupPlaceholderTag(true)
+                .add(AttributeModifier.append("class", "btn btn-primary")));
 
         addButton(new BootstrapAjaxLink<Void>(Modal.BUTTON_MARKUP_ID, Buttons.Type.Default) {
             @Override
@@ -325,7 +355,7 @@ public class SaleModal extends Modal<Sale> {
             Long storageId = model.getObject().getNumber(SaleItem.STORAGE);
             Long nomenclatureId = model.getObject().getNumber(SaleItem.NOMENCLATURE);
 
-            if (storageId != null || nomenclatureId != null) {
+            if (storageId != null && nomenclatureId != null) {
                 List<Product> products = domainService.getDomains(Product.class,
                         FilterWrapper.of((Product) new Product()
                                 .setParentId(storageId)
@@ -359,13 +389,13 @@ public class SaleModal extends Modal<Sale> {
 
     private void open(AjaxRequestTarget target){
         container.setVisible(true);
-        target.add(container);
+        target.add(container, saveButton);
 
-        appendShowDialogJavaScript(target);
+        show(target);
     }
 
     private void close(AjaxRequestTarget target){
-        appendCloseDialogJavaScript(target);
+        super.close(target);
 
         container.visitChildren(FormComponent.class, (c, v) -> ((FormComponent) c).clearInput());
 
@@ -373,7 +403,6 @@ public class SaleModal extends Modal<Sale> {
     }
 
     void sale(Long sellerWorkerId, AjaxRequestTarget target){
-
         List<Long> regions = domainService.getNumberValues(Worker.ENTITY_NAME, sellerWorkerId, Worker.REGIONS);
 
         if (!regions.isEmpty()){
@@ -392,17 +421,46 @@ public class SaleModal extends Modal<Sale> {
 
         saleModel.setObject(sale);
 
+        lastName.setObjectId(null);
+        firstName.setObjectId(null);
+        middleName.setObjectId(null);
+
         mycookModel.setObject(new ArrayList<>());
         baseAssortmentModel.setObject(new ArrayList<>());
 
         mycookModel.getObject().add(newMycook());
         baseAssortmentModel.getObject().add(newBaseAssortment());
 
+        container.setEnabled(true);
+
         open(target);
     }
 
     void edit(){
 
+    }
+
+    void view(SaleItem saleItem, AjaxRequestTarget target){
+        Sale sale = domainService.getDomain(Sale.class, saleItem.getParentId());
+
+        saleModel.setObject(sale);
+
+        lastName.setObjectId(sale.getBuyerLastName());
+        firstName.setObjectId(sale.getBuyerFirstName());;
+        middleName.setObjectId(sale.getBuyerMiddleName());
+
+        List<SaleItem> saleItems = domainService.getDomains(SaleItem.class, FilterWrapper.of((SaleItem) new SaleItem()
+                .setParentId(saleItem.getParentId())));
+
+        if (sale.getNumber(Sale.TYPE).equals(SaleType.MYCOOK)){
+            mycookModel.setObject(saleItems);
+        }else if (sale.getNumber(Sale.TYPE).equals(SaleType.BASE_ASSORTMENT)){
+            baseAssortmentModel.setObject(saleItems);
+        }
+
+        container.setEnabled(false);
+
+        open(target);
     }
 
     private void save(AjaxRequestTarget target){

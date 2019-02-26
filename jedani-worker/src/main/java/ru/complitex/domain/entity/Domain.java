@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
  * @author Anatoly A. Ivanov
  * 30.11.2017 15:29
  */
-public class Domain implements Serializable{
+public class Domain<T extends Domain<T>> implements Serializable{
     private Long id;
     private Long objectId;
     private Long parentId;
@@ -40,11 +40,11 @@ public class Domain implements Serializable{
         this.entityName = entityName;
     }
 
-    public Domain(Domain domain){
+    public Domain(Domain<T> domain){
         copy(domain, false);
     }
 
-    public void copy(Domain domain, boolean wrapAttributes){
+    public void copy(Domain<T> domain, boolean wrapAttributes){
        id = domain.id;
        objectId = domain.objectId;
        parentId = domain.parentId;
@@ -64,7 +64,7 @@ public class Domain implements Serializable{
         map.putAll(domain.map);
     }
 
-    public Domain(Domain domain, String entityName){
+    public Domain(Domain<T> domain, String entityName){
         this(domain);
 
         this.entityName = entityName;
@@ -75,7 +75,7 @@ public class Domain implements Serializable{
         this.objectId = objectId;
     }
 
-    public Domain setText(Long entityAttributeId, String text){
+    public Domain<T> setText(Long entityAttributeId, String text){
         getOrCreateAttribute(entityAttributeId).setText(text);
 
         return this;
@@ -85,7 +85,7 @@ public class Domain implements Serializable{
         setText(entityAttributeId, domain.getText(entityAttributeId));
     }
 
-    public Domain setUpperText(Long entityAttributeId, String text){
+    public Domain<T> setUpperText(Long entityAttributeId, String text){
         if (text != null){
             setText(entityAttributeId, text.toUpperCase());
         }

@@ -1,8 +1,10 @@
 package ru.complitex.domain.service;
 
+import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.mapper.EntityMapper;
+import ru.complitex.domain.util.Domains;
 
 import javax.inject.Inject;
 import java.io.Serializable;
@@ -21,6 +23,10 @@ public class EntityService implements Serializable {
 
     public Entity getEntity(String entityName){
         return entityMapper.getEntity(entityName);
+    }
+
+    public Entity getEntity(Class<? extends Domain> domainClass){
+        return entityMapper.getEntity(Domains.getEntityName(domainClass));
     }
 
     public EntityAttribute getEntityAttribute(String entityName, Long entityAttributeId){

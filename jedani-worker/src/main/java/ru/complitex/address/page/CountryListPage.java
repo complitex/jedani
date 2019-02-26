@@ -2,10 +2,11 @@ package ru.complitex.address.page;
 
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import ru.complitex.address.entity.Country;
-import ru.complitex.domain.page.DomainListPage;
+import ru.complitex.domain.entity.Entity;
+import ru.complitex.domain.entity.EntityAttribute;
+import ru.complitex.domain.page.DomainListModalPage;
 import ru.complitex.jedani.worker.security.JedaniRoles;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -13,13 +14,13 @@ import java.util.List;
  * 21.12.2017 1:06
  */
 @AuthorizeInstantiation(JedaniRoles.ADMINISTRATORS)
-public class CountryListPage extends DomainListPage<Country>{
+public class CountryListPage extends DomainListModalPage<Country> {
     public CountryListPage() {
-        super(Country.class, CountryEditPage.class);
+        super(Country.class);
     }
 
     @Override
-    protected List<Long> getEntityAttributeIds() {
-        return Arrays.asList(Country.NAME, Country.SHORT_NAME);
+    protected List<EntityAttribute> getEntityAttributes(Entity entity) {
+        return entity.getEntityAttributes(Country.NAME, Country.SHORT_NAME);
     }
 }

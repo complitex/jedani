@@ -54,6 +54,10 @@ public class DomainAutoCompleteFormGroup extends Panel{
         return domainAutoComplete.getModelObject();
     }
 
+    public void setObjectId(Long objectId){
+        domainAutoComplete.setModelObject(objectId);
+    }
+
     public DomainAutoCompleteFormGroup setRequired(boolean required){
         domainAutoComplete.setRequired(required);
 

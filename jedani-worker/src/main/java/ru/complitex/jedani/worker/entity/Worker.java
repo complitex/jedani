@@ -9,7 +9,7 @@ import java.util.Date;
  * @author Anatoly A. Ivanov
  * 17.12.2017 3:29
  */
-public class Worker extends DomainNode {
+public class Worker extends DomainNode<Worker> {
     public static final String ENTITY_NAME = "worker";
 
     public static final long ENTITY_ID = 20;

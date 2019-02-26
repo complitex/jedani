@@ -27,7 +27,10 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 import ru.complitex.address.entity.City;
-import ru.complitex.address.page.*;
+import ru.complitex.address.page.CityListPage;
+import ru.complitex.address.page.CityTypeListPage;
+import ru.complitex.address.page.CountryListPage;
+import ru.complitex.address.page.RegionListPage;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.wicket.component.MenuLink;
 import ru.complitex.domain.service.DomainService;
@@ -37,9 +40,7 @@ import ru.complitex.jedani.worker.entity.Worker;
 import ru.complitex.jedani.worker.mapper.StorageMapper;
 import ru.complitex.jedani.worker.page.admin.ImportPage;
 import ru.complitex.jedani.worker.page.admin.SettingPage;
-import ru.complitex.jedani.worker.page.catalog.MkStatusEditPage;
 import ru.complitex.jedani.worker.page.catalog.MkStatusListPage;
-import ru.complitex.jedani.worker.page.catalog.PositionEditPage;
 import ru.complitex.jedani.worker.page.catalog.PositionListPage;
 import ru.complitex.jedani.worker.page.promotion.PromotionListPage;
 import ru.complitex.jedani.worker.page.resource.JedaniCssResourceReference;
@@ -47,7 +48,6 @@ import ru.complitex.jedani.worker.page.resource.JedaniJsResourceReference;
 import ru.complitex.jedani.worker.page.resource.MenuCssResourceReference;
 import ru.complitex.jedani.worker.page.resource.MenuJsResourceReference;
 import ru.complitex.jedani.worker.page.sale.SaleListPage;
-import ru.complitex.jedani.worker.page.storage.NomenclatureEditPage;
 import ru.complitex.jedani.worker.page.storage.NomenclatureListPage;
 import ru.complitex.jedani.worker.page.storage.StorageListPage;
 import ru.complitex.jedani.worker.page.storage.StoragePage;
@@ -56,7 +56,9 @@ import ru.complitex.jedani.worker.page.worker.WorkerPage;
 import ru.complitex.jedani.worker.security.JedaniRoles;
 import ru.complitex.jedani.worker.service.StorageService;
 import ru.complitex.jedani.worker.service.WorkerService;
-import ru.complitex.name.page.*;
+import ru.complitex.name.page.FirstNameListPage;
+import ru.complitex.name.page.LastNameListPage;
+import ru.complitex.name.page.MiddleNameListPage;
 import ru.complitex.name.service.NameService;
 import ru.complitex.user.entity.User;
 import ru.complitex.user.mapper.UserMapper;
@@ -179,39 +181,21 @@ public class BasePage extends WebPage{
         address.add(newBehavior());
         sidebar.add(address);
 
-        address.add(new MenuLink("countries", CountryListPage.class)
-                .addMenuPageClass(CountryEditPage.class)
-                .setVisible(isAdmin()));
-        address.add(new MenuLink("regions", RegionListPage.class)
-                .addMenuPageClass(RegionEditPage.class)
-                .setVisible(isAdmin()));
-        address.add(new MenuLink("cityTypes", CityTypeListPage.class)
-                .addMenuPageClass(CityTypeEditPage.class)
-                .setVisible(isAdmin()));
-        address.add(new MenuLink("cities", CityListPage.class)
-                .addMenuPageClass(CityEditPage.class)
-                .setVisible(isAdmin()));
+        address.add(new MenuLink("countries", CountryListPage.class).setVisible(isAdmin()));
+        address.add(new MenuLink("regions", RegionListPage.class).setVisible(isAdmin()));
+        address.add(new MenuLink("cityTypes", CityTypeListPage.class).setVisible(isAdmin()));
+        address.add(new MenuLink("cities", CityListPage.class).setVisible(isAdmin()));
 
         WebMarkupContainer catalog = new WebMarkupContainer("catalog");
         catalog.setVisible(isAdmin() || isStructureAdmin());
         catalog.add(newBehavior());
         sidebar.add(catalog);
 
-        catalog.add(new MenuLink("first_name", FirstNameListPage.class)
-                .addMenuPageClass(FirstNameEditPage.class)
-                .setVisible(isAdmin()));
-        catalog.add(new MenuLink("middle_name", MiddleNameListPage.class)
-                .addMenuPageClass(MiddleNameEditPage.class)
-                .setVisible(isAdmin()));
-        catalog.add(new MenuLink("last_name", LastNameListPage.class)
-                .addMenuPageClass(LastNameEditPage.class)
-                .setVisible(isAdmin()));
-        catalog.add(new MenuLink("position", PositionListPage.class)
-                .addMenuPageClass(PositionEditPage.class)
-                .setVisible(isAdmin()));
-        catalog.add(new MenuLink("mk_status", MkStatusListPage.class)
-                .addMenuPageClass(MkStatusEditPage.class)
-                .setVisible(isAdmin()));
+        catalog.add(new MenuLink("first_name", FirstNameListPage.class).setVisible(isAdmin()));
+        catalog.add(new MenuLink("middle_name", MiddleNameListPage.class).setVisible(isAdmin()));
+        catalog.add(new MenuLink("last_name", LastNameListPage.class).setVisible(isAdmin()));
+        catalog.add(new MenuLink("position", PositionListPage.class).setVisible(isAdmin()));
+        catalog.add(new MenuLink("mk_status", MkStatusListPage.class).setVisible(isAdmin()));
         catalog.add(new MenuLink("workers", WorkerListPage.class)
                 .addMenuPageClass(WorkerPage.class)
                 .setVisible(isAdmin() || isStructureAdmin()));
@@ -221,7 +205,7 @@ public class BasePage extends WebPage{
         storages.add(newBehavior());
         sidebar.add(storages);
 
-        storages.add(new MenuLink("nomenclature", NomenclatureListPage.class).addMenuPageClass(NomenclatureEditPage.class));
+        storages.add(new MenuLink("nomenclature", NomenclatureListPage.class));
         storages.add(new MenuLink("storage", StorageListPage.class).addMenuPageClass(StoragePage.class));
 
         WebMarkupContainer promotions = new WebMarkupContainer("promotions");

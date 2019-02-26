@@ -1,7 +1,7 @@
 package ru.complitex.name.page;
 
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
-import ru.complitex.domain.page.DomainListPage;
+import ru.complitex.domain.page.DomainListModalPage;
 import ru.complitex.jedani.worker.security.JedaniRoles;
 import ru.complitex.name.entity.FirstName;
 
@@ -10,9 +10,8 @@ import ru.complitex.name.entity.FirstName;
  * 28.12.2017 17:32
  */
 @AuthorizeInstantiation(JedaniRoles.ADMINISTRATORS)
-public class FirstNameListPage extends DomainListPage<FirstName>{
+public class FirstNameListPage extends DomainListModalPage<FirstName>{
     public FirstNameListPage() {
-        super(FirstName.class, FirstNameEditPage.class);
+        super(FirstName.class);
     }
-
 }
