@@ -24,6 +24,7 @@ public class MoneyTextField<T> extends TextField<T> {
 
         response.render(JavaScriptHeaderItem.forReference(MaskMoneyJsResourceReference.INSTANCE));
 
-        response.render(OnDomReadyHeaderItem.forScript("$('#" + getMarkupId() + "').maskMoney()"));
+        response.render(OnDomReadyHeaderItem.forScript("$('#" + getMarkupId() +
+                "').maskMoney({decimal:',', thousands:'', precision: 2})"));
     }
 }

@@ -19,17 +19,15 @@
                 <label for="file">Файл</label>
                 <div>
                     <div class="input-group">
-
                         <span id="downloadFileName" class="form-control" style="overflow: hidden">
                             <a wicket:id="downloadFile">
-                            <span wicket:id="name"></span>
-                        </a>
-
+                                <span wicket:id="name"></span>
+                            </a>
                         </span>
 
                         <span class="input-group-btn">
                             <label class="btn btn-default btn-file">
-                                Загрузить
+                                Выбрать
                                 <input wicket:id="file" id="file" type="file" accept="application/pdf" style="display: none"
                                    onchange="$('#downloadFileName').html(this.files[0].name)"/>
                           </label>
