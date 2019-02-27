@@ -1,3 +1,11 @@
+-- Fix constraints
+
+ALTER TABLE promotion_attribute DROP FOREIGN KEY fk_promotion_attribute__entity_attribute;
+ALTER TABLE sale_attribute DROP FOREIGN KEY fk_sale_attribute__entity_attribute;
+ALTER TABLE sale_item_attribute DROP FOREIGN KEY fk_sale_item_attribute__entity_attribute;
+ALTER TABLE transaction_attribute DROP FOREIGN KEY fk_transaction_attribute__transaction;
+
+
 -- ---------------------------
 -- Currency
 -- ---------------------------
@@ -53,8 +61,6 @@ CREATE TABLE `currency_attribute`
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
   CONSTRAINT `fk_currency_attribute__currency` FOREIGN KEY (`object_id`) REFERENCES `currency` (`object_id`),
-  CONSTRAINT `fk_currency_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`)
-    REFERENCES entity_attribute (`entity_attribute_id`),
   CONSTRAINT `fk_currency_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE = InnoDB
   CHARSET = utf8
@@ -89,26 +95,40 @@ INSERT INTO `entity_value`(`entity_id`, `locale_id`, `text`) VALUES (30, 1, 'Н�
 INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (30, 1, 0);
 INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (30, 1, 1, 'Название'), (30, 1, 2, 'Назва');
 
-INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (30, 2, 2);
-INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (30, 2, 1, 'Код'), (30, 2, 2, 'Код');
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (30, 2, 0);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (30, 2, 1, 'Краткое название'), (30, 2, 2, 'Коротка назва');
+
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (30, 3, 2);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (30, 3, 1, 'Символ'), (30, 3, 2, 'Символ');
+
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (30, 4, 2);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (30, 4, 1, 'Код'), (30, 4, 2, 'Код');
 
 -- Currency
 
 INSERT INTO currency (id, object_id, status) VALUES (1, 1, 1);
 INSERT INTO currency_attribute (id, object_id, entity_attribute_id, status) VALUES (1, 1, 1, 1);
 INSERT INTO currency_value (attribute_id, locale_id, text) VALUES (1, 1, 'Рубль');
-INSERT INTO currency_attribute (id, object_id, entity_attribute_id, status, text) VALUES (2, 1, 2, 1, 'RUB');
+INSERT INTO currency_attribute (id, object_id, entity_attribute_id, status) VALUES (2, 1, 2, 1);
+INSERT INTO currency_value (attribute_id, locale_id, text) VALUES (2, 1, 'руб.');
+INSERT INTO currency_attribute (id, object_id, entity_attribute_id, status, text) VALUES (3, 1, 3, 1, '₽');
+INSERT INTO currency_attribute (id, object_id, entity_attribute_id, status, text) VALUES (4, 1, 4, 1, 'RUB');
 
 INSERT INTO currency (id, object_id, status) VALUES (2, 2, 1);
-INSERT INTO currency_attribute (id, object_id, entity_attribute_id, status) VALUES (3, 2, 1, 1);
-INSERT INTO currency_value (attribute_id, locale_id, text) VALUES (3, 1, 'Гривна');
-INSERT INTO currency_value (attribute_id, locale_id, text) VALUES (3, 2, 'Гривня');
-INSERT INTO currency_attribute (id, object_id, entity_attribute_id, status, text) VALUES (4, 2, 2, 1, 'UAH');
+INSERT INTO currency_attribute (id, object_id, entity_attribute_id, status) VALUES (5, 2, 1, 1);
+INSERT INTO currency_value (attribute_id, locale_id, text) VALUES (5, 1, 'Гривна'), (5, 2, 'Гривня');
+INSERT INTO currency_attribute (id, object_id, entity_attribute_id, status) VALUES (6, 2, 2, 1);
+INSERT INTO currency_value (attribute_id, locale_id, text) VALUES (6, 1, 'грн.'), (6, 2, 'грн.');
+INSERT INTO currency_attribute (id, object_id, entity_attribute_id, status, text) VALUES (7, 2, 3, 1, '₴');
+INSERT INTO currency_attribute (id, object_id, entity_attribute_id, status, text) VALUES (8, 2, 4, 1, 'UAH');
 
 INSERT INTO currency (id, object_id, status) VALUES (3, 3, 1);
-INSERT INTO currency_attribute (id, object_id, entity_attribute_id, status) VALUES (5, 3, 1, 1);
-INSERT INTO currency_value (attribute_id, locale_id, text) VALUES (5, 1, 'Евро');
-INSERT INTO currency_attribute (id, object_id, entity_attribute_id, status, text) VALUES (6, 3, 2, 1, 'EUR');
+INSERT INTO currency_attribute (id, object_id, entity_attribute_id, status) VALUES (9, 3, 1, 1);
+INSERT INTO currency_value (attribute_id, locale_id, text) VALUES (9, 1, 'Евро'), (9, 2, 'Евро');
+INSERT INTO currency_attribute (id, object_id, entity_attribute_id, status) VALUES (10, 3, 2, 1);
+INSERT INTO currency_value (attribute_id, locale_id, text) VALUES (10, 1, 'евро'), (10, 2, 'евро');
+INSERT INTO currency_attribute (id, object_id, entity_attribute_id, status, text) VALUES (11, 3, 3, 1, '€');
+INSERT INTO currency_attribute (id, object_id, entity_attribute_id, status, text) VALUES (12, 3, 4, 1, 'EUR');
 
 -- ---------------------------
 -- Exchange rate
@@ -165,8 +185,6 @@ CREATE TABLE `exchange_rate_attribute`
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
   CONSTRAINT `fk_exchange_rate_attribute__exchange_rate` FOREIGN KEY (`object_id`) REFERENCES `exchange_rate` (`object_id`),
-  CONSTRAINT `fk_exchange_rate_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`)
-    REFERENCES entity_attribute (`entity_attribute_id`),
   CONSTRAINT `fk_exchange_rate_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE = InnoDB
   CHARSET = utf8

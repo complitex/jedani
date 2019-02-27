@@ -19,6 +19,8 @@ public class CurrencyListPage extends DomainListModalPage<Currency> {
 
     @Override
     protected List<EntityAttribute> getEntityAttributes(Entity entity) {
+        entity.getEntityAttribute(Currency.SHORT_NAME).setStringType(StringType.LOWER_CASE);
+        entity.getEntityAttribute(Currency.SYMBOL).setStringType(StringType.DEFAULT);
         entity.getEntityAttribute(Currency.CODE).setStringType(StringType.DEFAULT);
 
         return super.getEntityAttributes(entity);
@@ -26,6 +28,8 @@ public class CurrencyListPage extends DomainListModalPage<Currency> {
 
     @Override
     protected List<EntityAttribute> getEditEntityAttributes(Entity entity) {
+        entity.getEntityAttribute(Currency.SHORT_NAME).setStringType(StringType.LOWER_CASE);
+        entity.getEntityAttribute(Currency.SYMBOL).setStringType(StringType.DEFAULT);
         entity.getEntityAttribute(Currency.CODE).setStringType(StringType.DEFAULT);
 
         return super.getEditEntityAttributes(entity);

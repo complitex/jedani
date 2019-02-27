@@ -1264,8 +1264,6 @@ CREATE TABLE `promotion_attribute` (
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
   CONSTRAINT `fk_promotion_attribute__promotion` FOREIGN KEY (`object_id`) REFERENCES `promotion`(`object_id`),
-  CONSTRAINT `fk_promotion_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`)
-    REFERENCES entity_attribute (`entity_attribute_id`),
   CONSTRAINT `fk_promotion_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты акции';
 
@@ -1340,8 +1338,6 @@ CREATE TABLE `sale_attribute`
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
   CONSTRAINT `fk_sale_attribute__sale` FOREIGN KEY (`object_id`) REFERENCES `sale` (`object_id`),
-  CONSTRAINT `fk_sale_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`)
-    REFERENCES entity_attribute (`entity_attribute_id`),
   CONSTRAINT `fk_sale_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE = InnoDB
   CHARSET = utf8
@@ -1421,8 +1417,6 @@ CREATE TABLE `sale_item_attribute`
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
   CONSTRAINT `fk_sale_item_attribute__sale_item` FOREIGN KEY (`object_id`) REFERENCES `sale_item` (`object_id`),
-  CONSTRAINT `fk_sale_item_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`)
-    REFERENCES entity_attribute (`entity_attribute_id`),
   CONSTRAINT `fk_sale_item_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE = InnoDB
   CHARSET = utf8
@@ -1502,8 +1496,6 @@ CREATE TABLE `currency_attribute`
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
   CONSTRAINT `fk_currency_attribute__currency` FOREIGN KEY (`object_id`) REFERENCES `currency` (`object_id`),
-  CONSTRAINT `fk_currency_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`)
-    REFERENCES entity_attribute (`entity_attribute_id`),
   CONSTRAINT `fk_currency_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE = InnoDB
   CHARSET = utf8
@@ -1583,8 +1575,6 @@ CREATE TABLE `exchange_rate_attribute`
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
   CONSTRAINT `fk_exchange_rate_attribute__exchange_rate` FOREIGN KEY (`object_id`) REFERENCES `exchange_rate` (`object_id`),
-  CONSTRAINT `fk_exchange_rate_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`)
-    REFERENCES entity_attribute (`entity_attribute_id`),
   CONSTRAINT `fk_exchange_rate_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE = InnoDB
   CHARSET = utf8
