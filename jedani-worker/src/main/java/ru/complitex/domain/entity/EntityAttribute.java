@@ -28,7 +28,7 @@ public class EntityAttribute implements Serializable{
 
     private EntityAttribute prefixEntityAttribute;
 
-    private boolean displayLowerCase;
+    private StringType stringType = StringType.UPPER_CASE;
 
     public EntityAttribute() {
     }
@@ -148,16 +148,6 @@ public class EntityAttribute implements Serializable{
         return this;
     }
 
-    public boolean isDisplayLowerCase() {
-        return displayLowerCase;
-    }
-
-    public EntityAttribute setDisplayLowerCase(boolean displayLowerCase) {
-        this.displayLowerCase = displayLowerCase;
-
-        return this;
-    }
-
     public EntityAttribute addReferenceEntityAttribute(EntityAttribute entityAttribute){
         if (referenceEntityAttributes == null){
             referenceEntityAttributes = new ArrayList<>();
@@ -184,5 +174,15 @@ public class EntityAttribute implements Serializable{
 
     public boolean hasReferenceEntityAttributes(){
         return referenceEntityAttributes != null && !referenceEntityAttributes.isEmpty();
+    }
+
+    public StringType getStringType() {
+        return stringType;
+    }
+
+    public EntityAttribute setStringType(StringType stringType) {
+        this.stringType = stringType;
+
+        return this;
     }
 }

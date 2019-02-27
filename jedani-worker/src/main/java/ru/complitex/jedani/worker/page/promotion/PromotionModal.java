@@ -29,6 +29,7 @@ import ru.complitex.domain.component.form.AbstractDomainAutoCompleteList;
 import ru.complitex.domain.component.form.DomainAutoCompleteFormGroup;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.Status;
+import ru.complitex.domain.entity.StringType;
 import ru.complitex.domain.model.*;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.util.Locales;
@@ -139,7 +140,7 @@ public class PromotionModal extends Modal<Promotion> {
 
         container.add(new FormGroupBorder("eur", new ResourceModel("eur"))
                 .add(new MoneyTextField<>("eur", new TextAttributeModel(getModel(), Promotion.EUR,
-                        TextAttributeModel.TYPE.DEFAULT))));
+                        StringType.DEFAULT))));
 
         addButton(new IndicatingAjaxButton(Modal.BUTTON_MARKUP_ID, new ResourceModel("save")) {
             @Override

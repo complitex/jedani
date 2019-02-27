@@ -23,6 +23,7 @@ import ru.complitex.common.wicket.datatable.TextDataFilter;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
+import ru.complitex.domain.entity.StringType;
 import ru.complitex.domain.page.DomainListPage;
 import ru.complitex.domain.service.EntityService;
 import ru.complitex.jedani.worker.entity.Position;
@@ -82,7 +83,7 @@ public class WorkerListPage extends DomainListPage<Worker>{
                         .withReference(CityType.ENTITY_NAME, CityType.SHORT_NAME)));
 
         list.add(entity.getEntityAttribute(Worker.PHONE));
-        list.add(entity.getEntityAttribute(Worker.EMAIL).setDisplayLowerCase(true));
+        list.add(entity.getEntityAttribute(Worker.EMAIL).setStringType(StringType.LOWER_CASE));
         list.add(entity.getEntityAttribute(Worker.INVOLVED_AT));
 
         list.add(entity.getEntityAttribute(Worker.POSITION).withReference(Position.ENTITY_NAME, Position.NAME));

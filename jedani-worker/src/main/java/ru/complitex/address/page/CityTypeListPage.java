@@ -4,6 +4,7 @@ import org.apache.wicket.authroles.authorization.strategies.role.annotations.Aut
 import ru.complitex.address.entity.CityType;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
+import ru.complitex.domain.entity.StringType;
 import ru.complitex.domain.page.DomainListModalPage;
 import ru.complitex.jedani.worker.security.JedaniRoles;
 
@@ -25,7 +26,7 @@ public class CityTypeListPage extends DomainListModalPage<CityType> {
         List<EntityAttribute> list = new ArrayList<>();
 
         list.add(entity.getEntityAttribute(CityType.NAME));
-        list.add(entity.getEntityAttribute(CityType.SHORT_NAME).setDisplayLowerCase(true));
+        list.add(entity.getEntityAttribute(CityType.SHORT_NAME).setStringType(StringType.LOWER_CASE));
 
         return list;
     }

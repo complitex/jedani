@@ -243,7 +243,7 @@ public class WorkerPage extends BasePage {
                 MkStatus.ENTITY_NAME, MkStatus.NAME).setVisible(participant));
         form.add(new DateTextFieldFormGroup("birthday", new DateAttributeModel(worker, Worker.BIRTHDAY)));
         form.add(new AttributeInputListFormGroup("phone", Model.of(worker.getOrCreateAttribute(Worker.PHONE))).setRequired(participant));
-        form.add(new TextFieldFormGroup<>("email", new TextAttributeModel(worker, Worker.EMAIL, TextAttributeModel.TYPE.LOWER_CASE)));
+        form.add(new TextFieldFormGroup<>("email", new TextAttributeModel(worker, Worker.EMAIL, StringType.LOWER_CASE)));
 
         AttributeSelectListFormGroup city, region;
         form.add(region = new AttributeSelectListFormGroup("region", Model.of(worker.getOrCreateAttribute(Worker.REGIONS)),

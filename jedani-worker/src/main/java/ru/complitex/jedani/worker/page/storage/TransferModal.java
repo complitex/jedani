@@ -20,12 +20,16 @@ import ru.complitex.common.wicket.form.FormGroupPanel;
 import ru.complitex.common.wicket.form.FormGroupSelectPanel;
 import ru.complitex.common.wicket.form.TextFieldFormGroup;
 import ru.complitex.domain.component.form.DomainAutoCompleteFormGroup;
+import ru.complitex.domain.entity.StringType;
 import ru.complitex.domain.model.NumberAttributeModel;
 import ru.complitex.domain.model.TextAttributeModel;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.component.StorageAutoComplete;
 import ru.complitex.jedani.worker.component.WorkerAutoComplete;
-import ru.complitex.jedani.worker.entity.*;
+import ru.complitex.jedani.worker.entity.Product;
+import ru.complitex.jedani.worker.entity.RecipientType;
+import ru.complitex.jedani.worker.entity.Transaction;
+import ru.complitex.jedani.worker.entity.TransferType;
 import ru.complitex.jedani.worker.util.Nomenclatures;
 import ru.complitex.name.entity.FirstName;
 import ru.complitex.name.entity.LastName;
@@ -119,7 +123,7 @@ public abstract class TransferModal extends StorageModal {
                         Transaction.QUANTITY)).setRequired(true).setType(Long.class));
 
                 fragment.add(new TextFieldFormGroup<>("serialNumber", new TextAttributeModel(getModel(), Transaction.SERIAL_NUMBER,
-                        TextAttributeModel.TYPE.DEFAULT)));
+                        StringType.DEFAULT)));
 
                 return fragment;
             }
@@ -264,7 +268,7 @@ public abstract class TransferModal extends StorageModal {
                         Transaction.QUANTITY)).setRequired(true).setType(Long.class).setRequired(true));
 
                 fragment.add(new TextFieldFormGroup<>("comments", new TextAttributeModel(getModel(), Transaction.COMMENTS,
-                        TextAttributeModel.TYPE.DEFAULT)));
+                        StringType.DEFAULT)));
 
                 return fragment;
             }

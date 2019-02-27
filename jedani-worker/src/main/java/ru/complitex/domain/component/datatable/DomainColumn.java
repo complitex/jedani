@@ -14,10 +14,7 @@ import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.wicket.datatable.FilterDataForm;
 import ru.complitex.common.wicket.datatable.TextDataFilter;
 import ru.complitex.common.wicket.panel.InputPanel;
-import ru.complitex.domain.entity.Attribute;
-import ru.complitex.domain.entity.Domain;
-import ru.complitex.domain.entity.EntityAttribute;
-import ru.complitex.domain.entity.Value;
+import ru.complitex.domain.entity.*;
 import ru.complitex.domain.model.DateAttributeModel;
 import ru.complitex.domain.model.NumberAttributeModel;
 import ru.complitex.domain.model.TextAttributeModel;
@@ -73,7 +70,7 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
                         new DateAttributeModel(domain, entityAttributeId),
                         new DateTextFieldConfig().withFormat("dd.MM.yyyy").withLanguage("ru").autoClose(true)));
             default:
-                return new TextDataFilter<>(componentId, new TextAttributeModel(domain, entityAttributeId, TextAttributeModel.TYPE.DEFAULT), form);
+                return new TextDataFilter<>(componentId, new TextAttributeModel(domain, entityAttributeId, StringType.DEFAULT), form);
         }
     }
 

@@ -400,7 +400,97 @@ INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `tex
 INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (29, 6, 5);
 INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (29, 6, 1, 'Рассрочка'), (29, 6, 2, 'Розстрочка');
 
+/* Currency */
+
+INSERT INTO `sequence` (`name`) VALUE ('currency');
+
+INSERT INTO `entity` (`id`, `name`) VALUE (30, 'currency');
+INSERT INTO `entity_value`(`entity_id`, `locale_id`, `text`) VALUES (30, 1, 'Нац.валюта'), (30, 2, 'Нац.валюті');
+
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (30, 1, 0);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (30, 1, 1, 'Название'), (30, 1, 2, 'Назва');
+
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (30, 2, 2);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (30, 2, 1, 'Код'), (30, 2, 2, 'Код');
+
+-- Currency
+
+INSERT INTO currency (id, object_id, status) VALUES (1, 1, 1);
+INSERT INTO currency_attribute (id, object_id, entity_attribute_id, status) VALUES (1, 1, 1, 1);
+INSERT INTO currency_value (attribute_id, locale_id, text) VALUES (1, 1, 'Рубль');
+INSERT INTO currency_attribute (id, object_id, entity_attribute_id, status, text) VALUES (2, 1, 2, 1, 'RUB');
+
+INSERT INTO currency (id, object_id, status) VALUES (2, 2, 1);
+INSERT INTO currency_attribute (id, object_id, entity_attribute_id, status) VALUES (3, 2, 1, 1);
+INSERT INTO currency_value (attribute_id, locale_id, text) VALUES (3, 1, 'Гривна');
+INSERT INTO currency_value (attribute_id, locale_id, text) VALUES (3, 2, 'Гривня');
+INSERT INTO currency_attribute (id, object_id, entity_attribute_id, status, text) VALUES (4, 2, 2, 1, 'UAH');
+
+INSERT INTO currency (id, object_id, status) VALUES (3, 3, 1);
+INSERT INTO currency_attribute (id, object_id, entity_attribute_id, status) VALUES (5, 3, 1, 1);
+INSERT INTO currency_value (attribute_id, locale_id, text) VALUES (5, 1, 'Евро');
+INSERT INTO currency_attribute (id, object_id, entity_attribute_id, status, text) VALUES (6, 3, 2, 1, 'EUR');
+
+/* Exchange rate */
+
+INSERT INTO `sequence` (`name`) VALUE ('exchange_rate');
+
+INSERT INTO `entity` (`id`, `name`) VALUE (31, 'exchange_rate');
+INSERT INTO `entity_value`(`entity_id`, `locale_id`, `text`) VALUES (31, 1, 'Курс нац.валюты'), (31, 2, 'Курс нац.валюті');
+
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (31, 1, 0);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (31, 1, 1, 'Название'), (31, 1, 2, 'Назва');
+
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (31, 2, 2);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (31, 2, 1, 'Код'), (31, 2, 2, 'Код');
+
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`, `reference_id`) VALUES (31, 3, 11, 30);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (31, 3, 1, 'Базовая валюта'), (31, 3, 2, 'Базова валюта');
+
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`, `reference_id`) VALUES (31, 4, 11, 30);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (31, 4, 1, 'Котируемая валюта'), (31, 4, 2, 'Котирувана валюта');
+
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (31, 5, 2);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (31, 5, 1, 'uri_xml');
+
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (31, 6, 2);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (31, 6, 1, 'xpath_name');
+
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (31, 7, 2);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (31, 7, 1, 'xpath_code');
+
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (31, 8, 2);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (31, 8, 1, 'xpath_date');
+
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (31, 9, 2);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (31, 9, 1, 'xpath_value');
+
+-- Exchange rate
+
+INSERT INTO exchange_rate (id, object_id, status) VALUES (1, 1, 1);
+INSERT INTO exchange_rate_attribute (id, object_id, entity_attribute_id, status) VALUES (1, 1, 1, 1);
+INSERT INTO exchange_rate_value (attribute_id, locale_id, text) VALUES (1, 1, 'EUR/RUB (ЦБ РФ');
+INSERT INTO exchange_rate_attribute (id, object_id, entity_attribute_id, status, text) VALUES (2, 1, 2, 1, 'EUR/RUB');
+INSERT INTO exchange_rate_attribute (id, object_id, entity_attribute_id, status, number) VALUES (3, 1, 3, 1, 3);
+INSERT INTO exchange_rate_attribute (id, object_id, entity_attribute_id, status, number) VALUES (4, 1, 4, 1, 1);
+INSERT INTO exchange_rate_attribute (id, object_id, entity_attribute_id, status, text) VALUES (5, 1, 5, 1, 'http://www.cbr.ru/scripts/XML_daily.asp');
+INSERT INTO exchange_rate_attribute (id, object_id, entity_attribute_id, status, text) VALUES (6, 1, 6, 1, '/ValCurs/Valute[@ID=\'R01239\']/Name/text()');
+INSERT INTO exchange_rate_attribute (id, object_id, entity_attribute_id, status, text) VALUES (7, 1, 7, 1, '/ValCurs/Valute[@ID=\'R01239\']/CharCode/text()');
+INSERT INTO exchange_rate_attribute (id, object_id, entity_attribute_id, status, text) VALUES (8, 1, 8, 1, '/ValCurs/@Date');
+INSERT INTO exchange_rate_attribute (id, object_id, entity_attribute_id, status, text) VALUES (9, 1, 9, 1, '/ValCurs/Valute[@ID=\'R01239\']/Value/text()');
+
+INSERT INTO exchange_rate (id, object_id, status) VALUES (2, 2, 1);
+INSERT INTO exchange_rate_attribute (id, object_id, entity_attribute_id, status) VALUES (10, 2, 1, 1);
+INSERT INTO exchange_rate_value (attribute_id, locale_id, text) VALUES (10, 1, 'EUR/UAH (НБУ)');
+INSERT INTO exchange_rate_attribute (id, object_id, entity_attribute_id, status, text) VALUES (11, 2, 2, 1, 'EUR/UAH');
+INSERT INTO exchange_rate_attribute (id, object_id, entity_attribute_id, status, number) VALUES (12, 2, 3, 1, 3);
+INSERT INTO exchange_rate_attribute (id, object_id, entity_attribute_id, status, number) VALUES (13, 2, 4, 1, 2);
+INSERT INTO exchange_rate_attribute (id, object_id, entity_attribute_id, status, text) VALUES (14, 2, 5, 1, 'https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?valcode=EUR&date=');
+INSERT INTO exchange_rate_attribute (id, object_id, entity_attribute_id, status, text) VALUES (15, 2, 6, 1, 'exchange/currency/txt/text()');
+INSERT INTO exchange_rate_attribute (id, object_id, entity_attribute_id, status, text) VALUES (16, 2, 7, 1, 'exchange/currency/cc/text()');
+INSERT INTO exchange_rate_attribute (id, object_id, entity_attribute_id, status, text) VALUES (17, 2, 8, 1, 'exchange/currency/exchangedate/text()');
+INSERT INTO exchange_rate_attribute (id, object_id, entity_attribute_id, status, text) VALUES (18, 2, 9, 1, 'exchange/currency/rate/text()');
 
 -- Update
 
-INSERT INTO `update` (`version`) VALUE ('20190218_1.0.6');
+INSERT INTO `update` (`version`) VALUE ('20190227_1.0.7');

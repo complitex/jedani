@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.model.IModel;
 import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Domain;
+import ru.complitex.domain.entity.StringType;
 import ru.complitex.domain.entity.Value;
 import ru.complitex.domain.util.Attributes;
 
@@ -12,8 +13,6 @@ import ru.complitex.domain.util.Attributes;
  * 14.09.2018 13:46
  */
 public class TextAttributeModel implements IModel<String> {
-    public enum TYPE {DEFAULT, LOWER_CASE, UPPER_CASE}
-
     private Domain domain;
     private Long entityAttributeId;
 
@@ -21,7 +20,7 @@ public class TextAttributeModel implements IModel<String> {
 
     private Value value;
 
-    private TYPE type;
+    private StringType type;
 
     private IModel<? extends Domain> domainModel;
 
@@ -29,27 +28,27 @@ public class TextAttributeModel implements IModel<String> {
         this.domain = domain;
         this.entityAttributeId = entityAttributeId;
 
-        this.type = TYPE.DEFAULT;
+        this.type = StringType.DEFAULT;
     }
 
-    public TextAttributeModel(Domain domain, Long entityAttributeId, TYPE type) {
+    public TextAttributeModel(Domain domain, Long entityAttributeId, StringType type) {
         this.domain = domain;
         this.entityAttributeId = entityAttributeId;
 
         this.type = type;
     }
 
-    public TextAttributeModel(Attribute attribute, TYPE type) {
+    public TextAttributeModel(Attribute attribute, StringType type) {
         this.attribute = attribute;
         this.type = type;
     }
 
-    public TextAttributeModel(Value value, TYPE type) {
+    public TextAttributeModel(Value value, StringType type) {
         this.value = value;
         this.type = type;
     }
 
-    public TextAttributeModel(IModel<? extends Domain> domainModel, Long entityAttributeId, TYPE type) {
+    public TextAttributeModel(IModel<? extends Domain> domainModel, Long entityAttributeId, StringType type) {
         this.domainModel = domainModel;
         this.entityAttributeId = entityAttributeId;
 
@@ -78,7 +77,7 @@ public class TextAttributeModel implements IModel<String> {
         if (text != null){
             text = text.trim();
 
-            if (!type.equals(TYPE.DEFAULT)) {
+            if (!type.equals(StringType.DEFAULT)) {
                 text = text.toUpperCase();
             }
         }

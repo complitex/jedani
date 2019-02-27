@@ -23,10 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.complitex.common.wicket.component.FormGroupBorder;
 import ru.complitex.domain.component.form.DomainAutoComplete;
-import ru.complitex.domain.entity.Attribute;
-import ru.complitex.domain.entity.Domain;
-import ru.complitex.domain.entity.Entity;
-import ru.complitex.domain.entity.EntityAttribute;
+import ru.complitex.domain.entity.*;
 import ru.complitex.domain.model.TextAttributeModel;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
@@ -36,9 +33,6 @@ import ru.complitex.jedani.worker.page.BasePage;
 
 import javax.inject.Inject;
 import java.util.List;
-
-import static ru.complitex.domain.model.TextAttributeModel.TYPE.LOWER_CASE;
-import static ru.complitex.domain.model.TextAttributeModel.TYPE.UPPER_CASE;
 
 /**
  * @author Anatoly A. Ivanov
@@ -119,7 +113,7 @@ public class DomainEditModal<T extends Domain<T>> extends Modal<T> {
                         case TEXT:
                         case DECIMAL:
                         case ENTITY_VALUE:
-                            input1 = new TextField<>("input1", new TextAttributeModel(attribute, UPPER_CASE));
+                            input1 = new TextField<>("input1", new TextAttributeModel(attribute, entityAttribute.getStringType()));
                             break;
                         case DATE:
                             input1 = new TextField<>("input1", new PropertyModel<>(attribute, "date"));
@@ -136,14 +130,12 @@ public class DomainEditModal<T extends Domain<T>> extends Modal<T> {
                             input1 = new TextField<>("input1", new PropertyModel<>(attribute, "number"));
                             break;
                         case TEXT_VALUE:
-                            boolean lowerCase = entityAttribute.isDisplayLowerCase();
-
                             input1 = new TextField<>("input1", new TextAttributeModel(attribute.getOrCreateValue(
-                                    Locales.getLocaleId(Locales.RU)), lowerCase ? LOWER_CASE : UPPER_CASE));
+                                    Locales.getLocaleId(Locales.RU)), entityAttribute.getStringType()));
                             input1.add(new AttributeModifier("placeholder", getString("RU")));
 
                             input2 = new TextField<>("input2", new TextAttributeModel(attribute.getOrCreateValue(
-                                    Locales.getLocaleId(Locales.UA)), lowerCase ? LOWER_CASE : UPPER_CASE));
+                                    Locales.getLocaleId(Locales.UA)), entityAttribute.getStringType()));
                             input2.add(new AttributeModifier("placeholder", getString("UA")));
 
                             break;

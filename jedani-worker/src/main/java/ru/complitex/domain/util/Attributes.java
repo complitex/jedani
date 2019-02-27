@@ -1,7 +1,7 @@
 package ru.complitex.domain.util;
 
 import ru.complitex.domain.entity.EntityAttribute;
-import ru.complitex.domain.entity.ValueType;
+import ru.complitex.domain.entity.StringType;
 
 /**
  * @author Anatoly A. Ivanov
@@ -14,9 +14,9 @@ public class Attributes {
         }
 
         if (entityAttribute != null) {
-            if (entityAttribute.isDisplayLowerCase()){
+            if (entityAttribute.getStringType().equals(StringType.LOWER_CASE)){
                 return text.toLowerCase();
-            }else if (entityAttribute.getValueType().equals(ValueType.TEXT_VALUE)){
+            }else if (entityAttribute.getStringType().equals(StringType.UPPER_CASE)){
                 return capitalize(text);
             }
         }
