@@ -143,6 +143,7 @@ public class BasePage extends WebPage{
         WebMarkupContainer userStorages = new WebMarkupContainer("userStorages");
         userStorages.setVisible(isUser() && !isAdmin() && !isParticipant());
         userStorages.add(newBehavior());
+        userStorages.add(new WebMarkupContainer("link").add(newBehaviorLink()));
         sidebar.add(userStorages);
 
         userStorages.add(new MenuLink("storage", StoragePage.class,
@@ -173,6 +174,7 @@ public class BasePage extends WebPage{
         WebMarkupContainer settings = new WebMarkupContainer("settings");
         settings.setVisible(isAdmin());
         settings.add(newBehavior());
+        settings.add(new WebMarkupContainer("link").add(newBehaviorLink()));
         sidebar.add(settings);
 
         settings.add(new MenuLink("setting", SettingPage.class).setVisible(isAdmin()));
@@ -181,6 +183,7 @@ public class BasePage extends WebPage{
         WebMarkupContainer address = new WebMarkupContainer("address");
         address.setVisible(isAdmin());
         address.add(newBehavior());
+        address.add(new WebMarkupContainer("link").add(newBehaviorLink()));
         sidebar.add(address);
 
         address.add(new MenuLink("countries", CountryListPage.class).setVisible(isAdmin()));
@@ -191,6 +194,7 @@ public class BasePage extends WebPage{
         WebMarkupContainer catalog = new WebMarkupContainer("catalog");
         catalog.setVisible(isAdmin() || isStructureAdmin());
         catalog.add(newBehavior());
+        catalog.add(new WebMarkupContainer("link").add(newBehaviorLink()));
         sidebar.add(catalog);
 
         catalog.add(new MenuLink("first_name", FirstNameListPage.class).setVisible(isAdmin()));
@@ -204,6 +208,7 @@ public class BasePage extends WebPage{
         WebMarkupContainer workers = new WebMarkupContainer("workers");
         workers.setVisible(isAdmin() || isStructureAdmin());
         workers.add(newBehavior());
+        workers.add(new WebMarkupContainer("link").add(newBehaviorLink()));
         sidebar.add(workers);
 
         workers.add(new MenuLink("workers", WorkerListPage.class).addMenuPageClass(WorkerPage.class));
@@ -211,6 +216,7 @@ public class BasePage extends WebPage{
         WebMarkupContainer storages = new WebMarkupContainer("storages");
         storages.setVisible(isAdmin());
         storages.add(newBehavior());
+        storages.add(new WebMarkupContainer("link").add(newBehaviorLink()));
         sidebar.add(storages);
 
         storages.add(new MenuLink("nomenclature", NomenclatureListPage.class));
@@ -219,12 +225,14 @@ public class BasePage extends WebPage{
         WebMarkupContainer promotions = new WebMarkupContainer("promotions");
         promotions.setVisible(isAdmin() || isPromotionAdmin());
         promotions.add(newBehavior());
+        promotions.add(new WebMarkupContainer("link").add(newBehaviorLink()));
         sidebar.add(promotions);
 
         promotions.add(new MenuLink("promotion", PromotionListPage.class));
 
         WebMarkupContainer sales = new WebMarkupContainer("sales");
         sales.add(newBehavior());
+        sales.add(new WebMarkupContainer("link").add(newBehaviorLink()));
         sidebar.add(sales);
 
         sales.add(new MenuLink("sale", SaleListPage.class));
@@ -246,6 +254,19 @@ public class BasePage extends WebPage{
 
                 if (_class != null && _class.isEmpty()){
                     de.agilecoders.wicket.core.util.Attributes.removeClass(tag, "mm-active");
+                }
+            }
+        };
+    }
+
+    private Behavior newBehaviorLink() {
+        return new Behavior() {
+            @Override
+            public void onComponentTag(Component component, ComponentTag tag) {
+                String _class = getMenuToggleMap().get(component.getParent().getId());
+
+                if (_class != null && _class.isEmpty()){
+                    tag.put("aria-expanded", "false");
                 }
             }
         };
