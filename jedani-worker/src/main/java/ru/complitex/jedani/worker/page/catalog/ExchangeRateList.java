@@ -40,8 +40,8 @@ public class ExchangeRateList extends DomainListModalPage<ExchangeRate> {
     protected List<EntityAttribute> getEntityAttributes(Entity entity) {
         List<EntityAttribute> list = new ArrayList<>();
 
-        list.add(entity.getEntityAttribute(ExchangeRate.NAME).setStringType(StringType.UPPER_UPPER_CASE));
-        list.add(entity.getEntityAttribute(ExchangeRate.CODE));
+        list.add(entity.getEntityAttribute(ExchangeRate.NAME).setStringType(StringType.DEFAULT));
+        list.add(entity.getEntityAttribute(ExchangeRate.CODE).setStringType(StringType.DEFAULT));
         list.add(entity.getEntityAttribute(ExchangeRate.BASE_CURRENCY).withReference(Currency.ENTITY_NAME, Currency.NAME));
         list.add(entity.getEntityAttribute(ExchangeRate.COUNTER_CURRENCY).withReference(Currency.ENTITY_NAME, Currency.NAME));
 
@@ -50,7 +50,10 @@ public class ExchangeRateList extends DomainListModalPage<ExchangeRate> {
 
     @Override
     protected List<EntityAttribute> getEditEntityAttributes(Entity entity) {
-        entity.getEntityAttribute(ExchangeRate.CODE).setStringType(StringType.UPPER_UPPER_CASE);
+        entity.getEntityAttribute(ExchangeRate.NAME).setStringType(StringType.DEFAULT);
+        entity.getEntityAttribute(ExchangeRate.CODE).setStringType(StringType.DEFAULT);
+        entity.getEntityAttribute(ExchangeRate.BASE_CURRENCY).withReference(Currency.ENTITY_NAME, Currency.NAME);
+        entity.getEntityAttribute(ExchangeRate.COUNTER_CURRENCY).withReference(Currency.ENTITY_NAME, Currency.NAME);
         entity.getEntityAttribute(ExchangeRate.URI_XML).setStringType(StringType.DEFAULT);
         entity.getEntityAttribute(ExchangeRate.XPATH_NAME).setStringType(StringType.DEFAULT);
         entity.getEntityAttribute(ExchangeRate.XPATH_CODE).setStringType(StringType.DEFAULT);

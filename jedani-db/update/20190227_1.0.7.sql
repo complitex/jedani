@@ -251,6 +251,12 @@ INSERT INTO exchange_rate_attribute (id, object_id, entity_attribute_id, status,
 INSERT INTO exchange_rate_attribute (id, object_id, entity_attribute_id, status, text) VALUES (17, 2, 8, 1, 'exchange/currency/exchangedate/text()');
 INSERT INTO exchange_rate_attribute (id, object_id, entity_attribute_id, status, text) VALUES (18, 2, 9, 1, 'exchange/currency/rate/text()');
 
+/* Country */
+
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`, `reference_id`) VALUES (1, 3, 11, 30);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (1, 3, 1, 'Нац.валюта'), (1, 3, 2, 'Нац.валюті');
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`, `reference_id`) VALUES (1, 4, 11, 31);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (1, 4, 1, 'Курс евро'), (1, 4, 2, 'Курс евро');
 
 -- Update
 

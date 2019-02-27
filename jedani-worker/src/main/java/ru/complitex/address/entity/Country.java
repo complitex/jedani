@@ -13,6 +13,8 @@ public class Country extends Domain<Country> {
 
     public static final long NAME = 1;
     public static final long SHORT_NAME = 2;
+    public static final long CURRENCY = 3;
+    public static final long EXCHANGE_RATE_EUR = 4;
 
     public Country() {
         super(ENTITY_NAME);

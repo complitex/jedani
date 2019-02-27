@@ -18,8 +18,15 @@ public class CurrencyListPage extends DomainListModalPage<Currency> {
     }
 
     @Override
+    protected List<EntityAttribute> getEntityAttributes(Entity entity) {
+        entity.getEntityAttribute(Currency.CODE).setStringType(StringType.DEFAULT);
+
+        return super.getEntityAttributes(entity);
+    }
+
+    @Override
     protected List<EntityAttribute> getEditEntityAttributes(Entity entity) {
-        entity.getEntityAttribute(Currency.CODE).setStringType(StringType.UPPER_UPPER_CASE);
+        entity.getEntityAttribute(Currency.CODE).setStringType(StringType.DEFAULT);
 
         return super.getEditEntityAttributes(entity);
     }

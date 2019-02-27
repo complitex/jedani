@@ -158,6 +158,12 @@ public class EntityAttribute implements Serializable{
         return this;
     }
 
+    public EntityAttribute withReference(String referenceEntityName, Long referenceEntityAttributeId,
+                                         StringType stringType){
+        return addReferenceEntityAttribute(new EntityAttribute(referenceEntityName, referenceEntityAttributeId)
+                .setStringType(stringType));
+    }
+
     public EntityAttribute withReference(String referenceEntityName, Long referenceEntityAttributeId){
         return addReferenceEntityAttribute(new EntityAttribute(referenceEntityName, referenceEntityAttributeId));
     }

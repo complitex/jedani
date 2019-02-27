@@ -135,7 +135,8 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage{
             });
         }
 
-        getEntityAttributes(entity).forEach(a -> columns.add(newDomainColumn(a)));
+        getEntityAttributes(entityService.getEntity(domainInstance.getEntityName()))
+                .forEach(a -> columns.add(newDomainColumn(a)));
 
         onAddColumns(columns);
 
@@ -177,7 +178,8 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage{
 
         if (isEditModelEnabled()) {
             domainEditModal = new DomainEditModal<T>("edit", domainClass, parentEntityName,
-                    parentEntityAttributeId, getEditEntityAttributes(entity), t -> t.add(feedback, table)){
+                    parentEntityAttributeId, getEditEntityAttributes(entityService.getEntity(domainInstance.getEntityName())),
+                    t -> t.add(feedback, table)){
                 @Override
                 protected boolean validate(Domain<T> domain) {
                     return DomainListModalPage.this.validate(domain);

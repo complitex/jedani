@@ -4,9 +4,13 @@ import org.apache.wicket.authroles.authorization.strategies.role.annotations.Aut
 import ru.complitex.address.entity.Country;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
+import ru.complitex.domain.entity.StringType;
 import ru.complitex.domain.page.DomainListModalPage;
+import ru.complitex.jedani.worker.entity.Currency;
+import ru.complitex.jedani.worker.entity.ExchangeRate;
 import ru.complitex.jedani.worker.security.JedaniRoles;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,6 +25,20 @@ public class CountryListPage extends DomainListModalPage<Country> {
 
     @Override
     protected List<EntityAttribute> getEntityAttributes(Entity entity) {
-        return entity.getEntityAttributes(Country.NAME, Country.SHORT_NAME);
+        List<EntityAttribute> list = new ArrayList<>();
+
+        list.add(entity.getEntityAttribute(Country.NAME));
+        list.add(entity.getEntityAttribute(Country.SHORT_NAME));
+        list.add(entity.getEntityAttribute(Country.CURRENCY)
+                .withReference(Currency.ENTITY_NAME, Currency.NAME));
+        list.add(entity.getEntityAttribute(Country.EXCHANGE_RATE_EUR)
+                .withReference(ExchangeRate.ENTITY_NAME, ExchangeRate.NAME, StringType.DEFAULT));
+
+        return list;
+    }
+
+    @Override
+    protected List<EntityAttribute> getEditEntityAttributes(Entity entity) {
+        return super.getEditEntityAttributes(entity);
     }
 }
