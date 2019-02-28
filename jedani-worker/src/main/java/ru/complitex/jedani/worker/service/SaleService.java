@@ -11,7 +11,6 @@ import ru.complitex.jedani.worker.exception.SaleException;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @author Anatoly A. Ivanov
@@ -43,14 +42,14 @@ public class SaleService implements Serializable {
 
             Product filter = new Product();
 
-            filter.setParentId(s.getNumber(SaleItem.STORAGE));
-            filter.setNumber(Product.NOMENCLATURE, s.getNumber(SaleItem.NOMENCLATURE));
+            filter.setParentId(s.getStorageId());
+            filter.setNomenclatureId(s.getNomenclatureId());
 
             List<Product> products = domainService.getDomains(Product.class, FilterWrapper.of(filter));
 
-            if (products.isEmpty() || products.get(0).getNumber(Product.QUANTITY) - Optional.ofNullable(products.get(0)
-                    .getNumber(Product.RESERVE)).orElse(0L) < s.getNumber(SaleItem.QUANTITY)) {
-                throw new SaleException("Количество товара на складе меньше " + s.getNumber(SaleItem.QUANTITY) +
+            if (products.isEmpty() || products.get(0).getQuantity() - products.get(0).getReserveQuantity() <
+                    s.getQuantity()) {
+                throw new SaleException("Количество товара на складе меньше " + s.getQuantity() +
                         " для позиции № " + (i+1));
             }
 
@@ -58,8 +57,7 @@ public class SaleService implements Serializable {
 
             Product product = products.get(0);
 
-            product.setNumber(Product.RESERVE, Optional.ofNullable(product.getNumber(Product.RESERVE))
-                    .orElse(0L) + s.getNumber(SaleItem.QUANTITY));
+            product.setReserveQuantity(product.getReserveQuantity() + s.getQuantity());
 
             domainService.save(product);
 
@@ -67,13 +65,13 @@ public class SaleService implements Serializable {
 
             Transaction t = new Transaction();
 
-            t.setNumber(Transaction.NOMENCLATURE, s.getNumber(SaleItem.NOMENCLATURE));
-            t.setNumber(Transaction.QUANTITY, s.getNumber(SaleItem.QUANTITY));
-            t.setNumber(Transaction.TYPE, TransactionType.RESERVE);
-            t.setNumber(Transaction.STORAGE_FROM, s.getNumber(SaleItem.STORAGE));
-            t.setNumber(Transaction.FIRST_NAME_TO, sale.getBuyerFirstName());
-            t.setNumber(Transaction.MIDDLE_NAME_TO, sale.getBuyerMiddleName());
-            t.setNumber(Transaction.LAST_NAME_TO, sale.getBuyerLastName());
+            t.setNomenclatureId(s.getNomenclatureId());
+            t.setQuantity(s.getQuantity());
+            t.setType(TransactionType.RESERVE);
+            t.setStorageIdFrom(s.getStorageId());
+            t.setFirstNameIdTo(sale.getBuyerFirstName());
+            t.setMiddleNameIdTo(sale.getBuyerMiddleName());
+            t.setLastNameIdTo(sale.getBuyerLastName());
 
             domainService.save(t);
 

@@ -2,6 +2,8 @@ package ru.complitex.jedani.worker.entity;
 
 import ru.complitex.domain.entity.Domain;
 
+import java.util.Date;
+
 /**
  * @author Anatoly A. Ivanov
  * 18.02.2019 14:19
@@ -21,6 +23,14 @@ public class Sale extends Domain<Sale> {
         super(ENTITY_NAME);
 
         setUseDateAttribute(true);
+    }
+
+    public Long getSellerWorkerId(){
+        return getNumber(SELLER_WORKER);
+    }
+
+    public void setSellerWorkerId(Long sellerWorkerId){
+        setNumber(SELLER_WORKER, sellerWorkerId);
     }
 
     public Long getBuyerFirstName(){
@@ -45,5 +55,21 @@ public class Sale extends Domain<Sale> {
 
     public void setBuyerLastName(Long lastNameId){
         setNumber(BUYER_LAST_NAME, lastNameId);
+    }
+
+    public Date getDate(){
+        return getDate(DATE);
+    }
+
+    public void setDate(Date date){
+        setDate(DATE, date);
+    }
+
+    public Long getType(){
+        return getNumber(TYPE);
+    }
+
+    public void setType(Long type){
+        setNumber(TYPE, type);
     }
 }

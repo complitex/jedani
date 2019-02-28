@@ -117,7 +117,7 @@ public class StoragePage extends BasePage {
                 boolean storages = storageMapper.getStorages(new FilterWrapper<>(new Storage())
                         .add(Storage.FILTER_CURRENT_WORKER, getCurrentWorker().getObjectId())
                         .add(Storage.FILTER_CITIES, getCurrentWorker().getNumberValuesString(Worker.CITIES)))
-                        .stream().filter(s -> s.getNumber(Storage.CITY) != null)
+                        .stream().filter(s -> s.getCityId() != null)
                         .anyMatch(s -> Objects.equals(s.getObjectId(), storageId));
 
                 if (!storages && !worker) {
@@ -127,7 +127,7 @@ public class StoragePage extends BasePage {
         } else {
             storage = new Storage();
 
-            storage.setNumber(Storage.TYPE, StorageType.REAL);
+            storage.setType(StorageType.REAL);
 
             edit = isAdmin();
         }
@@ -150,7 +150,7 @@ public class StoragePage extends BasePage {
                 new NumberAttributeModel(storage, Storage.CITY)){
             @Override
             public boolean isVisible() {
-                return Objects.equals(storage.getNumber(Storage.TYPE), StorageType.REAL);
+                return Objects.equals(storage.getType(), StorageType.REAL);
             }
         }.setRequired(true).setEnabled(edit));
 
@@ -161,7 +161,7 @@ public class StoragePage extends BasePage {
                 .setEnabled(edit)){
             @Override
             public boolean isVisible() {
-                return Objects.equals(storage.getNumber(Storage.TYPE), StorageType.REAL);
+                return Objects.equals(storage.getType(), StorageType.REAL);
             }
         });
 
@@ -172,7 +172,7 @@ public class StoragePage extends BasePage {
                 .setEnabled(storageId == null)){
             @Override
             public boolean isVisible() {
-                return Objects.equals(storage.getNumber(Storage.TYPE), StorageType.VIRTUAL);
+                return Objects.equals(storage.getType(), StorageType.VIRTUAL);
             }
         });
 
@@ -322,16 +322,16 @@ public class StoragePage extends BasePage {
                     }
                 }
             });
-            productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.SENDING)));
+            productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.SENDING_QUANTITY)));
 
-            productColumns.add(new DomainColumn<Product>(productEntity.getEntityAttribute(Product.RECEIVING)){
+            productColumns.add(new DomainColumn<Product>(productEntity.getEntityAttribute(Product.RECEIVING_QUANTITY)){
                 @Override
                 public void populateItem(Item<ICellPopulator<Product>> cellItem, String componentId, IModel<Product> rowModel) {
                     super.populateItem(cellItem, componentId, rowModel);
 
                     Product product = rowModel.getObject();
 
-                    if (edit && product.getNumber(Product.RECEIVING, 0L) > 0){
+                    if (edit && product.getNumber(Product.RECEIVING_QUANTITY, 0L) > 0){
                         cellItem.add(new CssClassNameAppender("pointer"));
 
                         cellItem.add(new AjaxEventBehavior("click") {
@@ -363,16 +363,16 @@ public class StoragePage extends BasePage {
                     }
                 }
             });
-            productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.GIFT_SENDING)));
+            productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.GIFT_SENDING_QUANTITY)));
 
-            productColumns.add(new DomainColumn<Product>(productEntity.getEntityAttribute(Product.GIFT_RECEIVING)){
+            productColumns.add(new DomainColumn<Product>(productEntity.getEntityAttribute(Product.GIFT_RECEIVING_QUANTITY)){
                 @Override
                 public void populateItem(Item<ICellPopulator<Product>> cellItem, String componentId, IModel<Product> rowModel) {
                     super.populateItem(cellItem, componentId, rowModel);
 
                     Product product = rowModel.getObject();
 
-                    if (edit && product.getNumber(Product.RECEIVING, 0L) > 0){
+                    if (edit && product.getNumber(Product.RECEIVING_QUANTITY, 0L) > 0){
                         cellItem.add(new CssClassNameAppender("pointer"));
 
                         cellItem.add(new AjaxEventBehavior("click") {
@@ -385,14 +385,14 @@ public class StoragePage extends BasePage {
                 }
             });
 
-            productColumns.add(new DomainColumn<Product>(productEntity.getEntityAttribute(Product.RESERVE)){
+            productColumns.add(new DomainColumn<Product>(productEntity.getEntityAttribute(Product.RESERVE_QUANTITY)){
                 @Override
                 public void populateItem(Item<ICellPopulator<Product>> cellItem, String componentId, IModel<Product> rowModel) {
                     super.populateItem(cellItem, componentId, rowModel);
 
                     Product product = rowModel.getObject();
 
-                    if (edit && product.getNumber(Product.RESERVE, 0L) > 0){
+                    if (edit && product.getNumber(Product.RESERVE_QUANTITY, 0L) > 0){
                         cellItem.add(new CssClassNameAppender("pointer"));
 
                         cellItem.add(new AjaxEventBehavior("click") {
@@ -485,7 +485,7 @@ public class StoragePage extends BasePage {
 
             Entity transactionEntity = entityService.getEntity(Transaction.ENTITY_NAME);
 
-            transactionColumns.add(new DomainColumn<Transaction>(transactionEntity.getEntityAttribute(Transaction.NOMENCLATURE)
+            transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.NOMENCLATURE)
                     .withReferences(Nomenclature.ENTITY_NAME, Nomenclature.CODE, Nomenclature.NAME)));
 
             transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.QUANTITY)));
@@ -507,8 +507,7 @@ public class StoragePage extends BasePage {
                 @Override
                 public void populateItem(Item<ICellPopulator<Transaction>> cellItem, String componentId,
                                          IModel<Transaction> rowModel) {
-                    cellItem.add(new Label(componentId, workerService.getSimpleWorkerLabel(rowModel.getObject()
-                            .getNumber(Transaction.WORKER_TO))));
+                    cellItem.add(new Label(componentId, workerService.getSimpleWorkerLabel(rowModel.getObject().getWorkerIdTo())));
                 }
 
                 @Override
@@ -523,8 +522,8 @@ public class StoragePage extends BasePage {
                 public void populateItem(Item<ICellPopulator<Transaction>> cellItem, String componentId, IModel<Transaction> rowModel) {
                     Transaction transaction = rowModel.getObject();
 
-                    cellItem.add(new Label(componentId, nameService.getFio(transaction.getNumber(Transaction.LAST_NAME_TO),
-                            transaction.getNumber(Transaction.FIRST_NAME_TO), transaction.getNumber(Transaction.MIDDLE_NAME_TO))));
+                    cellItem.add(new Label(componentId, nameService.getFio(transaction.getLastNameIdTo(),
+                            transaction.getFirstNameIdTo(), transaction.getMiddleNameIdTo())));
                 }
 
                 @Override
@@ -577,7 +576,7 @@ public class StoragePage extends BasePage {
                                          IModel<Transaction> rowModel) {
                     String resourceKey = null;
 
-                    Long transferType = rowModel.getObject().getNumber(Transaction.TRANSFER_TYPE);
+                    Long transferType = rowModel.getObject().getTransferType();
 
                     if (transferType != null) {
                         switch (transferType.intValue()){
@@ -642,7 +641,7 @@ public class StoragePage extends BasePage {
                                          IModel<Transaction> rowModel) {
                     String resourceKey = null;
 
-                    Long transactionType = rowModel.getObject().getNumber(Transaction.TYPE);
+                    Long transactionType = rowModel.getObject().getType();
 
                     if (transactionType != null) {
                         switch (transactionType.intValue()){
@@ -673,8 +672,8 @@ public class StoragePage extends BasePage {
                 public void populateItem(Item<ICellPopulator<Transaction>> cellItem, String componentId, IModel<Transaction> rowModel) {
                     Transaction transaction = rowModel.getObject();
 
-                    boolean receive = Objects.equals(transaction.getNumber(Transaction.TYPE), TransactionType.TRANSFER) &&
-                            Objects.equals(transaction.getNumber(Transaction.STORAGE_TO), storageId) &&
+                    boolean receive = Objects.equals(transaction.getType(), TransactionType.TRANSFER) &&
+                            Objects.equals(transaction.getStorageIdTo(), storageId) &&
                             transaction.getEndDate() == null;
 
                     cellItem.add(new LinkPanel(componentId, new BootstrapAjaxLink<Void>(LinkPanel.LINK_COMPONENT_ID,
@@ -701,8 +700,8 @@ public class StoragePage extends BasePage {
 
                 Transaction transaction = model.getObject();
 
-                boolean receive = Objects.equals(transaction.getNumber(Transaction.TYPE), TransactionType.TRANSFER) &&
-                        Objects.equals(transaction.getNumber(Transaction.STORAGE_TO), storageId) &&
+                boolean receive = Objects.equals(transaction.getType(), TransactionType.TRANSFER) &&
+                        Objects.equals(transaction.getStorageIdTo(), storageId) &&
                         transaction.getEndDate() == null;
 
                 if (receive) {

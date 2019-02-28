@@ -70,7 +70,7 @@ class TransferModal extends StorageModal {
                         .setLabel(Model.of(getString("worker")))){
                     @Override
                     public boolean isVisible() {
-                        return Objects.equals(getModelObject().getNumber(Transaction.RECIPIENT_TYPE), RecipientType.WORKER);
+                        return Objects.equals(getModelObject().getRecipientType(), RecipientType.WORKER);
                     }
                 };
                 fragment.add(worker);
@@ -78,7 +78,7 @@ class TransferModal extends StorageModal {
                 WebMarkupContainer client = new WebMarkupContainer("client"){
                     @Override
                     public boolean isVisible() {
-                        return Objects.equals(getModelObject().getNumber(Transaction.RECIPIENT_TYPE), RecipientType.CLIENT);
+                        return Objects.equals(getModelObject().getRecipientType(), RecipientType.CLIENT);
                     }
                 };
                 client.setOutputMarkupId(true);
@@ -149,7 +149,7 @@ class TransferModal extends StorageModal {
                         ){
                     @Override
                     public boolean isVisible() {
-                        return Objects.equals(getModelObject().getNumber(Transaction.RECIPIENT_TYPE), RecipientType.STORAGE);
+                        return Objects.equals(getModelObject().getRecipientType(), RecipientType.STORAGE);
                     }
                 });
 
@@ -159,7 +159,7 @@ class TransferModal extends StorageModal {
                         .setLabel(Model.of(getString("worker")))){
                     @Override
                     public boolean isVisible() {
-                        return Objects.equals(getModelObject().getNumber(Transaction.RECIPIENT_TYPE), RecipientType.WORKER);
+                        return Objects.equals(getModelObject().getRecipientType(), RecipientType.WORKER);
                     }
                 };
                 fragment.add(worker);
@@ -290,7 +290,7 @@ class TransferModal extends StorageModal {
                 new LoadableDetachableModel<String>() {
                     @Override
                     protected String load() {
-                        return Nomenclatures.getNomenclatureLabel(product.getNumber(Product.NOMENCLATURE), domainService);
+                        return Nomenclatures.getNomenclatureLabel(product.getNomenclatureId(), domainService);
                     }
                 }).setEnabled(false);
     }
@@ -302,7 +302,7 @@ class TransferModal extends StorageModal {
 
         open(target);
 
-        getModelObject().setNumber(Transaction.TRANSFER_TYPE, transferType);
+        getModelObject().setTransferType(transferType);
     }
 
     private void updateTabs(AjaxRequestTarget target){
@@ -310,12 +310,12 @@ class TransferModal extends StorageModal {
 
         switch (tabIndexModel.getObject()){
             case 0:
-                getModelObject().setNumber(Transaction.RECIPIENT_TYPE, RecipientType.WORKER);
+                getModelObject().setRecipientType(RecipientType.WORKER);
                 label = getString("sellAction");
 
                 break;
             case 1:
-                getModelObject().setNumber(Transaction.RECIPIENT_TYPE, RecipientType.STORAGE);
+                getModelObject().setRecipientType(RecipientType.STORAGE);
                 label = getString("transferAction");
 
                 break;
@@ -347,10 +347,11 @@ class TransferModal extends StorageModal {
 
         Product product = domainService.getDomain(Product.class, getProduct().getObjectId());
 
-        boolean gift = Objects.equals(transaction.getNumber(Transaction.TRANSFER_TYPE), TransferType.GIFT);
+        boolean gift = Objects.equals(transaction.getTransferType(), TransferType.GIFT);
 
-        Long tQty = transaction.getNumber(gift ? TransferType.GIFT : Transaction.QUANTITY);
-        Long pQty = product.getNumber(gift ? TransferType.GIFT : Product.QUANTITY);
+        Long pQty = gift ? product.getGiftQuantity() : product.getQuantity();
+
+        Long tQty = transaction.getQuantity();
 
         if (tQty > pQty){
             error(getString("error_quantity") + ": " + tQty + " > " + pQty);
@@ -366,10 +367,10 @@ class TransferModal extends StorageModal {
             return;
         }
 
-        if (Objects.equals(transaction.getNumber(Transaction.RECIPIENT_TYPE), RecipientType.WORKER)){
-            Worker w = domainService.getDomain(Worker.class, transaction.getNumber(Transaction.WORKER_TO));
+        if (Objects.equals(transaction.getRecipientType(), RecipientType.WORKER)){
+            Worker w = domainService.getDomain(Worker.class, transaction.getWorkerIdTo());
 
-            if (Objects.equals(w.getNumber(Worker.TYPE), 1L)){
+            if (Objects.equals(w.getType(), 1L)){
                 error(getString("error_participant"));
                 target.add(getFeedback());
 
@@ -384,8 +385,8 @@ class TransferModal extends StorageModal {
 
                 break;
             case 1:
-                if (Objects.equals(transaction.getNumber(Transaction.RECIPIENT_TYPE), RecipientType.STORAGE)
-                        && Objects.equals(transaction.getNumber(Transaction.STORAGE_TO), getStorageId())){
+                if (Objects.equals(transaction.getRecipientType(), RecipientType.STORAGE)
+                        && Objects.equals(transaction.getStorageIdTo(), getStorageId())){
                     error(getString("error_same_storage"));
                     target.add(getFeedback());
 

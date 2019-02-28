@@ -40,14 +40,14 @@ class ReceiveModal extends StorageModal {
         getContainer().add(new Label("nomenclature", new LoadableDetachableModel<String>() {
             @Override
             protected String load() {
-                return Nomenclatures.getNomenclatureLabel(transaction.getNumber(Transaction.NOMENCLATURE), domainService);
+                return Nomenclatures.getNomenclatureLabel(transaction.getNomenclatureId(), domainService);
             }
         }));
 
         getContainer().add(new Label("quantity", new LoadableDetachableModel<String>() {
             @Override
             protected String load() {
-                return transaction.getNumber(Transaction.QUANTITY) + "";
+                return transaction.getQuantity() + "";
             }
         }));
     }
@@ -66,9 +66,9 @@ class ReceiveModal extends StorageModal {
         if (!transactions.isEmpty()){
             Transaction transaction = transactions.get(0);
 
-            if (Objects.equals(transaction.getNumber(Transaction.TYPE), TransactionType.TRANSFER) &&
-                    Objects.equals(transaction.getNumber(Transaction.STORAGE_TO), product.getParentId()) &&
-                    Objects.equals(transaction.getNumber(Transaction.TRANSFER_TYPE), transferType) &&
+            if (Objects.equals(transaction.getType(), TransactionType.TRANSFER) &&
+                    Objects.equals(transaction.getStorageIdTo(), product.getParentId()) &&
+                    Objects.equals(transaction.getTransferType(), transferType) &&
                     transaction.getEndDate() == null
             ) {
                 this.transaction = transaction;

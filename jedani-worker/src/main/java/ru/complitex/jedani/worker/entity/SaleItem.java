@@ -19,4 +19,36 @@ public class SaleItem extends Domain<SaleItem> {
     public SaleItem() {
         super(ENTITY_NAME);
     }
+
+    public Long getNomenclatureId(){
+        return getNumber(NOMENCLATURE);
+    }
+
+    public void setNomenclatureId(Long nomenclatureId){
+        setNumber(NOMENCLATURE, nomenclatureId);
+    }
+
+    public Long getQuantity(){
+        return getNumber(QUANTITY);
+    }
+
+    public Long getStorageId(){
+        return getNumber(STORAGE);
+    }
+
+    public void setStorageId(Long storageId){
+        setNumber(STORAGE, storageId);
+    }
+
+    public Long getInstallmentPercentage(){
+        return getNumber(INSTALLMENT_PERCENTAGE);
+    }
+
+    public void setInstallmentPercentage(Long percentage){
+        setNumber(INSTALLMENT_PERCENTAGE, percentage);
+    }
+
+    public void setInstallmentMonths(Long months){
+        setNumber(INSTALLMENT_MONTHS, months);
+    }
 }

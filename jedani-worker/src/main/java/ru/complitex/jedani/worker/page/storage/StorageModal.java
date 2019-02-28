@@ -87,8 +87,8 @@ abstract class StorageModal extends Modal<Transaction> {
 
         transaction.getAttributes().clear();
 
-        transaction.setNumber(Transaction.QUANTITY, 1L);
-        transaction.setNumber(Transaction.RECIPIENT_TYPE, RecipientType.WORKER);
+        transaction.setQuantity(1L);
+        transaction.setRecipientType(RecipientType.WORKER);
 
         container.setVisible(true);
         target.add(container);

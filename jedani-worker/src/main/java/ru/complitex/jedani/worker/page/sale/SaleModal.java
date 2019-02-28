@@ -352,8 +352,8 @@ public class SaleModal extends Modal<Sale> {
 
     private SerializableConsumer<AjaxRequestTarget> newQuantityChange(IModel<SaleItem> model, TextField quantity) {
         return t -> {
-            Long storageId = model.getObject().getNumber(SaleItem.STORAGE);
-            Long nomenclatureId = model.getObject().getNumber(SaleItem.NOMENCLATURE);
+            Long storageId = model.getObject().getStorageId();
+            Long nomenclatureId = model.getObject().getNomenclatureId();
 
             if (storageId != null && nomenclatureId != null) {
                 List<Product> products = domainService.getDomains(Product.class,
@@ -370,9 +370,9 @@ public class SaleModal extends Modal<Sale> {
     private SaleItem newMycook() {
         SaleItem saleItem = new SaleItem();
 
-        saleItem.setNumber(SaleItem.INSTALLMENT_PERCENTAGE, 100L);
-        saleItem.setNumber(SaleItem.INSTALLMENT_MONTHS, 0L);
-        saleItem.setNumber(SaleItem.STORAGE, defaultStorageId);
+        saleItem.setInstallmentPercentage(100L);
+        saleItem.setInstallmentMonths(0L);
+        saleItem.setStorageId(defaultStorageId);
 
         return saleItem;
     }
@@ -380,9 +380,9 @@ public class SaleModal extends Modal<Sale> {
     private SaleItem newBaseAssortment() {
         SaleItem saleItem = new SaleItem();
 
-        saleItem.setNumber(SaleItem.INSTALLMENT_PERCENTAGE, 100L);
-        saleItem.setNumber(SaleItem.INSTALLMENT_MONTHS, 0L);
-        saleItem.setNumber(SaleItem.STORAGE, defaultStorageId);
+        saleItem.setInstallmentPercentage(100L);
+        saleItem.setInstallmentMonths(0L);
+        saleItem.setStorageId(defaultStorageId);
 
         return saleItem;
     }
@@ -415,9 +415,9 @@ public class SaleModal extends Modal<Sale> {
         }
 
         Sale sale = new Sale();
-        sale.setNumber(Sale.SELLER_WORKER, sellerWorkerId);
-        sale.setNumber(Sale.TYPE, SaleType.MYCOOK);
-        sale.setDate(Sale.DATE, new Date());
+        sale.setSellerWorkerId(sellerWorkerId);
+        sale.setType(SaleType.MYCOOK);
+        sale.setDate(new Date());
 
         saleModel.setObject(sale);
 
@@ -452,9 +452,9 @@ public class SaleModal extends Modal<Sale> {
         List<SaleItem> saleItems = domainService.getDomains(SaleItem.class, FilterWrapper.of((SaleItem) new SaleItem()
                 .setParentId(saleItem.getParentId())));
 
-        if (sale.getNumber(Sale.TYPE).equals(SaleType.MYCOOK)){
+        if (sale.getType().equals(SaleType.MYCOOK)){
             mycookModel.setObject(saleItems);
-        }else if (sale.getNumber(Sale.TYPE).equals(SaleType.BASE_ASSORTMENT)){
+        }else if (sale.getType().equals(SaleType.BASE_ASSORTMENT)){
             baseAssortmentModel.setObject(saleItems);
         }
 
@@ -470,7 +470,7 @@ public class SaleModal extends Modal<Sale> {
         sale.setBuyerFirstName(nameService.getOrCreateFirstName(firstName.getInput(), firstName.getObjectId()));
         sale.setBuyerMiddleName(nameService.getOrCreateMiddleName(middleName.getInput(), middleName.getObjectId()));
 
-        Long type = sale.getNumber(Sale.TYPE);
+        Long type = sale.getType();
 
         List<SaleItem> saleItems = null;
 

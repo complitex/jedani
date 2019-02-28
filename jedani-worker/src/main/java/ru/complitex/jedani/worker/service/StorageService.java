@@ -27,7 +27,7 @@ public class StorageService implements Serializable {
 
         storage.setParentEntityId(entityService.getEntity(Worker.ENTITY_NAME).getId());
         storage.setParentId(workerId);
-        storage.setNumber(Storage.TYPE, StorageType.VIRTUAL);
+        storage.setType(StorageType.VIRTUAL);
 
         domainService.save(storage);
 
@@ -38,27 +38,26 @@ public class StorageService implements Serializable {
     public void accept(Long storageId, Transaction transaction){
         Transaction t = new Transaction();
 
-        t.copyNumber(Transaction.NOMENCLATURE, transaction);
-        t.copyNumber(Transaction.QUANTITY, transaction);
-        t.setNumber(Transaction.TYPE, TransactionType.ACCEPT);
-        t.setNumber(Transaction.STORAGE_TO, storageId);
+        t.setNomenclatureId(transaction.getNomenclatureId());
+        t.setQuantity(transaction.getQuantity());
+        t.setType(TransactionType.ACCEPT);
+        t.setStorageIdTo(storageId);
 
         domainService.save(t);
 
         Product product;
 
-        if (isProductExist(storageId, t.getNumber(Transaction.NOMENCLATURE))){
-            product = getProduct(storageId, t.getNumber(Transaction.NOMENCLATURE));
+        if (isProductExist(storageId, t.getNomenclatureId())){
+            product = getProduct(storageId, t.getNomenclatureId());
 
-            product.setNumber(Product.QUANTITY, product.getNumber(Product.QUANTITY) +
-                    t.getNumber(Transaction.QUANTITY));
+            product.setQuantity(product.getQuantity() + t.getQuantity());
         }else {
             product = new Product();
 
-            product.setParentId(t.getNumber(Transaction.STORAGE_TO));
+            product.setParentId(t.getStorageIdTo());
             product.setParentEntityId(entityService.getEntity(Storage.ENTITY_NAME).getId());
-            product.setNumber(Product.NOMENCLATURE, t.getNumber(Transaction.NOMENCLATURE));
-            product.setNumber(Product.QUANTITY, t.getNumber(Transaction.QUANTITY));
+            product.setNomenclatureId(t.getNomenclatureId());
+            product.setQuantity(t.getQuantity());
         }
 
         domainService.save(product);
@@ -87,12 +86,12 @@ public class StorageService implements Serializable {
     private Transaction newTransaction(Product product, Transaction transaction, Long transactionType){
         Transaction t = new Transaction();
 
-        t.setNumber(Transaction.NOMENCLATURE, product.getNumber(Product.NOMENCLATURE));
-        t.copyNumber(Transaction.QUANTITY, transaction);
-        t.setNumber(Transaction.TYPE, transactionType);
-        t.copyNumber(Transaction.TRANSFER_TYPE, transaction);
-        t.copyNumber(Transaction.RECIPIENT_TYPE, transaction);
-        t.setNumber(Transaction.STORAGE_FROM, product.getParentId());
+        t.setNomenclatureId(product.getNomenclatureId());
+        t.setQuantity(transaction.getQuantity());
+        t.setType(transactionType);
+        t.setTransferType(transaction.getTransferType());
+        t.setRecipientType(transaction.getRecipientType());
+        t.setStorageIdFrom(product.getParentId());
 
         return t;
     }
@@ -101,27 +100,27 @@ public class StorageService implements Serializable {
     public void sell(Product product, Transaction transaction) {
         Transaction t = newTransaction(product, transaction, TransactionType.SELL);
 
-        switch (t.getNumber(Transaction.RECIPIENT_TYPE).intValue()){
+        switch (t.getRecipientType().intValue()){
             case (int) RecipientType.WORKER:
-                t.copyNumber(Transaction.WORKER_TO, transaction);
+                t.setWorkerIdTo(transaction.getWorkerIdTo());
 
                 break;
             case (int) RecipientType.CLIENT:
-                t.copyNumber(Transaction.LAST_NAME_TO, transaction);
-                t.copyNumber(Transaction.FIRST_NAME_TO, transaction);
-                t.copyNumber(Transaction.MIDDLE_NAME_TO, transaction);
+                t.setLastNameIdTo(transaction.getLastNameIdTo());
+                t.setFirstNameIdTo(transaction.getFirstNameIdTo());
+                t.setMiddleNameIdTo(transaction.getMiddleNameIdTo());
 
                 break;
         }
 
-        t.copyText(Transaction.SERIAL_NUMBER, transaction);
+        t.setSerialNumber(transaction.getSerialNumber());
 
         domainService.save(t);
 
 
         Product p = domainService.getDomain(Product.class, product.getObjectId(), true);
 
-        p.setNumber(Product.QUANTITY, p.getNumber(Product.QUANTITY) - t.getNumber(Transaction.QUANTITY));
+        p.setQuantity(p.getQuantity() - t.getQuantity());
 
         domainService.save(p);
     }
@@ -129,18 +128,18 @@ public class StorageService implements Serializable {
     @Transactional
     public void transfer(Product product, Transaction transaction) {
         Transaction t = newTransaction(product, transaction, TransactionType.TRANSFER);
-        t.copyNumber(Transaction.WORKER_TO, transaction);
+        t.setWorkerIdTo(transaction.getWorkerIdTo());
 
-        switch (t.getNumber(Transaction.RECIPIENT_TYPE).intValue()){
+        switch (t.getRecipientType().intValue()){
             case (int) RecipientType.STORAGE:
-                t.copyNumber(Transaction.STORAGE_TO, transaction);
+                t.setStorageIdTo(transaction.getStorageIdTo());
 
                 break;
             case (int) RecipientType.WORKER:
                 Storage storage;
 
                 List<Storage> storages = domainService.getDomains(Storage.class, FilterWrapper.of((Storage) new Storage()
-                        .setParentId(t.getNumber(Transaction.WORKER_TO))));
+                        .setParentId(t.getWorkerIdTo())));
 
                 if (storages.size() == 1){
                     storage = storages.get(0);
@@ -148,15 +147,15 @@ public class StorageService implements Serializable {
                     storage = new Storage();
 
                     storage.setParentEntityId(entityService.getEntity(Worker.ENTITY_NAME).getId());
-                    storage.setParentId(t.getNumber(Transaction.WORKER_TO));
-                    storage.setNumber(Storage.TYPE, StorageType.VIRTUAL);
+                    storage.setParentId(t.getWorkerIdTo());
+                    storage.setType(StorageType.VIRTUAL);
 
                     domainService.save(storage);
                 } else {
                     throw new RuntimeException("More than one worker storage for worker");
                 }
 
-                t.setNumber(Transaction.STORAGE_TO, storage.getObjectId());
+                t.setStorageIdTo(storage.getObjectId());
 
                 break;
         }
@@ -167,35 +166,35 @@ public class StorageService implements Serializable {
         Product pFrom = domainService.getDomain(Product.class, product.getObjectId(), true);
         Product pTo;
 
-        Long storageId = t.getNumber(Transaction.STORAGE_TO);
+        Long storageId = t.getStorageIdTo();
 
-        if (!isProductExist(storageId, t.getNumber(Transaction.NOMENCLATURE))){
+        if (!isProductExist(storageId, t.getNomenclatureId())){
             pTo = new Product();
 
             pTo.setParentEntityId(entityService.getEntity(Storage.ENTITY_NAME).getId());
             pTo.setParentId(storageId);
-            pTo.setNumber(Product.NOMENCLATURE, t.getNumber(Transaction.NOMENCLATURE));
-            pTo.setNumber(Product.QUANTITY, 0L);
+            pTo.setNomenclatureId(t.getNomenclatureId());
+            pTo.setQuantity(0L);
 
             domainService.save(product);
         }else{
-            pTo = getProduct(storageId, t.getNumber(Transaction.NOMENCLATURE));
+            pTo = getProduct(storageId, t.getNomenclatureId());
         }
 
 
-        Long qty = t.getNumber(Transaction.QUANTITY);
+        Long qty = t.getQuantity();
 
-        pFrom.setNumber(Product.QUANTITY, pFrom.getNumber(Product.QUANTITY) - qty);
+        pFrom.setQuantity( pFrom.getQuantity() - qty);
 
-        switch (t.getNumber(Transaction.TRANSFER_TYPE).intValue()){
+        switch (t.getTransferType().intValue()){
             case (int) TransferType.TRANSFER:
-                pFrom.setNumber(Product.SENDING, pFrom.getNumber(Product.SENDING, 0L) + qty);
-                pTo.setNumber(Product.RECEIVING, pTo.getNumber(Product.RECEIVING, 0L) + qty);
+                pFrom.setSendingQuantity(pFrom.getSendingQuantity() + qty);
+                pTo.setNumber(Product.RECEIVING_QUANTITY, pTo.getReceivingQuantity() + qty);
 
                 break;
             case (int) TransferType.GIFT:
-                pFrom.setNumber(Product.GIFT_SENDING, pFrom.getNumber(Product.GIFT_SENDING, 0L) + qty);
-                pTo.setNumber(Product.GIFT_RECEIVING, pTo.getNumber(Product.GIFT_RECEIVING, 0L) + qty);
+                pFrom.setGiftSendingQuantity(pFrom.getGiftSendingQuantity() + qty);
+                pTo.setGiftReceivingQuantity(pTo.getReceivingQuantity() + qty);
 
                 break;
         }
@@ -208,21 +207,21 @@ public class StorageService implements Serializable {
     public void withdraw(Product product, Transaction transaction) {
         Transaction t = newTransaction(product, transaction, TransactionType.WITHDRAW);
 
-        t.copyText(Transaction.COMMENTS, transaction);
+        t.setComments(transaction.getComments());
 
         domainService.save(t);
 
-        Product p = getProduct(t.getNumber(Transaction.STORAGE_FROM), t.getNumber(Transaction.NOMENCLATURE));
+        Product p = getProduct(t.getStorageIdFrom(), t.getNomenclatureId());
 
-        Long qty = t.getNumber(Transaction.QUANTITY);
+        Long qty = t.getQuantity();
 
-        switch (t.getNumber(Transaction.TRANSFER_TYPE).intValue()){
+        switch (t.getTransferType().intValue()){
             case (int) TransferType.TRANSFER:
-                p.setNumber(Product.QUANTITY, p.getNumber(Product.QUANTITY) - qty);
+                p.setQuantity(p.getQuantity() - qty);
 
                 break;
             case (int) TransferType.GIFT:
-                p.setNumber(Product.GIFT_QUANTITY, p.getNumber(Product.GIFT_QUANTITY) - qty);
+                p.setGiftQuantity(p.getGiftQuantity() - qty);
 
                 break;
         }
@@ -232,22 +231,22 @@ public class StorageService implements Serializable {
 
     @Transactional
     public void receive(Transaction transaction) {
-        Product pFrom = getProduct(transaction.getNumber(Transaction.STORAGE_FROM), transaction.getNumber(Transaction.NOMENCLATURE));
-        Product pTo = getProduct(transaction.getNumber(Transaction.STORAGE_TO), transaction.getNumber(Transaction.NOMENCLATURE));
+        Product pFrom = getProduct(transaction.getStorageIdFrom(), transaction.getNomenclatureId());
+        Product pTo = getProduct(transaction.getStorageIdTo(), transaction.getNomenclatureId());
 
-        Long qty = transaction.getNumber(Transaction.QUANTITY);
+        Long qty = transaction.getQuantity();
 
-        switch (transaction.getNumber(Transaction.TRANSFER_TYPE).intValue()){
+        switch (transaction.getTransferType().intValue()){
             case (int) TransferType.TRANSFER:
-                pFrom.setNumber(Product.SENDING, pFrom.getNumber(Product.SENDING, 0L) - qty);
-                pTo.setNumber(Product.RECEIVING, pTo.getNumber(Product.RECEIVING, 0L) - qty);
-                pTo.setNumber(Product.QUANTITY, pTo.getNumber(Product.QUANTITY) + qty);
+                pFrom.setSendingQuantity(pFrom.getSendingQuantity() - qty);
+                pTo.setReceivingQuantity(pTo.getReceivingQuantity() - qty);
+                pTo.setQuantity(pTo.getQuantity() + qty);
 
                 break;
             case (int) TransferType.GIFT:
-                pFrom.setNumber(Product.GIFT_SENDING, pFrom.getNumber(Product.GIFT_SENDING, 0L) - qty);
-                pTo.setNumber(Product.GIFT_RECEIVING, pTo.getNumber(Product.GIFT_RECEIVING, 0L) - qty);
-                pTo.setNumber(Product.GIFT_QUANTITY, pTo.getNumber(Product.GIFT_QUANTITY, 0L) + qty);
+                pFrom.setGiftSendingQuantity(pFrom.getGiftSendingQuantity() - qty);
+                pTo.setGiftReceivingQuantity(pTo.getGiftReceivingQuantity() - qty);
+                pTo.setGiftQuantity(pTo.getGiftQuantity() + qty);
 
                 break;
         }

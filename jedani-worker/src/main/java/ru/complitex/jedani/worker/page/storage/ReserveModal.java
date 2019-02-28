@@ -64,7 +64,7 @@ public class ReserveModal extends Modal<Product> {
                 new LoadableDetachableModel<String>() {
                     @Override
                     protected String load() {
-                        return Nomenclatures.getNomenclatureLabel(productModel.getObject().getNumber(Product.NOMENCLATURE),
+                        return Nomenclatures.getNomenclatureLabel(productModel.getObject().getNomenclatureId(),
                                 domainService);
                     }
                 }).setEnabled(false));
@@ -73,7 +73,7 @@ public class ReserveModal extends Modal<Product> {
                 new LoadableDetachableModel<Long>() {
                     @Override
                     protected Long load() {
-                        return productModel.getObject().getNumber(Product.QUANTITY);
+                        return productModel.getObject().getQuantity();
                     }
                 }).setEnabled(false));
 
@@ -87,8 +87,8 @@ public class ReserveModal extends Modal<Product> {
                 }
 
                 SaleItem filter = new SaleItem();
-                filter.setNumber(SaleItem.NOMENCLATURE, product.getNumber(Product.NOMENCLATURE));
-                filter.setNumber(SaleItem.STORAGE, product.getParentId());
+                filter.setNomenclatureId(product.getNomenclatureId());
+                filter.setStorageId(product.getParentId());
 
                 return domainService.getDomains(SaleItem.class, FilterWrapper.of(filter));
             }
@@ -100,14 +100,14 @@ public class ReserveModal extends Modal<Product> {
                 item.add(new Label("id", saleItem.getObjectId()));
 
                 Sale sale = domainService.getDomain(Sale.class, saleItem.getParentId());
-                Worker worker = domainService.getDomain(Worker.class, sale.getNumber(Sale.SELLER_WORKER));
+                Worker worker = domainService.getDomain(Worker.class, sale.getSellerWorkerId());
 
                 item.add(new Label("seller", worker != null ? workerService.getWorkerLabel(worker) : ""));
 
-                item.add(new Label("buyer", nameService.getFio(sale.getNumber(Sale.BUYER_LAST_NAME),
-                        sale.getNumber(Sale.BUYER_FIRST_NAME), sale.getNumber(Sale.BUYER_MIDDLE_NAME))));
+                item.add(new Label("buyer", nameService.getFio(sale.getBuyerLastName(), sale.getBuyerFirstName(),
+                        sale.getBuyerMiddleName())));
 
-                item.add(new Label("quantity", saleItem.getNumber(SaleItem.QUANTITY)));
+                item.add(new Label("quantity", saleItem.getQuantity()));
             }
         });
 

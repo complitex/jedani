@@ -153,10 +153,10 @@ public class WorkerPage extends BasePage {
                     manager.getNumberValues(Worker.REGIONS).forEach(n -> worker.addNumberValue(Worker.REGIONS, n));
                     manager.getNumberValues(Worker.CITIES).forEach(n -> worker.addNumberValue(Worker.CITIES, n));
 
-                    worker.setNumber(Worker.MANAGER_ID, manager.getObjectId());
+                    worker.setManagerId(manager.getObjectId());
                 }
             }else{
-                worker.setNumber(Worker.TYPE, 1L);
+                worker.setType(1L);
             }
         }else{
             if (id != null) {
@@ -165,10 +165,10 @@ public class WorkerPage extends BasePage {
                 worker = getCurrentWorker();
             }
 
-            participant = !Objects.equals(worker.getNumber(Worker.TYPE), 1L);
+            participant = !Objects.equals(worker.getType(), 1L);
 
-            if (worker.getNumber(Worker.MANAGER_ID) != null && worker.getNumber(Worker.MANAGER_ID) != 1) {
-                manager = workerMapper.getWorker(worker.getNumber(Worker.MANAGER_ID));
+            if (worker.getManagerId() != null && worker.getManagerId() != 1L) {
+                manager = workerMapper.getWorker(worker.getManagerId());
             }
         }
 
@@ -490,9 +490,9 @@ public class WorkerPage extends BasePage {
                     worker.setParentEntityId(User.ENTITY_ID);
                     worker.setUserId(getCurrentUser().getId());
 
-                    worker.setNumber(Worker.LAST_NAME, nameService.getOrCreateLastName(lastName.getInput(), worker.getNumber(Worker.LAST_NAME)));
-                    worker.setNumber(Worker.FIRST_NAME, nameService.getOrCreateFirstName(firstName.getInput(), worker.getNumber(Worker.FIRST_NAME)));
-                    worker.setNumber(Worker.MIDDLE_NAME, nameService.getOrCreateMiddleName(middleName.getInput(), worker.getNumber(Worker.MIDDLE_NAME)));
+                    worker.setLastNameId(nameService.getOrCreateLastName(lastName.getInput(), worker.getLastNameId()));
+                    worker.setFirstNameId(nameService.getOrCreateFirstName(firstName.getInput(), worker.getFistNameId()));
+                    worker.setMiddleNameId(nameService.getOrCreateMiddleName(middleName.getInput(), worker.getMiddleNameId()));
 
                     if (participant && workerMapper.isExistJId(worker.getObjectId(), jId.getTextField().getInput())) {
                         jId.getTextField().error(getString("error_jid_exist"));
@@ -500,7 +500,7 @@ public class WorkerPage extends BasePage {
                         return;
                     }
 
-                    if (worker.getNumber(Worker.MANAGER_ID) == null){
+                    if (worker.getManagerId() == null){
                         worker.setNumber(Worker.MANAGER_ID, 1L);
                         manager = workerMapper.getWorker(1L);
                     }
@@ -523,8 +523,8 @@ public class WorkerPage extends BasePage {
 
                         success(getString("info_user_created"));
                     }else{
-                        boolean moveIndex = !Objects.equals(worker.getNumber(Worker.MANAGER_ID),
-                                workerMapper.getWorker(worker.getObjectId()).getNumber(Worker.MANAGER_ID)); //todo opt
+                        boolean moveIndex = !Objects.equals(worker.getManagerId(),
+                                workerMapper.getWorker(worker.getObjectId()).getManagerId()); //todo opt
 
                         domainMapper.updateDomain(worker);
 

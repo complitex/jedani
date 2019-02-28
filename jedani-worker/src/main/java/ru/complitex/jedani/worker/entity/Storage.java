@@ -29,6 +29,22 @@ public class Storage extends Domain<Storage> {
         setUseNumberValue(true);
     }
 
+    public Long getCityId(){
+        return getNumber(CITY);
+    }
+
+    public void setCityId(Long cityId){
+        setNumber(CITY, cityId);
+    }
+
+    public Long getType(){
+        return getNumber(TYPE);
+    }
+
+    public void setType(Long type){
+        setNumber(TYPE, type);
+    }
+
     public Long getNomenclatureCount() {
         return nomenclatureCount;
     }

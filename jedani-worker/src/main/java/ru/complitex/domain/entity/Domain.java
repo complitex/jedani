@@ -75,32 +75,10 @@ public class Domain<T extends Domain<T>> implements Serializable{
         this.objectId = objectId;
     }
 
-    public Domain<T> setText(Long entityAttributeId, String text){
-        getOrCreateAttribute(entityAttributeId).setText(text);
-
-        return this;
-    }
-
-    public void copyText(Long entityAttributeId, Domain domain){
-        setText(entityAttributeId, domain.getText(entityAttributeId));
-    }
-
-    public Domain<T> setUpperText(Long entityAttributeId, String text){
+    public void setUpperText(Long entityAttributeId, String text){
         if (text != null){
             setText(entityAttributeId, text.toUpperCase());
         }
-
-        return this;
-    }
-
-    public Domain setNumber(Long entityAttributeId, Long number){
-        getOrCreateAttribute(entityAttributeId).setNumber(number);
-
-        return this;
-    }
-
-    public void copyNumber(Long entityAttributeId, Domain domain){
-        setNumber(entityAttributeId, domain.getNumber(entityAttributeId));
     }
 
     public void setDate(Long entityAttributeId, Date date){
@@ -146,6 +124,16 @@ public class Domain<T extends Domain<T>> implements Serializable{
         return attribute != null ? attribute.getText() : null;
     }
 
+    public Domain<T> setText(Long entityAttributeId, String text){
+        getOrCreateAttribute(entityAttributeId).setText(text);
+
+        return this;
+    }
+
+    public void copyText(Long entityAttributeId, Domain domain){
+        setText(entityAttributeId, domain.getText(entityAttributeId));
+    }
+
     public Long getNumber(Long entityAttributeId){
         Attribute attribute = getAttribute(entityAttributeId);
 
@@ -156,6 +144,16 @@ public class Domain<T extends Domain<T>> implements Serializable{
         Attribute attribute = getAttribute(entityAttributeId);
 
         return attribute != null ? attribute.getNumber() != null ? attribute.getNumber() : defaultNumber : defaultNumber;
+    }
+
+    public Domain setNumber(Long entityAttributeId, Long number){
+        getOrCreateAttribute(entityAttributeId).setNumber(number);
+
+        return this;
+    }
+
+    public void copyNumber(Long entityAttributeId, Domain domain){
+        setNumber(entityAttributeId, domain.getNumber(entityAttributeId));
     }
 
     public Date getDate(Long entityAttributeId){

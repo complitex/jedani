@@ -114,4 +114,48 @@ public class Worker extends DomainNode<Worker> {
     public void setSubWorkerCount(Long subWorkerCount) {
         this.subWorkerCount = subWorkerCount;
     }
+
+    public String getJId(){
+        return getText(J_ID);
+    }
+
+    public Long getFistNameId(){
+        return getNumber(FIRST_NAME);
+    }
+
+    public void setFirstNameId(Long firstNameId){
+        setNumber(FIRST_NAME, firstNameId);
+    }
+
+    public Long getMiddleNameId(){
+        return getNumber(MIDDLE_NAME);
+    }
+
+    public void setMiddleNameId(Long middleNameId){
+        setNumber(MIDDLE_NAME, middleNameId);
+    }
+
+    public Long getLastNameId(){
+        return getNumber(LAST_NAME);
+    }
+
+    public void setLastNameId(Long lastNameId){
+        setNumber(LAST_NAME, lastNameId);
+    }
+
+    public Long getManagerId(){
+        return getNumber(MANAGER_ID);
+    }
+
+    public void setManagerId(Long managerId){
+        setNumber(MANAGER_ID, managerId);
+    }
+
+    public Long getType(){
+        return getNumber(TYPE);
+    }
+
+    public void setType(Long type){
+        setNumber(TYPE, type);
+    }
 }

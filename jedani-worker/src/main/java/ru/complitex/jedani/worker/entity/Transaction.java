@@ -32,4 +32,110 @@ public class Transaction extends Domain<Transaction> {
 
         setUseDateAttribute(true);
     }
+
+    public Long getNomenclatureId() {
+        return getNumber(NOMENCLATURE);
+    }
+
+    public void setNomenclatureId(Long nomenclatureId) {
+        setNumber(NOMENCLATURE, nomenclatureId);
+    }
+
+    public Long getQuantity() {
+        return getNumber(QUANTITY);
+    }
+
+    public void setQuantity(Long quantity) {
+        setNumber(QUANTITY, quantity);
+    }
+
+    public Long getType() {
+        return getNumber(TYPE);
+    }
+
+    public void setType(Long type) {
+        setNumber(TYPE, type);
+    }
+
+    public Long getTransferType(){
+        return getNumber(TRANSFER_TYPE);
+    }
+
+    public void setTransferType(Long transferType){
+        setNumber(TRANSFER_TYPE, transferType);
+    }
+
+    public Long getRecipientType() {
+        return getNumber(RECIPIENT_TYPE);
+    }
+
+    public void setRecipientType(Long recipientType) {
+        setNumber(RECIPIENT_TYPE, recipientType);
+    }
+
+    public Long getStorageIdFrom() {
+        return getNumber(STORAGE_FROM);
+    }
+
+    public void setStorageIdFrom(Long storageId) {
+        setNumber(STORAGE_FROM, storageId);
+    }
+
+    public Long getStorageIdTo() {
+        return getNumber(STORAGE_TO);
+    }
+
+    public void setStorageIdTo(Long storageId) {
+        setNumber(STORAGE_TO, storageId);
+    }
+
+    public Long getWorkerIdTo() {
+        return getNumber(WORKER_TO);
+    }
+
+    public void setWorkerIdTo(Long workerId) {
+        setNumber(WORKER_TO, workerId);
+    }
+
+    public Long getFirstNameIdTo() {
+        return getNumber(FIRST_NAME_TO);
+    }
+
+    public void setFirstNameIdTo(Long firstNameId) {
+        setNumber(FIRST_NAME_TO, firstNameId);
+    }
+
+    public Long getMiddleNameIdTo(){
+        return getNumber(MIDDLE_NAME_TO);
+    }
+
+    public void setMiddleNameIdTo(Long middleNameId){
+        setNumber(MIDDLE_NAME_TO, middleNameId);
+    }
+
+    public Long getLastNameIdTo() {
+        return getNumber(LAST_NAME_TO);
+    }
+
+    public void setLastNameIdTo(Long lastNameId){
+        setNumber(LAST_NAME_TO, lastNameId);
+    }
+
+    public String getSerialNumber(){
+        return getText(SERIAL_NUMBER);
+    }
+
+    public void setSerialNumber(String serialNumber){
+        setText(SERIAL_NUMBER, serialNumber);
+    }
+
+    public String getComments(){
+        return getText(COMMENTS);
+    }
+
+    public void setComments(String comments){
+        setText(COMMENTS, comments);
+    }
+
+
 }

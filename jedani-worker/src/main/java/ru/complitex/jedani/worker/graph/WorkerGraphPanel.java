@@ -39,7 +39,7 @@ public class WorkerGraphPanel extends Panel {
 
         elements =  " {data: {id: '" + worker.getObjectId() + "', " +
                 "label: '" + worker.getText(Worker.J_ID) + "\\n" +
-                nameService.getLastName(worker.getNumber(Worker.LAST_NAME))
+                nameService.getLastName(worker.getLastNameId())
 //                + "\\n" +
 //                nameService.getFirstName(worker.getNumber(Worker.FIRST_NAME)) + "\\n" +
 //                nameService.getMiddleName(worker.getNumber(Worker.MIDDLE_NAME))
@@ -52,7 +52,7 @@ public class WorkerGraphPanel extends Panel {
 
                         return " {data: {id: '" + w.getObjectId() + "', " +
                                 "label: '" + w.getText(Worker.J_ID) + "\\n" +
-                                nameService.getLastName(w.getNumber(Worker.LAST_NAME))
+                                nameService.getLastName(w.getLastNameId())
 //                                + "\\n" +
 //                                nameService.getFirstName(w.getNumber(Worker.FIRST_NAME)) + "\\n" +
 //                                nameService.getMiddleName(w.getNumber(Worker.MIDDLE_NAME))
@@ -63,15 +63,15 @@ public class WorkerGraphPanel extends Panel {
 
             elements += "," + workers.stream()
                     .map(w -> " {data: {id: 'e" + w.getObjectId() + "', " +
-                            "source: '" + w.getNumber(Worker.MANAGER_ID) + "', " +
+                            "source: '" + w.getManagerId() + "', " +
                             "target: '" + w.getObjectId() + "'}}")
                     .collect(Collectors.joining(","));
         }
 
-        fileName =  worker.getText(Worker.J_ID) + " " +
-                nameService.getLastName(worker.getNumber(Worker.LAST_NAME)) + " " +
-                nameService.getFirstName(worker.getNumber(Worker.FIRST_NAME)) + " " +
-                nameService.getMiddleName(worker.getNumber(Worker.MIDDLE_NAME));
+        fileName =  worker.getJId() + " " +
+                nameService.getLastName(worker.getLastNameId()) + " " +
+                nameService.getFirstName(worker.getFistNameId()) + " " +
+                nameService.getMiddleName(worker.getMiddleNameId());
     }
 
     @Override
