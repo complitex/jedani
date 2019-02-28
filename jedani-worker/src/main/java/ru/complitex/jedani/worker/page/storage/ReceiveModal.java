@@ -3,6 +3,7 @@ package ru.complitex.jedani.worker.page.storage;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.LoadableDetachableModel;
+import org.danekja.java.util.function.serializable.SerializableConsumer;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.entity.Product;
@@ -10,6 +11,7 @@ import ru.complitex.jedani.worker.entity.Transaction;
 import ru.complitex.jedani.worker.entity.TransactionType;
 import ru.complitex.jedani.worker.entity.TransferType;
 import ru.complitex.jedani.worker.mapper.TransactionMapper;
+import ru.complitex.jedani.worker.service.StorageService;
 import ru.complitex.jedani.worker.util.Nomenclatures;
 
 import javax.inject.Inject;
@@ -20,17 +22,20 @@ import java.util.Objects;
  * @author Anatoly A. Ivanov
  * 16.11.2018 15:20
  */
-public abstract class ReceiveModal extends StorageModal {
+class ReceiveModal extends StorageModal {
     @Inject
     private DomainService domainService;
 
     @Inject
     private TransactionMapper transactionMapper;
 
+    @Inject
+    private StorageService storageService;
+
     private Transaction transaction;
 
-    public ReceiveModal(String markupId) {
-        super(markupId);
+    public ReceiveModal(String markupId, Long storageId, SerializableConsumer<AjaxRequestTarget> onUpdate) {
+        super(markupId, storageId, onUpdate);
 
         getContainer().add(new Label("nomenclature", new LoadableDetachableModel<String>() {
             @Override
@@ -75,5 +80,15 @@ public abstract class ReceiveModal extends StorageModal {
 
     public Transaction getTransaction() {
         return transaction;
+    }
+
+    void action(AjaxRequestTarget target) {
+        storageService.receive(getTransaction());
+
+        success(getString("info_received"));
+
+        close(target);
+
+        onUpdate(target);
     }
 }

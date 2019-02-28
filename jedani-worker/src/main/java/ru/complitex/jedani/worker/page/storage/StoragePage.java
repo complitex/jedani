@@ -218,17 +218,7 @@ public class StoragePage extends BasePage {
         };
         add(acceptForm);
 
-        AcceptModal acceptModal = new AcceptModal("acceptModal") {
-            @Override
-            void action(AjaxRequestTarget target) {
-                storageService.accept(storageId, getModelObject());
-
-                success(getString("info_accepted"));
-
-                close(target);
-                target.add(feedback, tables);
-            }
-        };
+        AcceptModal acceptModal = new AcceptModal("acceptModal", storageId, t -> t.add(feedback, tables));
         acceptForm.add(acceptModal);
 
         //Transfer Modal
@@ -241,73 +231,7 @@ public class StoragePage extends BasePage {
         };
         add(transferForm);
 
-        TransferModal transferModal = new TransferModal("transferModal") {
-            @Override
-            void action(AjaxRequestTarget target) {
-                Transaction transaction = getModelObject();
-
-                Product product = domainService.getDomain(Product.class, getProduct().getObjectId());
-
-                boolean gift = Objects.equals(transaction.getNumber(Transaction.TRANSFER_TYPE), TransferType.GIFT);
-
-                Long tQty = transaction.getNumber(gift ? TransferType.GIFT : Transaction.QUANTITY);
-                Long pQty = product.getNumber(gift ? TransferType.GIFT : Product.QUANTITY);
-
-                if (tQty > pQty){
-                    error(getString("error_quantity") + ": " + tQty + " > " + pQty);
-                    target.add(getFeedback());
-
-                    return;
-                }
-
-                if (tQty < 1){
-                    error(getString("error_quantity") + ": " + tQty + " < 1 ");
-                    target.add(getFeedback());
-
-                    return;
-                }
-
-                if (Objects.equals(transaction.getNumber(Transaction.RECIPIENT_TYPE), RecipientType.WORKER)){
-                    Worker w = domainService.getDomain(Worker.class, transaction.getNumber(Transaction.WORKER_TO));
-
-                    if (Objects.equals(w.getNumber(Worker.TYPE), 1L)){
-                        error(getString("error_participant"));
-                        target.add(getFeedback());
-
-                        return;
-                    }
-                }
-
-                switch (getTabIndexModel().getObject()){
-                    case 0:
-                        storageService.sell(product, transaction);
-                        success(getString("info_sold"));
-
-                        break;
-                    case 1:
-                        if (Objects.equals(transaction.getNumber(Transaction.RECIPIENT_TYPE), RecipientType.STORAGE)
-                                && Objects.equals(transaction.getNumber(Transaction.STORAGE_TO), storageId)){
-                            error(getString("error_same_storage"));
-                            target.add(getFeedback());
-
-                            return;
-                        }
-
-                        storageService.transfer(product, transaction);
-                        success(getString("info_transferred"));
-
-                        break;
-                    case 2:
-                        storageService.withdraw(product, transaction);
-                        success(getString("info_withdrew"));
-
-                        break;
-                }
-
-                close(target);
-                target.add(feedback, tables);
-            }
-        };
+        TransferModal transferModal = new TransferModal("transferModal", storageId, t -> t.add(feedback, tables));
         transferForm.add(transferModal);
 
         //Receive Modal
@@ -320,17 +244,7 @@ public class StoragePage extends BasePage {
         };
         add(receiveForm);
 
-        ReceiveModal receiveModal = new ReceiveModal("receiveModal") {
-            @Override
-            void action(AjaxRequestTarget target) {
-                storageService.receive(getTransaction());
-
-                success(getString("info_received"));
-
-                close(target);
-                target.add(feedback, tables);
-            }
-        };
+        ReceiveModal receiveModal = new ReceiveModal("receiveModal", storageId, t -> t.add(feedback, tables));
         receiveForm.add(receiveModal);
 
         //Reserve Modal

@@ -247,7 +247,7 @@ INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `tex
 
 INSERT INTO exchange_rate (id, object_id, status) VALUES (1, 1, 1);
 INSERT INTO exchange_rate_attribute (id, object_id, entity_attribute_id, status) VALUES (1, 1, 1, 1);
-INSERT INTO exchange_rate_value (attribute_id, locale_id, text) VALUES (1, 1, 'EUR/RUB (ЦБ РФ');
+INSERT INTO exchange_rate_value (attribute_id, locale_id, text) VALUES (1, 1, 'EUR/RUB (ЦБ РФ)');
 INSERT INTO exchange_rate_attribute (id, object_id, entity_attribute_id, status, text) VALUES (2, 1, 2, 1, 'EUR/RUB');
 INSERT INTO exchange_rate_attribute (id, object_id, entity_attribute_id, status, number) VALUES (3, 1, 3, 1, 3);
 INSERT INTO exchange_rate_attribute (id, object_id, entity_attribute_id, status, number) VALUES (4, 1, 4, 1, 1);

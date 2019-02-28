@@ -16,6 +16,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
+import org.danekja.java.util.function.serializable.SerializableConsumer;
 import ru.complitex.common.wicket.form.FormGroupPanel;
 import ru.complitex.common.wicket.form.FormGroupSelectPanel;
 import ru.complitex.common.wicket.form.TextFieldFormGroup;
@@ -26,10 +27,8 @@ import ru.complitex.domain.model.TextAttributeModel;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.component.StorageAutoComplete;
 import ru.complitex.jedani.worker.component.WorkerAutoComplete;
-import ru.complitex.jedani.worker.entity.Product;
-import ru.complitex.jedani.worker.entity.RecipientType;
-import ru.complitex.jedani.worker.entity.Transaction;
-import ru.complitex.jedani.worker.entity.TransferType;
+import ru.complitex.jedani.worker.entity.*;
+import ru.complitex.jedani.worker.service.StorageService;
 import ru.complitex.jedani.worker.util.Nomenclatures;
 import ru.complitex.name.entity.FirstName;
 import ru.complitex.name.entity.LastName;
@@ -42,16 +41,19 @@ import java.util.*;
  * @author Anatoly A. Ivanov
  * 07.11.2018 17:18
  */
-public abstract class TransferModal extends StorageModal {
+class TransferModal extends StorageModal {
     @Inject
     private DomainService domainService;
+
+    @Inject
+    private StorageService storageService;
 
     private Product product;
 
     private IModel<Integer> tabIndexModel = Model.of(0);
 
-    TransferModal(String markupId) {
-        super(markupId);
+    TransferModal(String markupId, Long storageId, SerializableConsumer<AjaxRequestTarget> onUpdate) {
+        super(markupId, storageId, onUpdate);
 
         List<ITab> tabs = new ArrayList<>();
 
@@ -337,5 +339,72 @@ public abstract class TransferModal extends StorageModal {
 
     public IModel<Integer> getTabIndexModel() {
         return tabIndexModel;
+    }
+
+    @Override
+    void action(AjaxRequestTarget target) {
+        Transaction transaction = getModelObject();
+
+        Product product = domainService.getDomain(Product.class, getProduct().getObjectId());
+
+        boolean gift = Objects.equals(transaction.getNumber(Transaction.TRANSFER_TYPE), TransferType.GIFT);
+
+        Long tQty = transaction.getNumber(gift ? TransferType.GIFT : Transaction.QUANTITY);
+        Long pQty = product.getNumber(gift ? TransferType.GIFT : Product.QUANTITY);
+
+        if (tQty > pQty){
+            error(getString("error_quantity") + ": " + tQty + " > " + pQty);
+            target.add(getFeedback());
+
+            return;
+        }
+
+        if (tQty < 1){
+            error(getString("error_quantity") + ": " + tQty + " < 1 ");
+            target.add(getFeedback());
+
+            return;
+        }
+
+        if (Objects.equals(transaction.getNumber(Transaction.RECIPIENT_TYPE), RecipientType.WORKER)){
+            Worker w = domainService.getDomain(Worker.class, transaction.getNumber(Transaction.WORKER_TO));
+
+            if (Objects.equals(w.getNumber(Worker.TYPE), 1L)){
+                error(getString("error_participant"));
+                target.add(getFeedback());
+
+                return;
+            }
+        }
+
+        switch (getTabIndexModel().getObject()){
+            case 0:
+                storageService.sell(product, transaction);
+                success(getString("info_sold"));
+
+                break;
+            case 1:
+                if (Objects.equals(transaction.getNumber(Transaction.RECIPIENT_TYPE), RecipientType.STORAGE)
+                        && Objects.equals(transaction.getNumber(Transaction.STORAGE_TO), getStorageId())){
+                    error(getString("error_same_storage"));
+                    target.add(getFeedback());
+
+                    return;
+                }
+
+                storageService.transfer(product, transaction);
+                success(getString("info_transferred"));
+
+                break;
+            case 2:
+                storageService.withdraw(product, transaction);
+                success(getString("info_withdrew"));
+
+                break;
+        }
+
+        close(target);
+
+        onUpdate(target);
     }
 }

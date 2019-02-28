@@ -11,6 +11,7 @@ import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
+import org.danekja.java.util.function.serializable.SerializableConsumer;
 import ru.complitex.common.wicket.util.Wickets;
 import ru.complitex.jedani.worker.entity.RecipientType;
 import ru.complitex.jedani.worker.entity.Transaction;
@@ -25,8 +26,15 @@ abstract class StorageModal extends Modal<Transaction> {
 
     private BootstrapAjaxButton actionButton;
 
-    StorageModal(String markupId) {
+    private Long storageId;
+
+    private SerializableConsumer<AjaxRequestTarget> onUpdate;
+
+    StorageModal(String markupId, Long storageId, SerializableConsumer<AjaxRequestTarget> onUpdate) {
         super(markupId, Model.of(new Transaction()));
+
+        this.storageId = storageId;
+        this.onUpdate = onUpdate;
 
         setBackdrop(Backdrop.FALSE);
 
@@ -64,6 +72,14 @@ abstract class StorageModal extends Modal<Transaction> {
                 StorageModal.this.close(target);
             }
         }.setLabel(new ResourceModel("cancel")));
+    }
+
+    public Long getStorageId() {
+        return storageId;
+    }
+
+    public void setStorageId(Long storageId) {
+        this.storageId = storageId;
     }
 
     void open(AjaxRequestTarget target){
@@ -115,5 +131,11 @@ abstract class StorageModal extends Modal<Transaction> {
 
     protected String getFocusMarkupId() {
         return null;
+    }
+
+    protected void onUpdate(AjaxRequestTarget target){
+        if (onUpdate != null){
+            onUpdate.accept(target);
+        }
     }
 }
