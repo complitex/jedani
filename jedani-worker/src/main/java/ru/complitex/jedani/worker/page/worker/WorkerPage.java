@@ -590,7 +590,7 @@ public class WorkerPage extends BasePage {
                         success(getString("info_user_updated"));
                     }
 
-                    target.add(feedback, form, lastName, firstName, middleName);
+                    target.add(feedback, form);
                 } catch (Exception e) {
                     error("Ошибка: " + e.getMessage());
                     target.add(feedback);
@@ -703,7 +703,6 @@ public class WorkerPage extends BasePage {
 
             }
         };
-        table.setHideOnEmpty(worker.getObjectId() == null);
         structure.add(table);
 
         filterWrapper.getMap().put("levelDepth", 1L);
