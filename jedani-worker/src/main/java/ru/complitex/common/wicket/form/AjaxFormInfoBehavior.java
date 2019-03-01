@@ -1,4 +1,4 @@
-package ru.complitex.common.wicket.component;
+package ru.complitex.common.wicket.form;
 
 import de.agilecoders.wicket.jquery.JQuery;
 import de.agilecoders.wicket.jquery.function.Function;

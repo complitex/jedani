@@ -1,8 +1,6 @@
 package ru.complitex.jedani.worker.page.worker;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
@@ -26,7 +24,6 @@ import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.entity.StringType;
 import ru.complitex.domain.page.DomainListPage;
 import ru.complitex.domain.service.EntityService;
-import ru.complitex.jedani.worker.entity.Position;
 import ru.complitex.jedani.worker.entity.Worker;
 import ru.complitex.jedani.worker.mapper.WorkerMapper;
 import ru.complitex.jedani.worker.security.JedaniRoles;
@@ -56,13 +53,6 @@ public class WorkerListPage extends DomainListPage<Worker>{
 
     public WorkerListPage() {
         super(Worker.class, WorkerPage.class);
-
-        getContainer().add(new AjaxLink<Void>("addEmployee") {
-            @Override
-            public void onClick(AjaxRequestTarget target) {
-                setResponsePage(WorkerPage.class, new PageParameters().add("new", "employee").add("a", ""));
-            }
-        });
     }
 
     @SuppressWarnings("Duplicates")
@@ -86,8 +76,8 @@ public class WorkerListPage extends DomainListPage<Worker>{
         list.add(entity.getEntityAttribute(Worker.EMAIL).setStringType(StringType.LOWER_CASE));
         list.add(entity.getEntityAttribute(Worker.INVOLVED_AT));
 
-        list.add(entity.getEntityAttribute(Worker.POSITION).withReference(Position.ENTITY_NAME, Position.NAME));
-        list.add(entity.getEntityAttribute(Worker.TYPE));
+//        list.add(entity.getEntityAttribute(Worker.POSITION).withReference(Position.ENTITY_NAME, Position.NAME));
+//        list.add(entity.getEntityAttribute(Worker.TYPE));
 
         return list;
     }
@@ -109,6 +99,7 @@ public class WorkerListPage extends DomainListPage<Worker>{
             }
         });
 
+        //noinspection Duplicates
         columns.add(new AbstractDomainColumn<Worker>(new ResourceModel("subWorkersCount"),
                 new SortProperty("subWorkersCount")) {
             @Override
@@ -122,6 +113,7 @@ public class WorkerListPage extends DomainListPage<Worker>{
             }
         });
 
+        //noinspection Duplicates
         columns.add(new AbstractDomainColumn<Worker>(new ResourceModel("level"), new SortProperty("level")) {
             @Override
             public void populateItem(Item<ICellPopulator<Worker>> cellItem, String componentId, IModel<Worker> rowModel) {
@@ -158,5 +150,19 @@ public class WorkerListPage extends DomainListPage<Worker>{
     @Override
     protected void onAddPageParameters(PageParameters pageParameters) {
         pageParameters.add("a", "");
+    }
+
+    @Override
+    protected IModel<String> displayModel(EntityAttribute entityAttribute) {
+        switch (entityAttribute.getEntityAttributeId().intValue()){
+            case (int) Worker.J_ID:
+                return new ResourceModel("jId");
+            case (int) Worker.INVOLVED_AT:
+                return new ResourceModel("involvedAt");
+            case (int) Worker.TYPE:
+                return new ResourceModel("type");
+        }
+
+        return super.displayModel(entityAttribute);
     }
 }

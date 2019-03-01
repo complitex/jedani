@@ -119,6 +119,10 @@ public class Worker extends DomainNode<Worker> {
         return getText(J_ID);
     }
 
+    public void setJId(String jId){
+        setText(J_ID, jId);
+    }
+
     public Long getFistNameId(){
         return getNumber(FIRST_NAME);
     }
@@ -157,5 +161,9 @@ public class Worker extends DomainNode<Worker> {
 
     public void setType(Long type){
         setNumber(TYPE, type);
+    }
+
+    public boolean isParticipant(){
+        return getType() == null || getType().equals(WorkerType.PARTICIPANT);
     }
 }

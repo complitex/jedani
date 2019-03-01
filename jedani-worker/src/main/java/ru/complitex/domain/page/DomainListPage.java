@@ -181,8 +181,12 @@ public class DomainListPage<T extends Domain> extends BasePage{
         });
     }
 
-    protected DomainColumn<T> newDomainColumn(EntityAttribute a) {
-        return new DomainColumn<>(a);
+    protected DomainColumn<T> newDomainColumn(EntityAttribute entityAttribute) {
+        return new DomainColumn<>(entityAttribute, displayModel(entityAttribute));
+    }
+
+    protected IModel<String> displayModel(EntityAttribute entityAttribute){
+        return null;
     }
 
     public DomainListPage(Class<T> domainInstance, Class<? extends WebPage> editPageClass) {

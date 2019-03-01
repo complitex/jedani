@@ -19,6 +19,8 @@ import java.util.Date;
 public class DateTextFieldFormGroup extends Panel{
     private DateTextField dateTextField;
 
+    private boolean required;
+
     public DateTextFieldFormGroup(String id, IModel<Date> model) {
         this(id, new ResourceModel(id), model);
     }
@@ -30,14 +32,23 @@ public class DateTextFieldFormGroup extends Panel{
 
         FormGroup group = new FormGroup("group", label);
         group.add(dateTextField = new DateTextField("input", model,
-                new DateTextFieldConfig().withFormat("dd.MM.yyyy").withLanguage("ru").autoClose(true)));
+                new DateTextFieldConfig().withFormat("dd.MM.yyyy").withLanguage("ru").autoClose(true)){
+            @Override
+            public boolean isRequired() {
+                return DateTextFieldFormGroup.this.isRequired();
+            }
+        });
         dateTextField.setLabel(label);
 
         add(group);
     }
 
+    public boolean isRequired() {
+        return required;
+    }
+
     public DateTextFieldFormGroup setRequired(boolean required){
-        dateTextField.setRequired(required);
+        this.required = required;
 
         return this;
     }

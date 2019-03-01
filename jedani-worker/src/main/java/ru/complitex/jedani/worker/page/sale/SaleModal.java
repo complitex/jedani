@@ -26,7 +26,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.danekja.java.util.function.serializable.SerializableConsumer;
 import ru.complitex.common.entity.FilterWrapper;
-import ru.complitex.common.wicket.component.AjaxFormInfoBehavior;
+import ru.complitex.common.wicket.form.AjaxFormInfoBehavior;
 import ru.complitex.common.wicket.form.FormGroupPanel;
 import ru.complitex.common.wicket.form.FormGroupSelectPanel;
 import ru.complitex.domain.component.form.DomainAutoCompleteFormGroup;

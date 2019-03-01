@@ -23,7 +23,7 @@ import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.complitex.common.wicket.component.FormGroupBorder;
+import ru.complitex.common.wicket.form.FormGroupBorder;
 import ru.complitex.domain.component.form.DomainAutoComplete;
 import ru.complitex.domain.entity.*;
 import ru.complitex.domain.model.TextAttributeModel;

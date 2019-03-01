@@ -3,7 +3,6 @@ package ru.complitex.common.wicket.form;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.ResourceModel;
-import ru.complitex.common.wicket.component.FormGroupBorder;
 
 /**
  * @author Anatoly A. Ivanov

@@ -41,6 +41,7 @@ import ru.complitex.common.wicket.component.DateTimeLabel;
 import ru.complitex.common.wicket.datatable.*;
 import ru.complitex.common.wicket.form.DateTextFieldFormGroup;
 import ru.complitex.common.wicket.form.FormGroupPanel;
+import ru.complitex.common.wicket.form.FormGroupSelectPanel;
 import ru.complitex.common.wicket.form.TextFieldFormGroup;
 import ru.complitex.common.wicket.util.Wickets;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
@@ -62,10 +63,12 @@ import ru.complitex.domain.model.TextAttributeModel;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
 import ru.complitex.jedani.worker.component.JedaniRoleSelectList;
+import ru.complitex.jedani.worker.component.TypeSelect;
 import ru.complitex.jedani.worker.component.WorkerAutoComplete;
 import ru.complitex.jedani.worker.entity.MkStatus;
 import ru.complitex.jedani.worker.entity.Position;
 import ru.complitex.jedani.worker.entity.Worker;
+import ru.complitex.jedani.worker.entity.WorkerType;
 import ru.complitex.jedani.worker.mapper.WorkerMapper;
 import ru.complitex.jedani.worker.page.BasePage;
 import ru.complitex.jedani.worker.security.JedaniRoles;
@@ -127,8 +130,6 @@ public class WorkerPage extends BasePage {
 
     private IModel<Boolean> showGraph = Model.of(false);
 
-    private boolean participant = true;
-
     public WorkerPage(PageParameters parameters) {
         Long id = parameters.get("id").toOptionalLong();
 
@@ -138,25 +139,20 @@ public class WorkerPage extends BasePage {
             worker = new Worker();
             worker.init();
 
-            participant = !Objects.equals(parameters.get("new").toOptionalString(), "employee");
+            worker.setType(WorkerType.PARTICIPANT);
+            worker.setText(Worker.J_ID, workerMapper.getNewJId());
 
-            if (participant) {
-                worker.setText(Worker.J_ID, workerMapper.getNewJId());
+            if (id != null) {
+                manager = workerMapper.getWorker(id);
+            }else if (getCurrentWorker().getObjectId() != null){
+                manager = workerMapper.getWorker(getCurrentWorker().getObjectId());
+            }
 
-                if (id != null) {
-                    manager = workerMapper.getWorker(id);
-                }else if (getCurrentWorker().getObjectId() != null){
-                    manager = workerMapper.getWorker(getCurrentWorker().getObjectId());
-                }
+            if (manager != null){
+                manager.getNumberValues(Worker.REGIONS).forEach(n -> worker.addNumberValue(Worker.REGIONS, n));
+                manager.getNumberValues(Worker.CITIES).forEach(n -> worker.addNumberValue(Worker.CITIES, n));
 
-                if (manager != null){
-                    manager.getNumberValues(Worker.REGIONS).forEach(n -> worker.addNumberValue(Worker.REGIONS, n));
-                    manager.getNumberValues(Worker.CITIES).forEach(n -> worker.addNumberValue(Worker.CITIES, n));
-
-                    worker.setManagerId(manager.getObjectId());
-                }
-            }else{
-                worker.setType(1L);
+                worker.setManagerId(manager.getObjectId());
             }
         }else{
             if (id != null) {
@@ -165,14 +161,12 @@ public class WorkerPage extends BasePage {
                 worker = getCurrentWorker();
             }
 
-            participant = !Objects.equals(worker.getType(), 1L);
-
             if (worker.getManagerId() != null && worker.getManagerId() != 1L) {
                 manager = workerMapper.getWorker(worker.getManagerId());
             }
         }
 
-        if (worker.getObjectId() != null && participant){
+        if (worker.getObjectId() != null && worker.isParticipant()){
             if (!isAdmin() && !isStructureAdmin()){
                 if (getCurrentWorker().getRight() < worker.getRight() || getCurrentWorker().getLeft() > worker.getLeft()){
                     throw new UnauthorizedInstantiationException(WorkerPage.class);
@@ -208,7 +202,17 @@ public class WorkerPage extends BasePage {
 
         //Worker
         FilterDataForm<FilterWrapper<Worker>> form = new FilterDataForm<>("form", dataProvider);
+        form.setOutputMarkupId(true);
         add(form);
+
+        form.add(new FormGroupSelectPanel("type", new TypeSelect(FormGroupPanel.COMPONENT_ID,
+                new NumberAttributeModel(worker, Worker.TYPE), WorkerType.PARTICIPANT, WorkerType.USER)
+                .add(OnChangeAjaxBehavior.onChange(t -> t.add(form)))){
+            @Override
+            public boolean isVisible() {
+                return worker.getObjectId() == null && (isAdmin() || isStructureAdmin());
+            }
+        });
 
         DomainAutoCompleteFormGroup lastName, firstName, middleName;
 
@@ -221,33 +225,48 @@ public class WorkerPage extends BasePage {
         form.add(new AttributeSelectFormGroup("position", new NumberAttributeModel(worker, Worker.POSITION),
                 Position.ENTITY_NAME, Position.NAME));
 
-        TextFieldFormGroup<String> jId = new TextFieldFormGroup<>("jId", new PropertyModel<>(worker.getOrCreateAttribute(Worker.J_ID), "text"));
-        jId.setRequired(participant);
+        TextFieldFormGroup<String> jId = new TextFieldFormGroup<String>("jId", new TextAttributeModel(worker, Worker.J_ID)){
+            @Override
+            public boolean isRequired() {
+                return worker.isParticipant();
+            }
+        };
 
         if (worker.getObjectId() == null) {
             jId.onUpdate(target -> {
-                if (workerMapper.isExistJId(null, jId.getTextField().getInput())) {
+                if (worker.isParticipant() && workerMapper.isExistJId(null, jId.getTextField().getInput())) {
                     jId.getTextField().error(getString("error_jid_exist"));
                 }
 
                 target.add(jId);
             });
         }
-        jId.setVisible(participant);
         form.add(jId);
 
-        //num
-        form.add(new TextFieldFormGroup<>("num", Model.of("")).setVisible(!participant));
-
         form.add(new AttributeSelectFormGroup("mkStatus", new NumberAttributeModel(worker, Worker.MK_STATUS),
-                MkStatus.ENTITY_NAME, MkStatus.NAME).setVisible(participant));
+                MkStatus.ENTITY_NAME, MkStatus.NAME){
+            @Override
+            public boolean isVisible() {
+                return worker.isParticipant();
+            }
+        });
         form.add(new DateTextFieldFormGroup("birthday", new DateAttributeModel(worker, Worker.BIRTHDAY)));
-        form.add(new AttributeInputListFormGroup("phone", Model.of(worker.getOrCreateAttribute(Worker.PHONE))).setRequired(participant));
+        form.add(new AttributeInputListFormGroup("phone", Model.of(worker.getOrCreateAttribute(Worker.PHONE))){
+            @Override
+            public boolean isRequired() {
+                return worker.isParticipant();
+            }
+        });
         form.add(new TextFieldFormGroup<>("email", new TextAttributeModel(worker, Worker.EMAIL, StringType.LOWER_CASE)));
 
         AttributeSelectListFormGroup city, region;
         form.add(region = new AttributeSelectListFormGroup("region", Model.of(worker.getOrCreateAttribute(Worker.REGIONS)),
-                Region.ENTITY_NAME, Region.NAME, true).setRequired(participant));
+                Region.ENTITY_NAME, Region.NAME, true){
+            @Override
+            public boolean isRequired() {
+                return worker.isParticipant();
+            }
+        });
         form.add(city = new AttributeSelectListFormGroup("city", Model.of(worker.getOrCreateAttribute(Worker.CITIES)),
                 City.ENTITY_NAME, City.NAME, region.getListModel(), true){
             @Override
@@ -264,13 +283,18 @@ public class WorkerPage extends BasePage {
 
                 return super.getPrefix(domain);
             }
-        }.setRequired(participant));
+
+            @Override
+            public boolean isRequired() {
+                return worker.isParticipant();
+            }
+        });
         region.onChange(t -> t.add(city));
 
         //User
         User user = worker.getParentId() != null
                 ? userMapper.getUser(worker.getParentId())
-                : new User(participant ? worker.getText(Worker.J_ID) : null);
+                : new User(worker.getText(Worker.J_ID));
 
         List<String> roles = new ArrayList<>();
 
@@ -302,13 +326,20 @@ public class WorkerPage extends BasePage {
         confirmPassword.setRequired(false);
         form.add(confirmPassword);
 
-        form.add(new DateTextFieldFormGroup("registrationDate", new PropertyModel<>(worker.getOrCreateAttribute(Worker.INVOLVED_AT), "date"))
-                .onUpdate(target -> target.add(get("form:registrationDate")))
-                .setRequired(participant));
+        form.add(new DateTextFieldFormGroup("registrationDate", new DateAttributeModel(worker, Worker.INVOLVED_AT)){
+            @Override
+            public boolean isRequired() {
+                return worker.isParticipant();
+            }
+        }.onUpdate(t -> t.add(get("form:registrationDate"))));
 
         //Manager
-        WebMarkupContainer managerContainer = new WebMarkupContainer("manager");
-        managerContainer.setVisible(participant);
+        WebMarkupContainer managerContainer = new WebMarkupContainer("manager"){
+            @Override
+            public boolean isVisible() {
+                return worker.isParticipant();
+            }
+        };
         form.add(managerContainer);
 
         Label managerPhone = new Label("managerPhones", new LoadableDetachableModel<String>() {
@@ -338,14 +369,23 @@ public class WorkerPage extends BasePage {
                 }));
 
         //Structure
-        WebMarkupContainer structure = new WebMarkupContainer("structure");
+        WebMarkupContainer structure = new WebMarkupContainer("structure"){
+            @Override
+            public boolean isVisible() {
+                return worker.getObjectId() != null && worker.isParticipant();
+            }
+        };
+
         structure.setOutputMarkupId(true);
-        structure.setVisible(worker.getObjectId() != null && participant);
         form.add(structure);
 
         //History
-        WebMarkupContainer historyHeader = new WebMarkupContainer("historyHeader");
-        historyHeader.setVisible(worker.getObjectId() != null);
+        WebMarkupContainer historyHeader = new WebMarkupContainer("historyHeader"){
+            @Override
+            public boolean isVisible() {
+                return worker.getObjectId() != null;
+            }
+        };
         form.add(historyHeader);
 
         Entity workerEntity = entityMapper.getEntity(Worker.ENTITY_NAME);
@@ -429,17 +469,27 @@ public class WorkerPage extends BasePage {
             }
         };
 
-        DataTable<Attribute, String> historyDataTable = new DataTable<>("history", historyColumns, historyDataProvider, 5);
+        DataTable<Attribute, String> historyDataTable = new DataTable<Attribute, String>("history", historyColumns,
+                historyDataProvider, 5){
+            @Override
+            public boolean isVisible() {
+                return worker.getObjectId() != null;
+            }
+        };
         historyDataTable.addTopToolbar(new AjaxFallbackHeadersToolbar<>(historyDataTable, historyDataProvider));
         historyDataTable.addBottomToolbar(new NavigationToolbar(historyDataTable, "workerPage_history"));
         historyDataTable.setOutputMarkupId(true);
-        historyDataTable.setVisible(worker.getObjectId() != null);
         form.add(historyDataTable);
 
         form.add(new IndicatingAjaxButton("save") {
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
                 try {
+                    if (!worker.isParticipant()){
+                        worker.setManagerId(null);
+                        worker.setJId(null);
+                    }
+
                     //User
                     if (!Strings.isNullOrEmpty(user.getPassword())){
                         if (!user.getPassword().equals(user.getConfirmPassword())){
@@ -494,7 +544,7 @@ public class WorkerPage extends BasePage {
                     worker.setFirstNameId(nameService.getOrCreateFirstName(firstName.getInput(), worker.getFistNameId()));
                     worker.setMiddleNameId(nameService.getOrCreateMiddleName(middleName.getInput(), worker.getMiddleNameId()));
 
-                    if (participant && workerMapper.isExistJId(worker.getObjectId(), jId.getTextField().getInput())) {
+                    if (worker.isParticipant() && workerMapper.isExistJId(worker.getObjectId(), jId.getTextField().getInput())) {
                         jId.getTextField().error(getString("error_jid_exist"));
                         target.add(feedback, jId);
                         return;
@@ -540,7 +590,7 @@ public class WorkerPage extends BasePage {
                         success(getString("info_user_updated"));
                     }
 
-                    target.add(feedback, structure, historyDataTable);
+                    target.add(feedback, form, lastName, firstName, middleName);
                 } catch (Exception e) {
                     error("Ошибка: " + e.getMessage());
                     target.add(feedback);
@@ -572,7 +622,7 @@ public class WorkerPage extends BasePage {
 
             @Override
             public boolean isVisible() {
-                return worker.getObjectId() != null && participant;
+                return worker.getObjectId() != null && worker.isParticipant();
             }
         }.setDefaultFormProcessing(false));
 
@@ -601,6 +651,7 @@ public class WorkerPage extends BasePage {
         columns.add(new DomainIdColumn<>());
         getEntityAttributes().forEach(a -> columns.add(new DomainColumn<>(a)));
 
+        //noinspection Duplicates
         columns.add(new AbstractDomainColumn<Worker>(new ResourceModel("subWorkersCount"),
                 new SortProperty("subWorkersCount")) {
             @Override
@@ -614,6 +665,7 @@ public class WorkerPage extends BasePage {
             }
         });
 
+        //noinspection Duplicates
         columns.add(new AbstractDomainColumn<Worker>(new ResourceModel("level"), new SortProperty("level")) {
             @Override
             public void populateItem(Item<ICellPopulator<Worker>> cellItem, String componentId, IModel<Worker> rowModel) {

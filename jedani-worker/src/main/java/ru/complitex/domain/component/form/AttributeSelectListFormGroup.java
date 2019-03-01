@@ -5,7 +5,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.danekja.java.util.function.serializable.SerializableConsumer;
-import ru.complitex.common.wicket.component.FormGroupBorder;
+import ru.complitex.common.wicket.form.FormGroupBorder;
 import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Domain;
 
@@ -17,6 +17,8 @@ import java.util.List;
  */
 public class AttributeSelectListFormGroup extends Panel {
     private AttributeSelectList attributeSelectList;
+
+    private boolean required;
 
     public AttributeSelectListFormGroup(String id, IModel<String> label, IModel<Attribute> model, String refEntityName,
                                         Long refEntityAttributeId, IModel<List<Long>> parentListModel, boolean upperCase) {
@@ -30,6 +32,11 @@ public class AttributeSelectListFormGroup extends Panel {
             @Override
             protected String getPrefix(Domain domain) {
                 return AttributeSelectListFormGroup.this.getPrefix(domain);
+            }
+
+            @Override
+            public boolean isRequired() {
+                return AttributeSelectListFormGroup.this.isRequired();
             }
         });
         attributeSelectList.setLabel(label);
@@ -55,12 +62,15 @@ public class AttributeSelectListFormGroup extends Panel {
         attributeSelectList.onChange(onChange);
     }
 
+    public boolean isRequired() {
+        return required;
+    }
+
     public AttributeSelectListFormGroup setRequired(boolean required){
-        attributeSelectList.setRequired(required);
+        this.required = required;
 
         return this;
     }
-
     protected String getPrefix(Domain domain){
         return "";
     }

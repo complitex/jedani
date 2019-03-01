@@ -51,6 +51,12 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
         this.entityAttribute = entityAttribute;
     }
 
+    public DomainColumn(EntityAttribute entityAttribute, IModel<String> displayModel) {
+        super(displayModel != null ? displayModel : displayModel(entityAttribute), sortProperty(entityAttribute));
+
+        this.entityAttribute = entityAttribute;
+    }
+
     @Override
     public Component getFilter(String componentId, FilterDataForm<?> form) {
         Long entityAttributeId = entityAttribute.getEntityAttributeId();

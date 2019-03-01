@@ -8,13 +8,14 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.danekja.java.util.function.serializable.SerializableConsumer;
-import ru.complitex.common.wicket.component.FormGroupBorder;
 
 /**
  * @author Anatoly A. Ivanov
  * 22.12.2017 8:03
  */
 public class TextFieldFormGroup<T> extends Panel{
+    private boolean required;
+
     private TextField<T> textField;
 
     public TextFieldFormGroup(String id, IModel<T> model) {
@@ -29,11 +30,15 @@ public class TextFieldFormGroup<T> extends Panel{
         FormGroupBorder group = new FormGroupBorder("group", label);
         group.add(textField = new TextField<T>("input", model){
             @Override
-            protected void onComponentTag(final ComponentTag tag)
-            {
+            protected void onComponentTag(final ComponentTag tag){
                 super.onComponentTag(tag);
 
                 tag.put("autocomplete", "off");
+            }
+
+            @Override
+            public boolean isRequired() {
+                return TextFieldFormGroup.this.isRequired();
             }
         });
         textField.setLabel(label);
@@ -42,7 +47,7 @@ public class TextFieldFormGroup<T> extends Panel{
     }
 
     public void onUpdate(SerializableConsumer<AjaxRequestTarget> onUpdate){
-        textField.add(AjaxFormComponentUpdatingBehavior.onUpdate("blur", onUpdate));
+        textField.add(AjaxFormComponentUpdatingBehavior.onUpdate("change", onUpdate));
     }
 
     public TextField<T> getTextField() {
@@ -50,8 +55,12 @@ public class TextFieldFormGroup<T> extends Panel{
     }
 
 
+    public boolean isRequired() {
+        return required;
+    }
+
     public TextFieldFormGroup<T> setRequired(boolean required){
-        textField.setRequired(required);
+        this.required = required;
 
         return this;
     }
