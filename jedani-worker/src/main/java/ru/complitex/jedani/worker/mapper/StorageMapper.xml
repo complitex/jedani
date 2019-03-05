@@ -27,7 +27,7 @@
             left join last_name_attribute ln_a on ln_a.object_id = wa_ln.number and ln_a.status = 1
             left join last_name_value ln_v on ln_a.id = ln_v.attribute_id
 
-          where sa.object_id = d.object_id and sa.entity_attribute_id = 2 and sa.status = 1
+          where sa.object_id = d.object_id and sa.entity_attribute_id = 2 and sa.status = 1 limit 1
           )
     </sql>
 
@@ -50,7 +50,7 @@
             left join last_name_attribute ln_a on ln_a.object_id = wa_ln.number and ln_a.status = 1
             left join last_name_value ln_v on ln_a.id = ln_v.attribute_id
 
-          where s.object_id = d.object_id and s.parent_id is not null
+          where s.object_id = d.object_id and s.parent_id is not null limit 1
           )
     </sql>
 
@@ -75,22 +75,25 @@
     </sql>
 
     <sql id="selectStoragesWhere">
-      <if test="map.cities != null">
-          and (
-              <if test="map.currentWorker != null">
-                  d.parent_id = #{map.currentWorker}
-                  or exists(select sa.id from storage_attribute sa
-                    left join storage_value sv on sv.attribute_id = sa.id and sa.entity_attribute_id = 2 and sa.status = 1
-                    where sa.object_id = d.object_id and sv.number = #{map.currentWorker})
-                  or
-              </if>
+        <if test="map.objectId != null">
+            d.object_id concat('%', #{map.objectId}, '%')
+        </if>
+        <if test="map.cities != null">
+        and (
+          <if test="map.currentWorker != null">
+              d.parent_id = #{map.currentWorker}
+              or exists(select sa.id from storage_attribute sa
+                left join storage_value sv on sv.attribute_id = sa.id and sa.entity_attribute_id = 2 and sa.status = 1
+                where sa.object_id = d.object_id and sv.number = #{map.currentWorker})
+              or
+          </if>
 
-              exists(select sa.id from storage_attribute sa
-                left join city c on sa.entity_attribute_id = 1 and sa.status = 1 and c.object_id = sa.number
-                left join city rc on c.parent_id = rc.parent_id
-                where sa.object_id = d.object_id and (c.object_id in (${map.cities}) or rc.object_id in (${map.cities})))
-          )
-      </if>
+          exists(select sa.id from storage_attribute sa
+            left join city c on sa.entity_attribute_id = 1 and sa.status = 1 and c.object_id = sa.number
+            left join city rc on c.parent_id = rc.parent_id
+            where sa.object_id = d.object_id and (c.object_id in (${map.cities}) or rc.object_id in (${map.cities})))
+        )
+        </if>
         <if test="map.regions != null">
             and (
                 exists(select sa.id from storage_attribute sa
@@ -99,10 +102,18 @@
             )
         </if>
       <if test="map.workers != null">
-        and <include refid="selectStoragesWorkers"/> like concat('%', #{map.workers}, '%')
+          <choose>
+              <when test="filter == 'search'"> or </when>
+              <otherwise> and </otherwise>
+          </choose>
+          <include refid="selectStoragesWorkers"/> like concat('%', #{map.workers}, '%')
       </if>
       <if test="map.worker != null">
-        and <include refid="selectStoragesWorker"/> like concat('%', #{map.worker}, '%')
+          <choose>
+              <when test="filter == 'search'"> or </when>
+              <otherwise> and </otherwise>
+          </choose>
+          <include refid="selectStoragesWorker"/> like concat('%', #{map.worker}, '%')
       </if>
       <if test="map.nomenclatureCount != null">
           and <include refid="selectStoragesNomenclatureCount"/> = #{map.nomenclatureCount}

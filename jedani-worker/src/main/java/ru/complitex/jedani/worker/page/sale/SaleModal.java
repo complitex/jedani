@@ -514,19 +514,9 @@ public class SaleModal extends Modal<Sale> {
 
     }
 
-    private FormComponent<Long> newRealStorageAutoComplete(String markupId, IModel<SaleItem> model, SerializableConsumer<AjaxRequestTarget> onChange) {
-        return new StorageAutoComplete(markupId, NumberAttributeModel.of(model, SaleItem.STORAGE), onChange){
-            @Override
-            protected Domain getFilterObject(String input) {
-                Domain domain = super.getFilterObject(input);
-
-                Attribute attribute = new Attribute(Storage.TYPE);
-                attribute.setNumber(StorageType.REAL);
-
-                domain.getMap().put("attributes", Collections.singleton(attribute));
-
-                return domain;
-            }
-        }.setRequired(true);
+    private FormComponent<Long> newRealStorageAutoComplete(String markupId, IModel<SaleItem> model,
+                                                           SerializableConsumer<AjaxRequestTarget> onChange) {
+        return new StorageAutoComplete(markupId, NumberAttributeModel.of(model, SaleItem.STORAGE), onChange)
+                .setRequired(true);
     }
 }
