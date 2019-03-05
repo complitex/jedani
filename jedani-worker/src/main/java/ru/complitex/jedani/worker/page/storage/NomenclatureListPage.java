@@ -1,5 +1,6 @@
 package ru.complitex.jedani.worker.page.storage;
 
+import de.agilecoders.wicket.core.markup.html.bootstrap.behavior.CssClassNameAppender;
 import org.apache.wicket.Component;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.model.Model;
@@ -42,9 +43,19 @@ public class NomenclatureListPage extends DomainListModalPage<Nomenclature> {
         List<EntityAttribute> list = new ArrayList<>();
 
         list.add(entity.getEntityAttribute(Nomenclature.NAME)); //todo required
-
         list.add(entity.getEntityAttribute(Nomenclature.CODE));
+        list.add(entity.getEntityAttribute(Nomenclature.COUNTRIES).withReference(Country.ENTITY_NAME, Country.NAME));
 
+        return list;
+    }
+
+    @Override
+    protected List<EntityAttribute> getEditEntityAttributes(Entity entity) {
+        List<EntityAttribute> list = new ArrayList<>();
+
+        list.add(entity.getEntityAttribute(Nomenclature.NAME));
+        list.add(entity.getEntityAttribute(Nomenclature.TYPE));
+        list.add(entity.getEntityAttribute(Nomenclature.CODE));
         list.add(entity.getEntityAttribute(Nomenclature.COUNTRIES).withReference(Country.ENTITY_NAME, Country.NAME));
 
         return list;
@@ -58,7 +69,8 @@ public class NomenclatureListPage extends DomainListModalPage<Nomenclature> {
 
         if (attribute.getEntityAttributeId().equals(Nomenclature.TYPE)){
             return new SelectPanel(componentId, new TypeSelect(SelectPanel.SELECT_COMPONENT_ID,
-                    NumberAttributeModel.of(attribute), NomenclatureType.MYCOOK, NomenclatureType.BASE_ASSORTMENT));
+                    NumberAttributeModel.of(attribute), NomenclatureType.MYCOOK, NomenclatureType.BASE_ASSORTMENT)
+                    .add(new CssClassNameAppender("form-control")));
         }
 
         return null;
