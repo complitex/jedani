@@ -11,6 +11,7 @@ import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.select.Bootst
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
@@ -139,14 +140,11 @@ public class SaleModal extends Modal<Sale> {
         baseAssortmentContainer.setOutputMarkupPlaceholderTag(true);
         container.add(baseAssortmentContainer);
 
+        container.add(new DomainAutoCompleteFormGroup("promotion", Promotion.ENTITY_NAME, Promotion.NAME,
+                NumberAttributeModel.of(saleModel, Sale.PROMOTION)));
+
         FormGroupPanel sasRequest = new FormGroupPanel("sasRequest", new BootstrapCheckbox(FormGroupPanel.COMPONENT_ID,
-                BooleanAttributeModel.of(saleModel, Sale.SAS_REQUEST), new ResourceModel("sasRequestLabel"))){
-            @Override
-            public boolean isVisible() {
-                return Objects.equals(saleModel.getObject().getOrCreateAttribute(Sale.TYPE).getNumber(),
-                        SaleType.BASE_ASSORTMENT);
-            }
-        };
+                BooleanAttributeModel.of(saleModel, Sale.SAS_REQUEST), new ResourceModel("sasRequestLabel")));
         container.add(sasRequest);
 
         container.add(new FormGroupSelectPanel("saleType", new BootstrapSelect<>(FormGroupPanel.COMPONENT_ID,
@@ -215,17 +213,30 @@ public class SaleModal extends Modal<Sale> {
                         .setRequired(true)
                         .add(new AjaxFormInfoBehavior()));
 
+                Component month = new BootstrapSelect<>("months",
+                        NumberAttributeModel.of(model, SaleItem.INSTALLMENT_MONTHS),
+                        LongStream.range(0, 25).boxed().collect(Collectors.toList()))
+                        .setRequired(true)
+                        .setOutputMarkupId(true)
+                        .add(new AjaxFormInfoBehavior());
+                item.add(month);
+
                 item.add(new BootstrapSelect<>("percentage",
                         NumberAttributeModel.of(model, SaleItem.INSTALLMENT_PERCENTAGE),
                         Arrays.asList(0L, 10L, 20L, 30L, 40L, 50L, 60L, 70L,80L, 90L, 100L))
                         .setRequired(true)
-                        .add(new AjaxFormInfoBehavior()));
+                        .add(new AjaxFormInfoBehavior())
+                        .add(AjaxFormComponentUpdatingBehavior.onUpdate("change", t -> {
+                            SaleItem si = model.getObject();
 
-                item.add(new BootstrapSelect<>("months",
-                        NumberAttributeModel.of(model, SaleItem.INSTALLMENT_MONTHS),
-                        LongStream.range(0, 25).boxed().collect(Collectors.toList()))
-                        .setRequired(true)
-                        .add(new AjaxFormInfoBehavior()));
+                            if (si.getInstallmentPercentage() == 100){
+                                si.setInstallmentMonths(0L);
+                            }else if (si.getInstallmentMonths() == 0) {
+                                si.setInstallmentMonths(si.getInstallmentPercentage() < 100 ? 24L : 0);
+                            }
+
+                            t.add(month);
+                        })));
 
                 item.add(newRealStorageAutoComplete("storage", model, onChange));
 

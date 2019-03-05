@@ -99,6 +99,9 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage{
                 if (getSort() != null){
                     filterWrapper.setSortProperty(getSort().getProperty());
                     filterWrapper.setAscending(getSort().isAscending());
+                }else{
+                    filterWrapper.setSortProperty(new SortProperty("id"));
+                    filterWrapper.setAscending(false);
                 }
 
                 List<T> list = getDomains(filterWrapper);

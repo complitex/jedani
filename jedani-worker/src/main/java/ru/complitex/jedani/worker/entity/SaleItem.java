@@ -48,6 +48,10 @@ public class SaleItem extends Domain<SaleItem> {
         setNumber(INSTALLMENT_PERCENTAGE, percentage);
     }
 
+    public Long getInstallmentMonths(){
+        return getNumber(INSTALLMENT_MONTHS);
+    }
+
     public void setInstallmentMonths(Long months){
         setNumber(INSTALLMENT_MONTHS, months);
     }
