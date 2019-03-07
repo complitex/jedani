@@ -18,6 +18,7 @@ public class Sale extends Domain<Sale> {
     public static final long DATE = 5;
     public static final long TYPE = 6;
     public static final long SAS_REQUEST = 7;
+    public static final long PROMOTION = 8;
 
     public Sale() {
         super(ENTITY_NAME);

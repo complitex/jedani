@@ -4,6 +4,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
 import org.danekja.java.util.function.serializable.SerializableConsumer;
 import ru.complitex.address.entity.City;
+import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.domain.component.form.AbstractDomainAutoComplete;
 import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Domain;
@@ -11,10 +12,12 @@ import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
 import ru.complitex.jedani.worker.entity.Storage;
 import ru.complitex.jedani.worker.entity.Worker;
+import ru.complitex.jedani.worker.mapper.StorageMapper;
 import ru.complitex.jedani.worker.util.Storages;
 import ru.complitex.name.service.NameService;
 
 import javax.inject.Inject;
+import java.util.List;
 
 /**
  * @author Anatoly A. Ivanov
@@ -26,6 +29,9 @@ public class StorageAutoComplete extends AbstractDomainAutoComplete {
 
     @Inject
     private DomainService domainService;
+
+    @Inject
+    private StorageMapper storageMapper;
 
     @Inject
     private NameService nameService;
@@ -47,12 +53,31 @@ public class StorageAutoComplete extends AbstractDomainAutoComplete {
                 City.ENTITY_NAME, City.NAME));
         cityId.setText(input);
 
+
+
         Attribute workerIds = storage.getOrCreateAttribute(Storage.WORKERS);
         workerIds.setEntityAttribute(entityService.getEntityAttribute(Storage.ENTITY_NAME, Storage.WORKERS,
                 Worker.ENTITY_NAME, Worker.J_ID));
         workerIds.setText(input);
 
         return storage;
+    }
+
+    @Override
+    protected List<? extends Domain> getDomains(String input) {
+        Storage storage = new Storage();
+
+        Attribute cityId = storage.getOrCreateAttribute(Storage.CITY);
+        cityId.setEntityAttribute(entityService.getEntityAttribute(Storage.ENTITY_NAME, Storage.CITY,
+                City.ENTITY_NAME, City.NAME));
+        cityId.setText(input);
+
+        return storageMapper.getStorages(FilterWrapper.of(storage)
+                .setFilter("search")
+                .add(Storage.FILTER_WORKER, input)
+                .add(Storage.FILTER_WORKERS, input)
+                .add(Storage.FILTER_OBJECT_ID, input)
+                .limit(0L, 10L));
     }
 
     @Override

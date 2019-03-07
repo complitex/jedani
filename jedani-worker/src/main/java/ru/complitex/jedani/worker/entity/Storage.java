@@ -19,6 +19,7 @@ public class Storage extends Domain<Storage> {
     public static final String FILTER_WORKER = "worker";
     public static final String FILTER_NOMENCLATURE_COUNT = "nomenclatureCount";
     public static final String FILTER_TRANSACTION_COUNT = "transactionCount";
+    public static final String FILTER_OBJECT_ID = "id";
 
     private Long nomenclatureCount;
     private Long transactionCount;
