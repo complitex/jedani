@@ -1,6 +1,8 @@
 package ru.complitex.jedani.worker.page.catalog;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.basic.Label;
@@ -8,6 +10,8 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
 import ru.complitex.common.wicket.datatable.FilterDataForm;
 import ru.complitex.common.wicket.datatable.TextDataFilter;
@@ -18,9 +22,12 @@ import ru.complitex.domain.entity.StringType;
 import ru.complitex.domain.page.DomainListModalPage;
 import ru.complitex.jedani.worker.entity.Currency;
 import ru.complitex.jedani.worker.entity.ExchangeRate;
+import ru.complitex.jedani.worker.security.JedaniRoles;
 import ru.complitex.jedani.worker.service.ExchangeRateService;
 
 import javax.inject.Inject;
+import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,14 +35,16 @@ import java.util.List;
  * @author Anatoly A. Ivanov
  * 27.02.2019 22:24
  */
-public class ExchangeRateList extends DomainListModalPage<ExchangeRate> {
+@AuthorizeInstantiation(JedaniRoles.ADMINISTRATORS)
+public class ExchangeRateListPage extends DomainListModalPage<ExchangeRate> {
     @Inject
     private ExchangeRateService exchangeRateService;
 
-    public ExchangeRateList() {
+    public ExchangeRateListPage() {
         super(ExchangeRate.class);
     }
 
+    @SuppressWarnings("Duplicates")
     @Override
     protected List<EntityAttribute> getEntityAttributes(Entity entity) {
         List<EntityAttribute> list = new ArrayList<>();
@@ -48,19 +57,44 @@ public class ExchangeRateList extends DomainListModalPage<ExchangeRate> {
         return list;
     }
 
+    @SuppressWarnings("Duplicates")
     @Override
     protected List<EntityAttribute> getEditEntityAttributes(Entity entity) {
-        entity.getEntityAttribute(ExchangeRate.NAME).setStringType(StringType.DEFAULT);
-        entity.getEntityAttribute(ExchangeRate.CODE).setStringType(StringType.DEFAULT);
-        entity.getEntityAttribute(ExchangeRate.BASE_CURRENCY).withReference(Currency.ENTITY_NAME, Currency.NAME);
-        entity.getEntityAttribute(ExchangeRate.COUNTER_CURRENCY).withReference(Currency.ENTITY_NAME, Currency.NAME);
-        entity.getEntityAttribute(ExchangeRate.URI_XML).setStringType(StringType.DEFAULT);
-        entity.getEntityAttribute(ExchangeRate.XPATH_NAME).setStringType(StringType.DEFAULT);
-        entity.getEntityAttribute(ExchangeRate.XPATH_CODE).setStringType(StringType.DEFAULT);
-        entity.getEntityAttribute(ExchangeRate.XPATH_DATE).setStringType(StringType.DEFAULT);
-        entity.getEntityAttribute(ExchangeRate.XPATH_VALUE).setStringType(StringType.DEFAULT);
+        List<EntityAttribute> list = new ArrayList<>();
+        
+        list.add(entity.getEntityAttribute(ExchangeRate.NAME).setStringType(StringType.DEFAULT));
+        list.add(entity.getEntityAttribute(ExchangeRate.CODE).setStringType(StringType.DEFAULT));
+        list.add(entity.getEntityAttribute(ExchangeRate.BASE_CURRENCY).withReference(Currency.ENTITY_NAME, Currency.NAME));
+        list.add(entity.getEntityAttribute(ExchangeRate.COUNTER_CURRENCY).withReference(Currency.ENTITY_NAME, Currency.NAME));
+        
+        list.add(entity.getEntityAttribute(ExchangeRate.URI_XML).setStringType(StringType.DEFAULT));
+        
+        list.add(entity.getEntityAttribute(ExchangeRate.URI_DATE_PARAM).setStringType(StringType.DEFAULT));
+        list.add(entity.getEntityAttribute(ExchangeRate.URI_DATE_FORMAT).setStringType(StringType.DEFAULT));
+        
+        list.add(entity.getEntityAttribute(ExchangeRate.XPATH_NAME).setStringType(StringType.DEFAULT));
+        list.add(entity.getEntityAttribute(ExchangeRate.XPATH_CODE).setStringType(StringType.DEFAULT));
+        list.add(entity.getEntityAttribute(ExchangeRate.XPATH_DATE).setStringType(StringType.DEFAULT));
+        list.add(entity.getEntityAttribute(ExchangeRate.XPATH_VALUE).setStringType(StringType.DEFAULT));        
 
-        return entity.getAttributes();
+        return list;
+    }
+
+    @Override
+    protected List<ExchangeRate> getDomains(FilterWrapper<ExchangeRate> filterWrapper) {
+        List<ExchangeRate> list = super.getDomains(filterWrapper);
+
+        list.forEach(r -> {
+            String[] values = exchangeRateService.getValue(r.getUriXml(), r.getUriDateParam(),r.getUriDateFormat(),
+                    LocalDate.now(), r.getXpathDate(), r.getXpathValue());
+
+            if (values != null) {
+                r.getMap().put("date", values[0]);
+                r.getMap().put("value", values[1]);
+            }
+        });
+
+        return list;
     }
 
     @Override
@@ -68,9 +102,7 @@ public class ExchangeRateList extends DomainListModalPage<ExchangeRate> {
         columns.add(new AbstractDomainColumn<ExchangeRate>(new ResourceModel("date"), new SortProperty("date")) {
             @Override
             public void populateItem(Item<ICellPopulator<ExchangeRate>> cellItem, String componentId, IModel<ExchangeRate> rowModel) {
-                ExchangeRate exchangeRate = rowModel.getObject();
-
-                cellItem.add(new Label(componentId, exchangeRateService.getValue(exchangeRate.getUriXml(), exchangeRate.getXpathDate())));
+                cellItem.add(new Label(componentId, (Serializable) rowModel.getObject().getMap().get("date")));
             }
 
             @Override
@@ -82,9 +114,7 @@ public class ExchangeRateList extends DomainListModalPage<ExchangeRate> {
         columns.add(new AbstractDomainColumn<ExchangeRate>(new ResourceModel("value"), new SortProperty("value")) {
             @Override
             public void populateItem(Item<ICellPopulator<ExchangeRate>> cellItem, String componentId, IModel<ExchangeRate> rowModel) {
-                ExchangeRate exchangeRate = rowModel.getObject();
-
-                cellItem.add(new Label(componentId, exchangeRateService.getValue(exchangeRate.getUriXml(), exchangeRate.getXpathValue())));
+                cellItem.add(new Label(componentId, (Serializable) rowModel.getObject().getMap().get("value")));
             }
 
             @Override
@@ -92,5 +122,10 @@ public class ExchangeRateList extends DomainListModalPage<ExchangeRate> {
                 return new TextDataFilter<>(componentId, new PropertyModel<>(form.getModel(), "map.value"), form);
             }
         });
+    }
+
+    @Override
+    protected void onRowClick(ExchangeRate object, AjaxRequestTarget target) {
+        setResponsePage(ExchangeRatePage.class, new PageParameters().add("id", object.getObjectId()));
     }
 }

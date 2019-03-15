@@ -43,17 +43,20 @@
     <!--suppress SqlResolve -->
     <select id="selectHistoryAttributes" parameterType="map" resultMap="attributeResultMap">
         select '${entityName}' entity_name, a.* from ${entityName}_attribute a where a.object_id = #{objectId}
+        <if test="entityAttributeId != null"> and a.entity_attribute_id = #{entityAttributeId}</if>
     </select>
 
     <!--suppress SqlResolve -->
     <select id="selectHistoryAttributesLimit" parameterType="map" resultMap="attributeResultMap">
         select '${entityName}' entity_name, a.* from ${entityName}_attribute a where a.object_id = #{objectId}
+        <if test="entityAttributeId != null"> and a.entity_attribute_id = #{entityAttributeId}</if>
           limit #{first}, #{count}
     </select>
 
     <!--suppress SqlResolve -->
     <select id="selectHistoryAttributesCount" parameterType="map" resultType="long">
         select count(id) from ${entityName}_attribute where object_id = #{objectId}
+        <if test="entityAttributeId != null"> and entity_attribute_id = #{entityAttributeId}</if>
     </select>
 
     <!--suppress SqlResolve -->

@@ -55,14 +55,29 @@ public class AttributeMapper extends BaseMapper {
                 "objectId", objectId));
     }
 
+    public List<Attribute> getHistoryAttributes(String entityName, Long objectId, Long entityAttributeId){
+        return sqlSession().selectList("selectHistoryAttributes", Maps.of("entityName", entityName,
+                "objectId", objectId, "entityAttributeId", entityAttributeId));
+    }
+
     public List<Attribute> getHistoryAttributes(String entityName, Long objectId, long first, long count){
         return sqlSession().selectList("selectHistoryAttributesLimit", Maps.of("entityName", entityName,
                 "objectId", objectId, "first", first, "count", count));
     }
 
+    public List<Attribute> getHistoryAttributes(String entityName, Long objectId, Long entityAttributeId, long first, long count){
+        return sqlSession().selectList("selectHistoryAttributesLimit", Maps.of("entityName", entityName,
+                "objectId", objectId, "entityAttributeId", entityAttributeId, "first", first, "count", count));
+    }
+
     public Long getHistoryAttributesCount(String entityName, Long objectId){
         return sqlSession().selectOne("selectHistoryAttributesCount", Maps.of("entityName", entityName,
                 "objectId", objectId));
+    }
+
+    public Long getHistoryAttributesCount(String entityName, Long objectId, Long entityAttributeId){
+        return sqlSession().selectOne("selectHistoryAttributesCount", Maps.of("entityName", entityName,
+                "objectId", objectId, "entityAttributeId", entityAttributeId));
     }
 
     public Long getNumber(String entityName, Long objectId, Long entityAttributeId){

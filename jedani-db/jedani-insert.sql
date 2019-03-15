@@ -483,32 +483,45 @@ INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `tex
 INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (31, 9, 2);
 INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (31, 9, 1, 'xpath_value');
 
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (31, 10, 4);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (31, 10, 1, 'Курс'), (31, 10, 2, 'Курс');
+
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (31, 11, 2);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (31, 11, 1, 'uri_date_param');
+
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (31, 12, 2);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (31, 12, 1, 'uri_date_format');
+
 -- Exchange rate
 
 INSERT INTO exchange_rate (id, object_id, status) VALUES (1, 1, 1);
 INSERT INTO exchange_rate_attribute (id, object_id, entity_attribute_id, status) VALUES (1, 1, 1, 1);
 INSERT INTO exchange_rate_value (attribute_id, locale_id, text) VALUES (1, 1, 'EUR/RUB (ЦБ РФ');
-INSERT INTO exchange_rate_attribute (id, object_id, entity_attribute_id, status, text) VALUES (2, 1, 2, 1, 'EUR/RUB');
-INSERT INTO exchange_rate_attribute (id, object_id, entity_attribute_id, status, number) VALUES (3, 1, 3, 1, 3);
-INSERT INTO exchange_rate_attribute (id, object_id, entity_attribute_id, status, number) VALUES (4, 1, 4, 1, 1);
-INSERT INTO exchange_rate_attribute (id, object_id, entity_attribute_id, status, text) VALUES (5, 1, 5, 1, 'http://www.cbr.ru/scripts/XML_daily.asp');
-INSERT INTO exchange_rate_attribute (id, object_id, entity_attribute_id, status, text) VALUES (6, 1, 6, 1, '/ValCurs/Valute[@ID=\'R01239\']/Name/text()');
-INSERT INTO exchange_rate_attribute (id, object_id, entity_attribute_id, status, text) VALUES (7, 1, 7, 1, '/ValCurs/Valute[@ID=\'R01239\']/CharCode/text()');
-INSERT INTO exchange_rate_attribute (id, object_id, entity_attribute_id, status, text) VALUES (8, 1, 8, 1, '/ValCurs/@Date');
-INSERT INTO exchange_rate_attribute (id, object_id, entity_attribute_id, status, text) VALUES (9, 1, 9, 1, '/ValCurs/Valute[@ID=\'R01239\']/Value/text()');
+INSERT INTO exchange_rate_attribute (object_id, entity_attribute_id, status, text) VALUES (1, 2, 1, 'EUR/RUB');
+INSERT INTO exchange_rate_attribute (object_id, entity_attribute_id, status, number) VALUES (1, 3, 1, 3);
+INSERT INTO exchange_rate_attribute (object_id, entity_attribute_id, status, number) VALUES (1, 4, 1, 1);
+INSERT INTO exchange_rate_attribute (object_id, entity_attribute_id, status, text) VALUES (1, 5, 1, 'http://www.cbr.ru/scripts/XML_daily.asp');
+INSERT INTO exchange_rate_attribute (object_id, entity_attribute_id, status, text) VALUES (1, 6, 1, '/ValCurs/Valute[@ID=\'R01239\']/Name/text()');
+INSERT INTO exchange_rate_attribute (object_id, entity_attribute_id, status, text) VALUES (1, 7, 1, '/ValCurs/Valute[@ID=\'R01239\']/CharCode/text()');
+INSERT INTO exchange_rate_attribute (object_id, entity_attribute_id, status, text) VALUES (1, 8, 1, '/ValCurs/@Date');
+INSERT INTO exchange_rate_attribute (object_id, entity_attribute_id, status, text) VALUES (1, 9, 1, '/ValCurs/Valute[@ID=\'R01239\']/Value/text()');
+INSERT INTO exchange_rate_attribute (object_id, entity_attribute_id, status, text) VALUES (1, 11, 1, 'date_req');
+INSERT INTO exchange_rate_attribute (object_id, entity_attribute_id, status, text) VALUES (1, 12, 1, 'dd/MM/yyyy');
 
 INSERT INTO exchange_rate (id, object_id, status) VALUES (2, 2, 1);
 INSERT INTO exchange_rate_attribute (id, object_id, entity_attribute_id, status) VALUES (10, 2, 1, 1);
 INSERT INTO exchange_rate_value (attribute_id, locale_id, text) VALUES (10, 1, 'EUR/UAH (НБУ)');
-INSERT INTO exchange_rate_attribute (id, object_id, entity_attribute_id, status, text) VALUES (11, 2, 2, 1, 'EUR/UAH');
-INSERT INTO exchange_rate_attribute (id, object_id, entity_attribute_id, status, number) VALUES (12, 2, 3, 1, 3);
-INSERT INTO exchange_rate_attribute (id, object_id, entity_attribute_id, status, number) VALUES (13, 2, 4, 1, 2);
-INSERT INTO exchange_rate_attribute (id, object_id, entity_attribute_id, status, text) VALUES (14, 2, 5, 1, 'https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?valcode=EUR&date=');
-INSERT INTO exchange_rate_attribute (id, object_id, entity_attribute_id, status, text) VALUES (15, 2, 6, 1, 'exchange/currency/txt/text()');
-INSERT INTO exchange_rate_attribute (id, object_id, entity_attribute_id, status, text) VALUES (16, 2, 7, 1, 'exchange/currency/cc/text()');
-INSERT INTO exchange_rate_attribute (id, object_id, entity_attribute_id, status, text) VALUES (17, 2, 8, 1, 'exchange/currency/exchangedate/text()');
-INSERT INTO exchange_rate_attribute (id, object_id, entity_attribute_id, status, text) VALUES (18, 2, 9, 1, 'exchange/currency/rate/text()');
+INSERT INTO exchange_rate_attribute (object_id, entity_attribute_id, status, text) VALUES (2, 2, 1, 'EUR/UAH');
+INSERT INTO exchange_rate_attribute (object_id, entity_attribute_id, status, number) VALUES (2, 3, 1, 3);
+INSERT INTO exchange_rate_attribute (object_id, entity_attribute_id, status, number) VALUES (2, 4, 1, 2);
+INSERT INTO exchange_rate_attribute (object_id, entity_attribute_id, status, text) VALUES (2, 5, 1, 'https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?valcode=EUR&date=');
+INSERT INTO exchange_rate_attribute (object_id, entity_attribute_id, status, text) VALUES (2, 6, 1, 'exchange/currency/txt/text()');
+INSERT INTO exchange_rate_attribute (object_id, entity_attribute_id, status, text) VALUES (2, 7, 1, 'exchange/currency/cc/text()');
+INSERT INTO exchange_rate_attribute (object_id, entity_attribute_id, status, text) VALUES (2, 8, 1, 'exchange/currency/exchangedate/text()');
+INSERT INTO exchange_rate_attribute (object_id, entity_attribute_id, status, text) VALUES (2, 9, 1, 'exchange/currency/rate/text()');
+INSERT INTO exchange_rate_attribute (object_id, entity_attribute_id, status, text) VALUES (2, 11, 1, 'date');
+INSERT INTO exchange_rate_attribute (object_id, entity_attribute_id, status, text) VALUES (2, 12, 1, 'yyyyMMdd');
 
 -- Update
 
-INSERT INTO `update` (`version`) VALUE ('20190227_1.0.7');
+INSERT INTO `update` (`version`) VALUE ('20190307_1.0.9');

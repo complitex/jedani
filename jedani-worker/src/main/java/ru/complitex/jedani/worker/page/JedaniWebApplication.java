@@ -35,10 +35,7 @@ import ru.complitex.common.wicket.application.ServletUnauthorizedListener;
 import ru.complitex.common.wicket.application.ServletWebSession;
 import ru.complitex.jedani.worker.graph.GraphPage;
 import ru.complitex.jedani.worker.page.admin.ImportPage;
-import ru.complitex.jedani.worker.page.catalog.CurrencyListPage;
-import ru.complitex.jedani.worker.page.catalog.ExchangeRateList;
-import ru.complitex.jedani.worker.page.catalog.MkStatusListPage;
-import ru.complitex.jedani.worker.page.catalog.PositionListPage;
+import ru.complitex.jedani.worker.page.catalog.*;
 import ru.complitex.jedani.worker.page.login.LoginPage;
 import ru.complitex.jedani.worker.page.promotion.PromotionListPage;
 import ru.complitex.jedani.worker.page.resource.JedaniCssResourceReference;
@@ -109,7 +106,8 @@ public class JedaniWebApplication extends WebApplication{
         mountPage("promotions", PromotionListPage.class);
         mountPage("sales", SaleListPage.class);
         mountPage("currencies", CurrencyListPage.class);
-        mountPage("exchange_rates", ExchangeRateList.class);
+        mountPage("exchange_rates", ExchangeRateListPage.class);
+        mountPage("exchange_rate/${id}", ExchangeRatePage.class);
     }
 
     private void configureMountResource(){

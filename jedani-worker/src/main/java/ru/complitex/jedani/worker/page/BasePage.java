@@ -41,7 +41,7 @@ import ru.complitex.jedani.worker.mapper.StorageMapper;
 import ru.complitex.jedani.worker.page.admin.ImportPage;
 import ru.complitex.jedani.worker.page.admin.SettingPage;
 import ru.complitex.jedani.worker.page.catalog.CurrencyListPage;
-import ru.complitex.jedani.worker.page.catalog.ExchangeRateList;
+import ru.complitex.jedani.worker.page.catalog.ExchangeRateListPage;
 import ru.complitex.jedani.worker.page.catalog.MkStatusListPage;
 import ru.complitex.jedani.worker.page.catalog.PositionListPage;
 import ru.complitex.jedani.worker.page.promotion.PromotionListPage;
@@ -203,7 +203,7 @@ public class BasePage extends WebPage{
         catalog.add(new MenuLink("position", PositionListPage.class).setVisible(isAdmin()));
         catalog.add(new MenuLink("mk_status", MkStatusListPage.class).setVisible(isAdmin()));
         catalog.add(new MenuLink("currency", CurrencyListPage.class).setVisible(isAdmin()));
-        catalog.add(new MenuLink("exchangeRate", ExchangeRateList.class).setVisible(isAdmin()));
+        catalog.add(new MenuLink("exchangeRate", ExchangeRateListPage.class).setVisible(isAdmin()));
 
         WebMarkupContainer workers = new WebMarkupContainer("workers");
         workers.setVisible(isAdmin() || isStructureAdmin());

@@ -300,7 +300,7 @@ public class StoragePage extends BasePage {
 
             //todo multi ref filter
 
-            productColumns.add(new DomainColumn<Product>(productEntity.getEntityAttribute(Product.NOMENCLATURE)
+            productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.NOMENCLATURE)
                     .withReferences(Nomenclature.ENTITY_NAME, Nomenclature.CODE, Nomenclature.NAME)));
 
             productColumns.add(new DomainColumn<Product>(productEntity.getEntityAttribute(Product.QUANTITY)){

@@ -35,6 +35,11 @@ public class Attribute implements Serializable{
         this.entityAttributeId = entityAttributeId;
     }
 
+    public Attribute(String entityName, Long objectId){
+        this.entityName = entityName;
+        this.objectId = objectId;
+    }
+
     public Attribute(Attribute attribute){
         copy(attribute);
     }

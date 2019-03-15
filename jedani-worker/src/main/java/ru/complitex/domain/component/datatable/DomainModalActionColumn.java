@@ -5,6 +5,7 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.image.GlyphIconType;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.extensions.ajax.markup.html.AjaxIndicatorAppender;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.markup.repeater.Item;
@@ -47,6 +48,13 @@ public abstract class DomainModalActionColumn<T extends Domain> extends Abstract
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
                 DomainModalActionColumn.this.onAction(rowModel, target);
+            }
+
+            @Override
+            protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
+                super.updateAjaxAttributes(attributes);
+
+                attributes.setEventPropagation(AjaxRequestAttributes.EventPropagation.STOP);
             }
         }.setIconType(GlyphIconType.edit)));
     }

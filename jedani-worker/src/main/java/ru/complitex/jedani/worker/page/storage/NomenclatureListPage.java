@@ -53,8 +53,8 @@ public class NomenclatureListPage extends DomainListModalPage<Nomenclature> {
     protected List<EntityAttribute> getEditEntityAttributes(Entity entity) {
         List<EntityAttribute> list = new ArrayList<>();
 
-        list.add(entity.getEntityAttribute(Nomenclature.NAME));
         list.add(entity.getEntityAttribute(Nomenclature.TYPE));
+        list.add(entity.getEntityAttribute(Nomenclature.NAME));
         list.add(entity.getEntityAttribute(Nomenclature.CODE));
         list.add(entity.getEntityAttribute(Nomenclature.COUNTRIES).withReference(Country.ENTITY_NAME, Country.NAME));
 

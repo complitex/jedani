@@ -228,7 +228,7 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage{
         item.add(new AjaxEventBehavior("click") {
             @Override
             protected void onEvent(AjaxRequestTarget target) {
-                onActionEdit(item.getModelObject(), target);
+                onRowClick(item.getModelObject(), target);
             }
         });
 
@@ -237,6 +237,10 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage{
 
     protected void onActionEdit(T object, AjaxRequestTarget target) {
         domainEditModal.edit(object, target);
+    }
+
+    protected void onRowClick(T object, AjaxRequestTarget target) {
+        onActionEdit(object, target);
     }
 
     protected List<T> getDomains(FilterWrapper<T> filterWrapper) {
