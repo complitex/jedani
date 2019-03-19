@@ -32,6 +32,12 @@ body {
     }
 }
 
+@media print {
+    #content{
+        border-left: 0;
+    }
+}
+
 .sidebar-nav{
     padding-right: 0 !important;
     padding-left: 0 !important;

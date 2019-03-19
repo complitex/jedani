@@ -7,6 +7,9 @@ import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptHeaderItem;
+import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
@@ -14,6 +17,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.util.template.PackageTextTemplate;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
 import ru.complitex.common.wicket.datatable.*;
@@ -22,13 +26,13 @@ import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.entity.ExchangeRate;
 import ru.complitex.jedani.worker.page.BasePage;
+import ru.complitex.jedani.worker.page.resource.ApexChartsJsResourceReference;
 import ru.complitex.jedani.worker.security.JedaniRoles;
 import ru.complitex.jedani.worker.service.ExchangeRateService;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Anatoly A. Ivanov
@@ -42,10 +46,18 @@ public class ExchangeRatePage extends BasePage {
     @Inject
     private ExchangeRateService exchangeRateService;
 
+    private String data;
+
     public ExchangeRatePage(PageParameters pageParameters) {
         ExchangeRate exchangeRate = domainService.getDomain(ExchangeRate.class, pageParameters.get("id").toLongObject());
 
-        exchangeRateService.loadValues(exchangeRate);
+        Map<Date, Attribute> exchangeRateMap = exchangeRateService.loadValues(exchangeRate);
+
+        List<Attribute> exchangeRateList = new ArrayList<>(exchangeRateMap.values());
+        exchangeRateList.sort(Comparator.comparing(Attribute::getStartDate));
+
+        data = exchangeRateList.stream().map(a -> "[" + a.getStartDate().getTime() + ", " + a.getText() + "]")
+                .collect(Collectors.joining(","));
 
         FeedbackPanel feedback = new NotificationPanel("feedback");
         feedback.setOutputMarkupId(true);
@@ -118,7 +130,7 @@ public class ExchangeRatePage extends BasePage {
             }
         });
 
-        FilterDataTable<Attribute> table = new FilterDataTable<>("table", columns, dataProvider, form, 15, "exchangeRagePage");
+        FilterDataTable<Attribute> table = new FilterDataTable<>("table", columns, dataProvider, form, 10, "exchangeRagePage");
         form.add(table);
 
         add(new AjaxLink<Object>("back") {
@@ -127,6 +139,18 @@ public class ExchangeRatePage extends BasePage {
                 setResponsePage(ExchangeRateListPage.class);
             }
         });
+    }
 
+    @Override
+    public void renderHead(IHeaderResponse response) {
+        super.renderHead(response);
+
+        response.render(JavaScriptHeaderItem.forReference(ApexChartsJsResourceReference.INSTANCE));
+
+        response.render(OnDomReadyHeaderItem.forScript(new PackageTextTemplate(getClass(),"ExchangeRatePage.js",
+                "text/javascript", "UTF-8")
+                .asString(new HashMap<String, String>(){{
+                    put("data", data);
+                }})));
     }
 }

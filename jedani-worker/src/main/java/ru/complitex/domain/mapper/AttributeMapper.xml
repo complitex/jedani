@@ -50,6 +50,7 @@
     <select id="selectHistoryAttributesLimit" parameterType="map" resultMap="attributeResultMap">
         select '${entityName}' entity_name, a.* from ${entityName}_attribute a where a.object_id = #{objectId}
         <if test="entityAttributeId != null"> and a.entity_attribute_id = #{entityAttributeId}</if>
+          order by a.id desc
           limit #{first}, #{count}
     </select>
 

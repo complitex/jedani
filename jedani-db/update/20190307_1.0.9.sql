@@ -11,7 +11,8 @@ INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `tex
 INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (31, 12, 2);
 INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (31, 12, 1, 'uri_date_format');
 
-UPDATE exchange_rate_attribute set text = 'https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?valcode=EUR' WHERE id = 14;;
+UPDATE exchange_rate_attribute set text = 'https://www.cbr.ru/scripts/XML_daily.asp' WHERE id = 5;
+UPDATE exchange_rate_attribute set text = 'https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?valcode=EUR' WHERE id = 14;
 
 INSERT INTO exchange_rate_attribute (object_id, entity_attribute_id, status, text) VALUES (1, 11, 1, 'date_req');
 INSERT INTO exchange_rate_attribute (object_id, entity_attribute_id, status, text) VALUES (1, 12, 1, 'dd/MM/yyyy');

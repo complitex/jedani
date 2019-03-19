@@ -2,62 +2,61 @@
 <!DOCTYPE html>
 <html xmlns:wicket="http://wicket.apache.org">
 <head>
-    <title>Jedani</title>
-    <script>
-        function b64toBlob(b64Data, contentType, sliceSize) {
-            contentType = contentType || '';
-            sliceSize = sliceSize || 512;
+    <wicket:head>
+        <title>Структура</title>
+        <script>
+            function b64toBlob(b64Data, contentType, sliceSize) {
+                contentType = contentType || '';
+                sliceSize = sliceSize || 512;
 
-            var byteCharacters = atob(b64Data);
-            var byteArrays = [];
+                var byteCharacters = atob(b64Data);
+                var byteArrays = [];
 
-            for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
-                var slice = byteCharacters.slice(offset, offset + sliceSize);
+                for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+                    var slice = byteCharacters.slice(offset, offset + sliceSize);
 
-                var byteNumbers = new Array(slice.length);
-                for (var i = 0; i < slice.length; i++) {
-                    byteNumbers[i] = slice.charCodeAt(i);
+                    var byteNumbers = new Array(slice.length);
+                    for (var i = 0; i < slice.length; i++) {
+                        byteNumbers[i] = slice.charCodeAt(i);
+                    }
+
+                    var byteArray = new Uint8Array(byteNumbers);
+
+                    byteArrays.push(byteArray);
                 }
 
-                var byteArray = new Uint8Array(byteNumbers);
-
-                byteArrays.push(byteArray);
+                return new Blob(byteArrays, {type: contentType});
             }
 
-            return new Blob(byteArrays, {type: contentType});
-        }
+            function savePng() {
+                var b64key = 'base64,';
+                var png = cy.png({bg: '#fff'});
+                var b64 = png.substring(png.indexOf(b64key) + b64key.length);
+                var imgBlob = b64toBlob(b64, 'image/png');
 
-        function savePng() {
-            var b64key = 'base64,';
-            var png = cy.png({bg: '#fff'});
-            var b64 = png.substring(png.indexOf(b64key) + b64key.length);
-            var imgBlob = b64toBlob(b64, 'image/png');
-
-            saveAs(imgBlob, fileName + '.png');
-        }
-    </script>
-    <style>
-        @media print {
-            #action{
-                display: none;
+                saveAs(imgBlob, fileName + '.png');
             }
+        </script>
+        <style>
+            @media print {
+                #action{
+                    display: none;
+                }
 
-        }
-
-        #action{
-            margin: 5px;
-            float: right;
-        }
-    </style>
+            }
+        </style>
+    </wicket:head>
 </head>
 <body>
+<wicket:extend>
+    <div wicket:id="graph" style="width: 100%; height: 90vh; padding-top: 40px"></div>
 
-<div id="action">
-    <button class="btn btn-default" onclick="savePng()">Скачать</button>
-    <button  class="btn btn-default" onclick="window.print()">Печать</button>
-</div>
-
-<div wicket:id="graph" style="width: 100%; height: 90vh; padding-top: 40px"></div>
+    <div id="action">
+        <button class="btn btn-primary" onclick="savePng()">Скачать</button>
+        <button  class="btn btn-default" onclick="window.print()">Печать</button>
+        <button class="btn btn-default" wicket:id="back">Назад</button>
+    </div>
+</wicket:extend>
 
 </body>
 </html>

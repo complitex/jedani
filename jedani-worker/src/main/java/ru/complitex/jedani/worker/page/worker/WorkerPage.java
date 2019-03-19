@@ -718,7 +718,7 @@ public class WorkerPage extends BasePage {
             @Override
             public void onClick() {
                 setResponsePage(WorkerStructurePage.class, new PageParameters().add("id", worker.getObjectId())
-                        .add("level_depth", filterWrapper.getMap().get("levelDepth")));
+                        .add("level", filterWrapper.getMap().get("levelDepth")));
             }
         });
     }

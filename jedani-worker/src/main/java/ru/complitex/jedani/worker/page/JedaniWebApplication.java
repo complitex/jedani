@@ -33,7 +33,6 @@ import ru.complitex.address.page.RegionListPage;
 import ru.complitex.common.wicket.application.ServletAuthorizationStrategy;
 import ru.complitex.common.wicket.application.ServletUnauthorizedListener;
 import ru.complitex.common.wicket.application.ServletWebSession;
-import ru.complitex.jedani.worker.graph.GraphPage;
 import ru.complitex.jedani.worker.page.admin.ImportPage;
 import ru.complitex.jedani.worker.page.catalog.*;
 import ru.complitex.jedani.worker.page.login.LoginPage;
@@ -93,7 +92,6 @@ public class JedaniWebApplication extends WebApplication{
         mountPage("worker", WorkerPage.class);
         mountPage("worker/${id}", WorkerPage.class);
         mountPage("worker/structure/${id}", WorkerStructurePage.class);
-        mountPage("graph", GraphPage.class);
         mountPage("mk_statuses", MkStatusListPage.class);
         mountPage("positions", PositionListPage.class);
         mountPage("last_names", LastNameListPage.class);

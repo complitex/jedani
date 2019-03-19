@@ -66,20 +66,19 @@ public class ExchangeRateService implements Serializable {
                 attribute.getObjectId(), ExchangeRate.VALUE, filterWrapper.getFirst(), filterWrapper.getCount());
     }
 
-    public void loadValues(ExchangeRate exchangeRate){
+    public Map<Date, Attribute> loadValues(ExchangeRate exchangeRate){
         List<Attribute> attributes = attributeMapper.getHistoryAttributes(exchangeRate.getEntityName(),
                 exchangeRate.getObjectId(), ExchangeRate.VALUE);
 
         Map<Date, Attribute> map = attributes.stream().collect(Collectors.toMap(Attribute::getStartDate, a -> a));
 
-        LocalDate localDate = LocalDate.now().plusDays(2);
+        LocalDate now = LocalDate.now();
 
-        for (int i = 0; i < 365; ++i){
-            localDate = localDate.minusDays(1);
+        for (LocalDate date = now.minusDays(365); date.isBefore(now); date = date.plusDays(1)){
 
             ZoneOffset zoneOffset = OffsetDateTime.now().getOffset();
-            Date startDate = Date.from(localDate.atTime(LocalTime.MIN).toInstant(zoneOffset));
-            Date endDate = Date.from(localDate.atTime(LocalTime.MAX).toInstant(zoneOffset));
+            Date startDate = Date.from(date.atTime(LocalTime.MIN).toInstant(zoneOffset));
+            Date endDate = Date.from(date.atTime(LocalTime.MAX).toInstant(zoneOffset));
 
             if (map.get(startDate) == null){
                 Attribute a = new Attribute();
@@ -92,18 +91,20 @@ public class ExchangeRateService implements Serializable {
                 a.setStatus(Status.SYNC);
 
                 String[] values = getValue(exchangeRate.getUriXml(), exchangeRate.getUriDateParam(),
-                        exchangeRate.getUriDateFormat(), localDate, exchangeRate.getXpathDate(),
+                        exchangeRate.getUriDateFormat(), date, exchangeRate.getXpathDate(),
                         exchangeRate.getXpathValue());
 
-                if (values != null){
+                if (values != null && !values[1].isEmpty()){
                     a.setText(values[1].replace(',', '.'));
+
+                    attributeMapper.insertAttribute(a, startDate);
+
+                    map.put(startDate, a);
                 }
-
-                attributeMapper.insertAttribute(a, startDate);
-
-                map.put(startDate, a);
             }
         }
+
+        return map;
     }
 
     public Long getExchangeRateHistoriesCount(FilterWrapper<Attribute> filterWrapper){
