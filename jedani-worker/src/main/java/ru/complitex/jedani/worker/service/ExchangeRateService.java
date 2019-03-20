@@ -72,9 +72,9 @@ public class ExchangeRateService implements Serializable {
 
         Map<Date, Attribute> map = attributes.stream().collect(Collectors.toMap(Attribute::getStartDate, a -> a));
 
-        LocalDate now = LocalDate.now();
+        LocalDate tomorrow = LocalDate.now().plusDays(1);
 
-        for (LocalDate date = now.minusDays(365); date.isBefore(now); date = date.plusDays(1)){
+        for (LocalDate date = tomorrow.minusDays(365); date.isBefore(tomorrow); date = date.plusDays(1)){
 
             ZoneOffset zoneOffset = OffsetDateTime.now().getOffset();
             Date startDate = Date.from(date.atTime(LocalTime.MIN).toInstant(zoneOffset));

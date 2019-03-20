@@ -89,23 +89,6 @@ public class ExchangeRatePage extends BasePage {
 
         List<IColumn<Attribute, SortProperty>> columns = new ArrayList<>();
 
-        columns.add(new AbstractFilterColumn<Attribute>(new ResourceModel("id"), new SortProperty("id")) {
-            @Override
-            public Component getFilter(String componentId, FilterDataForm<?> form) {
-                return new TextDataFilter<>(componentId, Model.of(""), form);
-            }
-
-            @Override
-            public void populateItem(Item<ICellPopulator<Attribute>> cellItem, String componentId, IModel<Attribute> rowModel) {
-                cellItem.add(new Label(componentId, rowModel.getObject().getId()));
-            }
-
-            @Override
-            public String getCssClass() {
-                return "domain-id-column";
-            }
-        });
-
         columns.add(new AbstractFilterColumn<Attribute>(new ResourceModel("date"), new SortProperty("date")) {
             @Override
             public Component getFilter(String componentId, FilterDataForm<?> form) {

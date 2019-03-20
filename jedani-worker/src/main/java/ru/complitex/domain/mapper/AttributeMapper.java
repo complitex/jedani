@@ -60,6 +60,7 @@ public class AttributeMapper extends BaseMapper {
                 "objectId", objectId, "entityAttributeId", entityAttributeId));
     }
 
+    //todo filter wrapper
     public List<Attribute> getHistoryAttributes(String entityName, Long objectId, long first, long count){
         return sqlSession().selectList("selectHistoryAttributesLimit", Maps.of("entityName", entityName,
                 "objectId", objectId, "first", first, "count", count));

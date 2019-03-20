@@ -60,6 +60,9 @@ let options = {
         },
         axisTicks: {
             color: '#ddd'
+        },
+        crosshairs: {
+            show: false
         }
     },
     yaxis: {
