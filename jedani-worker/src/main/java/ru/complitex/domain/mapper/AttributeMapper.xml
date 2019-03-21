@@ -47,17 +47,21 @@
     </select>
 
     <!--suppress SqlResolve -->
-    <select id="selectHistoryAttributesLimit" parameterType="map" resultMap="attributeResultMap">
-        select '${entityName}' entity_name, a.* from ${entityName}_attribute a where a.object_id = #{objectId}
-        <if test="entityAttributeId != null"> and a.entity_attribute_id = #{entityAttributeId}</if>
-          order by a.id desc
-          limit #{first}, #{count}
+    <select id="selectHistoryAttributesFilter" parameterType="ru.complitex.common.entity.FilterWrapper" resultMap="attributeResultMap">
+        select '${object.entityName}' entity_name, a.* from ${object.entityName}_attribute a where a.object_id = #{object.objectId}
+        <if test="object.entityAttributeId != null"> and a.entity_attribute_id = #{object.entityAttributeId}</if>
+        <if test="object.text != null"> and a.text like concat('%', #{object.text}, '%')</if>
+        <if test="object.startDate != null"> and a.start_date = #{object.startDate}</if>
+        <if test="sortProperty != null">order by a.${sortProperty.key} ${asc}</if>
+        ${limit}
     </select>
 
     <!--suppress SqlResolve -->
-    <select id="selectHistoryAttributesCount" parameterType="map" resultType="long">
-        select count(id) from ${entityName}_attribute where object_id = #{objectId}
-        <if test="entityAttributeId != null"> and entity_attribute_id = #{entityAttributeId}</if>
+    <select id="selectHistoryAttributesCountFilter" parameterType="ru.complitex.common.entity.FilterWrapper" resultType="long">
+        select count(a.id) from ${object.entityName}_attribute a where a.object_id = #{object.objectId}
+        <if test="object.entityAttributeId != null"> and a.entity_attribute_id = #{object.entityAttributeId}</if>
+        <if test="object.text != null"> and a.text like concat('%', #{object.text}, '%')</if>
+        <if test="object.startDate != null"> and a.start_date = #{object.startDate}</if>
     </select>
 
     <!--suppress SqlResolve -->

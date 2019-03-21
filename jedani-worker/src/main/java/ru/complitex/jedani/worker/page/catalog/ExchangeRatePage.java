@@ -1,6 +1,9 @@
 package ru.complitex.jedani.worker.page.catalog;
 
+import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxButton;
+import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
+import de.agilecoders.wicket.core.markup.html.bootstrap.image.GlyphIconType;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -11,10 +14,12 @@ import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.template.PackageTextTemplate;
@@ -22,6 +27,7 @@ import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
 import ru.complitex.common.wicket.datatable.*;
 import ru.complitex.common.wicket.form.TextFieldFormGroup;
+import ru.complitex.common.wicket.panel.LinkPanel;
 import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.entity.ExchangeRate;
@@ -66,11 +72,19 @@ public class ExchangeRatePage extends BasePage {
         add(new TextFieldFormGroup<>("name", Model.of(exchangeRate.getName())));
         add(new TextFieldFormGroup<>("code", Model.of(exchangeRate.getCode())));
 
-        DataProvider<Attribute> dataProvider = new DataProvider<Attribute>(FilterWrapper.of(
-                new Attribute(exchangeRate.getEntityName(), exchangeRate.getObjectId()))) {
+        FilterWrapper<Attribute> filterWrapper = FilterWrapper.of(new Attribute(exchangeRate.getEntityName(),
+                exchangeRate.getObjectId(), ExchangeRate.VALUE));
+        filterWrapper.setSortProperty(new SortProperty("start_date"));
+
+        DataProvider<Attribute> dataProvider = new DataProvider<Attribute>(filterWrapper) {
             @Override
             public Iterator<? extends Attribute> iterator(long first, long count) {
                 FilterWrapper<Attribute> filterWrapper = getFilterState();
+
+                if (getSort() != null){
+                    filterWrapper.setSortProperty(getSort().getProperty());
+                    filterWrapper.setAscending(getSort().isAscending());
+                }
 
                 filterWrapper.setFirst(first);
                 filterWrapper.setCount(count);
@@ -84,15 +98,15 @@ public class ExchangeRatePage extends BasePage {
             }
         };
 
-        FilterDataForm<FilterWrapper<Attribute>> form =new FilterDataForm<>("form", dataProvider);
+        FilterDataForm<FilterWrapper<Attribute>> form = new FilterDataForm<>("form", dataProvider);
         add(form);
 
         List<IColumn<Attribute, SortProperty>> columns = new ArrayList<>();
 
-        columns.add(new AbstractFilterColumn<Attribute>(new ResourceModel("date"), new SortProperty("date")) {
+        columns.add(new AbstractFilterColumn<Attribute>(new ResourceModel("date"), new SortProperty("start_date")) {
             @Override
             public Component getFilter(String componentId, FilterDataForm<?> form) {
-                return new TextDataFilter<>(componentId, Model.of(""), form);
+                return new DateFilter(componentId, new PropertyModel<>(form.getModel(), "object.startDate"), form);
             }
 
             @Override
@@ -101,15 +115,37 @@ public class ExchangeRatePage extends BasePage {
             }
         });
 
-        columns.add(new AbstractFilterColumn<Attribute>(new ResourceModel("value"), new SortProperty("value")) {
+        columns.add(new AbstractFilterColumn<Attribute>(new ResourceModel("value"), new SortProperty("text")) {
             @Override
             public Component getFilter(String componentId, FilterDataForm<?> form) {
-                return new TextDataFilter<>(componentId, Model.of(""), form);
+                return new TextDataFilter<>(componentId, new PropertyModel<>(form.getModel(), "object.text"), form);
             }
 
             @Override
             public void populateItem(Item<ICellPopulator<Attribute>> cellItem, String componentId, IModel<Attribute> rowModel) {
                 cellItem.add(new Label(componentId, rowModel.getObject().getText()));
+            }
+        });
+
+        columns.add(new AbstractFilterColumn<Attribute>(null) {
+            @Override
+            public Component getFilter(String componentId, FilterDataForm<?> form) {
+                return new LinkPanel(componentId, new BootstrapAjaxButton(LinkPanel.LINK_COMPONENT_ID, Buttons.Type.Link){
+                    @Override
+                    protected void onSubmit(AjaxRequestTarget target) {
+                        target.add(form);
+                    }
+                }.setIconType(GlyphIconType.search));
+            }
+
+            @Override
+            public void populateItem(Item<ICellPopulator<Attribute>> cellItem, String componentId, IModel<Attribute> rowModel) {
+                cellItem.add(new EmptyPanel(componentId));
+            }
+
+            @Override
+            public String getCssClass() {
+                return "domain-id-column";
             }
         });
 

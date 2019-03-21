@@ -59,13 +59,6 @@ public class ExchangeRateService implements Serializable {
         }
     }
 
-    public List<Attribute> getExchangeRateHistories(FilterWrapper<Attribute> filterWrapper){
-        Attribute attribute = filterWrapper.getObject();
-
-        return attributeMapper.getHistoryAttributes(attribute.getEntityName(),
-                attribute.getObjectId(), ExchangeRate.VALUE, filterWrapper.getFirst(), filterWrapper.getCount());
-    }
-
     public Map<Date, Attribute> loadValues(ExchangeRate exchangeRate){
         List<Attribute> attributes = attributeMapper.getHistoryAttributes(exchangeRate.getEntityName(),
                 exchangeRate.getObjectId(), ExchangeRate.VALUE);
@@ -107,10 +100,13 @@ public class ExchangeRateService implements Serializable {
         return map;
     }
 
-    public Long getExchangeRateHistoriesCount(FilterWrapper<Attribute> filterWrapper){
-        Attribute attribute = filterWrapper.getObject();
-
-        return attributeMapper.getHistoryAttributesCount(attribute.getEntityName(), attribute.getObjectId(),
-                ExchangeRate.VALUE);
+    public List<Attribute> getExchangeRateHistories(FilterWrapper<Attribute> filterWrapper){
+        return attributeMapper.getHistoryAttributes(filterWrapper);
     }
+
+    public Long getExchangeRateHistoriesCount(FilterWrapper<Attribute> filterWrapper){
+        return attributeMapper.getHistoryAttributesCount(filterWrapper);
+    }
+
+
 }

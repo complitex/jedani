@@ -1,6 +1,7 @@
 package ru.complitex.domain.mapper;
 
 import org.mybatis.cdi.Transactional;
+import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.mybatis.BaseMapper;
 import ru.complitex.common.util.Maps;
 import ru.complitex.domain.entity.Attribute;
@@ -60,25 +61,12 @@ public class AttributeMapper extends BaseMapper {
                 "objectId", objectId, "entityAttributeId", entityAttributeId));
     }
 
-    //todo filter wrapper
-    public List<Attribute> getHistoryAttributes(String entityName, Long objectId, long first, long count){
-        return sqlSession().selectList("selectHistoryAttributesLimit", Maps.of("entityName", entityName,
-                "objectId", objectId, "first", first, "count", count));
+    public List<Attribute> getHistoryAttributes(FilterWrapper<Attribute> filterWrapper){
+        return sqlSession().selectList("selectHistoryAttributesFilter", filterWrapper);
     }
 
-    public List<Attribute> getHistoryAttributes(String entityName, Long objectId, Long entityAttributeId, long first, long count){
-        return sqlSession().selectList("selectHistoryAttributesLimit", Maps.of("entityName", entityName,
-                "objectId", objectId, "entityAttributeId", entityAttributeId, "first", first, "count", count));
-    }
-
-    public Long getHistoryAttributesCount(String entityName, Long objectId){
-        return sqlSession().selectOne("selectHistoryAttributesCount", Maps.of("entityName", entityName,
-                "objectId", objectId));
-    }
-
-    public Long getHistoryAttributesCount(String entityName, Long objectId, Long entityAttributeId){
-        return sqlSession().selectOne("selectHistoryAttributesCount", Maps.of("entityName", entityName,
-                "objectId", objectId, "entityAttributeId", entityAttributeId));
+    public Long getHistoryAttributesCount(FilterWrapper<Attribute> filterWrapper){
+        return sqlSession().selectOne("selectHistoryAttributesCountFilter", filterWrapper);
     }
 
     public Long getNumber(String entityName, Long objectId, Long entityAttributeId){
