@@ -29,6 +29,7 @@ import ru.complitex.common.wicket.datatable.*;
 import ru.complitex.common.wicket.form.TextFieldFormGroup;
 import ru.complitex.common.wicket.panel.LinkPanel;
 import ru.complitex.domain.entity.Attribute;
+import ru.complitex.domain.mapper.AttributeMapper;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.entity.ExchangeRate;
 import ru.complitex.jedani.worker.page.BasePage;
@@ -47,6 +48,9 @@ import java.util.stream.Collectors;
 @AuthorizeInstantiation(JedaniRoles.ADMINISTRATORS)
 public class ExchangeRatePage extends BasePage {
     @Inject
+    private AttributeMapper attributeMapper;
+
+    @Inject
     private DomainService domainService;
 
     @Inject
@@ -57,9 +61,9 @@ public class ExchangeRatePage extends BasePage {
     public ExchangeRatePage(PageParameters pageParameters) {
         ExchangeRate exchangeRate = domainService.getDomain(ExchangeRate.class, pageParameters.get("id").toLongObject());
 
-        Map<Date, Attribute> exchangeRateMap = exchangeRateService.loadValues(exchangeRate);
+        List<Attribute> exchangeRateList = attributeMapper.getHistoryAttributes(exchangeRate.getEntityName(),
+                exchangeRate.getObjectId(), ExchangeRate.VALUE);
 
-        List<Attribute> exchangeRateList = new ArrayList<>(exchangeRateMap.values());
         exchangeRateList.sort(Comparator.comparing(Attribute::getStartDate));
 
         data = exchangeRateList.stream().map(a -> "[" + a.getStartDate().getTime() + ", " + a.getText() + "]")

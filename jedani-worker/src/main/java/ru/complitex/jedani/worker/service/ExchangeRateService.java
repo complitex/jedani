@@ -59,7 +59,7 @@ public class ExchangeRateService implements Serializable {
         }
     }
 
-    public Map<Date, Attribute> loadValues(ExchangeRate exchangeRate){
+    public boolean loadValues(ExchangeRate exchangeRate){
         List<Attribute> attributes = attributeMapper.getHistoryAttributes(exchangeRate.getEntityName(),
                 exchangeRate.getObjectId(), ExchangeRate.VALUE);
 
@@ -93,11 +93,13 @@ public class ExchangeRateService implements Serializable {
                     attributeMapper.insertAttribute(a, startDate);
 
                     map.put(startDate, a);
+                }else{
+                    return false;
                 }
             }
         }
 
-        return map;
+        return true;
     }
 
     public List<Attribute> getExchangeRateHistories(FilterWrapper<Attribute> filterWrapper){
