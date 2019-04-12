@@ -13,22 +13,18 @@ import org.danekja.java.util.function.serializable.SerializableConsumer;
  * @author Anatoly A. Ivanov
  * 22.12.2017 8:03
  */
-public class TextFieldFormGroup<T> extends Panel{
+public class FormGroupTextField<T> extends Panel{
     private boolean required;
 
     private TextField<T> textField;
 
-    public TextFieldFormGroup(String id, IModel<T> model) {
-        this(id, new ResourceModel(id), model);
-    }
-
-    public TextFieldFormGroup(String id, IModel<String> label, IModel<T> model) {
+    public FormGroupTextField(String id, IModel<String> label, IModel<T> model, Class<T> type) {
         super(id);
 
         setOutputMarkupId(true);
 
         FormGroupBorder group = new FormGroupBorder("group", label);
-        group.add(textField = new TextField<T>("input", model){
+        group.add(textField = new TextField<T>("input", model, type){
             @Override
             protected void onComponentTag(final ComponentTag tag){
                 super.onComponentTag(tag);
@@ -38,12 +34,24 @@ public class TextFieldFormGroup<T> extends Panel{
 
             @Override
             public boolean isRequired() {
-                return TextFieldFormGroup.this.isRequired();
+                return FormGroupTextField.this.isRequired();
             }
         });
         textField.setLabel(label);
 
         add(group);
+    }
+
+    public FormGroupTextField(String id, IModel<T> model, Class<T> type) {
+        this(id, new ResourceModel(id), model, type);
+    }
+
+    public FormGroupTextField(String id, IModel<T> model) {
+        this(id, model, null);
+    }
+
+    public FormGroupTextField(String id, IModel<String> label, IModel<T> model) {
+        this(id, label, model, null);
     }
 
     public void onUpdate(SerializableConsumer<AjaxRequestTarget> onUpdate){
@@ -59,13 +67,13 @@ public class TextFieldFormGroup<T> extends Panel{
         return required;
     }
 
-    public TextFieldFormGroup<T> setRequired(boolean required){
+    public FormGroupTextField<T> setRequired(boolean required){
         this.required = required;
 
         return this;
     }
 
-    public TextFieldFormGroup<T> setType(Class<?> type){
+    public FormGroupTextField<T> setType(Class<?> type){
         textField.setType(type);
 
         return this;

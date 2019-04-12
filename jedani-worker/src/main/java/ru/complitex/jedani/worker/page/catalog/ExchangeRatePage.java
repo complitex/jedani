@@ -26,7 +26,7 @@ import org.apache.wicket.util.template.PackageTextTemplate;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
 import ru.complitex.common.wicket.datatable.*;
-import ru.complitex.common.wicket.form.TextFieldFormGroup;
+import ru.complitex.common.wicket.form.FormGroupTextField;
 import ru.complitex.common.wicket.panel.LinkPanel;
 import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.mapper.AttributeMapper;
@@ -73,8 +73,8 @@ public class ExchangeRatePage extends BasePage {
         feedback.setOutputMarkupId(true);
         add(feedback);
 
-        add(new TextFieldFormGroup<>("name", Model.of(exchangeRate.getName())));
-        add(new TextFieldFormGroup<>("code", Model.of(exchangeRate.getCode())));
+        add(new FormGroupTextField<>("name", Model.of(exchangeRate.getName())));
+        add(new FormGroupTextField<>("code", Model.of(exchangeRate.getCode())));
 
         FilterWrapper<Attribute> filterWrapper = FilterWrapper.of(new Attribute(exchangeRate.getEntityName(),
                 exchangeRate.getObjectId(), ExchangeRate.VALUE));

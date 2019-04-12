@@ -37,7 +37,7 @@ import ru.complitex.common.wicket.component.DateTimeLabel;
 import ru.complitex.common.wicket.datatable.*;
 import ru.complitex.common.wicket.form.FormGroupPanel;
 import ru.complitex.common.wicket.form.FormGroupSelectPanel;
-import ru.complitex.common.wicket.form.TextFieldFormGroup;
+import ru.complitex.common.wicket.form.FormGroupTextField;
 import ru.complitex.common.wicket.panel.LinkPanel;
 import ru.complitex.common.wicket.panel.SelectPanel;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
@@ -139,7 +139,7 @@ public class StoragePage extends BasePage {
         Form form = new Form<>("form");
         add(form);
 
-        TextFieldFormGroup storageIdFormGroup = new TextFieldFormGroup<>("storageId", Model.of(storageId));
+        FormGroupTextField storageIdFormGroup = new FormGroupTextField<>("storageId", Model.of(storageId));
         storageIdFormGroup.setEnabled(false);
         storageIdFormGroup.setVisible(storageId != null);
         form.add(storageIdFormGroup);

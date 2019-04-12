@@ -1,6 +1,5 @@
 package ru.complitex.jedani.worker.page.sale;
 
-import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
@@ -9,15 +8,11 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
 import ru.complitex.common.wicket.component.DateTimeLabel;
-import ru.complitex.common.wicket.datatable.FilterDataForm;
-import ru.complitex.common.wicket.datatable.TextDataFilter;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
-import ru.complitex.domain.component.datatable.DomainColumn;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.page.DomainListModalPage;
@@ -34,7 +29,6 @@ import ru.complitex.name.service.NameService;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author Anatoly A. Ivanov
@@ -86,35 +80,13 @@ public class SaleListPage extends DomainListModalPage<SaleItem> {
                 .withReferences(Nomenclature.ENTITY_NAME, Nomenclature.CODE, Nomenclature.NAME));
         list.add(entity.getEntityAttribute(SaleItem.QUANTITY));
         list.add(entity.getEntityAttribute(SaleItem.PRICE));
-        list.add(entity.getEntityAttribute(SaleItem.STORAGE));
-        list.add(entity.getEntityAttribute(SaleItem.INSTALLMENT_PERCENTAGE));
-        list.add(entity.getEntityAttribute(SaleItem.INSTALLMENT_MONTHS));
 
         return list;
     }
 
     @Override
-    protected DomainColumn<SaleItem> newDomainColumn(EntityAttribute a) {
-        if (Objects.equals(a.getEntityAttributeId(), SaleItem.STORAGE)){
-            return new DomainColumn<SaleItem>(a){
-                @Override
-                protected String displayEntity(EntityAttribute entityAttribute, Long objectId) {
-                    return Storages.getSimpleStorageLabel(objectId, domainService);
-                }
-            };
-        }
-
-        return super.newDomainColumn(a);
-    }
-
-    @Override
     protected void onAddColumns(List<IColumn<SaleItem, SortProperty>> columns) {
-        columns.add(1, new AbstractDomainColumn<SaleItem>(new ResourceModel("date"), new SortProperty("date")) {
-            @Override
-            public Component getFilter(String componentId, FilterDataForm<?> form) {
-                return new TextDataFilter<>(componentId, new PropertyModel<>(form.getModel(), "map.date"), form);
-            }
-
+        columns.add(1, new AbstractDomainColumn<SaleItem>(SaleItem.FILTER_DATE) {
             @Override
             public void populateItem(Item<ICellPopulator<SaleItem>> cellItem, String componentId, IModel<SaleItem> rowModel) {
                 Sale sale = domainService.getDomain(Sale.class, rowModel.getObject().getParentId());
@@ -123,12 +95,7 @@ public class SaleListPage extends DomainListModalPage<SaleItem> {
             }
         });
 
-        columns.add(2, new AbstractDomainColumn<SaleItem>(new ResourceModel("buyer"), new SortProperty("buyer")) {
-            @Override
-            public Component getFilter(String componentId, FilterDataForm<?> form) {
-                return new TextDataFilter<>(componentId, new PropertyModel<>(form.getModel(), "map.buyer"), form);
-            }
-
+        columns.add(2, new AbstractDomainColumn<SaleItem>(SaleItem.FILTER_BUYER) {
             @Override
             public void populateItem(Item<ICellPopulator<SaleItem>> cellItem, String componentId, IModel<SaleItem> rowModel) {
                 Sale sale = domainService.getDomain(Sale.class, rowModel.getObject().getParentId());
@@ -138,13 +105,35 @@ public class SaleListPage extends DomainListModalPage<SaleItem> {
             }
         });
 
-        if (isAdmin()) {
-            columns.add(2, new AbstractDomainColumn<SaleItem>(new ResourceModel("sellerWorker"), new SortProperty("sellerWorker")) {
-                @Override
-                public Component getFilter(String componentId, FilterDataForm<?> form) {
-                    return new TextDataFilter<>(componentId, new PropertyModel<>(form.getModel(), "map.sellerWorker"), form);
-                }
+        columns.add(new AbstractDomainColumn<SaleItem>(SaleItem.FILTER_STORAGE) {
+            @Override
+            public void populateItem(Item<ICellPopulator<SaleItem>> cellItem, String componentId, IModel<SaleItem> rowModel) {
+                Sale sale = domainService.getDomain(Sale.class, rowModel.getObject().getParentId());
 
+                cellItem.add(new Label(componentId, Storages.getSimpleStorageLabel(sale.getStorageId(), domainService)));
+            }
+        });
+
+        columns.add(new AbstractDomainColumn<SaleItem>(SaleItem.FILTER_INSTALLMENT_PERCENTAGE) {
+            @Override
+            public void populateItem(Item<ICellPopulator<SaleItem>> cellItem, String componentId, IModel<SaleItem> rowModel) {
+                Sale sale = domainService.getDomain(Sale.class, rowModel.getObject().getParentId());
+
+                cellItem.add(new Label(componentId, sale.getInstallmentPercentage()));
+            }
+        });
+
+        columns.add(new AbstractDomainColumn<SaleItem>(SaleItem.FILTER_INSTALLMENT_MONTHS) {
+            @Override
+            public void populateItem(Item<ICellPopulator<SaleItem>> cellItem, String componentId, IModel<SaleItem> rowModel) {
+                Sale sale = domainService.getDomain(Sale.class, rowModel.getObject().getParentId());
+
+                cellItem.add(new Label(componentId, sale.getInstallmentMonths()));
+            }
+        });
+
+        if (isAdmin()) {
+            columns.add(2, new AbstractDomainColumn<SaleItem>(SaleItem.FILTER_SELLER_WORKER) {
                 @Override
                 public void populateItem(Item<ICellPopulator<SaleItem>> cellItem, String componentId, IModel<SaleItem> rowModel) {
                     Sale sale = domainService.getDomain(Sale.class, rowModel.getObject().getParentId());

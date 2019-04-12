@@ -42,7 +42,7 @@ public class SaleService implements Serializable {
 
             Product filter = new Product();
 
-            filter.setParentId(s.getStorageId());
+            filter.setParentId(sale.getStorageId());
             filter.setNomenclatureId(s.getNomenclatureId());
 
             List<Product> products = domainService.getDomains(Product.class, FilterWrapper.of(filter));
@@ -68,7 +68,7 @@ public class SaleService implements Serializable {
             t.setNomenclatureId(s.getNomenclatureId());
             t.setQuantity(s.getQuantity());
             t.setType(TransactionType.RESERVE);
-            t.setStorageIdFrom(s.getStorageId());
+            t.setStorageIdFrom(sale.getStorageId());
             t.setFirstNameIdTo(sale.getBuyerFirstName());
             t.setMiddleNameIdTo(sale.getBuyerMiddleName());
             t.setLastNameIdTo(sale.getBuyerLastName());

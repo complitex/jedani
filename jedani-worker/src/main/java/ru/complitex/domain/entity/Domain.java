@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import ru.complitex.domain.util.Locales;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -155,6 +156,17 @@ public class Domain<T extends Domain<T>> implements Serializable{
     public void copyNumber(Long entityAttributeId, Domain domain){
         setNumber(entityAttributeId, domain.getNumber(entityAttributeId));
     }
+
+    public BigDecimal getDecimal(Long entityAttributeId){
+        return new BigDecimal(getOrCreateAttribute(entityAttributeId).getText());
+    }
+
+    public Domain setDecimal(Long entityAttributeId, BigDecimal decimal){
+        setText(entityAttributeId, decimal.toPlainString());
+
+        return this;
+    }
+
 
     public Date getDate(Long entityAttributeId){
         return Optional.ofNullable(getAttribute(entityAttributeId))

@@ -19,7 +19,7 @@ import org.apache.wicket.model.ResourceModel;
 import org.danekja.java.util.function.serializable.SerializableConsumer;
 import ru.complitex.common.wicket.form.FormGroupPanel;
 import ru.complitex.common.wicket.form.FormGroupSelectPanel;
-import ru.complitex.common.wicket.form.TextFieldFormGroup;
+import ru.complitex.common.wicket.form.FormGroupTextField;
 import ru.complitex.domain.component.form.DomainAutoCompleteFormGroup;
 import ru.complitex.domain.entity.StringType;
 import ru.complitex.domain.model.NumberAttributeModel;
@@ -121,10 +121,10 @@ class TransferModal extends StorageModal {
                             }
                         }).setNullValid(false).add(OnChangeAjaxBehavior.onChange(target -> target.add(worker, client)))));
 
-                fragment.add(new TextFieldFormGroup<>("quantity", new NumberAttributeModel(getModel(),
+                fragment.add(new FormGroupTextField<>("quantity", new NumberAttributeModel(getModel(),
                         Transaction.QUANTITY)).setRequired(true).setType(Long.class));
 
-                fragment.add(new TextFieldFormGroup<>("serialNumber", new TextAttributeModel(getModel(), Transaction.SERIAL_NUMBER,
+                fragment.add(new FormGroupTextField<>("serialNumber", new TextAttributeModel(getModel(), Transaction.SERIAL_NUMBER,
                         StringType.DEFAULT)));
 
                 return fragment;
@@ -193,7 +193,7 @@ class TransferModal extends StorageModal {
                             }
                         }).setNullValid(false).add(OnChangeAjaxBehavior.onChange(target -> target.add(worker, storage)))));
 
-                fragment.add(new TextFieldFormGroup<>("quantity", new NumberAttributeModel(getModel(),
+                fragment.add(new FormGroupTextField<>("quantity", new NumberAttributeModel(getModel(),
                         Transaction.QUANTITY)).setRequired(true).setType(Long.class));
 
                 fragment.add(new FormGroupSelectPanel("type", new BootstrapSelect<>(FormGroupPanel.COMPONENT_ID,
@@ -266,10 +266,10 @@ class TransferModal extends StorageModal {
                             }
                         }).with(new BootstrapSelectConfig().withNoneSelectedText(""))));
 
-                fragment.add(new TextFieldFormGroup<>("quantity", new NumberAttributeModel(getModel(),
+                fragment.add(new FormGroupTextField<>("quantity", new NumberAttributeModel(getModel(),
                         Transaction.QUANTITY)).setRequired(true).setType(Long.class).setRequired(true));
 
-                fragment.add(new TextFieldFormGroup<>("comments", new TextAttributeModel(getModel(), Transaction.COMMENTS,
+                fragment.add(new FormGroupTextField<>("comments", new TextAttributeModel(getModel(), Transaction.COMMENTS,
                         StringType.DEFAULT)));
 
                 return fragment;
@@ -286,7 +286,7 @@ class TransferModal extends StorageModal {
     }
 
     private Component getNomenclature(){
-        return new TextFieldFormGroup<>("nomenclature", new ResourceModel("nomenclature"),
+        return new FormGroupTextField<>("nomenclature", new ResourceModel("nomenclature"),
                 new LoadableDetachableModel<String>() {
                     @Override
                     protected String load() {

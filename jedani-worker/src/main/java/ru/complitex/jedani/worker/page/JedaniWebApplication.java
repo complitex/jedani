@@ -15,6 +15,7 @@ import de.agilecoders.wicket.extensions.markup.html.bootstrap.references.Bootstr
 import de.agilecoders.wicket.themes.markup.html.google.GoogleCssReference;
 import de.agilecoders.wicket.themes.markup.html.google.GoogleTheme;
 import de.agilecoders.wicket.webjars.request.resource.WebjarsCssResourceReference;
+import org.apache.wicket.ConverterLocator;
 import org.apache.wicket.Page;
 import org.apache.wicket.Session;
 import org.apache.wicket.ajax.WicketAjaxJQueryResourceReference;
@@ -33,6 +34,7 @@ import ru.complitex.address.page.RegionListPage;
 import ru.complitex.common.wicket.application.ServletAuthorizationStrategy;
 import ru.complitex.common.wicket.application.ServletUnauthorizedListener;
 import ru.complitex.common.wicket.application.ServletWebSession;
+import ru.complitex.common.wicket.converter.BigDecimalConverter;
 import ru.complitex.jedani.worker.page.admin.ImportPage;
 import ru.complitex.jedani.worker.page.catalog.*;
 import ru.complitex.jedani.worker.page.login.LoginPage;
@@ -51,6 +53,8 @@ import ru.complitex.jedani.worker.page.worker.WorkerStructurePage;
 import ru.complitex.name.page.FirstNameListPage;
 import ru.complitex.name.page.LastNameListPage;
 import ru.complitex.name.page.MiddleNameListPage;
+
+import java.math.BigDecimal;
 
 /**
  * @author Anatoly A. Ivanov
@@ -73,6 +77,8 @@ public class JedaniWebApplication extends WebApplication{
 
         getSecuritySettings().setAuthorizationStrategy(new ServletAuthorizationStrategy());
         getSecuritySettings().setUnauthorizedComponentInstantiationListener(new ServletUnauthorizedListener(LoginPage.class));
+
+        ((ConverterLocator)getConverterLocator()).set(BigDecimal.class, new BigDecimalConverter());
     }
 
     private void configureBootstrap() {

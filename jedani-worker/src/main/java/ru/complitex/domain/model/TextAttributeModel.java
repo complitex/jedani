@@ -55,6 +55,13 @@ public class TextAttributeModel implements IModel<String> {
         this.type = type;
     }
 
+    public TextAttributeModel(IModel<? extends Domain> domainModel, Long entityAttributeId) {
+        this.domainModel = domainModel;
+        this.entityAttributeId = entityAttributeId;
+
+        this.type = StringType.DEFAULT;
+    }
+
     @Override
     public String getObject() {
         String text = domainModel != null ? domainModel.getObject().getText(entityAttributeId)

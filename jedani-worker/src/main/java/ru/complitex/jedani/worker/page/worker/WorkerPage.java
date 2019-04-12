@@ -42,7 +42,7 @@ import ru.complitex.common.wicket.datatable.*;
 import ru.complitex.common.wicket.form.DateTextFieldFormGroup;
 import ru.complitex.common.wicket.form.FormGroupPanel;
 import ru.complitex.common.wicket.form.FormGroupSelectPanel;
-import ru.complitex.common.wicket.form.TextFieldFormGroup;
+import ru.complitex.common.wicket.form.FormGroupTextField;
 import ru.complitex.common.wicket.util.Wickets;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.component.datatable.DomainActionColumn;
@@ -225,7 +225,7 @@ public class WorkerPage extends BasePage {
         form.add(new AttributeSelectFormGroup("position", new NumberAttributeModel(worker, Worker.POSITION),
                 Position.ENTITY_NAME, Position.NAME));
 
-        TextFieldFormGroup<String> jId = new TextFieldFormGroup<String>("jId", new TextAttributeModel(worker, Worker.J_ID)){
+        FormGroupTextField<String> jId = new FormGroupTextField<String>("jId", new TextAttributeModel(worker, Worker.J_ID)){
             @Override
             public boolean isRequired() {
                 return worker.isParticipant();
@@ -257,7 +257,7 @@ public class WorkerPage extends BasePage {
                 return worker.isParticipant();
             }
         });
-        form.add(new TextFieldFormGroup<>("email", new TextAttributeModel(worker, Worker.EMAIL, StringType.LOWER_CASE)));
+        form.add(new FormGroupTextField<>("email", new TextAttributeModel(worker, Worker.EMAIL, StringType.LOWER_CASE)));
 
         AttributeSelectListFormGroup city, region;
         form.add(region = new AttributeSelectListFormGroup("region", Model.of(worker.getOrCreateAttribute(Worker.REGIONS)),

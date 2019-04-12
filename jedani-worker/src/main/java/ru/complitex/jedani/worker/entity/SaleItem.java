@@ -2,6 +2,8 @@ package ru.complitex.jedani.worker.entity;
 
 import ru.complitex.domain.entity.Domain;
 
+import java.math.BigDecimal;
+
 /**
  * @author Anatoly A. Ivanov
  * 18.02.2019 14:35
@@ -12,9 +14,13 @@ public class SaleItem extends Domain<SaleItem> {
     public static final long NOMENCLATURE = 1;
     public static final long QUANTITY = 2;
     public static final long PRICE = 3;
-    public static final long STORAGE = 4;
-    public static final long INSTALLMENT_PERCENTAGE = 5;
-    public static final long INSTALLMENT_MONTHS = 6;
+
+    public static final String FILTER_DATE = "date";
+    public static final String FILTER_BUYER = "buyer";
+    public static final String FILTER_STORAGE = "storage";
+    public static final String FILTER_INSTALLMENT_PERCENTAGE = "installmentPercentage";
+    public static final String FILTER_INSTALLMENT_MONTHS = "installmentMonths";
+    public static final String FILTER_SELLER_WORKER = "sellerWorker";
 
     public SaleItem() {
         super(ENTITY_NAME);
@@ -32,27 +38,11 @@ public class SaleItem extends Domain<SaleItem> {
         return getNumber(QUANTITY);
     }
 
-    public Long getStorageId(){
-        return getNumber(STORAGE);
+    public BigDecimal getPrice(){
+        return getDecimal(PRICE);
     }
 
-    public void setStorageId(Long storageId){
-        setNumber(STORAGE, storageId);
-    }
-
-    public Long getInstallmentPercentage(){
-        return getNumber(INSTALLMENT_PERCENTAGE);
-    }
-
-    public void setInstallmentPercentage(Long percentage){
-        setNumber(INSTALLMENT_PERCENTAGE, percentage);
-    }
-
-    public Long getInstallmentMonths(){
-        return getNumber(INSTALLMENT_MONTHS);
-    }
-
-    public void setInstallmentMonths(Long months){
-        setNumber(INSTALLMENT_MONTHS, months);
+    public void setPrice(BigDecimal price){
+        setDecimal(PRICE, price);
     }
 }

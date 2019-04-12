@@ -45,9 +45,13 @@ public abstract class AbstractDomainAutoComplete extends FormComponentPanel<Long
     private boolean error;
     private boolean errorRendered;
 
+    private SerializableConsumer<AjaxRequestTarget> onChange;
+
     public AbstractDomainAutoComplete(String id, String entityName, IModel<Long> model,
                               SerializableConsumer<AjaxRequestTarget> onChange) {
         super(id, model);
+
+        this.onChange = onChange;
 
         setOutputMarkupId(true);
 
@@ -233,5 +237,9 @@ public abstract class AbstractDomainAutoComplete extends FormComponentPanel<Long
 
     public boolean isErrorRendered() {
         return errorRendered;
+    }
+
+    public SerializableConsumer<AjaxRequestTarget> getOnChange() {
+        return onChange;
     }
 }

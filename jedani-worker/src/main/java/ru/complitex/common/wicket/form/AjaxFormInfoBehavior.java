@@ -73,4 +73,8 @@ public class AjaxFormInfoBehavior extends AjaxFormComponentUpdatingBehavior {
             response.render(OnDomReadyHeaderItem.forScript(getCallbackScript(component).toString()));
         }
     }
+
+    public boolean isError() {
+        return error;
+    }
 }

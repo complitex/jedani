@@ -13,12 +13,13 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import ru.complitex.common.entity.FilterWrapper;
-import ru.complitex.common.wicket.form.TextFieldFormGroup;
+import ru.complitex.common.wicket.form.FormGroupTextField;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.entity.Product;
 import ru.complitex.jedani.worker.entity.Sale;
 import ru.complitex.jedani.worker.entity.SaleItem;
 import ru.complitex.jedani.worker.entity.Worker;
+import ru.complitex.jedani.worker.mapper.SaleItemMapper;
 import ru.complitex.jedani.worker.service.WorkerService;
 import ru.complitex.jedani.worker.util.Nomenclatures;
 import ru.complitex.name.service.NameService;
@@ -41,6 +42,9 @@ public class ReserveModal extends Modal<Product> {
     @Inject
     private NameService nameService;
 
+    @Inject
+    private SaleItemMapper saleItemMapper;
+
     private IModel<Product> productModel;
 
     private WebMarkupContainer container;
@@ -60,7 +64,7 @@ public class ReserveModal extends Modal<Product> {
         container.setOutputMarkupId(true);
         add(container);
 
-        container.add(new TextFieldFormGroup<>("nomenclature",
+        container.add(new FormGroupTextField<>("nomenclature",
                 new LoadableDetachableModel<String>() {
                     @Override
                     protected String load() {
@@ -69,7 +73,7 @@ public class ReserveModal extends Modal<Product> {
                     }
                 }).setEnabled(false));
 
-        container.add(new TextFieldFormGroup<>("quantity",
+        container.add(new FormGroupTextField<>("quantity",
                 new LoadableDetachableModel<Long>() {
                     @Override
                     protected Long load() {
@@ -88,9 +92,9 @@ public class ReserveModal extends Modal<Product> {
 
                 SaleItem filter = new SaleItem();
                 filter.setNomenclatureId(product.getNomenclatureId());
-                filter.setStorageId(product.getParentId());
+                filter.getMap().put("storage", product.getParentId());
 
-                return domainService.getDomains(SaleItem.class, FilterWrapper.of(filter));
+                return saleItemMapper.getSaleItems(FilterWrapper.of(filter));
             }
         }) {
             @Override

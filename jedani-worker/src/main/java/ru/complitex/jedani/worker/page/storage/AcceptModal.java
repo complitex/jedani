@@ -4,7 +4,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.ResourceModel;
 import org.danekja.java.util.function.serializable.SerializableConsumer;
 import ru.complitex.common.wicket.form.FormGroupPanel;
-import ru.complitex.common.wicket.form.TextFieldFormGroup;
+import ru.complitex.common.wicket.form.FormGroupTextField;
 import ru.complitex.domain.component.form.AbstractDomainAutoComplete;
 import ru.complitex.domain.model.NumberAttributeModel;
 import ru.complitex.jedani.worker.component.NomenclatureAutoComplete;
@@ -32,7 +32,7 @@ class AcceptModal extends StorageModal {
         nomenclature.setRequired(true);
         nomenclature.setLabel(new ResourceModel("nomenclature"));
 
-        getContainer().add(new TextFieldFormGroup<>("quantity", new NumberAttributeModel(getModel(), Transaction.QUANTITY))
+        getContainer().add(new FormGroupTextField<>("quantity", new NumberAttributeModel(getModel(), Transaction.QUANTITY))
                 .setRequired(true).setType(Long.class));
     }
 
