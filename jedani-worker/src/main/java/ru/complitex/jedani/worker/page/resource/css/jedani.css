@@ -2,13 +2,16 @@ body {
 
 }
 #page{
-    /*background-color: #f1f1f1;*/
     width: 100%;
 }
 
 #header {
-    /*background-color: #f1f1f1;*/
     margin-bottom: 0;
+}
+
+#header .navbar-brand{
+    padding: 3px;
+    margin-left: 0;
 }
 
 #content {

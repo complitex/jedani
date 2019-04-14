@@ -17,6 +17,7 @@ import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.model.LoadableDetachableModel;
@@ -45,10 +46,7 @@ import ru.complitex.jedani.worker.page.catalog.ExchangeRateListPage;
 import ru.complitex.jedani.worker.page.catalog.MkStatusListPage;
 import ru.complitex.jedani.worker.page.catalog.PositionListPage;
 import ru.complitex.jedani.worker.page.promotion.PromotionListPage;
-import ru.complitex.jedani.worker.page.resource.JedaniCssResourceReference;
-import ru.complitex.jedani.worker.page.resource.JedaniJsResourceReference;
-import ru.complitex.jedani.worker.page.resource.MenuCssResourceReference;
-import ru.complitex.jedani.worker.page.resource.MenuJsResourceReference;
+import ru.complitex.jedani.worker.page.resource.*;
 import ru.complitex.jedani.worker.page.sale.SaleListPage;
 import ru.complitex.jedani.worker.page.storage.NomenclatureListPage;
 import ru.complitex.jedani.worker.page.storage.StorageListPage;
@@ -109,7 +107,10 @@ public class BasePage extends WebPage{
         currentUser = userMapper.getUser(login);
         currentWorker = workerService.getWorker(login);
 
-        add(new MenuLink("home", HomePage.class));
+        MenuLink menuLink = new MenuLink("home", HomePage.class);
+        add(menuLink);
+
+        menuLink.add(new Image("jedani", JedaniLogoImgResourceReference.INSTANCE));
 
         String fio = "";
         String jid = "";

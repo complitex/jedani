@@ -39,10 +39,7 @@ import ru.complitex.jedani.worker.page.admin.ImportPage;
 import ru.complitex.jedani.worker.page.catalog.*;
 import ru.complitex.jedani.worker.page.login.LoginPage;
 import ru.complitex.jedani.worker.page.promotion.PromotionListPage;
-import ru.complitex.jedani.worker.page.resource.JedaniCssResourceReference;
-import ru.complitex.jedani.worker.page.resource.JedaniJsResourceReference;
-import ru.complitex.jedani.worker.page.resource.MenuCssResourceReference;
-import ru.complitex.jedani.worker.page.resource.MenuJsResourceReference;
+import ru.complitex.jedani.worker.page.resource.*;
 import ru.complitex.jedani.worker.page.sale.SaleListPage;
 import ru.complitex.jedani.worker.page.storage.NomenclatureListPage;
 import ru.complitex.jedani.worker.page.storage.StorageListPage;
@@ -128,6 +125,8 @@ public class JedaniWebApplication extends WebApplication{
         mountResource("css/todc-bootstrap.css", GoogleCssReference.instance());
         mountResource("img/checkmark.png", new SharedResourceReference(GoogleCssReference.class,
                 "img/checkmark.png"));
+
+        mountResource("img/jedani.svg", JedaniLogoImgResourceReference.INSTANCE);
 
         mountResource("fonts/glyphicons-halflings-regular.woff2", new WebjarsCssResourceReference(
                 "/bootstrap/current/fonts/glyphicons-halflings-regular.woff2"));
