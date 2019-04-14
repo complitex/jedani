@@ -11,7 +11,6 @@ import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.select.Bootst
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
@@ -56,7 +55,6 @@ import javax.inject.Inject;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.LongStream;
 
 /**
  * @author Anatoly A. Ivanov
@@ -87,6 +85,7 @@ public class SaleModal extends Modal<Sale> {
     private DomainAutoCompleteFormGroup lastName, firstName, middleName;
 
     private FormGroupTextField total;
+    private FormGroupTextField payment;
 
     private Long defaultStorageId;
 
@@ -146,8 +145,8 @@ public class SaleModal extends Modal<Sale> {
                 }))));
         container.add(new FormGroupTextField<>("contract", new TextAttributeModel(saleModel, Sale.CONTRACT)));
 
-        total = new FormGroupTextField<>("total", new DecimalAttributeModel(saleModel, Sale.TOTAL), BigDecimal.class);
-        container.add(total);
+        container.add(total = new FormGroupTextField<>("total", new DecimalAttributeModel(saleModel, Sale.TOTAL), BigDecimal.class));
+        container.add(payment = new FormGroupTextField<>("payment", DecimalAttributeModel.of(saleModel, Sale.INITIAL_PAYMENT), BigDecimal.class));
 
         WebMarkupContainer baseAssortmentContainer = new WebMarkupContainer("baseAssortmentContainer"){
             @Override
@@ -190,38 +189,18 @@ public class SaleModal extends Modal<Sale> {
                 })
                 .with(new BootstrapSelectConfig().withNoneSelectedText(""))
                 .setNullValid(false)
-                .add(OnChangeAjaxBehavior.onChange(target -> target.add(mycookContainer, baseAssortmentContainer)))));
+                .add(OnChangeAjaxBehavior.onChange(target -> {
+                    saleModel.getObject().setTotal(null);
+                    saleModel.getObject().setInitialPayment(null);
+
+                    target.add(container);
+                }))));
 
         container.add(new DomainAutoCompleteFormGroup("promotion", Promotion.ENTITY_NAME, Promotion.NAME,
                 NumberAttributeModel.of(saleModel, Sale.PROMOTION)));
 
         container.add(new FormGroupPanel("sasRequest", new BootstrapCheckbox(FormGroupPanel.COMPONENT_ID,
                 BooleanAttributeModel.of(saleModel, Sale.SAS_REQUEST), new ResourceModel("sasRequestLabel"))));
-
-        mycookContainer.add(new FormGroupSelectPanel("percentage", new BootstrapSelect<>(FormGroupSelectPanel.COMPONENT_ID,
-                NumberAttributeModel.of(saleModel, Sale.INSTALLMENT_PERCENTAGE),
-                Arrays.asList(0L, 10L, 20L, 30L, 40L, 50L, 60L, 70L,80L, 90L, 100L))
-                .setRequired(true)
-                .add(new AjaxFormInfoBehavior())
-                .add(AjaxFormComponentUpdatingBehavior.onUpdate("change", t -> {
-                    Sale sale = saleModel.getObject();
-
-                    if (sale.getInstallmentPercentage() == 100){
-                        sale.setInstallmentMonths(0L);
-                    }else if (sale.getInstallmentMonths() == 0) {
-                        sale.setInstallmentMonths(sale.getInstallmentPercentage() < 100 ? 24L : 0);
-                    }
-
-//                    t.add(month);
-                }))));
-
-        mycookContainer.add(new FormGroupSelectPanel("months", new BootstrapSelect<>(FormGroupSelectPanel.COMPONENT_ID,
-                NumberAttributeModel.of(saleModel, Sale.INSTALLMENT_MONTHS),
-                LongStream.range(0, 25).boxed().collect(Collectors.toList()))
-                .setRequired(true)
-                .setOutputMarkupId(true)));
-
-        mycookContainer.add(new FormGroupTextField<>("payment", DecimalAttributeModel.of(saleModel, Sale.INITIAL_PAYMENT), BigDecimal.class));
 
         mycookContainer.add(new ListView<SaleItem>("mycooks", mycookModel) {
             @Override
@@ -260,9 +239,7 @@ public class SaleModal extends Modal<Sale> {
                                 super.onUpdate(target);
 
                                 if (!isError()){
-                                    updateTotal();
-
-                                    target.add(total);
+                                    updateTotal(target);
                                 }
                             }
                         }));
@@ -332,9 +309,7 @@ public class SaleModal extends Modal<Sale> {
                                 super.onUpdate(target);
 
                                 if (!isError()){
-                                    updateTotal();
-
-                                    target.add(total);
+                                    updateTotal(target);
                                 }
                             }
                         }));
@@ -412,14 +387,20 @@ public class SaleModal extends Modal<Sale> {
         };
     }
 
-    private void updateTotal(){
+    private void updateTotal(AjaxRequestTarget target){
         try {
+            Sale sale = saleModel.getObject();
+
             List<SaleItem> saleItems = saleModel.getObject().getType() == SaleType.MYCOOK
                     ? mycookModel.getObject()
                     : baseAssortmentModel.getObject();
 
-            saleModel.getObject().setTotal(saleItems.stream().map(SaleItem::getPrice)
+            sale.setTotal(saleItems.stream().map(SaleItem::getPrice)
                     .reduce(BigDecimal.ZERO, BigDecimal::add));
+
+            sale.setInitialPayment(sale.getTotal().divide(BigDecimal.TEN, 2, BigDecimal.ROUND_HALF_EVEN));
+
+            target.add(total, payment);
         } catch (Exception e) {
             log.error("update total error", e);
         }

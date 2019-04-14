@@ -162,11 +162,10 @@ public class Domain<T extends Domain<T>> implements Serializable{
     }
 
     public Domain setDecimal(Long entityAttributeId, BigDecimal decimal){
-        setText(entityAttributeId, decimal.toPlainString());
+        setText(entityAttributeId, decimal != null ? decimal.toPlainString() : null);
 
         return this;
     }
-
 
     public Date getDate(Long entityAttributeId){
         return Optional.ofNullable(getAttribute(entityAttributeId))

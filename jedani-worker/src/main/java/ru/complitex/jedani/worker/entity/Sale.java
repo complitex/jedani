@@ -112,4 +112,12 @@ public class Sale extends Domain<Sale> {
     public BigDecimal getTotal(){
         return getDecimal(TOTAL);
     }
+
+    public BigDecimal getInitialPayment(){
+        return getDecimal(INITIAL_PAYMENT);
+    }
+
+    public void setInitialPayment(BigDecimal initialPayment){
+        setDecimal(INITIAL_PAYMENT, initialPayment);
+    }
 }

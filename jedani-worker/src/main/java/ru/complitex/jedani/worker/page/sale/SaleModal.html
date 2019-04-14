@@ -7,7 +7,7 @@
 
             <div class="row">
                 <div wicket:id="saleType" class="col-md-4"></div>
-                <div wicket:id="promotion" class="col-md-4"></div>
+                <div wicket:id="contract" class="col-md-4"></div>
                 <div wicket:id="sasRequest" class="col-md-4"></div>
             </div>
 
@@ -19,17 +19,10 @@
 
             <div class="row">
                 <div wicket:id="storage" class="col-md-4"></div>
-                <div wicket:id="contract" class="col-md-4"></div>
-                <div wicket:id="total" class="col-md-4"></div>
+                <div wicket:id="promotion" class="col-md-4"></div>
             </div>
 
             <div wicket:id="mycookContainer">
-                <div class="row">
-                    <div wicket:id="percentage" class="col-md-4"></div>
-                    <div wicket:id="months" class="col-md-4"></div>
-                    <div wicket:id="payment" class="col-md-4"></div>
-                </div>
-
                 <table class="table sale-table">
                     <thead>
                     <tr>
@@ -49,9 +42,14 @@
                         <td class="sale-id-column"><a wicket:id="remove"></a></td>
                     </tr>
                     </tbody>
+                    <tfoot>
+                    <tr>
+                        <td colspan="5">
+                            <div class="text-center"><a wicket:id="add">Добавить</a></div>
+                        </td>
+                    </tr>
+                    </tfoot>
                 </table>
-
-                <div class="text-center"><a wicket:id="add">Добавить</a></div>
             </div>
 
             <div wicket:id="baseAssortmentContainer">
@@ -74,9 +72,19 @@
                         <td class="sale-id-column"><a wicket:id="remove"></a></td>
                     </tr>
                     </tbody>
+                    <tfoot>
+                    <tr>
+                        <td colspan="5">
+                            <div class="text-center"><a wicket:id="add">Добавить</a></div>
+                        </td>
+                    </tr>
+                    </tfoot>
                 </table>
+            </div>
 
-                <div class="text-center"><a wicket:id="add">Добавить</a></div>
+            <div class="row">
+                <div wicket:id="total" class="col-md-4"></div>
+                <div wicket:id="payment" class="col-md-4"></div>
             </div>
         </div>
     </wicket:extend>
