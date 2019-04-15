@@ -165,7 +165,7 @@ public class SaleListPage extends DomainListModalPage<SaleItem> {
     }
 
     @Override
-    protected boolean isEditModelEnabled() {
+    protected boolean isEditEnabled() {
         return false;
     }
 }

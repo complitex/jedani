@@ -128,4 +128,14 @@ public class ExchangeRateListPage extends DomainListModalPage<ExchangeRate> {
     protected void onRowClick(ExchangeRate object, AjaxRequestTarget target) {
         setResponsePage(ExchangeRatePage.class, new PageParameters().add("id", object.getObjectId()));
     }
+
+    @Override
+    protected boolean isEditEnabled() {
+        return isAdmin();
+    }
+
+    @Override
+    protected boolean isAddEnabled() {
+        return isAdmin();
+    }
 }

@@ -56,8 +56,6 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage{
 
     private FilterWrapper<T> filterWrapper;
 
-    private boolean addVisible = true;
-
     private WebMarkupContainer container;
 
     private FeedbackPanel feedback;
@@ -143,12 +141,14 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage{
 
         onAddColumns(columns);
 
-        columns.add(new DomainModalActionColumn<T>() {
-            @Override
-            protected void onAction(IModel<T> rowModel, AjaxRequestTarget target) {
-                onActionEdit(rowModel.getObject(), target);
-            }
-        });
+        if (isEditEnabled()) {
+            columns.add(new DomainModalActionColumn<T>() {
+                @Override
+                protected void onAction(IModel<T> rowModel, AjaxRequestTarget target) {
+                    onActionEdit(rowModel.getObject(), target);
+                }
+            });
+        }
 
         table = new FilterDataTable<T>("table", columns, dataProvider, form, 15, "domainGridPage" + entity.getName()){
             @Override
@@ -172,14 +172,14 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage{
 
             @Override
             public boolean isVisible() {
-                return addVisible;
+                return isAddEnabled();
             }
         });
 
         Form<T> editForm = new Form<>("editForm");
         container.add(editForm);
 
-        if (isEditModelEnabled()) {
+        if (isEditEnabled()) {
             domainEditModal = new DomainEditModal<T>("edit", domainClass, parentEntityName,
                     parentEntityAttributeId, getEditEntityAttributes(entityService.getEntity(domainInstance.getEntityName())),
                     t -> t.add(feedback, table)){
@@ -214,10 +214,6 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage{
 
     protected DomainColumn<T> newDomainColumn(EntityAttribute a) {
         return new DomainColumn<>(a);
-    }
-
-    public void setAddVisible(boolean addVisible) {
-        this.addVisible = addVisible;
     }
 
     protected void onAdd(AjaxRequestTarget target) {
@@ -289,7 +285,11 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage{
         titleLabel.setDefaultModel(titleModel);
     }
 
-    protected boolean isEditModelEnabled(){
+    protected boolean isEditEnabled(){
+        return true;
+    }
+
+    protected boolean isAddEnabled(){
         return true;
     }
 
