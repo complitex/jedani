@@ -10,28 +10,27 @@ body {
 }
 
 #header .navbar-brand{
-    padding: 3px;
+    padding: 3px 0;
     margin-left: 0;
 }
 
 #content {
-    padding: 0 15px;
     background-color: white;
 }
 
 @media (min-width: 768px) {
     #content {
         position: inherit;
-        margin: 0 0 0 220px;
-        padding: 0 30px;
+        margin: 0 0 0 200px;
+        padding: 15px 30px;
         border-left: 1px solid #e7e7e7;
     }
 
     .sidebar {
         z-index: 1;
         position: absolute;
-        width: 220px;
-        margin-top: 20px;
+        width: 200px;
+        margin-top: 15px;
     }
 }
 
@@ -39,6 +38,11 @@ body {
     #content{
         border-left: 0;
     }
+}
+
+.navbar{
+    border: none !important;
+    border-bottom: 1px solid #ebebeb !important;
 }
 
 .sidebar-nav{
