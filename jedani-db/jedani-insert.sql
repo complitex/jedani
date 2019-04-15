@@ -422,7 +422,7 @@ INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `tex
 INSERT INTO `sequence` (`name`) VALUE ('currency');
 
 INSERT INTO `entity` (`id`, `name`) VALUE (30, 'currency');
-INSERT INTO `entity_value`(`entity_id`, `locale_id`, `text`) VALUES (30, 1, 'Нац.валюта'), (30, 2, 'Нац.валюті');
+INSERT INTO `entity_value`(`entity_id`, `locale_id`, `text`) VALUES (30, 1, 'Валюта'), (30, 2, 'Валюта');
 
 INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (30, 1, 0);
 INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (30, 1, 1, 'Название'), (30, 1, 2, 'Назва');
@@ -467,7 +467,7 @@ INSERT INTO currency_attribute (id, object_id, entity_attribute_id, status, text
 INSERT INTO `sequence` (`name`) VALUE ('exchange_rate');
 
 INSERT INTO `entity` (`id`, `name`) VALUE (31, 'exchange_rate');
-INSERT INTO `entity_value`(`entity_id`, `locale_id`, `text`) VALUES (31, 1, 'Курс нац.валюты'), (31, 2, 'Курс нац.валюті');
+INSERT INTO `entity_value`(`entity_id`, `locale_id`, `text`) VALUES (31, 1, 'Курс валюты'), (31, 2, 'Курс валюті');
 
 INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (31, 1, 0);
 INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (31, 1, 1, 'Название'), (31, 1, 2, 'Назва');

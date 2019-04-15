@@ -1471,7 +1471,7 @@ CREATE TABLE `currency`
   CONSTRAINT `fk_currency__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE = InnoDB
   CHARSET = utf8
-  COLLATE = utf8_unicode_ci COMMENT 'Нац.валюта';
+  COLLATE = utf8_unicode_ci COMMENT 'Валюта';
 
 DROP TABLE IF EXISTS `currency_attribute`;
 CREATE TABLE `currency_attribute`
@@ -1499,7 +1499,7 @@ CREATE TABLE `currency_attribute`
   CONSTRAINT `fk_currency_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE = InnoDB
   CHARSET = utf8
-  COLLATE = utf8_unicode_ci COMMENT 'Атрибуты нац.валюты';
+  COLLATE = utf8_unicode_ci COMMENT 'Атрибуты валюты';
 
 DROP TABLE IF EXISTS `currency_value`;
 CREATE TABLE `currency_value`
@@ -1518,7 +1518,7 @@ CREATE TABLE `currency_value`
   CONSTRAINT `fk_currency_value__locale` FOREIGN KEY (`locale_id`) REFERENCES `locale` (`id`)
 ) ENGINE = InnoDB
   CHARSET = utf8
-  COLLATE = utf8_unicode_ci COMMENT 'Значения атрибутов нац.валюты';
+  COLLATE = utf8_unicode_ci COMMENT 'Значения атрибутов валюты';
 
 -- ---------------------------
 -- Exchange rate
@@ -1550,7 +1550,7 @@ CREATE TABLE `exchange_rate`
   CONSTRAINT `fk_exchange_rate__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE = InnoDB
   CHARSET = utf8
-  COLLATE = utf8_unicode_ci COMMENT 'Курсы нац.валют';
+  COLLATE = utf8_unicode_ci COMMENT 'Курсы валют';
 
 DROP TABLE IF EXISTS `exchange_rate_attribute`;
 CREATE TABLE `exchange_rate_attribute`
@@ -1578,7 +1578,7 @@ CREATE TABLE `exchange_rate_attribute`
   CONSTRAINT `fk_exchange_rate_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE = InnoDB
   CHARSET = utf8
-  COLLATE = utf8_unicode_ci COMMENT 'Атрибуты курсов нац.валют';
+  COLLATE = utf8_unicode_ci COMMENT 'Атрибуты курсов валют';
 
 DROP TABLE IF EXISTS `exchange_rate_value`;
 CREATE TABLE `exchange_rate_value`
@@ -1597,4 +1597,4 @@ CREATE TABLE `exchange_rate_value`
   CONSTRAINT `fk_exchange_rate_value__locale` FOREIGN KEY (`locale_id`) REFERENCES `locale` (`id`)
 ) ENGINE = InnoDB
   CHARSET = utf8
-  COLLATE = utf8_unicode_ci COMMENT 'Значения атрибутов курсов нац.валют';
+  COLLATE = utf8_unicode_ci COMMENT 'Значения атрибутов курсов валют';
