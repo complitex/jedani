@@ -126,6 +126,22 @@ INSERT INTO `entity_value`(`entity_id`, `locale_id`, `text`) VALUES (22, 1, 'Д�
 INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (22, 1, 0);
 INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (22, 1, 1, 'Название'), (22, 1, 2, 'Назва');
 
+INSERT INTO position (`id`, `object_id`, `start_date`, `status`, `user_id`) VALUE (1, 1, now(), 1, 1);
+INSERT INTO position_attribute (`id`, `object_id`, `entity_attribute_id`, `start_date`, `status`, `user_id`) VALUE (1, 1, 1, now(), 1, 1);
+INSERT INTO position_value (`id`, `attribute_id`, `locale_id`, text) VALUE (1, 1, 1, 'СЕКРЕТАРЬ');
+
+INSERT INTO position (`id`, `object_id`, `start_date`, `status`, `user_id`) VALUE (3, 3, now(), 1, 1);
+INSERT INTO position_attribute (`id`, `object_id`, `entity_attribute_id`, `start_date`, `status`, `user_id`) VALUE (3, 3, 1, now(), 1, 1);
+INSERT INTO position_value (`id`, `attribute_id`, `locale_id`, text) VALUE (3, 3, 1, 'РУКОВОДИТЕЛЬ РЕГИОНА');
+
+INSERT INTO position (`id`, `object_id`, `start_date`, `status`, `user_id`) VALUE (4, 4, now(), 1, 1);
+INSERT INTO position_attribute (`id`, `object_id`, `entity_attribute_id`, `start_date`, `status`, `user_id`) VALUE (4, 4, 1, now(), 1, 1);
+INSERT INTO position_value (`id`, `attribute_id`, `locale_id`, text) VALUE (4, 4, 1, 'ТОРГОВЫЙ ДИРЕКТОР');
+
+INSERT INTO position (`id`, `object_id`, `start_date`, `status`, `user_id`) VALUE (5, 5, now(), 1, 1);
+INSERT INTO position_attribute (`id`, `object_id`, `entity_attribute_id`, `start_date`, `status`, `user_id`) VALUE (5, 5, 1, now(), 1, 1);
+INSERT INTO position_value (`id`, `attribute_id`, `locale_id`, text) VALUE (5, 5, 1, 'АДМИНИСТРАТИВНЫЙ ДИРЕКТОР');
+
 /* Worker */
 
 INSERT INTO `entity`(`id`, `name`) VALUES (20, 'worker');
