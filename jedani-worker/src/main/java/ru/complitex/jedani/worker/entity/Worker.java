@@ -59,7 +59,7 @@ public class Worker extends DomainNode<Worker> {
         setUseNumberValue(true);
     }
 
-    public Worker(Domain domain) {
+    public Worker(Domain<Worker> domain) {
         super(domain, ENTITY_NAME);
 
         setUseDateAttribute(true);

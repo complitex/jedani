@@ -7,6 +7,7 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.validation.IValidator;
 import org.danekja.java.util.function.serializable.SerializableConsumer;
 
 /**
@@ -75,6 +76,12 @@ public class FormGroupTextField<T> extends Panel{
 
     public FormGroupTextField<T> setType(Class<?> type){
         textField.setType(type);
+
+        return this;
+    }
+
+    public FormGroupTextField<T> addValidator(IValidator<T> validator){
+        textField.add(validator);
 
         return this;
     }

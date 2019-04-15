@@ -26,6 +26,11 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.util.parse.metapattern.MetaPattern;
+import org.apache.wicket.validation.IValidatable;
+import org.apache.wicket.validation.IValidationError;
+import org.apache.wicket.validation.ValidationError;
+import org.apache.wicket.validation.validator.PatternValidator;
 import org.danekja.java.util.function.serializable.SerializableConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -150,7 +155,15 @@ public class SaleModal extends Modal<Sale> {
                     target.add(container);
                 }))));
 
-        container.add(new FormGroupTextField<>("contract", new TextAttributeModel(saleModel, Sale.CONTRACT)));
+        container.add(new FormGroupTextField<>("contract", new TextAttributeModel(saleModel, Sale.CONTRACT))
+                .addValidator(new PatternValidator(MetaPattern.DIGITS){
+                    @Override
+                    protected IValidationError decorate(IValidationError error, IValidatable<String> validatable) {
+                        ((ValidationError)error).setVariable("pattern", getString("error_digits_only"));
+
+                        return error;
+                    }
+                }));
 
         container.add(new FormGroupPanel("sasRequest", new BootstrapCheckbox(FormGroupPanel.COMPONENT_ID,
                 BooleanAttributeModel.of(saleModel, Sale.SAS_REQUEST), new ResourceModel("sasRequestLabel"))));
