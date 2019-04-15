@@ -35,7 +35,7 @@ import java.util.List;
  * @author Anatoly A. Ivanov
  * 27.02.2019 22:24
  */
-@AuthorizeInstantiation(JedaniRoles.ADMINISTRATORS)
+@AuthorizeInstantiation(JedaniRoles.AUTHORIZED)
 public class ExchangeRateListPage extends DomainListModalPage<ExchangeRate> {
     @Inject
     private ExchangeRateService exchangeRateService;
@@ -90,7 +90,7 @@ public class ExchangeRateListPage extends DomainListModalPage<ExchangeRate> {
 
             if (values != null) {
                 r.getMap().put("date", values[0]);
-                r.getMap().put("value", values[1]);
+                r.getMap().put("value", values[1].replace(",", "."));
             }
         });
 

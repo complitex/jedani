@@ -193,7 +193,6 @@ public class BasePage extends WebPage{
         address.add(new MenuLink("cities", CityListPage.class).setVisible(isAdmin()));
 
         WebMarkupContainer catalog = new WebMarkupContainer("catalog");
-        catalog.setVisible(isAdmin() || isStructureAdmin());
         catalog.add(newBehavior());
         catalog.add(new WebMarkupContainer("link").add(newBehaviorLink()));
         sidebar.add(catalog);
@@ -204,7 +203,7 @@ public class BasePage extends WebPage{
         catalog.add(new MenuLink("position", PositionListPage.class).setVisible(isAdmin()));
         catalog.add(new MenuLink("mk_status", MkStatusListPage.class).setVisible(isAdmin()));
         catalog.add(new MenuLink("currency", CurrencyListPage.class).setVisible(isAdmin()));
-        catalog.add(new MenuLink("exchangeRate", ExchangeRateListPage.class).setVisible(isAdmin()));
+        catalog.add(new MenuLink("exchangeRate", ExchangeRateListPage.class));
 
         WebMarkupContainer workers = new WebMarkupContainer("workers");
         workers.setVisible(isAdmin() || isStructureAdmin());

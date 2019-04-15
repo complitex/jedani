@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
  * @author Anatoly A. Ivanov
  * 14.03.2019 21:33
  */
-@AuthorizeInstantiation(JedaniRoles.ADMINISTRATORS)
+@AuthorizeInstantiation(JedaniRoles.AUTHORIZED)
 public class ExchangeRatePage extends BasePage {
     @Inject
     private AttributeMapper attributeMapper;
