@@ -14,6 +14,8 @@ public class AttributeSelectFormGroup extends Panel {
 
     public AttributeSelectFormGroup(String id, IModel<Long> model, String refEntityName, Long refEntityAttributeId) {
         this(id, new ResourceModel(id), model, refEntityName, refEntityAttributeId);
+
+        setOutputMarkupId(true);
     }
 
     public AttributeSelectFormGroup(String id, IModel<String> label, IModel<Long> model, String refEntityName,

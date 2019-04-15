@@ -174,6 +174,15 @@ public class WorkerPage extends BasePage {
             }
         }
 
+        //User
+        User user = worker.getParentId() != null
+                ? userMapper.getUser(worker.getParentId())
+                : new User(worker.getText(Worker.J_ID));
+
+        if (user.getId() == null){
+            user.addRole(JedaniRoles.USERS);
+        }
+
         FeedbackPanel feedback = new NotificationPanel("feedback").showRenderedMessages(false);
         feedback.setOutputMarkupId(true);
         add(feedback);
@@ -222,8 +231,16 @@ public class WorkerPage extends BasePage {
                 new NumberAttributeModel(worker, Worker.FIRST_NAME)).setInputRequired(true));
         form.add(middleName = new DomainAutoCompleteFormGroup("middleName", MiddleName.ENTITY_NAME, MiddleName.NAME,
                 new NumberAttributeModel(worker, Worker.MIDDLE_NAME)));
-        form.add(new AttributeSelectFormGroup("position", new NumberAttributeModel(worker, Worker.POSITION),
-                Position.ENTITY_NAME, Position.NAME));
+
+        AttributeSelectFormGroup position;
+
+        form.add(position = new AttributeSelectFormGroup("position", new NumberAttributeModel(worker, Worker.POSITION),
+                Position.ENTITY_NAME, Position.NAME){
+            @Override
+            public boolean isEnabled() {
+                return user.hasRole(JedaniRoles.ADMINISTRATORS) || user.hasRole(JedaniRoles.STRUCTURE_ADMINISTRATORS);
+            }
+        });
 
         FormGroupTextField<String> jId = new FormGroupTextField<String>("jId", new TextAttributeModel(worker, Worker.J_ID)){
             @Override
@@ -291,10 +308,7 @@ public class WorkerPage extends BasePage {
         });
         region.onChange(t -> t.add(city));
 
-        //User
-        User user = worker.getParentId() != null
-                ? userMapper.getUser(worker.getParentId())
-                : new User(worker.getText(Worker.J_ID));
+        //Roles
 
         List<String> roles = new ArrayList<>();
 
@@ -312,7 +326,18 @@ public class WorkerPage extends BasePage {
         IModel<List<String>> userRolesModel = new ListModel<>(user.getRoles());
 
         form.add(new FormGroupPanel("role", new JedaniRoleSelectList(FormGroupPanel.COMPONENT_ID,
-                userRolesModel, roles)).setVisible(isAdmin() || isStructureAdmin()));
+                userRolesModel, roles){
+            @Override
+            protected void onChange(AjaxRequestTarget target) {
+                user.setRoles(userRolesModel.getObject());
+
+                if (!user.hasRole(JedaniRoles.ADMINISTRATORS) && !user.hasRole(JedaniRoles.STRUCTURE_ADMINISTRATORS)){
+                    worker.setNumber(Worker.POSITION, null);
+                }
+
+                target.add(position);
+            }
+        }).setVisible(isAdmin() || isStructureAdmin()));
 
         TextField<String> login = new TextField<>("login", new PropertyModel<>(user, "login"));
         login.setRequired(true);
