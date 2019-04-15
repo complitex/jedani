@@ -9,6 +9,7 @@ import org.apache.wicket.markup.html.border.Border;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.ResourceModel;
 
 import java.util.Objects;
 
@@ -30,6 +31,10 @@ public class FormGroupBorder extends Border {
         info.setOutputMarkupId(true);
 
         addToBorder(info);
+    }
+
+    public FormGroupBorder(String id) {
+        this(id, new ResourceModel(id));
     }
 
     @Override

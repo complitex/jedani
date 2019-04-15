@@ -262,8 +262,8 @@ public class StoragePage extends BasePage {
 
         //Products
 
-        DataProvider<Product> productDataProvider = new DataProvider<Product>(FilterWrapper.of(
-                new Product(){{setParentId(storageId);}})) {
+        DataProvider<Product> productDataProvider = new DataProvider<Product>(FilterWrapper.<Product>of(
+                new Product(){{setParentId(storageId);}}).sort("id", false)) {
             @Override
             public Iterator<? extends Product> iterator(long first, long count) {
                 FilterWrapper<Product> filterWrapper = getFilterState().limit(first, count);

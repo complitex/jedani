@@ -19,4 +19,12 @@ public class Nomenclature extends Domain<Nomenclature> {
 
         setUseNumberValue(true);
     }
+
+    public Long getType(){
+        return getNumber(TYPE);
+    }
+
+    public void setType(Long type){
+        setNumber(TYPE, type);
+    }
 }

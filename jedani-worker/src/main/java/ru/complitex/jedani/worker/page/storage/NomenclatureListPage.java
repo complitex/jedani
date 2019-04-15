@@ -5,11 +5,9 @@ import org.apache.wicket.Component;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.model.Model;
 import ru.complitex.address.entity.Country;
-import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.wicket.panel.SelectPanel;
 import ru.complitex.domain.component.form.AttributeSelectList;
 import ru.complitex.domain.entity.Attribute;
-import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.model.NumberAttributeModel;
@@ -23,7 +21,6 @@ import ru.complitex.jedani.worker.security.JedaniRoles;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author Anatoly A. Ivanov
@@ -77,18 +74,11 @@ public class NomenclatureListPage extends DomainListModalPage<Nomenclature> {
     }
 
     @Override
-    protected boolean validate(Domain<Nomenclature> domain) {
-        List<Nomenclature> domains =  domainService.getDomains(Nomenclature.class,
-                FilterWrapper.of((Nomenclature) new Nomenclature().setText(Nomenclature.CODE,
-                        domain.getText(Nomenclature.CODE))));
+    protected Nomenclature newDomain() {
+        Nomenclature nomenclature = new Nomenclature();
 
-        if (domains.stream().anyMatch(n -> !Objects.equals(n.getObjectId(), domain.getObjectId()) &&
-                        Objects.equals(domain.getText(Nomenclature.CODE), n.getText(Nomenclature.CODE)))){
-            error(getString("error_unique_nomenclature_code"));
+        nomenclature.setType(NomenclatureType.BASE_ASSORTMENT);
 
-            return false;
-        }
-
-        return true;
+        return nomenclature;
     }
 }

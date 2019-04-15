@@ -73,6 +73,13 @@ public class FilterWrapper<T extends Serializable> implements Serializable {
         return this;
     }
 
+    public FilterWrapper<T> sort(String key, boolean ascending){
+        this.sortProperty = new SortProperty(key);
+        this.ascending = ascending;
+
+        return this;
+    }
+
     public String getAsc(){
         return ascending ? "asc" : "desc";
     }

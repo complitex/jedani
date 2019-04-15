@@ -221,7 +221,11 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage{
     }
 
     protected void onAdd(AjaxRequestTarget target) {
-        domainEditModal.edit(Domains.newObject(domainClass), target);
+        domainEditModal.edit(newDomain(), target);
+    }
+
+    protected T newDomain(){
+        return Domains.newObject(domainClass);
     }
 
     protected void onRowItem(Item<T> item){

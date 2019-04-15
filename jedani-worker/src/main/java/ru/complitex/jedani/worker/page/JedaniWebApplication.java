@@ -9,6 +9,7 @@ import de.agilecoders.wicket.core.settings.IBootstrapSettings;
 import de.agilecoders.wicket.core.settings.SingleThemeProvider;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.select.SelectCSSReference;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.select.SelectJSReference;
+import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.spinner.Spinner;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.references.BootstrapDatepickerJsReference;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.references.BootstrapDatepickerLangJsReference;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.references.BootstrapDatepickerReference;
@@ -26,6 +27,8 @@ import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.request.Response;
+import org.apache.wicket.request.resource.CssResourceReference;
+import org.apache.wicket.request.resource.JavaScriptResourceReference;
 import org.apache.wicket.request.resource.SharedResourceReference;
 import org.apache.wicket.resource.JQueryResourceReference;
 import ru.complitex.address.page.CityListPage;
@@ -146,6 +149,9 @@ public class JedaniWebApplication extends WebApplication{
         mountResource("css/bootstrap-select.css", SelectCSSReference.instance());
 
         mountResource("js/wicket-autocomplete.js", AutoCompleteBehavior.AUTOCOMPLETE_JS);
+
+        mountResource("css/touchspin.min.css", new CssResourceReference(Spinner.class,"css/touchspin.min.css"));
+        mountResource("js/touchspin.min.js", new JavaScriptResourceReference(Spinner.class,"js/touchspin.min.js"));
     }
 
     @Override

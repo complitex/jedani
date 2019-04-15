@@ -8,6 +8,8 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.form.BootstrapCheckbox;
 import de.agilecoders.wicket.core.markup.html.bootstrap.image.GlyphIconType;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.select.BootstrapSelect;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.select.BootstrapSelectConfig;
+import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.spinner.Spinner;
+import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.spinner.SpinnerConfig;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -28,10 +30,7 @@ import org.danekja.java.util.function.serializable.SerializableConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.complitex.common.entity.FilterWrapper;
-import ru.complitex.common.wicket.form.AjaxFormInfoBehavior;
-import ru.complitex.common.wicket.form.FormGroupPanel;
-import ru.complitex.common.wicket.form.FormGroupSelectPanel;
-import ru.complitex.common.wicket.form.FormGroupTextField;
+import ru.complitex.common.wicket.form.*;
 import ru.complitex.domain.component.form.DomainAutoCompleteFormGroup;
 import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Domain;
@@ -114,51 +113,6 @@ public class SaleModal extends Modal<Sale> {
         feedback.showRenderedMessages(false);
         container.add(feedback);
 
-        WebMarkupContainer fioContainer = new WebMarkupContainer("fioContainer");
-        fioContainer.setOutputMarkupId(true);
-        container.add(fioContainer);
-
-        fioContainer.add(lastName = new DomainAutoCompleteFormGroup("lastName", LastName.ENTITY_NAME, LastName.NAME,
-                new Model<>()).setInputRequired(true));
-        fioContainer.add(firstName = new DomainAutoCompleteFormGroup("firstName", FirstName.ENTITY_NAME, FirstName.NAME,
-                new Model<>()).setInputRequired(true));
-        fioContainer.add(middleName = new DomainAutoCompleteFormGroup("middleName", MiddleName.ENTITY_NAME, MiddleName.NAME,
-                new Model<>()));
-
-        WebMarkupContainer mycookContainer = new WebMarkupContainer("mycookContainer"){
-            @Override
-            public boolean isVisible() {
-                return Objects.equals(saleModel.getObject().getOrCreateAttribute(Sale.TYPE).getNumber(),
-                        SaleType.MYCOOK);
-            }
-        };
-        mycookContainer.setOutputMarkupId(true);
-        mycookContainer.setOutputMarkupPlaceholderTag(true);
-        container.add(mycookContainer);
-
-        container.add(new FormGroupPanel("storage", new StorageAutoComplete(FormGroupPanel.COMPONENT_ID,
-                NumberAttributeModel.of(saleModel, Sale.STORAGE), t ->
-                container.visitChildren(NomenclatureAutoComplete.class, (c, v) -> {
-                    if (c.isVisibleInHierarchy()){
-                        ((NomenclatureAutoComplete)c).getOnChange().accept(t);
-                    }
-                }))));
-        container.add(new FormGroupTextField<>("contract", new TextAttributeModel(saleModel, Sale.CONTRACT)));
-
-        container.add(total = new FormGroupTextField<>("total", new DecimalAttributeModel(saleModel, Sale.TOTAL), BigDecimal.class));
-        container.add(payment = new FormGroupTextField<>("payment", DecimalAttributeModel.of(saleModel, Sale.INITIAL_PAYMENT), BigDecimal.class));
-
-        WebMarkupContainer baseAssortmentContainer = new WebMarkupContainer("baseAssortmentContainer"){
-            @Override
-            public boolean isVisible() {
-                return Objects.equals(saleModel.getObject().getOrCreateAttribute(Sale.TYPE).getNumber(),
-                        SaleType.BASE_ASSORTMENT);
-            }
-        };
-        baseAssortmentContainer.setOutputMarkupId(true);
-        baseAssortmentContainer.setOutputMarkupPlaceholderTag(true);
-        container.add(baseAssortmentContainer);
-
         container.add(new FormGroupSelectPanel("saleType", new BootstrapSelect<>(FormGroupPanel.COMPONENT_ID,
                 NumberAttributeModel.of(saleModel, Sale.TYPE),
                 Arrays.asList(SaleType.MYCOOK, SaleType.BASE_ASSORTMENT),
@@ -196,11 +150,49 @@ public class SaleModal extends Modal<Sale> {
                     target.add(container);
                 }))));
 
-        container.add(new DomainAutoCompleteFormGroup("promotion", Promotion.ENTITY_NAME, Promotion.NAME,
-                NumberAttributeModel.of(saleModel, Sale.PROMOTION)));
+        container.add(new FormGroupTextField<>("contract", new TextAttributeModel(saleModel, Sale.CONTRACT)));
 
         container.add(new FormGroupPanel("sasRequest", new BootstrapCheckbox(FormGroupPanel.COMPONENT_ID,
                 BooleanAttributeModel.of(saleModel, Sale.SAS_REQUEST), new ResourceModel("sasRequestLabel"))));
+
+        WebMarkupContainer fioContainer = new WebMarkupContainer("fioContainer");
+        fioContainer.setOutputMarkupId(true);
+        container.add(fioContainer);
+
+        fioContainer.add(lastName = new DomainAutoCompleteFormGroup("lastName", LastName.ENTITY_NAME, LastName.NAME,
+                new Model<>()).setInputRequired(true));
+        fioContainer.add(firstName = new DomainAutoCompleteFormGroup("firstName", FirstName.ENTITY_NAME, FirstName.NAME,
+                new Model<>()).setInputRequired(true));
+        fioContainer.add(middleName = new DomainAutoCompleteFormGroup("middleName", MiddleName.ENTITY_NAME, MiddleName.NAME,
+                new Model<>()));
+
+        container.add(new FormGroupPanel("storage", new StorageAutoComplete(FormGroupPanel.COMPONENT_ID,
+                NumberAttributeModel.of(saleModel, Sale.STORAGE), t ->
+                container.visitChildren(NomenclatureAutoComplete.class, (c, v) -> {
+                    if (c.isVisibleInHierarchy()){
+                        ((NomenclatureAutoComplete)c).getOnChange().accept(t);
+                    }
+                }))));
+
+        container.add(new DomainAutoCompleteFormGroup("promotion", Promotion.ENTITY_NAME, Promotion.NAME,
+                NumberAttributeModel.of(saleModel, Sale.PROMOTION)));
+
+        FormGroupBorder months = new FormGroupBorder("months");
+        container.add(months);
+
+        months.add(new Spinner<>("input", NumberAttributeModel.of(saleModel, Sale.INSTALLMENT_MONTHS),
+                new SpinnerConfig().withVerticalbuttons(true).withMin(0).withMax(24)).setType(Long.class));
+
+        WebMarkupContainer mycookContainer = new WebMarkupContainer("mycookContainer"){
+            @Override
+            public boolean isVisible() {
+                return Objects.equals(saleModel.getObject().getOrCreateAttribute(Sale.TYPE).getNumber(),
+                        SaleType.MYCOOK);
+            }
+        };
+        mycookContainer.setOutputMarkupId(true);
+        mycookContainer.setOutputMarkupPlaceholderTag(true);
+        container.add(mycookContainer);
 
         mycookContainer.add(new ListView<SaleItem>("mycooks", mycookModel) {
             @Override
@@ -225,7 +217,7 @@ public class SaleModal extends Modal<Sale> {
 
                         Attribute attribute = new Attribute(Nomenclature.TYPE);
                         attribute.setNumber(NomenclatureType.MYCOOK);
-                        domain.getMap().put("attributes", Collections.singleton(attribute));
+                        domain.put("attributes", Collections.singleton(attribute));
 
                         return domain;
                     }
@@ -274,6 +266,17 @@ public class SaleModal extends Modal<Sale> {
             }
         });
 
+        WebMarkupContainer baseAssortmentContainer = new WebMarkupContainer("baseAssortmentContainer"){
+            @Override
+            public boolean isVisible() {
+                return Objects.equals(saleModel.getObject().getOrCreateAttribute(Sale.TYPE).getNumber(),
+                        SaleType.BASE_ASSORTMENT);
+            }
+        };
+        baseAssortmentContainer.setOutputMarkupId(true);
+        baseAssortmentContainer.setOutputMarkupPlaceholderTag(true);
+        container.add(baseAssortmentContainer);
+
         baseAssortmentContainer.add(new ListView<SaleItem>("baseAssortments", baseAssortmentModel) {
             @Override
             protected void populateItem(ListItem<SaleItem> item) {
@@ -295,7 +298,7 @@ public class SaleModal extends Modal<Sale> {
 
                         Attribute attribute = new Attribute(Nomenclature.TYPE);
                         attribute.setNumber(NomenclatureType.MYCOOK);
-                        domain.getMap().put("notAttributes", Collections.singleton(attribute));
+                        domain.put("notAttributes", Collections.singleton(attribute));
 
                         return domain;
                     }
@@ -343,6 +346,9 @@ public class SaleModal extends Modal<Sale> {
                 return container.isEnabled();
             }
         });
+
+        container.add(total = new FormGroupTextField<>("total", new DecimalAttributeModel(saleModel, Sale.TOTAL), BigDecimal.class));
+        container.add(payment = new FormGroupTextField<>("payment", DecimalAttributeModel.of(saleModel, Sale.INITIAL_PAYMENT), BigDecimal.class));
 
         addButton(saveButton = new IndicatingAjaxButton(Modal.BUTTON_MARKUP_ID, new ResourceModel("save")) {
             @Override
@@ -458,17 +464,13 @@ public class SaleModal extends Modal<Sale> {
         open(target);
     }
 
-    void edit(){
-
-    }
-
     void view(SaleItem saleItem, AjaxRequestTarget target){
         Sale sale = domainService.getDomain(Sale.class, saleItem.getParentId());
 
         saleModel.setObject(sale);
 
         lastName.setObjectId(sale.getBuyerLastName());
-        firstName.setObjectId(sale.getBuyerFirstName());;
+        firstName.setObjectId(sale.getBuyerFirstName());
         middleName.setObjectId(sale.getBuyerMiddleName());
 
         List<SaleItem> saleItems = domainService.getDomains(SaleItem.class, FilterWrapper.of((SaleItem) new SaleItem()
