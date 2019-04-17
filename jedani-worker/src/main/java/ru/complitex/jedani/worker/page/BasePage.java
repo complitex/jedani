@@ -45,6 +45,7 @@ import ru.complitex.jedani.worker.page.catalog.CurrencyListPage;
 import ru.complitex.jedani.worker.page.catalog.ExchangeRateListPage;
 import ru.complitex.jedani.worker.page.catalog.MkStatusListPage;
 import ru.complitex.jedani.worker.page.catalog.PositionListPage;
+import ru.complitex.jedani.worker.page.price.PriceListPage;
 import ru.complitex.jedani.worker.page.promotion.PromotionListPage;
 import ru.complitex.jedani.worker.page.resource.*;
 import ru.complitex.jedani.worker.page.sale.SaleListPage;
@@ -235,6 +236,7 @@ public class BasePage extends WebPage{
         sales.add(new WebMarkupContainer("link").add(newBehaviorLink()));
         sidebar.add(sales);
 
+        sales.add(new MenuLink("price", PriceListPage.class).setVisible(isAdmin() || isStructureAdmin()));
         sales.add(new MenuLink("sale", SaleListPage.class));
 
         sidebar.visitChildren(MenuLink.class, (IVisitor<MenuLink, IVisit>) (m, v) -> {

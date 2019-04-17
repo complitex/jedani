@@ -1,6 +1,7 @@
 package ru.complitex.domain.model;
 
 import org.apache.wicket.model.IModel;
+import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Domain;
 
 import java.math.BigDecimal;
@@ -11,9 +12,11 @@ import java.math.BigDecimal;
  */
 public class DecimalAttributeModel implements IModel<BigDecimal> {
     private Domain domain;
+    private IModel<? extends Domain> domainModel;
+
     private Long entityAttributeId;
 
-    private IModel<? extends Domain> domainModel;
+    private Attribute attribute;
 
     public DecimalAttributeModel(Domain domain, Long entityAttributeId) {
         this.entityAttributeId = entityAttributeId;
@@ -25,10 +28,16 @@ public class DecimalAttributeModel implements IModel<BigDecimal> {
         this.domainModel = domainModel;
     }
 
+    public DecimalAttributeModel(Attribute attribute){
+        this.attribute = attribute;
+    }
+
     @Override
     public BigDecimal getObject() {
         String s = domainModel != null
                 ? domainModel.getObject().getText(entityAttributeId)
+                : attribute != null
+                ? attribute.getText()
                 : domain.getText(entityAttributeId);
 
         return s != null ? new BigDecimal(s) : null;
@@ -36,14 +45,22 @@ public class DecimalAttributeModel implements IModel<BigDecimal> {
 
     @Override
     public void setObject(BigDecimal object) {
+        String text = object != null ? object.toPlainString() : null;
+
         if (domainModel != null){
-            domainModel.getObject().setText(entityAttributeId, object.toPlainString());
-        }else{
-            domain.setText(entityAttributeId, object.toPlainString());
+            domainModel.getObject().setText(entityAttributeId, text);
+        }else if (domain != null){
+            domain.setText(entityAttributeId, text);
+        }else {
+            attribute.setText(text);
         }
     }
 
     public static DecimalAttributeModel of(IModel<? extends Domain> domainModel, Long entityAttributeId){
         return new DecimalAttributeModel(domainModel, entityAttributeId);
+    }
+
+    public static DecimalAttributeModel of(Attribute attribute){
+        return new DecimalAttributeModel(attribute);
     }
 }

@@ -5,6 +5,8 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxLink
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
 import de.agilecoders.wicket.core.markup.html.bootstrap.dialog.Modal;
+import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.DateTextField;
+import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.DateTextFieldConfig;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
@@ -15,6 +17,7 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.EmptyPanel;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
@@ -27,6 +30,7 @@ import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
+import ru.complitex.domain.model.DecimalAttributeModel;
 import ru.complitex.domain.model.TextAttributeModel;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
@@ -35,6 +39,7 @@ import ru.complitex.domain.util.Locales;
 import ru.complitex.jedani.worker.page.BasePage;
 
 import javax.inject.Inject;
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -115,11 +120,16 @@ public class DomainEditModal<T extends Domain<T>> extends Modal<T> {
                     switch (entityAttribute.getValueType()){
                         case TEXT:
                         case DECIMAL:
+                            input1 = new TextField<>("input1", DecimalAttributeModel.of(attribute), BigDecimal.class);
+
+                            break;
                         case ENTITY_VALUE:
                             input1 = new TextField<>("input1", new TextAttributeModel(attribute, entityAttribute.getStringType()));
                             break;
                         case DATE:
-                            input1 = new TextField<>("input1", new PropertyModel<>(attribute, "date"));
+                            input1 = new DateTextField("input1",
+                                    new PropertyModel<>(attribute, "date"),
+                                    new DateTextFieldConfig().withFormat("dd.MM.yyyy").withLanguage("ru").autoClose(true));
                             break;
                         case ENTITY:
                             EntityAttribute referenceEntityAttribute = attribute.getEntityAttribute()
@@ -143,6 +153,18 @@ public class DomainEditModal<T extends Domain<T>> extends Modal<T> {
 
                             break;
                     }
+                }
+
+                IModel<String> labelModel = Model.of(entityAttribute.getValue().getText());
+
+                if (input1 != null){
+                    input1.setLabel(labelModel);
+                }
+                if (input2 != null){
+                    input2.setLabel(labelModel);
+                }
+                if (component instanceof FormComponent){
+                    ((FormComponent)component).setLabel(labelModel);
                 }
 
                 group.add(input1 != null ? input1 : new EmptyPanel("input1").setVisible(false));
@@ -175,7 +197,7 @@ public class DomainEditModal<T extends Domain<T>> extends Modal<T> {
         }.setLabel(new ResourceModel("cancel")));
     }
 
-    protected DomainAutoComplete newParentComponent(String componentId, String parentEntityName,
+    protected Component newParentComponent(String componentId, String parentEntityName,
                                                     Long parentEntityAttributeId) {
         return new DomainAutoComplete(componentId, parentEntityName, parentEntityAttributeId,
                 new PropertyModel<>(getModel(), "parentId"));

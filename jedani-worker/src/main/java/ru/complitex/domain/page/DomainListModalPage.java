@@ -192,12 +192,23 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage{
                 protected Component getComponent(String componentId, Attribute attribute) {
                     return DomainListModalPage.this.getEditComponent(componentId, attribute);
                 }
+
+                @Override
+                protected Component newParentComponent(String componentId, String parentEntityName, Long parentEntityAttributeId) {
+                    return DomainListModalPage.this.newParentComponent(this, componentId,
+                            parentEntityName, parentEntityAttributeId);
+                }
             };
 
             editForm.add(domainEditModal);
         }else{
             editForm.add(new EmptyPanel("edit"));
         }
+    }
+
+    protected Component newParentComponent(DomainEditModal<T> domainEditModal, String componentId,
+                                           String parentEntityName, Long parentEntityAttributeId){
+        return domainEditModal.newParentComponent(componentId, parentEntityName, parentEntityAttributeId);
     }
 
     protected Component getEditComponent(String componentId, Attribute attribute) {

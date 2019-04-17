@@ -41,6 +41,7 @@ import ru.complitex.common.wicket.converter.BigDecimalConverter;
 import ru.complitex.jedani.worker.page.admin.ImportPage;
 import ru.complitex.jedani.worker.page.catalog.*;
 import ru.complitex.jedani.worker.page.login.LoginPage;
+import ru.complitex.jedani.worker.page.price.PriceListPage;
 import ru.complitex.jedani.worker.page.promotion.PromotionListPage;
 import ru.complitex.jedani.worker.page.resource.*;
 import ru.complitex.jedani.worker.page.sale.SaleListPage;
@@ -112,6 +113,7 @@ public class JedaniWebApplication extends WebApplication{
         mountPage("currencies", CurrencyListPage.class);
         mountPage("exchange_rates", ExchangeRateListPage.class);
         mountPage("exchange_rate/${id}", ExchangeRatePage.class);
+        mountPage("prices", PriceListPage.class);
     }
 
     private void configureMountResource(){
