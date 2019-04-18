@@ -44,6 +44,9 @@ public class User implements Serializable{
 
     public void setRoles(List<String> roles){
         userGroups.removeIf(userGroup -> !roles.contains(userGroup.getName()));
+
+        userGroups.forEach(userGroup -> userGroup.setLogin(getLogin()));
+
         roles.forEach(this::addRole);
     }
 

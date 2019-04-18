@@ -232,6 +232,7 @@ public class BasePage extends WebPage{
         promotions.add(new MenuLink("promotion", PromotionListPage.class));
 
         WebMarkupContainer sales = new WebMarkupContainer("sales");
+        sales.setVisible(isParticipant());
         sales.add(newBehavior());
         sales.add(new WebMarkupContainer("link").add(newBehaviorLink()));
         sidebar.add(sales);
@@ -353,10 +354,14 @@ public class BasePage extends WebPage{
     }
 
     protected Storage getCurrentStorage(){
+        if (!isParticipant()){
+            return null;
+        }
+
         List<Storage> storages = storageMapper.getStorages(FilterWrapper.of((Storage) new Storage()
                 .setParentId(getCurrentWorker().getObjectId())));
 
-        if (storages.isEmpty() && !isParticipant()){
+        if (storages.isEmpty()){
             return storageService.createVirtualStorage(getCurrentWorker().getObjectId());
         }
 
