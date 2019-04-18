@@ -247,6 +247,11 @@ public class WorkerPage extends BasePage {
             public boolean isRequired() {
                 return worker.isParticipant();
             }
+
+            @Override
+            public boolean isEnabled() {
+                return isEditEnabled();
+            }
         };
 
         if (worker.getObjectId() == null) {
@@ -266,6 +271,11 @@ public class WorkerPage extends BasePage {
             public boolean isVisible() {
                 return worker.isParticipant();
             }
+
+            @Override
+            public boolean isEnabled() {
+                return isEditEnabled();
+            }
         });
         form.add(new DateTextFieldFormGroup("birthday", new DateAttributeModel(worker, Worker.BIRTHDAY)));
         form.add(new AttributeInputListFormGroup("phone", Model.of(worker.getOrCreateAttribute(Worker.PHONE))){
@@ -282,6 +292,11 @@ public class WorkerPage extends BasePage {
             @Override
             public boolean isRequired() {
                 return worker.isParticipant();
+            }
+
+            @Override
+            public boolean isEnabled() {
+                return isEditEnabled();
             }
         });
         form.add(city = new AttributeSelectListFormGroup("city", Model.of(worker.getOrCreateAttribute(Worker.CITIES)),
@@ -304,6 +319,11 @@ public class WorkerPage extends BasePage {
             @Override
             public boolean isRequired() {
                 return worker.isParticipant();
+            }
+
+            @Override
+            public boolean isEnabled() {
+                return isEditEnabled();
             }
         });
         region.onChange(t -> t.add(city));
@@ -356,6 +376,11 @@ public class WorkerPage extends BasePage {
             public boolean isRequired() {
                 return worker.isParticipant();
             }
+
+            @Override
+            public boolean isEnabled() {
+                return isEditEnabled();
+            }
         }.onUpdate(t -> t.add(get("form:registrationDate"))));
 
         //Manager
@@ -363,6 +388,11 @@ public class WorkerPage extends BasePage {
             @Override
             public boolean isVisible() {
                 return worker.isParticipant();
+            }
+
+            @Override
+            public boolean isEnabled() {
+                return isEditEnabled();
             }
         };
         form.add(managerContainer);
@@ -397,7 +427,7 @@ public class WorkerPage extends BasePage {
         WebMarkupContainer structure = new WebMarkupContainer("structure"){
             @Override
             public boolean isVisible() {
-                return worker.getObjectId() != null && worker.isParticipant();
+                return worker.getObjectId() != null && worker.isParticipant() && dataProvider.size() > 0;
             }
         };
 
@@ -408,7 +438,7 @@ public class WorkerPage extends BasePage {
         WebMarkupContainer historyHeader = new WebMarkupContainer("historyHeader"){
             @Override
             public boolean isVisible() {
-                return worker.getObjectId() != null;
+                return worker.getObjectId() != null && (isAdmin() || isStructureAdmin());
             }
         };
         form.add(historyHeader);
@@ -769,5 +799,13 @@ public class WorkerPage extends BasePage {
                         .withReference(CityType.ENTITY_NAME, CityType.SHORT_NAME)));
 
         return list;
+    }
+
+    private boolean isCurrentWorkerPage(){
+        return Objects.equals(worker.getObjectId(), getCurrentWorker().getId());
+    }
+
+    private boolean isEditEnabled(){
+        return isAdmin() || isStructureAdmin() || (isUser() && !isCurrentWorkerPage());
     }
 }

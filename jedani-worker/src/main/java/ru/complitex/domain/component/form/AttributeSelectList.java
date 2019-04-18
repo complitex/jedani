@@ -122,6 +122,11 @@ public class AttributeSelectList extends FormComponentPanel<Attribute> {
 
                 onChange(target);
             }
+
+            @Override
+            public boolean isVisible() {
+                return AttributeSelectList.this.isEnabledInHierarchy();
+            }
         });
     }
 
