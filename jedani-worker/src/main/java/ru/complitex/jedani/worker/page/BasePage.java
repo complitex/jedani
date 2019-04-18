@@ -20,6 +20,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.ListItem;
+import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.IRequestParameters;
@@ -38,6 +39,7 @@ import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.util.Attributes;
 import ru.complitex.jedani.worker.entity.Storage;
 import ru.complitex.jedani.worker.entity.Worker;
+import ru.complitex.jedani.worker.entity.WorkerType;
 import ru.complitex.jedani.worker.mapper.StorageMapper;
 import ru.complitex.jedani.worker.page.admin.ImportPage;
 import ru.complitex.jedani.worker.page.admin.SettingPage;
@@ -143,13 +145,17 @@ public class BasePage extends WebPage{
         sidebar.add(new MenuLink("worker", WorkerPage.class));
 
         WebMarkupContainer userStorages = new WebMarkupContainer("userStorages");
-        userStorages.setVisible(isUser() && !isAdmin() && !isParticipant());
+        userStorages.setVisible(isUser() && !isAdmin() && isParticipant());
         userStorages.add(newBehavior());
         userStorages.add(new WebMarkupContainer("link").add(newBehaviorLink()));
         sidebar.add(userStorages);
 
-        userStorages.add(new MenuLink("storage", StoragePage.class,
-                new PageParameters().add("id", getCurrentStorage().getObjectId())));
+        if (getCurrentStorage() != null) {
+            userStorages.add(new MenuLink("storage", StoragePage.class,
+                    new PageParameters().add("id", getCurrentStorage().getObjectId())));
+        }else{
+            userStorages.add(new EmptyPanel("storage"));
+        }
 
         userStorages.add(new BootstrapListView<Storage>("storages", new LoadableDetachableModel<List<Storage>>() {
             @Override
@@ -335,7 +341,8 @@ public class BasePage extends WebPage{
     }
 
     protected boolean isParticipant(){
-        return Objects.equals(getCurrentWorker().getNumber(Worker.TYPE), 1L);
+        return getCurrentWorker().getNumber(Worker.TYPE) == null ||
+                Objects.equals(getCurrentWorker().getNumber(Worker.TYPE), WorkerType.PARTICIPANT);
     }
 
     public User getCurrentUser() {
