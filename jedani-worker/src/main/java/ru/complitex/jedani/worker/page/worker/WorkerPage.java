@@ -691,7 +691,7 @@ public class WorkerPage extends BasePage {
                 }else{
                     PageParameters pageParameters = new PageParameters();
 
-                    if (manager != null && manager.getObjectId() != null){
+                    if (manager != null && manager.getObjectId() != null && !isCurrentWorkerPage()){
                         pageParameters.add("id", manager.getObjectId());
                     }
 
