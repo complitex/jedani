@@ -42,4 +42,8 @@ public class DateAttributeModel implements IModel<Date> {
             domain.setDate(entityAttributeId, object);
         }
     }
+
+    public static DateAttributeModel of(IModel<? extends Domain> domainModel, Long entityAttributeId){
+        return new DateAttributeModel(domainModel, entityAttributeId);
+    }
 }

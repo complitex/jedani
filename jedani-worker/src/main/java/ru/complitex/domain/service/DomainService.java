@@ -74,6 +74,16 @@ public class DomainService implements Serializable {
         }
     }
 
+    @Transactional
+    public void insertDomain(Domain domain){
+        domainMapper.insertDomain(domain);
+    }
+
+    @Transactional
+    public void updateDomain(Domain domain){
+        domainMapper.updateDomain(domain);
+    }
+
     public Long getNumber(String entityName, Long objectId, Long entityAttributeId){
         return attributeMapper.getNumber(entityName, objectId, entityAttributeId);
     }

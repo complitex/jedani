@@ -383,19 +383,19 @@
         select '${object.entityName}' entity_name, d.*,
         <include refid="selectDomainsSelect"/>
         from (
-          select (dd.object_id) object_id
+          select (dd.d_id) dd_id
           from (
-            select d.object_id object_id
+            select d.id d_id
             <include refid="selectDomainsFrom"/>
             <include refid="selectDomainsFromFilter"/>
             <include refid="selectDomainsFromSort"/>
             <include refid="selectDomainsWhere"/>
-            group by d.object_id
+            group by d.id
             <include refid="selectDomainsOrderSort"/>
           ) dd
           ${limit}
         ) o
-        left join ${object.entityName} d on d.object_id = o.object_id
+        left join ${object.entityName} d on d.id = o.dd_id
         left join ${object.entityName}_attribute a on a.object_id = d.object_id and a.status = 1
         left join ${object.entityName}_value v on v.attribute_id = a.id
         <include refid="selectDomainsFromSort"/>

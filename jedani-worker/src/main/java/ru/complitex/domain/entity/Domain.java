@@ -45,7 +45,7 @@ public class Domain<T extends Domain<T>> implements Serializable{
         copy(domain, false);
     }
 
-    public void copy(Domain<T> domain, boolean wrapAttributes){
+    public void copy(Domain<T> domain, boolean initAttributes){
        id = domain.id;
        objectId = domain.objectId;
        parentId = domain.parentId;
@@ -56,7 +56,7 @@ public class Domain<T extends Domain<T>> implements Serializable{
        permissionId = domain.permissionId;
        entityName = domain.entityName;
 
-        if (wrapAttributes) {
+        if (initAttributes) {
             domain.attributes.forEach(a -> attributes.add(new Attribute(a)));
         }else{
             attributes = domain.attributes;

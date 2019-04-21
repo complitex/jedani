@@ -30,7 +30,11 @@ public class DomainMapper extends BaseMapper {
 
     @Transactional
     public void insertDomain(Domain<?> domain){
-        domain.setObjectId(sequenceMapper.nextId(domain.getEntityName()));
+        domain.setId(null);
+
+        if (domain.getObjectId() == null) {
+            domain.setObjectId(sequenceMapper.nextId(domain.getEntityName()));
+        }
 
         if (domain.getStartDate() == null){
             domain.setStartDate(new Date());

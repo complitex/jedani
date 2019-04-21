@@ -1,10 +1,7 @@
 package ru.complitex.jedani.worker.page.price;
 
-import org.apache.wicket.Component;
-import ru.complitex.domain.model.DomainParentModel;
-import ru.complitex.domain.page.DomainEditModal;
+import ru.complitex.domain.page.AbstractDomainEditModal;
 import ru.complitex.domain.page.DomainListModalPage;
-import ru.complitex.jedani.worker.component.NomenclatureAutoComplete;
 import ru.complitex.jedani.worker.entity.Nomenclature;
 import ru.complitex.jedani.worker.entity.Price;
 
@@ -18,8 +15,7 @@ public class PriceListPage extends DomainListModalPage<Price> {
     }
 
     @Override
-    protected Component newParentComponent(DomainEditModal<Price> domainEditModal, String componentId,
-                                           String parentEntityName, Long parentEntityAttributeId) {
-        return new NomenclatureAutoComplete(componentId, DomainParentModel.of(domainEditModal.getModel()));
+    protected AbstractDomainEditModal<Price> newDomainEditModal(String componentId) {
+        return new PriceEditModal(componentId, getCurrentUser().getId(), t -> t.add(getContainer()));
     }
 }

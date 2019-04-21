@@ -46,6 +46,8 @@ import java.util.Optional;
 public class DomainListModalPage<T extends Domain<T>> extends BasePage{
     public static final String CURRENT_PAGE_ATTRIBUTE = "_PAGE";
 
+    public static final String DOMAIN_EDIT_MODAL_ID = "edit";
+
     @Inject
     private EntityService entityService;
 
@@ -64,10 +66,15 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage{
 
     private Label titleLabel;
 
-    private DomainEditModal<T> domainEditModal;
+    private AbstractDomainEditModal<T> domainEditModal;
+
+    private String parentEntityName;
+    private Long parentEntityAttributeId;
 
     public DomainListModalPage(Class<T> domainClass, String parentEntityName, Long parentEntityAttributeId) {
         this.domainClass = domainClass;
+        this.parentEntityName = parentEntityName;
+        this.parentEntityAttributeId = parentEntityAttributeId;
 
         T domainInstance = Domains.newObject(domainClass);
 
@@ -150,7 +157,7 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage{
             });
         }
 
-        table = new FilterDataTable<T>("table", columns, dataProvider, form, 15, "domainGridPage" + entity.getName()){
+        table = new FilterDataTable<T>("table", columns, dataProvider, form, 15, "domainListModalPage" + entity.getName()){
             @Override
             protected Item<T> newRowItem(String id, int index, IModel<T> model) {
                 Item<T> item = super.newRowItem(id, index, model);
@@ -180,25 +187,7 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage{
         container.add(editForm);
 
         if (isEditEnabled()) {
-            domainEditModal = new DomainEditModal<T>("edit", domainClass, parentEntityName,
-                    parentEntityAttributeId, getEditEntityAttributes(entityService.getEntity(domainInstance.getEntityName())),
-                    t -> t.add(feedback, table)){
-                @Override
-                protected boolean validate(Domain<T> domain) {
-                    return DomainListModalPage.this.validate(domain);
-                }
-
-                @Override
-                protected Component getComponent(String componentId, Attribute attribute) {
-                    return DomainListModalPage.this.getEditComponent(componentId, attribute);
-                }
-
-                @Override
-                protected Component newParentComponent(String componentId, String parentEntityName, Long parentEntityAttributeId) {
-                    return DomainListModalPage.this.newParentComponent(this, componentId,
-                            parentEntityName, parentEntityAttributeId);
-                }
-            };
+            domainEditModal = newDomainEditModal(DOMAIN_EDIT_MODAL_ID);
 
             editForm.add(domainEditModal);
         }else{
@@ -206,9 +195,33 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage{
         }
     }
 
-    protected Component newParentComponent(DomainEditModal<T> domainEditModal, String componentId,
-                                           String parentEntityName, Long parentEntityAttributeId){
-        return domainEditModal.newParentComponent(componentId, parentEntityName, parentEntityAttributeId);
+    public DomainListModalPage(Class<T> domainInstance) {
+        this(domainInstance, null, null);
+    }
+
+    protected AbstractDomainEditModal<T> newDomainEditModal(String componentId) {
+        return new DomainEditModal<T>(componentId, domainClass, parentEntityName,
+                parentEntityAttributeId, getEditEntityAttributes(entityService.getEntity(Domains.getEntityName(domainClass))),
+                t -> t.add(feedback, table)){
+            @Override
+            protected boolean validate(Domain<T> domain) {
+                return DomainListModalPage.this.validate(domain);
+            }
+
+            @Override
+            protected Component getComponent(String componentId, Attribute attribute) {
+                return DomainListModalPage.this.getEditComponent(componentId, attribute);
+            }
+
+            @Override
+            protected Component newParentComponent(String componentId) {
+                return DomainListModalPage.this.newParentComponent(this, componentId);
+            }
+        };
+    }
+
+    protected Component newParentComponent(DomainEditModal<T> domainEditModal, String componentId){
+        return domainEditModal.newParentComponent(componentId);
     }
 
     protected Component getEditComponent(String componentId, Attribute attribute) {
@@ -217,10 +230,6 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage{
 
     protected boolean validate(Domain<T> domain) {
         return true;
-    }
-
-    public DomainListModalPage(Class<T> domainInstance) {
-        this(domainInstance, null, null);
     }
 
     protected DomainColumn<T> newDomainColumn(EntityAttribute a) {

@@ -21,6 +21,8 @@ public class AttributeMapper extends BaseMapper {
 
     @Transactional
     public void insertAttribute(Attribute attribute, Date startDate){
+        attribute.setId(null);
+
         attribute.setStartDate(startDate);
 
         if (attribute.getStatus() == null){

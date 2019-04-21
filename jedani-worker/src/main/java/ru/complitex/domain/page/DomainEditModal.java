@@ -46,7 +46,7 @@ import java.util.List;
  * @author Anatoly A. Ivanov
  * 26.02.2019 18:17
  */
-public class DomainEditModal<T extends Domain<T>> extends Modal<T> {
+public class DomainEditModal<T extends Domain<T>> extends AbstractDomainEditModal<T> {
     private Logger log = LoggerFactory.getLogger(getClass());
 
     @Inject
@@ -65,9 +65,15 @@ public class DomainEditModal<T extends Domain<T>> extends Modal<T> {
 
     private SerializableConsumer<AjaxRequestTarget> onChange;
 
+    private String parentEntityName;
+    private Long parentEntityAttributeId;
+
     public DomainEditModal(String markupId, Class<T> domainClass, String parentEntityName, Long parentEntityAttributeId,
                            List<EntityAttribute> entityAttributes, SerializableConsumer<AjaxRequestTarget> onChange) {
         super(markupId, Model.of(Domains.newObject(domainClass)));
+
+        this.parentEntityName = parentEntityName;
+        this.parentEntityAttributeId = parentEntityAttributeId;
 
         this.onChange = onChange;
 
@@ -94,7 +100,7 @@ public class DomainEditModal<T extends Domain<T>> extends Modal<T> {
             FormGroupBorder parentGroup = new FormGroupBorder("parentGroup", Model.of(parentEntity.getValue().getText()));
             container.add(parentGroup);
 
-            parentGroup.add(newParentComponent("parent", parentEntityName, parentEntityAttributeId));
+            parentGroup.add(newParentComponent("parent"));
         }else{
             container.add(new EmptyPanel("parentGroup").setVisible(false));
         }
@@ -197,8 +203,7 @@ public class DomainEditModal<T extends Domain<T>> extends Modal<T> {
         }.setLabel(new ResourceModel("cancel")));
     }
 
-    protected Component newParentComponent(String componentId, String parentEntityName,
-                                                    Long parentEntityAttributeId) {
+    protected Component newParentComponent(String componentId) {
         return new DomainAutoComplete(componentId, parentEntityName, parentEntityAttributeId,
                 new PropertyModel<>(getModel(), "parentId"));
     }
@@ -211,6 +216,7 @@ public class DomainEditModal<T extends Domain<T>> extends Modal<T> {
         return null;
     }
 
+    @Override
     public void edit(T domain, AjaxRequestTarget target){
         setModelObject(domain);
 
