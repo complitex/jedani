@@ -6,7 +6,7 @@
 
     <resultMap id="attributeResultMap" type="ru.complitex.domain.entity.Attribute">
         <id column="id" property="id"/>
-        <result column="object_id" property="objectId"/>
+        <result column="domain_id" property="domainId"/>
         <result column="entity_attribute_id" property="entityAttributeId"/>
         <result column="text" property="text"/>
         <result column="number" property="number"/>
@@ -22,33 +22,38 @@
 
     <!--suppress SqlResolve -->
     <insert id="insertAttribute" parameterType="ru.complitex.domain.entity.Attribute" useGeneratedKeys="true" keyProperty="id">
-        insert into ${entityName}_attribute (object_id, entity_attribute_id, `text`, `number`, start_date, end_date,
-          `status`, `user_id`)
-            value (#{objectId}, #{entityAttributeId}, #{text}, #{number}, #{startDate}, #{endDate}, #{status}, #{userId})
+        insert into ${entityName}_attribute (domain_id, entity_attribute_id, `text`, `number`, start_date, end_date,
+            `status`, `user_id`)
+        value (#{domainId}, #{entityAttributeId}, #{text}, #{number}, #{startDate}, #{endDate},
+            #{status}, #{userId})
     </insert>
 
     <!--suppress SqlResolve -->
     <insert id="insertAttributeWithDate" parameterType="ru.complitex.domain.entity.Attribute" useGeneratedKeys="true" keyProperty="id">
-        insert into ${entityName}_attribute (object_id, entity_attribute_id, `text`, `number`, `date`, start_date,
-          end_date, `status`, user_id)
-        value (#{objectId}, #{entityAttributeId}, #{text}, #{number}, #{date}, #{startDate}, #{endDate}, #{status},
-          #{userId})
+        insert into ${entityName}_attribute (domain_id, entity_attribute_id, `text`, `number`, `date`, start_date,
+            end_date, `status`, user_id)
+        value (#{domainId}, #{entityAttributeId}, #{text}, #{number}, #{date}, #{startDate},
+            #{endDate}, #{status}, #{userId})
     </insert>
 
     <!--suppress SqlResolve -->
     <select id="selectAttributes" parameterType="map" resultMap="attributeResultMap">
-        select '${entityName}' entity_name, a.* from ${entityName}_attribute a where a.object_id = #{objectId} and a.status = 1
+        select '${entityName}' entity_name, a.* from ${entityName}_attribute a where a.domain_id = #{domainId} and a.status = 1
     </select>
 
     <!--suppress SqlResolve -->
     <select id="selectHistoryAttributes" parameterType="map" resultMap="attributeResultMap">
-        select '${entityName}' entity_name, a.* from ${entityName}_attribute a where a.object_id = #{objectId}
+        select '${entityName}' entity_name, a.*  from ${entityName}_attribute a
+            left join ${entityName} d on a.domain_id = d.id
+        where d.object_id = #{objectId}
         <if test="entityAttributeId != null"> and a.entity_attribute_id = #{entityAttributeId}</if>
     </select>
 
     <!--suppress SqlResolve -->
     <select id="selectHistoryAttributesFilter" parameterType="ru.complitex.common.entity.FilterWrapper" resultMap="attributeResultMap">
-        select '${object.entityName}' entity_name, a.* from ${object.entityName}_attribute a where a.object_id = #{object.objectId}
+        select '${object.entityName}' entity_name, a.* from ${object.entityName}_attribute a
+            left join ${entityName} d on a.domain_id = d.id
+        where d.object_id = #{object.objectId}
         <if test="object.entityAttributeId != null"> and a.entity_attribute_id = #{object.entityAttributeId}</if>
         <if test="object.text != null"> and a.text like concat('%', #{object.text}, '%')</if>
         <if test="object.startDate != null"> and a.start_date = #{object.startDate}</if>
@@ -58,7 +63,9 @@
 
     <!--suppress SqlResolve -->
     <select id="selectHistoryAttributesCountFilter" parameterType="ru.complitex.common.entity.FilterWrapper" resultType="long">
-        select count(a.id) from ${object.entityName}_attribute a where a.object_id = #{object.objectId}
+        select count(a.id) from ${object.entityName}_attribute a
+            left join ${entityName} d on a.domain_id = d.id
+        where d.object_id = #{object.objectId}
         <if test="object.entityAttributeId != null"> and a.entity_attribute_id = #{object.entityAttributeId}</if>
         <if test="object.text != null"> and a.text like concat('%', #{object.text}, '%')</if>
         <if test="object.startDate != null"> and a.start_date = #{object.startDate}</if>
@@ -71,35 +78,35 @@
 
     <!--suppress SqlResolve -->
     <select id="selectAttributeNumber" parameterType="map" resultType="long">
-        select a.number from ${entityName} o
-          left join ${entityName}_attribute a on a.object_id = o.object_id
-        where o.status = 1 and o.object_id = #{objectId}
+        select a.number from ${entityName} d
+          left join ${entityName}_attribute a on a.domain_id = d.id
+        where d.status = 1 and d.object_id = #{objectId}
           and a.status = 1 and a.entity_attribute_id = #{entityAttributeId}
     </select>
 
     <!--suppress SqlResolve -->
     <select id="selectAttributeNumberValues" parameterType="map" resultType="long">
-       select v.number from ${entityName} o
-          left join ${entityName}_attribute a on a.object_id = o.object_id
+       select v.number from ${entityName} d
+          left join ${entityName}_attribute a on a.domain_id = d.id
           left join ${entityName}_value v on v.attribute_id = a.id
-        where o.status = 1 and o.object_id = #{objectId}
+        where d.status = 1 and d.object_id = #{objectId}
           and a.status = 1 and a.entity_attribute_id = #{entityAttributeId}
     </select>
 
     <!--suppress SqlResolve -->
     <select id="selectAttributeText" parameterType="map" resultType="string">
-        select a.text from ${entityName} o
-          left join ${entityName}_attribute a on a.object_id = o.object_id
-        where o.status = 1 and o.object_id = #{objectId}
+        select a.text from ${entityName} d
+          left join ${entityName}_attribute a on a.domain_id = d.id
+        where d.status = 1 and d.object_id = #{objectId}
           and a.status = 1 and a.entity_attribute_id = #{entityAttributeId}
     </select>
 
     <!--suppress SqlResolve -->
     <select id="selectAttributeTextValue" parameterType="map" resultType="string">
-        select v.text from ${entityName} o
-          left join ${entityName}_attribute a on a.object_id = o.object_id
+        select v.text from ${entityName} d
+          left join ${entityName}_attribute a on a.domain_id = d.id
           left join ${entityName}_value v on v.attribute_id = a.id
-        where o.status = 1 and o.object_id = #{objectId}
+        where d.status = 1 and d.object_id = #{objectId}
           and a.status = 1 and a.entity_attribute_id = #{entityAttributeId}
           and v.locale_id = 1
     </select>

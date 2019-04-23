@@ -13,18 +13,23 @@
             from storage_attribute sa
             left join storage_value sv on sa.id = sv.attribute_id
 
-            left join worker_attribute wa_id on wa_id.object_id = sv.number and wa_id.entity_attribute_id = 1 and wa_id.status = 1
+            left join worker w on w.object_id = sv.number and w.status = 1
 
-            left join worker_attribute wa_fn on wa_fn.object_id = sv.number and wa_fn.entity_attribute_id = 2 and wa_fn.status = 1
-            left join first_name_attribute fn_a on fn_a.object_id = wa_fn.number and fn_a.status = 1
+            left join worker_attribute wa_id on wa_id.domain_id = w.id and wa_id.entity_attribute_id = 1 and wa_id.status = 1
+
+            left join worker_attribute wa_fn on wa_fn.domain_id = w.id and wa_fn.entity_attribute_id = 2 and wa_fn.status = 1
+            left join first_name fn on fn.object_id = wa_fn.number and fn.status = 1
+            left join first_name_attribute fn_a on fn_a.domain_id = fn.id and fn_a.status = 1
             left join first_name_value fn_v on fn_a.id = fn_v.attribute_id
 
-            left join worker_attribute wa_mn on wa_mn.object_id = sv.number and wa_mn.entity_attribute_id = 3 and wa_mn.status = 1
-            left join middle_name_attribute mn_a on mn_a.object_id = wa_mn.number and mn_a.status = 1
+            left join worker_attribute wa_mn on wa_mn.domain_id = w.id and wa_mn.entity_attribute_id = 3 and wa_mn.status = 1
+            left join middle_name mn on mn.object_id = wa_mn.number and mn.status = 1
+            left join middle_name_attribute mn_a on mn_a.domain_id = mn.id and mn_a.status = 1
             left join middle_name_value mn_v on mn_a.id = mn_v.attribute_id
 
-            left join worker_attribute wa_ln on wa_ln.object_id = sv.number and wa_ln.entity_attribute_id = 4 and wa_ln.status = 1
-            left join last_name_attribute ln_a on ln_a.object_id = wa_ln.number and ln_a.status = 1
+            left join worker_attribute wa_ln on wa_ln.domain_id = w.id and wa_ln.entity_attribute_id = 4 and wa_ln.status = 1
+            left join last_name ln on ln.object_id = wa_ln.number and ln.status = 1
+            left join last_name_attribute ln_a on ln_a.domain_id = ln.id and ln_a.status = 1
             left join last_name_value ln_v on ln_a.id = ln_v.attribute_id
 
           where sa.object_id = d.object_id and sa.entity_attribute_id = 2 and sa.status = 1 limit 1
@@ -36,18 +41,23 @@
         (select concat(wa_id.text, ln_v.text, fn_v.text, mn_v.text) w_name
             from `storage` s
 
-            left join worker_attribute wa_id on wa_id.object_id = s.parent_id and wa_id.entity_attribute_id = 1 and wa_id.status = 1
+            left join worker w on w.object_id = s.parent_id and w.status = 1
 
-            left join worker_attribute wa_fn on wa_fn.object_id = s.parent_id and wa_fn.entity_attribute_id = 2 and wa_fn.status = 1
-            left join first_name_attribute fn_a on fn_a.object_id = wa_fn.number and fn_a.status = 1
+           left join worker_attribute wa_id on wa_id.domain_id = w.id and wa_id.entity_attribute_id = 1 and wa_id.status = 1
+
+            left join worker_attribute wa_fn on wa_fn.domain_id = w.id and wa_fn.entity_attribute_id = 2 and wa_fn.status = 1
+            left join first_name fn on fn.object_id = wa_fn.number and fn.status = 1
+            left join first_name_attribute fn_a on fn_a.domain_id = fn.id and fn_a.status = 1
             left join first_name_value fn_v on fn_a.id = fn_v.attribute_id
 
-            left join worker_attribute wa_mn on wa_mn.object_id = s.parent_id and wa_mn.entity_attribute_id = 3 and wa_mn.status = 1
-            left join middle_name_attribute mn_a on mn_a.object_id = wa_mn.number and mn_a.status = 1
+            left join worker_attribute wa_mn on wa_mn.domain_id = w.id and wa_mn.entity_attribute_id = 3 and wa_mn.status = 1
+            left join middle_name mn on mn.object_id = wa_mn.number and mn.status = 1
+            left join middle_name_attribute mn_a on mn_a.domain_id = mn.id and mn_a.status = 1
             left join middle_name_value mn_v on mn_a.id = mn_v.attribute_id
 
-            left join worker_attribute wa_ln on wa_ln.object_id = s.parent_id and wa_ln.entity_attribute_id = 4 and wa_ln.status = 1
-            left join last_name_attribute ln_a on ln_a.object_id = wa_ln.number and ln_a.status = 1
+            left join worker_attribute wa_ln on wa_ln.domain_id = w.id and wa_ln.entity_attribute_id = 4 and wa_ln.status = 1
+            left join last_name ln on ln.object_id = wa_ln.number and ln.status = 1
+            left join last_name_attribute ln_a on ln_a.domain_id = ln.id and ln_a.status = 1
             left join last_name_value ln_v on ln_a.id = ln_v.attribute_id
 
           where s.object_id = d.object_id and s.parent_id is not null limit 1
@@ -61,8 +71,8 @@
 
     <!--suppress SqlResolve -->
     <sql id="selectStoragesTransactionCount">
-        (select count(ta.object_id) from transaction_attribute ta where ta.number = d.object_id
-          and ta.entity_attribute_id in (6, 7) and ta.status = 1)
+        (select count(ta.id) from transaction_attribute ta
+            where ta.number = d.object_id and ta.entity_attribute_id in (6, 7) and ta.status = 1)
     </sql>
 
     <!--suppress SqlResolve -->
@@ -84,21 +94,21 @@
               d.parent_id = #{map.currentWorker}
               or exists(select sa.id from storage_attribute sa
                 left join storage_value sv on sv.attribute_id = sa.id and sa.entity_attribute_id = 2 and sa.status = 1
-                where sa.object_id = d.object_id and sv.number = #{map.currentWorker})
+                where sa.domain_id = d.id and sv.number = #{map.currentWorker})
               or
           </if>
 
           exists(select sa.id from storage_attribute sa
             left join city c on sa.entity_attribute_id = 1 and sa.status = 1 and c.object_id = sa.number
             left join city rc on c.parent_id = rc.parent_id
-            where sa.object_id = d.object_id and (c.object_id in (${map.cities}) or rc.object_id in (${map.cities})))
+            where sa.domain_id = d.id and (c.object_id in (${map.cities}) or rc.object_id in (${map.cities})))
         )
         </if>
         <if test="map.regions != null">
             and (
                 exists(select sa.id from storage_attribute sa
                     left join city c on sa.entity_attribute_id = 1 and sa.status = 1 and c.object_id = sa.number
-                where sa.object_id = d.object_id and c.parent_id in (${map.regions}))
+                where sa.domain_id = d.id and c.parent_id in (${map.regions}))
             )
         </if>
       <if test="map.workers != null">
@@ -140,23 +150,23 @@
           <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsSelect"/>,
           <include refid="selectStoragesSelect"/>
         from (
-          select dd.object_id object_id
+          select dd.d_id dd_id
         from (
-            select d.object_id object_id
+            select d.id d_id
                 <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFrom"/>
                 <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromFilter"/>
                 <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromSort"/>
                 <include refid="selectStoragesFrom"/>
                 <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsWhere"/>
                 <include refid="selectStoragesWhere"/>
-                group by d.object_id
+                group by d.id
                 <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsOrderSort"/>
                 <include refid="selectStoragesOrderSort"/>
             ) dd
             ${limit}
         ) o
-        left join `storage` d on d.object_id = o.object_id
-        left join storage_attribute a on a.object_id = d.object_id and a.status = 1
+        left join `storage` d on d.id = o.dd_id
+        left join storage_attribute a on a.domain_id = d.id and a.status = 1
         left join storage_value v on v.attribute_id = a.id
         <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromSort"/>
         group by d.id, a.id, v.id

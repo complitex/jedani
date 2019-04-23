@@ -6,9 +6,9 @@
     </resultMap>
 
     <sql id="selectTransactionsFrom">
-        left join transaction_attribute ta_s_from on ta_s_from.object_id = d.object_id
+        left join transaction_attribute ta_s_from on ta_s_from.domain_id = d.id
             and ta_s_from.entity_attribute_id = 6 and ta_s_from.status = 1
-        left join transaction_attribute ta_s_to on ta_s_to.object_id = d.object_id
+        left join transaction_attribute ta_s_to on ta_s_to.domain_id = d.id
             and ta_s_to.entity_attribute_id = 7 and ta_s_to.status = 1
     </sql>
 
@@ -17,18 +17,23 @@
        (select concat(wa_id.text, ln_v.text, fn_v.text, mn_v.text) w_name
             from transaction_attribute ta
 
-            left join worker_attribute wa_id on wa_id.object_id = ta.number and wa_id.entity_attribute_id = 1 and wa_id.status = 1
+            left join worker w on w.object_id = ta.number and w.status = 1
 
-            left join worker_attribute wa_fn on wa_fn.object_id = ta.number and wa_fn.entity_attribute_id = 2 and wa_fn.status = 1
-            left join first_name_attribute fn_a on fn_a.object_id = wa_fn.number and fn_a.status = 1
+            left join worker_attribute wa_id on wa_id.domain_id = w.id and wa_id.entity_attribute_id = 1 and wa_id.status = 1
+
+            left join worker_attribute wa_fn on wa_fn.domain_id = w.id and wa_fn.entity_attribute_id = 2 and wa_fn.status = 1
+            left join first_name fn_a on fn.object_id = wa_fn.number and fn.status = 1
+            left join first_name_attribute fn_a on fn_a.domain_id = fn.id and fn_a.status = 1
             left join first_name_value fn_v on fn_a.id = fn_v.attribute_id
 
-            left join worker_attribute wa_mn on wa_mn.object_id = ta.number and wa_mn.entity_attribute_id = 3 and wa_mn.status = 1
-            left join middle_name_attribute mn_a on mn_a.object_id = wa_mn.number and mn_a.status = 1
+            left join worker_attribute wa_mn on wa_mn.domain_id = w.id and wa_mn.entity_attribute_id = 3 and wa_mn.status = 1
+            left join middle_name mn on mn.object_id = wa_mn.number and mn.status = 1
+            left join middle_name_attribute mn_a on mn_a.domain_id = mn.id and mn_a.status = 1
             left join middle_name_value mn_v on mn_a.id = mn_v.attribute_id
 
-            left join worker_attribute wa_ln on wa_ln.object_id = ta.number and wa_ln.entity_attribute_id = 4 and wa_ln.status = 1
-            left join last_name_attribute ln_a on ln_a.object_id = wa_ln.number and ln_a.status = 1
+            left join worker_attribute wa_ln on wa_ln.domain_id = w.id and wa_ln.entity_attribute_id = 4 and wa_ln.status = 1
+            left join last_name ln on ln.object_id = wa_ln.number and ln.status = 1
+            left join last_name_attribute ln_a on ln_a.domain_id = ln.id and ln_a.status = 1
             left join last_name_value ln_v on ln_a.id = ln_v.attribute_id
 
           where ta.object_id = d.object_id and ta.entity_attribute_id = 8 and ta.status = 1
@@ -40,16 +45,19 @@
         (select concat(ln_v.text, fn_v.text, mn_v.text) c_name
             from `transaction` t
 
-            left join transaction_attribute ta_fn on ta_fn.object_id = t.object_id and ta_fn.entity_attribute_id = 9 and ta_fn.status = 1
-            left join first_name_attribute fn_a on fn_a.object_id = ta_fn.number and fn_a.status = 1
+            left join transaction_attribute ta_fn on ta_fn.domain_id = t.id and ta_fn.entity_attribute_id = 9 and ta_fn.status = 1
+            left join first_name fn on fn.object_id = ta_fn.number and fn.status = 1
+            left join first_name_attribute fn_a on fn_a.domain_id = fn.id and fn_a.status = 1
             left join first_name_value fn_v on fn_a.id = fn_v.attribute_id
 
-            left join transaction_attribute ta_mn on ta_mn.object_id = t.object_id and ta_mn.entity_attribute_id = 10 and ta_mn.status = 1
-            left join middle_name_attribute mn_a on mn_a.object_id = ta_mn.number and mn_a.status = 1
+            left join transaction_attribute ta_mn on ta_mn.domain_id = t.id and ta_mn.entity_attribute_id = 10 and ta_mn.status = 1
+            left join middle_name mn on mn.object_id = ta_mn.number and mn.status = 1
+            left join middle_name_attribute mn_a on mn_a.domain_id = mn.id and mn_a.status = 1
             left join middle_name_value mn_v on mn_a.id = mn_v.attribute_id
 
-            left join transaction_attribute ta_ln on ta_ln.object_id = t.object_id and ta_ln.entity_attribute_id = 11 and ta_ln.status = 1
-            left join last_name_attribute ln_a on ln_a.object_id = ta_ln.number and ln_a.status = 1
+            left join transaction_attribute ta_ln on ta_ln.domain_id = t.id and ta_ln.entity_attribute_id = 11 and ta_ln.status = 1
+            left join last_name ln on ln.object_id = ta_ln.number and ln.status = 1
+            left join last_name_attribute ln_a on ln_a.domain_id = ln.id and ln_a.status = 1
             left join last_name_value ln_v on ln_a.id = ln_v.attribute_id
 
           where t.object_id = d.object_id
@@ -74,16 +82,16 @@
          </if>
          <if test="map.receiving != null">
              and (exists(select ta.id from transaction_attribute ta
-                 left join transaction_attribute ta_tt on ta.object_id = ta_tt.object_id and ta_tt.status = 1
+                 left join transaction_attribute ta_tt on ta.domain_id = ta_tt.domain_id and ta_tt.status = 1
                      and ta_tt.entity_attribute_id = 4
-                 where ta.object_id = d.object_id and ta.status = 1 and ta.entity_attribute_id = 3
+                 where ta.domain_id = d.domain_id and ta.status = 1 and ta.entity_attribute_id = 3
                      and ta.number = 3 and ta_tt.number = 1 and d.end_date is null))
          </if>
          <if test="map.receivingGift != null">
              and (exists(select ta.id from transaction_attribute ta
-                 left join transaction_attribute ta_tt on ta.object_id = ta_tt.object_id and ta_tt.status = 1
+                 left join transaction_attribute ta_tt on ta.domain_id = ta_tt.domain_id and ta_tt.status = 1
                      and ta_tt.entity_attribute_id = 4
-                 where ta.object_id = d.object_id and ta.status = 1 and ta.entity_attribute_id = 3
+                 where ta.domain_id = d.domain_id and ta.status = 1 and ta.entity_attribute_id = 3
                      and ta.number = 3 and ta_tt.number = 2 and d.end_date is null))
          </if>
     </sql>
@@ -103,23 +111,23 @@
         select d.*, '${object.entityName}' entity_name,
           <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsSelect"/>
         from (
-          select dd.object_id object_id
+          select dd.d_id dd_id
         from (
-            select d.object_id object_id
+            select d.id d_id
                 <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFrom"/>
                 <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromFilter"/>
                 <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromSort"/>
                 <include refid="selectTransactionsFrom"/>
                 <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsWhere"/>
                 <include refid="selectTransactionsWhere"/>
-                group by d.object_id
+                group by d.id
                 <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsOrderSort"/>
                 <include refid="selectTransactionsOrderSort"/>
             ) dd
             ${limit}
         ) o
-        left join `transaction` d on d.object_id = o.object_id
-        left join transaction_attribute a on a.object_id = d.object_id and a.status = 1
+        left join `transaction` d on d.id = o.dd_id
+        left join transaction_attribute a on a.domain_id = d.id and a.status = 1
         left join transaction_value v on v.attribute_id = a.id
         <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromSort"/>
         group by d.id, a.id, v.id

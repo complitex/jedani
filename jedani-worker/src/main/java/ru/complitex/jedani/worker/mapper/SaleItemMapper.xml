@@ -8,7 +8,7 @@
     <sql id="selectSaleItemsWhere">
       <if test="map.sellerWorker != null">
           and exists(select s.id from sale s
-            left join sale_attribute sa on (sa.object_id = s.object_id and sa.status = 1)
+            left join sale_attribute sa on (sa.domain_id = s.id and sa.status = 1)
           where s.object_id = d.parent_id and s.status = 1 and sa.entity_attribute_id = 1 and sa.number = #{map.sellerWorker})
       </if>
     </sql>
@@ -18,21 +18,21 @@
         select d.*, '${object.entityName}' entity_name,
           <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsSelect"/>
         from (
-          select dd.object_id object_id
+          select dd.d_id dd_id
         from (
-            select d.object_id object_id
+            select d.id d_id
                 <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFrom"/>
                 <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromFilter"/>
                 <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromSort"/>
                 <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsWhere"/>
                 <include refid="selectSaleItemsWhere"/>
-                group by d.object_id
+                group by d.id
                 <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsOrderSort"/>
             ) dd
             ${limit}
         ) o
-        left join sale_item d on d.object_id = o.object_id
-        left join sale_item_attribute a on a.object_id = d.object_id and a.status = 1
+        left join sale_item d on d.id = o.dd_id
+        left join sale_item_attribute a on a.domain_id = d.id and a.status = 1
         left join sale_item_value v on v.attribute_id = a.id
         <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromSort"/>
         group by d.id, a.id, v.id

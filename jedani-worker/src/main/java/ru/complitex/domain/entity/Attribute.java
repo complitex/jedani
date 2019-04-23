@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
  */
 public class Attribute implements Serializable{
     private Long id;
-    private Long objectId;
+    private Long domainId;
     private Long entityAttributeId;
     private String text;
     private Long number;
@@ -28,6 +28,8 @@ public class Attribute implements Serializable{
 
     private EntityAttribute entityAttribute;
 
+    private Long objectId;
+
     public Attribute() {
     }
 
@@ -35,14 +37,12 @@ public class Attribute implements Serializable{
         this.entityAttributeId = entityAttributeId;
     }
 
-    public Attribute(String entityName, Long objectId){
+    public Attribute(String entityName){
         this.entityName = entityName;
-        this.objectId = objectId;
     }
 
-    public Attribute(String entityName, Long objectId, Long entityAttributeId){
+    public Attribute(String entityName, Long entityAttributeId){
         this.entityName = entityName;
-        this.objectId = objectId;
         this.entityAttributeId = entityAttributeId;
     }
 
@@ -52,7 +52,7 @@ public class Attribute implements Serializable{
 
     public void copy(Attribute attribute){
         id = attribute.id;
-        objectId = attribute.objectId;
+        domainId = attribute.domainId;
         entityAttributeId = attribute.entityAttributeId;
         text = attribute.text;
         number = attribute.number;
@@ -67,6 +67,7 @@ public class Attribute implements Serializable{
         attribute.values.forEach(v -> values.add(new Value(v)));
 
         entityAttribute = attribute.entityAttribute;
+        objectId = attribute.objectId;
     }
 
     public Value getValue(Long localeId){
@@ -133,6 +134,16 @@ public class Attribute implements Serializable{
         return values.stream().map(Value::getText).collect(Collectors.toList());
     }
 
+    public Attribute setObjectId(Long objectId){
+        this.objectId = objectId;
+
+        return this;
+    }
+
+    public Long getObjectId(){
+        return objectId;
+    }
+
     public Long getId() {
         return id;
     }
@@ -141,12 +152,12 @@ public class Attribute implements Serializable{
         this.id = id;
     }
 
-    public Long getObjectId() {
-        return objectId;
+    public Long getDomainId(){
+        return domainId;
     }
 
-    public void setObjectId(Long objectId) {
-        this.objectId = objectId;
+    public void setDomainId(Long domainId) {
+        this.domainId = domainId;
     }
 
     public Long getEntityAttributeId() {

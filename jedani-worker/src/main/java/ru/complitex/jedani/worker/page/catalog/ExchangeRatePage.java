@@ -77,7 +77,7 @@ public class ExchangeRatePage extends BasePage {
         add(new FormGroupTextField<>("code", Model.of(exchangeRate.getCode())));
 
         FilterWrapper<Attribute> filterWrapper = FilterWrapper.of(new Attribute(exchangeRate.getEntityName(),
-                exchangeRate.getObjectId(), ExchangeRate.VALUE));
+                ExchangeRate.VALUE).setObjectId(exchangeRate.getObjectId()));
         filterWrapper.setSortProperty(new SortProperty("start_date"));
 
         DataProvider<Attribute> dataProvider = new DataProvider<Attribute>(filterWrapper) {

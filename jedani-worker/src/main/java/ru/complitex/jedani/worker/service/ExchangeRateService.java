@@ -77,7 +77,7 @@ public class ExchangeRateService implements Serializable {
                 Attribute a = new Attribute();
 
                 a.setEntityName(exchangeRate.getEntityName());
-                a.setObjectId(exchangeRate.getObjectId());
+                a.setDomainId(exchangeRate.getId());
                 a.setEntityAttributeId(ExchangeRate.VALUE);
                 a.setStartDate(startDate);
                 a.setEndDate(endDate);

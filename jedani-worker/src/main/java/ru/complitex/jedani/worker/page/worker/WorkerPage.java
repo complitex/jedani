@@ -510,14 +510,14 @@ public class WorkerPage extends BasePage {
         SortableDataProvider<Attribute, String> historyDataProvider = new SortableDataProvider<Attribute, String>() {
             @Override
             public Iterator<? extends Attribute> iterator(long first, long count) {
-                return attributeMapper.getHistoryAttributes(FilterWrapper.of(new Attribute(Worker.ENTITY_NAME,
-                        worker.getObjectId()), first, count)).iterator();
+                return attributeMapper.getHistoryAttributes(FilterWrapper.of(new Attribute(Worker.ENTITY_NAME)
+                        .setObjectId(worker.getObjectId()), first, count)).iterator();
             }
 
             @Override
             public long size() {
-                return attributeMapper.getHistoryAttributesCount(FilterWrapper.of(new Attribute(Worker.ENTITY_NAME,
-                        worker.getObjectId())));
+                return attributeMapper.getHistoryAttributesCount(FilterWrapper.of(new Attribute(Worker.ENTITY_NAME)
+                        .setObjectId(worker.getObjectId())));
             }
 
             @Override

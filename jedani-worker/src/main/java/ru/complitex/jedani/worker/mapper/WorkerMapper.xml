@@ -14,8 +14,9 @@
     </select>
 
     <select id="selectIsExistJId" resultType="boolean" parameterType="map">
-        select count(*) > 0 from worker_attribute where entity_attribute_id = 1 and `text` = #{jId} and `status` = 1
-        <if test="objectId != null">and object_id != #{objectId}</if>
+        select count(*) > 0 from worker_attribute wa left join worker w on wa.domain_id = w.id
+            where wa.entity_attribute_id = 1 and wa.`text` = #{jId} and wa.`status` = 1
+        <if test="objectId != null">and w.object_id = #{objectId}</if>
     </select>
 
     <select id="selectSubWorkersCount" parameterType="long" resultType="int">
@@ -78,9 +79,9 @@
               sub_worker_count,
             <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsSelect"/>
         from (
-            select (dd.object_id) object_id
+            select (dd.d_id) dd_id
             from (
-                select d.object_id object_id
+                select d.id d_id
                 <include refid="selectWorkersSelectSort"/>
                 <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFrom"/>
                 <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromFilter"/>
@@ -89,14 +90,14 @@
                 <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsWhere"/>
                 <include refid="selectWorkersWhereNode"/>
                 <include refid="selectWorkersWhereLogin"/>
-                group by d.object_id
+                group by d.id
                 <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsOrderSort"/>
                 <include refid="selectWorkersOrderSort"/>
             ) dd
             ${limit}
         ) o
-        left join worker d on d.object_id = o.object_id
-        left join worker_attribute a on a.object_id = d.object_id and a.status = 1
+        left join worker d on d.id = o.dd_id
+        left join worker_attribute a on a.domain_id = d.id and a.status = 1
         left join worker_value v on v.attribute_id = a.id
         <include refid="selectWorkersFromLogin"/>
         <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromSort"/>
@@ -122,7 +123,7 @@
 
     <select id="selectWorkersByString" parameterType="string" resultMap="workerResultMap">
         select 'worker' entity_name, w.*,
-            a.id a_id, a.object_id a_object_id, a.entity_attribute_id a_entity_attribute_id, a.text a_text,
+            a.id a_id, a.domain_id a_domain_id, a.entity_attribute_id a_entity_attribute_id, a.text a_text,
             a.number a_number, a.date a_date, a.start_date a_start_date, a.end_date a_end_date, a.status a_status,
             a.user_id a_user_id, 'worker' a_entity_name, v.id v_id, v.attribute_id v_attribute_id,
             v.locale_id v_locale_id, v.text v_text, v.number v_number
@@ -131,18 +132,21 @@
           (select distinct (w.object_id) object_id
               from worker w
 
-              left join worker_attribute wa_jid on w.object_id = wa_jid.object_id and wa_jid.entity_attribute_id = 1 and wa_jid.status = 1
+              left join worker_attribute wa_jid on w.id = wa_jid.domain_id and wa_jid.entity_attribute_id = 1 and wa_jid.status = 1
 
-              left join worker_attribute wa_fn on w.object_id = wa_fn.object_id and wa_fn.entity_attribute_id = 2 and wa_fn.status = 1
-              left join first_name_attribute fn_a on fn_a.object_id = wa_fn.number and fn_a.entity_attribute_id = 1 and fn_a.status = 1
+              left join worker_attribute wa_fn on w.id = wa_fn.domain_id and wa_fn.entity_attribute_id = 2 and wa_fn.status = 1
+              left join first_name fn on fn.object_id = wa_fn.number and fn.status = 1
+              left join first_name_attribute fn_a on fn_a.domain_id = fn.id and fn_a.entity_attribute_id = 1 and fn_a.status = 1
               left join first_name_value fn_v on fn_v.attribute_id = fn_a.id
 
               left join worker_attribute wa_mn on w.object_id = wa_mn.object_id and wa_mn.entity_attribute_id = 3 and wa_mn.status = 1
-              left join middle_name_attribute mn_a on mn_a.object_id = wa_mn.number and mn_a.entity_attribute_id = 1 and mn_a.status = 1
+              left join middle_name mn on mn.object_id = wa_mn.number and mn.status = 1
+              left join middle_name_attribute mn_a on mn_a.domain_id = mn.id and mn_a.entity_attribute_id = 1 and mn_a.status = 1
               left join middle_name_value mn_v on mn_v.attribute_id = mn_a.id
 
               left join worker_attribute wa_ln on w.object_id = wa_ln.object_id and wa_ln.entity_attribute_id = 4
-              left join last_name_attribute ln_a on ln_a.object_id = wa_ln.number and ln_a.entity_attribute_id = 1 and ln_a.status = 1
+              left join last_name ln on ln.object_id = wa_ln.number and ln.status = 1
+              left join last_name_attribute ln_a on ln_a.domain_id = ln.id and ln_a.entity_attribute_id = 1 and ln_a.status = 1
               left join last_name_value ln_v on ln_v.attribute_id = ln_a.id
 
               where
@@ -154,7 +158,7 @@
               limit 10
           ) ww
           left join worker w on w.object_id = ww.object_id
-          left join worker_attribute a on a.object_id = w.object_id
+          left join worker_attribute a on a.domain_id = w.id
           left join worker_value v on v.attribute_id = a.id
     </select>
 
