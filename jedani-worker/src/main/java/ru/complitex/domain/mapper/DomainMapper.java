@@ -100,7 +100,9 @@ public class DomainMapper extends BaseMapper {
                 if (update){
                     attributeMapper.archiveAttribute(dbAttribute, date);
 
-                    attributeMapper.insertAttribute(a, date);
+                    if (!a.isEmpty()) {
+                        attributeMapper.insertAttribute(a, date);
+                    }
                 }
             }
         });
