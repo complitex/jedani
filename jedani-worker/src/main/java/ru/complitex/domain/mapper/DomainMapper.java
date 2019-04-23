@@ -113,7 +113,7 @@ public class DomainMapper extends BaseMapper {
             }
         });
 
-        sqlSession().update("updateDomain", domain);
+        sqlSession().update("updateDomain", domain); //todo change parent log
     }
 
     public Boolean hasDomain(String entityName, Long entityAttributeId, String text){

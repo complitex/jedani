@@ -124,11 +124,11 @@ public class DomainEditModal<T extends Domain<T>> extends AbstractDomainEditModa
 
                 if (component == null) {
                     switch (entityAttribute.getValueType()){
-                        case TEXT:
                         case DECIMAL:
                             input1 = new TextField<>("input1", DecimalAttributeModel.of(attribute), BigDecimal.class);
 
                             break;
+                        case TEXT:
                         case ENTITY_VALUE:
                             input1 = new TextField<>("input1", new TextAttributeModel(attribute, entityAttribute.getStringType()));
                             break;

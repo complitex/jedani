@@ -1,5 +1,6 @@
 package ru.complitex.domain.util;
 
+import org.apache.commons.text.WordUtils;
 import ru.complitex.domain.entity.EntityAttribute;
 
 /**
@@ -27,18 +28,6 @@ public class Attributes {
     }
 
     public static String capitalize(String text){
-        if (text == null || text.isEmpty()){
-            return text;
-        }
-
-        String[] arr = text.toLowerCase().split(" ");
-        StringBuilder sb = new StringBuilder();
-
-        for (String s : arr) {
-            sb.append(Character.toUpperCase(s.charAt(0)))
-                    .append(s.substring(1)).append(" ");
-        }
-
-        return sb.toString().trim();
+        return WordUtils.capitalizeFully(text);
     }
 }

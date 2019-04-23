@@ -73,6 +73,8 @@ public class TextAttributeModel implements IModel<String> {
             case LOWER_CASE:
                 return StringUtils.lowerCase(text);
             case UPPER_CASE:
+                return StringUtils.upperCase(text);
+            case CAPITALIZE:
                 return Attributes.capitalize(text);
         }
 
