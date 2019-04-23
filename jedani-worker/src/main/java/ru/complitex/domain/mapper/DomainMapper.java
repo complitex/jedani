@@ -20,9 +20,6 @@ import java.util.Objects;
  */
 public class DomainMapper extends BaseMapper {
     @Inject
-    private SequenceMapper sequenceMapper;
-
-    @Inject
     private AttributeMapper attributeMapper;
 
     @Inject
@@ -46,11 +43,13 @@ public class DomainMapper extends BaseMapper {
         sqlSession().update("updateDomainObjectId", domain);
 
         domain.getAttributes().forEach(a -> {
-            a.setEntityName(domain.getEntityName());
-            a.setDomainId(domain.getId());
-            a.setUserId(domain.getUserId());
+            if (!a.isEmpty()) {
+                a.setEntityName(domain.getEntityName());
+                a.setDomainId(domain.getId());
+                a.setUserId(domain.getUserId());
 
-            attributeMapper.insertAttribute(a, domain.getStartDate());
+                attributeMapper.insertAttribute(a, domain.getStartDate());
+            }
         });
     }
 

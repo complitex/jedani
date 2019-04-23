@@ -140,6 +140,11 @@ public class Attribute implements Serializable{
         return this;
     }
 
+    public boolean isEmpty(){
+        return text == null && number == null && date == null && values.stream()
+                .allMatch(v -> v.getText() == null && v.getNumber() == null);
+    }
+
     public Long getObjectId(){
         return objectId;
     }

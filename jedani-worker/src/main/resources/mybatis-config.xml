@@ -23,7 +23,6 @@
     </environments>
 
     <mappers>
-        <mapper resource="ru/complitex/domain/mapper/SequenceMapper.xml"/>
         <mapper resource="ru/complitex/domain/mapper/EntityMapper.xml"/>
         <mapper resource="ru/complitex/domain/mapper/EntityAttributeMapper.xml"/>        
         <mapper resource="ru/complitex/domain/mapper/EntityValueMapper.xml"/>
