@@ -29,17 +29,6 @@ CREATE TABLE  `user_group` (
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Группа пользователей';
 
 -- ------------------------------
--- Sequence
--- ------------------------------
-
-DROP TABLE IF EXISTS `sequence`;
-CREATE TABLE `sequence`(
-  `name` VARCHAR(100) NOT NULL COMMENT 'Название таблицы сущности',
-  `value` bigint UNSIGNED NOT NULL DEFAULT 1 COMMENT 'Значение идентификатора',
-  PRIMARY KEY (`name`)
-)ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Генератор идентификаторов объектов';
-
--- ------------------------------
 -- Locale
 -- ------------------------------
 
