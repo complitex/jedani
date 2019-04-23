@@ -171,7 +171,7 @@ CREATE TABLE `setting` (
 DROP TABLE IF EXISTS `setting_attribute`;
 CREATE TABLE `setting_attribute` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
-  `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
+  `domain_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор домена',
   `entity_attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор типа атрибута',
   `text` VARCHAR(255) COMMENT 'Текст',
   `number` BIGINT(20) COMMENT 'Число',
@@ -181,7 +181,7 @@ CREATE TABLE `setting_attribute` (
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
   `user_id` BIGINT(20) NULL COMMENT 'Идентифитактор пользователя',
   PRIMARY KEY  (`id`),
-  KEY `key_object_id` (`object_id`),
+  KEY `key_domain_id` (`domain_id`),
   KEY `key_entity_attribute_id` (`entity_attribute_id`),
   KEY `key_text` (`text`),
   KEY `key_number` (`number`),
@@ -189,7 +189,7 @@ CREATE TABLE `setting_attribute` (
   KEY `key_start_date` (`start_date`),
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
-  CONSTRAINT `fk_setting_attribute__setting` FOREIGN KEY (`object_id`) REFERENCES `setting`(`object_id`),
+  CONSTRAINT `fk_setting_attribute__setting` FOREIGN KEY (`domain_id`) REFERENCES `setting`(`id`),
   CONSTRAINT `fk_setting_attribute__entity_attribute` FOREIGN KEY (`entity_attribute_id`)
     REFERENCES entity_attribute (`entity_attribute_id`),
   CONSTRAINT `fk_setting_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
@@ -245,7 +245,7 @@ CREATE TABLE `country` (
 DROP TABLE IF EXISTS `country_attribute`;
 CREATE TABLE `country_attribute` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
-  `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
+  `domain_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор домена',
   `entity_attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор типа атрибута',
   `text` VARCHAR(255) COMMENT 'Текст',
   `number` BIGINT(20) COMMENT 'Число',
@@ -254,14 +254,14 @@ CREATE TABLE `country_attribute` (
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
   `user_id` BIGINT(20) NULL COMMENT 'Идентифитактор пользователя',
   PRIMARY KEY  (`id`),
-  KEY `key_object_id` (`object_id`),
+  KEY `key_domain_id` (`domain_id`),
   KEY `key_entity_attribute_id` (`entity_attribute_id`),
   KEY `key_text` (`text`),
   KEY `key_number` (`number`),
   KEY `key_start_date` (`start_date`),
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
-  CONSTRAINT `fk_country_attribute__country` FOREIGN KEY (`object_id`) REFERENCES `country`(`object_id`),
+  CONSTRAINT `fk_country_attribute__country` FOREIGN KEY (`domain_id`) REFERENCES `country`(`id`),
   CONSTRAINT `fk_country_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты страны';
 
@@ -311,7 +311,7 @@ CREATE TABLE `region` (
 DROP TABLE IF EXISTS `region_attribute`;
 CREATE TABLE `region_attribute` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
-  `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
+  `domain_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор домена',
   `entity_attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор типа атрибута',
   `text` VARCHAR(255) COMMENT 'Текст',
   `number` BIGINT(20) COMMENT 'Число',
@@ -320,14 +320,14 @@ CREATE TABLE `region_attribute` (
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
   `user_id` BIGINT(20) NULL COMMENT 'Идентифитактор пользователя',
   PRIMARY KEY  (`id`),
-  KEY `key_object_id` (`object_id`),
+  KEY `key_domain_id` (`domain_id`),
   KEY `key_entity_attribute_id` (`entity_attribute_id`),
   KEY `key_text` (`text`),
   KEY `key_number` (`number`),
   KEY `key_start_date` (`start_date`),
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
-  CONSTRAINT `fk_region_attribute__region` FOREIGN KEY (`object_id`) REFERENCES `region`(`object_id`),
+  CONSTRAINT `fk_region_attribute__region` FOREIGN KEY (`domain_id`) REFERENCES `region`(`id`),
   CONSTRAINT `fk_region_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты региона';
 
@@ -378,7 +378,7 @@ CREATE TABLE `city_type` (
 DROP TABLE IF EXISTS `city_type_attribute`;
 CREATE TABLE `city_type_attribute` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
-  `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
+  `domain_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор домена',
   `entity_attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор типа атрибута',
   `text` VARCHAR(255) COMMENT 'Текст',
   `number` BIGINT(20) COMMENT 'Число',
@@ -387,14 +387,14 @@ CREATE TABLE `city_type_attribute` (
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
   `user_id` BIGINT(20) NULL COMMENT 'Идентифитактор пользователя',
   PRIMARY KEY (`id`),
-  KEY `key_object_id` (`object_id`),
+  KEY `key_domain_id` (`domain_id`),
   KEY `key_entity_attribute_id` (`entity_attribute_id`),
   KEY `key_text` (`text`),
   KEY `key_number` (`number`),
   KEY `key_start_date` (`start_date`),
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
-  CONSTRAINT `fk_city_type_attribute__city_type` FOREIGN KEY (`object_id`) REFERENCES `city_type`(`object_id`),
+  CONSTRAINT `fk_city_type_attribute__city_type` FOREIGN KEY (`domain_id`) REFERENCES `city_type`(`id`),
   CONSTRAINT `fk_city_type_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты типа населенного пункта';
 
@@ -444,7 +444,7 @@ CREATE TABLE `city` (
 DROP TABLE IF EXISTS `city_attribute`;
 CREATE TABLE `city_attribute` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
-  `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
+  `domain_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор домена',
   `entity_attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор типа атрибута',
   `text` VARCHAR(255) COMMENT 'Текст',
   `number` BIGINT(20) COMMENT 'Число',
@@ -453,14 +453,14 @@ CREATE TABLE `city_attribute` (
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
   `user_id` BIGINT(20) NULL COMMENT 'Идентифитактор пользователя',
   PRIMARY KEY  (`id`),
-  KEY `key_object_id` (`object_id`),
+  KEY `key_domain_id` (`domain_id`),
   KEY `key_entity_attribute_id` (`entity_attribute_id`),
   KEY `key_text` (`text`),
   KEY `key_number` (`number`),
   KEY `key_start_date` (`start_date`),
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
-  CONSTRAINT `fk_city_attribute__city` FOREIGN KEY (`object_id`) REFERENCES `city`(`object_id`),
+  CONSTRAINT `fk_city_attribute__city` FOREIGN KEY (`domain_id`) REFERENCES `city`(`id`),
   CONSTRAINT `fk_city_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты населенного пункта';
 
@@ -515,7 +515,7 @@ CREATE TABLE `last_name` (
 DROP TABLE IF EXISTS `last_name_attribute`;
 CREATE TABLE `last_name_attribute` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
-  `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
+  `domain_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор домена',
   `entity_attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор типа атрибута',
   `text` VARCHAR(255) COMMENT 'Текст',
   `number` BIGINT(20) COMMENT 'Число',
@@ -524,14 +524,14 @@ CREATE TABLE `last_name_attribute` (
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
   `user_id` BIGINT(20) NULL COMMENT 'Идентифитактор пользователя',
   PRIMARY KEY  (`id`),
-  KEY `key_object_id` (`object_id`),
+  KEY `key_domain_id` (`domain_id`),
   KEY `key_entity_attribute_id` (`entity_attribute_id`),
   KEY `key_text` (`text`),
   KEY `key_number` (`number`),
   KEY `key_start_date` (`start_date`),
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
-  CONSTRAINT `fk_last_name_attribute__city` FOREIGN KEY (`object_id`) REFERENCES `last_name`(`object_id`),
+  CONSTRAINT `fk_last_name_attribute__last_name` FOREIGN KEY (`domain_id`) REFERENCES `last_name`(`id`),
   CONSTRAINT `fk_last_name_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты фамилии';
 
@@ -582,7 +582,7 @@ CREATE TABLE `first_name` (
 DROP TABLE IF EXISTS `first_name_attribute`;
 CREATE TABLE `first_name_attribute` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
-  `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
+  `domain_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор домена',
   `entity_attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор типа атрибута',
   `text` VARCHAR(255) COMMENT 'Текст',
   `number` BIGINT(20) COMMENT 'Число',
@@ -591,14 +591,14 @@ CREATE TABLE `first_name_attribute` (
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
   `user_id` BIGINT(20) NULL COMMENT 'Идентифитактор пользователя',
   PRIMARY KEY  (`id`),
-  KEY `key_object_id` (`object_id`),
+  KEY `key_domain_id` (`domain_id`),
   KEY `key_entity_attribute_id` (`entity_attribute_id`),
   KEY `key_text` (`text`),
   KEY `key_number` (`number`),
   KEY `key_start_date` (`start_date`),
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
-  CONSTRAINT `fk_first_name_attribute__city` FOREIGN KEY (`object_id`) REFERENCES `first_name`(`object_id`),
+  CONSTRAINT `fk_first_name_attribute__first_name` FOREIGN KEY (`domain_id`) REFERENCES `first_name`(`id`),
   CONSTRAINT `fk_first_name_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты имени';
 
@@ -649,7 +649,7 @@ CREATE TABLE `middle_name` (
 DROP TABLE IF EXISTS `middle_name_attribute`;
 CREATE TABLE `middle_name_attribute` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
-  `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
+  `domain_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор домена',
   `entity_attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор типа атрибута',
   `text` VARCHAR(255) COMMENT 'Текст',
   `number` BIGINT(20) COMMENT 'Число',
@@ -658,14 +658,14 @@ CREATE TABLE `middle_name_attribute` (
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
   `user_id` BIGINT(20) NULL COMMENT 'Идентифитактор пользователя',
   PRIMARY KEY  (`id`),
-  KEY `key_object_id` (`object_id`),
+  KEY `key_domain_id` (`domain_id`),
   KEY `key_entity_attribute_id` (`entity_attribute_id`),
   KEY `key_text` (`text`),
   KEY `key_number` (`number`),
   KEY `key_start_date` (`start_date`),
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
-  CONSTRAINT `fk_middle_name_attribute__city` FOREIGN KEY (`object_id`) REFERENCES `middle_name`(`object_id`),
+  CONSTRAINT `fk_middle_name_attribute__middle_name` FOREIGN KEY (`domain_id`) REFERENCES `middle_name`(`id`),
   CONSTRAINT `fk_middle_name_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты отчества';
 
@@ -721,7 +721,7 @@ CREATE TABLE `worker` (
 DROP TABLE IF EXISTS `worker_attribute`;
 CREATE TABLE `worker_attribute` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
-  `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
+  `domain_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор домена',
   `entity_attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор типа атрибута',
   `text` VARCHAR(255) COMMENT 'Текст',
   `number` BIGINT(20) COMMENT 'Число',
@@ -731,7 +731,7 @@ CREATE TABLE `worker_attribute` (
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
   `user_id` BIGINT(20) NULL COMMENT 'Идентифитактор пользователя',
   PRIMARY KEY  (`id`),
-  KEY `key_object_id` (`object_id`),
+  KEY `key_domain_id` (`domain_id`),
   KEY `key_entity_attribute_id` (`entity_attribute_id`),
   KEY `key_text` (`text`),
   KEY `key_number` (`number`),
@@ -739,7 +739,7 @@ CREATE TABLE `worker_attribute` (
   KEY `key_start_date` (`start_date`),
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
-  CONSTRAINT `fk_worker_attribute__city` FOREIGN KEY (`object_id`) REFERENCES `worker`(`object_id`),
+  CONSTRAINT `fk_worker_attribute__worker` FOREIGN KEY (`domain_id`) REFERENCES `worker`(`id`),
   CONSTRAINT `fk_worker_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты сотрудника';
 
@@ -792,7 +792,7 @@ CREATE TABLE `mk_status` (
 DROP TABLE IF EXISTS `mk_status_attribute`;
 CREATE TABLE `mk_status_attribute` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
-  `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
+  `domain_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор домена',
   `entity_attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор типа атрибута',
   `text` VARCHAR(255) COMMENT 'Текст',
   `number` BIGINT(20) COMMENT 'Число',
@@ -801,14 +801,14 @@ CREATE TABLE `mk_status_attribute` (
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
   `user_id` BIGINT(20) NULL COMMENT 'Идентифитактор пользователя',
   PRIMARY KEY  (`id`),
-  KEY `key_object_id` (`object_id`),
+  KEY `key_domain_id` (`domain_id`),
   KEY `key_entity_attribute_id` (`entity_attribute_id`),
   KEY `key_text` (`text`),
   KEY `key_number` (`number`),
   KEY `key_start_date` (`start_date`),
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
-  CONSTRAINT `fk_mk_status_attribute__mk_status` FOREIGN KEY (`object_id`) REFERENCES `mk_status`(`object_id`),
+  CONSTRAINT `fk_mk_status_attribute__mk_status` FOREIGN KEY (`domain_id`) REFERENCES `mk_status`(`id`),
   CONSTRAINT `fk_mk_status_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты МК статуса';
 
@@ -859,7 +859,7 @@ CREATE TABLE `position` (
 DROP TABLE IF EXISTS `position_attribute`;
 CREATE TABLE `position_attribute` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
-  `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
+  `domain_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор домена',
   `entity_attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор типа атрибута',
   `text` VARCHAR(255) COMMENT 'Текст',
   `number` BIGINT(20) COMMENT 'Число',
@@ -868,14 +868,14 @@ CREATE TABLE `position_attribute` (
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
   `user_id` BIGINT(20) NULL COMMENT 'Идентифитактор пользователя',
   PRIMARY KEY  (`id`),
-  KEY `key_object_id` (`object_id`),
+  KEY `key_domain_id` (`domain_id`),
   KEY `key_entity_attribute_id` (`entity_attribute_id`),
   KEY `key_text` (`text`),
   KEY `key_number` (`number`),
   KEY `key_start_date` (`start_date`),
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
-  CONSTRAINT `fk_position_attribute__position` FOREIGN KEY (`object_id`) REFERENCES `position`(`object_id`),
+  CONSTRAINT `fk_position_attribute__position` FOREIGN KEY (`domain_id`) REFERENCES `position`(`id`),
   CONSTRAINT `fk_position_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты должности';
 
@@ -926,7 +926,7 @@ CREATE TABLE `nomenclature` (
 DROP TABLE IF EXISTS `nomenclature_attribute`;
 CREATE TABLE `nomenclature_attribute` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
-  `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
+  `domain_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор домена',
   `entity_attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор типа атрибута',
   `text` VARCHAR(255) COMMENT 'Текст',
   `number` BIGINT(20) COMMENT 'Число',
@@ -935,14 +935,14 @@ CREATE TABLE `nomenclature_attribute` (
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
   `user_id` BIGINT(20) NULL COMMENT 'Идентифитактор пользователя',
   PRIMARY KEY  (`id`),
-  KEY `key_object_id` (`object_id`),
+  KEY `key_domain_id` (`domain_id`),
   KEY `key_entity_attribute_id` (`entity_attribute_id`),
   KEY `key_text` (`text`),
   KEY `key_number` (`number`),
   KEY `key_start_date` (`start_date`),
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
-  CONSTRAINT `fk_nomenclature_attribute__nomenclature` FOREIGN KEY (`object_id`) REFERENCES `nomenclature`(`object_id`),
+  CONSTRAINT `fk_nomenclature_attribute__nomenclature` FOREIGN KEY (`domain_id`) REFERENCES `nomenclature`(`id`),
   CONSTRAINT `fk_nomenclature_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты номенклатуры';
 
@@ -995,7 +995,7 @@ CREATE TABLE `storage` (
 DROP TABLE IF EXISTS `storage_attribute`;
 CREATE TABLE `storage_attribute` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
-  `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
+  `domain_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор домена',
   `entity_attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор типа атрибута',
   `text` VARCHAR(255) COMMENT 'Текст',
   `number` BIGINT(20) COMMENT 'Число',
@@ -1004,14 +1004,14 @@ CREATE TABLE `storage_attribute` (
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
   `user_id` BIGINT(20) NULL COMMENT 'Идентифитактор пользователя',
   PRIMARY KEY  (`id`),
-  KEY `key_object_id` (`object_id`),
+  KEY `key_domain_id` (`domain_id`),
   KEY `key_entity_attribute_id` (`entity_attribute_id`),
   KEY `key_text` (`text`),
   KEY `key_number` (`number`),
   KEY `key_start_date` (`start_date`),
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
-  CONSTRAINT `fk_storage_attribute__storage` FOREIGN KEY (`object_id`) REFERENCES `storage`(`object_id`),
+  CONSTRAINT `fk_storage_attribute__storage` FOREIGN KEY (`domain_id`) REFERENCES `storage`(`id`),
   CONSTRAINT `fk_storage_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты склада';
 
@@ -1064,7 +1064,7 @@ CREATE TABLE `product` (
 DROP TABLE IF EXISTS `product_attribute`;
 CREATE TABLE `product_attribute` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
-  `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
+  `domain_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор домена',
   `entity_attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор типа атрибута',
   `text` VARCHAR(255) COMMENT 'Текст',
   `number` BIGINT(20) COMMENT 'Число',
@@ -1073,14 +1073,14 @@ CREATE TABLE `product_attribute` (
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
   `user_id` BIGINT(20) NULL COMMENT 'Идентифитактор пользователя',
   PRIMARY KEY  (`id`),
-  KEY `key_object_id` (`object_id`),
+  KEY `key_domain_id` (`domain_id`),
   KEY `key_entity_attribute_id` (`entity_attribute_id`),
   KEY `key_text` (`text`),
   KEY `key_number` (`number`),
   KEY `key_start_date` (`start_date`),
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
-  CONSTRAINT `fk_product_attribute__product` FOREIGN KEY (`object_id`) REFERENCES `product`(`object_id`),
+  CONSTRAINT `fk_product_attribute__product` FOREIGN KEY (`domain_id`) REFERENCES `product`(`id`),
   CONSTRAINT `fk_product_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты товара';
 
@@ -1131,7 +1131,7 @@ CREATE TABLE `transaction` (
 DROP TABLE IF EXISTS `transaction_attribute`;
 CREATE TABLE `transaction_attribute` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
-  `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
+  `domain_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор домена',
   `entity_attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор типа атрибута',
   `text` VARCHAR(255) COMMENT 'Текст',
   `number` BIGINT(20) COMMENT 'Число',
@@ -1141,7 +1141,7 @@ CREATE TABLE `transaction_attribute` (
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
   `user_id` BIGINT(20) NULL COMMENT 'Идентифитактор пользователя',
   PRIMARY KEY  (`id`),
-  KEY `key_object_id` (`object_id`),
+  KEY `key_domain_id` (`domain_id`),
   KEY `key_entity_attribute_id` (`entity_attribute_id`),
   KEY `key_text` (`text`),
   KEY `key_number` (`number`),
@@ -1149,7 +1149,7 @@ CREATE TABLE `transaction_attribute` (
   KEY `key_start_date` (`start_date`),
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
-  CONSTRAINT `fk_transaction_attribute__transaction` FOREIGN KEY (`object_id`) REFERENCES `transaction`(`object_id`),
+  CONSTRAINT `fk_transaction_attribute__transaction` FOREIGN KEY (`domain_id`) REFERENCES `transaction`(`id`),
   CONSTRAINT `fk_transaction_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты транзакции';
 
@@ -1245,7 +1245,7 @@ CREATE TABLE `promotion` (
 DROP TABLE IF EXISTS `promotion_attribute`;
 CREATE TABLE `promotion_attribute` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
-  `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
+  `domain_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор домена',
   `entity_attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор типа атрибута',
   `text` VARCHAR(255) COMMENT 'Текст',
   `number` BIGINT(20) COMMENT 'Число',
@@ -1255,7 +1255,7 @@ CREATE TABLE `promotion_attribute` (
   `status` INTEGER NOT NULL DEFAULT 1 COMMENT 'Статус',
   `user_id` BIGINT(20) NULL COMMENT 'Идентифитактор пользователя',
   PRIMARY KEY  (`id`),
-  KEY `key_object_id` (`object_id`),
+  KEY `key_domain_id` (`domain_id`),
   KEY `key_entity_attribute_id` (`entity_attribute_id`),
   KEY `key_text` (`text`),
   KEY `key_number` (`number`),
@@ -1263,7 +1263,7 @@ CREATE TABLE `promotion_attribute` (
   KEY `key_start_date` (`start_date`),
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
-  CONSTRAINT `fk_promotion_attribute__promotion` FOREIGN KEY (`object_id`) REFERENCES `promotion`(`object_id`),
+  CONSTRAINT `fk_promotion_attribute__promotion` FOREIGN KEY (`domain_id`) REFERENCES `promotion`(`id`),
   CONSTRAINT `fk_promotion_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты акции';
 
@@ -1319,7 +1319,7 @@ DROP TABLE IF EXISTS `sale_attribute`;
 CREATE TABLE `sale_attribute`
 (
   `id`                  BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
-  `object_id`           BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
+  `domain_id`           BIGINT(20) NOT NULL COMMENT 'Идентификатор домена',
   `entity_attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор типа атрибута',
   `text`                VARCHAR(255) COMMENT 'Текст',
   `number`              BIGINT(20) COMMENT 'Число',
@@ -1329,7 +1329,7 @@ CREATE TABLE `sale_attribute`
   `status`              INTEGER    NOT NULL DEFAULT 1 COMMENT 'Статус',
   `user_id`             BIGINT(20) NULL COMMENT 'Идентифитактор пользователя',
   PRIMARY KEY (`id`),
-  KEY `key_object_id` (`object_id`),
+  KEY `key_domain_id` (`domain_id`),
   KEY `key_entity_attribute_id` (`entity_attribute_id`),
   KEY `key_text` (`text`),
   KEY `key_number` (`number`),
@@ -1337,7 +1337,7 @@ CREATE TABLE `sale_attribute`
   KEY `key_start_date` (`start_date`),
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
-  CONSTRAINT `fk_sale_attribute__sale` FOREIGN KEY (`object_id`) REFERENCES `sale` (`object_id`),
+  CONSTRAINT `fk_sale_attribute__sale` FOREIGN KEY (`domain_id`) REFERENCES `sale` (`id`),
   CONSTRAINT `fk_sale_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE = InnoDB
   CHARSET = utf8
@@ -1398,7 +1398,7 @@ DROP TABLE IF EXISTS `sale_item_attribute`;
 CREATE TABLE `sale_item_attribute`
 (
   `id`                  BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
-  `object_id`           BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
+  `domain_id`           BIGINT(20) NOT NULL COMMENT 'Идентификатор домена',
   `entity_attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор типа атрибута',
   `text`                VARCHAR(255) COMMENT 'Текст',
   `number`              BIGINT(20) COMMENT 'Число',
@@ -1408,7 +1408,7 @@ CREATE TABLE `sale_item_attribute`
   `status`              INTEGER    NOT NULL DEFAULT 1 COMMENT 'Статус',
   `user_id`             BIGINT(20) NULL COMMENT 'Идентифитактор пользователя',
   PRIMARY KEY (`id`),
-  KEY `key_object_id` (`object_id`),
+  KEY `key_domain_id` (`domain_id`),
   KEY `key_entity_attribute_id` (`entity_attribute_id`),
   KEY `key_text` (`text`),
   KEY `key_number` (`number`),
@@ -1416,7 +1416,7 @@ CREATE TABLE `sale_item_attribute`
   KEY `key_start_date` (`start_date`),
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
-  CONSTRAINT `fk_sale_item_attribute__sale_item` FOREIGN KEY (`object_id`) REFERENCES `sale_item` (`object_id`),
+  CONSTRAINT `fk_sale_item_attribute__sale_item` FOREIGN KEY (`domain_id`) REFERENCES `sale_item` (`id`),
   CONSTRAINT `fk_sale_item_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE = InnoDB
   CHARSET = utf8
@@ -1477,7 +1477,7 @@ DROP TABLE IF EXISTS `currency_attribute`;
 CREATE TABLE `currency_attribute`
 (
   `id`                  BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
-  `object_id`           BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
+  `domain_id`           BIGINT(20) NOT NULL COMMENT 'Идентификатор домена',
   `entity_attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор типа атрибута',
   `text`                VARCHAR(255) COMMENT 'Текст',
   `number`              BIGINT(20) COMMENT 'Число',
@@ -1487,7 +1487,7 @@ CREATE TABLE `currency_attribute`
   `status`              INTEGER    NOT NULL DEFAULT 1 COMMENT 'Статус',
   `user_id`             BIGINT(20) NULL COMMENT 'Идентифитактор пользователя',
   PRIMARY KEY (`id`),
-  KEY `key_object_id` (`object_id`),
+  KEY `key_domain_id` (`domain_id`),
   KEY `key_entity_attribute_id` (`entity_attribute_id`),
   KEY `key_text` (`text`),
   KEY `key_number` (`number`),
@@ -1495,7 +1495,7 @@ CREATE TABLE `currency_attribute`
   KEY `key_start_date` (`start_date`),
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
-  CONSTRAINT `fk_currency_attribute__currency` FOREIGN KEY (`object_id`) REFERENCES `currency` (`object_id`),
+  CONSTRAINT `fk_currency_attribute__currency` FOREIGN KEY (`domain_id`) REFERENCES `currency` (`id`),
   CONSTRAINT `fk_currency_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE = InnoDB
   CHARSET = utf8
@@ -1556,7 +1556,7 @@ DROP TABLE IF EXISTS `exchange_rate_attribute`;
 CREATE TABLE `exchange_rate_attribute`
 (
   `id`                  BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
-  `object_id`           BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
+  `domain_id`           BIGINT(20) NOT NULL COMMENT 'Идентификатор домена',
   `entity_attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор типа атрибута',
   `text`                VARCHAR(255) COMMENT 'Текст',
   `number`              BIGINT(20) COMMENT 'Число',
@@ -1566,7 +1566,7 @@ CREATE TABLE `exchange_rate_attribute`
   `status`              INTEGER    NOT NULL DEFAULT 1 COMMENT 'Статус',
   `user_id`             BIGINT(20) NULL COMMENT 'Идентифитактор пользователя',
   PRIMARY KEY (`id`),
-  KEY `key_object_id` (`object_id`),
+  KEY `key_domain_id` (`domain_id`),
   KEY `key_entity_attribute_id` (`entity_attribute_id`),
   KEY `key_text` (`text`),
   KEY `key_number` (`number`),
@@ -1574,7 +1574,7 @@ CREATE TABLE `exchange_rate_attribute`
   KEY `key_start_date` (`start_date`),
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
-  CONSTRAINT `fk_exchange_rate_attribute__exchange_rate` FOREIGN KEY (`object_id`) REFERENCES `exchange_rate` (`object_id`),
+  CONSTRAINT `fk_exchange_rate_attribute__exchange_rate` FOREIGN KEY (`domain_id`) REFERENCES `exchange_rate` (`id`),
   CONSTRAINT `fk_exchange_rate_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE = InnoDB
   CHARSET = utf8
@@ -1635,7 +1635,7 @@ DROP TABLE IF EXISTS `price_attribute`;
 CREATE TABLE `price_attribute`
 (
     `id`                  BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
-    `object_id`           BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
+    `domain_id`           BIGINT(20) NOT NULL COMMENT 'Идентификатор домена',
     `entity_attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор типа атрибута',
     `text`                VARCHAR(255) COMMENT 'Текст',
     `number`              BIGINT(20) COMMENT 'Число',
@@ -1645,7 +1645,7 @@ CREATE TABLE `price_attribute`
     `status`              INTEGER    NOT NULL DEFAULT 1 COMMENT 'Статус',
     `user_id`             BIGINT(20) NULL COMMENT 'Идентифитактор пользователя',
     PRIMARY KEY (`id`),
-    KEY `key_object_id` (`object_id`),
+    KEY `key_domain_id` (`domain_id`),
     KEY `key_entity_attribute_id` (`entity_attribute_id`),
     KEY `key_text` (`text`),
     KEY `key_number` (`number`),
@@ -1653,7 +1653,7 @@ CREATE TABLE `price_attribute`
     KEY `key_start_date` (`start_date`),
     KEY `key_end_date` (`end_date`),
     KEY `key_status` (`status`),
-    CONSTRAINT `fk_price_attribute__price` FOREIGN KEY (`object_id`) REFERENCES `price` (`object_id`),
+    CONSTRAINT `fk_price_attribute__price` FOREIGN KEY (`domain_id`) REFERENCES `price` (`id`),
     CONSTRAINT `fk_price_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE = InnoDB
   CHARSET = utf8
