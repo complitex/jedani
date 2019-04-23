@@ -52,7 +52,7 @@
     <!--suppress SqlResolve -->
     <select id="selectHistoryAttributesFilter" parameterType="ru.complitex.common.entity.FilterWrapper" resultMap="attributeResultMap">
         select '${object.entityName}' entity_name, a.* from ${object.entityName}_attribute a
-            left join ${entityName} d on a.domain_id = d.id
+            left join ${object.entityName} d on a.domain_id = d.id
         where d.object_id = #{object.objectId}
         <if test="object.entityAttributeId != null"> and a.entity_attribute_id = #{object.entityAttributeId}</if>
         <if test="object.text != null"> and a.text like concat('%', #{object.text}, '%')</if>
@@ -64,7 +64,7 @@
     <!--suppress SqlResolve -->
     <select id="selectHistoryAttributesCountFilter" parameterType="ru.complitex.common.entity.FilterWrapper" resultType="long">
         select count(a.id) from ${object.entityName}_attribute a
-            left join ${entityName} d on a.domain_id = d.id
+            left join ${object.entityName} d on a.domain_id = d.id
         where d.object_id = #{object.objectId}
         <if test="object.entityAttributeId != null"> and a.entity_attribute_id = #{object.entityAttributeId}</if>
         <if test="object.text != null"> and a.text like concat('%', #{object.text}, '%')</if>

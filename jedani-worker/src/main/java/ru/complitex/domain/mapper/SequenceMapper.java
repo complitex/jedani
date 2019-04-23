@@ -7,6 +7,7 @@ import ru.complitex.common.mybatis.BaseMapper;
  * 30.11.2017 16:27
  */
 public class SequenceMapper extends BaseMapper {
+    @Deprecated
     public Long nextId(String name){
         Long nextId = sqlSession().selectOne("selectSequenceId", name);
         sqlSession().update("incrementSequenceId", name);

@@ -212,16 +212,7 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage{
             protected Component getComponent(String componentId, Attribute attribute) {
                 return DomainListModalPage.this.getEditComponent(componentId, attribute);
             }
-
-            @Override
-            protected Component newParentComponent(String componentId) {
-                return DomainListModalPage.this.newParentComponent(this, componentId);
-            }
         };
-    }
-
-    protected Component newParentComponent(DomainEditModal<T> domainEditModal, String componentId){
-        return domainEditModal.newParentComponent(componentId);
     }
 
     protected Component getEditComponent(String componentId, Attribute attribute) {

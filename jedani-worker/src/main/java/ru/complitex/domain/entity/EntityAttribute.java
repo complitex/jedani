@@ -28,7 +28,7 @@ public class EntityAttribute implements Serializable{
 
     private EntityAttribute prefixEntityAttribute;
 
-    private StringType stringType = StringType.UPPER_CASE;
+    private StringType stringType = StringType.CAPITALIZE;
 
     public EntityAttribute() {
     }

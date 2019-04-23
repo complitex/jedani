@@ -36,9 +36,4 @@ public class CountryListPage extends DomainListModalPage<Country> {
 
         return list;
     }
-
-    @Override
-    protected List<EntityAttribute> getEditEntityAttributes(Entity entity) {
-        return super.getEditEntityAttributes(entity);
-    }
 }

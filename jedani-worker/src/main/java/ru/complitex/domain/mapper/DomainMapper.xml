@@ -55,13 +55,17 @@
     </resultMap>
 
     <!--suppress SqlResolve -->
-    <insert id="insertDomain" parameterType="ru.complitex.domain.entity.Domain" useGeneratedKeys="false" keyProperty="id">
+    <insert id="insertDomain" parameterType="ru.complitex.domain.entity.Domain" useGeneratedKeys="true" keyProperty="id">
         insert into ${entityName} (object_id, parent_id, parent_entity_id, start_date, end_date, `status`, permission_id,
           user_id)
         value (#{objectId}, #{parentId}, #{parentEntityId}, #{startDate}, #{endDate}, #{status}, #{permissionId},
           #{userId})
     </insert>
 
+    <!--suppress SqlResolve -->
+    <update id="updateDomainObjectId" parameterType="ru.complitex.domain.entity.Domain">
+        update ${entityName} set object_id = #{objectId} where id = #{id}
+    </update>
 
     <sql id="selectDomainSelect">
         a.id a_id, a.domain_id a_domain_id, a.entity_attribute_id a_entity_attribute_id, a.text a_text,

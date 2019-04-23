@@ -67,6 +67,8 @@ public class ExchangeRateService implements Serializable {
 
         LocalDate tomorrow = LocalDate.now().plusDays(1);
 
+        boolean updated = false;
+
         for (LocalDate date = tomorrow.minusDays(365); date.isBefore(tomorrow); date = date.plusDays(1)){
 
             ZoneOffset zoneOffset = OffsetDateTime.now().getOffset();
@@ -93,13 +95,13 @@ public class ExchangeRateService implements Serializable {
                     attributeMapper.insertAttribute(a, startDate);
 
                     map.put(startDate, a);
-                }else{
-                    return false;
+
+                    updated = true;
                 }
             }
         }
 
-        return true;
+        return updated;
     }
 
     public List<Attribute> getExchangeRateHistories(FilterWrapper<Attribute> filterWrapper){

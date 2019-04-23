@@ -31,10 +31,7 @@ public class DomainMapper extends BaseMapper {
     @Transactional
     public void insertDomain(Domain<?> domain){
         domain.setId(null);
-
-        if (domain.getObjectId() == null) {
-            domain.setObjectId(sequenceMapper.nextId(domain.getEntityName()));
-        }
+        domain.setObjectId(-1L);
 
         if (domain.getStartDate() == null){
             domain.setStartDate(new Date());
@@ -45,9 +42,12 @@ public class DomainMapper extends BaseMapper {
 
         sqlSession().insert("insertDomain", domain);
 
+        domain.setObjectId(domain.getId());
+        sqlSession().update("updateDomainObjectId", domain);
+
         domain.getAttributes().forEach(a -> {
             a.setEntityName(domain.getEntityName());
-            a.setObjectId(domain.getObjectId());
+            a.setDomainId(domain.getId());
             a.setUserId(domain.getUserId());
 
             attributeMapper.insertAttribute(a, domain.getStartDate());
@@ -62,7 +62,7 @@ public class DomainMapper extends BaseMapper {
 
         domain.getAttributes().forEach(a -> {
             a.setEntityName(domain.getEntityName());
-            a.setObjectId(domain.getObjectId());
+            a.setDomainId(domain.getId());
             a.setUserId(domain.getUserId());
 
             Attribute dbAttribute = dbDomain.getAttribute(a.getEntityAttributeId());
@@ -77,7 +77,10 @@ public class DomainMapper extends BaseMapper {
                 if (!update){
                     if (a.getValues() != null){
                         if (dbAttribute.getValues() != null) {
-                            update = a.getValues().size() != dbAttribute.getValues().size() ||
+                            boolean count = a.getValues().stream().filter(v -> v.getLocaleId() == null).count() ==
+                                    dbAttribute.getValues().stream().filter(v -> v.getLocaleId() == null).count();
+
+                            update =  !count ||
                                     a.getValues().stream().anyMatch(v -> {
                                         if (v.getLocaleId() != null) {
                                             Value dbValue = dbAttribute.getValue(v.getLocaleId());
