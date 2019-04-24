@@ -189,6 +189,10 @@ ALTER TABLE price_attribute MODIFY COLUMN domain_id BIGINT(20) NOT NULL COMMENT 
 ALTER TABLE price_attribute DROP COLUMN object_id;
 DROP INDEX unique_object_id__status on price;
 
+-- Update nomenclature entity value
+
+UPDATE `entity_value` SET `text` = 'Номенклатура' WHERE  entity_id = 23 and entity_attribute_id is null;
+
 -- Update
 
 INSERT INTO `update` (`version`) VALUE ('20190422_1.0.14');

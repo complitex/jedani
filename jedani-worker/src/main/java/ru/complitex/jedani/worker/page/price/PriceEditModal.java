@@ -6,17 +6,27 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
 import de.agilecoders.wicket.core.markup.html.bootstrap.dialog.Modal;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.FormComponent;
+import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.danekja.java.util.function.serializable.SerializableConsumer;
 import ru.complitex.common.entity.FilterWrapper;
+import ru.complitex.common.entity.SortProperty;
 import ru.complitex.common.util.Dates;
+import ru.complitex.common.wicket.component.DateTimeLabel;
+import ru.complitex.common.wicket.datatable.DataProvider;
+import ru.complitex.common.wicket.datatable.FilterDataForm;
+import ru.complitex.common.wicket.datatable.FilterDataTable;
 import ru.complitex.common.wicket.form.DateTextFieldFormGroup;
 import ru.complitex.common.wicket.form.FormGroupPanel;
 import ru.complitex.common.wicket.form.FormGroupTextField;
+import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.entity.Status;
 import ru.complitex.domain.model.DateAttributeModel;
 import ru.complitex.domain.model.DecimalAttributeModel;
@@ -27,13 +37,14 @@ import ru.complitex.domain.service.EntityService;
 import ru.complitex.jedani.worker.component.NomenclatureAutoComplete;
 import ru.complitex.jedani.worker.entity.Nomenclature;
 import ru.complitex.jedani.worker.entity.Price;
+import ru.complitex.user.entity.User;
+import ru.complitex.user.mapper.UserMapper;
 
 import javax.inject.Inject;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author Anatoly A. Ivanov
@@ -45,6 +56,9 @@ public class PriceEditModal extends AbstractDomainEditModal<Price> {
 
     @Inject
     private EntityService entityService;
+
+    @Inject
+    private UserMapper userMapper;
 
     private IModel<Price> priceModel;
 
@@ -85,6 +99,87 @@ public class PriceEditModal extends AbstractDomainEditModal<Price> {
                 .setRequired(true));
         container.add(new FormGroupTextField<>("price", DecimalAttributeModel.of(priceModel, Price.PRICE),
                 BigDecimal.class).setRequired(true));
+
+        DataProvider<Price> dataProvider = new DataProvider<Price>(FilterWrapper.of(new Price())) {
+            @Override
+            public Iterator<? extends Price> iterator(long first, long count) {
+                FilterWrapper<Price> filterWrapper = getFilterState();
+
+                filterWrapper.setFirst(first);
+                filterWrapper.setCount(count);
+
+                return domainService.getDomains(Price.class, filterWrapper).iterator();
+            }
+
+            @Override
+            public long size() {
+                Price price = getFilterState().getObject();
+
+                price.setStatus(Status.INACTIVE);
+                price.setObjectId(priceModel.getObject().getObjectId());
+
+                return domainService.getDomainsCount(getFilterState());
+            }
+        };
+
+        WebMarkupContainer historyContainer = new WebMarkupContainer("historyContainer"){
+            @Override
+            public boolean isVisible() {
+                return priceModel.getObject().getObjectId() != null;
+            }
+        };
+        container.add(historyContainer);
+
+        FilterDataForm<FilterWrapper<Price>> historyForm = new FilterDataForm<>("historyForm", dataProvider);
+        historyContainer.add(historyForm);
+
+        List<IColumn<Price, SortProperty>> columns = new ArrayList<>();
+
+        columns.add(new AbstractDomainColumn<Price>("id") {
+            @Override
+            public void populateItem(Item<ICellPopulator<Price>> cellItem, String componentId, IModel<Price> rowModel) {
+                cellItem.add(new Label(componentId, rowModel.getObject().getId()));
+            }
+        });
+
+        columns.add(new AbstractDomainColumn<Price>("dateBegin") {
+            @Override
+            public void populateItem(Item<ICellPopulator<Price>> cellItem, String componentId, IModel<Price> rowModel) {
+                cellItem.add(new Label(componentId, rowModel.getObject().getDate(Price.DATE_BEGIN)));
+            }
+        });
+
+        columns.add(new AbstractDomainColumn<Price>("dateEnd") {
+            @Override
+            public void populateItem(Item<ICellPopulator<Price>> cellItem, String componentId, IModel<Price> rowModel) {
+                cellItem.add(new Label(componentId, rowModel.getObject().getDate(Price.DATE_END)));
+            }
+        });
+
+        columns.add(new AbstractDomainColumn<Price>("price") {
+            @Override
+            public void populateItem(Item<ICellPopulator<Price>> cellItem, String componentId, IModel<Price> rowModel) {
+                cellItem.add(new Label(componentId, rowModel.getObject().getDecimal(Price.PRICE)));
+            }
+        });
+
+        columns.add(new AbstractDomainColumn<Price>("startDate") {
+            @Override
+            public void populateItem(Item<ICellPopulator<Price>> cellItem, String componentId, IModel<Price> rowModel) {
+                cellItem.add(new DateTimeLabel(componentId, rowModel.getObject().getStartDate()));
+            }
+        });
+
+        columns.add(new AbstractDomainColumn<Price>("user") {
+            @Override
+            public void populateItem(Item<ICellPopulator<Price>> cellItem, String componentId, IModel<Price> rowModel) {
+                User user = userMapper.getUser(rowModel.getObject().getUserId());
+
+                cellItem.add(new Label(componentId, user != null ? user.getLogin() : ""));
+            }
+        });
+
+        historyForm.add(new FilterDataTable<Price>("history", columns, dataProvider, historyForm, 5, "PriceEditModal"));
 
         addButton(new BootstrapAjaxButton(Modal.BUTTON_MARKUP_ID, Buttons.Type.Primary) {
             @Override
@@ -139,11 +234,7 @@ public class PriceEditModal extends AbstractDomainEditModal<Price> {
                 return;
             }
 
-            LocalDateTime endDateTime = price.getDate(Price.DATE_BEGIN).toInstant()
-                    .atZone(ZoneId.systemDefault()).toLocalDateTime()
-                    .minusDays(1).with(LocalTime.MAX);
-
-            prevPrice.setDate(Price.DATE_END, Date.from(endDateTime.atZone(ZoneId.systemDefault()).toInstant()));
+            prevPrice.setDate(Price.DATE_END,  price.getDate(Price.DATE_BEGIN));
             prevPrice.setEndDate(Dates.currentDate());
             prevPrice.setStatus(Status.INACTIVE);
 

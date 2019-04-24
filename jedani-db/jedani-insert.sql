@@ -247,7 +247,7 @@ INSERT INTO `worker` (`id`, `object_id`, `status`, `left`, `right`, `level`) VAL
 /* Nomenclature */
 
 INSERT INTO `entity` (`id`, `name`) VALUE (23, 'nomenclature');
-INSERT INTO `entity_value`(`entity_id`, `locale_id`, `text`) VALUES (23, 1, 'Товарная номенклатура'), (23, 2, 'Товарна номенклатура');
+INSERT INTO `entity_value`(`entity_id`, `locale_id`, `text`) VALUES (23, 1, 'Номенклатура'), (23, 2, 'Номенклатура');
 
 INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (23, 1, 0);
 INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (23, 1, 1, 'Название'), (23, 1, 2, 'Назва');

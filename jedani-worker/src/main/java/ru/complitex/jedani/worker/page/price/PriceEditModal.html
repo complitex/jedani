@@ -11,9 +11,27 @@
                 <div wicket:id="price" class="col-md-3"></div>
             </div>
 
-            <!--<div class="row">
-                <table wicket:id="prices"></table>
-            </div>-->
+            <br/>
+
+            <div wicket:id="historyContainer" class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="headingOne">
+                        <h4 class="panel-title">
+                            <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne"
+                               aria-expanded="false" aria-controls="collapseOne">
+                                Журнал изменений
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+                        <div class="panel-body">
+                            <form wicket:id="historyForm">
+                                <table wicket:id="history" class="table table-hover"></table>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </wicket:extend>
 </wicket:panel>

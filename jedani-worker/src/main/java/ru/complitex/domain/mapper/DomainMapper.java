@@ -21,9 +21,6 @@ public class DomainMapper extends BaseMapper {
     @Inject
     private AttributeMapper attributeMapper;
 
-//    @Inject
-//    private Principal principal;
-
     @Transactional
     public void insertDomain(Domain<?> domain){
         domain.setId(null);

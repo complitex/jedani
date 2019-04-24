@@ -55,6 +55,7 @@ public class Domain<T extends Domain<T>> implements Serializable{
        status = domain.status;
        permissionId = domain.permissionId;
        entityName = domain.entityName;
+       userId = domain.userId;
 
         if (initAttributes) {
             domain.attributes.forEach(a -> attributes.add(new Attribute(a)));
