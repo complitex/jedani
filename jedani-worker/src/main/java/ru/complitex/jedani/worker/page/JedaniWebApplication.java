@@ -39,6 +39,7 @@ import ru.complitex.common.wicket.application.ServletUnauthorizedListener;
 import ru.complitex.common.wicket.application.ServletWebSession;
 import ru.complitex.common.wicket.converter.BigDecimalConverter;
 import ru.complitex.jedani.worker.page.admin.ImportPage;
+import ru.complitex.jedani.worker.page.admin.SettingPage;
 import ru.complitex.jedani.worker.page.catalog.*;
 import ru.complitex.jedani.worker.page.login.LoginPage;
 import ru.complitex.jedani.worker.page.price.PriceListPage;
@@ -114,6 +115,7 @@ public class JedaniWebApplication extends WebApplication{
         mountPage("exchange_rates", ExchangeRateListPage.class);
         mountPage("exchange_rate/${id}", ExchangeRatePage.class);
         mountPage("prices", PriceListPage.class);
+        mountPage("settings", SettingPage.class);
     }
 
     private void configureMountResource(){
