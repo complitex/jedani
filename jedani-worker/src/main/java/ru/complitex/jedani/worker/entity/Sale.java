@@ -23,7 +23,6 @@ public class Sale extends Domain<Sale> {
     public static final long STORAGE = 9;
     public static final long CONTRACT = 10;
     public static final long TOTAL = 11;
-    public static final long INSTALLMENT_PERCENTAGE = 12;
     public static final long INSTALLMENT_MONTHS = 13;
     public static final long INITIAL_PAYMENT = 14;
 
@@ -79,14 +78,6 @@ public class Sale extends Domain<Sale> {
 
     public void setType(Long type){
         setNumber(TYPE, type);
-    }
-
-    public Long getInstallmentPercentage(){
-        return getNumber(INSTALLMENT_PERCENTAGE);
-    }
-
-    public void setInstallmentPercentage(Long percentage){
-        setNumber(INSTALLMENT_PERCENTAGE, percentage);
     }
 
     public Long getInstallmentMonths(){

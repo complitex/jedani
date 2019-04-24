@@ -17,6 +17,8 @@
        (select concat(wa_id.text, ln_v.text, fn_v.text, mn_v.text) w_name
             from transaction_attribute ta
 
+            left join `transaction` t on ta.domain_id = t.id
+
             left join worker w on w.object_id = ta.number and w.status = 1
 
             left join worker_attribute wa_id on wa_id.domain_id = w.id and wa_id.entity_attribute_id = 1 and wa_id.status = 1
@@ -36,7 +38,7 @@
             left join last_name_attribute ln_a on ln_a.domain_id = ln.id and ln_a.status = 1
             left join last_name_value ln_v on ln_a.id = ln_v.attribute_id
 
-          where ta.object_id = d.object_id and ta.entity_attribute_id = 8 and ta.status = 1
+          where t.object_id = d.object_id and ta.entity_attribute_id = 8 and ta.status = 1
           )
     </sql>
 
@@ -84,14 +86,14 @@
              and (exists(select ta.id from transaction_attribute ta
                  left join transaction_attribute ta_tt on ta.domain_id = ta_tt.domain_id and ta_tt.status = 1
                      and ta_tt.entity_attribute_id = 4
-                 where ta.domain_id = d.domain_id and ta.status = 1 and ta.entity_attribute_id = 3
+                 where ta.domain_id = d.id and ta.status = 1 and ta.entity_attribute_id = 3
                      and ta.number = 3 and ta_tt.number = 1 and d.end_date is null))
          </if>
          <if test="map.receivingGift != null">
              and (exists(select ta.id from transaction_attribute ta
                  left join transaction_attribute ta_tt on ta.domain_id = ta_tt.domain_id and ta_tt.status = 1
                      and ta_tt.entity_attribute_id = 4
-                 where ta.domain_id = d.domain_id and ta.status = 1 and ta.entity_attribute_id = 3
+                 where ta.domain_id = d.id and ta.status = 1 and ta.entity_attribute_id = 3
                      and ta.number = 3 and ta_tt.number = 2 and d.end_date is null))
          </if>
     </sql>

@@ -213,3 +213,7 @@ td.domain-id-column{
 .bootstrap-touchspin .input-group-btn-vertical>.btn {
     padding: 7px 10px !important;
 }
+
+.panel-group .panel-heading {
+    border: none;
+}

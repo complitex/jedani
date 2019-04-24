@@ -456,7 +456,6 @@ public class SaleModal extends Modal<Sale> {
         sale.setSellerWorkerId(sellerWorkerId);
         sale.setType(SaleType.MYCOOK);
         sale.setDate(new Date());
-        sale.setInstallmentPercentage(100L);
         sale.setInstallmentMonths(0L);
         sale.setStorageId(defaultStorageId);
 

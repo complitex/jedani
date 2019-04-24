@@ -11,6 +11,8 @@
     <sql id="selectStoragesWorkers">
         (select concat(wa_id.text, ln_v.text, fn_v.text, mn_v.text) w_name
             from storage_attribute sa
+
+            left join storage s on s.id = sa.domain_id
             left join storage_value sv on sa.id = sv.attribute_id
 
             left join worker w on w.object_id = sv.number and w.status = 1
@@ -32,7 +34,7 @@
             left join last_name_attribute ln_a on ln_a.domain_id = ln.id and ln_a.status = 1
             left join last_name_value ln_v on ln_a.id = ln_v.attribute_id
 
-          where sa.object_id = d.object_id and sa.entity_attribute_id = 2 and sa.status = 1 limit 1
+          where s.object_id = d.object_id and sa.entity_attribute_id = 2 and sa.status = 1 limit 1
           )
     </sql>
 

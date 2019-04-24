@@ -359,11 +359,11 @@ public class WorkerPage extends BasePage {
             }
         }).setVisible(isAdmin() || isStructureAdmin()));
 
-        TextField<String> login = new TextField<>("login", new PropertyModel<>(user, "login"));
+        TextField<String> login = new TextField<>("userLogin", new PropertyModel<>(user, "login"));
         login.setRequired(true);
         form.add(login);
 
-        PasswordTextField password = new PasswordTextField("password", new PropertyModel<>(user, "password"));
+        PasswordTextField password = new PasswordTextField("userPassword", new PropertyModel<>(user, "password"));
         password.setRequired(false);
         form.add(password);
 

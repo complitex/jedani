@@ -9,7 +9,6 @@ import ru.complitex.domain.entity.Status;
 import ru.complitex.domain.entity.Value;
 
 import javax.inject.Inject;
-import java.security.Principal;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -22,28 +21,35 @@ public class DomainMapper extends BaseMapper {
     @Inject
     private AttributeMapper attributeMapper;
 
-    @Inject
-    private Principal principal;
+//    @Inject
+//    private Principal principal;
 
     @Transactional
     public void insertDomain(Domain<?> domain){
         domain.setId(null);
-        domain.setObjectId(-1L);
+
+        if (domain.getObjectId() == null){
+            domain.setObjectId(-1L);
+        }
 
         if (domain.getStartDate() == null){
             domain.setStartDate(new Date());
         }
+
         if (domain.getStatus() == null){
             domain.setStatus(Status.ACTIVE);
         }
 
         sqlSession().insert("insertDomain", domain);
 
-        domain.setObjectId(domain.getId());
-        sqlSession().update("updateDomainObjectId", domain);
+        if (domain.getObjectId().equals(-1L)) {
+            domain.setObjectId(domain.getId());
+            sqlSession().update("updateDomainObjectId", domain);
+        }
 
         domain.getAttributes().forEach(a -> {
             if (!a.isEmpty()) {
+                a.setId(null);
                 a.setEntityName(domain.getEntityName());
                 a.setDomainId(domain.getId());
                 a.setUserId(domain.getUserId());
@@ -53,6 +59,7 @@ public class DomainMapper extends BaseMapper {
         });
     }
 
+    @Transactional
     public void updateDomain(Domain<?> domain){
         Date date = new Date();
 
@@ -113,7 +120,7 @@ public class DomainMapper extends BaseMapper {
             }
         });
 
-        sqlSession().update("updateDomain", domain); //todo change parent log
+        sqlSession().update("updateDomain", domain);
     }
 
     public Boolean hasDomain(String entityName, Long entityAttributeId, String text){

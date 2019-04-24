@@ -114,15 +114,6 @@ public class SaleListPage extends DomainListModalPage<SaleItem> {
             }
         });
 
-        columns.add(new AbstractDomainColumn<SaleItem>(SaleItem.FILTER_INSTALLMENT_PERCENTAGE) {
-            @Override
-            public void populateItem(Item<ICellPopulator<SaleItem>> cellItem, String componentId, IModel<SaleItem> rowModel) {
-                Sale sale = domainService.getDomain(Sale.class, rowModel.getObject().getParentId());
-
-                cellItem.add(new Label(componentId, sale.getInstallmentPercentage()));
-            }
-        });
-
         columns.add(new AbstractDomainColumn<SaleItem>(SaleItem.FILTER_INSTALLMENT_MONTHS) {
             @Override
             public void populateItem(Item<ICellPopulator<SaleItem>> cellItem, String componentId, IModel<SaleItem> rowModel) {
