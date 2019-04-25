@@ -128,7 +128,7 @@ DROP INDEX unique_object_id__status on product;
 
 ALTER TABLE transaction_attribute ADD COLUMN domain_id BIGINT(20);
 ALTER TABLE transaction_attribute ADD KEY key_domain_id(domain_id);
-ALTER TABLE transaction_attribute DROP FOREIGN KEY  fk_transaction_attribute__transaction;
+-- ALTER TABLE transaction_attribute DROP FOREIGN KEY  fk_transaction_attribute__transaction;
 ALTER TABLE transaction_attribute ADD CONSTRAINT fk_transaction_attribute__transaction FOREIGN KEY (domain_id) REFERENCES transaction (id);
 UPDATE transaction_attribute a LEFT JOIN transaction d on a.object_id = d.object_id SET a.domain_id = d.id WHERE a.id > 0;
 ALTER TABLE transaction_attribute MODIFY COLUMN domain_id BIGINT(20) NOT NULL COMMENT 'Идентификатор домена' AFTER id;
