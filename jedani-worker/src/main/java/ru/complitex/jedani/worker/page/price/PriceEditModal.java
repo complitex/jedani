@@ -105,7 +105,7 @@ public class PriceEditModal extends AbstractDomainEditModal<Price> {
             public boolean isEnabled() {
                 return priceModel.getObject() == null || priceModel.getObject().getNumber(Price.COUNTRY) == null;
             }
-        });
+        }.setRequired(true));
 
         container.add(new DateTextFieldFormGroup("begin", DateAttributeModel.of(priceModel, Price.DATE_BEGIN))
                 .setRequired(true));
