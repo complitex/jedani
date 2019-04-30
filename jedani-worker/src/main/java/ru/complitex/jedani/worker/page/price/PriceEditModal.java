@@ -38,7 +38,6 @@ import ru.complitex.domain.model.NumberAttributeModel;
 import ru.complitex.domain.page.AbstractDomainEditModal;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
-import ru.complitex.domain.util.Attributes;
 import ru.complitex.jedani.worker.component.NomenclatureAutoComplete;
 import ru.complitex.jedani.worker.entity.Nomenclature;
 import ru.complitex.jedani.worker.entity.Price;
@@ -50,7 +49,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author Anatoly A. Ivanov
@@ -102,7 +100,12 @@ public class PriceEditModal extends AbstractDomainEditModal<Price> {
                 DomainParentModel.of(priceModel)).setRequired(true)));
 
         container.add(new DomainAutoCompleteFormGroup("country", Country.ENTITY_NAME, Country.NAME,
-                NumberAttributeModel.of(priceModel, Price.COUNTRY)));
+                NumberAttributeModel.of(priceModel, Price.COUNTRY)){
+            @Override
+            public boolean isEnabled() {
+                return priceModel.getObject() == null || priceModel.getObject().getNumber(Price.COUNTRY) == null;
+            }
+        });
 
         container.add(new DateTextFieldFormGroup("begin", DateAttributeModel.of(priceModel, Price.DATE_BEGIN))
                 .setRequired(true));
@@ -153,16 +156,6 @@ public class PriceEditModal extends AbstractDomainEditModal<Price> {
             @Override
             public String getCssClass() {
                 return "domain-id-column";
-            }
-        });
-
-        columns.add(new AbstractDomainColumn<Price>("country") {
-            @Override
-            public void populateItem(Item<ICellPopulator<Price>> cellItem, String componentId, IModel<Price> rowModel) {
-                Country country = domainService.getDomain(Country.class, rowModel.getObject().getNumber(Price.COUNTRY));
-
-                cellItem.add(new Label(componentId, country != null ? Attributes.capitalize(
-                        country.getTextValue(Country.NAME)) : ""));
             }
         });
 
@@ -240,12 +233,11 @@ public class PriceEditModal extends AbstractDomainEditModal<Price> {
 
         price.copy(priceModel.getObject(), true);
 
-        List<Price> prices = domainService.getDomains(Price.class, FilterWrapper.of((Price) new Price()
+        Long count = domainService.getDomainsCount(FilterWrapper.of((Price) new Price()
                 .setParentId(priceModel.getObject().getParentId())
                 .setNumber(Price.COUNTRY, price.getNumber(Price.COUNTRY))));
 
-        if (!prices.isEmpty() && (price.getObjectId() == null || prices.stream()
-                .anyMatch(p -> !Objects.equals(p.getObjectId(), price.getObjectId())))) {
+        if (price.getObjectId() == null && count > 0) {
             error(getString("error_price_exists"));
             target.add(feedback);
 
@@ -255,7 +247,7 @@ public class PriceEditModal extends AbstractDomainEditModal<Price> {
         if (price.getObjectId() != null){
             Price prevPrice = domainService.getDomain(Price.class, price.getObjectId());
 
-            if (price.getDate(Price.DATE_BEGIN).compareTo(prevPrice.getDate(Price.DATE_BEGIN)) <= 0){
+            if (price.getDate(Price.DATE_BEGIN).compareTo(prevPrice.getDate(Price.DATE_BEGIN)) < 0){
                 error(getString("error_begin_date_before"));
                 target.add(feedback);
 
