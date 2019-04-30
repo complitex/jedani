@@ -6,6 +6,7 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
 import de.agilecoders.wicket.core.markup.html.bootstrap.dialog.Modal;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -16,6 +17,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.danekja.java.util.function.serializable.SerializableConsumer;
+import ru.complitex.address.entity.Country;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
 import ru.complitex.common.util.Dates;
@@ -27,17 +29,18 @@ import ru.complitex.common.wicket.form.DateTextFieldFormGroup;
 import ru.complitex.common.wicket.form.FormGroupPanel;
 import ru.complitex.common.wicket.form.FormGroupTextField;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
+import ru.complitex.domain.component.form.DomainAutoCompleteFormGroup;
 import ru.complitex.domain.entity.Status;
 import ru.complitex.domain.model.DateAttributeModel;
 import ru.complitex.domain.model.DecimalAttributeModel;
 import ru.complitex.domain.model.DomainParentModel;
+import ru.complitex.domain.model.NumberAttributeModel;
 import ru.complitex.domain.page.AbstractDomainEditModal;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
 import ru.complitex.jedani.worker.component.NomenclatureAutoComplete;
 import ru.complitex.jedani.worker.entity.Nomenclature;
 import ru.complitex.jedani.worker.entity.Price;
-import ru.complitex.user.entity.User;
 import ru.complitex.user.mapper.UserMapper;
 
 import javax.inject.Inject;
@@ -75,7 +78,6 @@ public class PriceEditModal extends AbstractDomainEditModal<Price> {
         this.onChange = onChange;
 
         setBackdrop(Backdrop.FALSE);
-        size(Size.Large);
 
         header(new ResourceModel("header"));
 
@@ -94,6 +96,14 @@ public class PriceEditModal extends AbstractDomainEditModal<Price> {
 
         container.add(new FormGroupPanel("nomenclature", new NomenclatureAutoComplete(FormGroupPanel.COMPONENT_ID,
                 DomainParentModel.of(priceModel)).setRequired(true)));
+
+        container.add(new DomainAutoCompleteFormGroup("country", Country.ENTITY_NAME, Country.NAME,
+                NumberAttributeModel.of(priceModel, Price.COUNTRY)){
+            @Override
+            public boolean isEnabled() {
+                return priceModel.getObject().getObjectId() == null;
+            }
+        });
 
         container.add(new DateTextFieldFormGroup("begin", DateAttributeModel.of(priceModel, Price.DATE_BEGIN))
                 .setRequired(true));
@@ -125,7 +135,7 @@ public class PriceEditModal extends AbstractDomainEditModal<Price> {
         WebMarkupContainer historyContainer = new WebMarkupContainer("historyContainer"){
             @Override
             public boolean isVisible() {
-                return priceModel.getObject().getObjectId() != null;
+                return priceModel.getObject().getObjectId() != null && dataProvider.size() > 0;
             }
         };
         container.add(historyContainer);
@@ -139,6 +149,11 @@ public class PriceEditModal extends AbstractDomainEditModal<Price> {
             @Override
             public void populateItem(Item<ICellPopulator<Price>> cellItem, String componentId, IModel<Price> rowModel) {
                 cellItem.add(new Label(componentId, rowModel.getObject().getId()));
+            }
+
+            @Override
+            public String getCssClass() {
+                return "domain-id-column";
             }
         });
 
@@ -166,20 +181,12 @@ public class PriceEditModal extends AbstractDomainEditModal<Price> {
         columns.add(new AbstractDomainColumn<Price>("startDate") {
             @Override
             public void populateItem(Item<ICellPopulator<Price>> cellItem, String componentId, IModel<Price> rowModel) {
-                cellItem.add(new DateTimeLabel(componentId, rowModel.getObject().getStartDate()));
+                cellItem.add(new DateTimeLabel(componentId, rowModel.getObject().getStartDate())
+                        .add(AttributeAppender.append("style", "white-space: nowrap")));
             }
         });
 
-        columns.add(new AbstractDomainColumn<Price>("user") {
-            @Override
-            public void populateItem(Item<ICellPopulator<Price>> cellItem, String componentId, IModel<Price> rowModel) {
-                User user = userMapper.getUser(rowModel.getObject().getUserId());
-
-                cellItem.add(new Label(componentId, user != null ? user.getLogin() : ""));
-            }
-        });
-
-        historyForm.add(new FilterDataTable<Price>("history", columns, dataProvider, historyForm, 5, "PriceEditModal"));
+        historyForm.add(new FilterDataTable<>("history", columns, dataProvider, historyForm, 5, "PriceEditModal"));
 
         addButton(new BootstrapAjaxButton(Modal.BUTTON_MARKUP_ID, Buttons.Type.Primary) {
             @Override
@@ -216,7 +223,9 @@ public class PriceEditModal extends AbstractDomainEditModal<Price> {
         price.copy(priceModel.getObject(), true);
 
         if (price.getObjectId() == null){
-            Long count = domainService.getDomainsCount(FilterWrapper.of(new Price().setParentId(priceModel.getObject().getParentId())));
+            Long count = domainService.getDomainsCount(FilterWrapper.of(new Price()
+                    .setParentId(priceModel.getObject().getParentId())
+                    .setNumber(Price.COUNTRY, price.getNumber(Price.COUNTRY))));
 
             if (count > 0) {
                 error(getString("error_price_exists"));

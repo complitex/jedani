@@ -36,7 +36,12 @@ public class DomainAutoCompleteFormGroup extends Panel{
             if (!domainAutoComplete.isError() && domainAutoComplete.isErrorRendered()) {
                 t.appendJavaScript(group.getRemoveErrorJs());
             }
-        }));
+        }){
+            @Override
+            public boolean isEnabled() {
+                return DomainAutoCompleteFormGroup.this.isEnabled();
+            }
+        });
         domainAutoComplete.setLabel(label);
 
         add(group);
@@ -70,5 +75,8 @@ public class DomainAutoCompleteFormGroup extends Panel{
         return this;
     }
 
+    public boolean isEnabled(){
+        return true;
+    }
 
 }

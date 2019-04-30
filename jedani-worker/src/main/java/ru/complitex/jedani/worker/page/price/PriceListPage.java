@@ -1,5 +1,6 @@
 package ru.complitex.jedani.worker.page.price;
 
+import ru.complitex.address.entity.Country;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.page.AbstractDomainEditModal;
@@ -7,6 +8,7 @@ import ru.complitex.domain.page.DomainListModalPage;
 import ru.complitex.jedani.worker.entity.Nomenclature;
 import ru.complitex.jedani.worker.entity.Price;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,7 +22,13 @@ public class PriceListPage extends DomainListModalPage<Price> {
 
     @Override
     protected List<EntityAttribute> getEntityAttributes(Entity entity) {
-        return entity.getEntityAttributes(Price.DATE_BEGIN, Price.PRICE);
+        List<EntityAttribute> list = new ArrayList<>();
+
+        list.add(entity.getEntityAttribute(Price.COUNTRY).withReference(Country.ENTITY_NAME, Country.NAME));
+        list.add(entity.getEntityAttribute(Price.DATE_BEGIN));
+        list.add(entity.getEntityAttribute(Price.PRICE));
+
+        return list;
     }
 
     @Override

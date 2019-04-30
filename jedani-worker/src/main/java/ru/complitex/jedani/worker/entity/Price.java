@@ -12,6 +12,7 @@ public class Price extends Domain<Price> {
     public static final long DATE_BEGIN = 1;
     public static final long DATE_END = 2;
     public static final long PRICE = 3;
+    public static final long COUNTRY = 4;
 
 
     public Price(){

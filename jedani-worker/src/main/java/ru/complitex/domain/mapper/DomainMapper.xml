@@ -413,9 +413,9 @@
 
     <!--suppress SqlResolve -->
     <select id="selectDomainsCount" parameterType="ru.complitex.common.entity.FilterWrapper" resultType="long">
-        select count(distinct dd.object_id)
+        select count(distinct dd.d_id)
         from (
-          select d.object_id object_id
+          select d.id d_id
           <include refid="selectDomainsFrom"/>
           <include refid="selectDomainsFromFilter"/>
           <include refid="selectDomainsWhere"/>
