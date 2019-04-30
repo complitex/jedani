@@ -13,13 +13,13 @@
 
     <!--suppress SqlResolve -->
     <select id="selectDomainNode" parameterType="ru.complitex.domain.entity.DomainNode" resultMap="domainNodeResultMap">
-        select *, '${entityName}' entity_name  from `${entityName}` where object_id = #{objectId} and `status` in (1, 4)
+        select *, '${entityName}' entity_name  from `${entityName}` where object_id = #{objectId}
     </select>
 
     <!--suppress SqlResolve -->
     <update id="updateDomainNode" parameterType="ru.complitex.domain.entity.DomainNode">
         update `${entityName}` set `left` = #{left}, `right` = #{right}, `level` = #{level}
-          where object_id = #{objectId} and `status` in (1, 4)
+          where object_id = #{objectId}
     </update>
 
     <!--suppress SqlResolve -->
@@ -32,7 +32,7 @@
             resultMap="domainNodeResultMap">
         select d.*, '${entityName}' entity_name  from `${entityName}` d
           left join ${entityName}_attribute a on a.domain_id = d.id
-        where d.status in (1, 4) and a.status = 1 and a.entity_attribute_id = #{map.parentEntityAttributeId}
+        where a.status = 1 and a.entity_attribute_id = #{map.parentEntityAttributeId}
           and a.number = #{objectId}
         order by d.object_id asc
     </select>
@@ -49,7 +49,7 @@
 
     <!--suppress SqlResolve -->
     <select id="selectDomainNodeIds" parameterType="ru.complitex.domain.entity.DomainNode" resultType="long">
-        select object_id from `${entityName}` where `left` >= #{left} and #{right} >= `right` and `status` in (1, 4)
+        select object_id from `${entityName}` where `left` >= #{left} and #{right} >= `right`
     </select>
 
     <!--suppress SqlResolve -->

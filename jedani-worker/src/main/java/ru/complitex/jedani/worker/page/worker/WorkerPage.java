@@ -3,11 +3,16 @@ package ru.complitex.jedani.worker.page.worker;
 import com.google.common.base.Strings;
 import com.google.common.hash.Hashing;
 import de.agilecoders.wicket.core.markup.html.bootstrap.behavior.CssClassNameAppender;
+import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxLink;
+import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapBookmarkablePageLink;
+import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
+import de.agilecoders.wicket.core.markup.html.bootstrap.image.GlyphIconType;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.authorization.UnauthorizedInstantiationException;
@@ -27,6 +32,7 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
+import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.*;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
@@ -43,6 +49,7 @@ import ru.complitex.common.wicket.form.DateTextFieldFormGroup;
 import ru.complitex.common.wicket.form.FormGroupPanel;
 import ru.complitex.common.wicket.form.FormGroupSelectPanel;
 import ru.complitex.common.wicket.form.FormGroupTextField;
+import ru.complitex.common.wicket.panel.LinkPanel;
 import ru.complitex.common.wicket.util.Wickets;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.component.datatable.DomainActionColumn;
@@ -157,6 +164,14 @@ public class WorkerPage extends BasePage {
         }else{
             if (id != null) {
                 worker = workerMapper.getWorker(id);
+
+                if (worker == null){
+                    setResponsePage(getApplication().getHomePage());
+
+                    getSession().error(getString("error_not_exist_worker"));
+
+                    return;
+                }
             } else {
                 worker = getCurrentWorker();
             }
@@ -735,7 +750,47 @@ public class WorkerPage extends BasePage {
             }
         });
 
-        columns.add(new DomainActionColumn<>(WorkerPage.class));
+        WorkerRemoveModal workerRemoveModal = new WorkerRemoveModal("workerRemove"){
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                target.add(feedback);
+                target.add(structure);
+            }
+        };
+        structure.add(workerRemoveModal);
+
+        columns.add(new DomainActionColumn<Worker>(WorkerPage.class){
+            @Override
+            public void populateItem(Item<ICellPopulator<Worker>> cellItem, String componentId, IModel<Worker> rowModel) {
+                PageParameters pageParameters = new PageParameters().add("id", rowModel.getObject().getId());
+
+                RepeatingView repeatingView = new RepeatingView(componentId);
+                cellItem.add(repeatingView);
+
+                repeatingView.add(new LinkPanel(repeatingView.newChildId(), new BootstrapBookmarkablePageLink<>(LinkPanel.LINK_COMPONENT_ID,
+                        WorkerPage.class, pageParameters, Buttons.Type.Link).setIconType(GlyphIconType.edit)));
+
+                repeatingView.add(new LinkPanel(repeatingView.newChildId(), new BootstrapAjaxLink<Worker>(LinkPanel.LINK_COMPONENT_ID,
+                        Buttons.Type.Link) {
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        workerRemoveModal.delete(target, rowModel.getObject());
+                    }
+
+                    @Override
+                    protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
+                        super.updateAjaxAttributes(attributes);
+
+                        attributes.setEventPropagation(AjaxRequestAttributes.EventPropagation.STOP);
+                    }
+                }.setIconType(GlyphIconType.remove)));
+            }
+
+            @Override
+            public String getCssClass() {
+                return "domain-id-column worker-action";
+            }
+        });
 
         FilterDataTable<Worker> table = new FilterDataTable<Worker>("table", columns, dataProvider, form, 7, "workerPage"){
             @Override

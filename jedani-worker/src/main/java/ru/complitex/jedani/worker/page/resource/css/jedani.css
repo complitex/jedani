@@ -74,6 +74,14 @@ td.domain-id-column{
     padding-bottom: 0;
 }
 
+.worker-action div{
+    display: table-cell;
+}
+
+.worker-action a{
+    padding: 5px;
+}
+
 .btn{
     cursor: pointer !important;
 }

@@ -1,16 +1,21 @@
 package ru.complitex.jedani.worker.service;
 
 import org.apache.wicket.util.lang.Objects;
+import org.mybatis.cdi.Transactional;
 import ru.complitex.domain.entity.Domain;
+import ru.complitex.domain.entity.Status;
+import ru.complitex.domain.mapper.DomainMapper;
 import ru.complitex.domain.service.DomainNodeService;
 import ru.complitex.domain.util.Attributes;
 import ru.complitex.jedani.worker.entity.Worker;
 import ru.complitex.jedani.worker.mapper.WorkerMapper;
 import ru.complitex.name.service.NameService;
+import ru.complitex.user.entity.User;
 import ru.complitex.user.mapper.UserMapper;
 
 import javax.inject.Inject;
 import java.io.Serializable;
+import java.util.UUID;
 
 /**
  * @author Anatoly A. Ivanov
@@ -20,6 +25,9 @@ public class WorkerService implements Serializable {
 
     @Inject
     private UserMapper userMapper;
+
+    @Inject
+    private DomainMapper domainMapper;
 
     @Inject
     private WorkerMapper workerMapper;
@@ -41,6 +49,7 @@ public class WorkerService implements Serializable {
         return null;
     }
 
+    @Transactional
     public void rebuildIndex(){
         domainNodeService.rebuildRootIndex(Worker.ENTITY_NAME, 1L, Worker.MANAGER_ID);
     }
@@ -80,5 +89,15 @@ public class WorkerService implements Serializable {
     public String getSimpleWorkerLabel(Domain worker){
         return Objects.defaultIfNull(worker.getText(Worker.J_ID), "") + ", " +
                 Attributes.capitalize(nameService.getLastName(worker.getNumber(Worker.LAST_NAME)));
+    }
+
+    @Transactional
+    public void delete(Worker worker){
+        User user = userMapper.getUser(worker.getUserId());
+        user.setPassword(UUID.randomUUID().toString());
+        userMapper.updateUserPassword(user);
+
+        worker.setStatus(Status.ARCHIVE);
+        domainMapper.updateDomain(worker);
     }
 }
