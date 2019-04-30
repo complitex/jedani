@@ -12,9 +12,11 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import ru.complitex.jedani.worker.entity.Worker;
+import ru.complitex.jedani.worker.entity.WorkerType;
 import ru.complitex.jedani.worker.service.WorkerService;
 
 import javax.inject.Inject;
+import java.util.Objects;
 
 /**
  * @author Anatoly A. Ivanov
@@ -35,12 +37,20 @@ public class WorkerRemoveModal extends Modal<Worker> {
 
         setBackdrop(Backdrop.FALSE);
 
-        header(new ResourceModel("header"));
+        header(new LoadableDetachableModel<String>() {
+            @Override
+            protected String load() {
+                return getString(Objects.equals(workerModel.getObject().getType(), WorkerType.USER)
+                        ? "header_user" : "header_participant");
+            }
+        });
 
         add(workerLabel= new Label("worker", new LoadableDetachableModel<String>() {
             @Override
             protected String load() {
-                return workerService.getWorkerLabel(workerModel.getObject());
+                return getString(Objects.equals(workerModel.getObject().getType(), WorkerType.USER)
+                        ? "delete_user" : "delete_participant") + " " +
+                        workerService.getWorkerLabel(workerModel.getObject());
             }
         }).setOutputMarkupId(true));
 
@@ -77,7 +87,7 @@ public class WorkerRemoveModal extends Modal<Worker> {
     public void delete(AjaxRequestTarget target, Worker worker){
         workerModel.setObject(worker);
 
-        target.add(workerLabel);
+        target.add(workerLabel, get("dialog:header:header-label"));
 
         appendShowDialogJavaScript(target);
     }

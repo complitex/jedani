@@ -2,7 +2,6 @@ package ru.complitex.domain.page;
 
 import de.agilecoders.wicket.core.markup.html.bootstrap.behavior.CssClassNameAppender;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
-import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -53,7 +52,7 @@ public class DomainListPage<T extends Domain> extends BasePage{
 
     private Class<T> domainClass;
 
-    private Class<? extends Page> editPageClass;
+    private Class<? extends WebPage> editPageClass;
 
     private FilterWrapper<T> filterWrapper;
 
@@ -154,7 +153,7 @@ public class DomainListPage<T extends Domain> extends BasePage{
         onAddColumns(columns);
 
         if (editPageClass != null) {
-            columns.add(new DomainActionColumn<>(editPageClass));
+            columns.add(newDomainActionColumn());
         }
 
         table = new FilterDataTable<T>("table", columns, dataProvider, form, 15, "domainListPage" + entity.getName()){
@@ -282,5 +281,10 @@ public class DomainListPage<T extends Domain> extends BasePage{
     protected void title(IModel<String> titleModel){
         titleLabel.setDefaultModel(titleModel);
     }
+
+    protected IColumn<T, SortProperty> newDomainActionColumn(){
+        return new DomainActionColumn<T>(editPageClass);
+    }
+
 
 }

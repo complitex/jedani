@@ -1,11 +1,19 @@
 package ru.complitex.jedani.worker.page.worker;
 
+import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxLink;
+import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapBookmarkablePageLink;
+import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
+import de.agilecoders.wicket.core.markup.html.bootstrap.image.GlyphIconType;
 import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.repeater.Item;
+import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
@@ -18,7 +26,9 @@ import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
 import ru.complitex.common.wicket.datatable.FilterDataForm;
 import ru.complitex.common.wicket.datatable.TextDataFilter;
+import ru.complitex.common.wicket.panel.LinkPanel;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
+import ru.complitex.domain.component.datatable.DomainActionColumn;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.entity.StringType;
@@ -35,6 +45,7 @@ import ru.complitex.user.mapper.UserMapper;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Anatoly A. Ivanov
@@ -51,8 +62,20 @@ public class WorkerListPage extends DomainListPage<Worker>{
     @Inject
     private UserMapper userMapper;
 
+    private WorkerRemoveModal workerRemoveModal;
+
     public WorkerListPage() {
         super(Worker.class, WorkerPage.class);
+
+        Form form = new Form("workerRemoveForm");
+        getContainer().add(form);
+
+        form.add(workerRemoveModal = new WorkerRemoveModal("workerRemove"){
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                target.add(getFeedback(), getTable());
+            }
+        });
     }
 
     @SuppressWarnings("Duplicates")
@@ -164,5 +187,47 @@ public class WorkerListPage extends DomainListPage<Worker>{
         }
 
         return super.displayModel(entityAttribute);
+    }
+
+    @Override
+    protected IColumn<Worker, SortProperty> newDomainActionColumn() {
+        return new DomainActionColumn<Worker>(WorkerPage.class){
+            @Override
+            public void populateItem(Item<ICellPopulator<Worker>> cellItem, String componentId, IModel<Worker> rowModel) {
+                PageParameters pageParameters = new PageParameters().add("id", rowModel.getObject().getId());
+
+                RepeatingView repeatingView = new RepeatingView(componentId);
+                cellItem.add(repeatingView);
+
+                repeatingView.add(new LinkPanel(repeatingView.newChildId(), new BootstrapBookmarkablePageLink<>(LinkPanel.LINK_COMPONENT_ID,
+                        WorkerPage.class, pageParameters, Buttons.Type.Link).setIconType(GlyphIconType.edit)));
+
+                repeatingView.add(new LinkPanel(repeatingView.newChildId(), new BootstrapAjaxLink<Worker>(LinkPanel.LINK_COMPONENT_ID,
+                        Buttons.Type.Link) {
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        workerRemoveModal.delete(target, rowModel.getObject());
+                    }
+
+                    @Override
+                    protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
+                        super.updateAjaxAttributes(attributes);
+
+                        attributes.setEventPropagation(AjaxRequestAttributes.EventPropagation.STOP);
+                    }
+
+                    @Override
+                    public boolean isVisible() {
+                        return !Objects.equals(rowModel.getObject().getObjectId(), 1L) &&
+                                !Objects.equals(rowModel.getObject().getObjectId(), getCurrentWorker().getId());
+                    }
+                }.setIconType(GlyphIconType.remove)));
+            }
+
+            @Override
+            public String getCssClass() {
+                return "domain-id-column worker-action";
+            }
+        };
     }
 }

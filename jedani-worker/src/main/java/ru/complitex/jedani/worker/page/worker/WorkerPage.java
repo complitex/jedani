@@ -753,12 +753,12 @@ public class WorkerPage extends BasePage {
         WorkerRemoveModal workerRemoveModal = new WorkerRemoveModal("workerRemove"){
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
-                target.add(feedback);
-                target.add(structure);
+                target.add(feedback, structure);
             }
         };
         structure.add(workerRemoveModal);
 
+        //noinspection Duplicates
         columns.add(new DomainActionColumn<Worker>(WorkerPage.class){
             @Override
             public void populateItem(Item<ICellPopulator<Worker>> cellItem, String componentId, IModel<Worker> rowModel) {
@@ -782,6 +782,12 @@ public class WorkerPage extends BasePage {
                         super.updateAjaxAttributes(attributes);
 
                         attributes.setEventPropagation(AjaxRequestAttributes.EventPropagation.STOP);
+                    }
+
+                    @Override
+                    public boolean isVisible() {
+                        return !Objects.equals(rowModel.getObject().getObjectId(), 1L) &&
+                                !Objects.equals(rowModel.getObject().getObjectId(), getCurrentWorker().getId());
                     }
                 }.setIconType(GlyphIconType.remove)));
             }
