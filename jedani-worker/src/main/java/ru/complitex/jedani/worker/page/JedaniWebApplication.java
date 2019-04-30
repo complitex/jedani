@@ -137,6 +137,7 @@ public class JedaniWebApplication extends WebApplication{
                 "img/checkmark.png"));
 
         mountResource("img/jedani.svg", JedaniLogoImgResourceReference.INSTANCE);
+        mountResource("favicon.ico", JedaniFaviconResourceReference.INSTANCE);
 
         mountResource("fonts/glyphicons-halflings-regular.woff2", new WebjarsCssResourceReference(
                 "/bootstrap/current/fonts/glyphicons-halflings-regular.woff2"));

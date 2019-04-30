@@ -38,9 +38,11 @@ import ru.complitex.domain.model.NumberAttributeModel;
 import ru.complitex.domain.page.AbstractDomainEditModal;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
+import ru.complitex.domain.util.Attributes;
 import ru.complitex.jedani.worker.component.NomenclatureAutoComplete;
 import ru.complitex.jedani.worker.entity.Nomenclature;
 import ru.complitex.jedani.worker.entity.Price;
+import ru.complitex.user.entity.User;
 import ru.complitex.user.mapper.UserMapper;
 
 import javax.inject.Inject;
@@ -48,6 +50,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Anatoly A. Ivanov
@@ -78,6 +81,7 @@ public class PriceEditModal extends AbstractDomainEditModal<Price> {
         this.onChange = onChange;
 
         setBackdrop(Backdrop.FALSE);
+        size(Size.Large);
 
         header(new ResourceModel("header"));
 
@@ -98,19 +102,14 @@ public class PriceEditModal extends AbstractDomainEditModal<Price> {
                 DomainParentModel.of(priceModel)).setRequired(true)));
 
         container.add(new DomainAutoCompleteFormGroup("country", Country.ENTITY_NAME, Country.NAME,
-                NumberAttributeModel.of(priceModel, Price.COUNTRY)){
-            @Override
-            public boolean isEnabled() {
-                return priceModel.getObject().getObjectId() == null;
-            }
-        });
+                NumberAttributeModel.of(priceModel, Price.COUNTRY)));
 
         container.add(new DateTextFieldFormGroup("begin", DateAttributeModel.of(priceModel, Price.DATE_BEGIN))
                 .setRequired(true));
         container.add(new FormGroupTextField<>("price", DecimalAttributeModel.of(priceModel, Price.PRICE),
                 BigDecimal.class).setRequired(true));
 
-        DataProvider<Price> dataProvider = new DataProvider<Price>(FilterWrapper.of(new Price())) {
+        DataProvider<Price> dataProvider = new DataProvider<Price>(FilterWrapper.of(new Price()).sort("id", false)) {
             @Override
             public Iterator<? extends Price> iterator(long first, long count) {
                 FilterWrapper<Price> filterWrapper = getFilterState();
@@ -157,6 +156,16 @@ public class PriceEditModal extends AbstractDomainEditModal<Price> {
             }
         });
 
+        columns.add(new AbstractDomainColumn<Price>("country") {
+            @Override
+            public void populateItem(Item<ICellPopulator<Price>> cellItem, String componentId, IModel<Price> rowModel) {
+                Country country = domainService.getDomain(Country.class, rowModel.getObject().getNumber(Price.COUNTRY));
+
+                cellItem.add(new Label(componentId, country != null ? Attributes.capitalize(
+                        country.getTextValue(Country.NAME)) : ""));
+            }
+        });
+
         columns.add(new AbstractDomainColumn<Price>("dateBegin") {
             @Override
             public void populateItem(Item<ICellPopulator<Price>> cellItem, String componentId, IModel<Price> rowModel) {
@@ -183,6 +192,15 @@ public class PriceEditModal extends AbstractDomainEditModal<Price> {
             public void populateItem(Item<ICellPopulator<Price>> cellItem, String componentId, IModel<Price> rowModel) {
                 cellItem.add(new DateTimeLabel(componentId, rowModel.getObject().getStartDate())
                         .add(AttributeAppender.append("style", "white-space: nowrap")));
+            }
+        });
+
+        columns.add(new AbstractDomainColumn<Price>("user") {
+            @Override
+            public void populateItem(Item<ICellPopulator<Price>> cellItem, String componentId, IModel<Price> rowModel) {
+                User user = userMapper.getUser(rowModel.getObject().getUserId());
+
+                cellItem.add(new Label(componentId, user != null ? user.getLogin() : ""));
             }
         });
 
@@ -222,18 +240,19 @@ public class PriceEditModal extends AbstractDomainEditModal<Price> {
 
         price.copy(priceModel.getObject(), true);
 
-        if (price.getObjectId() == null){
-            Long count = domainService.getDomainsCount(FilterWrapper.of(new Price()
-                    .setParentId(priceModel.getObject().getParentId())
-                    .setNumber(Price.COUNTRY, price.getNumber(Price.COUNTRY))));
+        List<Price> prices = domainService.getDomains(Price.class, FilterWrapper.of((Price) new Price()
+                .setParentId(priceModel.getObject().getParentId())
+                .setNumber(Price.COUNTRY, price.getNumber(Price.COUNTRY))));
 
-            if (count > 0) {
-                error(getString("error_price_exists"));
-                target.add(feedback);
+        if (!prices.isEmpty() && (price.getObjectId() == null || prices.stream()
+                .anyMatch(p -> !Objects.equals(p.getObjectId(), price.getObjectId())))) {
+            error(getString("error_price_exists"));
+            target.add(feedback);
 
-                return;
-            }
-        }else{
+            return;
+        }
+
+        if (price.getObjectId() != null){
             Price prevPrice = domainService.getDomain(Price.class, price.getObjectId());
 
             if (price.getDate(Price.DATE_BEGIN).compareTo(prevPrice.getDate(Price.DATE_BEGIN)) <= 0){

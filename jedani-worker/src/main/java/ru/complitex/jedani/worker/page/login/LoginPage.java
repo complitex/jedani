@@ -5,8 +5,10 @@ import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.image.Image;
+import org.apache.wicket.markup.html.link.ResourceLink;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import ru.complitex.jedani.worker.page.resource.JedaniCssResourceReference;
+import ru.complitex.jedani.worker.page.resource.JedaniFaviconResourceReference;
 import ru.complitex.jedani.worker.page.resource.JedaniLogoImgResourceReference;
 
 /**
@@ -15,6 +17,8 @@ import ru.complitex.jedani.worker.page.resource.JedaniLogoImgResourceReference;
  */
 public class LoginPage extends WebPage{
     public LoginPage(PageParameters parameters) {
+        add(new ResourceLink<>("favicon", JedaniFaviconResourceReference.INSTANCE));
+
         setVersioned(false);
 
         add(new Image("jedani", JedaniLogoImgResourceReference.INSTANCE));

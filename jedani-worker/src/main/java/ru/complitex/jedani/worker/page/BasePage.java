@@ -19,6 +19,7 @@ import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.link.Link;
+import org.apache.wicket.markup.html.link.ResourceLink;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.model.LoadableDetachableModel;
@@ -105,6 +106,8 @@ public class BasePage extends WebPage{
     private Worker currentWorker;
 
     protected BasePage() {
+        add(new ResourceLink<>("favicon", JedaniFaviconResourceReference.INSTANCE));
+
         String login = ((HttpServletRequest)getRequestCycle().getRequest().getContainerRequest()).getUserPrincipal().getName();
 
         currentUser = userMapper.getUser(login);
