@@ -79,4 +79,11 @@ public class DomainAutoCompleteFormGroup extends Panel{
         return true;
     }
 
+    @Override
+    public void detachModels(){
+        super.detachModels();
+
+        domainAutoComplete.detachModels();
+    }
+
 }

@@ -60,7 +60,7 @@ public abstract class AbstractDomainAutoComplete extends FormComponentPanel<Long
         inputId = new HiddenField<>("inputId", new LoadableDetachableModel<Long>() {
             @Override
             protected Long load() {
-                return model.getObject();
+                return AbstractDomainAutoComplete.this.getModel().getObject();
             }
         }, Long.class);
         inputId.setConvertEmptyInputStringToNull(true);
@@ -94,7 +94,9 @@ public abstract class AbstractDomainAutoComplete extends FormComponentPanel<Long
         autoCompleteTextField = new AutoCompleteTextField<Domain>("input", new LoadableDetachableModel<Domain>() {
             @Override
             protected Domain load() {
-                return model.getObject() != null  ? getDomain(model.getObject()) : null;
+                Long objectId = AbstractDomainAutoComplete.this.getModel().getObject();
+
+                return objectId != null ? AbstractDomainAutoComplete.this.getDomain(objectId) : null;
             }
         }, Domain.class,
                 new AbstractAutoCompleteTextRenderer<Domain>() {
@@ -241,5 +243,12 @@ public abstract class AbstractDomainAutoComplete extends FormComponentPanel<Long
 
     public SerializableConsumer<AjaxRequestTarget> getOnChange() {
         return onChange;
+    }
+
+    public void detachModels(){
+        super.detachModels();
+
+        inputId.detachModels();
+        autoCompleteTextField.detachModels();
     }
 }

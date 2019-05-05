@@ -74,9 +74,9 @@ public class StorageAutoComplete extends AbstractDomainAutoComplete {
 
         return storageMapper.getStorages(FilterWrapper.of(storage)
                 .setFilter("search")
-                .add(Storage.FILTER_WORKER, input)
-                .add(Storage.FILTER_WORKERS, input)
-                .add(Storage.FILTER_OBJECT_ID, input)
+                .put(Storage.FILTER_WORKER, input)
+                .put(Storage.FILTER_WORKERS, input)
+                .put(Storage.FILTER_OBJECT_ID, input)
                 .limit(0L, 10L));
     }
 

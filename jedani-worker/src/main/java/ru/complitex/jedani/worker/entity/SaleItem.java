@@ -21,6 +21,7 @@ public class SaleItem extends Domain<SaleItem> {
     public static final String FILTER_INSTALLMENT_PERCENTAGE = "installmentPercentage";
     public static final String FILTER_INSTALLMENT_MONTHS = "installmentMonths";
     public static final String FILTER_SELLER_WORKER = "sellerWorker";
+    public static final String FILTER_REGION_IDS = "regionIds";
 
     public SaleItem() {
         super(ENTITY_NAME);

@@ -72,6 +72,10 @@ public class WorkerService implements Serializable {
     }
 
     public String getWorkerLabel(Domain worker){
+        if (worker == null){
+            return "";
+        }
+
         return ((worker.getText(Worker.J_ID) != null ? worker.getText(Worker.J_ID) + ", " : "") +
                 Attributes.capitalize(nameService.getLastName(worker.getNumber(Worker.LAST_NAME))) + " " +
                 Attributes.capitalize(nameService.getFirstName(worker.getNumber(Worker.FIRST_NAME))) + " " +

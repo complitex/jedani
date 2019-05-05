@@ -72,11 +72,11 @@ public class DomainListPage<T extends Domain> extends BasePage{
 
         this.editPageClass = editPageClass;
 
-        T domainInstance = Domains.newObject(domainClass);
+        T domainObject = Domains.newObject(domainClass);
 
-        Entity entity = entityService.getEntity(domainInstance.getEntityName());
+        Entity entity = entityService.getEntity(domainObject.getEntityName());
 
-        String title = entity.getValue() != null ? entity.getValue().getText() : "[" + domainInstance.getEntityName() + "]";
+        String title = entity.getValue() != null ? entity.getValue().getText() : "[" + domainObject.getEntityName() + "]";
 
         container = new WebMarkupContainer("container");
         container.setOutputMarkupId(true);
@@ -90,7 +90,7 @@ public class DomainListPage<T extends Domain> extends BasePage{
         feedback.setOutputMarkupId(true);
         container.add(feedback);
 
-        filterWrapper = FilterWrapper.of(domainInstance);
+        filterWrapper = newFilterWrapper(domainObject);
 
         DataProvider<T> dataProvider = new DataProvider<T>(filterWrapper) {
             @Override
@@ -181,6 +181,10 @@ public class DomainListPage<T extends Domain> extends BasePage{
                 return addVisible;
             }
         });
+    }
+
+    protected FilterWrapper<T> newFilterWrapper(T domainObject) {
+        return FilterWrapper.of(domainObject);
     }
 
     protected DomainColumn<T> newDomainColumn(EntityAttribute entityAttribute) {

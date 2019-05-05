@@ -16,7 +16,7 @@
     <select id="selectIsExistJId" resultType="boolean" parameterType="map">
         select count(*) > 0 from worker_attribute wa left join worker w on wa.domain_id = w.id
             where wa.entity_attribute_id = 1 and wa.`text` = #{jId} and wa.`status` = 1
-        <if test="objectId != null">and w.object_id = #{objectId}</if>
+        <if test="objectId != null">and w.object_id != #{objectId}</if>
     </select>
 
     <select id="selectSubWorkersCount" parameterType="long" resultType="int">
@@ -48,6 +48,19 @@
     <sql id="selectWorkersWhereLogin">
         <if test="map.login != null">
             and u.login like concat('%', #{map.login}, '%')
+        </if>
+    </sql>
+
+    <sql id="selectWorkersFromRegion">
+        <if test="map.regionIds != null">
+            left join worker_attribute wa_r on wa_r.domain_id = d.id and wa_r.entity_attribute_id = 6 and wa_r.status = 1
+            left join worker_value wv_r on wv_r.attribute_id = wa_r.id
+        </if>
+    </sql>
+
+    <sql id="selectWorkersWhereRegion">
+        <if test="map.regionIds != null">
+            and wv_r.number in (#{map.regionIds})
         </if>
     </sql>
 
@@ -87,9 +100,11 @@
                 <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromFilter"/>
                 <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromSort"/>
                 <include refid="selectWorkersFromLogin"/>
+                <include refid="selectWorkersFromRegion"/>
                 <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsWhere"/>
                 <include refid="selectWorkersWhereNode"/>
                 <include refid="selectWorkersWhereLogin"/>
+                <include refid="selectWorkersWhereRegion"/>
                 group by d.id
                 <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsOrderSort"/>
                 <include refid="selectWorkersOrderSort"/>
@@ -112,9 +127,12 @@
         <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFrom"/>
         <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromFilter"/>
         <include refid="selectWorkersFromLogin"/>
+        <include refid="selectWorkersFromRegion"/>
         <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsWhere"/>
+        <include refid="selectWorkersWhereNode"/>
         <include refid="selectWorkersWhereLogin"/>
-        <include refid="selectWorkersWhereNode"/>) w
+        <include refid="selectWorkersWhereRegion"/>
+        ) w
     </select>
 
     <select id="selectWorker" parameterType="long" resultMap="workerResultMap">

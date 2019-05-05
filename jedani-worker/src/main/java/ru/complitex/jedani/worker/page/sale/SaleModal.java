@@ -445,7 +445,7 @@ public class SaleModal extends Modal<Sale> {
 
         if (!regions.isEmpty()){
             List<Storage> storages = storageMapper.getStorages(FilterWrapper.of(new Storage())
-                    .add("regions", regions.stream().map(Object::toString).collect(Collectors.joining(","))));
+                    .put("regions", regions.stream().map(Object::toString).collect(Collectors.joining(","))));
 
             if (!storages.isEmpty()){
                 defaultStorageId = storages.get(0).getObjectId();

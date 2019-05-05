@@ -164,8 +164,8 @@ public class BasePage extends WebPage{
             @Override
             protected List<Storage> load() {
                 return storageMapper.getStorages(new FilterWrapper<>(new Storage())
-                        .add(Storage.FILTER_CURRENT_WORKER, getCurrentWorker().getObjectId())
-                        .add(Storage.FILTER_CITIES, getCurrentWorker().getNumberValuesString(Worker.CITIES)))
+                        .put(Storage.FILTER_CURRENT_WORKER, getCurrentWorker().getObjectId())
+                        .put(Storage.FILTER_CITIES, getCurrentWorker().getNumberValuesString(Worker.CITIES)))
                         .stream().filter(s -> s.getNumber(Storage.CITY) != null).collect(Collectors.toList());
             }
         }) {

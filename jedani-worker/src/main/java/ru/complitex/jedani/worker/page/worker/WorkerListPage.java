@@ -78,6 +78,17 @@ public class WorkerListPage extends DomainListPage<Worker>{
         });
     }
 
+    @Override
+    protected FilterWrapper<Worker> newFilterWrapper(Worker worker) {
+        FilterWrapper<Worker> filterWrapper =  super.newFilterWrapper(worker);
+
+        if (getCurrentWorker().isRegionalLeader()) {
+            filterWrapper.put(Worker.FILTER_REGION_IDS, getCurrentWorker().getRegionIdsString());
+        }
+
+        return filterWrapper;
+    }
+
     @SuppressWarnings("Duplicates")
     @Override
     protected List<EntityAttribute> getEntityAttributes(Entity entity) {

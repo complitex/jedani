@@ -52,8 +52,8 @@ public class StorageListPage extends DomainListPage<Storage> {
 
         if (!isAdmin()) {
             getFilterWrapper()
-                    .add(Storage.FILTER_CURRENT_WORKER, getCurrentWorker().getObjectId())
-                    .add(Storage.FILTER_CITIES, getCurrentWorker().getNumberValuesString(Worker.CITIES));
+                    .put(Storage.FILTER_CURRENT_WORKER, getCurrentWorker().getObjectId())
+                    .put(Storage.FILTER_CITIES, getCurrentWorker().getNumberValuesString(Worker.CITIES));
 
             boolean hasStorage = storageMapper.getStoragesCount(FilterWrapper.of((Storage) new Storage()
                     .setParentId(getCurrentWorker().getObjectId()))) == 0;

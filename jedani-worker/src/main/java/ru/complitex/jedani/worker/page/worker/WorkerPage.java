@@ -181,8 +181,13 @@ public class WorkerPage extends BasePage {
             }
         }
 
-        if (worker.getObjectId() != null && worker.isParticipant()){
-            if (!isAdmin() && !isStructureAdmin()){
+        if (worker.getObjectId() != null && !isAdmin()){
+            if (getCurrentWorker().isRegionalLeader()){
+                if (worker.getNumberValues(Worker.REGIONS).stream().noneMatch(r -> getCurrentWorker()
+                        .getNumberValues(Worker.REGIONS).contains(r))){
+                    throw new UnauthorizedInstantiationException(WorkerPage.class);
+                }
+            }else if (worker.isParticipant()){
                 if (getCurrentWorker().getRight() < worker.getRight() || getCurrentWorker().getLeft() > worker.getLeft()){
                     throw new UnauthorizedInstantiationException(WorkerPage.class);
                 }
@@ -203,7 +208,9 @@ public class WorkerPage extends BasePage {
         add(feedback);
 
         //Data provider
-        FilterWrapper<Worker> filterWrapper = FilterWrapper.of(new Worker(worker.getLeft(), worker.getRight(), worker.getLevel()));
+        FilterWrapper<Worker> filterWrapper = worker.isRegionalLeader()
+                ? FilterWrapper.of(new Worker()).put(Worker.FILTER_REGION_IDS, worker.getNumberValuesString(Worker.REGIONS))
+                : FilterWrapper.of(new Worker(worker.getLeft(), worker.getRight(), worker.getLevel()));
 
         DataProvider<Worker> dataProvider = new DataProvider<Worker>(filterWrapper) {
             @Override
@@ -231,7 +238,13 @@ public class WorkerPage extends BasePage {
 
         form.add(new FormGroupSelectPanel("type", new TypeSelect(FormGroupPanel.COMPONENT_ID,
                 new NumberAttributeModel(worker, Worker.TYPE), WorkerType.PARTICIPANT, WorkerType.USER)
-                .add(OnChangeAjaxBehavior.onChange(t -> t.add(form)))){
+                .add(OnChangeAjaxBehavior.onChange(t -> {
+                    if (!worker.isParticipant()){
+                        worker.setJId(null);
+                    }
+
+                    t.add(form);
+                }))){
             @Override
             public boolean isVisible() {
                 return worker.getObjectId() == null && (isAdmin() || isStructureAdmin());
@@ -265,7 +278,7 @@ public class WorkerPage extends BasePage {
 
             @Override
             public boolean isEnabled() {
-                return isEditEnabled();
+                return isEditEnabled() && worker.isParticipant();
             }
         };
 
@@ -616,6 +629,10 @@ public class WorkerPage extends BasePage {
                     worker.setFirstNameId(nameService.getOrCreateFirstName(firstName.getInput(), worker.getFistNameId()));
                     worker.setMiddleNameId(nameService.getOrCreateMiddleName(middleName.getInput(), worker.getMiddleNameId()));
 
+                    lastName.detachModels();
+                    firstName.detachModels();
+                    middleName.detachModels();
+
                     if (worker.isParticipant() && workerMapper.isExistJId(worker.getObjectId(), jId.getTextField().getInput())) {
                         jId.getTextField().error(getString("error_jid_exist"));
                         target.add(feedback, jId);
@@ -643,7 +660,7 @@ public class WorkerPage extends BasePage {
                             domainNodeMapper.updateIndex(new Worker(1L, 1L, 2L, 0L), worker);
                         }
 
-                        success(getString("info_user_created"));
+                        success(getString(worker.isParticipant() ? "info_worker_created" : "info_user_created"));
                     }else{
                         boolean moveIndex = !Objects.equals(worker.getManagerId(),
                                 workerMapper.getWorker(worker.getObjectId()).getManagerId()); //todo opt
@@ -659,11 +676,19 @@ public class WorkerPage extends BasePage {
                             filterWrapper.getObject().setLevel(worker.getLevel());
                         }
 
-                        success(getString("info_user_updated"));
+                        success(getString("info_updated"));
                     }
 
                     target.add(feedback, form);
                 } catch (Exception e) {
+                    if (worker.getObjectId() == null && user.getId() != null){
+                        try {
+                            userMapper.deleteUser(user.getId());
+                        } catch (Exception ex) {
+                            log.error("error save worker ", ex);
+                        }
+                    }
+
                     error("Ошибка: " + e.getMessage());
                     target.add(feedback);
 

@@ -29,6 +29,6 @@ public class FilterMapModel<T> implements IModel<T> {
 
     @Override
     public void setObject(T object) {
-        ((FilterWrapper)model.getObject()).add(filter, object);
+        ((FilterWrapper)model.getObject()).put(filter, object);
     }
 }

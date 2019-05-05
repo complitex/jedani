@@ -18,7 +18,7 @@ public abstract class BaseMapper implements Serializable {
     private transient SqlSessionManager sqlSessionManager;
 
     private SqlSessionManagerRegistry getSqlSessionManagerRegistry(){
-        if (sqlSessionManagerRegistry == null){
+        if (sqlSessionManagerRegistry == null || sqlSessionManagerRegistry.getManagers() == null){
             NonContextual.of(BaseMapper.class).inject(this);
         }
 

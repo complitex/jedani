@@ -66,11 +66,22 @@ public class SaleListPage extends DomainListModalPage<SaleItem> {
         };
         saleForm.add(saleModal);
 
-        if (!isAdmin()){
-            getFilterWrapper().add("sellerWorker", getCurrentWorker().getObjectId());
-        }
+
     }
 
+    @Override
+    protected FilterWrapper<SaleItem> newFilterMapper(SaleItem domainObject) {
+        FilterWrapper<SaleItem> filterWrapper = super.newFilterMapper(domainObject);
+
+        if (getCurrentWorker().isRegionalLeader()){
+            filterWrapper.put(SaleItem.FILTER_REGION_IDS, getCurrentWorker().getRegionIdsString());
+
+        }else if (!isAdmin()){
+            filterWrapper.put(SaleItem.FILTER_SELLER_WORKER, getCurrentWorker().getObjectId());
+        }
+
+        return filterWrapper;
+    }
 
     @Override
     protected List<EntityAttribute> getEntityAttributes(Entity entity) {

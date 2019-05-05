@@ -11,6 +11,8 @@ public class Position extends Domain<Position> {
 
     public static final long NAME = 1;
 
+    public static final Long POSITION_REGIONAL_LEADER = 3L;
+
     public Position() {
         super(ENTITY_NAME);
     }

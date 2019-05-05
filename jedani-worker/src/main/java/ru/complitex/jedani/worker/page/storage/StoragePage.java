@@ -115,8 +115,8 @@ public class StoragePage extends BasePage {
 
             if (!isAdmin()){
                 boolean storages = storageMapper.getStorages(new FilterWrapper<>(new Storage())
-                        .add(Storage.FILTER_CURRENT_WORKER, getCurrentWorker().getObjectId())
-                        .add(Storage.FILTER_CITIES, getCurrentWorker().getNumberValuesString(Worker.CITIES)))
+                        .put(Storage.FILTER_CURRENT_WORKER, getCurrentWorker().getObjectId())
+                        .put(Storage.FILTER_CITIES, getCurrentWorker().getNumberValuesString(Worker.CITIES)))
                         .stream().filter(s -> s.getCityId() != null)
                         .anyMatch(s -> Objects.equals(s.getObjectId(), storageId));
 
@@ -436,7 +436,7 @@ public class StoragePage extends BasePage {
         tables.add(transactionHeader);
 
         DataProvider<Transaction> transactionDataProvider = new DataProvider<Transaction>(FilterWrapper.of(
-                new Transaction()).add("storageId", storageId).sort("id", null, false)) {
+                new Transaction()).put("storageId", storageId).sort("id", null, false)) {
             @Override
             public Iterator<? extends Transaction> iterator(long first, long count) {
                 FilterWrapper<Transaction> filterWrapper = getFilterState().limit(first, count);

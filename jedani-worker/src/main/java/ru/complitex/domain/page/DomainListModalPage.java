@@ -76,11 +76,11 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage{
         this.parentEntityName = parentEntityName;
         this.parentEntityAttributeId = parentEntityAttributeId;
 
-        T domainInstance = Domains.newObject(domainClass);
+        T domainObject = Domains.newObject(domainClass);
 
-        Entity entity = entityService.getEntity(domainInstance.getEntityName());
+        Entity entity = entityService.getEntity(domainObject.getEntityName());
 
-        String title = entity.getValue() != null ? entity.getValue().getText() : "[" + domainInstance.getEntityName() + "]";
+        String title = entity.getValue() != null ? entity.getValue().getText() : "[" + domainObject.getEntityName() + "]";
 
         container = new WebMarkupContainer("container");
         container.setOutputMarkupId(true);
@@ -94,7 +94,7 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage{
         feedback.setOutputMarkupId(true);
         container.add(feedback);
 
-        filterWrapper = FilterWrapper.of(domainInstance);
+        filterWrapper = newFilterMapper(domainObject);
 
         DataProvider<T> dataProvider = new DataProvider<T>(filterWrapper) {
             @Override
@@ -143,7 +143,7 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage{
             });
         }
 
-        getEntityAttributes(entityService.getEntity(domainInstance.getEntityName()))
+        getEntityAttributes(entityService.getEntity(domainObject.getEntityName()))
                 .forEach(a -> columns.add(newDomainColumn(a)));
 
         onAddColumns(columns);
@@ -193,6 +193,10 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage{
         }else{
             editForm.add(new EmptyPanel("edit"));
         }
+    }
+
+    protected FilterWrapper<T> newFilterMapper(T domainObject) {
+        return FilterWrapper.of(domainObject);
     }
 
     public DomainListModalPage(Class<T> domainInstance) {

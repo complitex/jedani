@@ -60,8 +60,8 @@ class ReceiveModal extends StorageModal {
 
     void open(Product product, Long transferType, AjaxRequestTarget target){
         List<Transaction> transactions = transactionMapper.getTransactions(FilterWrapper.of(
-                new Transaction()).add(Transaction.FILTER_STORAGE_TO_ID, product.getParentId())
-                .add(transferType == TransferType.GIFT ? Transaction.FILTER_RECEIVING_GIFT : Transaction.FILTER_RECEIVING, true));
+                new Transaction()).put(Transaction.FILTER_STORAGE_TO_ID, product.getParentId())
+                .put(transferType == TransferType.GIFT ? Transaction.FILTER_RECEIVING_GIFT : Transaction.FILTER_RECEIVING, true));
 
         if (!transactions.isEmpty()){
             Transaction transaction = transactions.get(0);

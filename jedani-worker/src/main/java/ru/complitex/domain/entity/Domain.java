@@ -338,8 +338,10 @@ public class Domain<T extends Domain<T>> implements Serializable{
         this.map = map;
     }
 
-    public void put(String key, Object object){
+    public Domain put(String key, Object object){
         map.put(key, object);
+
+        return this;
     }
 
     public Long getUserId() {

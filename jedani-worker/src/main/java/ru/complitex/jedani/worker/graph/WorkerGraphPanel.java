@@ -35,7 +35,7 @@ public class WorkerGraphPanel extends Panel {
         super(id);
 
         List<Worker> workers = new ArrayList<>(workerMapper.getWorkers(FilterWrapper.of(
-                new Worker(worker.getLeft(), worker.getRight(), worker.getLevel())).add("levelDepth", levelDepth)));
+                new Worker(worker.getLeft(), worker.getRight(), worker.getLevel())).put("levelDepth", levelDepth)));
 
         elements =  " {data: {id: '" + worker.getObjectId() + "', " +
                 "label: '" + worker.getText(Worker.J_ID) + "\\n" +

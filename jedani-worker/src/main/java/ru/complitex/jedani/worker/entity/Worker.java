@@ -4,6 +4,7 @@ import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.DomainNode;
 
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * @author Anatoly A. Ivanov
@@ -44,6 +45,8 @@ public class Worker extends DomainNode<Worker> {
     public static final long IMPORT_MANAGER_RANK_ID = 104;
 
     private Long subWorkerCount;
+
+    public static final String FILTER_REGION_IDS = "regionIds";
 
     public Worker() {
         super(ENTITY_NAME);
@@ -165,5 +168,13 @@ public class Worker extends DomainNode<Worker> {
 
     public boolean isParticipant(){
         return getType() == null || getType().equals(WorkerType.PARTICIPANT);
+    }
+
+    public boolean isRegionalLeader(){
+        return Objects.equals(getNumber(POSITION), Position.POSITION_REGIONAL_LEADER);
+    }
+
+    public String getRegionIdsString(){
+        return getNumberValuesString(REGIONS);
     }
 }

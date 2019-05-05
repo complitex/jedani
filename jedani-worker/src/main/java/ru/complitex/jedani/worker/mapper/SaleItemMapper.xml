@@ -11,6 +11,15 @@
             left join sale_attribute sa on (sa.domain_id = s.id and sa.status = 1)
           where s.object_id = d.parent_id and s.status = 1 and sa.entity_attribute_id = 1 and sa.number = #{map.sellerWorker})
       </if>
+
+        <if test="map.regionIds != null">
+            and exists(select s.id from sale s
+                left join sale_attribute sa on (sa.domain_id = s.id and sa.status = 1 and sa.entity_attribute_id = 1)
+                left join worker w on (w.object_id = sa.number and w.status = 1)
+                left join worker_attribute wa_r on (wa_r.domain_id = w.id and wa_r.entity_attribute_id = 6 and wa_r.status = 1)
+                left join worker_value wv_r on (wv_r.attribute_id = wa_r.id)
+            where s.object_id = d.parent_id and s.status = 1 and wv_r.number in (#{map.regionIds}))
+        </if>
     </sql>
 
      <!--suppress SqlResolve -->
