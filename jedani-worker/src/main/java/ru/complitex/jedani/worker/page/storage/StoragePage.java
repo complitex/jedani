@@ -57,7 +57,6 @@ import ru.complitex.jedani.worker.mapper.StorageMapper;
 import ru.complitex.jedani.worker.mapper.TransactionMapper;
 import ru.complitex.jedani.worker.page.BasePage;
 import ru.complitex.jedani.worker.security.JedaniRoles;
-import ru.complitex.jedani.worker.service.StorageService;
 import ru.complitex.jedani.worker.service.WorkerService;
 import ru.complitex.jedani.worker.util.Storages;
 import ru.complitex.name.service.NameService;
@@ -83,9 +82,6 @@ public class StoragePage extends BasePage {
     private StorageMapper storageMapper;
 
     @Inject
-    private StorageService storageService;
-
-    @Inject
     private TransactionMapper transactionMapper;
 
     @Inject
@@ -95,7 +91,11 @@ public class StoragePage extends BasePage {
     private WorkerService workerService;
 
     public StoragePage(PageParameters pageParameters) {
+        super(pageParameters);
+
         Long storageId = pageParameters.get("id").toOptionalLong();
+
+        boolean backToStorageList = pageParameters.get("nsl").isNull();
 
         Storage storage;
 
@@ -767,6 +767,6 @@ public class StoragePage extends BasePage {
             public void onClick(AjaxRequestTarget target) {
                 setResponsePage(StorageListPage.class);
             }
-        });
+        }.setVisible(backToStorageList));
     }
 }

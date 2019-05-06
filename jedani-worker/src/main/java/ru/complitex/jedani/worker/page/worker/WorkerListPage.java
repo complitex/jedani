@@ -178,12 +178,12 @@ public class WorkerListPage extends DomainListPage<Worker>{
 
     @Override
     protected void onEditPageParameters(PageParameters pageParameters) {
-        pageParameters.add("a", "");
+        pageParameters.add("wl", "");
     }
 
     @Override
     protected void onAddPageParameters(PageParameters pageParameters) {
-        pageParameters.add("a", "");
+        pageParameters.add("wl", "");
     }
 
     @Override

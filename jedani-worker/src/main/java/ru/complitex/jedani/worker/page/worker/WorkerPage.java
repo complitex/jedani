@@ -140,7 +140,7 @@ public class WorkerPage extends BasePage {
     public WorkerPage(PageParameters parameters) {
         Long id = parameters.get("id").toOptionalLong();
 
-        boolean backToWorkerList = !parameters.get("a").isNull();
+        boolean backToWorkerList = !parameters.get("wl").isNull();
 
         if (!parameters.get("new").isNull()){
             worker = new Worker();

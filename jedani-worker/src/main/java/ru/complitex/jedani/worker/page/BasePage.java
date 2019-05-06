@@ -102,11 +102,17 @@ public class BasePage extends WebPage{
     @Inject
     private DomainService domainService;
 
+    private PageParameters pageParameters;
+
     private User currentUser;
 
     private Worker currentWorker;
 
-    protected BasePage() {
+    private WebMarkupContainer sidebar;
+
+    protected BasePage(PageParameters pageParameters) {
+        this.pageParameters = pageParameters;
+
         add(new ResourceLink<>("favicon", JedaniFaviconResourceReference.INSTANCE));
 
         String login = ((HttpServletRequest)getRequestCycle().getRequest().getContainerRequest()).getUserPrincipal().getName();
@@ -142,7 +148,7 @@ public class BasePage extends WebPage{
             }
         });
 
-        WebMarkupContainer sidebar = new WebMarkupContainer("sidebar");
+        sidebar = new WebMarkupContainer("sidebar");
         sidebar.add(newAjaxEventMenuBehavior());
         add(sidebar);
 
@@ -157,8 +163,9 @@ public class BasePage extends WebPage{
         sidebar.add(userStorages);
 
         if (getCurrentStorage() != null) {
-            userStorages.add(new MenuLink("storage", StoragePage.class,
-                    new PageParameters().add("id", getCurrentStorage().getObjectId())));
+            userStorages.add(new MenuLink("storage", StoragePage.class, new PageParameters()
+                            .add("id", getCurrentStorage().getObjectId())
+                            .add("nsl", ""), "id"));
         }else{
             userStorages.add(new EmptyPanel("storage"));
         }
@@ -179,11 +186,12 @@ public class BasePage extends WebPage{
                 String label = Attributes.capitalize(domainService.getDomain(City.class, storage.getNumber(Storage.CITY))
                         .getTextValue(City.NAME)); //todo get value text sql
 
-                item.add(new MenuLink("link", StoragePage.class,
-                        new PageParameters().add("id", storage.getObjectId()))
+                item.add(new MenuLink("link", StoragePage.class, new PageParameters()
+                        .add("id", storage.getObjectId())
+                        .add("nsl", ""), "id")
                         .add(new Label("label", label)));
             }
-        }.setVisible(isUser() || isStructureAdmin()));
+        }.setReuseItems(true).setVisible(isUser() || isStructureAdmin()));
 
         WebMarkupContainer settings = new WebMarkupContainer("settings");
         settings.setVisible(isAdmin());
@@ -251,14 +259,25 @@ public class BasePage extends WebPage{
 
         sales.add(new MenuLink("price", PriceListPage.class).setVisible(isAdmin() || isStructureAdmin()));
         sales.add(new MenuLink("sale", SaleListPage.class));
+    }
+
+    @Override
+    protected void onBeforeRender() {
+        super.onBeforeRender();
 
         sidebar.visitChildren(MenuLink.class, (IVisitor<MenuLink, IVisit>) (m, v) -> {
-            if (getClass().equals(m.getPageClass()) || m.hasMenuPageClass(getClass())){
+            if ((getClass().equals(m.getPageClass()) && (m.getMenuKey() == null ||
+                    m.getPageParameters().get(m.getMenuKey()).equals(pageParameters.get(m.getMenuKey())))) ||
+                    m.hasMenuPageClass(getClass())){
                 m.add(new AttributeAppender("class", "selected"));
 
                 v.stop();
             }
         });
+    }
+
+    public BasePage(){
+        this(new PageParameters());
     }
 
     private Behavior newBehavior() {

@@ -14,12 +14,20 @@ import java.util.List;
 public class MenuLink extends BookmarkablePageLink<Object> {
     private List<Class<? extends Page>> menuPageClasses = new ArrayList<>();
 
+    private String menuKey;
+
     public <C extends Page> MenuLink(String id, Class<C> pageClass) {
         super(id, pageClass);
     }
 
     public <C extends Page> MenuLink(String id, Class<C> pageClass, PageParameters parameters) {
         super(id, pageClass, parameters);
+    }
+
+    public <C extends Page> MenuLink(String id, Class<C> pageClass, PageParameters parameters, String menuKey) {
+        super(id, pageClass, parameters);
+
+        this.menuKey = menuKey;
     }
 
     public MenuLink addMenuPageClass(Class<? extends Page> menuPageClass){
@@ -34,5 +42,9 @@ public class MenuLink extends BookmarkablePageLink<Object> {
 
     public boolean hasMenuPageClass(Class<? extends Page> menuPageClass){
         return menuPageClasses.stream().anyMatch(m -> m.equals(menuPageClass));
+    }
+
+    public String getMenuKey(){
+        return menuKey;
     }
 }
