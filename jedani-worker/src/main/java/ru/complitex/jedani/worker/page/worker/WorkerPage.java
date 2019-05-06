@@ -266,7 +266,7 @@ public class WorkerPage extends BasePage {
                 Position.ENTITY_NAME, Position.NAME){
             @Override
             public boolean isEnabled() {
-                return isAdmin() || isStructureAdmin();
+                return isAdmin() || (isStructureAdmin() && !worker.getObjectId().equals(getCurrentWorker().getObjectId()));
             }
         });
 
