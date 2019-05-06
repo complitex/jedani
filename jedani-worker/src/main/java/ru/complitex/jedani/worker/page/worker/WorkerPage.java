@@ -142,6 +142,8 @@ public class WorkerPage extends BasePage {
 
         boolean backToWorkerList = !parameters.get("a").isNull();
 
+        boolean regionalLeader = !parameters.get("pp").isNull();
+
         if (!parameters.get("new").isNull()){
             worker = new Worker();
             worker.init();
@@ -182,7 +184,7 @@ public class WorkerPage extends BasePage {
         }
 
         if (worker.getObjectId() != null && !isAdmin()){
-            if (getCurrentWorker().isRegionalLeader()){
+            if (regionalLeader && getCurrentWorker().isRegionalLeader()){
                 if (worker.getNumberValues(Worker.REGIONS).stream().noneMatch(r -> getCurrentWorker()
                         .getNumberValues(Worker.REGIONS).contains(r))){
                     throw new UnauthorizedInstantiationException(WorkerPage.class);
@@ -208,7 +210,7 @@ public class WorkerPage extends BasePage {
         add(feedback);
 
         //Data provider
-        FilterWrapper<Worker> filterWrapper = worker.isRegionalLeader()
+        FilterWrapper<Worker> filterWrapper = regionalLeader && worker.isRegionalLeader()
                 ? FilterWrapper.of(new Worker()).put(Worker.FILTER_REGION_IDS, worker.getNumberValuesString(Worker.REGIONS))
                 : FilterWrapper.of(new Worker(worker.getLeft(), worker.getRight(), worker.getLevel()));
 
@@ -735,6 +737,10 @@ public class WorkerPage extends BasePage {
                         pageParameters.add("id", manager.getObjectId());
                     }
 
+                    if (regionalLeader){
+                        pageParameters.add("pp", "");
+                    }
+
                     setResponsePage(WorkerPage.class, pageParameters);
                 }
             }
@@ -787,7 +793,12 @@ public class WorkerPage extends BasePage {
         columns.add(new DomainActionColumn<Worker>(WorkerPage.class){
             @Override
             public void populateItem(Item<ICellPopulator<Worker>> cellItem, String componentId, IModel<Worker> rowModel) {
-                PageParameters pageParameters = new PageParameters().add("id", rowModel.getObject().getId());
+                PageParameters pageParameters = new PageParameters();
+                pageParameters.add("id", rowModel.getObject().getObjectId());
+
+                if (regionalLeader){
+                    pageParameters.add("pp", "");
+                }
 
                 RepeatingView repeatingView = new RepeatingView(componentId);
                 cellItem.add(repeatingView);
@@ -812,7 +823,7 @@ public class WorkerPage extends BasePage {
                     @Override
                     public boolean isVisible() {
                         return !Objects.equals(rowModel.getObject().getObjectId(), 1L) &&
-                                !Objects.equals(rowModel.getObject().getObjectId(), getCurrentWorker().getId());
+                                !Objects.equals(rowModel.getObject().getObjectId(), getCurrentWorker().getObjectId());
                     }
                 }.setIconType(GlyphIconType.remove)));
             }
@@ -836,6 +847,13 @@ public class WorkerPage extends BasePage {
                 rowItem.add(new AjaxEventBehavior("click") {
                     @Override
                     protected void onEvent(AjaxRequestTarget target) {
+                        PageParameters pageParameters = new PageParameters();
+                        pageParameters.add("id", model.getObject().getObjectId());
+
+                        if (regionalLeader){
+                            pageParameters.add("pp", "");
+                        }
+
                         setResponsePage(WorkerPage.class, new PageParameters().add("id", model.getObject().getObjectId()));
                     }
                 });
@@ -888,7 +906,7 @@ public class WorkerPage extends BasePage {
     }
 
     private boolean isCurrentWorkerPage(){
-        return Objects.equals(worker.getObjectId(), getCurrentWorker().getId());
+        return Objects.equals(worker.getObjectId(), getCurrentWorker().getObjectId());
     }
 
     private boolean isEditEnabled(){

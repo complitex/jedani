@@ -146,6 +146,7 @@ public class BasePage extends WebPage{
         add(sidebar);
 
         sidebar.add(new MenuLink("worker", WorkerPage.class));
+        sidebar.add(new MenuLink("regionalLeader", WorkerPage.class, new PageParameters().add("pp", "")));
 
         WebMarkupContainer userStorages = new WebMarkupContainer("userStorages");
         userStorages.setVisible(isUser() && !isAdmin() && isParticipant());
