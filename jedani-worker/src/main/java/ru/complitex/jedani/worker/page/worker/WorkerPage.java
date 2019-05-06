@@ -260,13 +260,18 @@ public class WorkerPage extends BasePage {
         form.add(middleName = new DomainAutoCompleteFormGroup("middleName", MiddleName.ENTITY_NAME, MiddleName.NAME,
                 new NumberAttributeModel(worker, Worker.MIDDLE_NAME)));
 
+        lastName.setEnabled(!isViewOnly());
+        firstName.setEnabled(!isViewOnly());
+        middleName.setEnabled(!isViewOnly());
+
         AttributeSelectFormGroup position;
 
         form.add(position = new AttributeSelectFormGroup("position", new NumberAttributeModel(worker, Worker.POSITION),
                 Position.ENTITY_NAME, Position.NAME){
             @Override
             public boolean isEnabled() {
-                return isAdmin() || (isStructureAdmin() && !worker.getObjectId().equals(getCurrentWorker().getObjectId()));
+                return !isViewOnly() && (isAdmin() || (isStructureAdmin() && !worker.getObjectId()
+                        .equals(getCurrentWorker().getObjectId())));
             }
         });
 
@@ -305,14 +310,21 @@ public class WorkerPage extends BasePage {
                 return isEditEnabled();
             }
         });
-        form.add(new DateTextFieldFormGroup("birthday", new DateAttributeModel(worker, Worker.BIRTHDAY)));
+        form.add(new DateTextFieldFormGroup("birthday", new DateAttributeModel(worker, Worker.BIRTHDAY))
+                .setEnabled(!isViewOnly()));
         form.add(new AttributeInputListFormGroup("phone", Model.of(worker.getOrCreateAttribute(Worker.PHONE))){
             @Override
             public boolean isRequired() {
                 return worker.isParticipant();
             }
+
+            @Override
+            public boolean isEnabled() {
+                return !isViewOnly();
+            }
         });
-        form.add(new FormGroupTextField<>("email", new TextAttributeModel(worker, Worker.EMAIL, StringType.LOWER_CASE)));
+        form.add(new FormGroupTextField<>("email", new TextAttributeModel(worker, Worker.EMAIL, StringType.LOWER_CASE))
+                .setEnabled(!isViewOnly()));
 
         AttributeSelectListFormGroup city, region;
         form.add(region = new AttributeSelectListFormGroup("region", Model.of(worker.getOrCreateAttribute(Worker.REGIONS)),
@@ -389,14 +401,17 @@ public class WorkerPage extends BasePage {
 
         TextField<String> login = new TextField<>("userLogin", new PropertyModel<>(user, "login"));
         login.setRequired(true);
+        login.setEnabled(!isViewOnly());
         form.add(login);
 
         PasswordTextField password = new PasswordTextField("userPassword", new PropertyModel<>(user, "password"));
         password.setRequired(false);
+        password.setVisible(!isViewOnly());
         form.add(password);
 
         PasswordTextField confirmPassword = new PasswordTextField("confirmPassword", new PropertyModel<>(user, "confirmPassword"));
         confirmPassword.setRequired(false);
+        confirmPassword.setVisible(!isViewOnly());
         form.add(confirmPassword);
 
         form.add(new DateTextFieldFormGroup("registrationDate", new DateAttributeModel(worker, Worker.INVOLVED_AT)){
@@ -708,6 +723,11 @@ public class WorkerPage extends BasePage {
 
                 target.add(form);
             }
+
+            @Override
+            public boolean isVisible() {
+                return !isViewOnly();
+            }
         });
 
         form.add(new AjaxButton("create") {
@@ -719,7 +739,7 @@ public class WorkerPage extends BasePage {
 
             @Override
             public boolean isVisible() {
-                return worker.getObjectId() != null && worker.isParticipant();
+                return !isViewOnly() && worker.getObjectId() != null && worker.isParticipant();
             }
         }.setDefaultFormProcessing(false));
 
@@ -737,6 +757,11 @@ public class WorkerPage extends BasePage {
 
                     setResponsePage(WorkerPage.this.getClass(), pageParameters);
                 }
+            }
+
+            @Override
+            public boolean isVisible() {
+                return !isViewOnly();
             }
         };
         back.add(new Label("label", getString("cancel")));
@@ -895,12 +920,16 @@ public class WorkerPage extends BasePage {
         return list;
     }
 
-    private boolean isCurrentWorkerPage(){
+    protected boolean isCurrentWorkerPage(){
         return Objects.equals(worker.getObjectId(), getCurrentWorker().getObjectId());
     }
 
-    private boolean isEditEnabled(){
+    protected boolean isEditEnabled(){
         return isAdmin() || isStructureAdmin() || (isUser() && !isCurrentWorkerPage());
+    }
+
+    protected boolean isViewOnly(){
+        return false;
     }
 
     protected Worker getWorker(){

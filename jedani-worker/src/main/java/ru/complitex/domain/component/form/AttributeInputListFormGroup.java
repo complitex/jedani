@@ -23,6 +23,7 @@ public class AttributeInputListFormGroup extends Panel {
         super(id);
 
         FormGroupBorder group = new FormGroupBorder("group", label);
+
         group.add(attributeInputList = new AttributeInputList("input", model){
             @Override
             public boolean isRequired() {

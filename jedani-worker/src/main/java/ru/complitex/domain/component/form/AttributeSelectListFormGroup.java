@@ -27,6 +27,7 @@ public class AttributeSelectListFormGroup extends Panel {
         setOutputMarkupId(true);
 
         FormGroupBorder group = new FormGroupBorder("group", label);
+
         group.add(attributeSelectList = new AttributeSelectList("select", model, refEntityName,
                 refEntityAttributeId, parentListModel, upperCase){
             @Override

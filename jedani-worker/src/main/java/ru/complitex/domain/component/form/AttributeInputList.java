@@ -8,6 +8,7 @@ import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
+import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.util.ListModel;
 import ru.complitex.domain.entity.Attribute;
@@ -31,16 +32,26 @@ public class AttributeInputList extends FormComponentPanel<Attribute> {
         ListView<String> listView = new ListView<String>("inputs", listModel) {
             @Override
             protected void populateItem(ListItem<String> item) {
-                item.add(new TextField<>("input", item.getModel()).add(OnChangeAjaxBehavior.onChange(t -> {})));
+                WebMarkupContainer group = new WebMarkupContainer("group");
+                item.add(group);
 
-                item.add(new AjaxLink<Void>("remove") {
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        listModel.getObject().remove(item.getIndex());
+                if (isEnabledInHierarchy()) {
+                    group.add(new TextField<>("input", item.getModel()).add(OnChangeAjaxBehavior.onChange(t -> {})));
 
-                        target.add(container);
-                    }
-                });
+                    group.add(new AjaxLink<Void>("remove") {
+                        @Override
+                        public void onClick(AjaxRequestTarget target) {
+                            listModel.getObject().remove(item.getIndex());
+
+                            target.add(container);
+                        }
+                    });
+
+                    item.add(new EmptyPanel("view").setVisible(false));
+                }else{
+                    group.setVisible(false);
+                    item.add(new TextField<>("view", item.getModel()).setEnabled(false));
+                }
             }
         };
         listView.setReuseItems(false);
@@ -52,6 +63,11 @@ public class AttributeInputList extends FormComponentPanel<Attribute> {
                 listModel.getObject().add("");
 
                 target.add(container);
+            }
+
+            @Override
+            public boolean isVisible() {
+                return isEnabledInHierarchy();
             }
         });
     }

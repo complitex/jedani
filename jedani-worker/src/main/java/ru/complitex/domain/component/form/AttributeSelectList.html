@@ -4,15 +4,17 @@
     <div class="select-list">
         <ul class="list-group" wicket:id="container">
             <li wicket:id="selects" class="list-group-item">
-                <div class="input-group">
+                <div wicket:id="group" class="input-group">
                     <select wicket:id="select" type="text" class="form-control"></select>
 
                     <span class="input-group-btn">
-                    <button wicket:id="remove" class="btn btn-default">
-                        <i class="glyphicon glyphicon-remove"></i>
-                    </button>
-                </span>
+                        <button wicket:id="remove" class="btn btn-default">
+                            <i class="glyphicon glyphicon-remove"></i>
+                        </button>
+                    </span>
                 </div>
+
+                <input wicket:id="view" type="text" class="form-control"/>
             </li>
         </ul>
         <div class="text-center">

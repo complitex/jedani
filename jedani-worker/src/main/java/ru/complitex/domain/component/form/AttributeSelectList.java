@@ -8,10 +8,13 @@ import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
+import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.util.ListModel;
 import org.danekja.java.util.function.serializable.SerializableConsumer;
 import ru.complitex.common.entity.FilterWrapper;
@@ -64,50 +67,61 @@ public class AttributeSelectList extends FormComponentPanel<Attribute> {
         ListView<Long> listView = new ListView<Long>("selects", listModel) {
             @Override
             protected void populateItem(ListItem<Long> item) {
-                item.add(new BootstrapSelect<Long>("select", item.getModel(),
-                        new LoadableDetachableModel<List<Long>>() {
-                            @Override
-                            protected List<Long> load() {
-                                return domains.stream()
-                                        .filter(d -> parentListModel == null ||
-                                                parentListModel.getObject().contains(d.getParentId()))
-                                        .map(Domain::getObjectId)
-                                        .collect(Collectors.toList());
-                            }
-                        },
-                        new IChoiceRenderer<Long>() {
-                            @Override
-                            public Object getDisplayValue(Long object) {
-                                return names.get(object);
-                            }
+                WebMarkupContainer group = new WebMarkupContainer("group");
+                item.add(group);
 
-                            @Override
-                            public String getIdValue(Long object, int index) {
-                                return object.toString();
-                            }
+                if (isEnabledInHierarchy()){
+                    group.add( new BootstrapSelect<Long>("select", item.getModel(),
+                            new LoadableDetachableModel<List<Long>>() {
+                                @Override
+                                protected List<Long> load() {
+                                    return domains.stream()
+                                            .filter(d -> parentListModel == null ||
+                                                    parentListModel.getObject().contains(d.getParentId()))
+                                            .map(Domain::getObjectId)
+                                            .collect(Collectors.toList());
+                                }
+                            },
+                            new IChoiceRenderer<Long>() {
+                                @Override
+                                public Object getDisplayValue(Long object) {
+                                    return names.get(object);
+                                }
 
-                            @Override
-                            public Long getObject(String id, IModel<? extends List<? extends Long>> choices) {
-                                return id != null && !id.isEmpty() ? Long.valueOf(id) : null;
-                            }
-                        }){
-                    @Override
-                    protected String getNullKeyDisplayValue() {
-                        return "";
-                    }
-                }.with(new BootstrapSelectConfig().withNoneSelectedText("")).add(OnChangeAjaxBehavior.onChange(
-                        AttributeSelectList.this::onChange)));
+                                @Override
+                                public String getIdValue(Long object, int index) {
+                                    return object.toString();
+                                }
 
-                item.add(new AjaxLink<Void>("remove") {
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        listModel.getObject().remove(item.getIndex());
+                                @Override
+                                public Long getObject(String id, IModel<? extends List<? extends Long>> choices) {
+                                    return id != null && !id.isEmpty() ? Long.valueOf(id) : null;
+                                }
+                            }){
+                        @Override
+                        protected String getNullKeyDisplayValue() {
+                            return "";
+                        }
+                    }.with(new BootstrapSelectConfig().withNoneSelectedText("")).add(OnChangeAjaxBehavior.onChange(
+                            AttributeSelectList.this::onChange)));
 
-                        target.add(container);
+                    group.add(new AjaxLink<Void>("remove") {
+                        @Override
+                        public void onClick(AjaxRequestTarget target) {
+                            listModel.getObject().remove(item.getIndex());
 
-                        onChange(target);
-                    }
-                });
+                            target.add(container);
+
+                            onChange(target);
+                        }
+                    });
+
+                    item.add(new EmptyPanel("view").setVisible(false));
+                } else {
+                    group.setVisible(false);
+
+                    item.add(new TextField<>("view", Model.of(names.get(item.getModelObject()))));
+                }
             }
         };
         listView.setReuseItems(false);
@@ -125,7 +139,7 @@ public class AttributeSelectList extends FormComponentPanel<Attribute> {
 
             @Override
             public boolean isVisible() {
-                return AttributeSelectList.this.isEnabledInHierarchy();
+                return isEnabledInHierarchy();
             }
         });
     }

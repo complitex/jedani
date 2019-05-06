@@ -75,10 +75,6 @@ public class DomainAutoCompleteFormGroup extends Panel{
         return this;
     }
 
-    public boolean isEnabled(){
-        return true;
-    }
-
     @Override
     public void detachModels(){
         super.detachModels();
