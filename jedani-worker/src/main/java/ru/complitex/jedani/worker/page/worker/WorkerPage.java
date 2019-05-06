@@ -821,31 +821,33 @@ public class WorkerPage extends BasePage {
                 repeatingView.add(new LinkPanel(repeatingView.newChildId(), new BootstrapBookmarkablePageLink<>(LinkPanel.LINK_COMPONENT_ID,
                         WorkerPage.this.getClass(), pageParameters, Buttons.Type.Link).setIconType(GlyphIconType.edit)));
 
-                repeatingView.add(new LinkPanel(repeatingView.newChildId(), new BootstrapAjaxLink<Worker>(LinkPanel.LINK_COMPONENT_ID,
-                        Buttons.Type.Link) {
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        workerRemoveModal.delete(target, rowModel.getObject());
-                    }
+                if (!isViewOnly()) {
+                    repeatingView.add(new LinkPanel(repeatingView.newChildId(), new BootstrapAjaxLink<Worker>(LinkPanel.LINK_COMPONENT_ID,
+                            Buttons.Type.Link) {
+                        @Override
+                        public void onClick(AjaxRequestTarget target) {
+                            workerRemoveModal.delete(target, rowModel.getObject());
+                        }
 
-                    @Override
-                    protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
-                        super.updateAjaxAttributes(attributes);
+                        @Override
+                        protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
+                            super.updateAjaxAttributes(attributes);
 
-                        attributes.setEventPropagation(AjaxRequestAttributes.EventPropagation.STOP);
-                    }
+                            attributes.setEventPropagation(AjaxRequestAttributes.EventPropagation.STOP);
+                        }
 
-                    @Override
-                    public boolean isVisible() {
-                        return !Objects.equals(rowModel.getObject().getObjectId(), 1L) &&
-                                !Objects.equals(rowModel.getObject().getObjectId(), getCurrentWorker().getObjectId());
-                    }
-                }.setIconType(GlyphIconType.remove)));
+                        @Override
+                        public boolean isVisible() {
+                            return !Objects.equals(rowModel.getObject().getObjectId(), 1L) &&
+                                    !Objects.equals(rowModel.getObject().getObjectId(), getCurrentWorker().getObjectId());
+                        }
+                    }.setIconType(GlyphIconType.remove)));
+                }
             }
 
             @Override
             public String getCssClass() {
-                return "domain-id-column worker-action";
+                return "domain-id-column" + (!isViewOnly() ? " worker-action" : "");
             }
         });
 
