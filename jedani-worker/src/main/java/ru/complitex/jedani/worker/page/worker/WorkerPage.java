@@ -142,8 +142,6 @@ public class WorkerPage extends BasePage {
 
         boolean backToWorkerList = !parameters.get("a").isNull();
 
-        boolean regionalLeader = !parameters.get("pp").isNull();
-
         if (!parameters.get("new").isNull()){
             worker = new Worker();
             worker.init();
@@ -184,7 +182,7 @@ public class WorkerPage extends BasePage {
         }
 
         if (worker.getObjectId() != null && !isAdmin()){
-            if (regionalLeader && getCurrentWorker().isRegionalLeader()){
+            if (!Objects.equals(getClass(), WorkerPage.class) && getCurrentWorker().isRegionalLeader()){
                 if (worker.getNumberValues(Worker.REGIONS).stream().noneMatch(r -> getCurrentWorker()
                         .getNumberValues(Worker.REGIONS).contains(r))){
                     throw new UnauthorizedInstantiationException(WorkerPage.class);
@@ -205,14 +203,14 @@ public class WorkerPage extends BasePage {
             user.addRole(JedaniRoles.USERS);
         }
 
+        add(new Label("title", new ResourceModel("title")));
+
         FeedbackPanel feedback = new NotificationPanel("feedback").showRenderedMessages(false);
         feedback.setOutputMarkupId(true);
         add(feedback);
 
         //Data provider
-        FilterWrapper<Worker> filterWrapper = regionalLeader && worker.isRegionalLeader()
-                ? FilterWrapper.of(new Worker()).put(Worker.FILTER_REGION_IDS, worker.getNumberValuesString(Worker.REGIONS))
-                : FilterWrapper.of(new Worker(worker.getLeft(), worker.getRight(), worker.getLevel()));
+        FilterWrapper<Worker> filterWrapper = newFilterWrapper();
 
         DataProvider<Worker> dataProvider = new DataProvider<Worker>(filterWrapper) {
             @Override
@@ -737,11 +735,7 @@ public class WorkerPage extends BasePage {
                         pageParameters.add("id", manager.getObjectId());
                     }
 
-                    if (regionalLeader){
-                        pageParameters.add("pp", "");
-                    }
-
-                    setResponsePage(WorkerPage.class, pageParameters);
+                    setResponsePage(WorkerPage.this.getClass(), pageParameters);
                 }
             }
         };
@@ -796,15 +790,11 @@ public class WorkerPage extends BasePage {
                 PageParameters pageParameters = new PageParameters();
                 pageParameters.add("id", rowModel.getObject().getObjectId());
 
-                if (regionalLeader){
-                    pageParameters.add("pp", "");
-                }
-
                 RepeatingView repeatingView = new RepeatingView(componentId);
                 cellItem.add(repeatingView);
 
                 repeatingView.add(new LinkPanel(repeatingView.newChildId(), new BootstrapBookmarkablePageLink<>(LinkPanel.LINK_COMPONENT_ID,
-                        WorkerPage.class, pageParameters, Buttons.Type.Link).setIconType(GlyphIconType.edit)));
+                        WorkerPage.this.getClass(), pageParameters, Buttons.Type.Link).setIconType(GlyphIconType.edit)));
 
                 repeatingView.add(new LinkPanel(repeatingView.newChildId(), new BootstrapAjaxLink<Worker>(LinkPanel.LINK_COMPONENT_ID,
                         Buttons.Type.Link) {
@@ -850,11 +840,7 @@ public class WorkerPage extends BasePage {
                         PageParameters pageParameters = new PageParameters();
                         pageParameters.add("id", model.getObject().getObjectId());
 
-                        if (regionalLeader){
-                            pageParameters.add("pp", "");
-                        }
-
-                        setResponsePage(WorkerPage.class, new PageParameters().add("id", model.getObject().getObjectId()));
+                        setResponsePage(WorkerPage.this.getClass(), new PageParameters().add("id", model.getObject().getObjectId()));
                     }
                 });
 
@@ -884,6 +870,10 @@ public class WorkerPage extends BasePage {
         });
     }
 
+    protected FilterWrapper<Worker> newFilterWrapper() {
+        return FilterWrapper.of(new Worker(worker.getLeft(), worker.getRight(), worker.getLevel()));
+    }
+
     @SuppressWarnings("Duplicates")
     private List<EntityAttribute> getEntityAttributes() {
         Entity entity = entityMapper.getEntity(Worker.ENTITY_NAME);
@@ -911,5 +901,9 @@ public class WorkerPage extends BasePage {
 
     private boolean isEditEnabled(){
         return isAdmin() || isStructureAdmin() || (isUser() && !isCurrentWorkerPage());
+    }
+
+    protected Worker getWorker(){
+        return worker;
     }
 }

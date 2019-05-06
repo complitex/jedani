@@ -55,6 +55,7 @@ import ru.complitex.jedani.worker.page.sale.SaleListPage;
 import ru.complitex.jedani.worker.page.storage.NomenclatureListPage;
 import ru.complitex.jedani.worker.page.storage.StorageListPage;
 import ru.complitex.jedani.worker.page.storage.StoragePage;
+import ru.complitex.jedani.worker.page.worker.RegionalLeaderPage;
 import ru.complitex.jedani.worker.page.worker.WorkerListPage;
 import ru.complitex.jedani.worker.page.worker.WorkerPage;
 import ru.complitex.jedani.worker.security.JedaniRoles;
@@ -146,7 +147,8 @@ public class BasePage extends WebPage{
         add(sidebar);
 
         sidebar.add(new MenuLink("worker", WorkerPage.class));
-        sidebar.add(new MenuLink("regionalLeader", WorkerPage.class, new PageParameters().add("pp", "")));
+        sidebar.add(new MenuLink("regionalLeader", RegionalLeaderPage.class)
+                .setVisible(getCurrentWorker().isRegionalLeader()));
 
         WebMarkupContainer userStorages = new WebMarkupContainer("userStorages");
         userStorages.setVisible(isUser() && !isAdmin() && isParticipant());

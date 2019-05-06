@@ -50,6 +50,7 @@ import ru.complitex.jedani.worker.page.sale.SaleListPage;
 import ru.complitex.jedani.worker.page.storage.NomenclatureListPage;
 import ru.complitex.jedani.worker.page.storage.StorageListPage;
 import ru.complitex.jedani.worker.page.storage.StoragePage;
+import ru.complitex.jedani.worker.page.worker.RegionalLeaderPage;
 import ru.complitex.jedani.worker.page.worker.WorkerListPage;
 import ru.complitex.jedani.worker.page.worker.WorkerPage;
 import ru.complitex.jedani.worker.page.worker.WorkerStructurePage;
@@ -100,6 +101,8 @@ public class JedaniWebApplication extends WebApplication{
         mountPage("workers", WorkerListPage.class);
         mountPage("worker", WorkerPage.class);
         mountPage("worker/${id}", WorkerPage.class);
+        mountPage("regional_leader", RegionalLeaderPage.class);
+        mountPage("regional_leader/${id}", RegionalLeaderPage.class);
         mountPage("worker/structure/${id}", WorkerStructurePage.class);
         mountPage("mk_statuses", MkStatusListPage.class);
         mountPage("positions", PositionListPage.class);
