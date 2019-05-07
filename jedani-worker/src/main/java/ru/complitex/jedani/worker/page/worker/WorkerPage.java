@@ -187,9 +187,8 @@ public class WorkerPage extends BasePage {
                         .getNumberValues(Worker.REGIONS).contains(r))){
                     throw new UnauthorizedInstantiationException(WorkerPage.class);
                 }
-            }else if (worker.isParticipant()){
-                if ((!isStructureAdmin() && getCurrentWorker().getRight() < worker.getRight()) ||
-                        (getCurrentWorker().getLeft() > worker.getLeft())){
+            }else if (worker.isParticipant() && !isStructureAdmin()){
+                if ((getCurrentWorker().getRight() < worker.getRight()) || (getCurrentWorker().getLeft() > worker.getLeft())){
                     throw new UnauthorizedInstantiationException(WorkerPage.class);
                 }
             }
