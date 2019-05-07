@@ -182,13 +182,14 @@ public class WorkerPage extends BasePage {
         }
 
         if (worker.getObjectId() != null && !isAdmin()){
-            if (!Objects.equals(getClass(), WorkerPage.class) && getCurrentWorker().isRegionalLeader()){
+            if (getCurrentWorker().isRegionalLeader()){
                 if (worker.getNumberValues(Worker.REGIONS).stream().noneMatch(r -> getCurrentWorker()
                         .getNumberValues(Worker.REGIONS).contains(r))){
                     throw new UnauthorizedInstantiationException(WorkerPage.class);
                 }
             }else if (worker.isParticipant()){
-                if (getCurrentWorker().getRight() < worker.getRight() || getCurrentWorker().getLeft() > worker.getLeft()){
+                if ((!isStructureAdmin() && getCurrentWorker().getRight() < worker.getRight()) ||
+                        (getCurrentWorker().getLeft() > worker.getLeft())){
                     throw new UnauthorizedInstantiationException(WorkerPage.class);
                 }
             }
