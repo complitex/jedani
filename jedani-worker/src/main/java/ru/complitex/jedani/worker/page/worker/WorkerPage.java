@@ -270,8 +270,8 @@ public class WorkerPage extends BasePage {
                 Position.ENTITY_NAME, Position.NAME){
             @Override
             public boolean isEnabled() {
-                return !isViewOnly() && (isAdmin() || (isStructureAdmin() && !worker.getObjectId()
-                        .equals(getCurrentWorker().getObjectId())));
+                return !isViewOnly() && (isAdmin() || (isStructureAdmin() && !Objects.equals(worker.getObjectId(),
+                        getCurrentWorker().getObjectId())));
             }
         });
 
