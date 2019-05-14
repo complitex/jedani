@@ -96,6 +96,12 @@ public class DomainService implements Serializable {
         return attributeMapper.getText(entityName, objectId, entityAttributeId);
     }
 
+    public String getTextOrEmpty(String entityName, Long objectId, Long entityAttributeId){
+        String s =  attributeMapper.getText(entityName, objectId, entityAttributeId);
+
+        return s != null ? s : "";
+    }
+
     public String getTextValue(String entityName, Long objectId, Long entityAttributeId){
         return attributeMapper.getTextValue(entityName, objectId, entityAttributeId);
     }

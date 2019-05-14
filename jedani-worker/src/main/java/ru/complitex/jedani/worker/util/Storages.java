@@ -66,13 +66,13 @@ public class Storages {
             }
 
             if (storage.getParentId() != null){
-                label += ", " + domainService.getText(Worker.ENTITY_NAME,  storage.getParentId(), Worker.J_ID) + " " +
+                label += ", " + domainService.getTextOrEmpty(Worker.ENTITY_NAME,  storage.getParentId(), Worker.J_ID) + " " +
                         nameService.getLastName(domainService.getNumber(Worker.ENTITY_NAME,  storage.getParentId(),
                                 Worker.LAST_NAME));
             }
 
             String workers = storage.getOrCreateAttribute(Storage.WORKERS).getNumberValues().stream()
-                    .map(objectId -> domainService.getText(Worker.ENTITY_NAME,  objectId, Worker.J_ID) + " " +
+                    .map(objectId -> domainService.getTextOrEmpty(Worker.ENTITY_NAME,  objectId, Worker.J_ID) + " " +
                             nameService.getLastName(domainService.getNumber(Worker.ENTITY_NAME,  objectId, Worker.LAST_NAME)))
                     .collect(Collectors.joining("; "));
 
