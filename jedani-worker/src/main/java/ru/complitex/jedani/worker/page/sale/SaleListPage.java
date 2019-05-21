@@ -76,7 +76,7 @@ public class SaleListPage extends DomainListModalPage<SaleItem> {
         if (getCurrentWorker().isRegionalLeader()){
             filterWrapper.put(SaleItem.FILTER_REGION_IDS, getCurrentWorker().getRegionIdsString());
 
-        }else if (!isAdmin()){
+        }else if (!isAdmin() && !isStructureAdmin()){
             filterWrapper.put(SaleItem.FILTER_SELLER_WORKER, getCurrentWorker().getObjectId());
         }
 
@@ -134,7 +134,7 @@ public class SaleListPage extends DomainListModalPage<SaleItem> {
             }
         });
 
-        if (isAdmin()) {
+        if (isAdmin() || isStructureAdmin()) {
             columns.add(2, new AbstractDomainColumn<SaleItem>(SaleItem.FILTER_SELLER_WORKER) {
                 @Override
                 public void populateItem(Item<ICellPopulator<SaleItem>> cellItem, String componentId, IModel<SaleItem> rowModel) {
@@ -148,7 +148,7 @@ public class SaleListPage extends DomainListModalPage<SaleItem> {
 
     @Override
     protected void onAdd(AjaxRequestTarget target) {
-        saleModal.sale(getCurrentWorker().getObjectId(), target);
+        saleModal.sale(target);
     }
 
     @Override

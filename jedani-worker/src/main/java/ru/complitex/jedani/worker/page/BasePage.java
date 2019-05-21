@@ -345,27 +345,27 @@ public class BasePage extends WebPage{
         return ((HttpServletRequest)RequestCycle.get().getRequest().getContainerRequest());
     }
 
-    protected String getLogin(){
+    public String getLogin(){
         return getHttpServletRequest().getUserPrincipal().getName();
     }
 
-    protected boolean isAdmin(){
+    public boolean isAdmin(){
         return getHttpServletRequest().isUserInRole(JedaniRoles.ADMINISTRATORS);
     }
 
-    protected boolean isStructureAdmin(){
+    public boolean isStructureAdmin(){
         return getHttpServletRequest().isUserInRole(JedaniRoles.STRUCTURE_ADMINISTRATORS);
     }
 
-    protected boolean isPromotionAdmin(){
+    public boolean isPromotionAdmin(){
         return getHttpServletRequest().isUserInRole(JedaniRoles.PROMOTION_ADMINISTRATORS);
     }
 
-    protected boolean isUser(){
+    public boolean isUser(){
         return getHttpServletRequest().isUserInRole(JedaniRoles.USERS);
     }
 
-    protected boolean isParticipant(){
+    public boolean isParticipant(){
         return getCurrentWorker().getNumber(Worker.TYPE) == null ||
                 Objects.equals(getCurrentWorker().getNumber(Worker.TYPE), WorkerType.PARTICIPANT);
     }
@@ -374,7 +374,7 @@ public class BasePage extends WebPage{
         return currentUser;
     }
 
-    protected Worker getCurrentWorker() {
+    public Worker getCurrentWorker() {
         if (currentWorker == null && isAdmin()){
             currentWorker = new Worker();
             currentWorker.init();
@@ -385,7 +385,7 @@ public class BasePage extends WebPage{
         return currentWorker;
     }
 
-    protected Storage getCurrentStorage(){
+    public Storage getCurrentStorage(){
         if (!isParticipant()){
             return null;
         }

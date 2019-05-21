@@ -38,7 +38,7 @@ public class SaleService implements Serializable {
         for (int i = 0, size = saleItems.size(); i < size; i++) {
             SaleItem s = saleItems.get(i);
 
-            //Validation
+            //Product
 
             Product filter = new Product();
 
@@ -46,14 +46,6 @@ public class SaleService implements Serializable {
             filter.setNomenclatureId(s.getNomenclatureId());
 
             List<Product> products = domainService.getDomains(Product.class, FilterWrapper.of(filter));
-
-            if (products.isEmpty() || products.get(0).getQuantity() - products.get(0).getReserveQuantity() <
-                    s.getQuantity()) {
-                throw new SaleException("Количество товара на складе меньше " + s.getQuantity() +
-                        " для позиции № " + (i+1));
-            }
-
-            //Product
 
             Product product = products.get(0);
 
@@ -82,5 +74,17 @@ public class SaleService implements Serializable {
 
             domainService.save(s);
         }
+    }
+
+    public boolean validateQuantity(Sale sale, SaleItem saleItem){
+        Product filter = new Product();
+
+        filter.setParentId(sale.getStorageId());
+        filter.setNomenclatureId(saleItem.getNomenclatureId());
+
+        List<Product> products = domainService.getDomains(Product.class, FilterWrapper.of(filter));
+
+        return !products.isEmpty() &&
+                products.get(0).getQuantity() - products.get(0).getReserveQuantity() > saleItem.getQuantity();
     }
 }

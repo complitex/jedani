@@ -44,11 +44,14 @@ import ru.complitex.domain.model.DecimalAttributeModel;
 import ru.complitex.domain.model.NumberAttributeModel;
 import ru.complitex.domain.model.TextAttributeModel;
 import ru.complitex.domain.service.DomainService;
+import ru.complitex.domain.util.Attributes;
 import ru.complitex.jedani.worker.component.NomenclatureAutoComplete;
 import ru.complitex.jedani.worker.component.StorageAutoComplete;
+import ru.complitex.jedani.worker.component.WorkerAutoComplete;
 import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.exception.SaleException;
 import ru.complitex.jedani.worker.mapper.StorageMapper;
+import ru.complitex.jedani.worker.page.BasePage;
 import ru.complitex.jedani.worker.service.SaleService;
 import ru.complitex.name.entity.FirstName;
 import ru.complitex.name.entity.LastName;
@@ -118,6 +121,14 @@ public class SaleModal extends Modal<Sale> {
         feedback.showRenderedMessages(false);
         container.add(feedback);
 
+        container.add(new FormGroupPanel("sellerWorker", new WorkerAutoComplete(FormGroupPanel.COMPONENT_ID,
+                new NumberAttributeModel(saleModel, Sale.SELLER_WORKER)).setRequired(true)){
+            @Override
+            public boolean isVisible() {
+                return getBasePage().isAdmin() || getBasePage().isStructureAdmin();
+            }
+        });
+
         container.add(new FormGroupSelectPanel("saleType", new BootstrapSelect<>(FormGroupPanel.COMPONENT_ID,
                 NumberAttributeModel.of(saleModel, Sale.TYPE),
                 Arrays.asList(SaleType.MYCOOK, SaleType.BASE_ASSORTMENT),
@@ -185,7 +196,7 @@ public class SaleModal extends Modal<Sale> {
                     if (c.isVisibleInHierarchy()){
                         ((NomenclatureAutoComplete)c).getOnChange().accept(t);
                     }
-                }))));
+                })).setRequired(true)));
 
         container.add(new DomainAutoCompleteFormGroup("promotion", Promotion.ENTITY_NAME, Promotion.NAME,
                 NumberAttributeModel.of(saleModel, Sale.PROMOTION)));
@@ -440,7 +451,9 @@ public class SaleModal extends Modal<Sale> {
         onUpdate(target);
     }
 
-    void sale(Long sellerWorkerId, AjaxRequestTarget target){
+    void sale(AjaxRequestTarget target){
+        Long sellerWorkerId = getBasePage().getCurrentWorker().getObjectId();
+
         List<Long> regions = domainService.getNumberValues(Worker.ENTITY_NAME, sellerWorkerId, Worker.REGIONS);
 
         if (!regions.isEmpty()){
@@ -520,7 +533,14 @@ public class SaleModal extends Modal<Sale> {
             return;
         }
 
-        //todo validate quantity
+        saleItems.forEach(s -> {
+            if (!saleService.validateQuantity(sale, s)){
+                Nomenclature n = domainService.getDomain(Nomenclature.class, s.getNomenclatureId());
+
+                getSession().warn(Attributes.capitalize(n.getTextValue(Nomenclature.NAME)) + ": " +
+                        getString("warn_quantity"));
+            }
+        });
 
         try {
             saleService.sale(sale, saleItems);
@@ -537,5 +557,9 @@ public class SaleModal extends Modal<Sale> {
 
     protected void onUpdate(AjaxRequestTarget target){
 
+    }
+
+    private BasePage getBasePage(){
+        return (BasePage) getPage();
     }
 }
