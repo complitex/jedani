@@ -23,6 +23,9 @@ public class SaleService implements Serializable {
     @Inject
     private EntityService entityService;
 
+    @Inject
+    private StorageService storageService;
+
     @Transactional(rollbackFor = SaleException.class)
     public void sale(Sale sale, List<SaleItem> saleItems) throws SaleException {
         //Init
@@ -46,6 +49,12 @@ public class SaleService implements Serializable {
             filter.setNomenclatureId(s.getNomenclatureId());
 
             List<Product> products = domainService.getDomains(Product.class, FilterWrapper.of(filter));
+
+            if (products.isEmpty()){
+                accept(sale.getStorageId(), s.getNomenclatureId());
+
+                products = domainService.getDomains(Product.class, FilterWrapper.of(filter));
+            }
 
             Product product = products.get(0);
 
@@ -74,6 +83,15 @@ public class SaleService implements Serializable {
 
             domainService.save(s);
         }
+    }
+
+    private void accept(Long storageId, Long nomenclatureId){
+        Transaction transaction = new Transaction();
+
+        transaction.setNomenclatureId(nomenclatureId);
+        transaction.setQuantity(0L);
+
+        storageService.accept(storageId, transaction);
     }
 
     public boolean validateQuantity(Sale sale, SaleItem saleItem){
