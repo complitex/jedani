@@ -116,9 +116,6 @@ BEGIN
     PREPARE QUERY FROM @insertEntityValue; EXECUTE QUERY; DEALLOCATE PREPARE QUERY;
 END //
 
-
-
-
 -- Add Sale Decision
 
 DELIMITER ;

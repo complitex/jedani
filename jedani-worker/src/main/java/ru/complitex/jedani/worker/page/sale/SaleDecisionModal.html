@@ -2,15 +2,21 @@
 
 <wicket:panel xmlns:wicket="http://wicket.apache.org">
     <wicket:extend>
-        <form wicket:id="form">
+        <form wicket:id="form" class="container-fluid">
             <table class="table">
                 <thead>
                 <tr>
                     <th wicket:id="conditions">
-
+                        <div wicket:id="type"></div>
+                    </th>
+                    <th style="vertical-align: middle; width: 55px; text-align: center; border-right: 1px solid #ddd;">
+                        <a wicket:id="addCondition"><i class="glyphicon glyphicon-plus"></i></a>
                     </th>
                     <th wicket:id="actions">
-
+                        <div wicket:id="type"></div>
+                    </th>
+                    <th style="vertical-align: middle; width: 55px; text-align: center;">
+                        <a wicket:id="addAction"><i class="glyphicon glyphicon-plus"></i></a>
                     </th>
                 </tr>
 

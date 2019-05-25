@@ -225,3 +225,7 @@ td.domain-id-column{
 .panel-group .panel-heading {
     border: none;
 }
+
+.dropdown-toggle{
+    min-width: 39px;
+}

@@ -23,6 +23,7 @@ import org.apache.wicket.ajax.WicketAjaxJQueryResourceReference;
 import org.apache.wicket.cdi.CdiConfiguration;
 import org.apache.wicket.cdi.ConversationPropagation;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteBehavior;
+import org.apache.wicket.markup.html.pages.AccessDeniedPage;
 import org.apache.wicket.markup.html.pages.InternalErrorPage;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
@@ -124,6 +125,7 @@ public class JedaniWebApplication extends WebApplication{
         mountPage("settings", SettingPage.class);
 
         mountPage("error", InternalErrorPage.class);
+        mountPage("access-denied", AccessDeniedPage.class);
     }
 
     private void configureMountResource(){

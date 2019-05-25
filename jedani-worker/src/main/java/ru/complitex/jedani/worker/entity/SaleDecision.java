@@ -13,6 +13,10 @@ public class SaleDecision extends Domain<SaleDecision> {
     private Rule header;
     private List<Rule> rules = new ArrayList<>();
 
+    public SaleDecision() {
+        super(ENTITY_NAME);
+    }
+
     public Rule getHeader() {
         return header;
     }
