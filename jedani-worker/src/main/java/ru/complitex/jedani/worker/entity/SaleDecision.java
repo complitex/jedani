@@ -38,6 +38,18 @@ public class SaleDecision extends Domain<SaleDecision> {
         rules.forEach(Rule::addCondition);
     }
 
+    public void updateCondition(Long index){
+        int rulesSize = rules.size();
+
+        if (rulesSize > 1) {
+            Rule rule = rules.get(0);
+
+            rules.subList(1, rulesSize).forEach(r -> {
+                r.updateCondition(rule.getCondition(index));
+            });
+        }
+    }
+
     public void removeCondition(Long index){
         rules.forEach(r -> r.removeCondition(index));
     }
@@ -45,6 +57,19 @@ public class SaleDecision extends Domain<SaleDecision> {
     public void addAction(){
         rules.forEach(Rule::addAction);
     }
+
+    public void updateAction(Long index){
+        int rulesSize = rules.size();
+
+        if (rulesSize > 1) {
+            Rule rule = rules.get(0);
+
+            rules.subList(1, rulesSize).forEach(r -> {
+                r.updateAction(rule.getAction(index));
+            });
+        }
+    }
+
 
     public void removeAction(Long index){
         rules.forEach(r -> r.removeAction(index));

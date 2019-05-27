@@ -35,7 +35,7 @@ public class AjaxSelectLabel<T> extends FormComponentPanel<T> {
 
         BootstrapSelect select = new BootstrapSelect<>("select", model, choices, renderer);
         select.with(new BootstrapSelectConfig().withNoneSelectedText(""));
-        select.add(OnChangeAjaxBehavior.onChange(t -> {}));
+        select.add(OnChangeAjaxBehavior.onChange(AjaxSelectLabel.this::onSelect));
         selectContainer.add(select);
 
         selectContainer.add(new AjaxLink<RuleAction>("remove") {
@@ -90,6 +90,10 @@ public class AjaxSelectLabel<T> extends FormComponentPanel<T> {
             }
         });
         link.add(label);
+    }
+
+    protected void onSelect(AjaxRequestTarget target) {
+
     }
 
     protected void onApply(AjaxRequestTarget target) {

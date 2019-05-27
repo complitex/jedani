@@ -10,6 +10,8 @@ import java.util.Objects;
 public class Rule extends Domain<Rule> {
     public final static String ENTITY_NAME = "rule";
 
+    public final static long INDEX = 1;
+
     private List<RuleCondition> conditions = new ArrayList<>();
     private List<RuleAction> actions = new ArrayList<>();
 
@@ -52,6 +54,17 @@ public class Rule extends Domain<Rule> {
         conditions.add(new RuleCondition().setIndex((long) conditions.size()));
     }
 
+    public RuleCondition getCondition(Long index){
+        return conditions.get(index.intValue());
+    }
+
+    public void updateCondition(RuleCondition ruleCondition){
+        RuleCondition condition = conditions.get(ruleCondition.getIndex().intValue());
+
+        condition.setType(ruleCondition.getType());
+        condition.setValueType(ruleCondition.getValueType());
+    }
+
     public void removeCondition(Long index){
         conditions.removeIf(c -> Objects.equals(c.getIndex(), index));
 
@@ -78,6 +91,16 @@ public class Rule extends Domain<Rule> {
                 .setType(ruleAction.getType()));
 
         return this;
+    }
+
+    public RuleAction getAction(Long index){
+        return actions.get(index.intValue());
+    }
+
+    public void updateAction(RuleAction ruleAction){
+        RuleAction action = actions.get(ruleAction.getIndex().intValue());
+
+        action.setType(ruleAction.getType());
     }
 
     public void removeAction(Long index){

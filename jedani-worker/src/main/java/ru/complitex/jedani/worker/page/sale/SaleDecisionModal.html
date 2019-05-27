@@ -25,7 +25,12 @@
                 <tr wicket:id="rules">
                     <td wicket:id="id"></td>
                     <th wicket:id="ruleConditions">
-                        <div wicket:id="value"></div>
+                        <div class="input-group">
+                            <span class="input-group-btn" style="width: 55px">
+                                <select wicket:id="comparator" class="form-control"></select>
+                            </span>
+                            <input wicket:id="value" class="form-control"/>
+                        </div>
                     </th>
                     <th style="vertical-align: middle; width: 32px; text-align: center; border-right: 1px solid #ddd;">
 

@@ -1,24 +1,25 @@
 package ru.complitex.jedani.worker.page.sale;
 
 import de.agilecoders.wicket.core.markup.html.bootstrap.dialog.Modal;
+import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.select.BootstrapSelect;
+import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.select.BootstrapSelectConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.*;
 import ru.complitex.common.wicket.form.AjaxSelectLabel;
 import ru.complitex.domain.model.NumberAttributeModel;
-import ru.complitex.jedani.worker.entity.Rule;
-import ru.complitex.jedani.worker.entity.RuleAction;
-import ru.complitex.jedani.worker.entity.RuleCondition;
-import ru.complitex.jedani.worker.entity.SaleDecision;
+import ru.complitex.jedani.worker.entity.*;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class SaleDecisionModal extends Modal<SaleDecision> {
     public SaleDecisionModal(String markupId) {
@@ -57,6 +58,13 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
                         return StringUtils.isNumeric(id) ? Long.valueOf(id) : null;
                     }
                 }){
+                    @Override
+                    protected void onApply(AjaxRequestTarget target) {
+                        saleDecisionModel.getObject().updateCondition(item.getModelObject().getIndex());
+
+                        target.add(form);
+                    }
+
                     @Override
                     protected void onRemove(AjaxRequestTarget target) {
                         saleDecisionModel.getObject().removeCondition((long) item.getIndex());
@@ -100,6 +108,14 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
                         return StringUtils.isNumeric(id) ? Long.valueOf(id) : null;
                     }
                 }){
+
+                    @Override
+                    protected void onApply(AjaxRequestTarget target) {
+                        saleDecisionModel.getObject().updateAction(item.getModelObject().getIndex());
+
+                        target.add(form);
+                    }
+
                     @Override
                     protected void onRemove(AjaxRequestTarget target) {
                         saleDecisionModel.getObject().removeAction((long) item.getIndex());
@@ -131,7 +147,46 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
                         new PropertyModel<>(item.getModel(), "conditions")) {
                     @Override
                     protected void populateItem(ListItem<RuleCondition> item) {
-                        item.add(new Label("value", item.getModelObject().getIndex()));
+                        RuleCondition ruleCondition = item.getModelObject();
+
+                        item.add(new BootstrapSelect<Long>("comparator", NumberAttributeModel.of(item.getModel(),
+                                RuleCondition.COMPARATOR), RuleConditionComparator.getComparatorIds(),
+                                new IChoiceRenderer<Long>() {
+                            @Override
+                            public Object getDisplayValue(Long object) {
+                                if (object != null){
+                                    switch (object.intValue()){
+                                        case (int) RuleConditionComparator.EQUAL: return "==";
+                                        case (int) RuleConditionComparator.NOT_EQUAL: return "!=";
+                                        case (int) RuleConditionComparator.GREATER: return ">";
+                                        case (int) RuleConditionComparator.LOWER: return "<";
+                                        case (int) RuleConditionComparator.GREATER_OR_EQUAL: return ">=";
+                                        case (int) RuleConditionComparator.LOWER_OR_EQUAL: return "<=";
+                                    }
+                                }
+
+                                return null;
+                            }
+
+                            @Override
+                            public String getIdValue(Long object, int index) {
+                                return object + "";
+                            }
+
+                            @Override
+                            public Long getObject(String id, IModel<? extends List<? extends Long>> choices) {
+                                return StringUtils.isNumeric(id) ? Long.valueOf(id) : null;
+                            }
+                        }){
+                            @Override
+                            public boolean isVisible() {
+                                return hasComparator(ruleCondition);
+                            }
+                        }.with(new BootstrapSelectConfig().withNoneSelectedText("")));
+
+                        item.add(new TextField<>("value", Model.of(ruleCondition.getIndex())));
+
+                        //todo add value input
                     }
                 });
 
@@ -154,6 +209,10 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
                 target.add(form);
             }
         });
+    }
+
+    public boolean hasComparator(RuleCondition ruleCondition){
+        return !Objects.equals(ruleCondition.getType(), RuleConditionType.PAYMENT_MONTHLY);
 
     }
 
