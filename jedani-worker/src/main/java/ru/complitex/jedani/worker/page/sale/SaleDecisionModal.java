@@ -29,17 +29,14 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
 
         header(new ResourceModel("header"));
 
-        IModel<SaleDecision> saleDecisionModel = Model.of(new SaleDecision()
-                .setHeader(new Rule()
-                        .add(new RuleCondition())
-                        .add(new RuleAction())));
+        IModel<SaleDecision> saleDecisionModel = Model.of(new SaleDecision().addRule());
 
         Form form = new Form("form");
         form.setOutputMarkupId(true);
         add(form);
 
         ListView<RuleCondition> conditions = new ListView<RuleCondition>("conditions",
-                new PropertyModel<>(saleDecisionModel, "header.conditions")) {
+                new PropertyModel<>(saleDecisionModel, "rules.0.conditions")) {
             @Override
             protected void populateItem(ListItem<RuleCondition> item) {
                 item.add(new AjaxSelectLabel<Long>("type",
@@ -62,7 +59,7 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
                 }){
                     @Override
                     protected void onRemove(AjaxRequestTarget target) {
-                        saleDecisionModel.getObject().getHeader().getConditions().remove(item.getModelObject());
+                        saleDecisionModel.getObject().removeCondition((long) item.getIndex());
 
                         target.add(form);
                     }
@@ -75,14 +72,14 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
         form.add(new AjaxLink<RuleCondition>("addCondition") {
             @Override
             public void onClick(AjaxRequestTarget target) {
-                saleDecisionModel.getObject().getHeader().getConditions().add(new RuleCondition());
+                saleDecisionModel.getObject().addCondition();
 
                 target.add(form);
             }
         });
 
         ListView<RuleAction> actions = new ListView<RuleAction>("actions",
-                new PropertyModel<>(saleDecisionModel, "header.actions")) {
+                new PropertyModel<>(saleDecisionModel, "rules.0.actions")) {
             @Override
             protected void populateItem(ListItem<RuleAction> item) {
                 item.add(new AjaxSelectLabel<Long>("type",
@@ -105,7 +102,7 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
                 }){
                     @Override
                     protected void onRemove(AjaxRequestTarget target) {
-                        saleDecisionModel.getObject().getHeader().getActions().remove(item.getModelObject());
+                        saleDecisionModel.getObject().removeAction((long) item.getIndex());
 
                         target.add(form);
                     }
@@ -118,7 +115,7 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
         form.add(new AjaxLink<RuleCondition>("addAction") {
             @Override
             public void onClick(AjaxRequestTarget target) {
-                saleDecisionModel.getObject().getHeader().getActions().add(new RuleAction());
+                saleDecisionModel.getObject().addAction();
 
                 target.add(form);
             }
@@ -128,21 +125,21 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
                 new PropertyModel<>(saleDecisionModel, "rules")) {
             @Override
             protected void populateItem(ListItem<Rule> item) {
-                item.add(new Label("id", item.getId()));
+                item.add(new Label("id", item.getIndex() + 1));
 
                 item.add(new ListView<RuleCondition>("ruleConditions",
-                        new PropertyModel<>(saleDecisionModel, "header.conditions")) {
+                        new PropertyModel<>(item.getModel(), "conditions")) {
                     @Override
                     protected void populateItem(ListItem<RuleCondition> item) {
-                        item.add(new Label("value", item.getMarkupId()));
+                        item.add(new Label("value", item.getModelObject().getIndex()));
                     }
                 });
 
-                item.add(new ListView<RuleCondition>("ruleActions",
-                        new PropertyModel<>(saleDecisionModel, "header.actions")) {
+                item.add(new ListView<RuleAction>("ruleActions",
+                        new PropertyModel<>(item.getModel(), "actions")) {
                     @Override
-                    protected void populateItem(ListItem<RuleCondition> item) {
-                        item.add(new Label("value", item.getMarkupId()));
+                    protected void populateItem(ListItem<RuleAction> item) {
+                        item.add(new Label("value", item.getModelObject().getIndex()));
                     }
                 });
             }
@@ -152,7 +149,7 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
         form.add(new AjaxLink<RuleCondition>("addRule") {
             @Override
             public void onClick(AjaxRequestTarget target) {
-                saleDecisionModel.getObject().getRules().add(new Rule());
+                saleDecisionModel.getObject().addRule();
 
                 target.add(form);
             }

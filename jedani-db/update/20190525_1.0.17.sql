@@ -125,11 +125,13 @@ CALL createEntity(33, 'rule', 'Правило', 'Правило');
 
 CALL createDomainTables('rule_condition', 'Условие правила');
 CALL createEntity(34, 'rule_condition', 'Условие правила', 'Умова правила');
-CALL createEntityAttribute(34, 1, 5, 'Тип условия', 'Тип умови');
+CALL createEntityAttribute(34, 1, 5, 'Индекс', 'Індекс');
+CALL createEntityAttribute(34, 2, 5, 'Тип условия', 'Тип умови');
 
 CALL createDomainTables('rule_action', 'Действие правила');
 CALL createEntity(35, 'rule_action', 'Действие правила', 'Дії правила');
-CALL createEntityAttribute(35, 1, 5, 'Тип действия', 'Тип дії');
+CALL createEntityAttribute(35, 1, 5, 'Индекс', 'Індекс');
+CALL createEntityAttribute(35, 2, 5, 'Тип действия', 'Тип дії');
 
 CALL createDomainTables('sale_decision', 'Условие продаж');
 CALL createEntity(36, 'sale_decision', 'Условие продаж', 'Умова продажів');

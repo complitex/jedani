@@ -10,21 +10,10 @@ public class SaleDecision extends Domain<SaleDecision> {
 
     public final static long NAME = 1;
 
-    private Rule header;
     private List<Rule> rules = new ArrayList<>();
 
     public SaleDecision() {
         super(ENTITY_NAME);
-    }
-
-    public Rule getHeader() {
-        return header;
-    }
-
-    public SaleDecision setHeader(Rule header) {
-        this.header = header;
-
-        return this;
     }
 
     public List<Rule> getRules() {
@@ -33,5 +22,31 @@ public class SaleDecision extends Domain<SaleDecision> {
 
     public void setRules(List<Rule> rules) {
         this.rules = rules;
+    }
+
+    public SaleDecision addRule(){
+        if (rules.isEmpty()){
+            rules.add(new Rule());
+        } else {
+            rules.add(new Rule(rules.get(0)));
+        }
+
+        return this;
+    }
+
+    public void addCondition(){
+        rules.forEach(Rule::addCondition);
+    }
+
+    public void removeCondition(Long index){
+        rules.forEach(r -> r.removeCondition(index));
+    }
+
+    public void addAction(){
+        rules.forEach(Rule::addAction);
+    }
+
+    public void removeAction(Long index){
+        rules.forEach(r -> r.removeAction(index));
     }
 }
