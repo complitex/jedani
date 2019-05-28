@@ -54,7 +54,7 @@ import java.util.List;
  * @author Anatoly A. Ivanov
  * 21.04.2019 22:02
  */
-public class PriceEditModal extends AbstractDomainEditModal<Price> {
+public class PriceModal extends AbstractDomainEditModal<Price> {
     @Inject
     private DomainService domainService;
 
@@ -72,7 +72,7 @@ public class PriceEditModal extends AbstractDomainEditModal<Price> {
     private Long currentUserId;
     private SerializableConsumer<AjaxRequestTarget> onChange;
 
-    public PriceEditModal(String markupId, Long currentUserId, SerializableConsumer<AjaxRequestTarget> onChange) {
+    public PriceModal(String markupId, Long currentUserId, SerializableConsumer<AjaxRequestTarget> onChange) {
         super(markupId);
 
         this.currentUserId = currentUserId;
@@ -197,12 +197,12 @@ public class PriceEditModal extends AbstractDomainEditModal<Price> {
             }
         });
 
-        historyForm.add(new FilterDataTable<>("history", columns, dataProvider, historyForm, 5, "PriceEditModal"));
+        historyForm.add(new FilterDataTable<>("history", columns, dataProvider, historyForm, 5, "PriceModal"));
 
         addButton(new BootstrapAjaxButton(Modal.BUTTON_MARKUP_ID, Buttons.Type.Primary) {
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
-                PriceEditModal.this.save(target);
+                PriceModal.this.save(target);
             }
 
             @Override
@@ -214,7 +214,7 @@ public class PriceEditModal extends AbstractDomainEditModal<Price> {
         addButton(new BootstrapAjaxLink<Void>(Modal.BUTTON_MARKUP_ID, Buttons.Type.Default) {
             @Override
             public void onClick(AjaxRequestTarget target) {
-                PriceEditModal.this.cancel(target);
+                PriceModal.this.cancel(target);
             }
         }.setLabel(new ResourceModel("cancel")));
     }

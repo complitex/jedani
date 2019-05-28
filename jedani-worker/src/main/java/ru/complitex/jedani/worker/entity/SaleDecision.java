@@ -9,6 +9,8 @@ public class SaleDecision extends Domain<SaleDecision> {
     public static final String ENTITY_NAME = "sale_decision";
 
     public final static long NAME = 1;
+    public final static long DATE_BEGIN = 2;
+    public final static long DATE_END = 3;
 
     private List<Rule> rules = new ArrayList<>();
 

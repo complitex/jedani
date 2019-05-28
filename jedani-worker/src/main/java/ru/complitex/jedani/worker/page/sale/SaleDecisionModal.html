@@ -2,7 +2,13 @@
 
 <wicket:panel xmlns:wicket="http://wicket.apache.org">
     <wicket:extend>
-        <form wicket:id="form" class="container-fluid">
+        <div wicket:id="container" class="container-fluid">
+            <div class="row">
+                <div wicket:id="name" class="col-md-6"></div>
+                <div wicket:id="begin" class="col-md-3"></div>
+                <div wicket:id="end" class="col-md-3"></div>
+            </div>
+
             <table class="table">
                 <thead>
                 <tr>
@@ -44,7 +50,7 @@
                         </div>
                     </td>
                     <td style="vertical-align: middle; width: 32px; text-align: center;">
-                        <a><i class="glyphicon glyphicon-remove"></i></a>
+                        <a wicket:id="remove"><i class="glyphicon glyphicon-remove"></i></a>
                     </td>
                 </tr>
                 </tbody>
@@ -52,6 +58,6 @@
             <div class="text-center">
                 <a wicket:id="addRule">Добавить</a>
             </div>
-        </form>
+        </div>
     </wicket:extend>
 </wicket:panel>
