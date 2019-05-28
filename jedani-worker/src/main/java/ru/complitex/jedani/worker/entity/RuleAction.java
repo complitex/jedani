@@ -8,6 +8,8 @@ public class RuleAction extends Domain<RuleAction> {
     public static final long INDEX = 1;
     public static final long TYPE = 2;
     public static final long VALUE_TYPE = 3;
+    public static final long COMPARATOR = 4;
+    public static final long ACTION = 5;
 
     public RuleAction() {
         super(ENTITY_NAME);
@@ -39,6 +41,16 @@ public class RuleAction extends Domain<RuleAction> {
 
     public RuleAction setValueType(Long valueType){
         setNumber(VALUE_TYPE, valueType);
+
+        return this;
+    }
+
+    public Long getComparator(){
+        return getNumber(COMPARATOR);
+    }
+
+    public RuleAction setComparator(Long comparator){
+        setNumber(COMPARATOR, comparator);
 
         return this;
     }
