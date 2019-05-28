@@ -45,7 +45,8 @@ public class Rule extends Domain<Rule> {
     public Rule add(RuleCondition ruleCondition){
         conditions.add(new RuleCondition()
                 .setIndex(ruleCondition.getIndex())
-                .setType(ruleCondition.getType()));
+                .setType(ruleCondition.getType())
+                .setValueType(ruleCondition.getValueType()));
 
         return this;
     }
@@ -88,7 +89,8 @@ public class Rule extends Domain<Rule> {
     public Rule add(RuleAction ruleAction){
         actions.add(new RuleAction()
                 .setIndex(ruleAction.getIndex())
-                .setType(ruleAction.getType()));
+                .setType(ruleAction.getType())
+                .setValueType(ruleAction.getValueType()));
 
         return this;
     }

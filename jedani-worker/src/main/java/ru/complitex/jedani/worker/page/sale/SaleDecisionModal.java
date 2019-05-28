@@ -11,6 +11,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.TextField;
@@ -208,7 +209,7 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
 
                                     @Override
                                     public String getIdValue(RuleConditionComparator object, int index) {
-                                        return object + "";
+                                        return object.getId() + "";
                                     }
 
                                     @Override
@@ -217,6 +218,7 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
                                     }
                                 });
                         comparator.with(new BootstrapSelectConfig().withNoneSelectedText(""));
+                        comparator.setOutputMarkupId(true);
                         comparator.add(OnChangeAjaxBehavior.onChange(t -> {}));
                         item.add(comparator);
 
@@ -233,8 +235,15 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
                                 public void setObject(Boolean object) {
                                     ruleCondition.setNumber(RuleCondition.CONDITION, object ? 1L : 0L);
                                 }
-                            })
-                                    .add(OnChangeAjaxBehavior.onChange(t -> {})));
+                            }){
+                                @Override
+                                protected CheckBox newCheckBox(String id, IModel<Boolean> model) {
+                                    CheckBox checkBox =  super.newCheckBox(id, model);
+                                    checkBox.add(OnChangeAjaxBehavior.onChange(t -> {}));
+
+                                    return checkBox;
+                                }
+                            });
                         }else if (Objects.equals(ruleCondition.getValueType(), ValueType.DECIMAL.getId())){
                             item.add(new TextField<>("value", new IModel<BigDecimal>() {
                                 @Override
@@ -311,7 +320,7 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
 
                                     @Override
                                     public String getIdValue(RuleConditionComparator object, int index) {
-                                        return object + "";
+                                        return object.getId() + "";
                                     }
 
                                     @Override
@@ -320,6 +329,7 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
                                     }
                                 });
                         comparator.with(new BootstrapSelectConfig().withNoneSelectedText(""));
+                        comparator.setOutputMarkupId(true);
                         comparator.add(OnChangeAjaxBehavior.onChange(t -> {}));
                         item.add(comparator);
 
@@ -336,8 +346,16 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
                                 public void setObject(Boolean object) {
                                     ruleAction.setNumber(RuleAction.ACTION, object ? 1L : 0L);
                                 }
-                            })
-                                    .add(OnChangeAjaxBehavior.onChange(t -> {})));
+                            }){
+                                @Override
+                                protected CheckBox newCheckBox(String id, IModel<Boolean> model) {
+                                    CheckBox checkBox =  super.newCheckBox(id, model);
+                                    checkBox.add(OnChangeAjaxBehavior.onChange(t -> {}));
+
+                                    return checkBox;
+                                }
+                            }
+                                    );
                         }else if (Objects.equals(ruleAction.getValueType(), ValueType.DECIMAL.getId())){
                             item.add(new TextField<>("value", new IModel<BigDecimal>() {
                                 @Override

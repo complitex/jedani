@@ -233,3 +233,8 @@ td.domain-id-column{
 .input-group .form-control{
     z-index: auto;
 }
+
+.checkbox {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
