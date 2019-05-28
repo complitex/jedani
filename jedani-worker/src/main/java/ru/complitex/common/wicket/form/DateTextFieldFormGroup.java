@@ -4,7 +4,7 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.form.FormGroup;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.DateTextField;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.DateTextFieldConfig;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
+import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
@@ -54,7 +54,7 @@ public class DateTextFieldFormGroup extends Panel{
     }
 
     public DateTextFieldFormGroup onUpdate(SerializableConsumer<AjaxRequestTarget> onUpdate){
-        dateTextField.add(AjaxFormComponentUpdatingBehavior.onUpdate("blur", onUpdate));
+        dateTextField.add(OnChangeAjaxBehavior.onChange(onUpdate));
 
         return this;
     }
