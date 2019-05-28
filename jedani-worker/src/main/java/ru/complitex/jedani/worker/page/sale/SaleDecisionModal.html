@@ -6,7 +6,7 @@
             <table class="table">
                 <thead>
                 <tr>
-                    <th class="domain-id-column"><a href="#">№</a></th>
+                    <th style="width: 33px"><a href="#">№</a></th>
                     <th wicket:id="conditions">
                         <div wicket:id="type"></div>
                     </th>
@@ -23,29 +23,29 @@
                 </thead>
                 <tbody>
                 <tr wicket:id="rules">
-                    <td wicket:id="id"></td>
-                    <th wicket:id="ruleConditions">
+                    <td wicket:id="id" style="vertical-align: middle"></td>
+                    <td wicket:id="ruleConditions">
                         <div class="input-group">
-                            <span class="input-group-btn" style="width: 55px">
+                            <span class="input-group-btn" style="width: 33px">
                                 <select wicket:id="comparator" class="form-control"></select>
                             </span>
                             <input wicket:id="value" class="form-control"/>
                         </div>
-                    </th>
-                    <th style="vertical-align: middle; width: 32px; text-align: center; border-right: 1px solid #ddd;">
+                    </td>
+                    <td style="vertical-align: middle; width: 32px; text-align: center; border-right: 1px solid #ddd;">
 
-                    </th>
-                    <th wicket:id="ruleActions">
+                    </td>
+                    <td wicket:id="ruleActions">
                         <div class="input-group">
-                        <span class="input-group-btn" style="width: 55px">
+                        <span class="input-group-btn" style="width: 33px">
                                 <select wicket:id="comparator" class="form-control"></select>
                             </span>
                         <input wicket:id="value" class="form-control"/>
                         </div>
-                    </th>
-                    <th style="vertical-align: middle; width: 32px; text-align: center;">
+                    </td>
+                    <td style="vertical-align: middle; width: 32px; text-align: center;">
                         <a><i class="glyphicon glyphicon-remove"></i></a>
-                    </th>
+                    </td>
                 </tr>
                 </tbody>
             </table>

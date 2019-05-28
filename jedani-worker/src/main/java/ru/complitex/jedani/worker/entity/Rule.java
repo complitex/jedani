@@ -103,6 +103,7 @@ public class Rule extends Domain<Rule> {
         RuleAction action = actions.get(ruleAction.getIndex().intValue());
 
         action.setType(ruleAction.getType());
+        action.setValueType(ruleAction.getValueType());
     }
 
     public void removeAction(Long index){

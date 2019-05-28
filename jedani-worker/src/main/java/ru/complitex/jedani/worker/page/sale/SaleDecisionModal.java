@@ -4,17 +4,12 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.dialog.Modal;
 import de.agilecoders.wicket.core.markup.html.bootstrap.form.BootstrapCheckbox;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.DateTextField;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.DateTextFieldConfig;
-import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.select.BootstrapSelect;
-import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.select.BootstrapSelectConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.CheckBox;
-import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
-import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.form.*;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.EmptyPanel;
@@ -46,6 +41,8 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
         Form form = new Form("form");
         form.setOutputMarkupId(true);
         add(form);
+
+        //todo name, date
 
         ListView<RuleCondition> conditions = new ListView<RuleCondition>("conditions",
                 new PropertyModel<>(saleDecisionModel, "rules.0.conditions")) {
@@ -184,7 +181,7 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
                     protected void populateItem(ListItem<RuleCondition> item) {
                         RuleCondition ruleCondition = item.getModelObject();
 
-                        BootstrapSelect comparator = new BootstrapSelect<>("comparator",
+                        DropDownChoice comparator = new DropDownChoice<>("comparator",
                                 new IModel<RuleConditionComparator>(){
                                     @Override
                                     public RuleConditionComparator getObject() {
@@ -193,7 +190,7 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
 
                                     @Override
                                     public void setObject(RuleConditionComparator object) {
-                                        item.getModelObject().setComparator(object.getId());
+                                        item.getModelObject().setComparator(object != null ? object.getId() : null);
                                     }
                                 },
                                 Arrays.asList(RuleConditionComparator.values()),
@@ -217,7 +214,6 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
                                         return StringUtils.isNumeric(id) ? RuleConditionComparator.getValue(Long.valueOf(id)) : null;
                                     }
                                 });
-                        comparator.with(new BootstrapSelectConfig().withNoneSelectedText(""));
                         comparator.setOutputMarkupId(true);
                         comparator.add(OnChangeAjaxBehavior.onChange(t -> {}));
                         item.add(comparator);
@@ -295,7 +291,7 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
                     protected void populateItem(ListItem<RuleAction> item) {
                         RuleAction ruleAction = item.getModelObject();
 
-                        BootstrapSelect comparator = new BootstrapSelect<>("comparator",
+                        DropDownChoice comparator = new DropDownChoice<>("comparator",
                                 new IModel<RuleConditionComparator>(){
                                     @Override
                                     public RuleConditionComparator getObject() {
@@ -304,7 +300,7 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
 
                                     @Override
                                     public void setObject(RuleConditionComparator object) {
-                                        item.getModelObject().setComparator(object.getId());
+                                        item.getModelObject().setComparator(object != null ? object.getId() : null);
                                     }
                                 },
                                 Arrays.asList(RuleConditionComparator.values()),
@@ -328,7 +324,6 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
                                         return StringUtils.isNumeric(id) ? RuleConditionComparator.getValue(Long.valueOf(id)) : null;
                                     }
                                 });
-                        comparator.with(new BootstrapSelectConfig().withNoneSelectedText(""));
                         comparator.setOutputMarkupId(true);
                         comparator.add(OnChangeAjaxBehavior.onChange(t -> {}));
                         item.add(comparator);
@@ -399,6 +394,8 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
                         }
                     }
                 });
+
+                //todo remove
             }
         };
         form.add(rules);
@@ -411,11 +408,8 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
                 target.add(form);
             }
         });
-    }
 
-    private boolean hasComparator(RuleCondition ruleCondition){
-        return !Objects.equals(ruleCondition.getType(), RuleConditionType.PAYMENT_MONTHLY.getId());
-
+        //todo modal button
     }
 
     public void edit(AjaxRequestTarget target){
