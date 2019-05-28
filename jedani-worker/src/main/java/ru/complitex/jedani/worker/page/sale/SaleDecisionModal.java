@@ -5,6 +5,7 @@ import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.select.Bootst
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.select.BootstrapSelectConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
@@ -12,9 +13,11 @@ import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
-import org.apache.wicket.model.*;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
+import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.model.ResourceModel;
 import ru.complitex.common.wicket.form.AjaxSelectLabel;
-import ru.complitex.domain.model.NumberAttributeModel;
 import ru.complitex.jedani.worker.entity.*;
 
 import java.util.Arrays;
@@ -40,22 +43,34 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
                 new PropertyModel<>(saleDecisionModel, "rules.0.conditions")) {
             @Override
             protected void populateItem(ListItem<RuleCondition> item) {
-                item.add(new AjaxSelectLabel<Long>("type",
-                        NumberAttributeModel.of(item.getModel(), RuleCondition.TYPE),
-                        Arrays.asList(1L, 2L, 3L, 4L), new IChoiceRenderer<Long>() {
+                item.add(new AjaxSelectLabel<RuleConditionType>("type",
+                        new IModel<RuleConditionType>() {
+                            @Override
+                            public RuleConditionType getObject() {
+                                return RuleConditionType.getValue(item.getModelObject().getType());
+                            }
+
+                            @Override
+                            public void setObject(RuleConditionType object) {
+                                item.getModelObject().setType(object.getId());
+                                item.getModelObject().setValueType(object.getValueType().getId());
+                            }
+                        },
+                        Arrays.asList(RuleConditionType.values()),
+                        new IChoiceRenderer<RuleConditionType>() {
                     @Override
-                    public Object getDisplayValue(Long object) {
-                        return getString("ruleConditionType." + object);
+                    public Object getDisplayValue(RuleConditionType object) {
+                        return getString(object.name());
                     }
 
                     @Override
-                    public String getIdValue(Long object, int index) {
-                        return object + "";
+                    public String getIdValue(RuleConditionType object, int index) {
+                        return object.getId() + "";
                     }
 
                     @Override
-                    public Long getObject(String id, IModel<? extends List<? extends Long>> choices) {
-                        return StringUtils.isNumeric(id) ? Long.valueOf(id) : null;
+                    public RuleConditionType getObject(String id, IModel<? extends List<? extends RuleConditionType>> choices) {
+                        return StringUtils.isNumeric(id) ? RuleConditionType.getValue(Long.valueOf(id)) : null;
                     }
                 }){
                     @Override
@@ -90,22 +105,34 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
                 new PropertyModel<>(saleDecisionModel, "rules.0.actions")) {
             @Override
             protected void populateItem(ListItem<RuleAction> item) {
-                item.add(new AjaxSelectLabel<Long>("type",
-                        NumberAttributeModel.of(item.getModel(), RuleAction.TYPE),
-                        Arrays.asList(1L, 2L), new IChoiceRenderer<Long>() {
+                item.add(new AjaxSelectLabel<RuleActionType>("type",
+                        new IModel<RuleActionType>() {
+                            @Override
+                            public RuleActionType getObject() {
+                                return RuleActionType.getValue(item.getModelObject().getType());
+                            }
+
+                            @Override
+                            public void setObject(RuleActionType object) {
+                                item.getModelObject().setType(object.getId());
+                                item.getModelObject().setValueType(object.getValueType().getId());
+                            }
+                        },
+                        Arrays.asList(RuleActionType.values()),
+                        new IChoiceRenderer<RuleActionType>() {
                     @Override
-                    public Object getDisplayValue(Long object) {
-                        return getString("ruleActionType." + object);
+                    public Object getDisplayValue(RuleActionType object) {
+                        return getString(object.name());
                     }
 
                     @Override
-                    public String getIdValue(Long object, int index) {
-                        return object + "";
+                    public String getIdValue(RuleActionType object, int index) {
+                        return object.getId() + "";
                     }
 
                     @Override
-                    public Long getObject(String id, IModel<? extends List<? extends Long>> choices) {
-                        return StringUtils.isNumeric(id) ? Long.valueOf(id) : null;
+                    public RuleActionType getObject(String id, IModel<? extends List<? extends RuleActionType>> choices) {
+                        return StringUtils.isNumeric(id) ? RuleActionType.getValue(Long.valueOf(id)) : null;
                     }
                 }){
 
@@ -149,40 +176,45 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
                     protected void populateItem(ListItem<RuleCondition> item) {
                         RuleCondition ruleCondition = item.getModelObject();
 
-                        item.add(new BootstrapSelect<Long>("comparator", NumberAttributeModel.of(item.getModel(),
-                                RuleCondition.COMPARATOR), RuleConditionComparator.getComparatorIds(),
-                                new IChoiceRenderer<Long>() {
-                            @Override
-                            public Object getDisplayValue(Long object) {
-                                if (object != null){
-                                    switch (object.intValue()){
-                                        case (int) RuleConditionComparator.EQUAL: return "==";
-                                        case (int) RuleConditionComparator.NOT_EQUAL: return "!=";
-                                        case (int) RuleConditionComparator.GREATER: return ">";
-                                        case (int) RuleConditionComparator.LOWER: return "<";
-                                        case (int) RuleConditionComparator.GREATER_OR_EQUAL: return ">=";
-                                        case (int) RuleConditionComparator.LOWER_OR_EQUAL: return "<=";
+                        item.add(new BootstrapSelect<RuleConditionComparator>("comparator",
+                                new IModel<RuleConditionComparator>(){
+                                    @Override
+                                    public RuleConditionComparator getObject() {
+                                        return RuleConditionComparator.getValue(item.getModelObject().getComparator());
                                     }
+
+                                    @Override
+                                    public void setObject(RuleConditionComparator object) {
+                                        item.getModelObject().setComparator(object.getId());
+                                    }
+                                },
+                                Arrays.asList(RuleConditionComparator.values()),
+                                new IChoiceRenderer<RuleConditionComparator>() {
+                            @Override
+                            public Object getDisplayValue(RuleConditionComparator object) {
+                                if (object != null){
+                                    return object.getText();
                                 }
 
                                 return null;
                             }
 
                             @Override
-                            public String getIdValue(Long object, int index) {
+                            public String getIdValue(RuleConditionComparator object, int index) {
                                 return object + "";
                             }
 
                             @Override
-                            public Long getObject(String id, IModel<? extends List<? extends Long>> choices) {
-                                return StringUtils.isNumeric(id) ? Long.valueOf(id) : null;
+                            public RuleConditionComparator getObject(String id, IModel<? extends List<? extends RuleConditionComparator>> choices) {
+                                return StringUtils.isNumeric(id) ? RuleConditionComparator.getValue(Long.valueOf(id)) : null;
                             }
                         }){
                             @Override
                             public boolean isVisible() {
                                 return hasComparator(ruleCondition);
                             }
-                        }.with(new BootstrapSelectConfig().withNoneSelectedText("")));
+                        }.with(new BootstrapSelectConfig().withNoneSelectedText(""))
+                                .add(OnChangeAjaxBehavior.onChange(t -> {})));
 
                         item.add(new TextField<>("value", Model.of(ruleCondition.getIndex())));
 
@@ -211,8 +243,8 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
         });
     }
 
-    public boolean hasComparator(RuleCondition ruleCondition){
-        return !Objects.equals(ruleCondition.getType(), RuleConditionType.PAYMENT_MONTHLY);
+    private boolean hasComparator(RuleCondition ruleCondition){
+        return !Objects.equals(ruleCondition.getType(), RuleConditionType.PAYMENT_MONTHLY.getId());
 
     }
 

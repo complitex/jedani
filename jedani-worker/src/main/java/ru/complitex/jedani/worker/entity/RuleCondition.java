@@ -8,8 +8,9 @@ public class RuleCondition extends Domain<RuleCondition> {
     public static final long INDEX = 1;
     public static final long TYPE = 2;
     public static final long VALUE_TYPE = 3;
-    public static final long CONDITION = 4;
-    public static final long COMPARATOR = 5;
+    public static final long COMPARATOR = 4;
+    public static final long CONDITION = 5;
+
 
     public RuleCondition() {
         super(ENTITY_NAME);
@@ -41,6 +42,16 @@ public class RuleCondition extends Domain<RuleCondition> {
 
     public RuleCondition setValueType(Long valueType){
         setNumber(VALUE_TYPE, valueType);
+
+        return this;
+    }
+
+    public Long getComparator(){
+        return getNumber(COMPARATOR);
+    }
+
+    public RuleCondition setComparator(Long comparator){
+        setNumber(COMPARATOR, comparator);
 
         return this;
     }

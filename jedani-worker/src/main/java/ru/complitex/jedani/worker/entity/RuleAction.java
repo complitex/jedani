@@ -7,6 +7,7 @@ public class RuleAction extends Domain<RuleAction> {
 
     public static final long INDEX = 1;
     public static final long TYPE = 2;
+    public static final long VALUE_TYPE = 3;
 
     public RuleAction() {
         super(ENTITY_NAME);
@@ -28,6 +29,16 @@ public class RuleAction extends Domain<RuleAction> {
 
     public RuleAction setType(Long type){
         setNumber(TYPE, type);
+
+        return this;
+    }
+
+    public Long getValueType(){
+        return getNumber(VALUE_TYPE);
+    }
+
+    public RuleAction setValueType(Long valueType){
+        setNumber(VALUE_TYPE, valueType);
 
         return this;
     }

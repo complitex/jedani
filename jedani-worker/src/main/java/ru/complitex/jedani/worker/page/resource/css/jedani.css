@@ -229,3 +229,7 @@ td.domain-id-column{
 .dropdown-toggle{
     min-width: 39px;
 }
+
+.input-group .form-control{
+    z-index: auto;
+}

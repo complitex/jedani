@@ -3,24 +3,26 @@ package ru.complitex.domain.entity;
 import ru.complitex.common.entity.IdEnum;
 
 public enum ValueType implements IdEnum {
-    TEXT_VALUE(0),
-    NUMBER_VALUE(1),
-    TEXT(2),
-    BOOLEAN(3),
-    DECIMAL(4),
-    NUMBER(5),
-    DATE(6),
+    TEXT_VALUE(0L, "value"),
+    NUMBER_VALUE(1L, "number_value"),
+    TEXT(2L, "text"),
+    BOOLEAN(3L, "number"),
+    DECIMAL(4L, "text"),
+    NUMBER(5L, "number"),
+    DATE(6L, "date"),
 
-    ENTITY_VALUE(10),
-    ENTITY(11);
+    ENTITY_VALUE(10L, "entity_value"),
+    ENTITY(11L, "entity");
 
-    private Integer id;
+    private Long id;
+    private String key;
 
-    ValueType(Integer id) {
+    ValueType(Long id, String key) {
         this.id = id;
+        this.key = key;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
@@ -29,23 +31,6 @@ public enum ValueType implements IdEnum {
     }
 
     public String getKey(){
-        switch (this){
-            case TEXT_VALUE:
-                return "value";
-            case TEXT:
-            case DECIMAL:
-                return "text";
-            case BOOLEAN:
-            case NUMBER:
-                return "number";
-            case DATE:
-                return "date";
-            case ENTITY_VALUE:
-                return "entity_value";
-            case ENTITY:
-                return "entity";
-        }
-
-        return "none";
+        return key;
     }
 }
