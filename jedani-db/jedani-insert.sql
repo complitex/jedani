@@ -572,6 +572,62 @@ INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `tex
 INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`, `reference_id`) VALUES (32, 4, 11, 1);
 INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (32, 4, 1, 'Страна'), (32, 4, 2, 'Країна');
 
+DELIMITER //
+
+-- Add create entity procedures
+
+CREATE PROCEDURE createEntity(IN id BIGINT, IN entityName VARCHAR(64) CHARSET utf8,
+                              IN entityDescriptionRU VARCHAR(128) CHARSET utf8, IN entityDescriptionUA VARCHAR(128) CHARSET utf8)
+BEGIN
+    SET @insertEntity = CONCAT('INSERT INTO `entity` (`id`, `name`) VALUE (',id, ', ''', entityName, ''');');
+
+    PREPARE QUERY FROM @insertEntity; EXECUTE QUERY; DEALLOCATE PREPARE QUERY;
+
+    SET @insertEntityValue = CONCAT('INSERT INTO `entity_value`(`entity_id`, `locale_id`, `text`) VALUES (', id,
+                                    ', 1, ''', entityDescriptionRU, '''), (', id, ', 2, ''', entityDescriptionUA, ''');');
+
+    PREPARE QUERY FROM @insertEntityValue; EXECUTE QUERY; DEALLOCATE PREPARE QUERY;
+END //
+
+CREATE PROCEDURE createEntityAttribute(IN entityId BIGINT, IN entityAttributeId BIGINT, IN valueTypeId BIGINT,
+                                       IN entityDescriptionRU VARCHAR(128) CHARSET utf8, IN entityDescriptionUA VARCHAR(128) CHARSET utf8)
+BEGIN
+    SET @insertAttribute = CONCAT('INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (',
+                                  entityId, ', ', entityAttributeId, ', ', valueTypeId, ');');
+
+    PREPARE QUERY FROM @insertAttribute; EXECUTE QUERY; DEALLOCATE PREPARE QUERY;
+
+    SET @insertEntityValue = CONCAT('INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (',
+                                    entityId, ', ', entityAttributeId, ', 1, ''', entityDescriptionRU, '''), (',
+                                    entityId, ', ', entityAttributeId, ', 2, ''', entityDescriptionUA, ''');');
+
+    PREPARE QUERY FROM @insertEntityValue; EXECUTE QUERY; DEALLOCATE PREPARE QUERY;
+END //
+
+DELIMITER ;
+
+CALL createEntity(33, 'rule', 'Правило', 'Правило');
+
+CALL createEntity(34, 'rule_condition', 'Условие правила', 'Умова правила');
+CALL createEntityAttribute(34, 1, 5, 'Индекс', 'Індекс');
+CALL createEntityAttribute(34, 2, 5, 'Тип условия', 'Тип умови');
+CALL createEntityAttribute(34, 3, 5, 'Тип значения', 'Тип значення');
+CALL createEntityAttribute(34, 4, 5, 'Компаратор', 'Компаратор');
+CALL createEntityAttribute(34, 5, 2, 'Условие', 'Умова');
+
+CALL createEntity(35, 'rule_action', 'Действие правила', 'Дії правила');
+CALL createEntityAttribute(35, 1, 5, 'Индекс', 'Індекс');
+CALL createEntityAttribute(35, 2, 5, 'Тип действия', 'Тип дії');
+CALL createEntityAttribute(35, 3, 5, 'Тип значения', 'Тип значення');
+CALL createEntityAttribute(35, 4, 5, 'Компаратор', 'Компаратор');
+CALL createEntityAttribute(35, 5, 2, 'Действие', 'Дія');
+
+CALL createEntity(36, 'sale_decision', 'Условие продаж', 'Умова продажів');
+CALL createEntityAttribute(36, 1, 2, 'Название', 'Назва');
+CALL createEntityAttribute(36, 2, 6, 'Дата начала', 'Дата початку');
+CALL createEntityAttribute(36, 3, 6, 'Дата окончания', 'Дата закінчення');
+
+
 -- Update
 
 INSERT INTO `update` (`version`) VALUE ('20190417_1.0.13');

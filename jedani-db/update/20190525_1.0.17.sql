@@ -38,7 +38,7 @@ BEGIN
         CREATE TABLE `', entityName, '_attribute`
         (
             `id`                  BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT ''Идентификатор'',
-            `object_id`           BIGINT(20) NOT NULL COMMENT ''Идентификатор объекта'',
+            `domain_id`           BIGINT(20) NOT NULL COMMENT ''Идентификатор домена'',
             `entity_attribute_id` BIGINT(20) NOT NULL COMMENT ''Идентификатор типа атрибута'',
             `text`                VARCHAR(255) COMMENT ''Текст'',
             `number`              BIGINT(20) COMMENT ''Число'',
@@ -48,7 +48,7 @@ BEGIN
             `status`              INTEGER    NOT NULL DEFAULT 1 COMMENT ''Статус'',
             `user_id`             BIGINT(20) NULL COMMENT ''Идентифитактор пользователя'',
             PRIMARY KEY (`id`),
-            KEY `key_object_id` (`object_id`),
+            KEY `key_domain_id` (`domain_id`),
             KEY `key_entity_attribute_id` (`entity_attribute_id`),
             KEY `key_text` (`text`),
             KEY `key_number` (`number`),
@@ -56,7 +56,7 @@ BEGIN
             KEY `key_start_date` (`start_date`),
             KEY `key_end_date` (`end_date`),
             KEY `key_status` (`status`),
-            CONSTRAINT `fk_', entityName, '_attribute__', entityName, '` FOREIGN KEY (`object_id`) REFERENCES `', entityName, '` (`object_id`),
+            CONSTRAINT `fk_', entityName, '_attribute__', entityName, '` FOREIGN KEY (`domain_id`) REFERENCES `', entityName, '` (`id`),
             CONSTRAINT `fk_', entityName, '_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
         ) ENGINE = InnoDB
           CHARSET = utf8
@@ -121,22 +121,30 @@ END //
 DELIMITER ;
 
 CALL createDomainTables('rule', 'Правило');
+CALL createDomainTables('rule_condition', 'Условие правила');
+CALL createDomainTables('rule_action', 'Действие правила');
+CALL createDomainTables('sale_decision', 'Условие продаж');
+
 CALL createEntity(33, 'rule', 'Правило', 'Правило');
 
-CALL createDomainTables('rule_condition', 'Условие правила');
 CALL createEntity(34, 'rule_condition', 'Условие правила', 'Умова правила');
 CALL createEntityAttribute(34, 1, 5, 'Индекс', 'Індекс');
 CALL createEntityAttribute(34, 2, 5, 'Тип условия', 'Тип умови');
+CALL createEntityAttribute(34, 3, 5, 'Тип значения', 'Тип значення');
+CALL createEntityAttribute(34, 4, 5, 'Компаратор', 'Компаратор');
+CALL createEntityAttribute(34, 5, 2, 'Условие', 'Умова');
 
-CALL createDomainTables('rule_action', 'Действие правила');
 CALL createEntity(35, 'rule_action', 'Действие правила', 'Дії правила');
 CALL createEntityAttribute(35, 1, 5, 'Индекс', 'Індекс');
 CALL createEntityAttribute(35, 2, 5, 'Тип действия', 'Тип дії');
+CALL createEntityAttribute(35, 3, 5, 'Тип значения', 'Тип значення');
+CALL createEntityAttribute(35, 4, 5, 'Компаратор', 'Компаратор');
+CALL createEntityAttribute(35, 5, 2, 'Действие', 'Дія');
 
-CALL createDomainTables('sale_decision', 'Условие продаж');
 CALL createEntity(36, 'sale_decision', 'Условие продаж', 'Умова продажів');
-CALL createEntityAttribute(36, 2, 5, 'Название', 'Назва');
-
+CALL createEntityAttribute(36, 1, 2, 'Название', 'Назва');
+CALL createEntityAttribute(36, 2, 6, 'Дата начала', 'Дата початку');
+CALL createEntityAttribute(36, 3, 6, 'Дата окончания', 'Дата закінчення');
 
 -- Update
 

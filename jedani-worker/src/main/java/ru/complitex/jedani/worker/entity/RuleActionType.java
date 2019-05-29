@@ -9,7 +9,8 @@ import java.util.stream.Collectors;
 
 public enum  RuleActionType {
     EURO_RATE_AS_INITIAL_PAYMENT(1L, ValueType.BOOLEAN),
-    EURO_RATE_LESS_OR_EQUAL(2L, ValueType.DECIMAL);
+    EURO_RATE_LESS_OR_EQUAL(2L, ValueType.DECIMAL),
+    DISCOUNT(3L, ValueType.NUMBER);
 
     private Long id;
     private ValueType valueType;

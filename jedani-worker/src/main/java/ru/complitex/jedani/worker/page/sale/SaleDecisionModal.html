@@ -3,10 +3,12 @@
 <wicket:panel xmlns:wicket="http://wicket.apache.org">
     <wicket:extend>
         <div wicket:id="container" class="container-fluid">
+            <div wicket:id="feedback"></div>
+
             <div class="row">
-                <div wicket:id="name" class="col-md-6"></div>
-                <div wicket:id="begin" class="col-md-3"></div>
-                <div wicket:id="end" class="col-md-3"></div>
+                <div wicket:id="name" class="col-md-4"></div>
+                <div wicket:id="begin" class="col-md-4"></div>
+                <div wicket:id="end" class="col-md-4"></div>
             </div>
 
             <table class="table">
@@ -32,7 +34,7 @@
                     <td wicket:id="id" style="vertical-align: middle"></td>
                     <td wicket:id="ruleConditions">
                         <div class="input-group">
-                            <span class="input-group-btn" style="width: 33px">
+                            <span class="input-group-btn" style="min-width: 33px">
                                 <select wicket:id="comparator" class="form-control"></select>
                             </span>
                             <input wicket:id="value" class="form-control"/>
@@ -43,7 +45,7 @@
                     </td>
                     <td wicket:id="ruleActions">
                         <div class="input-group">
-                        <span class="input-group-btn" style="width: 33px">
+                        <span class="input-group-btn" style="min-width: 33px">
                                 <select wicket:id="comparator" class="form-control"></select>
                             </span>
                         <input wicket:id="value" class="form-control"/>

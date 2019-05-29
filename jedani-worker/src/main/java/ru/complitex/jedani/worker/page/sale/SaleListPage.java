@@ -152,7 +152,7 @@ public class SaleListPage extends DomainListModalPage<SaleItem> {
     }
 
     @Override
-    protected void onActionEdit(SaleItem object, AjaxRequestTarget target) {
+    protected void onEdit(SaleItem object, AjaxRequestTarget target) {
         saleModal.view(object, target);
     }
 

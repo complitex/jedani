@@ -3,6 +3,7 @@ package ru.complitex.jedani.worker.page.sale;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxButton;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxLink;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
+import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
 import de.agilecoders.wicket.core.markup.html.bootstrap.dialog.Modal;
 import de.agilecoders.wicket.core.markup.html.bootstrap.form.BootstrapCheckbox;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.DateTextField;
@@ -12,6 +13,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.*;
@@ -30,7 +32,9 @@ import ru.complitex.domain.entity.ValueType;
 import ru.complitex.domain.model.DateAttributeModel;
 import ru.complitex.domain.model.TextAttributeModel;
 import ru.complitex.jedani.worker.entity.*;
+import ru.complitex.jedani.worker.service.SaleDecisionService;
 
+import javax.inject.Inject;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Date;
@@ -38,6 +42,13 @@ import java.util.List;
 import java.util.Objects;
 
 public class SaleDecisionModal extends Modal<SaleDecision> {
+    @Inject
+    private SaleDecisionService saleDecisionService;
+
+    private IModel<SaleDecision> saleDecisionModel;
+
+    private WebMarkupContainer container;
+
     public SaleDecisionModal(String markupId) {
         super(markupId);
 
@@ -46,22 +57,26 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
 
         header(new ResourceModel("header"));
 
-        SaleDecision saleDecision = new SaleDecision();
-        saleDecision.addRule();
-        saleDecision.addCondition();
-        saleDecision.addAction();;
+        saleDecisionModel = Model.of(new SaleDecision());
 
-        IModel<SaleDecision> saleDecisionModel = Model.of(saleDecision);
-
-        WebMarkupContainer container = new WebMarkupContainer("container");
+        container = new WebMarkupContainer("container");
         container.setOutputMarkupId(true);
         add(container);
 
+        NotificationPanel feedback = new NotificationPanel("feedback");
+        feedback.setOutputMarkupId(true);
+        feedback.showRenderedMessages(false);
+        container.add(feedback);
+
+
         container.add(new FormGroupTextField<>("name", new TextAttributeModel(saleDecisionModel, SaleDecision.NAME))
+                .setRequired(true)
                 .onUpdate(t -> {}));
         container.add(new DateTextFieldFormGroup("begin", DateAttributeModel.of(saleDecisionModel, SaleDecision.DATE_BEGIN))
+                .setRequired(true)
                 .onUpdate(t -> {}));
         container.add(new DateTextFieldFormGroup("end", DateAttributeModel.of(saleDecisionModel, SaleDecision.DATE_END))
+                .setRequired(true)
                 .onUpdate(t -> {}));
 
         ListView<RuleCondition> conditions = new ListView<RuleCondition>("conditions",
@@ -77,8 +92,10 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
 
                             @Override
                             public void setObject(RuleConditionType object) {
-                                item.getModelObject().setType(object.getId());
-                                item.getModelObject().setValueType(object.getValueType().getId());
+                                if (object != null) {
+                                    item.getModelObject().setType(object.getId());
+                                    item.getModelObject().setValueType(object.getValueType().getId());
+                                }
                             }
                         },
                         Arrays.asList(RuleConditionType.values()),
@@ -98,6 +115,13 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
                                 return StringUtils.isNumeric(id) ? RuleConditionType.getValue(Long.valueOf(id)) : null;
                             }
                         }){
+                    @Override
+                    protected void onSelect(AjaxRequestTarget target) {
+                        saleDecisionModel.getObject().updateCondition(item.getModelObject().getIndex());
+
+                        target.add(container);
+                    }
+
                     @Override
                     protected void onApply(AjaxRequestTarget target) {
                         saleDecisionModel.getObject().updateCondition(item.getModelObject().getIndex());
@@ -139,8 +163,10 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
 
                             @Override
                             public void setObject(RuleActionType object) {
-                                item.getModelObject().setType(object.getId());
-                                item.getModelObject().setValueType(object.getValueType().getId());
+                                if (object != null) {
+                                    item.getModelObject().setType(object.getId());
+                                    item.getModelObject().setValueType(object.getValueType().getId());
+                                }
                             }
                         },
                         Arrays.asList(RuleActionType.values()),
@@ -160,6 +186,12 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
                                 return StringUtils.isNumeric(id) ? RuleActionType.getValue(Long.valueOf(id)) : null;
                             }
                         }){
+                    @Override
+                    protected void onSelect(AjaxRequestTarget target) {
+                        saleDecisionModel.getObject().updateAction(item.getModelObject().getIndex());
+
+                        target.add(container);
+                    }
 
                     @Override
                     protected void onApply(AjaxRequestTarget target) {
@@ -328,7 +360,7 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
                 }
             };
         }else if (Objects.equals(domainModel.getObject().getNumber(valueTypeAttributeId), ValueType.DECIMAL.getId())){
-            return new TextField<>("value", new IModel<BigDecimal>() {
+            return new TextField<BigDecimal>("value", new IModel<BigDecimal>() {
                 @Override
                 public BigDecimal getObject() {
                     return domainModel.getObject().getDecimal(valueAttributeId);
@@ -338,10 +370,17 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
                 public void setObject(BigDecimal object) {
                     domainModel.getObject().setDecimal(valueAttributeId, object);
                 }
-            }, BigDecimal.class)
+            }, BigDecimal.class){
+                @Override
+                protected void onComponentTag(ComponentTag tag) {
+                    super.onComponentTag(tag);
+
+                    tag.put("style", "min-width: 42px");
+                }
+            }
                     .add(OnChangeAjaxBehavior.onChange(t -> {}));
         }else if (Objects.equals(domainModel.getObject().getNumber(valueTypeAttributeId), ValueType.NUMBER.getId())){
-            return new TextField<>("value", new IModel<Long>() {
+            return new TextField<Long>("value", new IModel<Long>() {
                 @Override
                 public Long getObject() {
                     return domainModel.getObject().getNumber(valueAttributeId);
@@ -351,7 +390,14 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
                 public void setObject(Long object) {
                     domainModel.getObject().setNumber(valueAttributeId, object);
                 }
-            }, Long.class)
+            }, Long.class){
+                @Override
+                protected void onComponentTag(ComponentTag tag) {
+                    super.onComponentTag(tag);
+
+                    tag.put("style", "min-width: 33px");
+                }
+            }
                     .add(OnChangeAjaxBehavior.onChange(t -> {}));
         }else if (Objects.equals(domainModel.getObject().getNumber(valueTypeAttributeId), ValueType.DATE.getId())){
             return new DateTextField("value", new IModel<Date>() {
@@ -364,14 +410,38 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
                 public void setObject(Date object) {
                     domainModel.getObject().setDate(valueAttributeId, object);
                 }
-            },new DateTextFieldConfig().withFormat("dd.MM.yyyy").withLanguage("ru").autoClose(true))
+            },new DateTextFieldConfig().withFormat("dd.MM.yyyy").withLanguage("ru").autoClose(true)){
+                @Override
+                protected void onComponentTag(ComponentTag tag) {
+                    super.onComponentTag(tag);
+
+                    tag.put("style", "min-width: 85px");
+                }
+            }
                     .add(OnChangeAjaxBehavior.onChange(t -> {}));
         }else{
             return new EmptyPanel("value");
         }
     }
 
-    public void edit(AjaxRequestTarget target){
+    public void add(AjaxRequestTarget target){
+        SaleDecision saleDecision = new SaleDecision();
+        saleDecision.addRule();
+        saleDecision.addCondition();
+        saleDecision.addAction();
+
+        saleDecisionModel.setObject(saleDecision);
+
+        target.add(container);
+        appendShowDialogJavaScript(target);
+    }
+
+    public void edit(SaleDecision saleDecision,  AjaxRequestTarget target){
+        saleDecisionService.loadRules(saleDecision);
+
+        saleDecisionModel.setObject(saleDecision);
+
+        target.add(container);
         appendShowDialogJavaScript(target);
     }
 
@@ -380,7 +450,16 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
     }
 
     private void save(AjaxRequestTarget target) {
-        //todo dev save
+        saleDecisionService.save(saleDecisionModel.getObject());
+
+        getSession().success(getString("info_sale_decision_saved"));
+
+        appendCloseDialogJavaScript(target);
+
+        onUpdate(target);
+    }
+
+    protected void onUpdate(AjaxRequestTarget target){
 
     }
 }

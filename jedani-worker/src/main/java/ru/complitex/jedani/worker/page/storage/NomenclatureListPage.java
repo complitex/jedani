@@ -10,15 +10,14 @@ import ru.complitex.domain.component.form.AttributeSelectList;
 import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
+import ru.complitex.domain.entity.StringType;
 import ru.complitex.domain.model.NumberAttributeModel;
 import ru.complitex.domain.page.DomainListModalPage;
-import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.component.TypeSelect;
 import ru.complitex.jedani.worker.entity.Nomenclature;
 import ru.complitex.jedani.worker.entity.NomenclatureType;
 import ru.complitex.jedani.worker.security.JedaniRoles;
 
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,10 +27,7 @@ import java.util.List;
  */
 @AuthorizeInstantiation(JedaniRoles.ADMINISTRATORS)
 public class NomenclatureListPage extends DomainListModalPage<Nomenclature> {
-    @Inject
-    private DomainService domainService;
-
-    public NomenclatureListPage() {
+     public NomenclatureListPage() {
         super(Nomenclature.class);
     }
 
@@ -40,7 +36,7 @@ public class NomenclatureListPage extends DomainListModalPage<Nomenclature> {
         List<EntityAttribute> list = new ArrayList<>();
 
         list.add(entity.getEntityAttribute(Nomenclature.NAME)); //todo required
-        list.add(entity.getEntityAttribute(Nomenclature.CODE));
+        list.add(entity.getEntityAttribute(Nomenclature.CODE).setStringType(StringType.UPPER_CASE));
         list.add(entity.getEntityAttribute(Nomenclature.COUNTRIES).withReference(Country.ENTITY_NAME, Country.NAME));
 
         return list;
@@ -52,7 +48,7 @@ public class NomenclatureListPage extends DomainListModalPage<Nomenclature> {
 
         list.add(entity.getEntityAttribute(Nomenclature.TYPE));
         list.add(entity.getEntityAttribute(Nomenclature.NAME));
-        list.add(entity.getEntityAttribute(Nomenclature.CODE));
+        list.add(entity.getEntityAttribute(Nomenclature.CODE).setStringType(StringType.UPPER_CASE));
         list.add(entity.getEntityAttribute(Nomenclature.COUNTRIES).withReference(Country.ENTITY_NAME, Country.NAME));
 
         return list;
