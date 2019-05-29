@@ -446,11 +446,15 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
     }
 
     private void cancel(AjaxRequestTarget target) {
+        container.visitChildren(FormComponent.class, (c, v) -> ((FormComponent) c).clearInput());
+
         appendCloseDialogJavaScript(target);
     }
 
     private void save(AjaxRequestTarget target) {
         saleDecisionService.save(saleDecisionModel.getObject());
+
+        container.visitChildren(FormComponent.class, (c, v) -> ((FormComponent) c).clearInput());
 
         getSession().success(getString("info_sale_decision_saved"));
 
