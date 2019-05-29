@@ -55,8 +55,10 @@ public class FormGroupTextField<T> extends Panel{
         this(id, label, model, null);
     }
 
-    public void onUpdate(SerializableConsumer<AjaxRequestTarget> onUpdate){
+    public FormGroupTextField onUpdate(SerializableConsumer<AjaxRequestTarget> onUpdate){
         textField.add(AjaxFormComponentUpdatingBehavior.onUpdate("change", onUpdate));
+
+        return this;
     }
 
     public TextField<T> getTextField() {

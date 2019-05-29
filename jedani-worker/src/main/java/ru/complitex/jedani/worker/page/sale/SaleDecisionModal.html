@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<wicket:panel xmlns:wicket="http://wicket.apache.org">
+    <wicket:extend>
+        <div wicket:id="container" class="container-fluid">
+            <div class="row">
+                <div wicket:id="name" class="col-md-6"></div>
+                <div wicket:id="begin" class="col-md-3"></div>
+                <div wicket:id="end" class="col-md-3"></div>
+            </div>
+
+            <table class="table">
+                <thead>
+                <tr>
+                    <th style="width: 33px"><a href="#">№</a></th>
+                    <th wicket:id="conditions">
+                        <div wicket:id="type"></div>
+                    </th>
+                    <th style="vertical-align: middle; width: 32px; text-align: center; border-right: 1px solid #ddd;">
+                        <a wicket:id="addCondition"><i class="glyphicon glyphicon-plus"></i></a>
+                    </th>
+                    <th wicket:id="actions">
+                        <div wicket:id="type"></div>
+                    </th>
+                    <th style="vertical-align: middle; width: 32px; text-align: center;">
+                        <a wicket:id="addAction"><i class="glyphicon glyphicon-plus"></i></a>
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr wicket:id="rules">
+                    <td wicket:id="id" style="vertical-align: middle"></td>
+                    <td wicket:id="ruleConditions">
+                        <div class="input-group">
+                            <span class="input-group-btn" style="width: 33px">
+                                <select wicket:id="comparator" class="form-control"></select>
+                            </span>
+                            <input wicket:id="value" class="form-control"/>
+                        </div>
+                    </td>
+                    <td style="vertical-align: middle; width: 32px; text-align: center; border-right: 1px solid #ddd;">
+
+                    </td>
+                    <td wicket:id="ruleActions">
+                        <div class="input-group">
+                        <span class="input-group-btn" style="width: 33px">
+                                <select wicket:id="comparator" class="form-control"></select>
+                            </span>
+                        <input wicket:id="value" class="form-control"/>
+                        </div>
+                    </td>
+                    <td style="vertical-align: middle; width: 32px; text-align: center;">
+                        <a wicket:id="remove"><i class="glyphicon glyphicon-remove"></i></a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="text-center">
+                <a wicket:id="addRule">Добавить</a>
+            </div>
+        </div>
+    </wicket:extend>
+</wicket:panel>

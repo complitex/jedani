@@ -26,7 +26,7 @@ public class IdEnumTypeHandler<T extends Enum & IdEnum> implements TypeHandler<T
         }
     }
 
-    private T getType(Integer id){
+    private T getType(Long id){
         for (T type : enums){
             if (id.equals(type.getId())){
                 return type;
@@ -39,7 +39,7 @@ public class IdEnumTypeHandler<T extends Enum & IdEnum> implements TypeHandler<T
     @Override
     public void setParameter(PreparedStatement ps, int i, T parameter, JdbcType jdbcType) throws SQLException {
         if (parameter != null) {
-            ps.setInt(i, parameter.getId());
+            ps.setLong(i, parameter.getId());
         }else {
             ps.setNull(i, jdbcType.TYPE_CODE);
         }
@@ -47,21 +47,21 @@ public class IdEnumTypeHandler<T extends Enum & IdEnum> implements TypeHandler<T
 
     @Override
     public T getResult(ResultSet rs, String columnName) throws SQLException {
-        Integer i = rs.getInt(columnName);
+        Long i = rs.getLong(columnName);
 
         return !rs.wasNull() ? getType(i) : null;
     }
 
     @Override
     public T getResult(ResultSet rs, int columnIndex) throws SQLException {
-        Integer i = rs.getInt(columnIndex);
+        Long i = rs.getLong(columnIndex);
 
         return !rs.wasNull() ? getType(i) : null;
     }
 
     @Override
     public T getResult(CallableStatement cs, int columnIndex) throws SQLException {
-        Integer i = cs.getInt(columnIndex);
+        Long i = cs.getLong(columnIndex);
 
         return !cs.wasNull() ? getType(i) : null;
     }

@@ -23,6 +23,7 @@ import org.apache.wicket.ajax.WicketAjaxJQueryResourceReference;
 import org.apache.wicket.cdi.CdiConfiguration;
 import org.apache.wicket.cdi.ConversationPropagation;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteBehavior;
+import org.apache.wicket.markup.html.pages.AccessDeniedPage;
 import org.apache.wicket.markup.html.pages.InternalErrorPage;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
@@ -46,6 +47,7 @@ import ru.complitex.jedani.worker.page.login.LoginPage;
 import ru.complitex.jedani.worker.page.price.PriceListPage;
 import ru.complitex.jedani.worker.page.promotion.PromotionListPage;
 import ru.complitex.jedani.worker.page.resource.*;
+import ru.complitex.jedani.worker.page.sale.SaleDecisionListPage;
 import ru.complitex.jedani.worker.page.sale.SaleListPage;
 import ru.complitex.jedani.worker.page.storage.NomenclatureListPage;
 import ru.complitex.jedani.worker.page.storage.StorageListPage;
@@ -101,27 +103,29 @@ public class JedaniWebApplication extends WebApplication{
         mountPage("workers", WorkerListPage.class);
         mountPage("worker", WorkerPage.class);
         mountPage("worker/${id}", WorkerPage.class);
-        mountPage("regional_leader", RegionalLeaderPage.class);
-        mountPage("regional_leader/${id}", RegionalLeaderPage.class);
+        mountPage("regional-leader", RegionalLeaderPage.class);
+        mountPage("regional-leader/${id}", RegionalLeaderPage.class);
         mountPage("worker/structure/${id}", WorkerStructurePage.class);
-        mountPage("mk_statuses", MkStatusListPage.class);
+        mountPage("mk-statuses", MkStatusListPage.class);
         mountPage("positions", PositionListPage.class);
-        mountPage("last_names", LastNameListPage.class);
-        mountPage("middle_names", MiddleNameListPage.class);
-        mountPage("first_names", FirstNameListPage.class);
+        mountPage("last-names", LastNameListPage.class);
+        mountPage("middle-names", MiddleNameListPage.class);
+        mountPage("first-names", FirstNameListPage.class);
         mountPage("nomenclatures", NomenclatureListPage.class);
         mountPage("storages", StorageListPage.class);
         mountPage("storage", StoragePage.class);
         mountPage("storage/${id}", StoragePage.class);
         mountPage("promotions", PromotionListPage.class);
         mountPage("sales", SaleListPage.class);
+        mountPage("sale-decisions", SaleDecisionListPage.class);
         mountPage("currencies", CurrencyListPage.class);
-        mountPage("exchange_rates", ExchangeRateListPage.class);
-        mountPage("exchange_rate/${id}", ExchangeRatePage.class);
+        mountPage("exchange-rates", ExchangeRateListPage.class);
+        mountPage("exchange-rate/${id}", ExchangeRatePage.class);
         mountPage("prices", PriceListPage.class);
         mountPage("settings", SettingPage.class);
 
         mountPage("error", InternalErrorPage.class);
+        mountPage("access-denied", AccessDeniedPage.class);
     }
 
     private void configureMountResource(){

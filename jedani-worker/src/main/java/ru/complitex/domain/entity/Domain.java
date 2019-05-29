@@ -159,7 +159,9 @@ public class Domain<T extends Domain<T>> implements Serializable{
     }
 
     public BigDecimal getDecimal(Long entityAttributeId){
-        return new BigDecimal(getOrCreateAttribute(entityAttributeId).getText());
+        String text = getOrCreateAttribute(entityAttributeId).getText();
+
+        return text != null && !text.isEmpty()  ? new BigDecimal(text) : null;
     }
 
     public Domain setDecimal(Long entityAttributeId, BigDecimal decimal){

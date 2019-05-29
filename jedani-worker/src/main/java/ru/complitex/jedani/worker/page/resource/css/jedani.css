@@ -225,3 +225,16 @@ td.domain-id-column{
 .panel-group .panel-heading {
     border: none;
 }
+
+.dropdown-toggle{
+    min-width: 39px;
+}
+
+.input-group .form-control{
+    z-index: auto;
+}
+
+.checkbox {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}

@@ -152,7 +152,7 @@ CREATE TABLE `setting` (
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
   KEY `key_permission_id` (`permission_id`),
-  CONSTRAINT `ft_setting__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
+  CONSTRAINT `fk_setting__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
   CONSTRAINT `fk_setting__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`),
   CONSTRAINT `fk_setting__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Настройки';
@@ -425,7 +425,7 @@ CREATE TABLE `city` (
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
   KEY `key_permission_id` (`permission_id`),
-  CONSTRAINT `ft_city__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
+  CONSTRAINT `fk_city__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
   CONSTRAINT `fk_city__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`),
   CONSTRAINT `fk_city__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Населенный пункт';
@@ -496,7 +496,7 @@ CREATE TABLE `last_name` (
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
   KEY `key_permission_id` (`permission_id`),
-  CONSTRAINT `ft_last_name__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
+  CONSTRAINT `fk_last_name__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
   CONSTRAINT `fk_last_name__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`),
   CONSTRAINT `fk_last_name__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Фамилия';
@@ -563,7 +563,7 @@ CREATE TABLE `first_name` (
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
   KEY `key_permission_id` (`permission_id`),
-  CONSTRAINT `ft_first_name__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
+  CONSTRAINT `fk_first_name__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
   CONSTRAINT `fk_first_name__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`),
   CONSTRAINT `fk_first_name__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Имя';
@@ -630,7 +630,7 @@ CREATE TABLE `middle_name` (
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
   KEY `key_permission_id` (`permission_id`),
-  CONSTRAINT `ft_middle_name__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
+  CONSTRAINT `fk_middle_name__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
   CONSTRAINT `fk_middle_name__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`),
   CONSTRAINT `fk_middle_name__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Отчество';
@@ -702,7 +702,7 @@ CREATE TABLE `worker` (
   KEY `key_left` (`left`),
   KEY `key_right` (`right`),
   KEY `key_level` (`level`),
-  CONSTRAINT `ft_worker__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
+  CONSTRAINT `fk_worker__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
   CONSTRAINT `fk_worker__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`),
   CONSTRAINT `fk_worker__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Профиль сотрудника';
@@ -773,7 +773,7 @@ CREATE TABLE `mk_status` (
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
   KEY `key_permission_id` (`permission_id`),
-  CONSTRAINT `ft_mk_status__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
+  CONSTRAINT `fk_mk_status__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
   CONSTRAINT `fk_mk_status__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`),
   CONSTRAINT `fk_mk_status__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'МК статус';
@@ -840,7 +840,7 @@ CREATE TABLE `position` (
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
   KEY `key_permission_id` (`permission_id`),
-  CONSTRAINT `ft_position__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
+  CONSTRAINT `fk_position__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
   CONSTRAINT `fk_position__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`),
   CONSTRAINT `fk_position__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Должности';
@@ -907,7 +907,7 @@ CREATE TABLE `nomenclature` (
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
   KEY `key_permission_id` (`permission_id`),
-  CONSTRAINT `ft_nomenclature__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
+  CONSTRAINT `fk_nomenclature__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
   CONSTRAINT `fk_nomenclature__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`),
   CONSTRAINT `fk_nomenclature__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Номенклатура';
@@ -976,7 +976,7 @@ CREATE TABLE `storage` (
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
   KEY `key_permission_id` (`permission_id`),
-  CONSTRAINT `ft_storage__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
+  CONSTRAINT `fk_storage__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
   CONSTRAINT `fk_storage__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`),
   CONSTRAINT `fk_storage__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Склад';
@@ -1045,7 +1045,7 @@ CREATE TABLE `product` (
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
   KEY `key_permission_id` (`permission_id`),
-  CONSTRAINT `ft_product__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
+  CONSTRAINT `fk_product__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
   CONSTRAINT `fk_product__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`),
   CONSTRAINT `fk_product__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Товар';
@@ -1112,7 +1112,7 @@ CREATE TABLE `transaction` (
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
   KEY `key_permission_id` (`permission_id`),
-  CONSTRAINT `ft_transaction__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
+  CONSTRAINT `fk_transaction__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
   CONSTRAINT `fk_transaction__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`),
   CONSTRAINT `fk_transaction__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Транзакция';
@@ -1226,7 +1226,7 @@ CREATE TABLE `promotion` (
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
   KEY `key_permission_id` (`permission_id`),
-  CONSTRAINT `ft_promotion__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
+  CONSTRAINT `fk_promotion__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
   CONSTRAINT `fk_promotion__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`),
   CONSTRAINT `fk_promotion__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Акция';
@@ -1297,7 +1297,7 @@ CREATE TABLE `sale`
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
   KEY `key_permission_id` (`permission_id`),
-  CONSTRAINT `ft_sale__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
+  CONSTRAINT `fk_sale__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
   CONSTRAINT `fk_sale__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`),
   CONSTRAINT `fk_sale__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE = InnoDB
@@ -1376,7 +1376,7 @@ CREATE TABLE `sale_item`
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
   KEY `key_permission_id` (`permission_id`),
-  CONSTRAINT `ft_sale_item__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
+  CONSTRAINT `fk_sale_item__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
   CONSTRAINT `fk_sale_item__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`),
   CONSTRAINT `fk_sale_item__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE = InnoDB
@@ -1455,7 +1455,7 @@ CREATE TABLE `currency`
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
   KEY `key_permission_id` (`permission_id`),
-  CONSTRAINT `ft_currency__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
+  CONSTRAINT `fk_currency__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
   CONSTRAINT `fk_currency__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`),
   CONSTRAINT `fk_currency__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE = InnoDB
@@ -1534,7 +1534,7 @@ CREATE TABLE `exchange_rate`
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
   KEY `key_permission_id` (`permission_id`),
-  CONSTRAINT `ft_exchange_rate__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
+  CONSTRAINT `fk_exchange_rate__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
   CONSTRAINT `fk_exchange_rate__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`),
   CONSTRAINT `fk_exchange_rate__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE = InnoDB
@@ -1613,7 +1613,7 @@ CREATE TABLE `price`
     KEY `key_end_date` (`end_date`),
     KEY `key_status` (`status`),
     KEY `key_permission_id` (`permission_id`),
-    CONSTRAINT `ft_price__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
+    CONSTRAINT `fk_price__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
     CONSTRAINT `fk_price__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`),
     CONSTRAINT `fk_price__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE = InnoDB
@@ -1667,4 +1667,97 @@ CREATE TABLE `price_value`
   CHARSET = utf8
   COLLATE = utf8_unicode_ci COMMENT 'Значения атрибутов базовой цены';
 
--- todo add domain tables create function
+DELIMITER //
+
+CREATE PROCEDURE createDomainTables (IN entityName VARCHAR(64) CHARSET utf8, IN entityDescription VARCHAR(256) CHARSET utf8)
+BEGIN
+    SET @createDomain = CONCAT('
+        CREATE TABLE `', entityName, '`
+        (
+            `id`               BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT ''Идентификатор'',
+            `object_id`        BIGINT(20) NOT NULL COMMENT ''Идентификатор объекта'',
+            `parent_id`        BIGINT(20) COMMENT ''Идентификатор родительского объекта'',
+            `parent_entity_id` BIGINT(20) COMMENT ''Идентификатор сущности родительского объекта'',
+            `start_date`       TIMESTAMP  NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT ''Дата начала периода действия объекта'',
+            `end_date`         TIMESTAMP  NULL     DEFAULT NULL COMMENT ''Дата окончания периода действия объекта'',
+            `status`           INTEGER    NOT NULL DEFAULT 1 COMMENT ''Статус'',
+            `permission_id`    BIGINT(20) NULL COMMENT ''Ключ прав доступа к объекту'',
+            `user_id`          BIGINT(20) NULL COMMENT ''Идентифитактор пользователя'',
+            PRIMARY KEY (`id`),
+            UNIQUE KEY `unique_object_id__status` (`object_id`, `status`),
+            KEY `key_object_id` (`object_id`),
+            KEY `key_parent_id` (`parent_id`),
+            KEY `key_parent_entity_id` (`parent_entity_id`),
+            KEY `key_start_date` (`start_date`),
+            KEY `key_end_date` (`end_date`),
+            KEY `key_status` (`status`),
+            KEY `key_permission_id` (`permission_id`),
+            CONSTRAINT `fk_', entityName, '__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
+            CONSTRAINT `fk_', entityName, '__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`),
+            CONSTRAINT `fk_', entityName, '__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
+        ) ENGINE = InnoDB
+          CHARSET = utf8
+          COLLATE = utf8_unicode_ci COMMENT ''', entityDescription, ''';');
+
+    PREPARE QUERY FROM @createDomain; EXECUTE QUERY; DEALLOCATE PREPARE QUERY;
+
+    SET @createAttribute = CONCAT('
+        CREATE TABLE `', entityName, '_attribute`
+        (
+            `id`                  BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT ''Идентификатор'',
+            `object_id`           BIGINT(20) NOT NULL COMMENT ''Идентификатор объекта'',
+            `entity_attribute_id` BIGINT(20) NOT NULL COMMENT ''Идентификатор типа атрибута'',
+            `text`                VARCHAR(255) COMMENT ''Текст'',
+            `number`              BIGINT(20) COMMENT ''Число'',
+            `date`                DATETIME COMMENT ''Дата'',
+            `start_date`          TIMESTAMP  NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT ''Дата начала периода действия атрибута'',
+            `end_date`            TIMESTAMP  NULL     DEFAULT NULL COMMENT ''Дата окончания периода действия атрибута'',
+            `status`              INTEGER    NOT NULL DEFAULT 1 COMMENT ''Статус'',
+            `user_id`             BIGINT(20) NULL COMMENT ''Идентифитактор пользователя'',
+            PRIMARY KEY (`id`),
+            KEY `key_object_id` (`object_id`),
+            KEY `key_entity_attribute_id` (`entity_attribute_id`),
+            KEY `key_text` (`text`),
+            KEY `key_number` (`number`),
+            KEY `key_date` (`date`),
+            KEY `key_start_date` (`start_date`),
+            KEY `key_end_date` (`end_date`),
+            KEY `key_status` (`status`),
+            CONSTRAINT `fk_', entityName, '_attribute__', entityName, '` FOREIGN KEY (`object_id`) REFERENCES `', entityName, '` (`object_id`),
+            CONSTRAINT `fk_', entityName, '_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
+        ) ENGINE = InnoDB
+          CHARSET = utf8
+          COLLATE = utf8_unicode_ci COMMENT ''', entityDescription, ' - Аттрибуты'';');
+
+    PREPARE QUERY FROM @createAttribute; EXECUTE QUERY; DEALLOCATE PREPARE QUERY;
+
+    SET @createValue = CONCAT('
+        CREATE TABLE `', entityName, '_value`
+        (
+            `id`           BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT ''Идентификатор'',
+            `attribute_id` BIGINT(20) NOT NULL COMMENT ''Идентификатор атрибута'',
+            `locale_id`    BIGINT(20) COMMENT ''Идентификатор локали'',
+            `text`         VARCHAR(1000) COMMENT ''Текстовое значение'',
+            `number`       BIGINT(20) COMMENT ''Числовое значение'',
+            PRIMARY KEY (`id`),
+            UNIQUE KEY `unique_id__locale` (`attribute_id`, `locale_id`),
+            KEY `key_attribute_id` (`attribute_id`),
+            KEY `key_locale` (`locale_id`),
+            KEY `key_value` (`text`(128)),
+            CONSTRAINT `fk_', entityName, '_value__', entityName, '_attribute` FOREIGN KEY (`attribute_id`) REFERENCES `', entityName, '_attribute` (`id`),
+            CONSTRAINT `fk_', entityName, '_value__locale` FOREIGN KEY (`locale_id`) REFERENCES `locale` (`id`)
+        ) ENGINE = InnoDB
+          CHARSET = utf8
+          COLLATE = utf8_unicode_ci COMMENT ''', entityDescription, ' - Значения атрибутов'';');
+
+    PREPARE QUERY FROM @createValue; EXECUTE QUERY; DEALLOCATE PREPARE QUERY;
+END //
+
+DELIMITER ;
+
+-- Add Sale Decision
+
+CALL createDomainTables('sale_decision', 'Условие продаж');
+CALL createDomainTables('rule', 'Правило');
+CALL createDomainTables('rule_condition', 'Условие правила');
+CALL createDomainTables('rule_action', 'Действие правила');

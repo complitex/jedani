@@ -33,6 +33,6 @@ public class PriceListPage extends DomainListModalPage<Price> {
 
     @Override
     protected AbstractDomainEditModal<Price> newDomainEditModal(String componentId) {
-        return new PriceEditModal(componentId, getCurrentUser().getId(), t -> t.add(getContainer()));
+        return new PriceModal(componentId, getCurrentUser().getId(), t -> t.add(getContainer()));
     }
 }
