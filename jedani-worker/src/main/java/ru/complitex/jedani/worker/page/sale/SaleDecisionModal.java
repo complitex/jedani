@@ -3,6 +3,7 @@ package ru.complitex.jedani.worker.page.sale;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxButton;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxLink;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
+import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
 import de.agilecoders.wicket.core.markup.html.bootstrap.dialog.Modal;
 import de.agilecoders.wicket.core.markup.html.bootstrap.form.BootstrapCheckbox;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.DateTextField;
@@ -12,6 +13,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.*;
@@ -57,11 +59,20 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
         container.setOutputMarkupId(true);
         add(container);
 
+        NotificationPanel feedback = new NotificationPanel("feedback");
+        feedback.setOutputMarkupId(true);
+        feedback.showRenderedMessages(false);
+        container.add(feedback);
+
+
         container.add(new FormGroupTextField<>("name", new TextAttributeModel(saleDecisionModel, SaleDecision.NAME))
+                .setRequired(true)
                 .onUpdate(t -> {}));
         container.add(new DateTextFieldFormGroup("begin", DateAttributeModel.of(saleDecisionModel, SaleDecision.DATE_BEGIN))
+                .setRequired(true)
                 .onUpdate(t -> {}));
         container.add(new DateTextFieldFormGroup("end", DateAttributeModel.of(saleDecisionModel, SaleDecision.DATE_END))
+                .setRequired(true)
                 .onUpdate(t -> {}));
 
         ListView<RuleCondition> conditions = new ListView<RuleCondition>("conditions",
@@ -77,8 +88,10 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
 
                             @Override
                             public void setObject(RuleConditionType object) {
-                                item.getModelObject().setType(object.getId());
-                                item.getModelObject().setValueType(object.getValueType().getId());
+                                if (object != null) {
+                                    item.getModelObject().setType(object.getId());
+                                    item.getModelObject().setValueType(object.getValueType().getId());
+                                }
                             }
                         },
                         Arrays.asList(RuleConditionType.values()),
@@ -98,6 +111,13 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
                                 return StringUtils.isNumeric(id) ? RuleConditionType.getValue(Long.valueOf(id)) : null;
                             }
                         }){
+                    @Override
+                    protected void onSelect(AjaxRequestTarget target) {
+                        saleDecisionModel.getObject().updateCondition(item.getModelObject().getIndex());
+
+                        target.add(container);
+                    }
+
                     @Override
                     protected void onApply(AjaxRequestTarget target) {
                         saleDecisionModel.getObject().updateCondition(item.getModelObject().getIndex());
@@ -139,8 +159,10 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
 
                             @Override
                             public void setObject(RuleActionType object) {
-                                item.getModelObject().setType(object.getId());
-                                item.getModelObject().setValueType(object.getValueType().getId());
+                                if (object != null) {
+                                    item.getModelObject().setType(object.getId());
+                                    item.getModelObject().setValueType(object.getValueType().getId());
+                                }
                             }
                         },
                         Arrays.asList(RuleActionType.values()),
@@ -160,6 +182,12 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
                                 return StringUtils.isNumeric(id) ? RuleActionType.getValue(Long.valueOf(id)) : null;
                             }
                         }){
+                    @Override
+                    protected void onSelect(AjaxRequestTarget target) {
+                        saleDecisionModel.getObject().updateCondition(item.getModelObject().getIndex());
+
+                        target.add(container);
+                    }
 
                     @Override
                     protected void onApply(AjaxRequestTarget target) {
@@ -328,7 +356,7 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
                 }
             };
         }else if (Objects.equals(domainModel.getObject().getNumber(valueTypeAttributeId), ValueType.DECIMAL.getId())){
-            return new TextField<>("value", new IModel<BigDecimal>() {
+            return new TextField<BigDecimal>("value", new IModel<BigDecimal>() {
                 @Override
                 public BigDecimal getObject() {
                     return domainModel.getObject().getDecimal(valueAttributeId);
@@ -338,10 +366,17 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
                 public void setObject(BigDecimal object) {
                     domainModel.getObject().setDecimal(valueAttributeId, object);
                 }
-            }, BigDecimal.class)
+            }, BigDecimal.class){
+                @Override
+                protected void onComponentTag(ComponentTag tag) {
+                    super.onComponentTag(tag);
+
+                    tag.put("style", "min-width: 42px");
+                }
+            }
                     .add(OnChangeAjaxBehavior.onChange(t -> {}));
         }else if (Objects.equals(domainModel.getObject().getNumber(valueTypeAttributeId), ValueType.NUMBER.getId())){
-            return new TextField<>("value", new IModel<Long>() {
+            return new TextField<Long>("value", new IModel<Long>() {
                 @Override
                 public Long getObject() {
                     return domainModel.getObject().getNumber(valueAttributeId);
@@ -351,7 +386,14 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
                 public void setObject(Long object) {
                     domainModel.getObject().setNumber(valueAttributeId, object);
                 }
-            }, Long.class)
+            }, Long.class){
+                @Override
+                protected void onComponentTag(ComponentTag tag) {
+                    super.onComponentTag(tag);
+
+                    tag.put("style", "min-width: 33px");
+                }
+            }
                     .add(OnChangeAjaxBehavior.onChange(t -> {}));
         }else if (Objects.equals(domainModel.getObject().getNumber(valueTypeAttributeId), ValueType.DATE.getId())){
             return new DateTextField("value", new IModel<Date>() {
@@ -364,7 +406,14 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
                 public void setObject(Date object) {
                     domainModel.getObject().setDate(valueAttributeId, object);
                 }
-            },new DateTextFieldConfig().withFormat("dd.MM.yyyy").withLanguage("ru").autoClose(true))
+            },new DateTextFieldConfig().withFormat("dd.MM.yyyy").withLanguage("ru").autoClose(true)){
+                @Override
+                protected void onComponentTag(ComponentTag tag) {
+                    super.onComponentTag(tag);
+
+                    tag.put("style", "min-width: 85px");
+                }
+            }
                     .add(OnChangeAjaxBehavior.onChange(t -> {}));
         }else{
             return new EmptyPanel("value");
