@@ -14,6 +14,8 @@ public class RuleCondition extends Domain<RuleCondition> {
 
     public RuleCondition() {
         super(ENTITY_NAME);
+
+        setUseDateAttribute(true);
     }
 
     public Long getIndex(){

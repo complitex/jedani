@@ -16,6 +16,8 @@ public class SaleDecision extends Domain<SaleDecision> {
 
     public SaleDecision() {
         super(ENTITY_NAME);
+
+        setUseDateAttribute(true);
     }
 
     public List<Rule> getRules() {

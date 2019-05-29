@@ -65,6 +65,13 @@ public class DomainService implements Serializable {
         return domainMapper.getDomain(getEntityName(referenceId), objectId);
     }
 
+    public <T extends Domain> List<T> getDomainsByParentId(Class<T> domainClass, Long parentId){
+        T domain = Domains.newObject(domainClass);
+        domain.setParentId(parentId);
+
+        return getDomains(domainClass, FilterWrapper.of(domain));
+    }
+
     @Transactional
     public void save(Domain domain){
         if (domain.getObjectId() != null){
@@ -104,5 +111,9 @@ public class DomainService implements Serializable {
 
     public String getTextValue(String entityName, Long objectId, Long entityAttributeId){
         return attributeMapper.getTextValue(entityName, objectId, entityAttributeId);
+    }
+
+    public void delete(Domain domain){
+        domainMapper.delete(domain);
     }
 }

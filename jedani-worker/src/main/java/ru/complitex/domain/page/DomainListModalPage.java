@@ -152,7 +152,7 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage{
             columns.add(new DomainModalActionColumn<T>() {
                 @Override
                 protected void onAction(IModel<T> rowModel, AjaxRequestTarget target) {
-                    onActionEdit(rowModel.getObject(), target);
+                    onEdit(rowModel.getObject(), target);
                 }
             });
         }
@@ -227,16 +227,20 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage{
         return true;
     }
 
-    protected DomainColumn<T> newDomainColumn(EntityAttribute a) {
-        return new DomainColumn<>(a);
-    }
-
     protected void onAdd(AjaxRequestTarget target) {
         domainEditModal.edit(newDomain(), target);
     }
 
     protected T newDomain(){
         return Domains.newObject(domainClass);
+    }
+
+    protected DomainColumn<T> newDomainColumn(EntityAttribute a) {
+        return new DomainColumn<>(a);
+    }
+
+    protected void onEdit(T object, AjaxRequestTarget target) {
+        domainEditModal.edit(object, target);
     }
 
     protected void onRowItem(Item<T> item){
@@ -250,12 +254,8 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage{
         item.add(new CssClassNameAppender("pointer"));
     }
 
-    protected void onActionEdit(T object, AjaxRequestTarget target) {
-        domainEditModal.edit(object, target);
-    }
-
     protected void onRowClick(T object, AjaxRequestTarget target) {
-        onActionEdit(object, target);
+        onEdit(object, target);
     }
 
     protected List<T> getDomains(FilterWrapper<T> filterWrapper) {

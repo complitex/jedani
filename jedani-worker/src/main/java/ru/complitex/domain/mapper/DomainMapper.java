@@ -12,6 +12,7 @@ import javax.inject.Inject;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author Anatoly A. Ivanov
@@ -21,12 +22,14 @@ public class DomainMapper extends BaseMapper {
     @Inject
     private AttributeMapper attributeMapper;
 
+    private static AtomicLong tmpId = new AtomicLong(-1);
+
     @Transactional
     public void insertDomain(Domain<?> domain){
         domain.setId(null);
 
         if (domain.getObjectId() == null){
-            domain.setObjectId(-1L);
+            domain.setObjectId(tmpId.decrementAndGet());
         }
 
         if (domain.getStartDate() == null){
@@ -39,7 +42,7 @@ public class DomainMapper extends BaseMapper {
 
         sqlSession().insert("insertDomain", domain);
 
-        if (domain.getObjectId().equals(-1L)) {
+        if (domain.getObjectId() < 0) {
             domain.setObjectId(domain.getId());
             sqlSession().update("updateDomainObjectId", domain);
         }
@@ -184,5 +187,11 @@ public class DomainMapper extends BaseMapper {
 
     public Long getDomainObjectId(Domain domain){
         return sqlSession().selectOne("selectDomainObjectId", domain);
+    }
+
+    public void delete(Domain domain){
+        domain.setStatus(Status.ARCHIVE);
+
+        sqlSession().update("updateDomain", domain);
     }
 }

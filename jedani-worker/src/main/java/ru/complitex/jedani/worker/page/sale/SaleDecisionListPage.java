@@ -14,11 +14,21 @@ public class SaleDecisionListPage extends DomainListModalPage<SaleDecision> {
         Form saleDecisionForm = new Form("saleDecisionForm");
         getContainer().add(saleDecisionForm);
 
-        saleDecisionForm.add(saleDecisionModal = new SaleDecisionModal("saleDecision"));
+        saleDecisionForm.add(saleDecisionModal = new SaleDecisionModal("saleDecision"){
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                target.add(getContainer());
+            }
+        });
     }
 
     @Override
     protected void onAdd(AjaxRequestTarget target) {
-        saleDecisionModal.edit(target);
+        saleDecisionModal.add(target);
+    }
+
+    @Override
+    protected void onEdit(SaleDecision object, AjaxRequestTarget target) {
+        saleDecisionModal.edit(object, target);
     }
 }

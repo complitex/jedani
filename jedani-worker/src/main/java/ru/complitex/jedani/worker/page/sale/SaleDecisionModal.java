@@ -32,7 +32,9 @@ import ru.complitex.domain.entity.ValueType;
 import ru.complitex.domain.model.DateAttributeModel;
 import ru.complitex.domain.model.TextAttributeModel;
 import ru.complitex.jedani.worker.entity.*;
+import ru.complitex.jedani.worker.service.SaleDecisionService;
 
+import javax.inject.Inject;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Date;
@@ -40,6 +42,13 @@ import java.util.List;
 import java.util.Objects;
 
 public class SaleDecisionModal extends Modal<SaleDecision> {
+    @Inject
+    private SaleDecisionService saleDecisionService;
+
+    private IModel<SaleDecision> saleDecisionModel;
+
+    private WebMarkupContainer container;
+
     public SaleDecisionModal(String markupId) {
         super(markupId);
 
@@ -48,14 +57,9 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
 
         header(new ResourceModel("header"));
 
-        SaleDecision saleDecision = new SaleDecision();
-        saleDecision.addRule();
-        saleDecision.addCondition();
-        saleDecision.addAction();;
+        saleDecisionModel = Model.of(new SaleDecision());
 
-        IModel<SaleDecision> saleDecisionModel = Model.of(saleDecision);
-
-        WebMarkupContainer container = new WebMarkupContainer("container");
+        container = new WebMarkupContainer("container");
         container.setOutputMarkupId(true);
         add(container);
 
@@ -184,7 +188,7 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
                         }){
                     @Override
                     protected void onSelect(AjaxRequestTarget target) {
-                        saleDecisionModel.getObject().updateCondition(item.getModelObject().getIndex());
+                        saleDecisionModel.getObject().updateAction(item.getModelObject().getIndex());
 
                         target.add(container);
                     }
@@ -420,7 +424,24 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
         }
     }
 
-    public void edit(AjaxRequestTarget target){
+    public void add(AjaxRequestTarget target){
+        SaleDecision saleDecision = new SaleDecision();
+        saleDecision.addRule();
+        saleDecision.addCondition();
+        saleDecision.addAction();
+
+        saleDecisionModel.setObject(saleDecision);
+
+        target.add(container);
+        appendShowDialogJavaScript(target);
+    }
+
+    public void edit(SaleDecision saleDecision,  AjaxRequestTarget target){
+        saleDecisionService.loadRules(saleDecision);
+
+        saleDecisionModel.setObject(saleDecision);
+
+        target.add(container);
         appendShowDialogJavaScript(target);
     }
 
@@ -429,7 +450,16 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
     }
 
     private void save(AjaxRequestTarget target) {
-        //todo dev save
+        saleDecisionService.save(saleDecisionModel.getObject());
+
+        getSession().success(getString("info_sale_decision_saved"));
+
+        appendCloseDialogJavaScript(target);
+
+        onUpdate(target);
+    }
+
+    protected void onUpdate(AjaxRequestTarget target){
 
     }
 }

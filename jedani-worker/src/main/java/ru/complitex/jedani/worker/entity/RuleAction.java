@@ -13,6 +13,8 @@ public class RuleAction extends Domain<RuleAction> {
 
     public RuleAction() {
         super(ENTITY_NAME);
+
+        setUseDateAttribute(true);
     }
 
     public Long getIndex(){

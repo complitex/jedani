@@ -1,7 +1,11 @@
 package ru.complitex.domain.util;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.WordUtils;
 import ru.complitex.domain.entity.EntityAttribute;
+
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 /**
  * @author Anatoly A. Ivanov
@@ -21,6 +25,8 @@ public class Attributes {
                     return text.toUpperCase();
                 case CAPITALIZE:
                     return capitalize(text);
+                case CAPITALIZE_WORDS:
+                    return capitalizeWords(text);
             }
         }
 
@@ -28,6 +34,22 @@ public class Attributes {
     }
 
     public static String capitalize(String text){
-        return WordUtils.capitalizeFully(text);
+        if (text == null){
+            return "";
+        }
+
+        text = StringUtils.capitalize(text.toLowerCase());
+
+        return Arrays.stream(text.split(" ")).map(s ->{
+            if (s.matches("\\w.*")){
+                return s.toUpperCase();
+            }
+
+            return s;
+        }).collect(Collectors.joining(" "));
+    }
+
+    public static String capitalizeWords(String text){
+        return WordUtils.capitalizeFully(text, '-');
     }
 }

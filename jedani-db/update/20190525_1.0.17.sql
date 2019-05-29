@@ -38,7 +38,7 @@ BEGIN
         CREATE TABLE `', entityName, '_attribute`
         (
             `id`                  BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT ''Идентификатор'',
-            `object_id`           BIGINT(20) NOT NULL COMMENT ''Идентификатор объекта'',
+            `domain_id`           BIGINT(20) NOT NULL COMMENT ''Идентификатор домена'',
             `entity_attribute_id` BIGINT(20) NOT NULL COMMENT ''Идентификатор типа атрибута'',
             `text`                VARCHAR(255) COMMENT ''Текст'',
             `number`              BIGINT(20) COMMENT ''Число'',
@@ -48,7 +48,7 @@ BEGIN
             `status`              INTEGER    NOT NULL DEFAULT 1 COMMENT ''Статус'',
             `user_id`             BIGINT(20) NULL COMMENT ''Идентифитактор пользователя'',
             PRIMARY KEY (`id`),
-            KEY `key_object_id` (`object_id`),
+            KEY `key_domain_id` (`domain_id`),
             KEY `key_entity_attribute_id` (`entity_attribute_id`),
             KEY `key_text` (`text`),
             KEY `key_number` (`number`),
@@ -56,7 +56,7 @@ BEGIN
             KEY `key_start_date` (`start_date`),
             KEY `key_end_date` (`end_date`),
             KEY `key_status` (`status`),
-            CONSTRAINT `fk_', entityName, '_attribute__', entityName, '` FOREIGN KEY (`object_id`) REFERENCES `', entityName, '` (`object_id`),
+            CONSTRAINT `fk_', entityName, '_attribute__', entityName, '` FOREIGN KEY (`domain_id`) REFERENCES `', entityName, '` (`id`),
             CONSTRAINT `fk_', entityName, '_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
         ) ENGINE = InnoDB
           CHARSET = utf8
