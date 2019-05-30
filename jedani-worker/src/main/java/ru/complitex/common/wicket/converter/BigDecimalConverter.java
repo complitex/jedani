@@ -18,6 +18,7 @@ public class BigDecimalConverter extends org.apache.wicket.util.convert.converte
         decimalFormatSymbols.setDecimalSeparator('.');
 
         decimalFormat.setDecimalFormatSymbols(decimalFormatSymbols);
+        decimalFormat.setGroupingUsed(false);
 
         return decimalFormat;
     }

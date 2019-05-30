@@ -30,19 +30,19 @@ public class SaleDecisionService {
 
             sd.getRules().forEach(r -> {
                 Rule rule = saleDecision.getRules().stream()
-                        .filter(r1 -> r1.getObjectId().equals(r.getObjectId()))
+                        .filter(r1 -> r.getObjectId().equals(r1.getObjectId()))
                         .findFirst()
                         .orElse(null);
 
                 if (rule != null){
                     r.getConditions().forEach(c -> {
-                        if (rule.getConditions().stream().noneMatch(c1 -> c1.getObjectId().equals(c.getObjectId()))){
+                        if (rule.getConditions().stream().noneMatch(c1 -> c.getObjectId().equals(c1.getObjectId()))){
                             domainService.delete(c);
                         }
                     });
 
                     r.getActions().forEach(a -> {
-                        if (rule.getActions().stream().noneMatch(a1 -> a1.getObjectId().equals(a.getObjectId()))){
+                        if (rule.getActions().stream().noneMatch(a1 -> a.getObjectId().equals(a1.getObjectId()))){
                             domainService.delete(a);
                         }
                     });

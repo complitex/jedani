@@ -238,3 +238,36 @@ td.domain-id-column{
     margin-top: 5px;
     margin-bottom: 5px;
 }
+
+.sd-id{
+    width: 33px;
+}
+
+.sd-id-td{
+    width: 33px;
+    vertical-align: middle !important;
+}
+
+.sd-add-condition{
+    vertical-align: middle;
+    width: 33px;
+    text-align: center;
+    border-right: 1px solid #ddd;
+}
+
+.sd-add-action{
+    vertical-align: middle;
+    width: 33px;
+    text-align: center;
+}
+
+.sd-comparator{
+    min-width: 33px;
+}
+
+.sd-remove{
+    vertical-align: middle;
+    width: 33px;
+    text-align: center;
+}
+
