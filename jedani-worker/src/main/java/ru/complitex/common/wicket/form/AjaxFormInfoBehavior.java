@@ -68,6 +68,11 @@ public class AjaxFormInfoBehavior extends AjaxFormComponentUpdatingBehavior {
     }
 
     @Override
+    protected void onError(AjaxRequestTarget target, RuntimeException e) {
+        target.add(getComponent());
+    }
+
+    @Override
     public void renderHead(Component component, IHeaderResponse response) {
         if (component.isEnabledInHierarchy()){
             response.render(OnDomReadyHeaderItem.forScript(getCallbackScript(component).toString()));

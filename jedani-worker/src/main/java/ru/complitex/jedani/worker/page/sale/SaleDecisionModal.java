@@ -24,6 +24,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
+import ru.complitex.common.wicket.form.AjaxFormInfoBehavior;
 import ru.complitex.common.wicket.form.AjaxSelectLabel;
 import ru.complitex.common.wicket.form.DateTextFieldFormGroup;
 import ru.complitex.common.wicket.form.FormGroupTextField;
@@ -378,7 +379,7 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
                     tag.put("style", "min-width: 42px");
                 }
             }
-                    .add(OnChangeAjaxBehavior.onChange(t -> {}));
+                    .add(new AjaxFormInfoBehavior());
         }else if (Objects.equals(domainModel.getObject().getNumber(valueTypeAttributeId), ValueType.NUMBER.getId())){
             return new TextField<Long>("value", new IModel<Long>() {
                 @Override
@@ -398,7 +399,7 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
                     tag.put("style", "min-width: 33px");
                 }
             }
-                    .add(OnChangeAjaxBehavior.onChange(t -> {}));
+                    .add(new AjaxFormInfoBehavior());
         }else if (Objects.equals(domainModel.getObject().getNumber(valueTypeAttributeId), ValueType.DATE.getId())){
             return new DateTextField("value", new IModel<Date>() {
                 @Override
@@ -418,7 +419,7 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
                     tag.put("style", "min-width: 85px");
                 }
             }
-                    .add(OnChangeAjaxBehavior.onChange(t -> {}));
+                    .add(new AjaxFormInfoBehavior());
         }else{
             return new EmptyPanel("value");
         }
