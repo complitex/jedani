@@ -45,7 +45,7 @@ import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
 import ru.complitex.common.wicket.component.DateTimeLabel;
 import ru.complitex.common.wicket.datatable.*;
-import ru.complitex.common.wicket.form.DateTextFieldFormGroup;
+import ru.complitex.common.wicket.form.FormGroupDateTextField;
 import ru.complitex.common.wicket.form.FormGroupPanel;
 import ru.complitex.common.wicket.form.FormGroupSelectPanel;
 import ru.complitex.common.wicket.form.FormGroupTextField;
@@ -310,7 +310,7 @@ public class WorkerPage extends BasePage {
                 return isEditEnabled();
             }
         });
-        form.add(new DateTextFieldFormGroup("birthday", new DateAttributeModel(worker, Worker.BIRTHDAY))
+        form.add(new FormGroupDateTextField("birthday", new DateAttributeModel(worker, Worker.BIRTHDAY))
                 .setEnabled(!isViewOnly()));
         form.add(new AttributeInputListFormGroup("phone", Model.of(worker.getOrCreateAttribute(Worker.PHONE))){
             @Override
@@ -414,7 +414,7 @@ public class WorkerPage extends BasePage {
         confirmPassword.setVisible(!isViewOnly());
         form.add(confirmPassword);
 
-        form.add(new DateTextFieldFormGroup("registrationDate", new DateAttributeModel(worker, Worker.INVOLVED_AT)){
+        form.add(new FormGroupDateTextField("registrationDate", new DateAttributeModel(worker, Worker.INVOLVED_AT)){
             @Override
             public boolean isRequired() {
                 return worker.isParticipant();

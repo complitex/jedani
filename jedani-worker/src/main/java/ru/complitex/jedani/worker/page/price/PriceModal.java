@@ -25,7 +25,7 @@ import ru.complitex.common.wicket.component.DateTimeLabel;
 import ru.complitex.common.wicket.datatable.DataProvider;
 import ru.complitex.common.wicket.datatable.FilterDataForm;
 import ru.complitex.common.wicket.datatable.FilterDataTable;
-import ru.complitex.common.wicket.form.DateTextFieldFormGroup;
+import ru.complitex.common.wicket.form.FormGroupDateTextField;
 import ru.complitex.common.wicket.form.FormGroupPanel;
 import ru.complitex.common.wicket.form.FormGroupTextField;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
@@ -107,7 +107,7 @@ public class PriceModal extends AbstractDomainEditModal<Price> {
             }
         }.setRequired(true));
 
-        container.add(new DateTextFieldFormGroup("begin", DateAttributeModel.of(priceModel, Price.DATE_BEGIN))
+        container.add(new FormGroupDateTextField("begin", DateAttributeModel.of(priceModel, Price.DATE_BEGIN))
                 .setRequired(true));
         container.add(new FormGroupTextField<>("price", DecimalAttributeModel.of(priceModel, Price.PRICE),
                 BigDecimal.class).setRequired(true));

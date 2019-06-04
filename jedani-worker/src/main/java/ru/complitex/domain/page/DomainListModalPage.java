@@ -20,10 +20,7 @@ import ru.complitex.common.entity.SortProperty;
 import ru.complitex.common.wicket.datatable.DataProvider;
 import ru.complitex.common.wicket.datatable.FilterDataForm;
 import ru.complitex.common.wicket.datatable.FilterDataTable;
-import ru.complitex.domain.component.datatable.DomainColumn;
-import ru.complitex.domain.component.datatable.DomainIdColumn;
-import ru.complitex.domain.component.datatable.DomainModalActionColumn;
-import ru.complitex.domain.component.datatable.DomainParentColumn;
+import ru.complitex.domain.component.datatable.*;
 import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.Entity;
@@ -235,7 +232,7 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage{
         return Domains.newObject(domainClass);
     }
 
-    protected DomainColumn<T> newDomainColumn(EntityAttribute a) {
+    protected AbstractDomainColumn<T> newDomainColumn(EntityAttribute a) {
         return new DomainColumn<>(a);
     }
 

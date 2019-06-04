@@ -22,14 +22,14 @@ body {
     #content {
         position: inherit;
         margin: 0 0 0 200px;
-        padding: 15px 30px;
+        padding: 15px;
         border-left: 1px solid #e7e7e7;
     }
 
     .sidebar {
         z-index: 1;
         position: absolute;
-        width: 200px;
+        width: 185px;
         margin-top: 15px;
     }
 }

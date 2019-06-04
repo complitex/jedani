@@ -44,6 +44,7 @@ import ru.complitex.jedani.worker.entity.WorkerType;
 import ru.complitex.jedani.worker.mapper.StorageMapper;
 import ru.complitex.jedani.worker.page.admin.ImportPage;
 import ru.complitex.jedani.worker.page.admin.SettingPage;
+import ru.complitex.jedani.worker.page.card.CardListPage;
 import ru.complitex.jedani.worker.page.catalog.CurrencyListPage;
 import ru.complitex.jedani.worker.page.catalog.ExchangeRateListPage;
 import ru.complitex.jedani.worker.page.catalog.MkStatusListPage;
@@ -234,6 +235,7 @@ public class BasePage extends WebPage{
         sidebar.add(workers);
 
         workers.add(new MenuLink("workers", WorkerListPage.class).addMenuPageClass(WorkerPage.class));
+        workers.add(new MenuLink("cards", CardListPage.class));
 
         WebMarkupContainer storages = new WebMarkupContainer("storages");
         storages.setVisible(isAdmin());
@@ -244,14 +246,6 @@ public class BasePage extends WebPage{
         storages.add(new MenuLink("nomenclature", NomenclatureListPage.class));
         storages.add(new MenuLink("storage", StorageListPage.class).addMenuPageClass(StoragePage.class));
 
-        WebMarkupContainer promotions = new WebMarkupContainer("promotions");
-        promotions.setVisible(isAdmin() || isPromotionAdmin());
-        promotions.add(newBehavior());
-        promotions.add(new WebMarkupContainer("link").add(newBehaviorLink()));
-        sidebar.add(promotions);
-
-        promotions.add(new MenuLink("promotion", PromotionListPage.class));
-
         WebMarkupContainer sales = new WebMarkupContainer("sales");
         sales.setVisible(isParticipant());
         sales.add(newBehavior());
@@ -259,6 +253,7 @@ public class BasePage extends WebPage{
         sidebar.add(sales);
 
         sales.add(new MenuLink("price", PriceListPage.class).setVisible(isAdmin() || isStructureAdmin()));
+        sales.add(new MenuLink("promotion", PromotionListPage.class).setVisible(isAdmin() || isPromotionAdmin()));
         sales.add(new MenuLink("saleDecision", SaleDecisionListPage.class).setVisible(isAdmin() || isStructureAdmin()));
         sales.add(new MenuLink("sale", SaleListPage.class));
     }

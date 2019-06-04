@@ -21,7 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.complitex.address.entity.Country;
 import ru.complitex.common.wicket.component.MoneyTextField;
-import ru.complitex.common.wicket.form.DateTextFieldFormGroup;
+import ru.complitex.common.wicket.form.FormGroupDateTextField;
 import ru.complitex.common.wicket.form.FormGroupBorder;
 import ru.complitex.common.wicket.form.FormGroupPanel;
 import ru.complitex.common.wicket.util.Wickets;
@@ -86,8 +86,8 @@ public class PromotionModal extends Modal<Promotion> {
         feedback.setOutputMarkupId(true);
         container.add(feedback);
 
-        container.add(new DateTextFieldFormGroup("begin", new DateAttributeModel(getModel(), Promotion.BEGIN)));
-        container.add(new DateTextFieldFormGroup("end", new DateAttributeModel(getModel(), Promotion.END)));
+        container.add(new FormGroupDateTextField("begin", new DateAttributeModel(getModel(), Promotion.BEGIN)));
+        container.add(new FormGroupDateTextField("end", new DateAttributeModel(getModel(), Promotion.END)));
         container.add(new DomainAutoCompleteFormGroup("country", Country.ENTITY_NAME, Country.NAME,
                 new NumberAttributeModel(getModel(), Promotion.COUNTRY)).setRequired(true));
         container.add(new FormGroupBorder("name", new ResourceModel("name"))

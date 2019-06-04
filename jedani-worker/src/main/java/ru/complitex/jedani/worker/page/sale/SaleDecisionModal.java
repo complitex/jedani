@@ -26,7 +26,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import ru.complitex.common.wicket.form.AjaxFormInfoBehavior;
 import ru.complitex.common.wicket.form.AjaxSelectLabel;
-import ru.complitex.common.wicket.form.DateTextFieldFormGroup;
+import ru.complitex.common.wicket.form.FormGroupDateTextField;
 import ru.complitex.common.wicket.form.FormGroupTextField;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.ValueType;
@@ -73,10 +73,10 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
         container.add(new FormGroupTextField<>("name", new TextAttributeModel(saleDecisionModel, SaleDecision.NAME))
                 .setRequired(true)
                 .onUpdate(t -> {}));
-        container.add(new DateTextFieldFormGroup("begin", DateAttributeModel.of(saleDecisionModel, SaleDecision.DATE_BEGIN))
+        container.add(new FormGroupDateTextField("begin", DateAttributeModel.of(saleDecisionModel, SaleDecision.DATE_BEGIN))
                 .setRequired(true)
                 .onUpdate(t -> {}));
-        container.add(new DateTextFieldFormGroup("end", DateAttributeModel.of(saleDecisionModel, SaleDecision.DATE_END))
+        container.add(new FormGroupDateTextField("end", DateAttributeModel.of(saleDecisionModel, SaleDecision.DATE_END))
                 .setRequired(true)
                 .onUpdate(t -> {}));
 

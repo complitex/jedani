@@ -101,4 +101,8 @@ public class TextAttributeModel implements IModel<String> {
             value.setText(text);
         }
     }
+
+    public static TextAttributeModel of(IModel<? extends Domain> model, Long entityAttributeId){
+        return new TextAttributeModel(model, entityAttributeId);
+    }
 }

@@ -16,16 +16,16 @@ import java.util.Date;
  * @author Anatoly A. Ivanov
  * 22.12.2017 8:03
  */
-public class DateTextFieldFormGroup extends Panel{
+public class FormGroupDateTextField extends Panel{
     private DateTextField dateTextField;
 
     private boolean required;
 
-    public DateTextFieldFormGroup(String id, IModel<Date> model) {
+    public FormGroupDateTextField(String id, IModel<Date> model) {
         this(id, new ResourceModel(id), model);
     }
 
-    public DateTextFieldFormGroup(String id, IModel<String> label, IModel<Date> model) {
+    public FormGroupDateTextField(String id, IModel<String> label, IModel<Date> model) {
         super(id);
 
         setOutputMarkupId(true);
@@ -35,7 +35,7 @@ public class DateTextFieldFormGroup extends Panel{
                 new DateTextFieldConfig().withFormat("dd.MM.yyyy").withLanguage("ru").autoClose(true)){
             @Override
             public boolean isRequired() {
-                return DateTextFieldFormGroup.this.isRequired();
+                return FormGroupDateTextField.this.isRequired();
             }
         });
         dateTextField.setLabel(label);
@@ -47,13 +47,13 @@ public class DateTextFieldFormGroup extends Panel{
         return required;
     }
 
-    public DateTextFieldFormGroup setRequired(boolean required){
+    public FormGroupDateTextField setRequired(boolean required){
         this.required = required;
 
         return this;
     }
 
-    public DateTextFieldFormGroup onUpdate(SerializableConsumer<AjaxRequestTarget> onUpdate){
+    public FormGroupDateTextField onUpdate(SerializableConsumer<AjaxRequestTarget> onUpdate){
         dateTextField.add(OnChangeAjaxBehavior.onChange(onUpdate));
 
         return this;

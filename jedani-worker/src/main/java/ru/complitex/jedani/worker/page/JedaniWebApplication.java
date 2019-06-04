@@ -42,6 +42,7 @@ import ru.complitex.common.wicket.application.ServletWebSession;
 import ru.complitex.common.wicket.converter.BigDecimalConverter;
 import ru.complitex.jedani.worker.page.admin.ImportPage;
 import ru.complitex.jedani.worker.page.admin.SettingPage;
+import ru.complitex.jedani.worker.page.card.CardListPage;
 import ru.complitex.jedani.worker.page.catalog.*;
 import ru.complitex.jedani.worker.page.login.LoginPage;
 import ru.complitex.jedani.worker.page.price.PriceListPage;
@@ -103,6 +104,7 @@ public class JedaniWebApplication extends WebApplication{
         mountPage("workers", WorkerListPage.class);
         mountPage("worker", WorkerPage.class);
         mountPage("worker/${id}", WorkerPage.class);
+        mountPage("cards", CardListPage.class);
         mountPage("regional-leader", RegionalLeaderPage.class);
         mountPage("regional-leader/${id}", RegionalLeaderPage.class);
         mountPage("worker/structure/${id}", WorkerStructurePage.class);
