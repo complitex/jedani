@@ -80,10 +80,15 @@ public class CardService implements Serializable {
         }
     }
 
-    public boolean isExist(Card card){
+    public boolean isExists(Card card){
         List<Card> cards = domainService.getDomains(Card.class, FilterWrapper.of(new Card().setNumber(card.getNumber())));
 
         return cards.stream().anyMatch(c -> !Objects.equals(c.getObjectId(), card.getObjectId()));
+    }
+
+    public boolean isWorkerExists(Long workerId){
+        return !domainService.getDomains(Card.class, FilterWrapper.of(new Card().setWorkerId(workerId))).isEmpty();
+
     }
 
     public void save(Card card){
@@ -91,7 +96,7 @@ public class CardService implements Serializable {
             throw new RuntimeException("card number is not valid " + card.getNumber());
         }
 
-        if (isExist(card)) {
+        if (isExists(card)) {
             throw new RuntimeException("card number is exist " + card.getNumber());
         }
 

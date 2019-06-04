@@ -40,8 +40,10 @@ public class Card extends Domain<Card> {
         return getNumber(WORKER);
     }
 
-    public void setWorkerId(Long workerId){
+    public Card setWorkerId(Long workerId){
         setNumber(WORKER, workerId);
+
+        return this;
     }
 
     public Long getIndex(){

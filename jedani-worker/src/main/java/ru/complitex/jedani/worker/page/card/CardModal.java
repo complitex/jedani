@@ -50,10 +50,10 @@ public class CardModal extends Modal<Card> {
         feedback.showRenderedMessages(false);
         container.add(feedback);
 
-        container.add(new FormGroupTextField<>("number", TextAttributeModel.of(cardModel, Card.NUMBER)));
-        container.add(new FormGroupDateTextField("date", DateAttributeModel.of(cardModel, Card.DATE)));
+        container.add(new FormGroupTextField<>("number", TextAttributeModel.of(cardModel, Card.NUMBER)).setRequired(true));
+        container.add(new FormGroupDateTextField("date", DateAttributeModel.of(cardModel, Card.DATE)).setRequired(true));
         container.add(new FormGroupPanel("worker", new WorkerAutoComplete(FormGroupPanel.COMPONENT_ID,
-                NumberAttributeModel.of(cardModel, Card.WORKER))));
+                NumberAttributeModel.of(cardModel, Card.WORKER)).setRequired(true)));
 
         addButton(new BootstrapAjaxButton(Modal.BUTTON_MARKUP_ID, Buttons.Type.Primary) {
             @Override
@@ -94,6 +94,14 @@ public class CardModal extends Modal<Card> {
     private void save(AjaxRequestTarget target){
         Card card = cardModel.getObject();
 
+        if (cardService.isWorkerExists(card.getWorkerId())){
+            error(getString("error_worker_exists"));
+
+            target.add(feedback);
+
+            return;
+        }
+
         if (!cardService.isValid(card.getNumber())){
             error(getString("error_not_valid"));
 
@@ -102,7 +110,7 @@ public class CardModal extends Modal<Card> {
             return;
         }
 
-        if (cardService.isExist(card)){
+        if (cardService.isExists(card)){
             error(getString("error_exists"));
 
             target.add(feedback);
