@@ -3,6 +3,7 @@ package ru.complitex.jedani.worker.service;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.checkdigit.CheckDigitException;
 import org.apache.commons.validator.routines.checkdigit.LuhnCheckDigit;
+import org.mybatis.cdi.Transactional;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.util.Dates;
 import ru.complitex.domain.entity.EntityAttribute;
@@ -12,6 +13,7 @@ import ru.complitex.jedani.worker.entity.Card;
 
 import javax.inject.Inject;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -101,5 +103,12 @@ public class CardService implements Serializable {
         }
 
         domainService.save(card);
+    }
+
+    @Transactional
+    public void generate(Long count, Date date){
+        for (int i = 0; i < count; ++i){
+            save(createCard());
+        }
     }
 }

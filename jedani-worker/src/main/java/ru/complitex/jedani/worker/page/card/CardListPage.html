@@ -2,8 +2,14 @@
 
 <wicket:panel xmlns:wicket="http://wicket.apache.org">
     <wicket:extend>
+        <button wicket:id="generate" class="btn btn-primary">Сгененировать</button>
+
         <form wicket:id="cardForm">
             <div wicket:id="card"></div>
+        </form>
+
+        <form wicket:id="cardBulkForm">
+            <div wicket:id="bulk"></div>
         </form>
     </wicket:extend>
 </wicket:panel>

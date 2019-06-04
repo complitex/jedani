@@ -1,6 +1,7 @@
 package ru.complitex.jedani.worker.page.card;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
@@ -21,6 +22,7 @@ public class CardListPage extends DomainListModalPage<Card> {
     private WorkerService workerService;
 
     private CardModal cardModal;
+    private CardBulkModal cardBulkModal;
 
     public CardListPage() {
         super(Card.class);
@@ -32,6 +34,23 @@ public class CardListPage extends DomainListModalPage<Card> {
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 target.add(getContainer());
+            }
+        });
+
+        Form bulkForm = new Form("cardBulkForm");
+        getContainer().add(bulkForm);
+
+        bulkForm.add(cardBulkModal = new CardBulkModal("bulk"){
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                target.add(getContainer());
+            }
+        });
+
+        getContainer().add(new AjaxLink<Card>("generate") {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                cardBulkModal.open(target);
             }
         });
     }
