@@ -11,6 +11,8 @@ public class SaleDecision extends Domain<SaleDecision> {
     public final static long NAME = 1;
     public final static long DATE_BEGIN = 2;
     public final static long DATE_END = 3;
+    public final static long COUNTRY = 4;
+    public final static long NOMENCLATURES = 5;
 
     private List<Rule> rules = new ArrayList<>();
 
@@ -18,6 +20,7 @@ public class SaleDecision extends Domain<SaleDecision> {
         super(ENTITY_NAME);
 
         setUseDateAttribute(true);
+        setUseNumberValue(true);
     }
 
     public List<Rule> getRules() {

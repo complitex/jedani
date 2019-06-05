@@ -1755,9 +1755,18 @@ END //
 
 DELIMITER ;
 
--- Add Sale Decision
+-- ---------------------------
+-- Sale Decision
+-- ---------------------------
 
 CALL createDomainTables('sale_decision', 'Условие продаж');
 CALL createDomainTables('rule', 'Правило');
 CALL createDomainTables('rule_condition', 'Условие правила');
 CALL createDomainTables('rule_action', 'Действие правила');
+
+
+-- ---------------------------
+-- Card
+-- ---------------------------
+
+CALL createDomainTables('card', 'Карта');

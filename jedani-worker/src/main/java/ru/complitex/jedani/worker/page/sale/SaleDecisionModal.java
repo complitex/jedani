@@ -24,14 +24,16 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
-import ru.complitex.common.wicket.form.AjaxFormInfoBehavior;
-import ru.complitex.common.wicket.form.AjaxSelectLabel;
-import ru.complitex.common.wicket.form.FormGroupDateTextField;
-import ru.complitex.common.wicket.form.FormGroupTextField;
+import ru.complitex.address.entity.Country;
+import ru.complitex.common.wicket.form.*;
+import ru.complitex.domain.component.form.DomainAutoCompleteFormGroup;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.ValueType;
+import ru.complitex.domain.model.AttributeModel;
 import ru.complitex.domain.model.DateAttributeModel;
+import ru.complitex.domain.model.NumberAttributeModel;
 import ru.complitex.domain.model.TextAttributeModel;
+import ru.complitex.jedani.worker.component.NomenclatureAutoCompleteList;
 import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.service.SaleDecisionService;
 
@@ -46,8 +48,6 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
     @Inject
     private SaleDecisionService saleDecisionService;
 
-    private IModel<SaleDecision> saleDecisionModel;
-
     private WebMarkupContainer container;
 
     public SaleDecisionModal(String markupId) {
@@ -58,7 +58,7 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
 
         header(new ResourceModel("header"));
 
-        saleDecisionModel = Model.of(new SaleDecision());
+        setModel(Model.of(new SaleDecision()));
 
         container = new WebMarkupContainer("container");
         container.setOutputMarkupId(true);
@@ -69,19 +69,26 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
         feedback.showRenderedMessages(false);
         container.add(feedback);
 
+        container.add(new FormGroupTextField<>("name", new TextAttributeModel(getModel(), SaleDecision.NAME))
+                .setRequired(true)
+                .onUpdate(t -> {}));
 
-        container.add(new FormGroupTextField<>("name", new TextAttributeModel(saleDecisionModel, SaleDecision.NAME))
+        container.add(new DomainAutoCompleteFormGroup("country", Country.ENTITY_NAME, Country.NAME,
+                NumberAttributeModel.of(getModel(), SaleDecision.COUNTRY)).setRequired(true));
+
+        container.add(new FormGroupDateTextField("begin", DateAttributeModel.of(getModel(), SaleDecision.DATE_BEGIN))
                 .setRequired(true)
                 .onUpdate(t -> {}));
-        container.add(new FormGroupDateTextField("begin", DateAttributeModel.of(saleDecisionModel, SaleDecision.DATE_BEGIN))
+
+        container.add(new FormGroupDateTextField("end", DateAttributeModel.of(getModel(), SaleDecision.DATE_END))
                 .setRequired(true)
                 .onUpdate(t -> {}));
-        container.add(new FormGroupDateTextField("end", DateAttributeModel.of(saleDecisionModel, SaleDecision.DATE_END))
-                .setRequired(true)
-                .onUpdate(t -> {}));
+
+        container.add(new FormGroupPanel("nomenclatures", new NomenclatureAutoCompleteList(FormGroupPanel.COMPONENT_ID,
+                Nomenclature.ENTITY_NAME, new AttributeModel(getModel(), SaleDecision.NOMENCLATURES))));
 
         ListView<RuleCondition> conditions = new ListView<RuleCondition>("conditions",
-                new PropertyModel<>(saleDecisionModel, "rules.0.conditions")) {
+                new PropertyModel<>(getModel(), "rules.0.conditions")) {
             @Override
             protected void populateItem(ListItem<RuleCondition> item) {
                 item.add(new AjaxSelectLabel<RuleConditionType>("type",
@@ -118,21 +125,21 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
                         }){
                     @Override
                     protected void onSelect(AjaxRequestTarget target) {
-                        saleDecisionModel.getObject().updateCondition(item.getModelObject().getIndex());
+                        SaleDecisionModal.this.getModelObject().updateCondition(item.getModelObject().getIndex());
 
                         target.add(container);
                     }
 
                     @Override
                     protected void onApply(AjaxRequestTarget target) {
-                        saleDecisionModel.getObject().updateCondition(item.getModelObject().getIndex());
+                        SaleDecisionModal.this.getModelObject().updateCondition(item.getModelObject().getIndex());
 
                         target.add(container);
                     }
 
                     @Override
                     protected void onRemove(AjaxRequestTarget target) {
-                        saleDecisionModel.getObject().removeCondition((long) item.getIndex());
+                        SaleDecisionModal.this.getModelObject().removeCondition((long) item.getIndex());
 
                         target.add(container);
                     }
@@ -145,14 +152,14 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
         container.add(new AjaxLink<RuleCondition>("addCondition") {
             @Override
             public void onClick(AjaxRequestTarget target) {
-                saleDecisionModel.getObject().addCondition();
+                SaleDecisionModal.this.getModelObject().addCondition();
 
                 target.add(container);
             }
         });
 
         ListView<RuleAction> actions = new ListView<RuleAction>("actions",
-                new PropertyModel<>(saleDecisionModel, "rules.0.actions")) {
+                new PropertyModel<>(getModel(), "rules.0.actions")) {
             @Override
             protected void populateItem(ListItem<RuleAction> item) {
                 item.add(new AjaxSelectLabel<RuleActionType>("type",
@@ -189,21 +196,21 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
                         }){
                     @Override
                     protected void onSelect(AjaxRequestTarget target) {
-                        saleDecisionModel.getObject().updateAction(item.getModelObject().getIndex());
+                        SaleDecisionModal.this.getModelObject().updateAction(item.getModelObject().getIndex());
 
                         target.add(container);
                     }
 
                     @Override
                     protected void onApply(AjaxRequestTarget target) {
-                        saleDecisionModel.getObject().updateAction(item.getModelObject().getIndex());
+                        SaleDecisionModal.this.getModelObject().updateAction(item.getModelObject().getIndex());
 
                         target.add(container);
                     }
 
                     @Override
                     protected void onRemove(AjaxRequestTarget target) {
-                        saleDecisionModel.getObject().removeAction((long) item.getIndex());
+                        SaleDecisionModal.this.getModelObject().removeAction((long) item.getIndex());
 
                         target.add(container);
                     }
@@ -216,14 +223,14 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
         container.add(new AjaxLink<RuleCondition>("addAction") {
             @Override
             public void onClick(AjaxRequestTarget target) {
-                saleDecisionModel.getObject().addAction();
+                SaleDecisionModal.this.getModelObject().addAction();
 
                 target.add(container);
             }
         });
 
         ListView<Rule> rules = new ListView<Rule>("rules",
-                new PropertyModel<>(saleDecisionModel, "rules")) {
+                new PropertyModel<>(getModel(), "rules")) {
             @Override
             protected void populateItem(ListItem<Rule> item) {
                 item.add(new Label("id", item.getIndex() + 1));
@@ -249,14 +256,14 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
                 item.add(new AjaxLink<Rule>("remove") {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
-                        saleDecisionModel.getObject().getRules().remove(item.getModelObject());
+                        SaleDecisionModal.this.getModelObject().getRules().remove(item.getModelObject());
 
                         target.add(container);
                     }
 
                     @Override
                     public boolean isVisible() {
-                        return saleDecisionModel.getObject().getRules().size() > 1;
+                        return SaleDecisionModal.this.getModelObject().getRules().size() > 1;
                     }
                 });
             }
@@ -266,7 +273,7 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
         container.add(new AjaxLink<RuleCondition>("addRule") {
             @Override
             public void onClick(AjaxRequestTarget target) {
-                saleDecisionModel.getObject().addRule();
+                SaleDecisionModal.this.getModelObject().addRule();
 
                 target.add(container);
             }
@@ -431,7 +438,7 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
         saleDecision.addCondition();
         saleDecision.addAction();
 
-        saleDecisionModel.setObject(saleDecision);
+        setModelObject(saleDecision);
 
         target.add(container);
         appendShowDialogJavaScript(target);
@@ -440,7 +447,7 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
     public void edit(SaleDecision saleDecision,  AjaxRequestTarget target){
         saleDecisionService.loadRules(saleDecision);
 
-        saleDecisionModel.setObject(saleDecision);
+        setModelObject(saleDecision);
 
         target.add(container);
         appendShowDialogJavaScript(target);
@@ -453,7 +460,7 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
     }
 
     private void save(AjaxRequestTarget target) {
-        saleDecisionService.save(saleDecisionModel.getObject());
+        saleDecisionService.save(getModelObject());
 
         container.visitChildren(FormComponent.class, (c, v) -> ((FormComponent) c).clearInput());
 

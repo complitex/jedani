@@ -21,22 +21,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.complitex.address.entity.Country;
 import ru.complitex.common.wicket.component.MoneyTextField;
-import ru.complitex.common.wicket.form.FormGroupDateTextField;
 import ru.complitex.common.wicket.form.FormGroupBorder;
+import ru.complitex.common.wicket.form.FormGroupDateTextField;
 import ru.complitex.common.wicket.form.FormGroupPanel;
 import ru.complitex.common.wicket.util.Wickets;
-import ru.complitex.domain.component.form.AbstractDomainAutoCompleteList;
 import ru.complitex.domain.component.form.DomainAutoCompleteFormGroup;
-import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.Status;
 import ru.complitex.domain.entity.StringType;
 import ru.complitex.domain.model.*;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.util.Locales;
+import ru.complitex.jedani.worker.component.NomenclatureAutoCompleteList;
 import ru.complitex.jedani.worker.entity.Nomenclature;
 import ru.complitex.jedani.worker.entity.Promotion;
 import ru.complitex.jedani.worker.entity.Setting;
-import ru.complitex.jedani.worker.util.Nomenclatures;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -120,23 +118,8 @@ public class PromotionModal extends Modal<Promotion> {
         file = new FileUploadField("file");
         container.add(file);
 
-        container.add(new FormGroupPanel("nomenclatures", new AbstractDomainAutoCompleteList(FormGroupPanel.COMPONENT_ID,
-                Nomenclature.ENTITY_NAME, new AttributeModel(getModel(), Promotion.NOMENCLATURES)) {
-            @Override
-            protected String getTextValue(Domain domain) {
-                return Nomenclatures.getNomenclatureLabel(domain);
-            }
-
-            @Override
-            protected Domain getFilterObject(String input) {
-                Nomenclature nomenclature = new Nomenclature();
-
-                nomenclature.getOrCreateAttribute(Nomenclature.CODE).setText(input);
-                nomenclature.getOrCreateAttribute(Nomenclature.NAME).setText(input);
-
-                return nomenclature;
-            }
-        }));
+        container.add(new FormGroupPanel("nomenclatures", new NomenclatureAutoCompleteList(FormGroupPanel.COMPONENT_ID,
+                Nomenclature.ENTITY_NAME, new AttributeModel(getModel(), Promotion.NOMENCLATURES))));
 
         container.add(new FormGroupBorder("eur", new ResourceModel("eur"))
                 .add(new MoneyTextField<>("eur", new TextAttributeModel(getModel(), Promotion.EUR,
