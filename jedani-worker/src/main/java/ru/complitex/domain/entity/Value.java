@@ -1,5 +1,7 @@
 package ru.complitex.domain.entity;
 
+import com.google.common.base.MoreObjects;
+
 import java.io.Serializable;
 
 /**
@@ -87,5 +89,17 @@ public class Value implements Serializable{
 
     public void setEntityName(String entityName) {
         this.entityName = entityName;
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this).omitNullValues()
+                .add("id", id)
+                .add("attributeId", attributeId)
+                .add("localeId", localeId)
+                .add("text", text)
+                .add("number", number)
+                .add("entityName", entityName)
+                .toString();
     }
 }

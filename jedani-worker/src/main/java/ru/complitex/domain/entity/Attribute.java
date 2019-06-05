@@ -1,5 +1,6 @@
 package ru.complitex.domain.entity;
 
+import com.google.common.base.MoreObjects;
 import ru.complitex.domain.util.Locales;
 
 import java.io.Serializable;
@@ -251,5 +252,25 @@ public class Attribute implements Serializable{
 
     public void setEntityAttribute(EntityAttribute entityAttribute) {
         this.entityAttribute = entityAttribute;
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this).omitNullValues()
+                .add("id", id)
+                .add("domainId", domainId)
+                .add("entityAttributeId", entityAttributeId)
+                .add("text", text)
+                .add("number", number)
+                .add("date", date)
+                .add("startDate", startDate)
+                .add("endDate", endDate)
+                .add("status", status)
+                .add("userId", userId)
+                .add("entityName", entityName)
+                .add("values", values)
+                .add("entityAttribute", entityAttribute)
+                .add("objectId", objectId)
+                .toString();
     }
 }

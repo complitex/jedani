@@ -3,10 +3,12 @@ package ru.complitex.jedani.worker.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
+import ru.complitex.address.entity.Country;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Status;
 import ru.complitex.domain.mapper.AttributeMapper;
+import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.entity.ExchangeRate;
 
 import javax.inject.Inject;
@@ -14,6 +16,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -34,6 +37,9 @@ public class ExchangeRateService implements Serializable {
 
     @Inject
     private AttributeMapper attributeMapper;
+
+    @Inject
+    private DomainService domainService;
 
     public String[] getValue(String uri, String uriDateParam, String uriDateFormat, LocalDate localDate,
                              String xpathDate, String xpathValue){
@@ -112,5 +118,20 @@ public class ExchangeRateService implements Serializable {
         return attributeMapper.getHistoryAttributesCount(filterWrapper);
     }
 
+    public BigDecimal getExchangeRateValue(Long countryId){
+        Long exchangeRateId = domainService.getNumber(Country.ENTITY_NAME, countryId, Country.EXCHANGE_RATE_EUR);
 
+        List<Attribute> values = attributeMapper.getHistoryAttributes(FilterWrapper.of(
+                new Attribute(ExchangeRate.ENTITY_NAME, ExchangeRate.VALUE).setObjectId(exchangeRateId)));
+
+        if (!values.isEmpty()){
+            String value = values.get(0).getText();
+
+            if (value != null){
+                return new BigDecimal(value.replace(",", "."));
+            }
+        }
+
+        return null;
+    }
 }

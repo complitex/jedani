@@ -1,19 +1,23 @@
 package ru.complitex.jedani.worker.service;
 
 import org.mybatis.cdi.Transactional;
+import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.ValueType;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
-import ru.complitex.jedani.worker.entity.Rule;
-import ru.complitex.jedani.worker.entity.RuleAction;
-import ru.complitex.jedani.worker.entity.RuleCondition;
-import ru.complitex.jedani.worker.entity.SaleDecision;
+import ru.complitex.jedani.worker.entity.*;
+import ru.complitex.jedani.worker.mapper.SaleDecisionMapper;
 
 import javax.inject.Inject;
+import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 public class SaleDecisionService {
+    @Inject
+    private SaleDecisionMapper saleDecisionMapper;
+
     @Inject
     private EntityService entityService;
 
@@ -90,20 +94,66 @@ public class SaleDecisionService {
     }
 
     private void updateValues(Domain domain, Long valueTypeEAId, Long valueEAId, Long comparatorEAId){
-            if (Objects.equals(domain.getNumber(valueTypeEAId), ValueType.BOOLEAN.getId())){
-                domain.setText(valueEAId, null);
-                domain.setDate(valueEAId, null);
-                domain.setNumber(comparatorEAId, null);
-            }else if (Objects.equals(domain.getNumber(valueTypeEAId), ValueType.DECIMAL.getId())){
-                domain.setNumber(valueEAId, null);
-                domain.setDate(valueEAId, null);
-            }else if (Objects.equals(domain.getNumber(valueTypeEAId), ValueType.NUMBER.getId())){
-                domain.setText(valueEAId, null);
-                domain.setDate(valueEAId, null);
-            }else if (Objects.equals(domain.getNumber(valueTypeEAId), ValueType.DATE.getId())){
-                domain.setNumber(valueEAId, null);
-                domain.setText(valueEAId, null);
+        if (Objects.equals(domain.getNumber(valueTypeEAId), ValueType.BOOLEAN.getId())){
+            domain.setText(valueEAId, null);
+            domain.setDate(valueEAId, null);
+            domain.setNumber(comparatorEAId, null);
+        }else if (Objects.equals(domain.getNumber(valueTypeEAId), ValueType.DECIMAL.getId())){
+            domain.setNumber(valueEAId, null);
+            domain.setDate(valueEAId, null);
+        }else if (Objects.equals(domain.getNumber(valueTypeEAId), ValueType.NUMBER.getId())){
+            domain.setText(valueEAId, null);
+            domain.setDate(valueEAId, null);
+        }else if (Objects.equals(domain.getNumber(valueTypeEAId), ValueType.DATE.getId())){
+            domain.setNumber(valueEAId, null);
+            domain.setText(valueEAId, null);
+        }
+    }
+
+    public List<SaleDecision> getSaleDecisions(Long countryId, Long nomenclatureId, Date date){
+        return saleDecisionMapper.getSaleDecisions(FilterWrapper.of(new SaleDecision()
+                .setCountryId(countryId))
+                .put(SaleDecision.FILTER_NOMENCLATURE, nomenclatureId)
+                .put(SaleDecision.FILTER_DATE, date));
+
+    }
+
+    public boolean check(Rule rule, Date date){
+        boolean check = true;
+
+        for (RuleCondition condition : rule.getConditions()){
+            if (RuleConditionType.PAYMENT_DATE.getId().equals(condition.getType())){
+                Date conditionDate = condition.getDate(RuleCondition.CONDITION);
+
+                if (condition.getComparator() != null){
+                    switch (RuleConditionComparator.getValue(condition.getComparator())){
+                        case EQUAL:
+                            check = date.compareTo(conditionDate) == 0;
+                            break;
+                        case NOT_EQUAL:
+                            check = date.compareTo(conditionDate) != 0;
+                            break;
+                        case GREATER:
+                            check = date.compareTo(conditionDate) > 0;
+                            break;
+                        case LOWER:
+                            check = date.compareTo(conditionDate) < 0;
+                            break;
+                        case GREATER_OR_EQUAL:
+                            check = date.compareTo(conditionDate) >= 0;
+                            break;
+                        case LOWER_OR_EQUAL:
+                            check = date.compareTo(conditionDate) <= 0;
+                            break;
+                    }
+                }
+
+                if (!check){
+                    break;
+                }
             }
         }
 
+        return check;
+    }
 }

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ru.complitex.jedani.worker.mapper.SaleDecisionMapper">
+    <resultMap id="saleDecisionResultMap" type="ru.complitex.jedani.worker.entity.SaleDecision"
+               extends="ru.complitex.domain.mapper.DomainMapper.domainResultMapJoin">
+    </resultMap>
+
+    <sql id="selectSaleDecisionsFrom">
+        <if test="map.date != null">
+            left join sale_decision_attribute sda_b on sda_b.domain_id = d.id and sda_b.entity_attribute_id = 2 and sda_b.status = 1
+            left join sale_decision_attribute sda_e on sda_e.domain_id = d.id and sda_e.entity_attribute_id = 3 and sda_e.status = 1
+        </if>
+    </sql>
+
+    <sql id="selectSaleDecisionsWhere">
+        <if test="map.date != null">
+            and (${map.date} >= sda_b.date and (sda_e.date is null or sda_e.date >= ${map.date}))
+        </if>
+
+        <if test="map.nomenclature != null">
+            and exists(
+                select sda_n.id from sale_decision_attribute sda_n
+                    left join sale_decision_value sdv_n on sdv_n.attribute_id = sda_n.id
+                where sda_n.domain_id = d.id and sda_n.entity_attribute_id = 5 and sda_n.status = 1
+                    and sdv_n.number = ${map.nomenclature}
+            )
+        </if>
+    </sql>
+    
+    <!--suppress SqlResolve -->
+    <select id="selectSaleDecisions" parameterType="ru.complitex.common.entity.FilterWrapper" resultMap="saleDecisionResultMap">
+        select d.*, '${object.entityName}' entity_name,
+          <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsSelect"/>
+        from (
+          select dd.d_id dd_id
+        from (
+            select d.id d_id
+                <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFrom"/>
+                <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromFilter"/>
+                <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromSort"/>
+                <include refid="selectSaleDecisionsFrom"/>
+                <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsWhere"/>
+                <include refid="selectSaleDecisionsWhere"/>
+                group by d.id
+                <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsOrderSort"/>
+            ) dd
+            ${limit}
+        ) o
+        left join sale_decision d on d.id = o.dd_id
+        left join sale_decision_attribute a on a.domain_id = d.id and a.status = 1
+        left join sale_decision_value v on v.attribute_id = a.id
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromSort"/>
+        group by d.id, a.id, v.id
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsOrderSort"/>
+    </select>
+
+    <!--suppress SqlResolve -->
+    <select id="selectSaleDecisionsCount" parameterType="ru.complitex.common.entity.FilterWrapper" resultType="long">
+        select count(distinct sd.object_id) from (select d.object_id
+            <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFrom"/>
+            <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromFilter"/>
+            <include refid="selectSaleDecisionsFrom"/>
+            <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsWhere"/>
+            <include refid="selectSaleDecisionsWhere"/>
+        ) sd
+    </select>
+</mapper>

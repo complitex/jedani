@@ -1,6 +1,8 @@
 package ru.complitex.jedani.worker.service;
 
 import org.mybatis.cdi.Transactional;
+import ru.complitex.address.entity.City;
+import ru.complitex.address.entity.Region;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
@@ -256,5 +258,18 @@ public class StorageService implements Serializable {
 
         transaction.setEndDate(new Date());
         domainService.save(transaction);
+    }
+
+    public Long getCountryId(Long storageId){
+        Storage storage = domainService.getDomain(Storage.class, storageId);
+
+        if (storage.getCityId() == null){
+            return null;
+        }
+
+        City city = domainService.getDomain(City.class, storage.getCityId());
+        Region region = domainService.getDomain(Region.class, city.getParentId());
+
+        return region.getParentId();
     }
 }

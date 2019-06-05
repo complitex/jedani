@@ -14,6 +14,9 @@ public class SaleDecision extends Domain<SaleDecision> {
     public final static long COUNTRY = 4;
     public final static long NOMENCLATURES = 5;
 
+    public static final String FILTER_DATE = "date";
+    public static final String FILTER_NOMENCLATURE = "nomenclature";
+
     private List<Rule> rules = new ArrayList<>();
 
     public SaleDecision() {
@@ -21,6 +24,20 @@ public class SaleDecision extends Domain<SaleDecision> {
 
         setUseDateAttribute(true);
         setUseNumberValue(true);
+    }
+
+    public Long getCountryId(){
+        return getNumber(COUNTRY);
+    }
+
+    public SaleDecision setCountryId(Long countryId){
+        setNumber(COUNTRY, countryId);
+
+        return this;
+    }
+
+    public List<Long> getNomenclatureIds(){
+        return getNumberValues(NOMENCLATURES);
     }
 
     public List<Rule> getRules() {

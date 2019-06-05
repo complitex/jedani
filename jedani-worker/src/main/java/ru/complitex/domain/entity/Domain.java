@@ -1,5 +1,6 @@
 package ru.complitex.domain.entity;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
 import ru.complitex.domain.util.Locales;
 
@@ -376,5 +377,26 @@ public class Domain<T extends Domain<T>> implements Serializable{
 
     public void setUseNumberValue(boolean useNumberValue) {
         this.useNumberValue = useNumberValue;
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this).omitNullValues()
+                .add("id", id)
+                .add("objectId", objectId)
+                .add("parentId", parentId)
+                .add("parentEntityId", parentEntityId)
+                .add("startDate", startDate)
+                .add("endDate", endDate)
+                .add("status", status)
+                .add("permissionId", permissionId)
+                .add("userId", userId)
+                .add("useDateAttribute", useDateAttribute)
+                .add("useNumberValue", useNumberValue)
+                .add("entityName", entityName)
+                .add("attributes", attributes)
+                .add("map", map)
+                .add("parentEntityAttribute", parentEntityAttribute)
+                .toString();
     }
 }

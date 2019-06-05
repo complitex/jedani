@@ -50,12 +50,12 @@
 
     <!--suppress SqlResolve -->
     <select id="selectSaleItemsCount" parameterType="ru.complitex.common.entity.FilterWrapper" resultType="long">
-        select count(distinct w.object_id) from (select d.object_id
+        select count(distinct si.object_id) from (select d.object_id
             <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFrom"/>
             <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromFilter"/>
             <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsWhere"/>
             <include refid="selectSaleItemsWhere"/>
-        ) w
+        ) si
     </select>
 
 </mapper>

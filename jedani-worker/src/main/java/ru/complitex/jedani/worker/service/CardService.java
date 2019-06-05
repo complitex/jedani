@@ -41,11 +41,11 @@ public class CardService implements Serializable {
                 maxIndex.set(index);
             }
 
-            String code = StringUtils.leftPad(index + "", 5, "0");
+            String code = getCode(index);
 
             String check = luhnCheckDigit.calculate(code);
 
-            String number = new StringBuilder(code).insert(4, check).toString();
+            String number = getNumber(code, check);
 
             Card card = new Card();
 
@@ -57,6 +57,14 @@ public class CardService implements Serializable {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private String getNumber(String code, String check) {
+        return new StringBuilder(code).insert(4, check).toString();
+    }
+
+    private String getCode(long index) {
+        return StringUtils.leftPad(index + "", 5, "0");
     }
 
     public boolean isValid(String cardNumber){
@@ -72,11 +80,11 @@ public class CardService implements Serializable {
 
     public boolean isSame(String cardNumber, Long index){
         try {
-            String code = StringUtils.leftPad(index + "", 5, "0");
+            String code = getCode(index);
 
             String check = luhnCheckDigit.calculate(code);
 
-            return new StringBuilder(code).insert(4, check).toString().equals(cardNumber);
+            return getNumber(code, check).equals(cardNumber);
         } catch (CheckDigitException e) {
             return false;
         }

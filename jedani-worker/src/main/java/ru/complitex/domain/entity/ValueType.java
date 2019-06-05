@@ -2,6 +2,9 @@ package ru.complitex.domain.entity;
 
 import ru.complitex.common.entity.IdEnum;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 public enum ValueType implements IdEnum {
     TEXT_VALUE(0L, "value"),
     NUMBER_VALUE(1L, "number_value"),
@@ -32,5 +35,14 @@ public enum ValueType implements IdEnum {
 
     public String getKey(){
         return key;
+    }
+
+    public static ValueType getValue(Long id){
+        if (id == null){
+            return null;
+        }
+
+        //noinspection OptionalGetWithoutIsPresent
+        return Arrays.stream(values()).filter(t -> Objects.equals(id, t.getId())).findAny().get();
     }
 }
