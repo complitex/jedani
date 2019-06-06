@@ -24,6 +24,7 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.util.parse.metapattern.MetaPattern;
@@ -35,6 +36,7 @@ import org.danekja.java.util.function.serializable.SerializableConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.complitex.common.entity.FilterWrapper;
+import ru.complitex.common.util.Dates;
 import ru.complitex.common.wicket.form.*;
 import ru.complitex.domain.component.form.DomainAutoCompleteFormGroup;
 import ru.complitex.domain.entity.Attribute;
@@ -52,6 +54,7 @@ import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.exception.SaleException;
 import ru.complitex.jedani.worker.mapper.StorageMapper;
 import ru.complitex.jedani.worker.page.BasePage;
+import ru.complitex.jedani.worker.service.PriceService;
 import ru.complitex.jedani.worker.service.SaleService;
 import ru.complitex.name.entity.FirstName;
 import ru.complitex.name.entity.LastName;
@@ -81,6 +84,9 @@ public class SaleModal extends Modal<Sale> {
 
     @Inject
     private StorageMapper storageMapper;
+
+    @Inject
+    private PriceService priceService;
 
     private IModel<Sale> saleModel;
     private IModel<List<SaleItem>> mycookModel;
@@ -231,10 +237,32 @@ public class SaleModal extends Modal<Sale> {
                 quantity.setRequired(true).setOutputMarkupId(true).add(new AjaxFormInfoBehavior());
                 item.add(quantity);
 
-                SerializableConsumer<AjaxRequestTarget> onChange = newQuantityChange(model, quantity);
+                TextField basePrice = new TextField<>("basePrice", new LoadableDetachableModel<BigDecimal>() {
+                    @Override
+                    protected BigDecimal load() {
+                        return priceService.getBasePrice(saleModel.getObject().getStorageId(),
+                                model.getObject().getNomenclatureId(), Dates.currentDate());
+                    }
+                }, BigDecimal.class);
+                basePrice.setOutputMarkupId(true);
+                basePrice.setEnabled(false);
+                item.add(basePrice);
 
-                item.add(new NomenclatureAutoComplete("nomenclature",
-                        NumberAttributeModel.of(model, SaleItem.NOMENCLATURE), onChange){
+                TextField price = new TextField<>("price", new LoadableDetachableModel<BigDecimal>() {
+                    @Override
+                    protected BigDecimal load() {
+                        return priceService.getPrice(saleModel.getObject().getStorageId(),
+                                model.getObject().getNomenclatureId(), Dates.currentDate());
+                    }
+                }, BigDecimal.class);
+                price.setOutputMarkupId(true);
+                price.setEnabled(false);
+                item.add(price);
+
+                SerializableConsumer<AjaxRequestTarget> onChange = newSaleItemOnChange(model, quantity, basePrice, price);
+
+                item.add(new NomenclatureAutoComplete("nomenclature", NumberAttributeModel.of(model,
+                        SaleItem.NOMENCLATURE), onChange){
                     @Override
                     protected Domain getFilterObject(String input) {
                         Domain domain = super.getFilterObject(input);
@@ -247,7 +275,7 @@ public class SaleModal extends Modal<Sale> {
                     }
                 }.setRequired(true));
 
-                item.add(new TextField<>("price", DecimalAttributeModel.of(model, SaleItem.PRICE), BigDecimal.class)
+                item.add(new TextField<>("total", DecimalAttributeModel.of(model, SaleItem.TOTAL), BigDecimal.class)
                         .setRequired(true)
                         .add(new AjaxFormInfoBehavior(){
                             @Override
@@ -312,7 +340,7 @@ public class SaleModal extends Modal<Sale> {
                 quantity.setRequired(true).setOutputMarkupId(true).add(new AjaxFormInfoBehavior());
                 item.add(quantity);
 
-                SerializableConsumer<AjaxRequestTarget> onChange = newQuantityChange(model, quantity);
+                SerializableConsumer<AjaxRequestTarget> onChange = newSaleItemOnChange(model, quantity);
 
                 item.add(new NomenclatureAutoComplete("nomenclature",
                         NumberAttributeModel.of(model, SaleItem.NOMENCLATURE), onChange){
@@ -328,7 +356,7 @@ public class SaleModal extends Modal<Sale> {
                     }
                 }.setRequired(true));
 
-                item.add(new TextField<>("price", DecimalAttributeModel.of(model, SaleItem.PRICE), BigDecimal.class)
+                item.add(new TextField<>("total", DecimalAttributeModel.of(model, SaleItem.TOTAL), BigDecimal.class)
                         .setRequired(true)
                         .add(new AjaxFormInfoBehavior(){
                             @Override
@@ -371,7 +399,7 @@ public class SaleModal extends Modal<Sale> {
             }
         });
 
-        container.add(total = new FormGroupTextField<>("total", new DecimalAttributeModel(saleModel, Sale.TOTAL), BigDecimal.class));
+        container.add(total = new FormGroupTextField<>("sum", new DecimalAttributeModel(saleModel, Sale.TOTAL), BigDecimal.class));
         container.add(payment = new FormGroupTextField<>("payment", DecimalAttributeModel.of(saleModel, Sale.INITIAL_PAYMENT), BigDecimal.class));
 
         addButton(saveButton = new IndicatingAjaxButton(Modal.BUTTON_MARKUP_ID, new ResourceModel("save")) {
@@ -400,7 +428,7 @@ public class SaleModal extends Modal<Sale> {
         }.setLabel(new ResourceModel("cancel")));
     }
 
-    private SerializableConsumer<AjaxRequestTarget> newQuantityChange(IModel<SaleItem> model, TextField quantity) {
+    private SerializableConsumer<AjaxRequestTarget> newSaleItemOnChange(IModel<SaleItem> model, TextField quantity, Component... update) {
         return t -> {
             Long storageId = saleModel.getObject().getStorageId();
             Long nomenclatureId = model.getObject().getNomenclatureId();
@@ -413,6 +441,10 @@ public class SaleModal extends Modal<Sale> {
 
                 t.appendJavaScript("$('#" + quantity.getMarkupId() + "').attr('placeholder', '" +
                         (!products.isEmpty() ? products.get(0).getAvailableQuantity() : "0") + "')");
+            }
+
+            if (update != null){
+                t.add(update);
             }
         };
     }

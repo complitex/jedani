@@ -90,7 +90,7 @@ public class SaleListPage extends DomainListModalPage<SaleItem> {
         list.add(entity.getEntityAttribute(SaleItem.NOMENCLATURE)
                 .withReferences(Nomenclature.ENTITY_NAME, Nomenclature.CODE, Nomenclature.NAME));
         list.add(entity.getEntityAttribute(SaleItem.QUANTITY));
-        list.add(entity.getEntityAttribute(SaleItem.PRICE));
+        list.add(entity.getEntityAttribute(SaleItem.TOTAL));
 
         return list;
     }

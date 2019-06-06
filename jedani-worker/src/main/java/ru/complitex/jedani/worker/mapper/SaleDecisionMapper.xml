@@ -14,7 +14,7 @@
 
     <sql id="selectSaleDecisionsWhere">
         <if test="map.date != null">
-            and (${map.date} >= sda_b.date and (sda_e.date is null or sda_e.date >= ${map.date}))
+            and (#{map.date} >= sda_b.date and (sda_e.date is null or sda_e.date >= #{map.date}))
         </if>
 
         <if test="map.nomenclature != null">

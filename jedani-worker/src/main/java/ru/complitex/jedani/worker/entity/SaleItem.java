@@ -13,7 +13,7 @@ public class SaleItem extends Domain<SaleItem> {
 
     public static final long NOMENCLATURE = 1;
     public static final long QUANTITY = 2;
-    public static final long PRICE = 3;
+    public static final long TOTAL = 3;
 
     public static final String FILTER_DATE = "date";
     public static final String FILTER_BUYER = "buyer";
@@ -40,10 +40,10 @@ public class SaleItem extends Domain<SaleItem> {
     }
 
     public BigDecimal getPrice(){
-        return getDecimal(PRICE);
+        return getDecimal(TOTAL);
     }
 
     public void setPrice(BigDecimal price){
-        setDecimal(PRICE, price);
+        setDecimal(TOTAL, price);
     }
 }

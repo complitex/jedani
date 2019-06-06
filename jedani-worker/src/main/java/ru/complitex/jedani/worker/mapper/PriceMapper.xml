@@ -14,7 +14,7 @@
 
     <sql id="selectPricesWhere">
         <if test="map.date != null">
-            and (${map.date} >= pa_b.date and (pa_e.date is null or pa_e.date >= ${map.date}))
+            and (#{map.date} >= pa_b.date and (pa_e.date is null or pa_e.date >= #{map.date}))
         </if>
     </sql>
     

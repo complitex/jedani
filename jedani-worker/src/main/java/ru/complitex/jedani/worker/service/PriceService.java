@@ -10,6 +10,7 @@ import ru.complitex.jedani.worker.entity.SaleDecision;
 import ru.complitex.jedani.worker.mapper.PriceMapper;
 
 import javax.inject.Inject;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-public class PriceService {
+public class PriceService implements Serializable {
     private final static Logger log = LoggerFactory.getLogger(Price.class);
 
     @Inject
@@ -29,13 +30,16 @@ public class PriceService {
     @Inject
     private ExchangeRateService exchangeRateService;
 
-    public BigDecimal getBasePrice(Long countryId, Long nomenclatureId, Date date){
-        if (countryId == null || nomenclatureId == null || date == null){
+    @Inject
+    private StorageService storageService;
+
+    public BigDecimal getBasePrice(Long storageId, Long nomenclatureId, Date date){
+        if (storageId == null || nomenclatureId == null || date == null){
             return null;
         }
 
         List<Price> prices = priceMapper.getPrices(FilterWrapper.of(new Price()
-                .setCountryId(countryId)
+                .setCountryId(storageService.getCountryId(storageId))
                 .setNomenclatureId(nomenclatureId))
                 .put(Price.FILTER_DATE, date));
 
@@ -50,18 +54,19 @@ public class PriceService {
         return null;
     }
 
-    public BigDecimal getPrice(Long countryId, Long nomenclatureId, Date date){
-        if (countryId == null || nomenclatureId == null || date == null){
+    public BigDecimal getPrice(Long storageId, Long nomenclatureId, Date date){
+        if (storageId == null || nomenclatureId == null || date == null){
             return null;
         }
 
-        BigDecimal basePrice = getBasePrice(countryId, nomenclatureId, date);
+        BigDecimal basePrice = getBasePrice(storageId, nomenclatureId, date);
 
-        return calculatePrice(basePrice, countryId, nomenclatureId, date);
+        return calculatePrice(basePrice, storageId, nomenclatureId, date);
     }
 
-    public BigDecimal calculatePrice(BigDecimal basePrice, Long countryId, Long nomenclatureId, Date date){
-        List<SaleDecision> saleDecisions = saleDecisionService.getSaleDecisions(countryId, nomenclatureId, date);
+    public BigDecimal calculatePrice(BigDecimal basePrice, Long storageId, Long nomenclatureId, Date date){
+        List<SaleDecision> saleDecisions = saleDecisionService.getSaleDecisions(storageService.getCountryId(storageId),
+                nomenclatureId, date);
 
         List<BigDecimal> prices = new ArrayList<>();
 
@@ -98,17 +103,17 @@ public class PriceService {
         return prices.stream().min(Comparator.naturalOrder()).orElse(basePrice);
     }
 
-    public BigDecimal getPointPrice(Long countryId, Long nomenclatureId, Date date){
-        if (countryId == null || nomenclatureId == null || date == null){
+    public BigDecimal getPointPrice(Long storageId, Long nomenclatureId, Date date){
+        if (storageId == null || nomenclatureId == null || date == null){
             return null;
         }
 
-        BigDecimal basePointPrice = exchangeRateService.getExchangeRateValue(countryId);
+        BigDecimal basePointPrice = exchangeRateService.getExchangeRateValue(storageService.getCountryId(storageId));
 
-        return calculatePointPrice(basePointPrice, countryId, nomenclatureId, date);
+        return calculatePointPrice(basePointPrice, storageId, nomenclatureId, date);
     }
 
-    public BigDecimal calculatePointPrice(BigDecimal basePointPrice, Long countryId, Long nomenclatureId, Date date){
+    public BigDecimal calculatePointPrice(BigDecimal basePointPrice, Long storageId, Long nomenclatureId, Date date){
         return basePointPrice;
     }
 
