@@ -36,8 +36,8 @@
                         <th>№</th>
                         <th>Товар</th>
                         <th>Базовая цена</th>
-                        <th>Цена</th>
                         <th>Кол-во</th>
+                        <th>Цена</th>
                         <th>Сумма</th>
                         <th></th>
                     </tr>
@@ -46,16 +46,15 @@
                     <tr wicket:id="mycooks">
                         <td class="sale-id-column"><span wicket:id="index"></span></td>
                         <td><span wicket:id="nomenclature"></span></td>
-                        <td><input class="form-control" wicket:id="basePrice" size="6"/></td>
+                        <td><input class="form-control" wicket:id="quantity" size="2"/></td>
                         <td><input class="form-control" wicket:id="price" size="6"/></td>
-                        <td><input class="form-control" wicket:id="quantity" size="3"/></td>
                         <td><input class="form-control" wicket:id="total" size="6"/></td>
                         <td class="sale-id-column"><a wicket:id="remove"></a></td>
                     </tr>
                     </tbody>
                     <tfoot>
                     <tr>
-                        <td colspan="5">
+                        <td colspan="7">
                             <div class="text-center"><a wicket:id="add">Добавить</a></div>
                         </td>
                     </tr>

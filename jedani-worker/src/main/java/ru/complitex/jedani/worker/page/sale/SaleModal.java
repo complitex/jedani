@@ -237,29 +237,18 @@ public class SaleModal extends Modal<Sale> {
                 quantity.setRequired(true).setOutputMarkupId(true).add(new AjaxFormInfoBehavior());
                 item.add(quantity);
 
-                TextField basePrice = new TextField<>("basePrice", new LoadableDetachableModel<BigDecimal>() {
-                    @Override
-                    protected BigDecimal load() {
-                        return priceService.getBasePrice(saleModel.getObject().getStorageId(),
-                                model.getObject().getNomenclatureId(), Dates.currentDate());
-                    }
-                }, BigDecimal.class);
-                basePrice.setOutputMarkupId(true);
-                basePrice.setEnabled(false);
-                item.add(basePrice);
-
                 TextField price = new TextField<>("price", new LoadableDetachableModel<BigDecimal>() {
                     @Override
                     protected BigDecimal load() {
                         return priceService.getPrice(saleModel.getObject().getStorageId(),
-                                model.getObject().getNomenclatureId(), Dates.currentDate());
+                                model.getObject().getNomenclatureId(), Dates.currentDate(), model.getObject().getPrice());
                     }
                 }, BigDecimal.class);
                 price.setOutputMarkupId(true);
                 price.setEnabled(false);
                 item.add(price);
 
-                SerializableConsumer<AjaxRequestTarget> onChange = newSaleItemOnChange(model, quantity, basePrice, price);
+                SerializableConsumer<AjaxRequestTarget> onChange = newSaleItemOnChange(model, quantity, price);
 
                 item.add(new NomenclatureAutoComplete("nomenclature", NumberAttributeModel.of(model,
                         SaleItem.NOMENCLATURE), onChange){

@@ -10,6 +10,7 @@ import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.mapper.SaleDecisionMapper;
 
 import javax.inject.Inject;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -118,7 +119,7 @@ public class SaleDecisionService {
 
     }
 
-    public boolean check(Rule rule, Date date){
+    public boolean check(Rule rule, Date date, BigDecimal total){
         boolean check = true;
 
         for (RuleCondition condition : rule.getConditions()){

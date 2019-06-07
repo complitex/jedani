@@ -54,17 +54,17 @@ public class PriceService implements Serializable {
         return null;
     }
 
-    public BigDecimal getPrice(Long storageId, Long nomenclatureId, Date date){
+    public BigDecimal getPrice(Long storageId, Long nomenclatureId, Date date, BigDecimal total){
         if (storageId == null || nomenclatureId == null || date == null){
             return null;
         }
 
         BigDecimal basePrice = getBasePrice(storageId, nomenclatureId, date);
 
-        return calculatePrice(basePrice, storageId, nomenclatureId, date);
+        return calculatePrice(basePrice, storageId, nomenclatureId, date, total);
     }
 
-    public BigDecimal calculatePrice(BigDecimal basePrice, Long storageId, Long nomenclatureId, Date date){
+    public BigDecimal calculatePrice(BigDecimal basePrice, Long storageId, Long nomenclatureId, Date date, BigDecimal total){
         List<SaleDecision> saleDecisions = saleDecisionService.getSaleDecisions(storageService.getCountryId(storageId),
                 nomenclatureId, date);
 
@@ -74,7 +74,7 @@ public class PriceService implements Serializable {
             saleDecisionService.loadRules(sd);
 
             sd.getRules().forEach(r -> {
-                if (saleDecisionService.check(r, date)){
+                if (saleDecisionService.check(r, date, total)){
                     for (RuleAction a : r.getActions()){
                         switch (RuleActionType.getValue(a.getType())){
                             case DISCOUNT:
