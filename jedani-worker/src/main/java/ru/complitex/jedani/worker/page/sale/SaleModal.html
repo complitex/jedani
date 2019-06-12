@@ -6,7 +6,9 @@
             <div wicket:id="feedback"></div>
 
             <div class="row">
-                <div wicket:id="sellerWorker" class="col-md-12"></div>
+                <div wicket:id="sellerWorker" class="col-md-8"></div>
+                <div wicket:id="saleDate" class="col-md-4"></div>
+
             </div>
 
             <div class="row">
@@ -35,10 +37,9 @@
                     <tr>
                         <th>№</th>
                         <th>Товар</th>
-                        <th>Базовая цена</th>
-                        <th>Кол-во</th>
-                        <th>Цена</th>
-                        <th>Сумма</th>
+                        <th class="si-qty">Количество</th>
+                        <th class="si-price">Базовая цена</th>
+                        <th class="si-price">Цена</th>
                         <th></th>
                     </tr>
                     </thead>
@@ -46,9 +47,9 @@
                     <tr wicket:id="mycooks">
                         <td class="sale-id-column"><span wicket:id="index"></span></td>
                         <td><span wicket:id="nomenclature"></span></td>
-                        <td><input class="form-control" wicket:id="quantity" size="2"/></td>
-                        <td><input class="form-control" wicket:id="price" size="6"/></td>
-                        <td><input class="form-control" wicket:id="total" size="6"/></td>
+                        <td><input class="form-control si-qty" wicket:id="quantity"/></td>
+                        <td><input class="form-control si-price" wicket:id="basePrice"/></td>
+                        <td><input class="form-control si-price" wicket:id="price"/></td>
                         <td class="sale-id-column"><a wicket:id="remove"></a></td>
                     </tr>
                     </tbody>
@@ -68,8 +69,9 @@
                     <tr>
                         <th>№</th>
                         <th>Товар</th>
-                        <th>Кол-во</th>
-                        <th>Сумма</th>
+                        <th class="si-qty">Количество</th>
+                        <th class="si-price">Базовая цена</th>
+                        <th class="si-price">Цена</th>
                         <th></th>
                     </tr>
                     </thead>
@@ -77,8 +79,9 @@
                     <tr wicket:id="baseAssortments">
                         <td class="sale-id-column"><span wicket:id="index"></span></td>
                         <td><span wicket:id="nomenclature"></span></td>
-                        <td><input class="form-control" wicket:id="quantity" size="3"></td>
-                        <td><input class="form-control" wicket:id="total" size="6"></td>
+                        <td><input class="form-control si-qty" wicket:id="quantity"></td>
+                        <td><input class="form-control si-price" wicket:id="basePrice"></td>
+                        <td><input class="form-control si-price" wicket:id="price"></td>
                         <td class="sale-id-column"><a wicket:id="remove"></a></td>
                     </tr>
                     </tbody>
@@ -93,7 +96,8 @@
             </div>
 
             <div class="row">
-                <div wicket:id="sum" class="col-md-4"></div>
+                <div wicket:id="total" class="col-md-4"></div>
+                <div wicket:id="totalLocal" class="col-md-4"></div>
                 <div wicket:id="payment" class="col-md-4"></div>
             </div>
         </div>

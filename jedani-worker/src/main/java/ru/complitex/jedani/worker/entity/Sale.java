@@ -23,6 +23,7 @@ public class Sale extends Domain<Sale> {
     public static final long STORAGE = 9;
     public static final long CONTRACT = 10;
     public static final long TOTAL = 11;
+    public static final long TOTAL_LOCAL = 12;
     public static final long INSTALLMENT_MONTHS = 13;
     public static final long INITIAL_PAYMENT = 14;
 
@@ -96,12 +97,12 @@ public class Sale extends Domain<Sale> {
         setNumber(STORAGE, storageId);
     }
 
-    public void setTotal(BigDecimal total){
-        setDecimal(TOTAL, total);
+    public void setTotalLocal(BigDecimal total){
+        setDecimal(TOTAL_LOCAL, total);
     }
 
-    public BigDecimal getTotal(){
-        return getDecimal(TOTAL);
+    public BigDecimal getTotalLocal(){
+        return getDecimal(TOTAL_LOCAL);
     }
 
     public BigDecimal getInitialPayment(){
@@ -110,5 +111,13 @@ public class Sale extends Domain<Sale> {
 
     public void setInitialPayment(BigDecimal initialPayment){
         setDecimal(INITIAL_PAYMENT, initialPayment);
+    }
+
+    public void setTotal(BigDecimal total){
+        setDecimal(TOTAL, total);
+    }
+
+    public BigDecimal getTotal(){
+        return getDecimal(TOTAL);
     }
 }

@@ -271,3 +271,10 @@ td.domain-id-column{
     text-align: center;
 }
 
+.si-qty{
+    width: 101px;
+}
+
+.si-price{
+    width: 101px;
+}

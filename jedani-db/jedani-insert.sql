@@ -21,6 +21,55 @@ INSERT INTO `user`(login, password) value ('admin', sha2('admin', 256));
 INSERT INTO `user_group` (login, name) value ('admin', 'AUTHORIZED');
 INSERT INTO `user_group` (login, name) value ('admin', 'ADMINISTRATORS');
 
+DELIMITER //
+
+-- Add create entity procedures
+
+CREATE PROCEDURE createEntity(IN id BIGINT, IN entityName VARCHAR(64) CHARSET utf8,
+                              IN entityDescriptionRU VARCHAR(128) CHARSET utf8, IN entityDescriptionUA VARCHAR(128) CHARSET utf8)
+BEGIN
+    SET @insertEntity = CONCAT('INSERT INTO `entity` (`id`, `name`) VALUE (',id, ', ''', entityName, ''');');
+
+    PREPARE QUERY FROM @insertEntity; EXECUTE QUERY; DEALLOCATE PREPARE QUERY;
+
+    SET @insertEntityValue = CONCAT('INSERT INTO `entity_value`(`entity_id`, `locale_id`, `text`) VALUES (', id,
+                                    ', 1, ''', entityDescriptionRU, '''), (', id, ', 2, ''', entityDescriptionUA, ''');');
+
+    PREPARE QUERY FROM @insertEntityValue; EXECUTE QUERY; DEALLOCATE PREPARE QUERY;
+END //
+
+CREATE PROCEDURE createEntityAttribute(IN entityId BIGINT, IN entityAttributeId BIGINT, IN valueTypeId BIGINT,
+                                       IN entityDescriptionRU VARCHAR(128) CHARSET utf8, IN entityDescriptionUA VARCHAR(128) CHARSET utf8)
+BEGIN
+    SET @insertAttribute = CONCAT('INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (',
+                                  entityId, ', ', entityAttributeId, ', ', valueTypeId, ');');
+
+    PREPARE QUERY FROM @insertAttribute; EXECUTE QUERY; DEALLOCATE PREPARE QUERY;
+
+    SET @insertEntityValue = CONCAT('INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (',
+                                    entityId, ', ', entityAttributeId, ', 1, ''', entityDescriptionRU, '''), (',
+                                    entityId, ', ', entityAttributeId, ', 2, ''', entityDescriptionUA, ''');');
+
+    PREPARE QUERY FROM @insertEntityValue; EXECUTE QUERY; DEALLOCATE PREPARE QUERY;
+END //
+
+CREATE PROCEDURE createEntityAttributeWithReference(IN entityId BIGINT, IN entityAttributeId BIGINT, IN valueTypeId BIGINT, IN referenceId BIGINT,
+                                                    IN entityDescriptionRU VARCHAR(128) CHARSET utf8, IN entityDescriptionUA VARCHAR(128) CHARSET utf8)
+BEGIN
+    SET @insertAttribute = CONCAT('INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`, `reference_id`) VALUES (',
+                                  entityId, ', ', entityAttributeId, ', ', valueTypeId,  ', ', referenceId, ');');
+
+    PREPARE QUERY FROM @insertAttribute; EXECUTE QUERY; DEALLOCATE PREPARE QUERY;
+
+    SET @insertEntityValue = CONCAT('INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (',
+                                    entityId, ', ', entityAttributeId, ', 1, ''', entityDescriptionRU, '''), (',
+                                    entityId, ', ', entityAttributeId, ', 2, ''', entityDescriptionUA, ''');');
+
+    PREPARE QUERY FROM @insertEntityValue; EXECUTE QUERY; DEALLOCATE PREPARE QUERY;
+END //
+
+DELIMITER ;
+
 /* Setting */
 
 INSERT INTO `entity` (`id`, `name`) VALUE (0, 'setting');
@@ -419,8 +468,8 @@ INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `tex
 INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (28, 11, 4);
 INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (28, 11, 1, 'Сумма договора'), (28, 11, 2, 'Сума договору');
 
-INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (28, 12, 5);
-INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (28, 12, 1, 'Процент оплаты'), (28, 12, 2, 'Відсоток оплати');
+INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (28, 12, 4);
+INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (28, 12, 1, 'Сумма договора в локальной валюте'), (28, 12, 2, 'Сума договору в локальній валюті');
 
 INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (28, 13, 5);
 INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (28, 13, 1, 'Рассрочка'), (28, 13, 2, 'Розстрочка');
@@ -430,18 +479,15 @@ INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `tex
 
 /* Sale Item*/
 
-INSERT INTO `entity` (`id`, `name`) VALUE (29, 'sale_item');
-INSERT INTO `entity_value`(`entity_id`, `locale_id`, `text`) VALUES (29, 1, 'Позиция продажи'), (29, 2, 'Позиція продажу');
-
-INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`, `reference_id`) VALUES (29, 1, 11, 23);
-INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (29, 1, 1, 'Номенклатура'), (29, 1, 2, 'Номенклатура');
-
-INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (29, 2, 5);
-INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (29, 2, 1, 'Количество'), (29, 2, 2, 'Кількість');
-
-INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (29, 3, 4);
-INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (29, 3, 1, 'Сумма'), (29, 3, 2, 'Сума');
-
+CALL createEntity(29, 'sale_item', 'Позиция продажи', 'Позиція продажу');
+CALL createEntityAttributeWithReference(29, 1, 11, 23, 'Номенклатура', 'Номенклатура');
+CALL createEntityAttribute(29, 2, 5, 'Количество', 'Кількість');
+CALL createEntityAttribute(29, 3, 4, 'Цена', 'Ціна');
+CALL createEntityAttribute(29, 4, 4, 'Сумма', 'Сума');
+CALL createEntityAttribute(29, 5, 4, 'Стоимость балла', 'Вартість бала');
+CALL createEntityAttribute(29, 6, 4, 'Сумма (в локальной валюте)', 'Сума (в локальній валюті)');
+CALL createEntityAttributeWithReference(29, 7, 11, 32, 'Базовая цена', 'Базова ціна');
+CALL createEntityAttributeWithReference(29, 8, 11, 36, 'Условия продаж', 'Умови продажу');
 
 /* Currency */
 
@@ -571,55 +617,6 @@ INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `tex
 
 INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`, `reference_id`) VALUES (32, 4, 11, 1);
 INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (32, 4, 1, 'Страна'), (32, 4, 2, 'Країна');
-
-DELIMITER //
-
--- Add create entity procedures
-
-CREATE PROCEDURE createEntity(IN id BIGINT, IN entityName VARCHAR(64) CHARSET utf8,
-                              IN entityDescriptionRU VARCHAR(128) CHARSET utf8, IN entityDescriptionUA VARCHAR(128) CHARSET utf8)
-BEGIN
-    SET @insertEntity = CONCAT('INSERT INTO `entity` (`id`, `name`) VALUE (',id, ', ''', entityName, ''');');
-
-    PREPARE QUERY FROM @insertEntity; EXECUTE QUERY; DEALLOCATE PREPARE QUERY;
-
-    SET @insertEntityValue = CONCAT('INSERT INTO `entity_value`(`entity_id`, `locale_id`, `text`) VALUES (', id,
-                                    ', 1, ''', entityDescriptionRU, '''), (', id, ', 2, ''', entityDescriptionUA, ''');');
-
-    PREPARE QUERY FROM @insertEntityValue; EXECUTE QUERY; DEALLOCATE PREPARE QUERY;
-END //
-
-CREATE PROCEDURE createEntityAttribute(IN entityId BIGINT, IN entityAttributeId BIGINT, IN valueTypeId BIGINT,
-                                       IN entityDescriptionRU VARCHAR(128) CHARSET utf8, IN entityDescriptionUA VARCHAR(128) CHARSET utf8)
-BEGIN
-    SET @insertAttribute = CONCAT('INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (',
-                                  entityId, ', ', entityAttributeId, ', ', valueTypeId, ');');
-
-    PREPARE QUERY FROM @insertAttribute; EXECUTE QUERY; DEALLOCATE PREPARE QUERY;
-
-    SET @insertEntityValue = CONCAT('INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (',
-                                    entityId, ', ', entityAttributeId, ', 1, ''', entityDescriptionRU, '''), (',
-                                    entityId, ', ', entityAttributeId, ', 2, ''', entityDescriptionUA, ''');');
-
-    PREPARE QUERY FROM @insertEntityValue; EXECUTE QUERY; DEALLOCATE PREPARE QUERY;
-END //
-
-CREATE PROCEDURE createEntityAttributeWithReference(IN entityId BIGINT, IN entityAttributeId BIGINT, IN valueTypeId BIGINT, IN referenceId BIGINT,
-                                                    IN entityDescriptionRU VARCHAR(128) CHARSET utf8, IN entityDescriptionUA VARCHAR(128) CHARSET utf8)
-BEGIN
-    SET @insertAttribute = CONCAT('INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`, `reference_id`) VALUES (',
-                                  entityId, ', ', entityAttributeId, ', ', valueTypeId,  ', ', referenceId, ');');
-
-    PREPARE QUERY FROM @insertAttribute; EXECUTE QUERY; DEALLOCATE PREPARE QUERY;
-
-    SET @insertEntityValue = CONCAT('INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (',
-                                    entityId, ', ', entityAttributeId, ', 1, ''', entityDescriptionRU, '''), (',
-                                    entityId, ', ', entityAttributeId, ', 2, ''', entityDescriptionUA, ''');');
-
-    PREPARE QUERY FROM @insertEntityValue; EXECUTE QUERY; DEALLOCATE PREPARE QUERY;
-END //
-
-DELIMITER ;
 
 CALL createEntity(33, 'rule', 'Правило', 'Правило');
 

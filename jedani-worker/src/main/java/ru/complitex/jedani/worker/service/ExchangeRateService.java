@@ -118,11 +118,13 @@ public class ExchangeRateService implements Serializable {
         return attributeMapper.getHistoryAttributesCount(filterWrapper);
     }
 
-    public BigDecimal getExchangeRateValue(Long countryId){
+    public BigDecimal getExchangeRateValue(Long countryId, Date date){
         Long exchangeRateId = domainService.getNumber(Country.ENTITY_NAME, countryId, Country.EXCHANGE_RATE_EUR);
 
         List<Attribute> values = attributeMapper.getHistoryAttributes(FilterWrapper.of(
                 new Attribute(ExchangeRate.ENTITY_NAME, ExchangeRate.VALUE).setObjectId(exchangeRateId)));
+
+        //todo date
 
         if (!values.isEmpty()){
             String value = values.get(0).getText();

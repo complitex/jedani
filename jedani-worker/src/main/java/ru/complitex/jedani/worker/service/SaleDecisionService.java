@@ -10,12 +10,13 @@ import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.mapper.SaleDecisionMapper;
 
 import javax.inject.Inject;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-public class SaleDecisionService {
+public class SaleDecisionService implements Serializable {
     @Inject
     private SaleDecisionMapper saleDecisionMapper;
 

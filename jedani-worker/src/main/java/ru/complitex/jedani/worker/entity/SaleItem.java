@@ -13,7 +13,12 @@ public class SaleItem extends Domain<SaleItem> {
 
     public static final long NOMENCLATURE = 1;
     public static final long QUANTITY = 2;
-    public static final long TOTAL = 3;
+    public static final long PRICE = 3;
+    public static final long TOTAL = 4;
+    public static final long POINT_PRICE = 5;
+    public static final long TOTAL_LOCAL = 6;
+    public static final long BASE_PRICE = 7;
+    public static final long SALE_DECISION = 8;
 
     public static final String FILTER_DATE = "date";
     public static final String FILTER_BUYER = "buyer";
@@ -40,10 +45,28 @@ public class SaleItem extends Domain<SaleItem> {
     }
 
     public BigDecimal getPrice(){
-        return getDecimal(TOTAL);
+        return getDecimal(PRICE);
     }
 
     public void setPrice(BigDecimal price){
-        setDecimal(TOTAL, price);
+        setDecimal(PRICE, price);
+    }
+
+    public BigDecimal getBasePrice(){
+        return getDecimal(BASE_PRICE);
+    }
+
+    public void setBasePrice(BigDecimal basePrice){
+        setDecimal(BASE_PRICE, basePrice);
+    }
+
+
+    public BigDecimal getPointPrice(){
+        return getDecimal(POINT_PRICE);
+    }
+
+    public void setPointPrice(BigDecimal pointPrice){
+        setDecimal(POINT_PRICE, pointPrice);
     }
 }
+

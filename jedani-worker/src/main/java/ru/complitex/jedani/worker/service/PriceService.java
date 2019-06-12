@@ -108,7 +108,7 @@ public class PriceService implements Serializable {
             return null;
         }
 
-        BigDecimal basePointPrice = exchangeRateService.getExchangeRateValue(storageService.getCountryId(storageId));
+        BigDecimal basePointPrice = exchangeRateService.getExchangeRateValue(storageService.getCountryId(storageId), date);
 
         return calculatePointPrice(basePointPrice, storageId, nomenclatureId, date);
     }
