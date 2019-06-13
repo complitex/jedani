@@ -120,16 +120,14 @@ public class SaleModal extends Modal<Sale> {
         container.add(feedback);
 
         container.add(new FormGroupPanel("sellerWorker", new WorkerAutoComplete(FormGroupPanel.COMPONENT_ID,
-                new NumberAttributeModel(saleModel, Sale.SELLER_WORKER)).setRequired(true)){
-            @Override
-            public boolean isVisible() {
-                return getBasePage().isAdmin() || getBasePage().isStructureAdmin();
-            }
-        });
+                new NumberAttributeModel(saleModel, Sale.SELLER_WORKER))
+                .setRequired(true)
+                .setVisible(getBasePage().isAdmin() || getBasePage().isStructureAdmin())));
 
         container.add(new FormGroupDateTextField("saleDate", DateAttributeModel.of(saleModel, Sale.DATE))
                 .onUpdate(this::updatePrices)
-                .setRequired(true));
+                .setRequired(true)
+                .setVisible(getBasePage().isAdmin() || getBasePage().isStructureAdmin()));
 
         container.add(new FormGroupPanel("sasRequest", new BootstrapCheckbox(FormGroupPanel.COMPONENT_ID,
                 BooleanAttributeModel.of(saleModel, Sale.SAS_REQUEST), new ResourceModel("sasRequestLabel"))));
