@@ -486,7 +486,7 @@ CALL createEntityAttribute(29, 3, 4, 'Цена', 'Ціна');
 CALL createEntityAttribute(29, 4, 4, 'Сумма', 'Сума');
 CALL createEntityAttribute(29, 5, 4, 'Стоимость балла', 'Вартість бала');
 CALL createEntityAttribute(29, 6, 4, 'Сумма (в локальной валюте)', 'Сума (в локальній валюті)');
-CALL createEntityAttributeWithReference(29, 7, 11, 32, 'Базовая цена', 'Базова ціна');
+CALL createEntityAttribute(29, 7, 4, 'Базовая цена', 'Базова ціна');
 CALL createEntityAttributeWithReference(29, 8, 11, 36, 'Условия продаж', 'Умови продажу');
 
 /* Currency */

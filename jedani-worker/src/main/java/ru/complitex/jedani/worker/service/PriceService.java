@@ -54,6 +54,19 @@ public class PriceService implements Serializable {
         return null;
     }
 
+    public SaleDecision getSaleDecision(BigDecimal basePrice, Long storageId, Long nomenclatureId, Date date, BigDecimal total){
+        //todo add get sale decisions
+
+        return null;
+    }
+
+    public BigDecimal calculatePrice(SaleDecision saleDecision, BigDecimal basePrice, Long storageId,
+                                     Long nomenclatureId, Date date, BigDecimal total){
+        //todo add calculate price
+
+        return null;
+    }
+
     public BigDecimal getPrice(Long storageId, Long nomenclatureId, Date date, BigDecimal total){
         if (storageId == null || nomenclatureId == null || date == null){
             return null;

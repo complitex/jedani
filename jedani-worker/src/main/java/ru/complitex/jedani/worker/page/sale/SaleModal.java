@@ -120,14 +120,19 @@ public class SaleModal extends Modal<Sale> {
         container.add(feedback);
 
         container.add(new FormGroupPanel("sellerWorker", new WorkerAutoComplete(FormGroupPanel.COMPONENT_ID,
-                new NumberAttributeModel(saleModel, Sale.SELLER_WORKER))
-                .setRequired(true)
-                .setVisible(getBasePage().isAdmin() || getBasePage().isStructureAdmin())));
+                new NumberAttributeModel(saleModel, Sale.SELLER_WORKER)){
+            @Override
+            public boolean isVisible() {
+                return getBasePage().isAdmin() || getBasePage().isStructureAdmin();
+            }
+        }.setRequired(true)));
 
-        container.add(new FormGroupDateTextField("saleDate", DateAttributeModel.of(saleModel, Sale.DATE))
-                .onUpdate(this::updatePrices)
-                .setRequired(true)
-                .setVisible(getBasePage().isAdmin() || getBasePage().isStructureAdmin()));
+        container.add(new FormGroupDateTextField("saleDate", DateAttributeModel.of(saleModel, Sale.DATE)){
+            @Override
+            public boolean isVisible() {
+                return getBasePage().isAdmin() || getBasePage().isStructureAdmin();
+            }
+        }.setRequired(true).onUpdate(this::updatePrices));
 
         container.add(new FormGroupPanel("sasRequest", new BootstrapCheckbox(FormGroupPanel.COMPONENT_ID,
                 BooleanAttributeModel.of(saleModel, Sale.SAS_REQUEST), new ResourceModel("sasRequestLabel"))));
@@ -204,7 +209,7 @@ public class SaleModal extends Modal<Sale> {
         }).setRequired(true)));
 
         container.add(new DomainAutoCompleteFormGroup("promotion", Promotion.ENTITY_NAME, Promotion.NAME,
-                NumberAttributeModel.of(saleModel, Sale.PROMOTION)));
+                NumberAttributeModel.of(saleModel, Sale.PROMOTION))); //todo promotion storage filter
 
         FormGroupBorder months = new FormGroupBorder("months");
         container.add(months);
