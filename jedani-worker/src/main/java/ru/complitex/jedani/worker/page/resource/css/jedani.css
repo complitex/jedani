@@ -200,19 +200,6 @@ td.domain-id-column{
     padding: 3px 10px;
 }
 
-.sale-id-column{
-    width: 33px;
-    vertical-align: middle !important;
-}
-
-.sale-id-column .btn{
-    padding: 0;
-}
-
-.sale-table .bootstrap-select{
-    width: 100% !important;
-}
-
 .nav > li > a.selected{
     text-decoration: none;
     background-color: #eee;
@@ -269,6 +256,29 @@ td.domain-id-column{
     vertical-align: middle;
     width: 33px;
     text-align: center;
+}
+
+.sale-id{
+    width: 33px;
+    vertical-align: middle !important;
+}
+
+.sale-action {
+    padding-left: 0 !important;
+    width: 55px;
+    vertical-align: middle !important;
+}
+
+.sale-action div {
+    display: table-cell;
+}
+
+.sale-action a{
+    padding: 0 5px;
+}
+
+.sale-table .bootstrap-select{
+    width: 100% !important;
 }
 
 .si-qty{

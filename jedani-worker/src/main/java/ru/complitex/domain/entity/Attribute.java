@@ -12,6 +12,8 @@ import java.util.stream.Collectors;
  * 30.11.2017 15:29
  */
 public class Attribute implements Serializable{
+    public final static String FILTER_DATE = "date";
+
     private Long id;
     private Long domainId;
     private Long entityAttributeId;

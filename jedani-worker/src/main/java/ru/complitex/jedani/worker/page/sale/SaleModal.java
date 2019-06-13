@@ -84,15 +84,14 @@ public class SaleModal extends Modal<Sale> {
     private PriceService priceService;
 
     private IModel<Sale> saleModel;
-    private IModel<List<SaleItem>> mycookModel;
-    private IModel<List<SaleItem>> baseAssortmentModel;
+    private IModel<List<SaleItem>> saleItemsModel;
 
     private WebMarkupContainer container;
     private NotificationPanel feedback;
 
     private DomainAutoCompleteFormGroup lastName, firstName, middleName;
 
-    private FormGroupTextField total, totalLocal, payment;
+    private ListView<SaleItem> saleItems;
 
     private Long defaultStorageId;
 
@@ -105,8 +104,7 @@ public class SaleModal extends Modal<Sale> {
         size(Size.Large);
 
         saleModel = Model.of(new Sale());
-        mycookModel = Model.ofList(new ArrayList<>());
-        baseAssortmentModel = Model.ofList(new ArrayList<>());
+        saleItemsModel = Model.ofList(new ArrayList<>());
 
         header(new ResourceModel("header"));
 
@@ -128,6 +126,10 @@ public class SaleModal extends Modal<Sale> {
                 return getBasePage().isAdmin() || getBasePage().isStructureAdmin();
             }
         });
+
+        container.add(new FormGroupDateTextField("saleDate", DateAttributeModel.of(saleModel, Sale.DATE))
+                .onUpdate(this::updatePrices)
+                .setRequired(true));
 
         container.add(new FormGroupPanel("sasRequest", new BootstrapCheckbox(FormGroupPanel.COMPONENT_ID,
                 BooleanAttributeModel.of(saleModel, Sale.SAS_REQUEST), new ResourceModel("sasRequestLabel"))));
@@ -163,8 +165,10 @@ public class SaleModal extends Modal<Sale> {
                 .with(new BootstrapSelectConfig().withNoneSelectedText(""))
                 .setNullValid(false)
                 .add(OnChangeAjaxBehavior.onChange(target -> {
-                    //saleModel.getObject().setTotal(null); //todo add total local
-                    saleModel.getObject().setInitialPayment(null);
+                    saleItemsModel.getObject().clear();
+                    saleItemsModel.getObject().add(new SaleItem());
+
+                    updateTotal();
 
                     target.add(container);
                 }))));
@@ -179,9 +183,6 @@ public class SaleModal extends Modal<Sale> {
                     }
                 }));
 
-        container.add(new FormGroupDateTextField("saleDate", DateAttributeModel.of(saleModel, Sale.DATE))
-                .setRequired(true));
-
         WebMarkupContainer fioContainer = new WebMarkupContainer("fioContainer");
         fioContainer.setOutputMarkupId(true);
         container.add(fioContainer);
@@ -194,12 +195,15 @@ public class SaleModal extends Modal<Sale> {
                 new Model<>()));
 
         container.add(new FormGroupPanel("storage", new StorageAutoComplete(FormGroupPanel.COMPONENT_ID,
-                NumberAttributeModel.of(saleModel, Sale.STORAGE), t ->
-                container.visitChildren(NomenclatureAutoComplete.class, (c, v) -> {
-                    if (c.isVisibleInHierarchy()){
-                        ((NomenclatureAutoComplete)c).getOnChange().accept(t);
-                    }
-                })).setRequired(true)));
+                NumberAttributeModel.of(saleModel, Sale.STORAGE), t -> {
+            updatePrices(t);
+
+            container.visitChildren(NomenclatureAutoComplete.class, (c, v) -> {
+                if (c.isVisibleInHierarchy()){
+                    ((NomenclatureAutoComplete)c).getOnChange().accept(t);
+                }
+            });
+        }).setRequired(true)));
 
         container.add(new DomainAutoCompleteFormGroup("promotion", Promotion.ENTITY_NAME, Promotion.NAME,
                 NumberAttributeModel.of(saleModel, Sale.PROMOTION)));
@@ -210,18 +214,7 @@ public class SaleModal extends Modal<Sale> {
         months.add(new Spinner<>("input", NumberAttributeModel.of(saleModel, Sale.INSTALLMENT_MONTHS),
                 new SpinnerConfig().withVerticalbuttons(true).withMin(0).withMax(24)).setType(Long.class));
 
-        WebMarkupContainer mycookContainer = new WebMarkupContainer("mycookContainer"){
-            @Override
-            public boolean isVisible() {
-                return Objects.equals(saleModel.getObject().getOrCreateAttribute(Sale.TYPE).getNumber(),
-                        SaleType.MYCOOK);
-            }
-        };
-        mycookContainer.setOutputMarkupId(true);
-        mycookContainer.setOutputMarkupPlaceholderTag(true);
-        container.add(mycookContainer);
-
-        mycookContainer.add(new ListView<SaleItem>("mycooks", mycookModel) {
+        saleItems = new ListView<SaleItem>("saleItems", saleItemsModel) {
             @Override
             protected void populateItem(ListItem<SaleItem> item) {
                 item.setOutputMarkupId(true);
@@ -248,8 +241,7 @@ public class SaleModal extends Modal<Sale> {
                             protected void onUpdate(AjaxRequestTarget target) {
                                 super.onUpdate(target);
 
-                                updatePrice(model, target, price, basePrice);
-                                updateTotal(target);
+                                updatePrices(target);
                             }
                         });
                 item.add(quantity);
@@ -257,27 +249,42 @@ public class SaleModal extends Modal<Sale> {
                 item.add(new NomenclatureAutoComplete("nomenclature", NumberAttributeModel.of(model,
                         SaleItem.NOMENCLATURE), target -> {
                     updateQuantity(model, target, quantity);
-                    updatePrice(model, target, price, basePrice);
-                    updateTotal(target);
+                    updatePrices(target);
                 }){
                     @Override
                     protected Domain getFilterObject(String input) {
                         Domain domain = super.getFilterObject(input);
 
                         Attribute attribute = new Attribute(Nomenclature.TYPE);
-                        attribute.setNumber(NomenclatureType.MYCOOK);
+                        if (saleModel.getObject().getType().equals(SaleType.MYCOOK)) {
+                            attribute.setNumber(NomenclatureType.MYCOOK);
+                        }else{
+                            attribute.setNumber(NomenclatureType.BASE_ASSORTMENT);
+                        }
                         domain.put("attributes", Collections.singleton(attribute));
 
                         return domain;
                     }
                 }.setRequired(true));
 
+                item.add(new BootstrapAjaxLink<SaleItem>("update", Buttons.Type.Link) {
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        updatePrices(target);
+                    }
+
+                    @Override
+                    public boolean isVisible() {
+                        return container.isEnabled();
+                    }
+                }.setIconType(GlyphIconType.refresh));
+
                 item.add(new BootstrapAjaxLink<SaleItem>("remove", Buttons.Type.Link) {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
-                        mycookModel.getObject().remove(item.getIndex());
+                        saleItemsModel.getObject().remove(item.getIndex());
 
-                        target.add(mycookContainer);
+                        target.add(container);
                     }
 
                     @Override
@@ -285,105 +292,17 @@ public class SaleModal extends Modal<Sale> {
                         return container.isEnabled();
                     }
                 }.setIconType(GlyphIconType.remove));
-            }
-        }.setReuseItems(true));
-
-        mycookContainer.add(new AjaxLink<SaleItem>("add") {
-            @Override
-            public void onClick(AjaxRequestTarget target) {
-                mycookModel.getObject().add(new SaleItem());
-
-                target.add(mycookContainer);
-            }
-
-            @Override
-            public boolean isVisible() {
-                return container.isEnabled();
-            }
-        });
-
-        WebMarkupContainer baseAssortmentContainer = new WebMarkupContainer("baseAssortmentContainer"){
-            @Override
-            public boolean isVisible() {
-                return Objects.equals(saleModel.getObject().getOrCreateAttribute(Sale.TYPE).getNumber(),
-                        SaleType.BASE_ASSORTMENT);
             }
         };
-        baseAssortmentContainer.setOutputMarkupId(true);
-        baseAssortmentContainer.setOutputMarkupPlaceholderTag(true);
-        container.add(baseAssortmentContainer);
+        saleItems.setReuseItems(true);
+        container.add(saleItems);
 
-        baseAssortmentContainer.add(new ListView<SaleItem>("baseAssortments", baseAssortmentModel) {
-            @Override
-            protected void populateItem(ListItem<SaleItem> item) {
-                IModel<SaleItem> model = item.getModel();
-
-                item.add(new Label("index", item.getIndex() + 1));
-
-                TextField basePrice = new TextField<>("basePrice", DecimalAttributeModel.of(model, SaleItem.BASE_PRICE), BigDecimal.class);
-                basePrice.setOutputMarkupId(true);
-                basePrice.setEnabled(false);
-                item.add(basePrice);
-
-                TextField price = new TextField<>("price", DecimalAttributeModel.of(model, SaleItem.PRICE), BigDecimal.class);
-                price.setOutputMarkupId(true);
-                price.setEnabled(false);
-                item.add(price);
-
-                TextField quantity = new TextField<>("quantity", NumberAttributeModel.of(model, SaleItem.QUANTITY), Long.class);
-                quantity.setRequired(true).setOutputMarkupId(true).add(new AjaxFormInfoBehavior(){
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        super.onUpdate(target);
-
-                        updatePrice(model, target, basePrice, price);
-                        updateTotal(target);
-                    }
-                });
-                item.add(quantity);
-
-                item.add(new NomenclatureAutoComplete("nomenclature",
-                        NumberAttributeModel.of(model, SaleItem.NOMENCLATURE), target -> {
-                    updateQuantity(model, target, quantity);
-                    updatePrice(model, target, basePrice, price);
-                    updateTotal(target);
-                }){
-                    @Override
-                    protected Domain getFilterObject(String input) {
-                        Domain domain = super.getFilterObject(input);
-
-                        Attribute attribute = new Attribute(Nomenclature.TYPE);
-                        attribute.setNumber(NomenclatureType.MYCOOK);
-                        domain.put("notAttributes", Collections.singleton(attribute));
-
-                        return domain;
-                    }
-                }.setRequired(true));
-
-
-
-                item.add(new BootstrapAjaxLink<SaleItem>("remove", Buttons.Type.Link) {
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        baseAssortmentModel.getObject().remove(item.getIndex());
-
-                        target.add(baseAssortmentContainer);
-                    }
-
-                    @Override
-                    public boolean isVisible() {
-                        return container.isEnabled();
-                    }
-                }.setIconType(GlyphIconType.remove));
-            }
-        }.setReuseItems(true));
-
-        baseAssortmentContainer.add(new AjaxLink<SaleItem>("add") {
+        container.add(new AjaxLink<SaleItem>("add") {
             @Override
             public void onClick(AjaxRequestTarget target) {
-                baseAssortmentModel.getObject().add(new SaleItem());
+                saleItemsModel.getObject().add(new SaleItem());
 
-                target.add(baseAssortmentContainer);
+                target.add(container);
             }
 
             @Override
@@ -392,9 +311,11 @@ public class SaleModal extends Modal<Sale> {
             }
         });
 
-        container.add(total = new FormGroupTextField<>("total", new DecimalAttributeModel(saleModel, Sale.TOTAL), BigDecimal.class));
-        container.add(totalLocal = new FormGroupTextField<>("totalLocal", new DecimalAttributeModel(saleModel, Sale.TOTAL_LOCAL), BigDecimal.class));
-        container.add(payment = new FormGroupTextField<>("payment", DecimalAttributeModel.of(saleModel, Sale.INITIAL_PAYMENT), BigDecimal.class));
+        container.add(new FormGroupTextField<>("total", DecimalAttributeModel.of(saleModel, Sale.TOTAL), BigDecimal.class)
+                .setEnabled(false));
+        container.add(new FormGroupTextField<>("totalLocal", DecimalAttributeModel.of(saleModel, Sale.TOTAL_LOCAL), BigDecimal.class)
+                .setEnabled(false));
+        container.add(new FormGroupTextField<>("payment", DecimalAttributeModel.of(saleModel, Sale.INITIAL_PAYMENT), BigDecimal.class));
 
         addButton(saveButton = new IndicatingAjaxButton(Modal.BUTTON_MARKUP_ID, new ResourceModel("save")) {
             @Override
@@ -437,50 +358,71 @@ public class SaleModal extends Modal<Sale> {
         }
     }
 
-    private void updatePrice(IModel<SaleItem> model, AjaxRequestTarget target, TextField basePrice, TextField price){
+    private void updateBasePrices(){
         Sale sale = saleModel.getObject();
-        SaleItem saleItem = model.getObject();
 
-        saleItem.setPrice(priceService.getPrice(sale.getStorageId(), saleItem.getNomenclatureId(), sale.getDate(), sale.getTotal()));
-        saleItem.setBasePrice(priceService.getBasePrice(sale.getStorageId(), saleItem.getNomenclatureId(), sale.getDate()));
-        saleItem.setPointPrice(priceService.getPointPrice(sale.getStorageId(), saleItem.getNomenclatureId(), sale.getDate()));
-
-        target.add(basePrice, price);
+        saleItemsModel.getObject().forEach(si -> {
+            si.setBasePrice(priceService.getBasePrice(sale.getStorageId(), si.getNomenclatureId(), sale.getDate()));
+        });
     }
 
-    private void updateTotal(AjaxRequestTarget target){
+    private void updatePrices(){
+        BigDecimal basePricesTotal = saleItemsModel.getObject().stream()
+                .map(si -> si.getQuantity() != null && si.getBasePrice() != null
+                        ? si.getBasePrice().multiply(new BigDecimal(si.getQuantity()))
+                        : BigDecimal.ZERO)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        Sale sale = saleModel.getObject();
+
+        saleItemsModel.getObject().forEach(si -> {
+            si.setPrice(priceService.getPrice(sale.getStorageId(), si.getNomenclatureId(), sale.getDate(), basePricesTotal));
+            si.setPointPrice(priceService.getPointPrice(sale.getStorageId(), si.getNomenclatureId(), sale.getDate()));
+        });
+    }
+
+    private void updateTotal(){
+        Sale sale = saleModel.getObject();
+        List<SaleItem> saleItems = saleItemsModel.getObject();
+
+        sale.setTotal(BigDecimal.ZERO);
+        sale.setTotalLocal(BigDecimal.ZERO);
+        sale.setInitialPayment(BigDecimal.ZERO);
+
+        if (saleItems.stream().noneMatch(si -> si.getQuantity() == null || si.getPrice() == null)) {
+            sale.setTotal(saleItems.stream().map(si -> si.getPrice().multiply(new BigDecimal(si.getQuantity())))
+                    .reduce(BigDecimal.ZERO, BigDecimal::add));
+        }
+
+        if (saleItems.stream().noneMatch(si -> si.getPrice() == null || si.getQuantity() == null || si.getPointPrice() == null)){
+            sale.setTotalLocal(saleItems.stream().map(si -> si.getPrice().multiply(new BigDecimal(si.getQuantity()))
+                    .multiply(si.getPointPrice())
+                    .setScale(2, RoundingMode.HALF_EVEN))
+                    .reduce(BigDecimal.ZERO, BigDecimal::add));
+        }
+
+        if (sale.getTotal() != null) {
+            sale.setInitialPayment(sale.getTotal().divide(BigDecimal.TEN, 2, BigDecimal.ROUND_HALF_EVEN));
+        }
+    }
+
+    private void updatePrices(AjaxRequestTarget target){
         try {
-            Sale sale = saleModel.getObject();
+            updateBasePrices();
+            updatePrices();
+            updateTotal();
 
-            List<SaleItem> saleItems = saleModel.getObject().getType() == SaleType.MYCOOK
-                    ? mycookModel.getObject()
-                    : baseAssortmentModel.getObject();
+            saleItems.stream().forEach(c -> {
+                target.add(c.get("price"), c.get("basePrice"));
+            });
 
-            if (saleItems.stream().noneMatch(si -> si.getQuantity() == null || si.getPrice() == null)) {
-                sale.setTotal(saleItems.stream().map(si -> si.getPrice().multiply(new BigDecimal(si.getQuantity())))
-                        .reduce(BigDecimal.ZERO, BigDecimal::add));
-            }else{
-                sale.setTotal(BigDecimal.ZERO);
-            }
+            container.get("total").modelChanged();
+            container.get("totalLocal").modelChanged();
+            container.get("payment").modelChanged();
 
-            if (saleItems.stream().noneMatch(si -> si.getPrice() == null || si.getQuantity() == null || si.getPointPrice() == null)){
-                sale.setTotalLocal(saleItems.stream().map(si -> si.getPrice().multiply(new BigDecimal(si.getQuantity()))
-                        .multiply(si.getPointPrice())
-                        .setScale(2, RoundingMode.HALF_EVEN))
-                        .reduce(BigDecimal.ZERO, BigDecimal::add));
-            }else{
-                sale.setTotalLocal(BigDecimal.ZERO);
-            }
-
-            if (sale.getTotal() != null) {
-                sale.setInitialPayment(sale.getTotal().divide(BigDecimal.TEN, 2, BigDecimal.ROUND_HALF_EVEN));
-            }else{
-                sale.setInitialPayment(BigDecimal.ZERO);
-            }
-
-            target.add(total, totalLocal, payment);
+            target.add(container.get("total"), container.get("totalLocal"), container.get("payment"));
         } catch (Exception e) {
-            log.error("update total error", e);
+            log.error("error update prices", e);
         }
     }
 
@@ -526,11 +468,8 @@ public class SaleModal extends Modal<Sale> {
         firstName.setObjectId(null);
         middleName.setObjectId(null);
 
-        mycookModel.setObject(new ArrayList<>());
-        baseAssortmentModel.setObject(new ArrayList<>());
-
-        mycookModel.getObject().add(new SaleItem());
-        baseAssortmentModel.getObject().add(new SaleItem());
+        saleItemsModel.setObject(new ArrayList<>());
+        saleItemsModel.getObject().add(new SaleItem());
 
         container.setEnabled(true);
 
@@ -549,11 +488,7 @@ public class SaleModal extends Modal<Sale> {
         List<SaleItem> saleItems = domainService.getDomains(SaleItem.class, FilterWrapper.of((SaleItem) new SaleItem()
                 .setParentId(saleItem.getParentId())));
 
-        if (sale.getType().equals(SaleType.MYCOOK)){
-            mycookModel.setObject(saleItems);
-        }else if (sale.getType().equals(SaleType.BASE_ASSORTMENT)){
-            baseAssortmentModel.setObject(saleItems);
-        }
+        saleItemsModel.setObject(saleItems);
 
         container.setEnabled(false);
 
@@ -567,15 +502,7 @@ public class SaleModal extends Modal<Sale> {
         sale.setBuyerFirstName(nameService.getOrCreateFirstName(firstName.getInput(), firstName.getObjectId()));
         sale.setBuyerMiddleName(nameService.getOrCreateMiddleName(middleName.getInput(), middleName.getObjectId()));
 
-        Long type = sale.getType();
-
-        List<SaleItem> saleItems = null;
-
-        if (Objects.equals(type, SaleType.MYCOOK)){
-            saleItems = mycookModel.getObject();
-        }else if (Objects.equals(type, SaleType.BASE_ASSORTMENT)){
-            saleItems = baseAssortmentModel.getObject();
-        }
+        List<SaleItem> saleItems = saleItemsModel.getObject();
 
         if (saleItems == null || saleItems.isEmpty()){
             return;

@@ -31,69 +31,38 @@
                 </div>
             </div>
 
-            <div wicket:id="mycookContainer">
-                <table class="table sale-table">
-                    <thead>
-                    <tr>
-                        <th>№</th>
-                        <th>Товар</th>
-                        <th class="si-qty">Количество</th>
-                        <th class="si-price">Базовая цена</th>
-                        <th class="si-price">Цена</th>
-                        <th></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr wicket:id="mycooks">
-                        <td class="sale-id-column"><span wicket:id="index"></span></td>
-                        <td><span wicket:id="nomenclature"></span></td>
-                        <td><input class="form-control si-qty" wicket:id="quantity"/></td>
-                        <td><input class="form-control si-price" wicket:id="basePrice"/></td>
-                        <td><input class="form-control si-price" wicket:id="price"/></td>
-                        <td class="sale-id-column"><a wicket:id="remove"></a></td>
-                    </tr>
-                    </tbody>
-                    <tfoot>
-                    <tr>
-                        <td colspan="7">
-                            <div class="text-center"><a wicket:id="add">Добавить</a></div>
-                        </td>
-                    </tr>
-                    </tfoot>
-                </table>
-            </div>
-
-            <div wicket:id="baseAssortmentContainer">
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th>№</th>
-                        <th>Товар</th>
-                        <th class="si-qty">Количество</th>
-                        <th class="si-price">Базовая цена</th>
-                        <th class="si-price">Цена</th>
-                        <th></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr wicket:id="baseAssortments">
-                        <td class="sale-id-column"><span wicket:id="index"></span></td>
-                        <td><span wicket:id="nomenclature"></span></td>
-                        <td><input class="form-control si-qty" wicket:id="quantity"></td>
-                        <td><input class="form-control si-price" wicket:id="basePrice"></td>
-                        <td><input class="form-control si-price" wicket:id="price"></td>
-                        <td class="sale-id-column"><a wicket:id="remove"></a></td>
-                    </tr>
-                    </tbody>
-                    <tfoot>
-                    <tr>
-                        <td colspan="5">
-                            <div class="text-center"><a wicket:id="add">Добавить</a></div>
-                        </td>
-                    </tr>
-                    </tfoot>
-                </table>
-            </div>
+            <table class="table sale-table">
+                <thead>
+                <tr>
+                    <th>№</th>
+                    <th>Товар</th>
+                    <th class="si-qty">Количество</th>
+                    <th class="si-price">Базовая цена</th>
+                    <th class="si-price">Цена</th>
+                    <th class="sale-action"></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr wicket:id="saleItems">
+                    <td class="sale-id"><span wicket:id="index"></span></td>
+                    <td><span wicket:id="nomenclature"></span></td>
+                    <td><input class="form-control si-qty" wicket:id="quantity"/></td>
+                    <td><input class="form-control si-price" wicket:id="basePrice"/></td>
+                    <td><input class="form-control si-price" wicket:id="price"/></td>
+                    <td class="sale-action">
+                        <div><a wicket:id="update" title="Обновить"></a></div>
+                        <div><a wicket:id="remove" title="Удалить"></a></div>
+                    </td>
+                </tr>
+                </tbody>
+                <tfoot>
+                <tr>
+                    <td colspan="6">
+                        <div class="text-center"><a wicket:id="add">Добавить</a></div>
+                    </td>
+                </tr>
+                </tfoot>
+            </table>
 
             <div class="row">
                 <div wicket:id="total" class="col-md-4"></div>

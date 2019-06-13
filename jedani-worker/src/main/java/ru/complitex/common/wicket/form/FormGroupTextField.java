@@ -87,4 +87,9 @@ public class FormGroupTextField<T> extends Panel{
 
         return this;
     }
+
+    @Override
+    protected void onModelChanged() {
+        textField.modelChanged();
+    }
 }

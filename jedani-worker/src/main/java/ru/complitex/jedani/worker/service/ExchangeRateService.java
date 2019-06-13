@@ -122,9 +122,9 @@ public class ExchangeRateService implements Serializable {
         Long exchangeRateId = domainService.getNumber(Country.ENTITY_NAME, countryId, Country.EXCHANGE_RATE_EUR);
 
         List<Attribute> values = attributeMapper.getHistoryAttributes(FilterWrapper.of(
-                new Attribute(ExchangeRate.ENTITY_NAME, ExchangeRate.VALUE).setObjectId(exchangeRateId)));
-
-        //todo date
+                new Attribute(ExchangeRate.ENTITY_NAME, ExchangeRate.VALUE)
+                        .setObjectId(exchangeRateId))
+                .put(Attribute.FILTER_DATE, date).sort("start_date", false));
 
         if (!values.isEmpty()){
             String value = values.get(0).getText();
