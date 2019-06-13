@@ -94,8 +94,9 @@ public class PriceService implements Serializable {
                                 Long discount = a.getNumber(RuleAction.ACTION);
 
                                 if (discount != null && discount > 0 && discount < 100){
-                                    prices.add(basePrice.multiply(new BigDecimal(discount/100).setScale(2,
-                                            RoundingMode.HALF_EVEN)));
+                                    prices.add(basePrice
+                                            .multiply(new BigDecimal(100 - discount)
+                                            .divide(new BigDecimal(100), 2, RoundingMode.HALF_EVEN)));
                                 }
 
                                 break;
