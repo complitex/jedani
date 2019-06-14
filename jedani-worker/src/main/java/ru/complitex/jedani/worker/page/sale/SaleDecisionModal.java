@@ -1,5 +1,6 @@
 package ru.complitex.jedani.worker.page.sale;
 
+import de.agilecoders.wicket.core.markup.html.bootstrap.behavior.CssClassNameAppender;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxButton;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxLink;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
@@ -34,6 +35,7 @@ import ru.complitex.domain.model.DateAttributeModel;
 import ru.complitex.domain.model.NumberAttributeModel;
 import ru.complitex.domain.model.TextAttributeModel;
 import ru.complitex.jedani.worker.component.NomenclatureAutoCompleteList;
+import ru.complitex.jedani.worker.component.TypeSelect;
 import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.service.SaleDecisionService;
 
@@ -84,8 +86,23 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
                 .setRequired(true)
                 .onUpdate(t -> {}));
 
+        container.add(new FormGroupSelectPanel("nomenclatureType", new TypeSelect(FormGroupSelectPanel.COMPONENT_ID,
+                NumberAttributeModel.of(getModel(), SaleDecision.NOMENCLATURE_TYPE),
+                NomenclatureType.MYCOOK, NomenclatureType.BASE_ASSORTMENT)
+                .add(new CssClassNameAppender("form-control"))
+                .add(OnChangeAjaxBehavior.onChange(t -> {})))) ;
+
         container.add(new FormGroupPanel("nomenclatures", new NomenclatureAutoCompleteList(FormGroupPanel.COMPONENT_ID,
-                Nomenclature.ENTITY_NAME, new AttributeModel(getModel(), SaleDecision.NOMENCLATURES))));
+                Nomenclature.ENTITY_NAME, new AttributeModel(getModel(), SaleDecision.NOMENCLATURES)){
+            @Override
+            protected Nomenclature getFilterObject(String input) {
+                Nomenclature nomenclature = super.getFilterObject(input);
+
+                nomenclature.setType(getModelObject().getNomenclatureType());
+
+                return nomenclature;
+            }
+        }));
 
         ListView<RuleCondition> conditions = new ListView<RuleCondition>("conditions",
                 new PropertyModel<>(getModel(), "rules.0.conditions")) {

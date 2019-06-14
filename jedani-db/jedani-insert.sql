@@ -640,6 +640,7 @@ CALL createEntityAttribute(36, 2, 6, 'Дата начала', 'Дата поча
 CALL createEntityAttribute(36, 3, 6, 'Дата окончания', 'Дата закінчення');
 CALL createEntityAttributeWithReference(36, 4, 11, 1, 'Страна', 'Країна');
 CALL createEntityAttributeWithReference(36, 5, 10, 23, 'Товары', 'Товари');
+CALL createEntityAttribute(36, 6, 5, 'Тип', 'Тип');
 
 CALL createEntity(37, 'card', 'Карта', 'Карта');
 CALL createEntityAttribute(37, 1, 2, 'Номер карты', 'Номер картки');
@@ -650,4 +651,4 @@ CALL createEntityAttribute(37, 4, 5, 'Индекс', 'Індекс');
 
 -- Update
 
-INSERT INTO `update` (`version`) VALUE ('20190605_1.0.19');
+INSERT INTO `update` (`version`) VALUE ('20190614_1.0.21');

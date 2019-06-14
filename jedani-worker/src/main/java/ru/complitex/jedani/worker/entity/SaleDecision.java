@@ -13,6 +13,7 @@ public class SaleDecision extends Domain<SaleDecision> {
     public final static long DATE_END = 3;
     public final static long COUNTRY = 4;
     public final static long NOMENCLATURES = 5;
+    public final static long NOMENCLATURE_TYPE = 6;
 
     public static final String FILTER_DATE = "date";
     public static final String FILTER_NOMENCLATURE = "nomenclature";
@@ -38,6 +39,10 @@ public class SaleDecision extends Domain<SaleDecision> {
 
     public List<Long> getNomenclatureIds(){
         return getNumberValues(NOMENCLATURES);
+    }
+
+    public Long getNomenclatureType(){
+        return getNumber(NOMENCLATURE_TYPE);
     }
 
     public List<Rule> getRules() {

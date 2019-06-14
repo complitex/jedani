@@ -18,7 +18,7 @@ public class NomenclatureAutoCompleteList extends AbstractDomainAutoCompleteList
     }
 
     @Override
-    protected Domain getFilterObject(String input) {
+    protected Nomenclature getFilterObject(String input) {
         Nomenclature nomenclature = new Nomenclature();
 
         nomenclature.getOrCreateAttribute(Nomenclature.CODE).setText(input);

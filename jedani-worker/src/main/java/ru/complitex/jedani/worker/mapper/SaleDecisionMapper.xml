@@ -18,11 +18,21 @@
         </if>
 
         <if test="map.nomenclature != null">
-            and exists(
-                select sda_n.id from sale_decision_attribute sda_n
+            and (
+                exists (select sda_n.id from sale_decision_attribute sda_n
                     left join sale_decision_value sdv_n on sdv_n.attribute_id = sda_n.id
                 where sda_n.domain_id = d.id and sda_n.entity_attribute_id = 5 and sda_n.status = 1
-                    and sdv_n.number = ${map.nomenclature}
+                    and sdv_n.number = #{map.nomenclature})
+                or (
+                    not exists (select sda_n.id from sale_decision_attribute sda_n
+                            left join sale_decision_value sdv_n on sdv_n.attribute_id = sda_n.id
+                        where sda_n.domain_id = d.id and sda_n.entity_attribute_id = 5 and sda_n.status = 1)
+                    and exists (select n.id from nomenclature n
+                        left join nomenclature_attribute na_t on na_t.domain_id = n.id and na_t.entity_attribute_id = 4 and na_t.status = 1
+                        left join sale_decision_attribute sda_nt on sda_nt.entity_attribute_id = 6 and sda_nt.status = 1
+                        where sda_nt.domain_id = d.id and n.object_id = #{map.nomenclature} and (na_t.number = sda_nt.number or
+                            (na_t.number is null and sda_nt.number = 1)))
+                )
             )
         </if>
     </sql>

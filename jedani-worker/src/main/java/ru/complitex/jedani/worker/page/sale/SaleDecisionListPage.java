@@ -1,8 +1,13 @@
 package ru.complitex.jedani.worker.page.sale;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.repeater.Item;
+import org.apache.wicket.model.IModel;
 import ru.complitex.address.entity.Country;
+import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.page.DomainListModalPage;
@@ -34,6 +39,23 @@ public class SaleDecisionListPage extends DomainListModalPage<SaleDecision> {
         entity.getEntityAttribute(SaleDecision.NOMENCLATURES).withReference(Nomenclature.ENTITY_NAME, Nomenclature.NAME);
 
         return super.getEntityAttributes(entity);
+    }
+
+    @Override
+    protected AbstractDomainColumn<SaleDecision> newDomainColumn(EntityAttribute a) {
+        if (a.getEntityAttributeId().equals(SaleDecision.NOMENCLATURE_TYPE)){
+            return new AbstractDomainColumn<SaleDecision>(a){
+
+                @Override
+                public void populateItem(Item<ICellPopulator<SaleDecision>> cellItem, String componentId, IModel<SaleDecision> rowModel) {
+                    Long type = rowModel.getObject().getNomenclatureType();
+
+                    cellItem.add(new Label(componentId, type != null ? getString("type." + type) : ""));
+                }
+            };
+        }
+
+        return super.newDomainColumn(a);
     }
 
     @Override
