@@ -3,18 +3,13 @@ package ru.complitex.jedani.worker.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.complitex.common.entity.FilterWrapper;
-import ru.complitex.jedani.worker.entity.Price;
-import ru.complitex.jedani.worker.entity.RuleAction;
-import ru.complitex.jedani.worker.entity.RuleActionType;
-import ru.complitex.jedani.worker.entity.SaleDecision;
+import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.mapper.PriceMapper;
 
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -54,67 +49,54 @@ public class PriceService implements Serializable {
         return null;
     }
 
-    public SaleDecision getSaleDecision(BigDecimal basePrice, Long storageId, Long nomenclatureId, Date date, BigDecimal total){
-        //todo add get sale decisions
-
-        return null;
-    }
-
-    public BigDecimal calculatePrice(SaleDecision saleDecision, BigDecimal basePrice, Long storageId,
-                                     Long nomenclatureId, Date date, BigDecimal total){
-        //todo add calculate price
-
-        return null;
-    }
-
-    public BigDecimal getPrice(Long storageId, Long nomenclatureId, Date date, BigDecimal total){
-        if (storageId == null || nomenclatureId == null || date == null){
+    public SaleDecision getSaleDecision(Long storageId, Long nomenclatureId, Date date, BigDecimal total){
+        if (storageId == null || nomenclatureId == null || date == null || total == null){
             return null;
         }
 
-        BigDecimal basePrice = getBasePrice(storageId, nomenclatureId, date);
-
-        return calculatePrice(basePrice, storageId, nomenclatureId, date, total);
-    }
-
-    public BigDecimal calculatePrice(BigDecimal basePrice, Long storageId, Long nomenclatureId, Date date, BigDecimal total){
         List<SaleDecision> saleDecisions = saleDecisionService.getSaleDecisions(storageService.getCountryId(storageId),
                 nomenclatureId, date);
 
-        List<BigDecimal> prices = new ArrayList<>();
+        for (SaleDecision saleDecision : saleDecisions){
+            saleDecisionService.loadRules(saleDecision);
 
-        saleDecisions.forEach(sd -> {
-            saleDecisionService.loadRules(sd);
+            for (Rule rule : saleDecision.getRules()){
+                if (saleDecisionService.check(rule, date, total)){
+                    return saleDecision;
+                }
+            }
+        }
 
-            sd.getRules().forEach(r -> {
-                if (saleDecisionService.check(r, date, total)){
-                    for (RuleAction a : r.getActions()){
-                        switch (RuleActionType.getValue(a.getType())){
-                            case DISCOUNT:
-                                Long discount = a.getNumber(RuleAction.ACTION);
+        return null;
+    }
 
-                                if (discount != null && discount > 0 && discount < 100){
-                                    prices.add(basePrice
-                                            .multiply(new BigDecimal(100 - discount)
-                                            .divide(new BigDecimal(100), 2, RoundingMode.HALF_EVEN)));
-                                }
+    public BigDecimal getPrice(SaleDecision saleDecision, Date date, BigDecimal basePrice, BigDecimal total){
+        if (saleDecision == null || date == null || basePrice == null || total == null){
+            return basePrice;
+        }
 
-                                break;
-                            case PRICE:
-                                BigDecimal price = a.getDecimal(RuleAction.ACTION);
+        for (Rule rule : saleDecision.getRules()){
+            if (saleDecisionService.check(rule, date, total)){
+                for (RuleAction a : rule.getActions()){
+                    switch (RuleActionType.getValue(a.getType())){
+                        case DISCOUNT:
+                            Long discount = a.getNumber(RuleAction.ACTION);
 
-                                if (price != null){
-                                    prices.add(price);
-                                }
+                            if (discount != null && discount > 0 && discount < 100){
+                                return basePrice.multiply(new BigDecimal(100 - discount)
+                                        .divide(new BigDecimal(100), 2, RoundingMode.HALF_EVEN));
 
-                                break;
-                        }
+                            }
+
+                            break;
+                        case PRICE:
+                            return a.getDecimal(RuleAction.ACTION);
                     }
                 }
-            });
-        });
+            }
+        }
 
-        return prices.stream().min(Comparator.naturalOrder()).orElse(basePrice);
+        return basePrice;
     }
 
     public BigDecimal getPointPrice(Long storageId, Long nomenclatureId, Date date){
@@ -122,16 +104,26 @@ public class PriceService implements Serializable {
             return null;
         }
 
-        BigDecimal basePointPrice = exchangeRateService.getExchangeRateValue(storageService.getCountryId(storageId), date);
-
-        return calculatePointPrice(basePointPrice, storageId, nomenclatureId, date);
+        return exchangeRateService.getExchangeRateValue(storageService.getCountryId(storageId), date);
     }
 
-    public BigDecimal calculatePointPrice(BigDecimal basePointPrice, Long storageId, Long nomenclatureId, Date date){
-        return basePointPrice;
-    }
+    public BigDecimal getPointPrice(SaleDecision saleDecision, Date date, BigDecimal pointPrice, BigDecimal total){
+        if (saleDecision == null || date == null || pointPrice == null || total == null){
+            return pointPrice;
+        }
 
-    public BigDecimal getLocalPrice(){
-        return null;
+        for (Rule rule : saleDecision.getRules()){
+            if (saleDecisionService.check(rule, date, total)){
+                for (RuleAction a : rule.getActions()){
+                    if (RuleActionType.getValue(a.getType()) == RuleActionType.EURO_RATE_LESS_OR_EQUAL) {
+                        BigDecimal actionPointPrice = a.getDecimal(RuleAction.ACTION);
+
+                        return actionPointPrice != null ? pointPrice.min(actionPointPrice) : pointPrice;
+                    }
+                }
+            }
+        }
+
+        return pointPrice;
     }
 }

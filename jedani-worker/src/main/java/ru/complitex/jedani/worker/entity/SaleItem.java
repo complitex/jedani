@@ -60,7 +60,6 @@ public class SaleItem extends Domain<SaleItem> {
         setDecimal(BASE_PRICE, basePrice);
     }
 
-
     public BigDecimal getPointPrice(){
         return getDecimal(POINT_PRICE);
     }
@@ -68,5 +67,11 @@ public class SaleItem extends Domain<SaleItem> {
     public void setPointPrice(BigDecimal pointPrice){
         setDecimal(POINT_PRICE, pointPrice);
     }
+
+    public void setSaleDecisionId(Long saleDecisionId){
+        setNumber(SALE_DECISION, saleDecisionId);
+    }
+
+
 }
 

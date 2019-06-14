@@ -121,41 +121,37 @@ public class SaleDecisionService implements Serializable {
     }
 
     public boolean check(Rule rule, Date date, BigDecimal total){
-        boolean check = true;
-
-        for (RuleCondition condition : rule.getConditions()){
-            if (RuleConditionType.PAYMENT_DATE.getId().equals(condition.getType())){
-                Date conditionDate = condition.getDate(RuleCondition.CONDITION);
-
-                if (condition.getComparator() != null){
-                    switch (RuleConditionComparator.getValue(condition.getComparator())){
-                        case EQUAL:
-                            check = date.compareTo(conditionDate) == 0;
-                            break;
-                        case NOT_EQUAL:
-                            check = date.compareTo(conditionDate) != 0;
-                            break;
-                        case GREATER:
-                            check = date.compareTo(conditionDate) > 0;
-                            break;
-                        case LOWER:
-                            check = date.compareTo(conditionDate) < 0;
-                            break;
-                        case GREATER_OR_EQUAL:
-                            check = date.compareTo(conditionDate) >= 0;
-                            break;
-                        case LOWER_OR_EQUAL:
-                            check = date.compareTo(conditionDate) <= 0;
-                            break;
-                    }
-                }
-
-                if (!check){
-                    break;
-                }
+        for (RuleCondition ruleCondition : rule.getConditions()){
+            if (RuleConditionType.PAYMENT_DATE.getId().equals(ruleCondition.getType()) &&
+                    !isCheck(ruleCondition, ruleCondition.getDate(RuleCondition.CONDITION), date)){
+                return false;
+            }else if (RuleConditionType.PAYMENT_TOTAL.getId().equals(ruleCondition.getType()) &&
+                    !isCheck(ruleCondition, ruleCondition.getDecimal(RuleCondition.CONDITION), total)){
+                return false;
             }
         }
 
-        return check;
+        return true;
+    }
+
+    private <T extends Comparable<T>> boolean isCheck(RuleCondition ruleCondition, T condition, T object){
+        if (condition != null && object != null && ruleCondition.getComparator() != null){
+            switch (RuleConditionComparator.getValue(ruleCondition.getComparator())){
+                case EQUAL:
+                    return object.compareTo(condition) == 0;
+                case NOT_EQUAL:
+                    return object.compareTo(condition) != 0;
+                case GREATER:
+                    return object.compareTo(condition) > 0;
+                case LOWER:
+                    return object.compareTo(condition) < 0;
+                case GREATER_OR_EQUAL:
+                    return object.compareTo(condition) >= 0;
+                case LOWER_OR_EQUAL:
+                    return object.compareTo(condition) <= 0;
+            }
+        }
+
+        return false;
     }
 }
