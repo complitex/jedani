@@ -382,9 +382,7 @@ public class SaleModal extends Modal<Sale> {
             SaleDecision saleDecision = priceService.getSaleDecision(sale.getStorageId(), si.getNomenclatureId(),
                     sale.getDate(), basePricesTotal);
 
-            if (saleDecision != null) {
-                si.setSaleDecisionId(saleDecision.getObjectId());
-            }
+            si.setSaleDecisionId(saleDecision != null ? saleDecision.getObjectId() : null);
 
             si.setPrice(priceService.getPrice(saleDecision, sale.getDate(), si.getBasePrice(), basePricesTotal));
 
