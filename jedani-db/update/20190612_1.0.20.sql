@@ -10,8 +10,8 @@ UPDATE `sale_attribute` SET `entity_attribute_id` = 12 WHERE `entity_attribute_i
 
 -- Update Sale Item
 
-DELETE FROM `entity_value` WHERE `entity_id` = 29 AND `entity_attribute_id` IN (3, 4);
-DELETE FROM `entity_attribute` WHERE `entity_id` = 29 AND `entity_attribute_id` IN (3, 4);
+DELETE FROM `entity_value` WHERE `entity_id` = 29 AND `entity_attribute_id` >= 3;
+DELETE FROM `entity_attribute` WHERE `entity_id` = 29 AND `entity_attribute_id` >= 3;
 
 CALL createEntityAttribute(29, 3, 4, 'Цена', 'Ціна');
 CALL createEntityAttribute(29, 4, 4, 'Сумма', 'Сума');
