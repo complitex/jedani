@@ -72,6 +72,10 @@ public class CardService implements Serializable {
     }
 
     public boolean isValid(String cardNumber){
+        if (cardNumber == null || cardNumber.length() < 6){
+            return false;
+        }
+
         String check = cardNumber.charAt(4) + "";
         String code = new StringBuilder(cardNumber).deleteCharAt(4).toString();
 
