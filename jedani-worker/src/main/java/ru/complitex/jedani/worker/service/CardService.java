@@ -4,6 +4,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.checkdigit.CheckDigitException;
 import org.apache.commons.validator.routines.checkdigit.LuhnCheckDigit;
 import org.mybatis.cdi.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.util.Dates;
 import ru.complitex.domain.entity.EntityAttribute;
@@ -20,6 +22,8 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class CardService implements Serializable {
+    private final Logger log = LoggerFactory.getLogger(CardService.class);
+
     @Inject
     private DomainService domainService;
 
@@ -118,5 +122,33 @@ public class CardService implements Serializable {
         for (int i = 0; i < count; ++i){
             save(createCard());
         }
+    }
+
+    public Card getCardByWorker(Long workerId){
+        List<Card> cards = domainService.getDomains(Card.class, FilterWrapper.of(new Card().setWorkerId(workerId)));
+
+        if (cards.size() > 1){
+            log.warn("More than one card for worker: {}", cards);
+        }
+
+        if (!cards.isEmpty()){
+            return cards.get(0);
+        }
+
+        return null;
+    }
+
+    public Card getCardByNumber(String cardNumber){
+        List<Card> cards = domainService.getDomains(Card.class, FilterWrapper.of(new Card().setNumber(cardNumber)));
+
+        if (cards.size() > 1){
+            log.error("More than one card for card number: {}", cards);
+        }
+
+        if (!cards.isEmpty()){
+            return cards.get(0);
+        }
+
+        return null;
     }
 }

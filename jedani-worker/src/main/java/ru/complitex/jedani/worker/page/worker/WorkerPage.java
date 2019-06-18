@@ -72,13 +72,11 @@ import ru.complitex.domain.service.EntityService;
 import ru.complitex.jedani.worker.component.JedaniRoleSelectList;
 import ru.complitex.jedani.worker.component.TypeSelect;
 import ru.complitex.jedani.worker.component.WorkerAutoComplete;
-import ru.complitex.jedani.worker.entity.MkStatus;
-import ru.complitex.jedani.worker.entity.Position;
-import ru.complitex.jedani.worker.entity.Worker;
-import ru.complitex.jedani.worker.entity.WorkerType;
+import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.mapper.WorkerMapper;
 import ru.complitex.jedani.worker.page.BasePage;
 import ru.complitex.jedani.worker.security.JedaniRoles;
+import ru.complitex.jedani.worker.service.CardService;
 import ru.complitex.jedani.worker.service.WorkerService;
 import ru.complitex.name.entity.FirstName;
 import ru.complitex.name.entity.LastName;
@@ -131,6 +129,9 @@ public class WorkerPage extends BasePage {
 
     @Inject
     private AttributeMapper attributeMapper;
+
+    @Inject
+    private CardService cardService;
 
     private Worker worker;
     private Worker manager;
@@ -414,6 +415,28 @@ public class WorkerPage extends BasePage {
         confirmPassword.setVisible(!isViewOnly());
         form.add(confirmPassword);
 
+        //Card
+
+        FormGroupTextField<String> card = new FormGroupTextField<String>("card", new Model<>()){
+            @Override
+            public boolean isVisible() {
+                return worker.isParticipant();
+            }
+        };
+
+
+        if (worker.getObjectId() != null) {
+            Card cardObject = cardService.getCardByWorker(worker.getObjectId());
+
+            if (cardObject != null){
+                card.getTextField().setModelObject(cardObject.getNumber());
+
+                card.setEnabled(false);
+            }
+        }
+
+        form.add(card);
+
         form.add(new FormGroupDateTextField("registrationDate", new DateAttributeModel(worker, Worker.INVOLVED_AT)){
             @Override
             public boolean isRequired() {
@@ -427,6 +450,7 @@ public class WorkerPage extends BasePage {
         }.onUpdate(t -> t.add(get("form:registrationDate"))));
 
         //Manager
+
         WebMarkupContainer managerContainer = new WebMarkupContainer("manager"){
             @Override
             public boolean isVisible() {
@@ -467,6 +491,7 @@ public class WorkerPage extends BasePage {
                 }));
 
         //Structure
+
         WebMarkupContainer structure = new WebMarkupContainer("structure"){
             @Override
             public boolean isVisible() {
@@ -478,6 +503,7 @@ public class WorkerPage extends BasePage {
         form.add(structure);
 
         //History
+
         WebMarkupContainer historyHeader = new WebMarkupContainer("historyHeader"){
             @Override
             public boolean isVisible() {
@@ -590,6 +616,32 @@ public class WorkerPage extends BasePage {
                         worker.setJId(null);
                     }
 
+                    //Card
+
+                    String cardNumber = card.getTextField().getModelObject();
+                    Card cardObject = null;
+
+                    if (cardNumber != null){
+                        if (!cardService.isValid(cardNumber)){
+                            card.error(getString("error_card_is_not_valid"));
+                            target.add(feedback);
+                            return;
+                        }
+
+                        cardObject = cardService.getCardByNumber(cardNumber);
+
+                        if (cardObject == null){
+                            card.error(getString("error_card_is_not_exists"));
+                            target.add(feedback);
+                            return;
+                        }else if (cardObject.getWorkerId() != null &&
+                                !Objects.equals(worker.getObjectId(), cardObject.getWorkerId())){
+                            card.error(getString("error_card_is_not_same_worker"));
+                            target.add(feedback);
+                            return;
+                        }
+                    }
+
                     //User
                     if (!Strings.isNullOrEmpty(user.getPassword())){
                         if (!user.getPassword().equals(user.getConfirmPassword())){
@@ -662,6 +714,12 @@ public class WorkerPage extends BasePage {
                     if (worker.getObjectId() == null){
                         try {
                             domainMapper.insertDomain(worker);
+
+                            if (cardNumber != null){
+                                cardObject.setWorkerId(worker.getObjectId());
+
+                                cardService.save(cardObject);
+                            }
                         } catch (Exception e) {
                             userMapper.deleteUser(user.getId());
 
@@ -689,6 +747,12 @@ public class WorkerPage extends BasePage {
                             filterWrapper.getObject().setLeft(worker.getLeft());
                             filterWrapper.getObject().setRight(worker.getRight());
                             filterWrapper.getObject().setLevel(worker.getLevel());
+                        }
+
+                        if (cardNumber != null && card.isEnabled()) {
+                            cardObject.setWorkerId(worker.getObjectId());
+
+                            cardService.save(cardObject);
                         }
 
                         success(getString("info_updated"));
