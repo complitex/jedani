@@ -8,6 +8,12 @@ CALL createEntityAttribute(28, 12, 4, 'Сумма договора (в лока�
 
 UPDATE `sale_attribute` SET `entity_attribute_id` = 12 WHERE `entity_attribute_id` = 11;
 
+-- Fix constraint
+
+ALTER TABLE `transaction_attribute` DROP FOREIGN KEY `fk_transaction_attribute__entity_attribute`;
+ALTER TABLE `setting_attribute` DROP FOREIGN KEY `fk_setting_attribute__entity_attribute`;
+
+
 -- Update Sale Item
 
 DELETE FROM `entity_value` WHERE `entity_id` = 29 AND `entity_attribute_id` >= 3;
