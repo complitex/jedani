@@ -35,8 +35,9 @@ public class Worker extends DomainNode<Worker> {
     public static final long RESET_PASSWORD_TOKEN = 18;
     public static final long RESET_PASSWORD_SEND_AT = 19;
     public static final long REMEMBER_CREATED_AT = 20;
-
     public static final long TYPE = 21;
+    public static final long RANK = 22;
+    public static final long POINT = 23;
 
     public static final long IMPORT_ID = 100;
     public static final long IMPORT_ANCESTRY = 101;
