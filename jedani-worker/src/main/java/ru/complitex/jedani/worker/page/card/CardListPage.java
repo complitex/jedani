@@ -7,7 +7,9 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.ResourceModel;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
+import ru.complitex.domain.component.datatable.DomainColumn;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.page.DomainListModalPage;
@@ -62,7 +64,10 @@ public class CardListPage extends DomainListModalPage<Card> {
 
     @Override
     protected AbstractDomainColumn<Card> newDomainColumn(EntityAttribute a) {
-        if (a.getEntityAttributeId().equals(Card.WORKER)){
+        if (a.getEntityAttributeId().equals(Card.NUMBER)){
+            return new DomainColumn<>(a, new ResourceModel("card_number"));
+
+        }else if (a.getEntityAttributeId().equals(Card.WORKER)){
             return new AbstractDomainColumn<Card>(a) {
                 @Override
                 public void populateItem(Item<ICellPopulator<Card>> cellItem, String componentId, IModel<Card> rowModel) {
