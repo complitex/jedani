@@ -915,7 +915,7 @@ public class WorkerPage extends BasePage {
             }
         });
 
-        FilterDataTable<Worker> table = new FilterDataTable<Worker>("table", columns, dataProvider, form, 7, "workerPage"){
+        FilterDataTable<Worker> table = new FilterDataTable<Worker>("table", columns, dataProvider, form, 5, "workerPage"){
             @Override
             public boolean isVisible() {
                 return !showGraph.getObject();
