@@ -1,8 +1,11 @@
 package ru.complitex.domain.util;
 
+import com.google.common.collect.Sets;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.WordUtils;
 import ru.complitex.domain.entity.EntityAttribute;
+
+import java.util.Set;
 
 /**
  * @author Anatoly A. Ivanov
@@ -30,6 +33,8 @@ public class Attributes {
         return text;
     }
 
+    private static final Set<String> NAMES = Sets.newHashSet("Майкук", "БА", "ПК");
+
     public static String capitalize(String text){
         if (text == null){
             return "";
@@ -42,10 +47,16 @@ public class Attributes {
                 : WordUtils.capitalizeFully(words[0], '-');
 
         for (int i = 1; i < words.length; i++){
-            if (words[i].matches("\\w.*")){
-                words[i] = words[i].toUpperCase();
+            String world = words[i];
+
+            String name = NAMES.stream().filter(n -> n.equalsIgnoreCase(world)).findFirst().orElse(null);
+
+            if (name != null){
+                words[i] = name;
+            }else if (world.matches("\\w.*")){
+                words[i] = world.toUpperCase();
             }else{
-                words[i] = words[i].toLowerCase();
+                words[i] = world.toLowerCase();
             }
         }
 

@@ -12,17 +12,17 @@ import javax.inject.Inject;
  * @author Anatoly A. Ivanov
  * 22.12.2017 8:03
  */
-public class DomainAutoCompleteFormGroup extends Panel{
+public class FormGroupDomainAutoComplete extends Panel{
     @Inject
     private EntityService entityService;
 
     private DomainAutoComplete domainAutoComplete;
 
-    public DomainAutoCompleteFormGroup(String id, String entityName, Long entityAttributeId, IModel<Long> model) {
+    public FormGroupDomainAutoComplete(String id, String entityName, Long entityAttributeId, IModel<Long> model) {
         this(id, new ResourceModel(id), entityName, entityAttributeId, model);
     }
 
-    public DomainAutoCompleteFormGroup(String id, IModel<String> label, String entityName, Long entityAttributeId,
+    public FormGroupDomainAutoComplete(String id, IModel<String> label, String entityName, Long entityAttributeId,
                                        IModel<Long> model) {
         super(id);
 
@@ -39,7 +39,7 @@ public class DomainAutoCompleteFormGroup extends Panel{
         }){
             @Override
             public boolean isEnabled() {
-                return DomainAutoCompleteFormGroup.this.isEnabled();
+                return FormGroupDomainAutoComplete.this.isEnabled();
             }
         });
         domainAutoComplete.setLabel(label);
@@ -63,13 +63,13 @@ public class DomainAutoCompleteFormGroup extends Panel{
         domainAutoComplete.setModelObject(objectId);
     }
 
-    public DomainAutoCompleteFormGroup setRequired(boolean required){
+    public FormGroupDomainAutoComplete setRequired(boolean required){
         domainAutoComplete.setRequired(required);
 
         return this;
     }
 
-    public DomainAutoCompleteFormGroup setInputRequired(boolean required){
+    public FormGroupDomainAutoComplete setInputRequired(boolean required){
         domainAutoComplete.getAutoCompleteTextField().setRequired(required);
 
         return this;

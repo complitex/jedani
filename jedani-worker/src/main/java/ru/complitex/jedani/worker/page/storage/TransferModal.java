@@ -20,7 +20,7 @@ import org.danekja.java.util.function.serializable.SerializableConsumer;
 import ru.complitex.common.wicket.form.FormGroupPanel;
 import ru.complitex.common.wicket.form.FormGroupSelectPanel;
 import ru.complitex.common.wicket.form.FormGroupTextField;
-import ru.complitex.domain.component.form.DomainAutoCompleteFormGroup;
+import ru.complitex.domain.component.form.FormGroupDomainAutoComplete;
 import ru.complitex.domain.entity.StringType;
 import ru.complitex.domain.model.NumberAttributeModel;
 import ru.complitex.domain.model.TextAttributeModel;
@@ -85,11 +85,11 @@ class TransferModal extends StorageModal {
                 client.setOutputMarkupPlaceholderTag(true);
                 fragment.add(client);
 
-                client.add(new DomainAutoCompleteFormGroup("lastName", LastName.ENTITY_NAME, LastName.NAME,
+                client.add(new FormGroupDomainAutoComplete("lastName", LastName.ENTITY_NAME, LastName.NAME,
                         new NumberAttributeModel(getModel(), Transaction.LAST_NAME_TO)).setRequired(true));
-                client.add(new DomainAutoCompleteFormGroup("firstName", FirstName.ENTITY_NAME, FirstName.NAME,
+                client.add(new FormGroupDomainAutoComplete("firstName", FirstName.ENTITY_NAME, FirstName.NAME,
                         new NumberAttributeModel(getModel(), Transaction.FIRST_NAME_TO)).setRequired(true));
-                client.add(new DomainAutoCompleteFormGroup("middleName", MiddleName.ENTITY_NAME, MiddleName.NAME,
+                client.add(new FormGroupDomainAutoComplete("middleName", MiddleName.ENTITY_NAME, MiddleName.NAME,
                         new NumberAttributeModel(getModel(), Transaction.MIDDLE_NAME_TO)));
 
                 IModel<Long> recipientModel = new NumberAttributeModel(getModel(), Transaction.RECIPIENT_TYPE);

@@ -10,16 +10,16 @@ import ru.complitex.domain.entity.Attribute;
  * @author Anatoly A. Ivanov
  * 16.04.2018 21:39
  */
-public class AttributeInputListFormGroup extends Panel {
+public class FormGroupAttributeInputList extends Panel {
     private AttributeInputList attributeInputList;
 
     private boolean required;
 
-    public AttributeInputListFormGroup(String id, IModel<Attribute> model) {
+    public FormGroupAttributeInputList(String id, IModel<Attribute> model) {
         this(id, new ResourceModel(id), model);
     }
 
-    public AttributeInputListFormGroup(String id, IModel<String> label, IModel<Attribute> model) {
+    public FormGroupAttributeInputList(String id, IModel<String> label, IModel<Attribute> model) {
         super(id);
 
         FormGroupBorder group = new FormGroupBorder("group", label);
@@ -27,7 +27,7 @@ public class AttributeInputListFormGroup extends Panel {
         group.add(attributeInputList = new AttributeInputList("input", model){
             @Override
             public boolean isRequired() {
-                return AttributeInputListFormGroup.this.isRequired();
+                return FormGroupAttributeInputList.this.isRequired();
             }
         });
         attributeInputList.setLabel(label);
@@ -39,7 +39,7 @@ public class AttributeInputListFormGroup extends Panel {
         return required;
     }
 
-    public AttributeInputListFormGroup setRequired(boolean required){
+    public FormGroupAttributeInputList setRequired(boolean required){
         this.required = required;
 
         return this;

@@ -15,12 +15,12 @@ import java.util.List;
  * @author Anatoly A. Ivanov
  * 16.04.2018 21:39
  */
-public class AttributeSelectListFormGroup extends Panel {
+public class FormGroupAttributeSelectList extends Panel {
     private AttributeSelectList attributeSelectList;
 
     private boolean required;
 
-    public AttributeSelectListFormGroup(String id, IModel<String> label, IModel<Attribute> model, String refEntityName,
+    public FormGroupAttributeSelectList(String id, IModel<String> label, IModel<Attribute> model, String refEntityName,
                                         Long refEntityAttributeId, IModel<List<Long>> parentListModel, boolean upperCase) {
         super(id);
 
@@ -32,12 +32,12 @@ public class AttributeSelectListFormGroup extends Panel {
                 refEntityAttributeId, parentListModel, upperCase){
             @Override
             protected String getPrefix(Domain domain) {
-                return AttributeSelectListFormGroup.this.getPrefix(domain);
+                return FormGroupAttributeSelectList.this.getPrefix(domain);
             }
 
             @Override
             public boolean isRequired() {
-                return AttributeSelectListFormGroup.this.isRequired();
+                return FormGroupAttributeSelectList.this.isRequired();
             }
         });
         attributeSelectList.setLabel(label);
@@ -46,12 +46,12 @@ public class AttributeSelectListFormGroup extends Panel {
     }
 
 
-    public AttributeSelectListFormGroup(String id, IModel<Attribute> model, String refEntityName,
+    public FormGroupAttributeSelectList(String id, IModel<Attribute> model, String refEntityName,
                                         Long refEntityAttributeId, IModel<List<Long>> parentListModel, boolean upperCase) {
         this(id, new ResourceModel(id), model, refEntityName, refEntityAttributeId, parentListModel, upperCase);
     }
 
-    public AttributeSelectListFormGroup(String id, IModel<Attribute> model, String refEntityName, Long refEntityAttributeId, boolean upperCase) {
+    public FormGroupAttributeSelectList(String id, IModel<Attribute> model, String refEntityName, Long refEntityAttributeId, boolean upperCase) {
         this(id, new ResourceModel(id), model, refEntityName, refEntityAttributeId, null, upperCase);
     }
 
@@ -67,7 +67,7 @@ public class AttributeSelectListFormGroup extends Panel {
         return required;
     }
 
-    public AttributeSelectListFormGroup setRequired(boolean required){
+    public FormGroupAttributeSelectList setRequired(boolean required){
         this.required = required;
 
         return this;

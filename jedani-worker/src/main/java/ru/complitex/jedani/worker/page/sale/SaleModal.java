@@ -35,7 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.wicket.form.*;
-import ru.complitex.domain.component.form.DomainAutoCompleteFormGroup;
+import ru.complitex.domain.component.form.FormGroupDomainAutoComplete;
 import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.model.*;
@@ -89,7 +89,7 @@ public class SaleModal extends Modal<Sale> {
     private WebMarkupContainer container;
     private NotificationPanel feedback;
 
-    private DomainAutoCompleteFormGroup lastName, firstName, middleName;
+    private FormGroupDomainAutoComplete lastName, firstName, middleName;
 
     private ListView<SaleItem> saleItems;
 
@@ -190,11 +190,11 @@ public class SaleModal extends Modal<Sale> {
         fioContainer.setOutputMarkupId(true);
         container.add(fioContainer);
 
-        fioContainer.add(lastName = new DomainAutoCompleteFormGroup("lastName", LastName.ENTITY_NAME, LastName.NAME,
+        fioContainer.add(lastName = new FormGroupDomainAutoComplete("lastName", LastName.ENTITY_NAME, LastName.NAME,
                 new Model<>()).setInputRequired(true));
-        fioContainer.add(firstName = new DomainAutoCompleteFormGroup("firstName", FirstName.ENTITY_NAME, FirstName.NAME,
+        fioContainer.add(firstName = new FormGroupDomainAutoComplete("firstName", FirstName.ENTITY_NAME, FirstName.NAME,
                 new Model<>()).setInputRequired(true));
-        fioContainer.add(middleName = new DomainAutoCompleteFormGroup("middleName", MiddleName.ENTITY_NAME, MiddleName.NAME,
+        fioContainer.add(middleName = new FormGroupDomainAutoComplete("middleName", MiddleName.ENTITY_NAME, MiddleName.NAME,
                 new Model<>()));
 
         container.add(new FormGroupPanel("storage", new StorageAutoComplete(FormGroupPanel.COMPONENT_ID,
@@ -208,7 +208,7 @@ public class SaleModal extends Modal<Sale> {
             });
         }).setRequired(true)));
 
-        container.add(new DomainAutoCompleteFormGroup("promotion", Promotion.ENTITY_NAME, Promotion.NAME,
+        container.add(new FormGroupDomainAutoComplete("promotion", Promotion.ENTITY_NAME, Promotion.NAME,
                 NumberAttributeModel.of(saleModel, Sale.PROMOTION))); //todo promotion storage filter
 
         FormGroupBorder months = new FormGroupBorder("months");

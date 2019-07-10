@@ -49,6 +49,7 @@ import ru.complitex.jedani.worker.page.catalog.*;
 import ru.complitex.jedani.worker.page.price.PriceListPage;
 import ru.complitex.jedani.worker.page.promotion.PromotionListPage;
 import ru.complitex.jedani.worker.page.resource.*;
+import ru.complitex.jedani.worker.page.reward.RewardListPage;
 import ru.complitex.jedani.worker.page.sale.SaleDecisionListPage;
 import ru.complitex.jedani.worker.page.sale.SaleListPage;
 import ru.complitex.jedani.worker.page.storage.NomenclatureListPage;
@@ -255,6 +256,7 @@ public class BasePage extends WebPage{
         sales.add(new MenuLink("promotion", PromotionListPage.class).setVisible(isAdmin() || isPromotionAdmin()));
         sales.add(new MenuLink("saleDecision", SaleDecisionListPage.class).setVisible(isAdmin() || isStructureAdmin()));
         sales.add(new MenuLink("sale", SaleListPage.class));
+        sales.add(new MenuLink("reward", RewardListPage.class).setVisible(isAdmin() || isStructureAdmin()));
     }
 
     @Override

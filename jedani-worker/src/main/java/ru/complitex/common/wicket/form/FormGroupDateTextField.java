@@ -9,6 +9,8 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.danekja.java.util.function.serializable.SerializableConsumer;
+import ru.complitex.domain.entity.Domain;
+import ru.complitex.domain.model.DateAttributeModel;
 
 import java.util.Date;
 
@@ -41,6 +43,10 @@ public class FormGroupDateTextField extends Panel{
         dateTextField.setLabel(label);
 
         add(group);
+    }
+
+    public FormGroupDateTextField(String id, IModel<? extends Domain> domainModel, Long entityAttributeId){
+        this(id, new ResourceModel(id), DateAttributeModel.of(domainModel, entityAttributeId));
     }
 
     public boolean isRequired() {

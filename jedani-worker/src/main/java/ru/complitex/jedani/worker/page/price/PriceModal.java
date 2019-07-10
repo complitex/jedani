@@ -29,7 +29,7 @@ import ru.complitex.common.wicket.form.FormGroupDateTextField;
 import ru.complitex.common.wicket.form.FormGroupPanel;
 import ru.complitex.common.wicket.form.FormGroupTextField;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
-import ru.complitex.domain.component.form.DomainAutoCompleteFormGroup;
+import ru.complitex.domain.component.form.FormGroupDomainAutoComplete;
 import ru.complitex.domain.entity.Status;
 import ru.complitex.domain.model.DateAttributeModel;
 import ru.complitex.domain.model.DecimalAttributeModel;
@@ -99,7 +99,7 @@ public class PriceModal extends AbstractDomainEditModal<Price> {
         container.add(new FormGroupPanel("nomenclature", new NomenclatureAutoComplete(FormGroupPanel.COMPONENT_ID,
                 DomainParentModel.of(priceModel)).setRequired(true)));
 
-        container.add(new DomainAutoCompleteFormGroup("country", Country.ENTITY_NAME, Country.NAME,
+        container.add(new FormGroupDomainAutoComplete("country", Country.ENTITY_NAME, Country.NAME,
                 NumberAttributeModel.of(priceModel, Price.COUNTRY)){
             @Override
             public boolean isEnabled() {

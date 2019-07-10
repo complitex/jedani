@@ -5,6 +5,7 @@ import org.apache.wicket.model.IModel;
 import org.danekja.java.util.function.serializable.SerializableConsumer;
 import ru.complitex.domain.component.form.AbstractDomainAutoComplete;
 import ru.complitex.domain.entity.Domain;
+import ru.complitex.domain.model.NumberAttributeModel;
 import ru.complitex.jedani.worker.mapper.WorkerMapper;
 import ru.complitex.jedani.worker.service.WorkerService;
 
@@ -28,6 +29,10 @@ public class WorkerAutoComplete extends AbstractDomainAutoComplete {
 
     public WorkerAutoComplete(String id, IModel<Long> model) {
         this(id,  model, null);
+    }
+
+    public WorkerAutoComplete(String id, IModel<? extends Domain> domainModel, Long entityAttributeId){
+        this(id, NumberAttributeModel.of(domainModel, entityAttributeId));
     }
 
     @Override

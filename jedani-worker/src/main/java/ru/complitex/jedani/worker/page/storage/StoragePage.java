@@ -44,7 +44,7 @@ import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.component.datatable.DomainActionColumn;
 import ru.complitex.domain.component.datatable.DomainColumn;
 import ru.complitex.domain.component.datatable.DomainIdColumn;
-import ru.complitex.domain.component.form.DomainAutoCompleteFormGroup;
+import ru.complitex.domain.component.form.FormGroupDomainAutoComplete;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.model.NumberAttributeModel;
@@ -146,7 +146,7 @@ public class StoragePage extends BasePage {
 
         Component city, workers, worker;
 
-        form.add(city = new DomainAutoCompleteFormGroup("city", City.ENTITY_NAME, City.NAME,
+        form.add(city = new FormGroupDomainAutoComplete("city", City.ENTITY_NAME, City.NAME,
                 new NumberAttributeModel(storage, Storage.CITY)){
             @Override
             public boolean isVisible() {

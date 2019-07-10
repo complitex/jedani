@@ -7,7 +7,9 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import ru.complitex.common.wicket.form.FormGroupBorder;
+import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.mapper.DomainMapper;
+import ru.complitex.domain.model.NumberAttributeModel;
 import ru.complitex.domain.util.Attributes;
 
 import javax.inject.Inject;
@@ -16,19 +18,19 @@ import javax.inject.Inject;
  * @author Anatoly A. Ivanov
  * 02.05.2018 7:57
  */
-public class AttributeSelectFormGroup extends Panel {
+public class FormGroupAttributeSelect extends Panel {
     @Inject
     private DomainMapper domainMapper;
 
     private AttributeSelect attributeSelect;
 
-    public AttributeSelectFormGroup(String id, IModel<Long> model, String refEntityName, Long refEntityAttributeId) {
+    public FormGroupAttributeSelect(String id, IModel<Long> model, String refEntityName, Long refEntityAttributeId) {
         this(id, new ResourceModel(id), model, refEntityName, refEntityAttributeId);
 
         setOutputMarkupId(true);
     }
 
-    public AttributeSelectFormGroup(String id, IModel<String> label, IModel<Long> model, String refEntityName,
+    public FormGroupAttributeSelect(String id, IModel<String> label, IModel<Long> model, String refEntityName,
                                     Long refEntityAttributeId) {
         super(id);
 
@@ -57,7 +59,12 @@ public class AttributeSelectFormGroup extends Panel {
         add(group);
     }
 
-    public AttributeSelectFormGroup setRequired(boolean required){
+    public FormGroupAttributeSelect(String id, IModel<? extends Domain> domainModel, Long entityAttributeId,
+                                    String refEntityName, Long refEntityAttributeId){
+        this(id, NumberAttributeModel.of(domainModel, entityAttributeId), refEntityName, refEntityAttributeId);
+    }
+
+    public FormGroupAttributeSelect setRequired(boolean required){
         if (attributeSelect != null) {
             attributeSelect.setRequired(required);
         }

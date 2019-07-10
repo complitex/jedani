@@ -14,5 +14,7 @@ public class Reward extends Domain<Reward> {
 
     public Reward() {
         super(ENTITY_NAME);
+
+        setUseDateAttribute(true);
     }
 }

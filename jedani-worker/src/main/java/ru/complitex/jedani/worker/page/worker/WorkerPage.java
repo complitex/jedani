@@ -55,10 +55,10 @@ import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.component.datatable.DomainActionColumn;
 import ru.complitex.domain.component.datatable.DomainColumn;
 import ru.complitex.domain.component.datatable.DomainIdColumn;
-import ru.complitex.domain.component.form.AttributeInputListFormGroup;
-import ru.complitex.domain.component.form.AttributeSelectFormGroup;
-import ru.complitex.domain.component.form.AttributeSelectListFormGroup;
-import ru.complitex.domain.component.form.DomainAutoCompleteFormGroup;
+import ru.complitex.domain.component.form.FormGroupAttributeInputList;
+import ru.complitex.domain.component.form.FormGroupAttributeSelect;
+import ru.complitex.domain.component.form.FormGroupAttributeSelectList;
+import ru.complitex.domain.component.form.FormGroupDomainAutoComplete;
 import ru.complitex.domain.entity.*;
 import ru.complitex.domain.mapper.AttributeMapper;
 import ru.complitex.domain.mapper.DomainMapper;
@@ -252,22 +252,22 @@ public class WorkerPage extends BasePage {
             }
         });
 
-        DomainAutoCompleteFormGroup lastName, firstName, middleName;
+        FormGroupDomainAutoComplete lastName, firstName, middleName;
 
-        form.add(lastName = new DomainAutoCompleteFormGroup("lastName", LastName.ENTITY_NAME, LastName.NAME,
+        form.add(lastName = new FormGroupDomainAutoComplete("lastName", LastName.ENTITY_NAME, LastName.NAME,
                 new NumberAttributeModel(worker, Worker.LAST_NAME)).setInputRequired(true));
-        form.add(firstName = new DomainAutoCompleteFormGroup("firstName", FirstName.ENTITY_NAME, FirstName.NAME,
+        form.add(firstName = new FormGroupDomainAutoComplete("firstName", FirstName.ENTITY_NAME, FirstName.NAME,
                 new NumberAttributeModel(worker, Worker.FIRST_NAME)).setInputRequired(true));
-        form.add(middleName = new DomainAutoCompleteFormGroup("middleName", MiddleName.ENTITY_NAME, MiddleName.NAME,
+        form.add(middleName = new FormGroupDomainAutoComplete("middleName", MiddleName.ENTITY_NAME, MiddleName.NAME,
                 new NumberAttributeModel(worker, Worker.MIDDLE_NAME)));
 
         lastName.setEnabled(!isViewOnly());
         firstName.setEnabled(!isViewOnly());
         middleName.setEnabled(!isViewOnly());
 
-        AttributeSelectFormGroup position;
+        FormGroupAttributeSelect position;
 
-        form.add(position = new AttributeSelectFormGroup("position", new NumberAttributeModel(worker, Worker.POSITION),
+        form.add(position = new FormGroupAttributeSelect("position", new NumberAttributeModel(worker, Worker.POSITION),
                 Position.ENTITY_NAME, Position.NAME){
             @Override
             public boolean isEnabled() {
@@ -299,7 +299,7 @@ public class WorkerPage extends BasePage {
         }
         form.add(jId);
 
-        form.add(new AttributeSelectFormGroup("mkStatus", new NumberAttributeModel(worker, Worker.MK_STATUS),
+        form.add(new FormGroupAttributeSelect("mkStatus", new NumberAttributeModel(worker, Worker.MK_STATUS),
                 MkStatus.ENTITY_NAME, MkStatus.NAME){
             @Override
             public boolean isVisible() {
@@ -313,7 +313,7 @@ public class WorkerPage extends BasePage {
         });
         form.add(new FormGroupDateTextField("birthday", new DateAttributeModel(worker, Worker.BIRTHDAY))
                 .setEnabled(!isViewOnly()));
-        form.add(new AttributeInputListFormGroup("phone", Model.of(worker.getOrCreateAttribute(Worker.PHONE))){
+        form.add(new FormGroupAttributeInputList("phone", Model.of(worker.getOrCreateAttribute(Worker.PHONE))){
             @Override
             public boolean isRequired() {
                 return worker.isParticipant();
@@ -327,8 +327,8 @@ public class WorkerPage extends BasePage {
         form.add(new FormGroupTextField<>("email", new TextAttributeModel(worker, Worker.EMAIL, StringType.LOWER_CASE))
                 .setEnabled(!isViewOnly()));
 
-        AttributeSelectListFormGroup city, region;
-        form.add(region = new AttributeSelectListFormGroup("region", Model.of(worker.getOrCreateAttribute(Worker.REGIONS)),
+        FormGroupAttributeSelectList city, region;
+        form.add(region = new FormGroupAttributeSelectList("region", Model.of(worker.getOrCreateAttribute(Worker.REGIONS)),
                 Region.ENTITY_NAME, Region.NAME, true){
             @Override
             public boolean isRequired() {
@@ -340,7 +340,7 @@ public class WorkerPage extends BasePage {
                 return isEditEnabled();
             }
         });
-        form.add(city = new AttributeSelectListFormGroup("city", Model.of(worker.getOrCreateAttribute(Worker.CITIES)),
+        form.add(city = new FormGroupAttributeSelectList("city", Model.of(worker.getOrCreateAttribute(Worker.CITIES)),
                 City.ENTITY_NAME, City.NAME, region.getListModel(), true){
             @Override
             protected String getPrefix(Domain domain) {

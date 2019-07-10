@@ -27,7 +27,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import ru.complitex.address.entity.Country;
 import ru.complitex.common.wicket.form.*;
-import ru.complitex.domain.component.form.DomainAutoCompleteFormGroup;
+import ru.complitex.domain.component.form.FormGroupDomainAutoComplete;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.ValueType;
 import ru.complitex.domain.model.AttributeModel;
@@ -75,7 +75,7 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
                 .setRequired(true)
                 .onUpdate(t -> {}));
 
-        container.add(new DomainAutoCompleteFormGroup("country", Country.ENTITY_NAME, Country.NAME,
+        container.add(new FormGroupDomainAutoComplete("country", Country.ENTITY_NAME, Country.NAME,
                 NumberAttributeModel.of(getModel(), SaleDecision.COUNTRY)).setRequired(true));
 
         container.add(new FormGroupDateTextField("begin", DateAttributeModel.of(getModel(), SaleDecision.DATE_BEGIN))

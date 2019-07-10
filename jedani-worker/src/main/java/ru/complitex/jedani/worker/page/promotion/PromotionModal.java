@@ -25,7 +25,7 @@ import ru.complitex.common.wicket.form.FormGroupBorder;
 import ru.complitex.common.wicket.form.FormGroupDateTextField;
 import ru.complitex.common.wicket.form.FormGroupPanel;
 import ru.complitex.common.wicket.util.Wickets;
-import ru.complitex.domain.component.form.DomainAutoCompleteFormGroup;
+import ru.complitex.domain.component.form.FormGroupDomainAutoComplete;
 import ru.complitex.domain.entity.Status;
 import ru.complitex.domain.entity.StringType;
 import ru.complitex.domain.model.*;
@@ -86,7 +86,7 @@ public class PromotionModal extends Modal<Promotion> {
 
         container.add(new FormGroupDateTextField("begin", new DateAttributeModel(getModel(), Promotion.BEGIN)));
         container.add(new FormGroupDateTextField("end", new DateAttributeModel(getModel(), Promotion.END)));
-        container.add(new DomainAutoCompleteFormGroup("country", Country.ENTITY_NAME, Country.NAME,
+        container.add(new FormGroupDomainAutoComplete("country", Country.ENTITY_NAME, Country.NAME,
                 new NumberAttributeModel(getModel(), Promotion.COUNTRY)).setRequired(true));
         container.add(new FormGroupBorder("name", new ResourceModel("name"))
                 .add(new TextArea<>("name", new TextValueModel(getModel(), Promotion.NAME,

@@ -48,6 +48,7 @@ import ru.complitex.jedani.worker.page.login.LoginPage;
 import ru.complitex.jedani.worker.page.price.PriceListPage;
 import ru.complitex.jedani.worker.page.promotion.PromotionListPage;
 import ru.complitex.jedani.worker.page.resource.*;
+import ru.complitex.jedani.worker.page.reward.RewardListPage;
 import ru.complitex.jedani.worker.page.sale.SaleDecisionListPage;
 import ru.complitex.jedani.worker.page.sale.SaleListPage;
 import ru.complitex.jedani.worker.page.storage.NomenclatureListPage;
@@ -127,6 +128,7 @@ public class JedaniWebApplication extends WebApplication{
         mountPage("settings", SettingPage.class);
         mountPage("rank", RankListPage.class);
         mountPage("reward-type", RewardTypeListPage.class);
+        mountPage("reward", RewardListPage.class);
 
         mountPage("error", InternalErrorPage.class);
         mountPage("access-denied", AccessDeniedPage.class);
