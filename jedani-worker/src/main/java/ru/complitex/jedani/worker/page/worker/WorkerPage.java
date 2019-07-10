@@ -855,7 +855,7 @@ public class WorkerPage extends BasePage {
         columns.add(new AbstractDomainColumn<Worker>(new ResourceModel("level"), new SortProperty("level")) {
             @Override
             public void populateItem(Item<ICellPopulator<Worker>> cellItem, String componentId, IModel<Worker> rowModel) {
-                cellItem.add(new Label(componentId, rowModel.getObject().getLevel()));
+                cellItem.add(new Label(componentId, rowModel.getObject().getLevel() - getCurrentWorker().getLevel()));
             }
 
             @Override
