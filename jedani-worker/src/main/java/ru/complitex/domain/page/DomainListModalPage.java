@@ -171,7 +171,7 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage{
         container.add(new AjaxLink<Void>("add") {
             @Override
             public void onClick(AjaxRequestTarget target) {
-                onAdd(target);
+                onCreate(target);
             }
 
             @Override
@@ -224,7 +224,7 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage{
         return true;
     }
 
-    protected void onAdd(AjaxRequestTarget target) {
+    protected void onCreate(AjaxRequestTarget target) {
         domainEditModal.edit(newDomain(), target);
     }
 

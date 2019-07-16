@@ -29,6 +29,8 @@ public class CardListPage extends DomainListModalPage<Card> {
     public CardListPage() {
         super(Card.class);
 
+        title(new ResourceModel("title"));
+
         Form form = new Form("cardForm");
         getContainer().add(form);
 
@@ -80,7 +82,7 @@ public class CardListPage extends DomainListModalPage<Card> {
     }
 
     @Override
-    protected void onAdd(AjaxRequestTarget target) {
+    protected void onCreate(AjaxRequestTarget target) {
         cardModal.create(target);
     }
 
