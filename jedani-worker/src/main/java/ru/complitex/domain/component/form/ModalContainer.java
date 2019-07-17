@@ -7,7 +7,9 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel
 import de.agilecoders.wicket.core.markup.html.bootstrap.dialog.Modal;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.model.ResourceModel;
+import org.danekja.java.util.function.serializable.SerializableConsumer;
 import ru.complitex.jedani.worker.entity.Reward;
 
 /**
@@ -18,8 +20,12 @@ public class ModalContainer<T> extends Modal<T> {
     private WebMarkupContainer container;
     private NotificationPanel feedback;
 
-    public ModalContainer(String markupId) {
+    private SerializableConsumer<AjaxRequestTarget> onUpdate;
+
+    public ModalContainer(String markupId, SerializableConsumer<AjaxRequestTarget> onUpdate) {
         super(markupId);
+
+        this.onUpdate = onUpdate;
 
         setBackdrop(Backdrop.FALSE);
         header(new ResourceModel("header"));
@@ -63,18 +69,30 @@ public class ModalContainer<T> extends Modal<T> {
     }
 
     public void create(AjaxRequestTarget target) {
+        target.add(getContainer());
+
         appendShowDialogJavaScript(target);
     }
 
     public void edit(Reward object, AjaxRequestTarget target) {
+        target.add(getContainer());
+
         appendShowDialogJavaScript(target);
     }
 
     protected void save(AjaxRequestTarget target) {
+        appendCloseDialogJavaScript(target);
 
+        container.visitChildren(FormComponent.class, (c, v) -> ((FormComponent)c).clearInput());
+
+        if (onUpdate != null) {
+            onUpdate.accept(target);
+        }
     }
 
     protected void cancel(AjaxRequestTarget target) {
         appendCloseDialogJavaScript(target);
+
+        container.visitChildren(FormComponent.class, (c, v) -> ((FormComponent)c).clearInput());
     }
 }

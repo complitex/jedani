@@ -2,6 +2,8 @@ package ru.complitex.jedani.worker.entity;
 
 import ru.complitex.domain.entity.Domain;
 
+import java.util.Date;
+
 public class Reward extends Domain<Reward> {
     public static final String ENTITY_NAME = "reward";
 
@@ -16,5 +18,13 @@ public class Reward extends Domain<Reward> {
         super(ENTITY_NAME);
 
         setUseDateAttribute(true);
+    }
+
+    public void setDate(Date date){
+        setDate(DATE, date);
+    }
+
+    public Long getWorkerId(){
+        return getNumber(WORKER);
     }
 }
