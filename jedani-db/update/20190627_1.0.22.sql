@@ -65,8 +65,8 @@ CALL createEntity(40, 'reward', 'Вознагражднение', 'Винаго�
 CALL createEntityAttribute(40, 1, 6, 'Дата', 'Дата');
 CALL createEntityAttributeWithReference(40, 2, 11, 20, 'Сотрудник', 'Співробітник');
 CALL createEntityAttribute(40, 3, 4, 'Баллы', 'Бали');
-CALL createEntityAttributeWithReference(40, 4, 11, 38, 'Тип', 'Тип');
-CALL createEntityAttributeWithReference(40, 5, 11, 39, 'Ранг', 'Ранг');
+CALL createEntityAttributeWithReference(40, 4, 11, 39, 'Тип', 'Тип');
+CALL createEntityAttributeWithReference(40, 5, 11, 38, 'Ранг', 'Ранг');
 CALL createEntityAttribute(40, 6, 2, 'Комментарий', 'Коментар');
 
 -- Add worker rank and point entity attributes

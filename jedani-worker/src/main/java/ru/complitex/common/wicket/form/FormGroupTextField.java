@@ -9,8 +9,6 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.validation.IValidator;
 import org.danekja.java.util.function.serializable.SerializableConsumer;
-import ru.complitex.domain.entity.Domain;
-import ru.complitex.domain.model.TextAttributeModel;
 
 /**
  * @author Anatoly A. Ivanov
@@ -51,10 +49,6 @@ public class FormGroupTextField<T> extends Panel{
 
     public FormGroupTextField(String id, IModel<T> model) {
         this(id, model, null);
-    }
-
-    public FormGroupTextField(String id, IModel<? extends Domain> domainModel, Long entityAttributeId) {
-        this(id, TextAttributeModel.of(domainModel, entityAttributeId), null);
     }
 
     public FormGroupTextField(String id, IModel<String> label, IModel<T> model) {

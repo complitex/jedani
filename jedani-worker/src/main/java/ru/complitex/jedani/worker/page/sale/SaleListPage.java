@@ -147,7 +147,7 @@ public class SaleListPage extends DomainListModalPage<SaleItem> {
     }
 
     @Override
-    protected void onAdd(AjaxRequestTarget target) {
+    protected void onCreate(AjaxRequestTarget target) {
         saleModal.sale(target);
     }
 

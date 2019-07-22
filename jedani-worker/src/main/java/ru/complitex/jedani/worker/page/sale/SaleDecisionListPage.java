@@ -59,7 +59,7 @@ public class SaleDecisionListPage extends DomainListModalPage<SaleDecision> {
     }
 
     @Override
-    protected void onAdd(AjaxRequestTarget target) {
+    protected void onCreate(AjaxRequestTarget target) {
         saleDecisionModal.add(target);
     }
 
