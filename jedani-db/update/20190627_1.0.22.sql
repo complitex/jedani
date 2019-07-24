@@ -76,4 +76,4 @@ CALL createEntityAttribute(20, 23, 4, 'Баллы', 'Бали');
 
 -- Update
 
-INSERT INTO `update` (`version`) VALUE ('20190627_1.0.21');
+INSERT INTO `update` (`version`) VALUE ('20190627_1.0.22');

@@ -576,6 +576,13 @@ public class WorkerPage extends BasePage {
             }
         });
 
+        historyColumns.add(new AbstractColumn<Attribute, String>(new ResourceModel("user"), "user") {
+            @Override
+            public void populateItem(Item<ICellPopulator<Attribute>> cellItem, String componentId, IModel<Attribute> rowModel) {
+                cellItem.add(new Label(componentId, workerService.getSimpleWorkerLabel(rowModel.getObject().getUserId())));
+            }
+        });
+
         SortableDataProvider<Attribute, String> historyDataProvider = new SortableDataProvider<Attribute, String>() {
             @Override
             public Iterator<? extends Attribute> iterator(long first, long count) {
