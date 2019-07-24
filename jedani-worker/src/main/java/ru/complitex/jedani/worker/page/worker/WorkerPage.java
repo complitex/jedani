@@ -284,7 +284,8 @@ public class WorkerPage extends BasePage {
 
             @Override
             public boolean isEnabled() {
-                return isEditEnabled() && worker.isParticipant();
+                return worker.getObjectId() != null && isEditEnabled() && worker.isParticipant() &&
+                        (isAdmin() || isStructureAdmin());
             }
         };
 
@@ -402,7 +403,7 @@ public class WorkerPage extends BasePage {
 
         TextField<String> login = new TextField<>("userLogin", new PropertyModel<>(user, "login"));
         login.setRequired(true);
-        login.setEnabled(!isViewOnly());
+        login.setEnabled(worker.getObjectId() != null && !isViewOnly() && (isAdmin() || isStructureAdmin()));
         form.add(login);
 
         PasswordTextField password = new PasswordTextField("userPassword", new PropertyModel<>(user, "password"));

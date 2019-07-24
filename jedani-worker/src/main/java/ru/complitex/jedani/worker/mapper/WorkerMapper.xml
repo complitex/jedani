@@ -10,7 +10,7 @@
     </resultMap>
 
     <select id="selectMaxJId" resultType="string">
-        select max(lpad(`text`, 6, '0')) from worker_attribute where entity_attribute_id = 1
+        select max(lpad(`text`, 6, '0')) from worker_attribute where entity_attribute_id = 1 and status = 1
     </select>
 
     <select id="selectIsExistJId" resultType="boolean" parameterType="map">
