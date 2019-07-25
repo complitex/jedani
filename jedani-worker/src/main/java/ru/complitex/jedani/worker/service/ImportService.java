@@ -296,7 +296,7 @@ public class ImportService implements Serializable {
         User currentUser = userMapper.getUser(principal.getName());
 
         if (!user.getLogin().isEmpty()) {
-            userMapper.insertUser(user);
+            userMapper.insert(user);
 
             worker.setParentId(user.getId());
             worker.setParentEntityId(User.ENTITY_ID);

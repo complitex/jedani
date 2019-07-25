@@ -13,7 +13,7 @@ public class UserMapper extends BaseMapper {
     @Inject
     private UserGroupMapper userGroupMapper;
 
-    public void insertUser(User user){
+    public void insert(User user){
         sqlSession().insert("insertUser", user);
 
         if (user.getUserGroups() != null) {

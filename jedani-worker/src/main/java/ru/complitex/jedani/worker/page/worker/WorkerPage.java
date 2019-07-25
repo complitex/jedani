@@ -61,7 +61,6 @@ import ru.complitex.domain.component.form.FormGroupAttributeSelectList;
 import ru.complitex.domain.component.form.FormGroupDomainAutoComplete;
 import ru.complitex.domain.entity.*;
 import ru.complitex.domain.mapper.AttributeMapper;
-import ru.complitex.domain.mapper.DomainMapper;
 import ru.complitex.domain.mapper.DomainNodeMapper;
 import ru.complitex.domain.mapper.EntityMapper;
 import ru.complitex.domain.model.DateAttributeModel;
@@ -102,9 +101,6 @@ public class WorkerPage extends BasePage {
 
     @Inject
     private EntityMapper entityMapper;
-
-    @Inject
-    private DomainMapper domainMapper;
 
     @Inject
     private DomainService domainService;
@@ -348,7 +344,7 @@ public class WorkerPage extends BasePage {
                 Long cityTypeId = domain.getNumber(City.CITY_TYPE);
 
                 if (cityTypeId != null){
-                    Domain cityType = domainMapper.getDomain(CityType.ENTITY_NAME, cityTypeId);
+                    CityType cityType = domainService.getDomain(CityType.class, cityTypeId);
 
                     if (cityType != null){
                         return cityType.getTextValue(CityType.SHORT_NAME).toLowerCase() + " ";
@@ -663,6 +659,8 @@ public class WorkerPage extends BasePage {
 
                     user.setRoles(userRolesModel.getObject());
 
+                    Long currentWorkerId = getCurrentWorker().getObjectId();
+
                     if (user.getId() == null){
                         if (userMapper.getUser(user.getLogin()) != null){
                             login.error(getString("error_login_exist"));
@@ -674,7 +672,7 @@ public class WorkerPage extends BasePage {
                             user.setPassword(Hashing.sha256().hashString(UUID.randomUUID().toString(), StandardCharsets.UTF_8).toString());
                         }
 
-                        userMapper.insertUser(user);
+                        workerService.insert(user, currentWorkerId);
                     }else{
                         if (!Objects.equals(user.getLogin(), userMapper.getUser(user.getId()).getLogin())){
                             if (userMapper.getUser(user.getLogin()) != null){
@@ -683,15 +681,15 @@ public class WorkerPage extends BasePage {
                                 return;
                             }
 
-                            userMapper.updateUserLogin(user);
+                            workerService.updateUserLogin(user, currentWorkerId);
                         }
 
                         if (!Strings.isNullOrEmpty(user.getPassword())){
-                            userMapper.updateUserPassword(user);
+                            workerService.updateUserPassword(user, currentWorkerId);
                         }
 
                         if (user.getUserGroups() != null) {
-                            userMapper.updateUserGroups(user);
+                            workerService.updateUserGroups(user, currentWorkerId);
                         }
                     }
 
@@ -721,7 +719,7 @@ public class WorkerPage extends BasePage {
 
                     if (worker.getObjectId() == null){
                         try {
-                            domainMapper.insertDomain(worker);
+                            domainService.insertDomain(worker);
 
                             if (cardNumber != null){
                                 cardObject.setWorkerId(worker.getObjectId());
@@ -746,7 +744,7 @@ public class WorkerPage extends BasePage {
                         boolean moveIndex = !Objects.equals(worker.getManagerId(),
                                 workerMapper.getWorker(worker.getObjectId()).getManagerId()); //todo opt
 
-                        domainMapper.updateDomain(worker);
+                        domainService.updateDomain(worker);
 
                         if (moveIndex){
                             workerService.moveIndex(manager, worker);

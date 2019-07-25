@@ -7,6 +7,7 @@ import ru.complitex.domain.entity.Status;
 import ru.complitex.domain.mapper.DomainMapper;
 import ru.complitex.domain.service.DomainNodeService;
 import ru.complitex.domain.util.Attributes;
+import ru.complitex.jedani.worker.entity.UserHistory;
 import ru.complitex.jedani.worker.entity.Worker;
 import ru.complitex.jedani.worker.mapper.WorkerMapper;
 import ru.complitex.name.service.NameService;
@@ -103,5 +104,33 @@ public class WorkerService implements Serializable {
 
         worker.setStatus(Status.ARCHIVE);
         domainMapper.updateDomain(worker);
+    }
+
+    @Transactional
+    public void insert(User user, Long workerId){
+        userMapper.insert(user);
+
+        workerMapper.insert(new UserHistory(user, workerId));
+    }
+
+    @Transactional
+    public void updateUserLogin(User user, Long workerId){
+        userMapper.updateUserLogin(user);
+
+        workerMapper.insert(new UserHistory(user.getId(), workerId).setLogin(user.getLogin()));
+    }
+
+    @Transactional
+    public void updateUserPassword(User user, Long workerId){
+        userMapper.updateUserPassword(user);
+
+        workerMapper.insert(new UserHistory(user.getId(), workerId).setPassword(user.getPassword()));
+    }
+
+    @Transactional
+    public void updateUserGroups(User user, Long workerId){
+        userMapper.updateUserGroups(user);
+
+        workerMapper.insert(new UserHistory(user.getId(), workerId).setUserGroups(user.getUserGroups()));
     }
 }

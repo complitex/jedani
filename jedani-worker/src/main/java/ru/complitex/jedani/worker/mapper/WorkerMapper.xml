@@ -185,5 +185,9 @@
           from worker d where d.object_id = #{objectId} and d.status = 1
     </select>
 
+    <insert id="insertUserHistory" parameterType="ru.complitex.jedani.worker.entity.UserHistory">
+        insert into user_history (user_id, login, password, `group`, worker_id)
+            value (#{userId}, #{login}, #{password}, #{group}, #{workerId})
+    </insert>
 
 </mapper>
