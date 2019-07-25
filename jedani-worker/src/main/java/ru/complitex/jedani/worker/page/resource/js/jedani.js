@@ -3,8 +3,3 @@ $(function () {
         toggle: false
     });
 });
-
-$(function () {
-    $("#content").css('min-height', ($("#menu").height()) + 'px');
-});
-
