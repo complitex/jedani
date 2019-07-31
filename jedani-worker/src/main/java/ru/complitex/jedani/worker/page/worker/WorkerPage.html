@@ -9,7 +9,7 @@
     <div>
         <div wicket:id="feedback"></div>
 
-        <form wicket:id="form">
+        <form wicket:id="form" autocomplete="off">
             <div class="row">
                 <div class="col-md-2" wicket:id="type"></div>
             </div>
@@ -28,15 +28,15 @@
 
                     <div class="form-group">
                         <label for="userLogin">Логин</label>
-                        <input wicket:id="userLogin" id="userLogin" class="form-control"/>
+                        <input wicket:id="userLogin" id="userLogin" class="form-control" autocomplete="new-login"/>
                         <div>
                             <table>
                                 <tr>
                                     <td>
-                                        <input wicket:id="userPassword" type="password" class="form-control" placeholder="Пароль" autocomplete="off">
+                                        <input wicket:id="userPassword" type="password" class="form-control" placeholder="Пароль" autocomplete="new-password">
                                     </td>
                                     <td>
-                                        <input wicket:id="confirmPassword" type="password" class="form-control" placeholder="Подтверждение пароля" autocomplete="off">
+                                        <input wicket:id="confirmPassword" type="password" class="form-control" placeholder="Подтверждение пароля" autocomplete="new-password">
                                     </td>
                                 </tr>
                             </table>
