@@ -10,20 +10,25 @@ import ru.complitex.jedani.worker.entity.Worker;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author Anatoly A. Ivanov
  * 22.12.2017 9:22
  */
 public class WorkerMapper extends BaseMapper {
+    private static AtomicLong jidIndex = new AtomicLong(0);
+
     public String getNewJId(){
         String maxJId = sqlSession().selectOne("selectMaxJId");
 
-        try {
-            return maxJId != null ? StringUtils.leftPad(Long.parseLong(maxJId) + 1 + "", 6, '0') : null;
-        } catch (NumberFormatException e) {
-            return null;
+        long jid = Long.parseLong(maxJId);
+
+        if (jidIndex.get() <= jid){
+            jidIndex.set(jid);
         }
+
+        return StringUtils.leftPad(jidIndex.incrementAndGet() + "", 6, '0');
     }
 
     public boolean isExistJId(Long objectId, String jId){
