@@ -30,6 +30,8 @@ public class EntityAttribute implements Serializable{
 
     private StringType stringType = StringType.CAPITALIZE;
 
+    private boolean required;
+
     public EntityAttribute() {
     }
 
@@ -188,6 +190,16 @@ public class EntityAttribute implements Serializable{
 
     public EntityAttribute setStringType(StringType stringType) {
         this.stringType = stringType;
+
+        return this;
+    }
+
+    public boolean isRequired() {
+        return required;
+    }
+
+    public EntityAttribute setRequired(boolean required) {
+        this.required = required;
 
         return this;
     }

@@ -27,7 +27,7 @@ public class CountryListPage extends DomainListModalPage<Country> {
     protected List<EntityAttribute> getEntityAttributes(Entity entity) {
         List<EntityAttribute> list = new ArrayList<>();
 
-        list.add(entity.getEntityAttribute(Country.NAME));
+        list.add(entity.getEntityAttribute(Country.NAME).setRequired(true));
         list.add(entity.getEntityAttribute(Country.SHORT_NAME));
         list.add(entity.getEntityAttribute(Country.CURRENCY)
                 .withReference(Currency.ENTITY_NAME, Currency.NAME));

@@ -22,6 +22,8 @@ public class RegionListPage extends DomainListModalPage<Region> {
 
     @Override
     protected List<EntityAttribute> getEntityAttributes(Entity entity) {
+        entity.getEntityAttribute(Region.NAME).setRequired(true);
+
         return entity.getEntityAttributes(Region.NAME, Region.SHORT_NAME);
     }
 }

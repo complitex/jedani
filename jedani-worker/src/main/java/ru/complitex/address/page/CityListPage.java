@@ -26,7 +26,7 @@ public class CityListPage extends DomainListModalPage<City> {
         List<EntityAttribute> list = new ArrayList<>();
 
         list.add(entity.getEntityAttribute(City.CITY_TYPE).withReference(CityType.ENTITY_NAME, CityType.NAME));
-        list.add(entity.getEntityAttribute(City.NAME));
+        list.add(entity.getEntityAttribute(City.NAME).setRequired(true));
         list.add(entity.getEntityAttribute(City.SHORT_NAME));
 
         return list;

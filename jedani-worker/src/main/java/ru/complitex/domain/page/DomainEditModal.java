@@ -165,12 +165,14 @@ public class DomainEditModal<T extends Domain<T>> extends AbstractDomainEditModa
 
                 if (input1 != null){
                     input1.setLabel(labelModel);
+                    input1.setRequired(entityAttribute.isRequired());
                 }
                 if (input2 != null){
                     input2.setLabel(labelModel);
                 }
                 if (component instanceof FormComponent){
                     ((FormComponent)component).setLabel(labelModel);
+                    ((FormComponent) component).setRequired(entityAttribute.isRequired());
                 }
 
                 group.add(input1 != null ? input1 : new EmptyPanel("input1").setVisible(false));
