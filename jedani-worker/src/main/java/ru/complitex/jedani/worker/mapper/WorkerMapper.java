@@ -24,7 +24,7 @@ public class WorkerMapper extends BaseMapper {
 
         long jid = Long.parseLong(maxJId);
 
-        if (jidIndex.get() <= jid){
+        if (jidIndex.get() < jid){
             jidIndex.set(jid);
         }
 
