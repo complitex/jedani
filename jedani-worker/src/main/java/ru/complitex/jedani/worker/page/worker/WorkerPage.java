@@ -307,7 +307,7 @@ public class WorkerPage extends BasePage {
             public boolean isEnabled() {
                 return isEditEnabled();
             }
-        });
+        }.setRequired(true));
         form.add(new FormGroupDateTextField("birthday", new DateAttributeModel(worker, Worker.BIRTHDAY))
                 .setEnabled(!isViewOnly()));
         form.add(new FormGroupAttributeInputList("phone", Model.of(worker.getOrCreateAttribute(Worker.PHONE))){
@@ -322,6 +322,7 @@ public class WorkerPage extends BasePage {
             }
         });
         form.add(new FormGroupTextField<>("email", new TextAttributeModel(worker, Worker.EMAIL, StringType.LOWER_CASE))
+                .setRequired(true)
                 .setEnabled(!isViewOnly()));
 
         FormGroupAttributeSelectList city, region;
