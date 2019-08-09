@@ -88,8 +88,12 @@ public class PromotionModal extends Modal<Promotion> {
         container.add(new FormGroupDateTextField("end", new DateAttributeModel(getModel(), Promotion.END)));
         container.add(new FormGroupDomainAutoComplete("country", Country.ENTITY_NAME, Country.NAME,
                 new NumberAttributeModel(getModel(), Promotion.COUNTRY)).setRequired(true));
-        container.add(new FormGroupBorder("name", new ResourceModel("name"))
-                .add(new TextArea<>("name", new TextValueModel(getModel(), Promotion.NAME,
+        container.add(new FormGroupBorder("name", new ResourceModel("name")){
+            @Override
+            protected boolean isRequired() {
+                return true;
+            }
+        }.add(new TextArea<>("name", new TextValueModel(getModel(), Promotion.NAME,
                         Locales.getSystemLocaleId())).setRequired(true)));
 
         container.add(new DownloadLink("downloadFile", new LoadableDetachableModel<File>() {

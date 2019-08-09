@@ -117,7 +117,12 @@ public class DomainEditModal<T extends Domain<T>> extends AbstractDomainEditModa
                 onAttribute(attribute);
                 entityService.loadReference(attribute.getEntityAttribute());
 
-                FormGroupBorder group = new FormGroupBorder("group", Model.of(entityAttribute.getValue().getText()));
+                FormGroupBorder group = new FormGroupBorder("group", Model.of(entityAttribute.getValue().getText())){
+                    @Override
+                    protected boolean isRequired() {
+                        return entityAttribute.isRequired();
+                    }
+                };
                 FormComponent input1 = null;
                 FormComponent input2 = null;
                 Component component = getComponent("component", attribute);

@@ -112,7 +112,12 @@ public abstract class DomainEditPage<T extends Domain> extends BasePage{
                 onAttribute(attribute);
                 entityService.loadReference(attribute.getEntityAttribute());
 
-                FormGroupBorder group = new FormGroupBorder("group", Model.of(entityAttribute.getValue().getText()));
+                FormGroupBorder group = new FormGroupBorder("group", Model.of(entityAttribute.getValue().getText())){
+                    @Override
+                    protected boolean isRequired() {
+                        return entityAttribute.isRequired();
+                    }
+                };
                 FormComponent input1 = null;
                 FormComponent input2 = null;
                 Component component = getComponent("component", attribute);
