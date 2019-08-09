@@ -29,7 +29,13 @@ public class FormGroupDomainAutoComplete extends Panel{
         setOutputMarkupId(true);
         setOutputMarkupPlaceholderTag(true);
 
-        FormGroupBorder group = new FormGroupBorder("group", label);
+        FormGroupBorder group = new FormGroupBorder("group", label){
+            @Override
+            protected boolean isRequired() {
+                return domainAutoComplete.isRequired() ||
+                        domainAutoComplete.getAutoCompleteTextField().isRequired();
+            }
+        };
 
         group.add(domainAutoComplete = new DomainAutoComplete("input", entityName,
                 entityService.getEntityAttribute(entityName, entityAttributeId), model, t -> {

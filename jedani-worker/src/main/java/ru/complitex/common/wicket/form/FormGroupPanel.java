@@ -18,7 +18,16 @@ public class FormGroupPanel extends Panel {
         setOutputMarkupId(true);
         setOutputMarkupPlaceholderTag(true);
 
-        FormGroupBorder group = new FormGroupBorder("group", new ResourceModel(id));
+        FormGroupBorder group = new FormGroupBorder("group", new ResourceModel(id)){
+            @Override
+            protected boolean isRequired() {
+                if (component instanceof FormComponent){
+                    ((FormComponent) component).isRequired();
+                }
+
+                return false;
+            }
+        };
         add(group);
 
         group.add(component);

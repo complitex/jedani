@@ -22,7 +22,12 @@ public class FormGroupAttributeInputList extends Panel {
     public FormGroupAttributeInputList(String id, IModel<String> label, IModel<Attribute> model) {
         super(id);
 
-        FormGroupBorder group = new FormGroupBorder("group", label);
+        FormGroupBorder group = new FormGroupBorder("group", label){
+            @Override
+            protected boolean isRequired() {
+                return FormGroupAttributeInputList.this.isRequired();
+            }
+        };
 
         group.add(attributeInputList = new AttributeInputList("input", model){
             @Override

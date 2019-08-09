@@ -34,7 +34,12 @@ public class FormGroupAttributeSelect extends Panel {
                                     Long refEntityAttributeId) {
         super(id);
 
-        FormGroupBorder group = new FormGroupBorder("group", label);
+        FormGroupBorder group = new FormGroupBorder("group", label){
+            @Override
+            protected boolean isRequired() {
+                return attributeSelect.isRequired();
+            }
+        };
 
         if (isEnabledInHierarchy()){
             attributeSelect = new AttributeSelect("select", model, refEntityName, refEntityAttributeId);

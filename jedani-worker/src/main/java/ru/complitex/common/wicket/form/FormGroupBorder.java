@@ -4,6 +4,7 @@ import de.agilecoders.wicket.jquery.JQuery;
 import de.agilecoders.wicket.jquery.function.Function;
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.border.Border;
 import org.apache.wicket.markup.html.form.FormComponent;
@@ -25,7 +26,13 @@ public class FormGroupBorder extends Border {
 
         setOutputMarkupId(true);
 
-        addToBorder(new Label("label", labelModel));
+        addToBorder(new Label("label", labelModel){
+            @Override
+            public void onComponentTagBody(final MarkupStream markupStream, final ComponentTag openTag){
+                replaceComponentTagBody(markupStream, openTag, getDefaultModelObjectAsString() +
+                        (isRequired() ? "*" : ""));
+            }
+        });
 
         info = new Label("info", new Model<>());
         info.setOutputMarkupId(true);
@@ -73,5 +80,9 @@ public class FormGroupBorder extends Border {
                         .chain(new Function("hide"))
                         .build();
 
+    }
+
+    protected boolean isRequired(){
+        return false;
     }
 }

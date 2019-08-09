@@ -26,7 +26,12 @@ public class FormGroupAttributeSelectList extends Panel {
 
         setOutputMarkupId(true);
 
-        FormGroupBorder group = new FormGroupBorder("group", label);
+        FormGroupBorder group = new FormGroupBorder("group", label){
+            @Override
+            protected boolean isRequired() {
+                return attributeSelectList.isRequired();
+            }
+        };
 
         group.add(attributeSelectList = new AttributeSelectList("select", model, refEntityName,
                 refEntityAttributeId, parentListModel, upperCase){

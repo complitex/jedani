@@ -24,7 +24,12 @@ public class FormGroupTextField<T> extends Panel{
 
         setOutputMarkupId(true);
 
-        FormGroupBorder group = new FormGroupBorder("group", label);
+        FormGroupBorder group = new FormGroupBorder("group", label){
+            @Override
+            protected boolean isRequired() {
+                return FormGroupTextField.this.isRequired();
+            }
+        };
         group.add(textField = new TextField<T>("input", model, type){
             @Override
             protected void onComponentTag(final ComponentTag tag){
