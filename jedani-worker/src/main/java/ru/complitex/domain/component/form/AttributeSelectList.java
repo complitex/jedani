@@ -1,6 +1,5 @@
 package ru.complitex.domain.component.form;
 
-import com.google.common.base.Strings;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.select.BootstrapSelect;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.select.BootstrapSelectConfig;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -55,7 +54,7 @@ public class AttributeSelectList extends FormComponentPanel<Attribute> {
         add(container);
 
         List<Domain> domains = domainMapper.getDomains(FilterWrapper.of(new Domain(refEntityName)));
-        domains.removeIf(d -> Strings.isNullOrEmpty(d.getAttribute(refEntityAttributeId).getValue(getLocale()).getText()));
+        domains.removeIf(d -> d.getAttribute(refEntityAttributeId) == null);
         domains.sort(Comparator.comparing(d -> d.getAttribute(refEntityAttributeId).getValue(getLocale()).getText()));
 
         Map<Long, String> names = domains.stream().collect(Collectors.toMap(Domain::getId,
