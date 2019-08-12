@@ -88,8 +88,8 @@
     <!--suppress SqlResolve -->
     <select id="selectWorkers" parameterType="ru.complitex.common.entity.FilterWrapper" resultMap="workerResultMap">
         select d.*, '${object.entityName}' entity_name,
-            (select count(w.object_id) from worker w where w.left > d.left and d.right > w.right and w.status = 1)
-              sub_worker_count,
+            (select count(w.object_id) from worker w where w.left > (select d.left) and (select d.right) > w.right
+                and w.status = 1) sub_worker_count,
             <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsSelect"/>
         from (
             select (dd.d_id) dd_id
