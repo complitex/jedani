@@ -225,8 +225,8 @@ public class BasePage extends WebPage{
         catalog.add(new MenuLink("mk_status", MkStatusListPage.class).setVisible(isAdmin()));
         catalog.add(new MenuLink("currency", CurrencyListPage.class).setVisible(isAdmin()));
         catalog.add(new MenuLink("exchangeRate", ExchangeRateListPage.class));
-        catalog.add(new MenuLink("rank", RankListPage.class));
-        catalog.add(new MenuLink("reward_type", RewardTypeListPage.class));
+        catalog.add(new MenuLink("rank", RankListPage.class).setVisible(isAdmin()));
+        catalog.add(new MenuLink("reward_type", RewardTypeListPage.class).setVisible(isAdmin()));
 
         WebMarkupContainer workers = new WebMarkupContainer("workers");
         workers.setVisible(isAdmin() || isStructureAdmin());
