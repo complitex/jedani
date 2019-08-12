@@ -37,7 +37,7 @@ public class FormGroupAttributeSelect extends Panel {
         FormGroupBorder group = new FormGroupBorder("group", label){
             @Override
             protected boolean isRequired() {
-                return attributeSelect.isRequired();
+                return attributeSelect != null && attributeSelect.isRequired();
             }
         };
 
