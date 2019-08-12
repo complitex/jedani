@@ -4,7 +4,6 @@ import de.agilecoders.wicket.jquery.JQuery;
 import de.agilecoders.wicket.jquery.function.Function;
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.ComponentTag;
-import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.border.Border;
 import org.apache.wicket.markup.html.form.FormComponent;
@@ -28,9 +27,12 @@ public class FormGroupBorder extends Border {
 
         addToBorder(new Label("label", labelModel){
             @Override
-            public void onComponentTagBody(final MarkupStream markupStream, final ComponentTag openTag){
-                replaceComponentTagBody(markupStream, openTag, getDefaultModelObjectAsString() +
-                        (isRequired() ? "*" : ""));
+            protected void onComponentTag(ComponentTag tag) {
+                if (isRequired()){
+                    super.onComponentTag(tag);
+
+                    tag.put("required", "required");
+                }
             }
         });
 

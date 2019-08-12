@@ -7,7 +7,6 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.markup.ComponentTag;
-import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
@@ -41,9 +40,12 @@ public class FormGroupDateTextField extends Panel{
             protected Component newLabel(String id, IModel<String> model) {
                 return new Label(id, model){
                     @Override
-                    public void onComponentTagBody(final MarkupStream markupStream, final ComponentTag openTag){
-                        replaceComponentTagBody(markupStream, openTag, getDefaultModelObjectAsString() +
-                                (isRequired() ? "*" : ""));
+                    protected void onComponentTag(ComponentTag tag) {
+                        super.onComponentTag(tag);
+
+                        if (isRequired()){
+                            tag.put("required", "required");
+                        }
                     }
                 };
             }

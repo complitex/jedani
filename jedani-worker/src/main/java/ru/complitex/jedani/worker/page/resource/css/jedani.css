@@ -61,6 +61,11 @@ body {
 li.disabled a, li.disabled span{
     cursor: default !important;
 }
+
+form label[required=required]:after{
+    content: "*";
+}
+
 .domain-id-column{
     width: 55px
 }

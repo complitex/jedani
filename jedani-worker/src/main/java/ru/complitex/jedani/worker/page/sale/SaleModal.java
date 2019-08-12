@@ -167,6 +167,7 @@ public class SaleModal extends Modal<Sale> {
                 })
                 .with(new BootstrapSelectConfig().withNoneSelectedText(""))
                 .setNullValid(false)
+                .setRequired(true)
                 .add(OnChangeAjaxBehavior.onChange(target -> {
                     saleItemsModel.getObject().clear();
                     saleItemsModel.getObject().add(new SaleItem());

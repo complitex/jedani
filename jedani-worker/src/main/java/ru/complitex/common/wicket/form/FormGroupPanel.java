@@ -22,7 +22,7 @@ public class FormGroupPanel extends Panel {
             @Override
             protected boolean isRequired() {
                 if (component instanceof FormComponent){
-                    ((FormComponent) component).isRequired();
+                    return ((FormComponent) component).isRequired();
                 }
 
                 return false;
