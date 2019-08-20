@@ -1,5 +1,6 @@
 package ru.complitex.jedani.worker.page.worker;
 
+import de.agilecoders.wicket.core.markup.html.bootstrap.behavior.CssClassNameAppender;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxLink;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapBookmarkablePageLink;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
@@ -31,10 +32,12 @@ import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.component.datatable.DomainActionColumn;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
+import ru.complitex.domain.entity.Status;
 import ru.complitex.domain.entity.StringType;
 import ru.complitex.domain.page.DomainListPage;
 import ru.complitex.domain.service.EntityService;
 import ru.complitex.jedani.worker.entity.Worker;
+import ru.complitex.jedani.worker.entity.WorkerStatus;
 import ru.complitex.jedani.worker.mapper.WorkerMapper;
 import ru.complitex.jedani.worker.security.JedaniRoles;
 import ru.complitex.name.entity.FirstName;
@@ -81,6 +84,8 @@ public class WorkerListPage extends DomainListPage<Worker>{
     @Override
     protected FilterWrapper<Worker> newFilterWrapper(Worker worker) {
         FilterWrapper<Worker> filterWrapper =  super.newFilterWrapper(worker);
+
+        filterWrapper.setStatus(FilterWrapper.STATUS_ACTIVE_AND_ARCHIVE);
 
         if (getCurrentWorker().isRegionalLeader()) {
             filterWrapper.put(Worker.FILTER_REGION_IDS, getCurrentWorker().getRegionIdsString());
@@ -240,5 +245,16 @@ public class WorkerListPage extends DomainListPage<Worker>{
                 return "domain-id-column worker-action";
             }
         };
+    }
+
+    @Override
+    protected void onRowItem(Item<Worker> item) {
+        super.onRowItem(item);
+
+        if (item.getModelObject().getStatus().equals(Status.ACTIVE) &&
+                item.getModelObject().getWorkerStatus() != null &&
+                item.getModelObject().getWorkerStatus() == WorkerStatus.MANAGER_CHANGED){
+            item.add(new CssClassNameAppender("info"));
+        }
     }
 }

@@ -2,6 +2,7 @@ package ru.complitex.jedani.worker.entity;
 
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.DomainNode;
+import ru.complitex.domain.entity.Status;
 
 import java.util.Date;
 import java.util.Objects;
@@ -30,7 +31,7 @@ public class Worker extends DomainNode<Worker> {
     public static final long UPDATED_AT = 13;
     public static final long INVOLVED_AT = 14;
     public static final long MK_STATUS = 15;
-    public static final long FIRED_STATUS = 16;
+    public static final long STATUS = 16;
     public static final long MANAGER_ID = 17;
     public static final long RESET_PASSWORD_TOKEN = 18;
     public static final long RESET_PASSWORD_SEND_AT = 19;
@@ -155,8 +156,10 @@ public class Worker extends DomainNode<Worker> {
         return getNumber(MANAGER_ID);
     }
 
-    public void setManagerId(Long managerId){
+    public Worker setManagerId(Long managerId){
         setNumber(MANAGER_ID, managerId);
+
+        return this;
     }
 
     public Long getType(){
@@ -177,5 +180,21 @@ public class Worker extends DomainNode<Worker> {
 
     public String getRegionIdsString(){
         return getNumberValuesString(REGIONS);
+    }
+
+    public Worker setStatus(Status status) {
+        super.setStatus(status);
+
+        return this;
+    }
+
+    public Long getWorkerStatus(){
+        return getNumber(STATUS);
+    }
+
+    public Worker setWorkerStatus(Long workerStatus){
+        setNumber(STATUS, workerStatus);
+
+        return this;
     }
 }

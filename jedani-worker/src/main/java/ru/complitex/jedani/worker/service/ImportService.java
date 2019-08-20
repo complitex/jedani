@@ -241,7 +241,7 @@ public class ImportService implements Serializable {
                     worker.setDate(Worker.BIRTHDAY, dayFormat.parse(columns[22]));
                 }
 
-                worker.setText(Worker.FIRED_STATUS, columns[23]);
+                worker.setText(Worker.STATUS, columns[23]);
 
                 worker.setText(Worker.IMPORT_OLD_PARENT_ID, columns[24]);
                 worker.setText(Worker.IMPORT_OLD_CHILD_ID, columns[25]);

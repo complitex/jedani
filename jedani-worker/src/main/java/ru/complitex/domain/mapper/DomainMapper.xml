@@ -93,8 +93,8 @@
         </if>
 
         <where>
-            <if test="parentId != null">and d.parent_id = #{parentId} and d.`status` in (1, 3, 4)</if>
-            <if test="objectId != null">and d.object_id = #{objectId} and d.`status` in (1, 3, 4)</if>
+            <if test="parentId != null">and d.parent_id = #{parentId} and d.`status` > 0</if>
+            <if test="objectId != null">and d.object_id = #{objectId} and d.`status` > 0</if>
             <if test="attributes != null and !attributes.isEmpty">
                 <foreach collection="attributes" index="i" item="a">
                     <if test="a.text != null">and (a${i}.text = #{a.text} and a${i}.status = 1)</if>
@@ -291,12 +291,20 @@
                 </foreach>
             </if>
 
+
             <choose>
-                <when test="object.status != null">
-                    and d.status = #{object.status}
+                <when test="status == 'active_and_archive'">
+                    and d.status in (1, 2)
                 </when>
                 <otherwise>
-                    and d.status = 1
+                    <choose>
+                        <when test="object.status != null">
+                            and d.status = #{object.status}
+                        </when>
+                        <otherwise>
+                            and d.status = 1
+                        </otherwise>
+                    </choose>
                 </otherwise>
             </choose>
         </where>

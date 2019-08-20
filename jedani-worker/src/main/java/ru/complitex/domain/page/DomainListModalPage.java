@@ -21,10 +21,7 @@ import ru.complitex.common.wicket.datatable.DataProvider;
 import ru.complitex.common.wicket.datatable.FilterDataForm;
 import ru.complitex.common.wicket.datatable.FilterDataTable;
 import ru.complitex.domain.component.datatable.*;
-import ru.complitex.domain.entity.Attribute;
-import ru.complitex.domain.entity.Domain;
-import ru.complitex.domain.entity.Entity;
-import ru.complitex.domain.entity.EntityAttribute;
+import ru.complitex.domain.entity.*;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
 import ru.complitex.domain.util.Domains;
@@ -160,6 +157,10 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage{
                 Item<T> item = super.newRowItem(id, index, model);
 
                 onRowItem(item);
+
+                if (item.getModelObject().getStatus().equals(Status.ARCHIVE)){
+                    item.add(new CssClassNameAppender("danger"));
+                }
 
                 return item;
             }

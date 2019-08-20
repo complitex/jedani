@@ -6,6 +6,7 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.dialog.Modal;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.extensions.ajax.markup.html.AjaxIndicatorAppender;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
@@ -74,7 +75,7 @@ public class WorkerRemoveModal extends Modal<Worker> {
 
                 appendCloseDialogJavaScript(target);
             }
-        }.setLabel(new ResourceModel("delete")));
+        }.setLabel(new ResourceModel("delete")).add(new AjaxIndicatorAppender()));
 
         addButton(new BootstrapAjaxLink<Void>(Modal.BUTTON_MARKUP_ID, Buttons.Type.Default) {
             @Override

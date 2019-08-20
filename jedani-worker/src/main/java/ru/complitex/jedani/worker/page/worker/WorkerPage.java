@@ -745,6 +745,10 @@ public class WorkerPage extends BasePage {
                         boolean moveIndex = !Objects.equals(worker.getManagerId(),
                                 workerMapper.getWorker(worker.getObjectId()).getManagerId()); //todo opt
 
+                        if (moveIndex){
+                            worker.setWorkerStatus(WorkerStatus.MANAGER_CHANGED);
+                        }
+
                         domainService.updateDomain(worker);
 
                         if (moveIndex){
@@ -944,6 +948,13 @@ public class WorkerPage extends BasePage {
 
                 rowItem.add(new CssClassNameAppender("pointer"));
 
+                if (rowItem.getModelObject().getStatus().equals(Status.ARCHIVE)){
+                    rowItem.add(new CssClassNameAppender("danger"));
+                }else if (rowItem.getModelObject().getWorkerStatus() != null &&
+                        rowItem.getModelObject().getWorkerStatus() == WorkerStatus.MANAGER_CHANGED){
+                    rowItem.add(new CssClassNameAppender("info"));
+                }
+
                 return rowItem;
 
             }
@@ -969,7 +980,8 @@ public class WorkerPage extends BasePage {
     }
 
     protected FilterWrapper<Worker> newFilterWrapper() {
-        return FilterWrapper.of(new Worker(worker.getLeft(), worker.getRight(), worker.getLevel()));
+        return FilterWrapper.of(new Worker(worker.getLeft(), worker.getRight(), worker.getLevel()))
+                .setStatus(FilterWrapper.STATUS_ACTIVE_AND_ARCHIVE);
     }
 
     @SuppressWarnings("Duplicates")

@@ -26,6 +26,7 @@ import ru.complitex.domain.component.datatable.DomainParentColumn;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
+import ru.complitex.domain.entity.Status;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
 import ru.complitex.domain.util.Domains;
@@ -231,6 +232,10 @@ public class DomainListPage<T extends Domain> extends BasePage{
             });
 
             item.add(new CssClassNameAppender("pointer"));
+        }
+
+        if (item.getModelObject().getStatus().equals(Status.ARCHIVE)){
+            item.add(new CssClassNameAppender("danger"));
         }
     }
 

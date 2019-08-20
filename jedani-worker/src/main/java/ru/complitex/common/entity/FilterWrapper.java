@@ -12,6 +12,8 @@ public class FilterWrapper<T extends Serializable> implements Serializable {
     public static final String FILTER_EQUAL = "equal";
     public static final String FILTER_SEARCH = "search";
 
+    public static final String STATUS_ACTIVE_AND_ARCHIVE = "active_and_archive";
+
     private T object;
     private Long first = 0L;
     private Long count = 0L;
@@ -20,6 +22,8 @@ public class FilterWrapper<T extends Serializable> implements Serializable {
     private Map<String, Object> map = new HashMap<>();
 
     private String filter;
+
+    private String status;
 
     public FilterWrapper() {
     }
@@ -146,6 +150,16 @@ public class FilterWrapper<T extends Serializable> implements Serializable {
 
     public FilterWrapper<T> setFilter(String filter) {
         this.filter = filter;
+
+        return this;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public FilterWrapper<T> setStatus(String status) {
+        this.status = status;
 
         return this;
     }

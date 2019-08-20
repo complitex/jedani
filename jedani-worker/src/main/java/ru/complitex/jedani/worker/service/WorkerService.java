@@ -2,6 +2,7 @@ package ru.complitex.jedani.worker.service;
 
 import org.apache.wicket.util.lang.Objects;
 import org.mybatis.cdi.Transactional;
+import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.Status;
 import ru.complitex.domain.mapper.DomainMapper;
@@ -9,6 +10,7 @@ import ru.complitex.domain.service.DomainNodeService;
 import ru.complitex.domain.util.Attributes;
 import ru.complitex.jedani.worker.entity.UserHistory;
 import ru.complitex.jedani.worker.entity.Worker;
+import ru.complitex.jedani.worker.entity.WorkerStatus;
 import ru.complitex.jedani.worker.mapper.WorkerMapper;
 import ru.complitex.name.service.NameService;
 import ru.complitex.user.entity.User;
@@ -102,8 +104,24 @@ public class WorkerService implements Serializable {
         user.setPassword(UUID.randomUUID().toString());
         userMapper.updateUserPassword(user);
 
+        workerMapper.getWorkers(FilterWrapper.of(new Worker().setManagerId(worker.getObjectId())))
+                .forEach(w -> {
+                    w.setManagerId(worker.getManagerId());
+                    w.setWorkerStatus(WorkerStatus.MANAGER_CHANGED);
+                    domainMapper.updateDomain(w);
+                });
+
+        workerMapper.getWorkers(FilterWrapper.of(new Worker().setManagerId(worker.getObjectId())
+                .setStatus(Status.ARCHIVE))).forEach(w -> {
+            w.setManagerId(worker.getManagerId());
+            w.setWorkerStatus(WorkerStatus.MANAGER_CHANGED);
+            domainMapper.updateDomain(w);
+        });
+
         worker.setStatus(Status.ARCHIVE);
         domainMapper.updateDomain(worker);
+
+        rebuildIndex();
     }
 
     @Transactional

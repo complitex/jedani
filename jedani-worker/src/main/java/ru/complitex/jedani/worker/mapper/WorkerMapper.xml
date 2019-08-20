@@ -19,12 +19,6 @@
         <if test="objectId != null">and w.object_id != #{objectId}</if>
     </select>
 
-    <select id="selectSubWorkersCount" parameterType="long" resultType="int">
-        select count(wa.id)from  worker_attribute wa
-          where wa.entity_attribute_id = 19 and wa.status = 1 and (wa.text = #{objectId} or
-            wa.text like concat('%/', #{objectId}, '/%') or  wa.text like concat('%/', #{objectId}));
-    </select>
-
     <sql id="selectWorkersWhereNode">
         <if test="object.left != null and object.right != null">
             and d.left > #{object.left} and #{object.right} > d.right
@@ -182,7 +176,7 @@
 
     <select id="selectWorkerLevelDepth" parameterType="long" resultType="long">
         select ifnull((select max(w.level) - d.level from worker w where w.left > d.left and d.right > w.right and w.status = 1), 0)
-          from worker d where d.object_id = #{objectId} and d.status = 1
+          from worker d where d.object_id = #{objectId}
     </select>
 
     <insert id="insertUserHistory" parameterType="ru.complitex.jedani.worker.entity.UserHistory">
