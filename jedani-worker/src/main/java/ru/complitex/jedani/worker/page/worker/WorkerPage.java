@@ -616,6 +616,12 @@ public class WorkerPage extends BasePage {
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
                 try {
+                    if (worker.isParticipant() && worker.getManagerId() == null){
+                        error(getString("error_manager_is_empty"));
+                        target.add(feedback);
+                        return;
+                    }
+
                     if (!worker.isParticipant()){
                         worker.setManagerId(null);
                         worker.setJId(null);
