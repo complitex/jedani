@@ -58,6 +58,16 @@
         </if>
     </sql>
 
+    <sql id="selectWorkersWhere">
+        <if test="map.level != null">
+            and d.level = #{map.level}
+        </if>
+        <if test="map.subWorkersCount != null">
+            and (select count(w.object_id) from worker w where w.left > (select d.left) and (select d.right) > w.right
+                and w.status = 1) = #{map.subWorkersCount}
+        </if>
+    </sql>
+
     <sql id="selectWorkersSelectSort">
         <if test="sortProperty != null">
             <choose>
@@ -96,6 +106,7 @@
                 <include refid="selectWorkersFromLogin"/>
                 <include refid="selectWorkersFromRegion"/>
                 <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsWhere"/>
+                <include refid="selectWorkersWhere"/>
                 <include refid="selectWorkersWhereNode"/>
                 <include refid="selectWorkersWhereLogin"/>
                 <include refid="selectWorkersWhereRegion"/>
@@ -123,6 +134,7 @@
         <include refid="selectWorkersFromLogin"/>
         <include refid="selectWorkersFromRegion"/>
         <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsWhere"/>
+        <include refid="selectWorkersWhere"/>
         <include refid="selectWorkersWhereNode"/>
         <include refid="selectWorkersWhereLogin"/>
         <include refid="selectWorkersWhereRegion"/>

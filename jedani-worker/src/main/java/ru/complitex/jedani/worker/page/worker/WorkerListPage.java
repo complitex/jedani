@@ -16,7 +16,6 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
@@ -148,7 +147,7 @@ public class WorkerListPage extends DomainListPage<Worker>{
 
             @Override
             public Component getFilter(String componentId, FilterDataForm<?> form) {
-                return new TextDataFilter<>(componentId, Model.of(""), form);
+                return new TextDataFilter<>(componentId, new PropertyModel<>(form.getModel(), "map.subWorkersCount"), form);
             }
         });
 
@@ -161,7 +160,7 @@ public class WorkerListPage extends DomainListPage<Worker>{
 
             @Override
             public Component getFilter(String componentId, FilterDataForm<?> form) {
-                return new TextDataFilter<>(componentId, Model.of(""), form);
+                return new TextDataFilter<>(componentId, new PropertyModel<>(form.getModel(), "map.level"), form);
             }
         });
     }
