@@ -6,7 +6,9 @@ import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.util.template.PackageTextTemplate;
 import ru.complitex.common.entity.FilterWrapper;
+import ru.complitex.domain.entity.Status;
 import ru.complitex.jedani.worker.entity.Worker;
+import ru.complitex.jedani.worker.entity.WorkerStatus;
 import ru.complitex.jedani.worker.graph.resource.CytoscapeCoseJsResourceReference;
 import ru.complitex.jedani.worker.mapper.WorkerMapper;
 import ru.complitex.name.service.NameService;
@@ -15,6 +17,7 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -35,7 +38,9 @@ public class WorkerGraphPanel extends Panel {
         super(id);
 
         List<Worker> workers = new ArrayList<>(workerMapper.getWorkers(FilterWrapper.of(
-                new Worker(worker.getLeft(), worker.getRight(), worker.getLevel())).put("levelDepth", levelDepth)));
+                new Worker(worker.getLeft(), worker.getRight(), worker.getLevel()))
+                .setStatus(FilterWrapper.STATUS_ACTIVE_AND_ARCHIVE)
+                .put("levelDepth", levelDepth)));
 
         elements =  " {data: {id: '" + worker.getObjectId() + "', " +
                 "label: '" + worker.getText(Worker.J_ID) + "\\n" +
@@ -43,7 +48,7 @@ public class WorkerGraphPanel extends Panel {
 //                + "\\n" +
 //                nameService.getFirstName(worker.getNumber(Worker.FIRST_NAME)) + "\\n" +
 //                nameService.getMiddleName(worker.getNumber(Worker.MIDDLE_NAME))
-                + "'}}";
+                + "'}, " + getStyle(worker, 223) + "}";
 
         if (!workers.isEmpty()) {
             elements += "," + workers.stream()
@@ -56,8 +61,7 @@ public class WorkerGraphPanel extends Panel {
 //                                + "\\n" +
 //                                nameService.getFirstName(w.getNumber(Worker.FIRST_NAME)) + "\\n" +
 //                                nameService.getMiddleName(w.getNumber(Worker.MIDDLE_NAME))
-                                + "'}, " +
-                                "style: {'background-color': 'rgb("+color+", "+color+", "+color+")'}}";
+                                + "'}, " + getStyle(w, color) + "}";
                     })
                     .collect(Collectors.joining(","));
 
@@ -72,6 +76,18 @@ public class WorkerGraphPanel extends Panel {
                 nameService.getLastName(worker.getLastNameId()) + " " +
                 nameService.getFirstName(worker.getFistNameId()) + " " +
                 nameService.getMiddleName(worker.getMiddleNameId());
+    }
+
+    private String getStyle(Worker w, int color) {
+        String style = "";
+        if (Objects.equals(w.getStatus(), Status.ARCHIVE)){
+            style = "style: {'background-color': 'hsl(0, 43%, "+(color-148)+"%)'}";
+        }else if (Objects.equals(w.getWorkerStatus(), WorkerStatus.MANAGER_CHANGED)){
+            style = "style: {'background-color': 'hsl(200, 65%, "+(color-148)+"%)'}";
+        }else{
+            style = "style: {'background-color': 'rgb("+color+", "+color+", "+color+")'}";
+        }
+        return style;
     }
 
     @Override

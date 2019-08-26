@@ -63,7 +63,12 @@
                     <div wicket:id="mkStatus"></div>
 
                     <div class="form-group" wicket:id="manager">
-                        <label for="managerFio">Вышестоящий сотрудник</label>
+                        <div>
+                            <label for="managerFio">Вышестоящий сотрудник*</label>
+                            <a wicket:id="managerLink" class="pull-right" style="padding-right: 12px">
+                                <i class="glyphicon glyphicon-share-alt"></i>
+                            </a>
+                        </div>
                         <div wicket:id="managerFio" id="managerFio"></div>
                         <div wicket:id="managerPhones" class="form-control form-control-info" id="managerPhones" disabled></div>
                         <span wicket:id="managerEmail" class="form-control form-control-info" id="managerEmail" disabled></span>

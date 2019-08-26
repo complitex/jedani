@@ -14,6 +14,7 @@ import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.authorization.UnauthorizedInstantiationException;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
@@ -462,12 +463,31 @@ public class WorkerPage extends BasePage {
         };
         form.add(managerContainer);
 
+        managerContainer.add(new AjaxLink<Worker>("managerLink") {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                if (manager != null) {
+                    setResponsePage(WorkerPage.class, new PageParameters().add("id", manager.getObjectId()));
+                }
+            }
+
+            @Override
+            public boolean isVisible() {
+                return (isAdmin() || isStructureAdmin()) && manager != null;
+            }
+        });
+
         Label managerPhone = new Label("managerPhones", new LoadableDetachableModel<String>() {
             @Override
             protected String load() {
                 return manager != null ? String.join(", ", manager.getTextValues(Worker.PHONE)) : null;
             }
-        });
+        }){
+            @Override
+            public boolean isVisible() {
+                return getDefaultModelObject() != null;
+            }
+        };
         managerPhone.setOutputMarkupId(true);
         managerContainer.add(managerPhone);
 
@@ -476,7 +496,12 @@ public class WorkerPage extends BasePage {
             protected String load() {
                 return manager != null ? StringUtils.lowerCase(manager.getText(Worker.EMAIL)): null;
             }
-        });
+        }){
+            @Override
+            public boolean isVisible() {
+                return getDefaultModelObject() != null;
+            }
+        };
         managerEmail.setOutputMarkupId(true);
         managerContainer.add(managerEmail);
 
