@@ -144,7 +144,7 @@ public class WorkerPage extends BasePage {
             worker = new Worker();
             worker.init();
 
-            worker.setType(WorkerType.PARTICIPANT);
+            worker.setType(WorkerType.PK);
             worker.setText(Worker.J_ID, workerMapper.getNewJId());
 
             if (id != null) {
@@ -235,7 +235,7 @@ public class WorkerPage extends BasePage {
         add(form);
 
         form.add(new FormGroupSelectPanel("type", new TypeSelect(FormGroupPanel.COMPONENT_ID,
-                new NumberAttributeModel(worker, Worker.TYPE), WorkerType.PARTICIPANT, WorkerType.USER)
+                new NumberAttributeModel(worker, Worker.TYPE), WorkerType.PK, WorkerType.USER)
                 .add(OnChangeAjaxBehavior.onChange(t -> {
                     if (!worker.isParticipant()){
                         worker.setJId(null);

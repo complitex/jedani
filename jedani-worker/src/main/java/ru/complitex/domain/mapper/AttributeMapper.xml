@@ -59,6 +59,7 @@
         <if test="object.startDate != null"> and a.start_date = #{object.startDate}</if>
         <if test="map.date != null">and #{map.date} between a.start_date and a.end_date</if>
         <if test="sortProperty != null">order by a.${sortProperty.key} ${asc}</if>
+        order by a.start_date desc
         ${limit}
     </select>
 
@@ -70,6 +71,7 @@
         <if test="object.entityAttributeId != null"> and a.entity_attribute_id = #{object.entityAttributeId}</if>
         <if test="object.text != null"> and a.text like concat('%', #{object.text}, '%')</if>
         <if test="object.startDate != null"> and a.start_date = #{object.startDate}</if>
+        order by a.start_date desc
     </select>
 
     <!--suppress SqlResolve -->

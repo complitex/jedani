@@ -32,6 +32,8 @@ END //
 
 DELIMITER ;
 
+CALL updateWorkerStatus();
+
 -- Update
 
 INSERT INTO `update` (`version`) VALUE ('20190825_1.0.26');

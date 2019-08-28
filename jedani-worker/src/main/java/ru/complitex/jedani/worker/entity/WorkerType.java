@@ -6,5 +6,5 @@ package ru.complitex.jedani.worker.entity;
  */
 public class WorkerType {
     public final static long USER = 1;
-    public final static long PARTICIPANT = 2;
+    public final static long PK = 2;
 }

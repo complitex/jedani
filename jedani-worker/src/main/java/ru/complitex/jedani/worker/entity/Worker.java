@@ -166,12 +166,14 @@ public class Worker extends DomainNode<Worker> {
         return getNumber(TYPE);
     }
 
-    public void setType(Long type){
+    public Worker setType(Long type){
         setNumber(TYPE, type);
+
+        return this;
     }
 
     public boolean isParticipant(){
-        return getType() == null || getType().equals(WorkerType.PARTICIPANT);
+        return getType() == null || getType().equals(WorkerType.PK);
     }
 
     public boolean isRegionalLeader(){

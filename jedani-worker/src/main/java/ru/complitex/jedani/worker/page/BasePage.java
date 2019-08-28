@@ -365,7 +365,7 @@ public class BasePage extends WebPage{
 
     public boolean isParticipant(){
         return getCurrentWorker().getNumber(Worker.TYPE) == null ||
-                Objects.equals(getCurrentWorker().getNumber(Worker.TYPE), WorkerType.PARTICIPANT);
+                Objects.equals(getCurrentWorker().getNumber(Worker.TYPE), WorkerType.PK);
     }
 
     public User getCurrentUser() {

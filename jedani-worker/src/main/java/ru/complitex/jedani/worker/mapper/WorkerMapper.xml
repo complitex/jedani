@@ -173,11 +173,16 @@
               left join last_name_attribute ln_a on ln_a.domain_id = ln.id and ln_a.entity_attribute_id = 1 and ln_a.status = 1
               left join last_name_value ln_v on ln_v.attribute_id = ln_a.id
 
+              left join worker_attribute wa_t on w.id = wa_t.domain_id and wa_t.entity_attribute_id = 21 and wa_t.status = 1
+
               where
-                  <foreach collection="array" item="i" separator="and">
+                  (wa_t.number is null or wa_t.number = 2)
+
+                  <foreach collection="array" item="i" separator="and" open="and">
                       (wa_jid.text like concat('%', #{i}) or fn_v.text like concat('%', #{i}, '%') or
                       mn_v.text like concat('%', #{i}, '%') or ln_v.text like concat('%', #{i}, '%'))
                   </foreach>
+
 
               limit 10
           ) ww
