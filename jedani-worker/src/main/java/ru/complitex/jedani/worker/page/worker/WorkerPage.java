@@ -518,7 +518,7 @@ public class WorkerPage extends BasePage {
         WebMarkupContainer structure = new WebMarkupContainer("structure"){
             @Override
             public boolean isVisible() {
-                return worker.getObjectId() != null && worker.isParticipant() && dataProvider.size() > 0;
+                return worker.getObjectId() != null && dataProvider.size() > 0;
             }
         };
 
@@ -944,7 +944,8 @@ public class WorkerPage extends BasePage {
 
                         @Override
                         public boolean isVisible() {
-                            return !Objects.equals(rowModel.getObject().getObjectId(), 1L) &&
+                            return  !rowModel.getObject().getStatus().equals(Status.ARCHIVE) &&
+                                    !Objects.equals(rowModel.getObject().getObjectId(), 1L) &&
                                     !Objects.equals(rowModel.getObject().getObjectId(), getCurrentWorker().getObjectId());
                         }
                     }.setIconType(GlyphIconType.remove)));

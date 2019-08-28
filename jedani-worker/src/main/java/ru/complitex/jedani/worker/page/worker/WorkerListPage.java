@@ -209,7 +209,9 @@ public class WorkerListPage extends DomainListPage<Worker>{
         return new DomainActionColumn<Worker>(WorkerPage.class){
             @Override
             public void populateItem(Item<ICellPopulator<Worker>> cellItem, String componentId, IModel<Worker> rowModel) {
-                PageParameters pageParameters = new PageParameters().add("id", rowModel.getObject().getId());
+                Worker worker = rowModel.getObject();
+
+                PageParameters pageParameters = new PageParameters().add("id", worker.getId());
 
                 RepeatingView repeatingView = new RepeatingView(componentId);
                 cellItem.add(repeatingView);
@@ -221,7 +223,7 @@ public class WorkerListPage extends DomainListPage<Worker>{
                         Buttons.Type.Link) {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
-                        workerRemoveModal.delete(target, rowModel.getObject());
+                        workerRemoveModal.delete(target, worker);
                     }
 
                     @Override
@@ -233,8 +235,9 @@ public class WorkerListPage extends DomainListPage<Worker>{
 
                     @Override
                     public boolean isVisible() {
-                        return !Objects.equals(rowModel.getObject().getObjectId(), 1L) &&
-                                !Objects.equals(rowModel.getObject().getObjectId(), getCurrentWorker().getId());
+                        return !worker.getStatus().equals(Status.ARCHIVE) &&
+                                !Objects.equals(worker.getObjectId(), 1L) &&
+                                !Objects.equals(worker.getObjectId(), getCurrentWorker().getId());
                     }
                 }.setIconType(GlyphIconType.remove)));
             }
