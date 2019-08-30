@@ -79,11 +79,11 @@ td.domain-id-column{
     padding-bottom: 0;
 }
 
-.worker-action div{
+.domain-action div{
     display: table-cell;
 }
 
-.worker-action a{
+.domain-action a{
     padding: 5px;
 }
 

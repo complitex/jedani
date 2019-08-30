@@ -36,6 +36,7 @@ public class CardModal extends Modal<Card> {
         super(markupId);
 
         setBackdrop(Backdrop.FALSE);
+        setCloseOnEscapeKey(false);
 
         header(new ResourceModel("header"));
 

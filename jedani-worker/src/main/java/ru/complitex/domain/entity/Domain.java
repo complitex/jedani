@@ -249,6 +249,10 @@ public class Domain<T extends Domain<T>> implements Serializable{
                 .collect(Collectors.toMap(s -> Locales.getLanguage(s.getLocaleId()), Value::getText));
     }
 
+    public void clearValues(Long entityAttributeId){
+        getOrCreateAttribute(entityAttributeId).clearValues();
+    }
+
     public Long getId() {
         return id;
     }

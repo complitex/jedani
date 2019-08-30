@@ -9,6 +9,7 @@ import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.extensions.ajax.markup.html.AjaxIndicatorAppender;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.markup.repeater.Item;
+import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import ru.complitex.common.wicket.datatable.FilterDataForm;
 import ru.complitex.common.wicket.panel.LinkPanel;
@@ -44,7 +45,10 @@ public abstract class DomainModalActionColumn<T extends Domain> extends Abstract
 
     @Override
     public void populateItem(Item<ICellPopulator<T>> cellItem, String componentId, IModel<T> rowModel) {
-        cellItem.add(new LinkPanel(componentId, new BootstrapAjaxButton(LinkPanel.LINK_COMPONENT_ID, Buttons.Type.Link) {
+        RepeatingView repeatingView = new RepeatingView(componentId);
+        cellItem.add(repeatingView);
+
+        repeatingView.add(new LinkPanel(repeatingView.newChildId(), new BootstrapAjaxButton(LinkPanel.LINK_COMPONENT_ID, Buttons.Type.Link) {
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
                 DomainModalActionColumn.this.onAction(rowModel, target);
@@ -57,16 +61,22 @@ public abstract class DomainModalActionColumn<T extends Domain> extends Abstract
                 attributes.setEventPropagation(AjaxRequestAttributes.EventPropagation.STOP);
             }
         }.setIconType(GlyphIconType.edit)));
+
+        onAddAction(repeatingView, rowModel);
     }
 
     protected abstract void onAction(IModel<T> rowModel, AjaxRequestTarget target);
 
     @Override
     public String getCssClass() {
-        return "domain-id-column";
+        return "domain-id-column domain-action";
     }
 
     public AjaxIndicatorAppender getAjaxIndicatorAppender() {
         return ajaxIndicatorAppender;
+    }
+
+    protected void onAddAction(RepeatingView repeatingView, IModel<T> rowModel){
+
     }
 }

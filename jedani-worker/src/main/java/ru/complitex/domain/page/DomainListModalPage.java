@@ -13,6 +13,7 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
+import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import ru.complitex.common.entity.FilterWrapper;
@@ -88,7 +89,7 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage{
         feedback.setOutputMarkupId(true);
         container.add(feedback);
 
-        filterWrapper = newFilterMapper(domainObject);
+        filterWrapper = newFilterWrapper(domainObject);
 
         DataProvider<T> dataProvider = new DataProvider<T>(filterWrapper) {
             @Override
@@ -148,6 +149,11 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage{
                 protected void onAction(IModel<T> rowModel, AjaxRequestTarget target) {
                     onEdit(rowModel.getObject(), target);
                 }
+
+                @Override
+                protected void onAddAction(RepeatingView repeatingView, IModel<T> rowModel) {
+                    DomainListModalPage.this.onAddAction(repeatingView, rowModel);
+                }
             });
         }
 
@@ -193,7 +199,7 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage{
         }
     }
 
-    protected FilterWrapper<T> newFilterMapper(T domainObject) {
+    protected FilterWrapper<T> newFilterWrapper(T domainObject) {
         return FilterWrapper.of(domainObject);
     }
 
@@ -304,6 +310,10 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage{
 
     protected boolean isAddEnabled(){
         return true;
+    }
+
+    protected void onAddAction(RepeatingView repeatingView, IModel<T> rowModel){
+
     }
 
 }

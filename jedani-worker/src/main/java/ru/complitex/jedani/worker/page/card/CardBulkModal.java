@@ -34,6 +34,7 @@ public class CardBulkModal extends Modal<Card> {
         super(markupId);
 
         setBackdrop(Backdrop.FALSE);
+        setCloseOnEscapeKey(false);
 
         header(new ResourceModel("header"));
 

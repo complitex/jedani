@@ -70,8 +70,8 @@ public class SaleListPage extends DomainListModalPage<SaleItem> {
     }
 
     @Override
-    protected FilterWrapper<SaleItem> newFilterMapper(SaleItem domainObject) {
-        FilterWrapper<SaleItem> filterWrapper = super.newFilterMapper(domainObject);
+    protected FilterWrapper<SaleItem> newFilterWrapper(SaleItem domainObject) {
+        FilterWrapper<SaleItem> filterWrapper = super.newFilterWrapper(domainObject);
 
         if (getCurrentWorker().isRegionalLeader()){
             filterWrapper.put(SaleItem.FILTER_REGION_IDS, getCurrentWorker().getRegionIdsString());

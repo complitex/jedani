@@ -7,6 +7,7 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
 import de.agilecoders.wicket.core.markup.html.bootstrap.dialog.Modal;
 import de.agilecoders.wicket.core.markup.html.bootstrap.form.BootstrapCheckbox;
+import de.agilecoders.wicket.core.markup.html.bootstrap.image.GlyphIconType;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.DateTextField;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.DateTextFieldConfig;
 import org.apache.commons.lang3.StringUtils;
@@ -14,6 +15,8 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -21,19 +24,32 @@ import org.apache.wicket.markup.html.form.*;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.EmptyPanel;
+import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import ru.complitex.address.entity.Country;
+import ru.complitex.common.entity.FilterWrapper;
+import ru.complitex.common.entity.SortProperty;
+import ru.complitex.common.wicket.datatable.FilterDataForm;
+import ru.complitex.common.wicket.datatable.FilterDataProvider;
+import ru.complitex.common.wicket.datatable.FilterDataTable;
 import ru.complitex.common.wicket.form.*;
+import ru.complitex.common.wicket.panel.LinkPanel;
+import ru.complitex.domain.component.datatable.DomainActionColumn;
+import ru.complitex.domain.component.datatable.DomainColumn;
+import ru.complitex.domain.component.datatable.DomainIdColumn;
 import ru.complitex.domain.component.form.FormGroupDomainAutoComplete;
 import ru.complitex.domain.entity.Domain;
+import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.ValueType;
 import ru.complitex.domain.model.AttributeModel;
 import ru.complitex.domain.model.DateAttributeModel;
 import ru.complitex.domain.model.NumberAttributeModel;
 import ru.complitex.domain.model.TextAttributeModel;
+import ru.complitex.domain.service.DomainService;
+import ru.complitex.domain.service.EntityService;
 import ru.complitex.jedani.worker.component.NomenclatureAutoCompleteList;
 import ru.complitex.jedani.worker.component.TypeSelect;
 import ru.complitex.jedani.worker.entity.*;
@@ -41,21 +57,28 @@ import ru.complitex.jedani.worker.service.SaleDecisionService;
 
 import javax.inject.Inject;
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class SaleDecisionModal extends Modal<SaleDecision> {
     @Inject
     private SaleDecisionService saleDecisionService;
 
+    @Inject
+    private DomainService domainService;
+
+    @Inject
+    private EntityService entityService;
+
     private WebMarkupContainer container;
+
+    private FormGroupPanel nomenclatures;
+    private WebMarkupContainer nomenclatureContainer;
 
     public SaleDecisionModal(String markupId) {
         super(markupId);
 
         setBackdrop(Backdrop.FALSE);
+        setCloseOnEscapeKey(false);
         size(Size.Large);
 
         header(new ResourceModel("header"));
@@ -76,7 +99,12 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
                 .onUpdate(t -> {}));
 
         container.add(new FormGroupDomainAutoComplete("country", Country.ENTITY_NAME, Country.NAME,
-                NumberAttributeModel.of(getModel(), SaleDecision.COUNTRY)).setRequired(true));
+                NumberAttributeModel.of(getModel(), SaleDecision.COUNTRY)){
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                target.add(nomenclatures, nomenclatureContainer);
+            }
+        }.setRequired(true));
 
         container.add(new FormGroupDateTextField("begin", DateAttributeModel.of(getModel(), SaleDecision.DATE_BEGIN))
                 .setRequired(true)
@@ -90,19 +118,91 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
                 NumberAttributeModel.of(getModel(), SaleDecision.NOMENCLATURE_TYPE),
                 NomenclatureType.MYCOOK, NomenclatureType.BASE_ASSORTMENT)
                 .add(new CssClassNameAppender("form-control"))
-                .add(OnChangeAjaxBehavior.onChange(t -> {})))) ;
+                .add(OnChangeAjaxBehavior.onChange(t -> {
+                    t.add(nomenclatures, nomenclatureContainer);
+                })))) ;
 
-        container.add(new FormGroupPanel("nomenclatures", new NomenclatureAutoCompleteList(FormGroupPanel.COMPONENT_ID,
-                Nomenclature.ENTITY_NAME, new AttributeModel(getModel(), SaleDecision.NOMENCLATURES)){
+
+        container.add(nomenclatures = new FormGroupPanel("nomenclatures",
+                new NomenclatureAutoCompleteList(FormGroupPanel.COMPONENT_ID,
+                        Nomenclature.ENTITY_NAME, new AttributeModel(getModel(), SaleDecision.NOMENCLATURES)){
+                    @Override
+                    protected Nomenclature getFilterObject(String input) {
+                        Nomenclature nomenclature = super.getFilterObject(input);
+
+                        nomenclature.setType(getModelObject().getNomenclatureType());
+                        nomenclature.setNumber(Nomenclature.COUNTRIES, getModelObject().getCountryId());
+
+                        return nomenclature;
+                    }
+                }){
             @Override
-            protected Nomenclature getFilterObject(String input) {
-                Nomenclature nomenclature = super.getFilterObject(input);
+            public boolean isVisible() {
+                return getModelObject().getCountryId() != null;
+            }
+        });
+
+        //Nomenclature filter table
+
+        FilterWrapper<Nomenclature> filterWrapper = FilterWrapper.of(new Nomenclature());
+
+        FilterDataProvider<Nomenclature> filterDataProvider = new FilterDataProvider<Nomenclature>(filterWrapper) {
+            @Override
+            public List<Nomenclature> getList() {
+                return domainService.getDomains(Nomenclature.class, getFilterState());
+            }
+
+            @Override
+            public Long getCount() {
+                Nomenclature nomenclature = getFilterState().getObject();
 
                 nomenclature.setType(getModelObject().getNomenclatureType());
+                nomenclature.setNumber(Nomenclature.COUNTRIES, getModelObject().getCountryId());
 
-                return nomenclature;
+                return domainService.getDomainsCount(getFilterState());
             }
-        }));
+        };
+
+        nomenclatureContainer = new WebMarkupContainer("nomenclatureContainer"){
+            @Override
+            public boolean isVisible() {
+                return getModelObject().getCountryId() != null;
+            }
+        };
+        nomenclatureContainer.setOutputMarkupId(true);
+        nomenclatureContainer.setOutputMarkupPlaceholderTag(true);
+        container.add(nomenclatureContainer);
+
+        FilterDataForm<FilterWrapper<Nomenclature>> filterDataForm = new FilterDataForm<>("nomenclatureForm", filterDataProvider);
+        filterDataForm.setOutputMarkupId(true);
+        nomenclatureContainer.add(filterDataForm);
+
+        List<IColumn<Nomenclature, SortProperty>> columns = new ArrayList<>();
+
+        Entity entity = entityService.getEntity(Nomenclature.class);
+
+        columns.add(new DomainIdColumn<>());
+        columns.add(new DomainColumn<>(entity.getEntityAttribute(Nomenclature.CODE)));
+        columns.add(new DomainColumn<>(entity.getEntityAttribute(Nomenclature.NAME)));
+        columns.add(new DomainActionColumn<Nomenclature>(){
+            @Override
+            public void populateItem(Item<ICellPopulator<Nomenclature>> cellItem, String componentId, IModel<Nomenclature> rowModel) {
+                cellItem.add(new LinkPanel(componentId, new BootstrapAjaxLink<Nomenclature>(LinkPanel.LINK_COMPONENT_ID, Buttons.Type.Link) {
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        SaleDecisionModal.this.getModelObject().addNomenclatureId(rowModel.getObject().getObjectId());
+
+                        target.add(nomenclatures);
+                    }
+                }.setIconType(GlyphIconType.plus)));
+            }
+        });
+
+        FilterDataTable<Nomenclature> filterDataTable = new FilterDataTable<>("nomenclatureTable", columns,
+                filterDataProvider, filterDataForm, 5, "saleDecisionNomenclatureTable");
+        filterDataForm.add(filterDataTable);
+
+        //Conditions
 
         ListView<RuleCondition> conditions = new ListView<RuleCondition>("conditions",
                 new PropertyModel<>(getModel(), "rules.0.conditions")) {

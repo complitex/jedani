@@ -26,6 +26,14 @@ public class SaleDecisionService implements Serializable {
     @Inject
     private DomainService domainService;
 
+    public SaleDecision getSaleDecision(Long objectId){
+        SaleDecision saleDecision = domainService.getDomain(SaleDecision.class, objectId);
+
+        loadRules(saleDecision);
+
+        return saleDecision;
+    }
+
     @Transactional
     public void save(SaleDecision saleDecision){
         if (saleDecision.getObjectId() != null){

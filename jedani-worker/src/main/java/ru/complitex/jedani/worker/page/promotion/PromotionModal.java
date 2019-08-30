@@ -67,6 +67,7 @@ public class PromotionModal extends Modal<Promotion> {
         super(markupId, new Model<>(new Promotion()));
 
         setBackdrop(Backdrop.FALSE);
+        setCloseOnEscapeKey(false);
 
         Setting promotionSetting = domainService.getDomain(Setting.class, Setting.PROMOTION);
 

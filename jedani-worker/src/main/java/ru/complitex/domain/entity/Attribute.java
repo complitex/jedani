@@ -148,6 +148,10 @@ public class Attribute implements Serializable{
                 .allMatch(v -> v.getText() == null && v.getNumber() == null);
     }
 
+    public void clearValues(){
+        values.clear();
+    }
+
     public Long getObjectId(){
         return objectId;
     }

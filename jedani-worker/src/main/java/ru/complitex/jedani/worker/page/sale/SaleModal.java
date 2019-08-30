@@ -101,6 +101,7 @@ public class SaleModal extends Modal<Sale> {
         super(markupId);
 
         setBackdrop(Backdrop.FALSE);
+        setCloseOnEscapeKey(false);
         size(Size.Large);
 
         saleModel = Model.of(new Sale());

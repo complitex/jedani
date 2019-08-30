@@ -37,6 +37,7 @@ abstract class StorageModal extends Modal<Transaction> {
         this.onUpdate = onUpdate;
 
         setBackdrop(Backdrop.FALSE);
+        setCloseOnEscapeKey(false);
 
         header(new ResourceModel("header"));
 

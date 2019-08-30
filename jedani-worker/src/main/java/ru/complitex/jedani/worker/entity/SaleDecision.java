@@ -27,6 +27,14 @@ public class SaleDecision extends Domain<SaleDecision> {
         setUseNumberValue(true);
     }
 
+    public String getName(){
+        return getText(NAME);
+    }
+
+    public void setName(String name){
+        setText(NAME, name);
+    }
+
     public Long getCountryId(){
         return getNumber(COUNTRY);
     }
@@ -40,6 +48,11 @@ public class SaleDecision extends Domain<SaleDecision> {
     public List<Long> getNomenclatureIds(){
         return getNumberValues(NOMENCLATURES);
     }
+
+    public void addNomenclatureId(Long nomenclatureId){
+        addNumberValue(NOMENCLATURES, nomenclatureId);
+    }
+
 
     public Long getNomenclatureType(){
         return getNumber(NOMENCLATURE_TYPE);
@@ -99,8 +112,25 @@ public class SaleDecision extends Domain<SaleDecision> {
         }
     }
 
-
     public void removeAction(Long index){
         rules.forEach(r -> r.removeAction(index));
+    }
+
+    public void clearObjectId(){
+        setObjectId(null);
+
+        if (getRules() != null){
+            getRules().forEach(r -> {
+                r.setObjectId(null);
+
+                if (r.getActions() != null){
+                    r.getActions().forEach(a -> a.setObjectId(null));
+                }
+
+                if (r.getConditions() != null){
+                    r.getConditions().forEach(c -> c.setObjectId(null));
+                }
+            });
+        }
     }
 }

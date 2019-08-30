@@ -28,6 +28,7 @@ public class ModalContainer<T> extends Modal<T> {
         this.onUpdate = onUpdate;
 
         setBackdrop(Backdrop.FALSE);
+        setCloseOnEscapeKey(false);
         header(new ResourceModel("header"));
 
         container = new WebMarkupContainer("container");

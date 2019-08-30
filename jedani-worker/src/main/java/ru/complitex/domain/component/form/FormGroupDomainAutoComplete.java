@@ -1,5 +1,6 @@
 package ru.complitex.domain.component.form;
 
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
@@ -42,6 +43,8 @@ public class FormGroupDomainAutoComplete extends Panel{
             if (!domainAutoComplete.isError() && domainAutoComplete.isErrorRendered()) {
                 t.appendJavaScript(group.getRemoveErrorJs());
             }
+
+            FormGroupDomainAutoComplete.this.onUpdate(t);
         }){
             @Override
             public boolean isEnabled() {
@@ -86,6 +89,10 @@ public class FormGroupDomainAutoComplete extends Panel{
         super.detachModels();
 
         domainAutoComplete.detachModels();
+    }
+
+    protected void onUpdate(AjaxRequestTarget target){
+
     }
 
 }

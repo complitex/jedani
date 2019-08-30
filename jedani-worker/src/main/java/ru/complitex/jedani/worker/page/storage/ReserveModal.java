@@ -53,6 +53,7 @@ public class ReserveModal extends Modal<Product> {
         super(markupId);
 
         setBackdrop(Backdrop.FALSE);
+        setCloseOnEscapeKey(false);
         size(Size.Large);
 
         productModel = new Model<>(new Product());

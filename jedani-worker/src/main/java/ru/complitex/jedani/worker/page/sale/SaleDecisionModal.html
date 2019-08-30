@@ -17,6 +17,25 @@
 
             <div wicket:id="nomenclatures"></div>
 
+            <div wicket:id="nomenclatureContainer" class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="headingOne">
+                        <h4 class="panel-title">
+                            <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                                Список товаров
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+                        <div class="panel-body">
+                            <form wicket:id="nomenclatureForm">
+                                <table wicket:id="nomenclatureTable" class="table table-hover"></table>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <table class="table">
                 <thead>
                 <tr>
@@ -25,13 +44,13 @@
                         <div wicket:id="type"></div>
                     </th>
                     <th class="sd-add-condition">
-                        <a wicket:id="addCondition"><i class="glyphicon glyphicon-plus"></i></a>
+                        <a wicket:id="addCondition" class="btn btn-link"><i class="glyphicon glyphicon-plus"></i></a>
                     </th>
                     <th wicket:id="actions">
                         <div wicket:id="type"></div>
                     </th>
                     <th class="sd-add-action">
-                        <a wicket:id="addAction"><i class="glyphicon glyphicon-plus"></i></a>
+                        <a wicket:id="addAction" class="btn btn-link"><i class="glyphicon glyphicon-plus"></i></a>
                     </th>
                 </tr>
                 </thead>

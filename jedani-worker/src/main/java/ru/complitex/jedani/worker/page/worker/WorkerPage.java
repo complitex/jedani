@@ -527,13 +527,13 @@ public class WorkerPage extends BasePage {
 
         //History
 
-        WebMarkupContainer historyHeader = new WebMarkupContainer("historyHeader"){
+        WebMarkupContainer historyContainer = new WebMarkupContainer("historyContainer"){
             @Override
             public boolean isVisible() {
                 return worker.getObjectId() != null && (isAdmin() || isStructureAdmin());
             }
         };
-        form.add(historyHeader);
+        form.add(historyContainer);
 
         Entity workerEntity = entityMapper.getEntity(Worker.ENTITY_NAME);
 
@@ -635,7 +635,7 @@ public class WorkerPage extends BasePage {
         historyDataTable.addTopToolbar(new AjaxFallbackHeadersToolbar<>(historyDataTable, historyDataProvider));
         historyDataTable.addBottomToolbar(new NavigationToolbar(historyDataTable, "workerPage_history"));
         historyDataTable.setOutputMarkupId(true);
-        form.add(historyDataTable);
+        historyContainer.add(historyDataTable);
 
         form.add(new IndicatingAjaxButton("save") {
             @Override
@@ -954,7 +954,7 @@ public class WorkerPage extends BasePage {
 
             @Override
             public String getCssClass() {
-                return "domain-id-column" + (!isViewOnly() ? " worker-action" : "");
+                return "domain-id-column" + (!isViewOnly() ? " domain-action" : "");
             }
         });
 

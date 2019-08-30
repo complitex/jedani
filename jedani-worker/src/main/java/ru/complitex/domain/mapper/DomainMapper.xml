@@ -255,12 +255,12 @@
                                    and a${i}.number is not null
                                </when>
                                <otherwise>
-                                   <choose>
-                                       <when test="filter == 'search'"> or </when>
-                                       <otherwise> and </otherwise>
-                                   </choose>
-                                   (a${i}.number = #{a.number}
-                                   <if test="object.useNumberValue">or v${i}.number = #{a.number}</if>)
+                                   and (
+                                       a${i}.number = #{a.number}
+                                       <if test="object.useNumberValue">
+                                           or v${i}.number = #{a.number}
+                                       </if>
+                                    )
                                </otherwise>
                            </choose>
                         </if>

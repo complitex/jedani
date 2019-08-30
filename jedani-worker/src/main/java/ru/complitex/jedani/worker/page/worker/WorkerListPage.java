@@ -244,7 +244,7 @@ public class WorkerListPage extends DomainListPage<Worker>{
 
             @Override
             public String getCssClass() {
-                return "domain-id-column worker-action";
+                return "domain-id-column domain-action";
             }
         };
     }

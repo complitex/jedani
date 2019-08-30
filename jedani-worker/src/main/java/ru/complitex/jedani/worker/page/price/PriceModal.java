@@ -79,6 +79,7 @@ public class PriceModal extends AbstractDomainEditModal<Price> {
         this.onChange = onChange;
 
         setBackdrop(Backdrop.FALSE);
+        setCloseOnEscapeKey(false);
         size(Size.Large);
 
         header(new ResourceModel("header"));
