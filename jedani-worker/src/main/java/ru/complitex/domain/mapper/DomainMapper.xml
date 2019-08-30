@@ -138,7 +138,7 @@
     <sql id="selectDomainsFromFilter">
         <if test="object.parentEntityAttribute != null and map.parentName != null">
             left join `${object.parentEntityAttribute.entityName}` p_d on p_d.object_id = d.parent_id
-            left join `${object.parentEntityAttribute.entityName}_attribute` p_a on p_a.domain_id = p_d.id
+            left join `${object.parentEntityAttribute.entityName}_attribute` p_a on p_a.domain_id = p_d.id and p_a.status = 1
             left join `${object.parentEntityAttribute.entityName}_value` p_v on p_v.attribute_id = p_a.id
         </if>
 
