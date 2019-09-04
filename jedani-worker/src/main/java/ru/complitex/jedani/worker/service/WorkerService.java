@@ -151,4 +151,8 @@ public class WorkerService implements Serializable {
 
         workerMapper.insert(new UserHistory(user.getId(), workerId).setUserGroups(user.getUserGroups()));
     }
+
+    public boolean isExistJId(String jId){
+        return workerMapper.isExistJId(null, jId);
+    }
 }

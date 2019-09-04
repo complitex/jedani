@@ -40,6 +40,7 @@ import ru.complitex.common.wicket.application.ServletAuthorizationStrategy;
 import ru.complitex.common.wicket.application.ServletUnauthorizedListener;
 import ru.complitex.common.wicket.application.ServletWebSession;
 import ru.complitex.common.wicket.converter.BigDecimalConverter;
+import ru.complitex.jedani.worker.api.VerifyResourceReference;
 import ru.complitex.jedani.worker.page.admin.ImportPage;
 import ru.complitex.jedani.worker.page.admin.SettingPage;
 import ru.complitex.jedani.worker.page.card.CardListPage;
@@ -80,6 +81,7 @@ public class JedaniWebApplication extends WebApplication{
         configureBootstrap();
         configureMountPage();
         configureMountResource();
+        configureMountApi();
 
         getDebugSettings().setAjaxDebugModeEnabled(false);
 
@@ -173,6 +175,10 @@ public class JedaniWebApplication extends WebApplication{
 
         mountResource("css/touchspin.min.css", new CssResourceReference(Spinner.class,"css/touchspin.min.css"));
         mountResource("js/touchspin.min.js", new JavaScriptResourceReference(Spinner.class,"js/touchspin.min.js"));
+    }
+
+    private void configureMountApi(){
+        mountResource("api/verify/${jId}", VerifyResourceReference.INSTANCE);
     }
 
     @Override
