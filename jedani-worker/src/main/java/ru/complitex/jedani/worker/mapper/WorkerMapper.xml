@@ -210,7 +210,7 @@
         (select id*5 as id, 1000, concat_ws(' ', IF(uh.login is not null, concat('login: ', uh.login), ''),
             IF(uh.password is not null, concat(' password_hash: ', substr(uh.password, 1, 8)), ''),
             IF(uh.group is not null, concat(' group: ', uh.group), '')),
-            null, null, uh.date as start_date, uh.worker_id
+            null, null, uh.date as start_date, uh.worker_id as user_id
             from user_history uh where uh.user_id = #{map.userId})) wa_uh
         order by wa_uh.start_date desc
     </sql>

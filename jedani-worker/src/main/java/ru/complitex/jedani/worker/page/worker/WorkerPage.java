@@ -612,7 +612,14 @@ public class WorkerPage extends BasePage {
         historyColumns.add(new AbstractColumn<Attribute, String>(new ResourceModel("user"), "user") {
             @Override
             public void populateItem(Item<ICellPopulator<Attribute>> cellItem, String componentId, IModel<Attribute> rowModel) {
-                cellItem.add(new Label(componentId, workerService.getSimpleWorkerLabel(rowModel.getObject().getUserId())));
+                if (rowModel.getObject().getEntityAttributeId() == 1000) {
+                    cellItem.add(new Label(componentId, workerService.getSimpleWorkerLabel(rowModel.getObject().getUserId())));
+                }else{
+                    User u = userMapper.getUser(rowModel.getObject().getUserId());
+                    Worker w = workerService.getWorker(u.getLogin());
+
+                    cellItem.add(new Label(componentId, workerService.getSimpleWorkerLabel(w.getObjectId())));
+                }
             }
         });
 
