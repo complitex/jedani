@@ -30,7 +30,7 @@ public class VerifyResourceReference extends ResourceReference {
                         String jId = attributes.getParameters().get("jId").toString();
 
                         attributes.getResponse().write("{j_id: \"" + jId + "\"," +
-                                " is_exists: " + (isExistJId(jId) ? "1" : "0") + "}");
+                                " is_exist: " + (isExistJId(jId) ? "1" : "0") + "}");
                     }
                 });
 
