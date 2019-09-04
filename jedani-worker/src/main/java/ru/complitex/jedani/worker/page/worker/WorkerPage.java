@@ -615,10 +615,17 @@ public class WorkerPage extends BasePage {
                 if (rowModel.getObject().getEntityAttributeId() == 1000) {
                     cellItem.add(new Label(componentId, workerService.getSimpleWorkerLabel(rowModel.getObject().getUserId())));
                 }else{
-                    User u = userMapper.getUser(rowModel.getObject().getUserId());
-                    Worker w = workerService.getWorker(u.getLogin());
+                    Worker w = new Worker();
+                    w.setParentId(rowModel.getObject().getUserId());
 
-                    cellItem.add(new Label(componentId, workerService.getSimpleWorkerLabel(w.getObjectId())));
+                    List<Worker> list = workerMapper.getWorkers(FilterWrapper.of(w));
+
+                    if (!list.isEmpty()){
+                        w = list.get(0);
+                    }
+
+                    cellItem.add(new Label(componentId, w.getObjectId() != null
+                            ? workerService.getSimpleWorkerLabel(w.getObjectId()) : "null"));
                 }
             }
         });
