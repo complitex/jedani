@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.mybatis.BaseMapper;
 import ru.complitex.common.util.Maps;
+import ru.complitex.domain.entity.Attribute;
 import ru.complitex.jedani.worker.entity.UserHistory;
 import ru.complitex.jedani.worker.entity.Worker;
 
@@ -78,6 +79,14 @@ public class WorkerMapper extends BaseMapper {
 
     public void insert(UserHistory userHistory){
         sqlSession().insert("insertUserHistory", userHistory);
+    }
+
+    public List<Attribute> getWorkerUserHistories(FilterWrapper filterWrapper){
+        return sqlSession().selectList("selectWorkerUserHistories", filterWrapper);
+    }
+
+    public Long getWorkerUserHistoriesCount(FilterWrapper filterWrapper){
+        return sqlSession().selectOne("selectWorkerUserHistoriesCount", filterWrapper);
     }
 }
 

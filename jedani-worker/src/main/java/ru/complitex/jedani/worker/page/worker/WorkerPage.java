@@ -548,17 +548,27 @@ public class WorkerPage extends BasePage {
         historyColumns.add(new AbstractColumn<Attribute, String>(new ResourceModel("name"), "name") {
             @Override
             public void populateItem(Item<ICellPopulator<Attribute>> cellItem, String componentId, IModel<Attribute> rowModel) {
-                EntityAttribute entityAttribute = workerEntity.getEntityAttribute(rowModel.getObject().getEntityAttributeId());
+                if (rowModel.getObject().getEntityAttributeId() == 1000){
+                    cellItem.add(new Label(componentId, getString("role")));
+                }else{
+                    EntityAttribute entityAttribute = workerEntity.getEntityAttribute(rowModel.getObject().getEntityAttributeId());
 
-                cellItem.add(new Label(componentId, entityAttribute.getValue() != null
-                        ? entityAttribute.getValue().getText()
-                        : entityAttribute.getEntityAttributeId().toString()));
+                    cellItem.add(new Label(componentId, entityAttribute.getValue() != null
+                            ? entityAttribute.getValue().getText()
+                            : entityAttribute.getEntityAttributeId().toString()));
+                }
             }
         });
         historyColumns.add(new AbstractColumn<Attribute, String>(new ResourceModel("value"), "value") {
             @Override
             public void populateItem(Item<ICellPopulator<Attribute>> cellItem, String componentId, IModel<Attribute> rowModel) {
                 Attribute attribute = rowModel.getObject();
+
+                if (attribute.getEntityAttributeId() == 1000){
+                    cellItem.add(new Label(componentId, attribute.getText()));
+
+                    return;
+                }
 
                 EntityAttribute entityAttribute = workerEntity.getEntityAttribute(attribute.getEntityAttributeId());
 
@@ -609,14 +619,16 @@ public class WorkerPage extends BasePage {
         SortableDataProvider<Attribute, String> historyDataProvider = new SortableDataProvider<Attribute, String>() {
             @Override
             public Iterator<? extends Attribute> iterator(long first, long count) {
-                return attributeMapper.getHistoryAttributes(FilterWrapper.of(new Attribute(Worker.ENTITY_NAME)
-                        .setObjectId(worker.getObjectId()), first, count)).iterator();
+                return workerMapper.getWorkerUserHistories(new FilterWrapper(first, count)
+                        .put("objectId", worker.getObjectId())
+                        .put("userId", worker.getParentId())).iterator();
             }
 
             @Override
             public long size() {
-                return attributeMapper.getHistoryAttributesCount(FilterWrapper.of(new Attribute(Worker.ENTITY_NAME)
-                        .setObjectId(worker.getObjectId())));
+                return workerMapper.getWorkerUserHistoriesCount(new FilterWrapper()
+                        .put("objectId", worker.getObjectId())
+                        .put("userId", worker.getParentId()));
             }
 
             @Override

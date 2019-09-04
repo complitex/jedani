@@ -3,6 +3,8 @@ package ru.complitex.jedani.worker.entity;
 import ru.complitex.user.entity.User;
 import ru.complitex.user.entity.UserGroup;
 
+import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -10,13 +12,14 @@ import java.util.stream.Collectors;
  * @author Anatoly A. Ivanov
  * 25.07.2019 20:03
  */
-public class UserHistory {
+public class UserHistory implements Serializable {
     private String id;
     private Long userId;
     private String login;
     private String password;
     private Long workerId;
     private String group;
+    private Date date;
 
     public UserHistory(Long userId, Long workerId) {
         this.userId = userId;
@@ -93,5 +96,13 @@ public class UserHistory {
 
     public void setGroup(String group) {
         this.group = group;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 }

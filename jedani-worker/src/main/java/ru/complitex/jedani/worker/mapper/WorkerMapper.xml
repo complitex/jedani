@@ -201,4 +201,28 @@
             value (#{userId}, #{login}, #{password}, #{group}, #{workerId})
     </insert>
 
+    <sql id="selectWorkerUserHistoriesSql">
+        select 'worker' as entity_name, wa_uh.* from ((select a.id*3 as id, a.entity_attribute_id, a.text, a.number, a.date, a.start_date, a.user_id
+            from worker_attribute a left join worker d on a.domain_id = d.id
+        where d.object_id = #{map.objectId})
+        union all
+        (select id*5 as id, 1000, concat_ws(' ', IF(uh.login is not null, concat('login: ', uh.login), ''),
+            IF(uh.password is not null, concat(' password_hash: ', substr(uh.password, 1, 8)), ''),
+            IF(uh.group is not null, concat(' group: ', uh.group), '')),
+            null, null, uh.date as start_date, uh.worker_id
+            from user_history uh where uh.user_id = #{map.userId})) wa_uh
+        order by wa_uh.start_date desc
+    </sql>
+
+    <!--suppress SqlResolve -->
+    <select id="selectWorkerUserHistories" parameterType="ru.complitex.common.entity.FilterWrapper"
+            resultMap="ru.complitex.domain.mapper.AttributeMapper.attributeResultMap">
+        <include refid="selectWorkerUserHistoriesSql"/>
+        ${limit}
+    </select>
+
+    <!--suppress SqlResolve -->
+    <select id="selectWorkerUserHistoriesCount" parameterType="ru.complitex.common.entity.FilterWrapper" resultType="long">
+        select count(*) from (<include refid="selectWorkerUserHistoriesSql"/>) c
+    </select>
 </mapper>
