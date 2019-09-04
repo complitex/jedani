@@ -202,9 +202,10 @@
     </insert>
 
     <sql id="selectWorkerUserHistoriesSql">
-        select 'worker' as entity_name, wa_uh.* from ((select a.id*3 as id, a.entity_attribute_id, a.text, a.number, a.date, a.start_date, a.user_id
-            from worker_attribute a left join worker d on a.domain_id = d.id
-        where d.object_id = #{map.objectId})
+        select 'worker' as entity_name, wa_uh.* from ((select a.id*3 as id, a.entity_attribute_id, a.text, a.number,
+            a.date, a.start_date, a.user_id
+        from worker_attribute a left join worker d on a.domain_id = d.id
+            where d.object_id = #{map.objectId})
         union all
         (select id*5 as id, 1000, concat_ws(' ', IF(uh.login is not null, concat('login: ', uh.login), ''),
             IF(uh.password is not null, concat(' password_hash: ', substr(uh.password, 1, 8)), ''),
