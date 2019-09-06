@@ -3,6 +3,7 @@ package ru.complitex.jedani.worker.service;
 import org.mybatis.cdi.Transactional;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.domain.entity.Entity;
+import ru.complitex.domain.entity.Status;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
 import ru.complitex.jedani.worker.entity.*;
@@ -28,9 +29,19 @@ public class SaleService implements Serializable {
 
     @Transactional(rollbackFor = SaleException.class)
     public void sale(Sale sale, List<SaleItem> saleItems) throws SaleException {
+        if (sale.getObjectId() != null){
+            domainService.delete(sale);
+            saleItems.forEach(si -> domainService.delete(si));
+        }
+
         //Init
         sale.setObjectId(null);
-        saleItems.forEach(s -> s.setObjectId(null));
+        sale.setStatus(Status.ACTIVE);
+
+        saleItems.forEach(si -> {
+            si.setObjectId(null);
+            si.setStatus(Status.ACTIVE);
+        });
 
         //Sale
 

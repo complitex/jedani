@@ -13,9 +13,11 @@ import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.spinner.Spinn
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
+import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.FormComponent;
@@ -217,7 +219,8 @@ public class SaleModal extends Modal<Sale> {
         container.add(months);
 
         months.add(new Spinner<>("input", NumberAttributeModel.of(saleModel, Sale.INSTALLMENT_MONTHS),
-                new SpinnerConfig().withVerticalbuttons(true).withMin(0).withMax(24)).setType(Long.class));
+                new SpinnerConfig().withVerticalbuttons(true).withMin(0).withMax(24)).setType(Long.class)
+                .add(AjaxFormComponentUpdatingBehavior.onUpdate("change", this::updatePrices)));
 
         saleItems = new ListView<SaleItem>("saleItems", saleItemsModel) {
             @Override
@@ -233,7 +236,16 @@ public class SaleModal extends Modal<Sale> {
                 basePrice.setEnabled(false);
                 item.add(basePrice);
 
-                TextField price = new TextField<>("price", DecimalAttributeModel.of(model, SaleItem.PRICE), BigDecimal.class);
+                TextField price = new TextField<BigDecimal>("price", DecimalAttributeModel.of(model, SaleItem.PRICE), BigDecimal.class){
+                    @Override
+                    protected void onComponentTag(ComponentTag tag) {
+                        super.onComponentTag(tag);
+
+                        SaleDecision saleDecision = domainService.getDomain(SaleDecision.class, model.getObject().getSaleDecisionId());
+
+                        tag.put("title", saleDecision != null ? saleDecision.getName() : getString("basePrice"));
+                    }
+                };
                 price.setOutputMarkupId(true);
                 price.setEnabled(false);
                 item.add(price);
@@ -382,15 +394,17 @@ public class SaleModal extends Modal<Sale> {
 
         saleItemsModel.getObject().forEach(si -> {
             SaleDecision saleDecision = priceService.getSaleDecision(sale.getStorageId(), si.getNomenclatureId(),
-                    sale.getDate(), basePricesTotal);
+                    sale.getDate(), basePricesTotal, sale.getInstallmentMonths());
 
             si.setSaleDecisionId(saleDecision != null ? saleDecision.getObjectId() : null);
 
-            si.setPrice(priceService.getPrice(saleDecision, sale.getDate(), si.getBasePrice(), basePricesTotal));
+            si.setPrice(priceService.getPrice(saleDecision, sale.getDate(), si.getBasePrice(), basePricesTotal,
+                    sale.getInstallmentMonths()));
 
             BigDecimal pointPrice = priceService.getPointPrice(sale.getStorageId(), si.getNomenclatureId(), sale.getDate());
 
-            si.setPointPrice(priceService.getPointPrice(saleDecision, sale.getDate(), pointPrice, basePricesTotal));
+            si.setPointPrice(priceService.getPointPrice(saleDecision, sale.getDate(), pointPrice, basePricesTotal,
+                    sale.getInstallmentMonths()));
         });
     }
 

@@ -72,6 +72,10 @@ public class SaleItem extends Domain<SaleItem> {
         setNumber(SALE_DECISION, saleDecisionId);
     }
 
+    public Long getSaleDecisionId(){
+        return getNumber(SALE_DECISION);
+    }
+
 
 }
 

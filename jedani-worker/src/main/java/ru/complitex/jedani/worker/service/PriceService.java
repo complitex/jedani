@@ -49,7 +49,8 @@ public class PriceService implements Serializable {
         return null;
     }
 
-    public SaleDecision getSaleDecision(Long storageId, Long nomenclatureId, Date date, BigDecimal total){
+    public SaleDecision getSaleDecision(Long storageId, Long nomenclatureId, Date date, BigDecimal total,
+                                        Long installmentMonths){
         if (storageId == null || nomenclatureId == null || date == null || total == null){
             return null;
         }
@@ -61,7 +62,7 @@ public class PriceService implements Serializable {
             saleDecisionService.loadRules(saleDecision);
 
             for (Rule rule : saleDecision.getRules()){
-                if (saleDecisionService.check(rule, date, total)){
+                if (saleDecisionService.check(rule, date, total, installmentMonths)){
                     return saleDecision;
                 }
             }
@@ -70,13 +71,14 @@ public class PriceService implements Serializable {
         return null;
     }
 
-    public BigDecimal getPrice(SaleDecision saleDecision, Date date, BigDecimal basePrice, BigDecimal total){
+    public BigDecimal getPrice(SaleDecision saleDecision, Date date, BigDecimal basePrice, BigDecimal total,
+                               Long installmentMonths){
         if (saleDecision == null || date == null || basePrice == null || total == null){
             return basePrice;
         }
 
         for (Rule rule : saleDecision.getRules()){
-            if (saleDecisionService.check(rule, date, total)){
+            if (saleDecisionService.check(rule, date, total, installmentMonths)){
                 for (RuleAction a : rule.getActions()){
                     switch (RuleActionType.getValue(a.getType())){
                         case DISCOUNT:
@@ -107,13 +109,14 @@ public class PriceService implements Serializable {
         return exchangeRateService.getExchangeRateValue(storageService.getCountryId(storageId), date);
     }
 
-    public BigDecimal getPointPrice(SaleDecision saleDecision, Date date, BigDecimal pointPrice, BigDecimal total){
+    public BigDecimal getPointPrice(SaleDecision saleDecision, Date date, BigDecimal pointPrice, BigDecimal total,
+                                    Long installmentMonths){
         if (saleDecision == null || date == null || pointPrice == null || total == null){
             return pointPrice;
         }
 
         for (Rule rule : saleDecision.getRules()){
-            if (saleDecisionService.check(rule, date, total)){
+            if (saleDecisionService.check(rule, date, total, installmentMonths)){
                 for (RuleAction a : rule.getActions()){
                     if (RuleActionType.getValue(a.getType()) == RuleActionType.EURO_RATE_LESS_OR_EQUAL) {
                         BigDecimal actionPointPrice = a.getDecimal(RuleAction.ACTION);

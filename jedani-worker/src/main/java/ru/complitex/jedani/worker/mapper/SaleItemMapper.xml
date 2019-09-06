@@ -6,6 +6,8 @@
     </resultMap>
 
     <sql id="selectSaleItemsWhere">
+      and exists(select s.id from sale s where s.object_id = d.parent_id and s.status = 1)
+
       <if test="map.sellerWorker != null">
           and exists(select s.id from sale s
             left join sale_attribute sa on (sa.domain_id = s.id and sa.status = 1)

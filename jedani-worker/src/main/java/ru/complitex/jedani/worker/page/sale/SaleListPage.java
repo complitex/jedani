@@ -1,17 +1,23 @@
 package ru.complitex.jedani.worker.page.sale;
 
+import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxButton;
+import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
+import de.agilecoders.wicket.core.markup.html.bootstrap.image.GlyphIconType;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.repeater.Item;
+import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
 import ru.complitex.common.wicket.component.DateTimeLabel;
+import ru.complitex.common.wicket.panel.LinkPanel;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
@@ -50,6 +56,8 @@ public class SaleListPage extends DomainListModalPage<SaleItem> {
 
     private SaleModal saleModal;
 
+    private SaleRemoveModal saleRemoveModal;
+
     public SaleListPage() {
         super(SaleItem.class);
 
@@ -66,7 +74,15 @@ public class SaleListPage extends DomainListModalPage<SaleItem> {
         };
         saleForm.add(saleModal);
 
+        Form form = new Form("saleRemoveForm");
+        getContainer().add(form);
 
+        form.add(saleRemoveModal = new SaleRemoveModal("saleRemove"){
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                target.add(getFeedback(), getTable());
+            }
+        });
     }
 
     @Override
@@ -169,5 +185,23 @@ public class SaleListPage extends DomainListModalPage<SaleItem> {
     @Override
     protected boolean isEditEnabled() {
         return isAdmin() || isStructureAdmin();
+    }
+
+    @Override
+    protected void onAddAction(RepeatingView repeatingView, IModel<SaleItem> rowModel) {
+        repeatingView.add(new LinkPanel(repeatingView.newChildId(), new BootstrapAjaxButton(LinkPanel.LINK_COMPONENT_ID,
+                Buttons.Type.Link) {
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                saleRemoveModal.delete(target, domainService.getDomain(Sale.class, rowModel.getObject().getParentId()));
+            }
+
+            @Override
+            protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
+                super.updateAjaxAttributes(attributes);
+
+                attributes.setEventPropagation(AjaxRequestAttributes.EventPropagation.STOP);
+            }
+        }.setIconType(GlyphIconType.remove)));
     }
 }
