@@ -3,7 +3,6 @@ package ru.complitex.jedani.worker.service;
 import org.mybatis.cdi.Transactional;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.domain.entity.Entity;
-import ru.complitex.domain.entity.Status;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
 import ru.complitex.jedani.worker.entity.*;
@@ -12,6 +11,7 @@ import ru.complitex.jedani.worker.exception.SaleException;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Anatoly A. Ivanov
@@ -29,19 +29,12 @@ public class SaleService implements Serializable {
 
     @Transactional(rollbackFor = SaleException.class)
     public void sale(Sale sale, List<SaleItem> saleItems) throws SaleException {
-        if (sale.getObjectId() != null){
-            domainService.delete(sale);
-            saleItems.forEach(si -> domainService.delete(si));
-        }
-
-        //Init
-        sale.setObjectId(null);
-        sale.setStatus(Status.ACTIVE);
-
-        saleItems.forEach(si -> {
-            si.setObjectId(null);
-            si.setStatus(Status.ACTIVE);
-        });
+        domainService.getDomains(SaleItem.class, FilterWrapper.of((SaleItem) new SaleItem().setParentId(sale.getObjectId())))
+                .forEach(si -> {
+                    if (saleItems.stream().noneMatch(si0 -> Objects.equals(si.getObjectId(), si0.getObjectId()))){
+                        domainService.delete(si);
+                    }
+                });
 
         //Sale
 
