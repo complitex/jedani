@@ -153,7 +153,7 @@ public class SaleListPage extends DomainListModalPage<SaleItem> {
 
     @Override
     protected void onEdit(SaleItem object, AjaxRequestTarget target) {
-        saleModal.view(object, target);
+        saleModal.view(object, target, isAdmin() || isStructureAdmin());
     }
 
     @Override
@@ -168,6 +168,6 @@ public class SaleListPage extends DomainListModalPage<SaleItem> {
 
     @Override
     protected boolean isEditEnabled() {
-        return false;
+        return isAdmin() || isStructureAdmin();
     }
 }

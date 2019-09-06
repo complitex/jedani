@@ -489,7 +489,7 @@ public class SaleModal extends Modal<Sale> {
         open(target);
     }
 
-    void view(SaleItem saleItem, AjaxRequestTarget target){
+    void view(SaleItem saleItem, AjaxRequestTarget target, boolean edit){
         Sale sale = domainService.getDomain(Sale.class, saleItem.getParentId());
 
         saleModel.setObject(sale);
@@ -503,7 +503,7 @@ public class SaleModal extends Modal<Sale> {
 
         saleItemsModel.setObject(saleItems);
 
-        container.setEnabled(false);
+        container.setEnabled(edit);
 
         open(target);
     }
