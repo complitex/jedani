@@ -29,12 +29,14 @@ public class SaleService implements Serializable {
 
     @Transactional(rollbackFor = SaleException.class)
     public void sale(Sale sale, List<SaleItem> saleItems) throws SaleException {
-        domainService.getDomains(SaleItem.class, FilterWrapper.of((SaleItem) new SaleItem().setParentId(sale.getObjectId())))
-                .forEach(si -> {
-                    if (saleItems.stream().noneMatch(si0 -> Objects.equals(si.getObjectId(), si0.getObjectId()))){
-                        domainService.delete(si);
-                    }
-                });
+        if (sale.getObjectId() != null) {
+            domainService.getDomains(SaleItem.class, FilterWrapper.of((SaleItem) new SaleItem().setParentId(sale.getObjectId())))
+                    .forEach(si -> {
+                        if (saleItems.stream().noneMatch(si0 -> Objects.equals(si.getObjectId(), si0.getObjectId()))){
+                            domainService.delete(si);
+                        }
+                    });
+        }
 
         //Sale
 
