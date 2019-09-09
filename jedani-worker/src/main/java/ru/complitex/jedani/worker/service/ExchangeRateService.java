@@ -1,5 +1,8 @@
 package ru.complitex.jedani.worker.service;
 
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -17,7 +20,6 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.net.HttpURLConnection;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
@@ -26,6 +28,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -44,22 +47,22 @@ public class ExchangeRateService implements Serializable {
     public String[] getValue(String uri, String uriDateParam, String uriDateFormat, LocalDate localDate,
                              String xpathDate, String xpathValue){
         try {
-            HttpURLConnection.setFollowRedirects(false);
-
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
             DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(uriDateFormat);
 
             String uriDate = uri + (uri.contains("?") ? "&" : "?") + uriDateParam + "=" + localDate.format(dateTimeFormatter);
 
-            Document document = factory.newDocumentBuilder().parse(uriDate);
+            Response response = new OkHttpClient().newCall(new Request.Builder().url(uriDate).get().build()).execute();
+
+            Document document = factory.newDocumentBuilder().parse(Objects.requireNonNull(response.body()).byteStream());
 
             XPathFactory xPathFactory = XPathFactory.newInstance();
             XPath xPath = xPathFactory.newXPath();
 
             return new String[]{xPath.evaluate(xpathDate, document), xPath.evaluate(xpathValue, document)};
         } catch (Exception e) {
-            log.error("error get value", e);
+            log.error("error get value: {}", e.getLocalizedMessage());
 
             return null;
         }
