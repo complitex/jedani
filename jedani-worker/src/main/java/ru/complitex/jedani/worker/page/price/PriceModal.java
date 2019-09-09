@@ -30,6 +30,7 @@ import ru.complitex.common.wicket.form.FormGroupPanel;
 import ru.complitex.common.wicket.form.FormGroupTextField;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.component.form.FormGroupDomainAutoComplete;
+import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.Status;
 import ru.complitex.domain.model.DateAttributeModel;
 import ru.complitex.domain.model.DecimalAttributeModel;
@@ -97,16 +98,25 @@ public class PriceModal extends AbstractDomainEditModal<Price> {
         feedback.showRenderedMessages(false);
         container.add(feedback);
 
-        container.add(new FormGroupPanel("nomenclature", new NomenclatureAutoComplete(FormGroupPanel.COMPONENT_ID,
-                DomainParentModel.of(priceModel)).setRequired(true)));
-
         container.add(new FormGroupDomainAutoComplete("country", Country.ENTITY_NAME, Country.NAME,
                 NumberAttributeModel.of(priceModel, Price.COUNTRY)){
             @Override
             public boolean isEnabled() {
-                return priceModel.getObject() == null || priceModel.getObject().getNumber(Price.COUNTRY) == null;
+                return priceModel.getObject().getObjectId() == null || priceModel.getObject().getNumber(Price.COUNTRY) == null;
             }
         }.setRequired(true));
+
+        container.add(new FormGroupPanel("nomenclature", new NomenclatureAutoComplete(FormGroupPanel.COMPONENT_ID,
+                DomainParentModel.of(priceModel)){
+            @Override
+            protected Domain getFilterObject(String input) {
+                Domain domain = super.getFilterObject(input);
+
+                domain.setNumber(Nomenclature.COUNTRIES, priceModel.getObject().getCountyId());
+
+                return domain;
+            }
+        }.setRequired(true)));
 
         container.add(new FormGroupDateTextField("begin", DateAttributeModel.of(priceModel, Price.DATE_BEGIN))
                 .setRequired(true));
@@ -233,6 +243,15 @@ public class PriceModal extends AbstractDomainEditModal<Price> {
         Price price = new Price();
 
         price.copy(priceModel.getObject(), true);
+
+        Nomenclature nomenclature = domainService.getDomain(Nomenclature.class, price.getNomenclatureId());
+
+        if (!nomenclature.getCountryIds().contains(price.getCountyId())){
+            error(getString("error_no_country_nomenclature"));
+            target.add(feedback);
+
+            return;
+        }
 
         Long count = domainService.getDomainsCount(FilterWrapper.of((Price) new Price()
                 .setParentId(priceModel.getObject().getParentId())

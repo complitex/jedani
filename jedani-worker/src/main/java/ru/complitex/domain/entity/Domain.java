@@ -14,6 +14,8 @@ import java.util.stream.Collectors;
  * 30.11.2017 15:29
  */
 public class Domain<T extends Domain<T>> implements Serializable{
+    public final static String FILTER_ATTRIBUTES = "attributes";
+
     private Long id;
     private Long objectId;
     private Long parentId;

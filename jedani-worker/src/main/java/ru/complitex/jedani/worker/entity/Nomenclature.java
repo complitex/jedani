@@ -2,6 +2,8 @@ package ru.complitex.jedani.worker.entity;
 
 import ru.complitex.domain.entity.Domain;
 
+import java.util.List;
+
 /**
  * @author Anatoly A. Ivanov
  * 16.10.2018 15:27
@@ -26,5 +28,9 @@ public class Nomenclature extends Domain<Nomenclature> {
 
     public void setType(Long type){
         setNumber(TYPE, type);
+    }
+
+    public List<Long> getCountryIds(){
+        return getNumberValues(COUNTRIES);
     }
 }

@@ -44,9 +44,7 @@ public class SaleService implements Serializable {
 
         domainService.save(sale);
 
-        for (int i = 0, size = saleItems.size(); i < size; i++) {
-            SaleItem s = saleItems.get(i);
-
+        for (SaleItem s : saleItems) {
             //Product
 
             Product filter = new Product();
@@ -56,7 +54,7 @@ public class SaleService implements Serializable {
 
             List<Product> products = domainService.getDomains(Product.class, FilterWrapper.of(filter));
 
-            if (products.isEmpty()){
+            if (products.isEmpty()) {
                 accept(sale.getStorageId(), s.getNomenclatureId());
 
                 products = domainService.getDomains(Product.class, FilterWrapper.of(filter));

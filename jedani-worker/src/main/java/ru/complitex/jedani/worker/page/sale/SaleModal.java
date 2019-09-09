@@ -278,7 +278,7 @@ public class SaleModal extends Modal<Sale> {
                         }else{
                             attribute.setNumber(NomenclatureType.BASE_ASSORTMENT);
                         }
-                        domain.put("attributes", Collections.singleton(attribute));
+                        domain.put(Domain.FILTER_ATTRIBUTES, Collections.singleton(attribute));
 
                         return domain;
                     }
