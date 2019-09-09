@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
  */
 public class Domain<T extends Domain<T>> implements Serializable{
     public final static String FILTER_ATTRIBUTES = "attributes";
+    public final static String FILTER_EXCLUDE_OBJECT_IDS = "excludeObjectIds";
 
     private Long id;
     private Long objectId;

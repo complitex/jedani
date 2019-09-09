@@ -32,7 +32,8 @@ public abstract class AbstractDomainAutoCompleteList extends Panel {
             @Override
             protected void populateItem(ListItem<Value> item) {
                 item.add(new AbstractDomainAutoComplete("item", entityName,
-                        new PropertyModel<>(item.getModel(), "number"), target -> {}){
+                        new PropertyModel<>(item.getModel(), "number"),
+                        AbstractDomainAutoCompleteList.this::onUpdate){
                     @Override
                     protected Domain getFilterObject(String input) {
                         return AbstractDomainAutoCompleteList.this.getFilterObject(input);
@@ -81,4 +82,9 @@ public abstract class AbstractDomainAutoCompleteList extends Panel {
     protected abstract String getTextValue(Domain domain);
 
     protected abstract Domain getFilterObject(String input);
+
+    protected void onUpdate(AjaxRequestTarget target){
+
+    }
+
 }

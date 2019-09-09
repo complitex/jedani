@@ -291,6 +291,12 @@
                 </foreach>
             </if>
 
+            <if test="object.map.excludeObjectIds != null">
+                and d.object_id not in
+                <foreach collection="object.map.excludeObjectIds" item="o" open="(" separator="," close=")">
+                    #{o}
+                </foreach>
+            </if>
 
             <choose>
                 <when test="status == 'active_and_archive'">

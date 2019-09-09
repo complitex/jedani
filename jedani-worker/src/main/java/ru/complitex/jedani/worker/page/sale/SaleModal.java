@@ -355,7 +355,7 @@ public class SaleModal extends Modal<Sale> {
         addButton(new BootstrapAjaxLink<Void>(Modal.BUTTON_MARKUP_ID, Buttons.Type.Default) {
             @Override
             public void onClick(AjaxRequestTarget target) {
-                SaleModal.this.close(target);
+                SaleModal.this.close(target, false);
             }
         }.setLabel(new ResourceModel("cancel")));
     }
@@ -460,12 +460,14 @@ public class SaleModal extends Modal<Sale> {
         show(target);
     }
 
-    private void close(AjaxRequestTarget target){
+    private void close(AjaxRequestTarget target, boolean update){
         super.close(target);
 
         container.visitChildren(FormComponent.class, (c, v) -> ((FormComponent) c).clearInput());
 
-        onUpdate(target);
+        if (update) {
+            onUpdate(target);
+        }
     }
 
     void sale(AjaxRequestTarget target){
@@ -549,7 +551,7 @@ public class SaleModal extends Modal<Sale> {
 
             getSession().success(getString("info_sold"));
 
-            close(target);
+            close(target, true);
         } catch (SaleException e) {
             error(getString("error_sell") + " " + e.getMessage());
 

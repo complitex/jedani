@@ -58,6 +58,7 @@ import ru.complitex.jedani.worker.service.SaleDecisionService;
 import javax.inject.Inject;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class SaleDecisionModal extends Modal<SaleDecision> {
     @Inject
@@ -133,7 +134,19 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
                         nomenclature.setType(getModelObject().getNomenclatureType());
                         nomenclature.setNumber(Nomenclature.COUNTRIES, getModelObject().getCountryId());
 
+                        List<Long> nomenclatureIds = getModelObject().getNomenclatureIds().stream()
+                                .filter(Objects::nonNull).collect(Collectors.toList());
+
+                        if (!nomenclatureIds.isEmpty()) {
+                            nomenclature.put(Domain.FILTER_EXCLUDE_OBJECT_IDS, nomenclatureIds);
+                        }
+
                         return nomenclature;
+                    }
+
+                    @Override
+                    public void onUpdate(AjaxRequestTarget target) {
+                        target.add(nomenclatureContainer.get("nomenclatureForm:nomenclatureTable"));
                     }
                 }){
             @Override
@@ -158,6 +171,13 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
 
                 nomenclature.setType(getModelObject().getNomenclatureType());
                 nomenclature.setNumber(Nomenclature.COUNTRIES, getModelObject().getCountryId());
+
+                List<Long> nomenclatureIds = getModelObject().getNomenclatureIds().stream()
+                        .filter(Objects::nonNull).collect(Collectors.toList());
+
+                if (!nomenclatureIds.isEmpty()) {
+                    nomenclature.put(Domain.FILTER_EXCLUDE_OBJECT_IDS, nomenclatureIds);
+                }
 
                 return domainService.getDomainsCount(getFilterState());
             }
@@ -192,7 +212,7 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
                     public void onClick(AjaxRequestTarget target) {
                         SaleDecisionModal.this.getModelObject().addNomenclatureId(rowModel.getObject().getObjectId());
 
-                        target.add(nomenclatures);
+                        target.add(nomenclatures, nomenclatureContainer.get("nomenclatureForm:nomenclatureTable"));
                     }
                 }.setIconType(GlyphIconType.plus)));
             }
@@ -571,19 +591,19 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
     }
 
     private void cancel(AjaxRequestTarget target) {
-        container.visitChildren(FormComponent.class, (c, v) -> ((FormComponent) c).clearInput());
-
         appendCloseDialogJavaScript(target);
+
+        container.visitChildren(FormComponent.class, (c, v) -> ((FormComponent) c).clearInput());
     }
 
     private void save(AjaxRequestTarget target) {
+        appendCloseDialogJavaScript(target);
+
         saleDecisionService.save(getModelObject());
 
         container.visitChildren(FormComponent.class, (c, v) -> ((FormComponent) c).clearInput());
 
         getSession().success(getString("info_sale_decision_saved"));
-
-        appendCloseDialogJavaScript(target);
 
         onUpdate(target);
     }
