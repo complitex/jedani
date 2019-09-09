@@ -432,8 +432,9 @@ public class SaleModal extends Modal<Sale> {
                     .reduce(BigDecimal.ZERO, BigDecimal::add));
         }
 
-        if (sale.getTotal() != null) {
-            sale.setInitialPayment(sale.getTotal().divide(BigDecimal.TEN, 2, BigDecimal.ROUND_HALF_EVEN));
+        if (sale.getTotal() != null && sale.getInstallmentMonths() >= 0) {
+            sale.setInitialPayment(sale.getTotal().divide(BigDecimal.valueOf(1 + sale.getInstallmentMonths()), 2,
+                    BigDecimal.ROUND_HALF_EVEN));
         }
     }
 
