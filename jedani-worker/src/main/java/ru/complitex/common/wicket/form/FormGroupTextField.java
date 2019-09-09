@@ -36,6 +36,8 @@ public class FormGroupTextField<T> extends Panel{
                 super.onComponentTag(tag);
 
                 tag.put("autocomplete", "off");
+
+                onTextFieldTag(tag);
             }
 
             @Override
@@ -96,5 +98,9 @@ public class FormGroupTextField<T> extends Panel{
     @Override
     protected void onModelChanged() {
         textField.modelChanged();
+    }
+
+    protected void onTextFieldTag(ComponentTag tag){
+
     }
 }
