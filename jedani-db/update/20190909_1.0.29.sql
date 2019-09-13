@@ -1,8 +1,8 @@
 -- Payment
 
-CALL createDomainTables('payment', 'Учет оплат');
+CALL createDomainTables('payment', 'Оплата');
 
-CALL createEntity(41, 'payment', 'Учет оплат', 'Облік оплат');
+CALL createEntity(41, 'payment', 'Оплата', 'Оплата');
 CALL createEntityAttributeWithReference(41, 1, 11, 20, 'Профконсультант', 'Профконсультант');
 CALL createEntityAttribute(41, 2, 6, 'Дата', 'Дата');
 CALL createEntityAttribute(41, 3, 4, 'Сумма оплаты (в локальной валюте)', 'Сума оплати (в локальній валюті)');
