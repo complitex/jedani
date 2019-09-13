@@ -129,10 +129,10 @@ public class JedaniWebApplication extends WebApplication{
         mountPage("exchange-rate/${id}", ExchangeRatePage.class);
         mountPage("prices", PriceListPage.class);
         mountPage("settings", SettingPage.class);
-        mountPage("rank", RankListPage.class);
-        mountPage("reward-type", RewardTypeListPage.class);
-        mountPage("reward", RewardListPage.class);
-        mountPage("payment", PaymentListPage.class);
+        mountPage("ranks", RankListPage.class);
+        mountPage("reward-types", RewardTypeListPage.class);
+        mountPage("rewards", RewardListPage.class);
+        mountPage("payments", PaymentListPage.class);
 
         mountPage("error", InternalErrorPage.class);
         mountPage("access-denied", AccessDeniedPage.class);
