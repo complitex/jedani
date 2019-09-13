@@ -31,7 +31,7 @@ public class RewardListPage extends DomainListModalPage<Reward> {
         Form rewardForm = new Form("rewardForm");
         getContainer().add(rewardForm);
 
-        rewardForm.add(rewardModal = new RewardModal("rewardModal", t -> t.add(getContainer())));
+        rewardForm.add(rewardModal = new RewardModal("rewardModal").onUpdate(t -> t.add(getContainer())));
     }
 
     @Override
@@ -68,7 +68,7 @@ public class RewardListPage extends DomainListModalPage<Reward> {
     }
 
     @Override
-    protected void onEdit(Reward object, AjaxRequestTarget target) {
-        rewardModal.edit(object, target);
+    protected void onEdit(Reward reward, AjaxRequestTarget target) {
+        rewardModal.edit(reward, target);
     }
 }

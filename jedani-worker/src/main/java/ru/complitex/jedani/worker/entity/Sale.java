@@ -120,4 +120,8 @@ public class Sale extends Domain<Sale> {
     public BigDecimal getTotal(){
         return getDecimal(TOTAL);
     }
+
+    public String getContract(){
+        return getText(CONTRACT);
+    }
 }

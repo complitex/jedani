@@ -12,8 +12,12 @@ import org.apache.wicket.model.ResourceModel;
 public class FormGroupPanel extends Panel {
     public static final String COMPONENT_ID = "component";
 
+    private Component component;
+
     public FormGroupPanel(String id, Component component) {
         super(id);
+
+        this.component = component;
 
         setOutputMarkupId(true);
         setOutputMarkupPlaceholderTag(true);
@@ -35,5 +39,13 @@ public class FormGroupPanel extends Panel {
         if (component instanceof FormComponent){
             ((FormComponent) component).setLabel(new ResourceModel(id));
         }
+    }
+
+    public FormGroupPanel setRequired(boolean required){
+        if (component instanceof FormComponent){
+            ((FormComponent) component).setRequired(required);
+        }
+
+        return this;
     }
 }

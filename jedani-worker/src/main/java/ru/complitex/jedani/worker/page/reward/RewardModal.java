@@ -3,49 +3,44 @@ package ru.complitex.jedani.worker.page.reward;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.danekja.java.util.function.serializable.SerializableConsumer;
 import ru.complitex.common.util.Dates;
 import ru.complitex.common.wicket.form.FormGroupDateTextField;
 import ru.complitex.common.wicket.form.FormGroupDecimalField;
-import ru.complitex.common.wicket.form.FormGroupPanel;
 import ru.complitex.common.wicket.form.FormGroupStringField;
+import ru.complitex.domain.component.form.AbstractEditModal;
 import ru.complitex.domain.component.form.FormGroupAttributeSelect;
-import ru.complitex.domain.component.form.ModalContainer;
 import ru.complitex.domain.service.DomainService;
-import ru.complitex.jedani.worker.component.WorkerAutoComplete;
+import ru.complitex.jedani.worker.component.FormGroupWorker;
 import ru.complitex.jedani.worker.entity.Rank;
 import ru.complitex.jedani.worker.entity.Reward;
 import ru.complitex.jedani.worker.entity.RewardType;
 
 import javax.inject.Inject;
 
-public class RewardModal extends ModalContainer<Reward> {
+public class RewardModal extends AbstractEditModal<Reward> {
     @Inject
     private DomainService domainService;
 
     private IModel<Reward> model;
 
-    public RewardModal(String markupId, SerializableConsumer<AjaxRequestTarget> onUpdate) {
-        super(markupId, onUpdate);
+    public RewardModal(String markupId) {
+        super(markupId);
 
         size(Size.Large);
 
         model = Model.of(new Reward());
 
-        getContainer().add(new FormGroupDateTextField("date", model, Reward.DATE).setRequired(true));
+        add(new FormGroupDateTextField("date", model, Reward.DATE).setRequired(true));
 
-        getContainer().add(new FormGroupPanel("worker", new WorkerAutoComplete(FormGroupPanel.COMPONENT_ID,
-                model, Reward.WORKER).setRequired(true)));
+        add(new FormGroupWorker("worker", model, Reward.WORKER).setRequired(true));
 
-        getContainer().add(new FormGroupAttributeSelect("type", model, Reward.TYPE, RewardType.ENTITY_NAME,
-                RewardType.NAME));
+        add(new FormGroupAttributeSelect("type", model, Reward.TYPE, RewardType.ENTITY_NAME, RewardType.NAME));
 
-        getContainer().add(new FormGroupAttributeSelect("rank", model, Reward.RANK, Rank.ENTITY_NAME,
-                Rank.NAME));
+        add(new FormGroupAttributeSelect("rank", model, Reward.RANK, Rank.ENTITY_NAME, Rank.NAME));
 
-        getContainer().add(new FormGroupDecimalField("point", model, Reward.POINT).setRequired(true));
+        add(new FormGroupDecimalField("point", model, Reward.POINT).setRequired(true));
 
-        getContainer().add(new FormGroupStringField("detail", model, Reward.DETAIL));
+        add(new FormGroupStringField("detail", model, Reward.DETAIL));
     }
 
     @Override
@@ -72,10 +67,5 @@ public class RewardModal extends ModalContainer<Reward> {
         domainService.save(model.getObject());
 
         success(getString("info_reward_saved"));
-    }
-
-    @Override
-    protected void cancel(AjaxRequestTarget target) {
-        super.cancel(target);
     }
 }

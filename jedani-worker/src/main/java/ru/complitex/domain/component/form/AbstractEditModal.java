@@ -5,27 +5,30 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxLink
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
 import de.agilecoders.wicket.core.markup.html.bootstrap.dialog.Modal;
+import org.apache.wicket.Component;
+import org.apache.wicket.MarkupContainer;
+import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.model.ResourceModel;
 import org.danekja.java.util.function.serializable.SerializableConsumer;
-import ru.complitex.jedani.worker.entity.Reward;
+import ru.complitex.jedani.worker.page.BasePage;
+
+import java.util.Objects;
 
 /**
  * @author Anatoly A. Ivanov
  * 16.07.2019 17:27
  */
-public class ModalContainer<T> extends Modal<T> {
+public abstract class AbstractEditModal<T> extends Modal<T> {
     private WebMarkupContainer container;
     private NotificationPanel feedback;
 
     private SerializableConsumer<AjaxRequestTarget> onUpdate;
 
-    public ModalContainer(String markupId, SerializableConsumer<AjaxRequestTarget> onUpdate) {
+    public AbstractEditModal(String markupId) {
         super(markupId);
-
-        this.onUpdate = onUpdate;
 
         setBackdrop(Backdrop.FALSE);
         setCloseOnEscapeKey(false);
@@ -34,7 +37,7 @@ public class ModalContainer<T> extends Modal<T> {
         container = new WebMarkupContainer("container");
         container.setOutputMarkupId(true);
         container.setOutputMarkupPlaceholderTag(true);
-        add(container);
+        super.add(container);
 
         feedback = new NotificationPanel("feedback");
         feedback.setOutputMarkupId(true);
@@ -75,7 +78,7 @@ public class ModalContainer<T> extends Modal<T> {
         appendShowDialogJavaScript(target);
     }
 
-    public void edit(Reward object, AjaxRequestTarget target) {
+    public void edit(T object, AjaxRequestTarget target) {
         target.add(getContainer());
 
         appendShowDialogJavaScript(target);
@@ -95,5 +98,40 @@ public class ModalContainer<T> extends Modal<T> {
         appendCloseDialogJavaScript(target);
 
         container.visitChildren(FormComponent.class, (c, v) -> ((FormComponent)c).clearInput());
+    }
+
+    @SuppressWarnings("unchecked")
+    public <M extends AbstractEditModal> M onUpdate(SerializableConsumer<AjaxRequestTarget> onUpdate) {
+        this.onUpdate = onUpdate;
+
+        return (M) this;
+    }
+
+    public MarkupContainer add(Component... children){
+        if (container != null) {
+            container.add(children);
+        } else {
+            super.add(children);
+        }
+
+        return this;
+    }
+
+    protected BasePage getBasePage(){
+        Page page = getPage();
+
+        if (page instanceof BasePage){
+            return ((BasePage) page);
+        }
+
+        return null;
+    }
+
+    protected boolean isAdmin(){
+        return Objects.requireNonNull(getBasePage()).isAdmin();
+    }
+
+    protected boolean isStructureAdmin(){
+        return Objects.requireNonNull(getBasePage()).isStructureAdmin();
     }
 }
