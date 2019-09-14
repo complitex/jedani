@@ -34,6 +34,7 @@ import ru.complitex.name.service.NameService;
 
 import javax.inject.Inject;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -139,6 +140,20 @@ public class SaleListPage extends DomainListModalPage<SaleItem> {
 
                 BigDecimal total = saleItem.getPrice() != null && saleItem.getQuantity() != null
                         ? saleItem.getPrice().multiply(BigDecimal.valueOf(saleItem.getQuantity()))
+                        : BigDecimal.ZERO;
+
+                cellItem.add(new Label(componentId, total.toPlainString()));
+            }
+        });
+
+        columns.add(new AbstractDomainColumn<SaleItem>("total_local") {
+            @Override
+            public void populateItem(Item<ICellPopulator<SaleItem>> cellItem, String componentId, IModel<SaleItem> rowModel) {
+                SaleItem saleItem = rowModel.getObject();
+
+                BigDecimal total = saleItem.getPrice() != null && saleItem.getQuantity() != null && saleItem.getPointPrice() != null
+                        ? saleItem.getPrice().multiply(BigDecimal.valueOf(saleItem.getQuantity()).multiply(saleItem.getPointPrice()))
+                        .setScale(2, RoundingMode.HALF_EVEN)
                         : BigDecimal.ZERO;
 
                 cellItem.add(new Label(componentId, total.toPlainString()));
