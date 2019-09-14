@@ -33,6 +33,7 @@ import ru.complitex.jedani.worker.util.Storages;
 import ru.complitex.name.service.NameService;
 
 import javax.inject.Inject;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -106,7 +107,6 @@ public class SaleListPage extends DomainListModalPage<SaleItem> {
         list.add(entity.getEntityAttribute(SaleItem.NOMENCLATURE)
                 .withReferences(Nomenclature.ENTITY_NAME, Nomenclature.CODE, Nomenclature.NAME));
         list.add(entity.getEntityAttribute(SaleItem.QUANTITY));
-        list.add(entity.getEntityAttribute(SaleItem.TOTAL));
 
         return list;
     }
@@ -129,6 +129,19 @@ public class SaleListPage extends DomainListModalPage<SaleItem> {
 
                 cellItem.add(new Label(componentId, nameService.getFio(sale.getBuyerLastName(), sale.getBuyerFirstName(),
                         sale.getBuyerMiddleName())));
+            }
+        });
+
+        columns.add(new AbstractDomainColumn<SaleItem>("total") {
+            @Override
+            public void populateItem(Item<ICellPopulator<SaleItem>> cellItem, String componentId, IModel<SaleItem> rowModel) {
+                SaleItem saleItem = rowModel.getObject();
+
+                BigDecimal total = saleItem.getPrice() != null && saleItem.getQuantity() != null
+                        ? saleItem.getPrice().multiply(BigDecimal.valueOf(saleItem.getQuantity()))
+                        : BigDecimal.ZERO;
+
+                cellItem.add(new Label(componentId, total.toPlainString()));
             }
         });
 

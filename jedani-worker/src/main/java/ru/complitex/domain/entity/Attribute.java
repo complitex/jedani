@@ -4,6 +4,7 @@ import com.google.common.base.MoreObjects;
 import ru.complitex.domain.util.Locales;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -194,6 +195,14 @@ public class Attribute implements Serializable{
 
     public void setNumber(Long number) {
         this.number = number;
+    }
+
+    public BigDecimal getDecimal(){
+        return text != null && !text.isEmpty()  ? new BigDecimal(text) : null;
+    }
+
+    public void setDecimal(BigDecimal decimal){
+        text = decimal != null ? decimal.toPlainString() : null;
     }
 
     public Date getDate() {
