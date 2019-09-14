@@ -16,6 +16,7 @@ import ru.complitex.common.wicket.datatable.TextDataFilter;
 import ru.complitex.common.wicket.panel.InputPanel;
 import ru.complitex.domain.entity.*;
 import ru.complitex.domain.model.DateAttributeModel;
+import ru.complitex.domain.model.DecimalAttributeModel;
 import ru.complitex.domain.model.NumberAttributeModel;
 import ru.complitex.domain.model.TextAttributeModel;
 import ru.complitex.domain.service.DomainService;
@@ -23,6 +24,7 @@ import ru.complitex.domain.service.EntityService;
 import ru.complitex.domain.util.Attributes;
 
 import javax.inject.Inject;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -71,6 +73,11 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
                 textFilter.getFilter().setType(Long.class);
 
                 return textFilter;
+            case DECIMAL:
+                TextDataFilter<BigDecimal> decimalFilter = new TextDataFilter<>(componentId, new DecimalAttributeModel(domain, entityAttributeId), form);
+                decimalFilter.getFilter().setType(BigDecimal.class);
+
+                return decimalFilter;
             case DATE:
                 return new InputPanel(componentId, new DateTextField(InputPanel.INPUT_COMPONENT_ID,
                         new DateAttributeModel(domain, entityAttributeId),
@@ -119,6 +126,10 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
                 break;
             case NUMBER:
                 text = attribute.getNumber() != null ?  attribute.getNumber() + "" : "";
+
+                break;
+            case DECIMAL:
+                text = attribute.getDecimal() != null ?  attribute.getDecimal() + "" : "";
 
                 break;
 
