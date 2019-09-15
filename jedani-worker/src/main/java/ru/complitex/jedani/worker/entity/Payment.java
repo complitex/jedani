@@ -2,6 +2,7 @@ package ru.complitex.jedani.worker.entity;
 
 import ru.complitex.domain.entity.Domain;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 public class Payment extends Domain<Payment> {
@@ -31,6 +32,10 @@ public class Payment extends Domain<Payment> {
         setNumber(WORKER, workerId);
     }
 
+    public Date getDate(){
+        return getDate(DATE);
+    }
+
     public void setDate(Date date){
         setDate(DATE, date);
     }
@@ -51,7 +56,38 @@ public class Payment extends Domain<Payment> {
         setDate(PERIOD_END, periodEnd);
     }
 
+    public BigDecimal getPayment(){
+        return getDecimal(PAYMENT);
+    }
+
+    public void setRate(BigDecimal rate){
+        setDecimal(RATE, rate);
+    }
+
+    public void setPoint(BigDecimal point){
+        setDecimal(POINT, point);
+    }
+
+    public BigDecimal getPoint(){
+        return getDecimal(POINT);
+    }
+
+    public String getContract(){
+        return getText(CONTRACT);
+    }
+
+    public Payment setContract(String contract){
+        setText(CONTRACT, contract);
+
+        return this;
+    }
+
     public Long getSaleId(){
         return getNumber(SALE);
     }
+
+    public void setSaleId(Long saleId){
+        setNumber(SALE, saleId);
+    }
+
 }

@@ -70,10 +70,6 @@ form label[required=required]:after{
     width: 55px
 }
 
-td.domain-id-column{
-    vertical-align: middle !important;
-}
-
 .domain-id-column .btn{
     padding-top: 0;
     padding-bottom: 0;

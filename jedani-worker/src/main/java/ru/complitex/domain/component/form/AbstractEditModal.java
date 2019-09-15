@@ -107,6 +107,10 @@ public abstract class AbstractEditModal<T> extends Modal<T> {
         return (M) this;
     }
 
+    public SerializableConsumer<AjaxRequestTarget> getOnUpdate() {
+        return onUpdate;
+    }
+
     public MarkupContainer add(Component... children){
         if (container != null) {
             container.add(children);

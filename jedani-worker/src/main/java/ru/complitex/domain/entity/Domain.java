@@ -268,8 +268,11 @@ public class Domain<T extends Domain<T>> implements Serializable{
         return objectId;
     }
 
-    public void setObjectId(Long objectId) {
+    @SuppressWarnings("unchecked")
+    public T setObjectId(Long objectId) {
         this.objectId = objectId;
+
+        return (T) this;
     }
 
     public Long getParentId() {
