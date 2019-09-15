@@ -190,7 +190,7 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage{
         Form<T> editForm = new Form<>("editForm");
         container.add(editForm);
 
-        if (isEditEnabled()) {
+        if (isEditEnabled() && isDomainModalEditEnabled()) {
             domainEditModal = newDomainEditModal(DOMAIN_EDIT_MODAL_ID);
 
             editForm.add(domainEditModal);
@@ -305,6 +305,10 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage{
     }
 
     protected boolean isEditEnabled(){
+        return true;
+    }
+
+    protected boolean isDomainModalEditEnabled(){
         return true;
     }
 

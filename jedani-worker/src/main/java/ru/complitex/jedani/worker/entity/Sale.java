@@ -124,4 +124,10 @@ public class Sale extends Domain<Sale> {
     public String getContract(){
         return getText(CONTRACT);
     }
+
+    public Sale setContract(String contract){
+        setText(CONTRACT, contract);
+
+        return this;
+    }
 }

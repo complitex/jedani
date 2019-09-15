@@ -7,6 +7,7 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
+import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.page.DomainListModalPage;
 import ru.complitex.domain.service.DomainService;
@@ -15,6 +16,7 @@ import ru.complitex.jedani.worker.entity.Sale;
 import ru.complitex.jedani.worker.service.WorkerService;
 
 import javax.inject.Inject;
+import java.util.List;
 
 public class PaymentListPage extends DomainListModalPage<Payment> {
     @Inject
@@ -32,6 +34,12 @@ public class PaymentListPage extends DomainListModalPage<Payment> {
         getContainer().add(paymentForm);
 
         paymentForm.add(paymentModal = new PaymentModal("paymentModal").onUpdate(t -> t.add(getContainer())));
+    }
+
+    @Override
+    protected List<EntityAttribute> getEntityAttributes(Entity entity) {
+        return entity.getEntityAttributes(Payment.DATE, Payment.PERIOD_START, Payment.PERIOD_END, Payment.WORKER,
+                Payment.CONTRACT, Payment.POINT);
     }
 
     @Override
@@ -65,5 +73,10 @@ public class PaymentListPage extends DomainListModalPage<Payment> {
     @Override
     protected void onEdit(Payment payment, AjaxRequestTarget target) {
         paymentModal.edit(payment, target);
+    }
+
+    @Override
+    protected boolean isDomainModalEditEnabled() {
+        return false;
     }
 }

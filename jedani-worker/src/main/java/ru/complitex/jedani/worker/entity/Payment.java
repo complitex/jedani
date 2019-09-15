@@ -9,13 +9,18 @@ public class Payment extends Domain<Payment> {
 
     public final static long WORKER = 1;
     public final static long DATE = 2;
-    public final static long PAYMENT = 3;
-    public final static long POINT = 4;
-    public final static long SALE = 5;
+    public final static long PERIOD_START = 3;
+    public final static long PERIOD_END = 4;
+    public final static long PAYMENT = 5;
     public final static long RATE = 6;
+    public final static long POINT = 7;
+    public final static long CONTRACT = 8;
+    public final static long SALE = 9;
 
     public Payment() {
         super(ENTITY_NAME);
+
+        setUseDateAttribute(true);
     }
 
     public Long getWorkerId(){
@@ -28,6 +33,22 @@ public class Payment extends Domain<Payment> {
 
     public void setDate(Date date){
         setDate(DATE, date);
+    }
+
+    public Date getPeriodStart(){
+        return getDate(PERIOD_START);
+    }
+
+    public void setPeriodStart(Date periodStart){
+        setDate(PERIOD_START, periodStart);
+    }
+
+    public Date getPeriodEnd(){
+        return getDate(PERIOD_END);
+    }
+
+    public void setPeriodEnd(Date periodEnd){
+        setDate(PERIOD_END, periodEnd);
     }
 
     public Long getSaleId(){

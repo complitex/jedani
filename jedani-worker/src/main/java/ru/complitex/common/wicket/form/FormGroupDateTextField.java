@@ -50,8 +50,7 @@ public class FormGroupDateTextField extends Panel{
                 };
             }
         };
-        group.add(dateTextField = new DateTextField("input", model,
-                new DateTextFieldConfig().withFormat("dd.MM.yyyy").withLanguage("ru").autoClose(true)){
+        group.add(dateTextField = new DateTextField("input", model, getDateTextFieldConfig()){
             @Override
             public boolean isRequired() {
                 return FormGroupDateTextField.this.isRequired();
@@ -60,6 +59,14 @@ public class FormGroupDateTextField extends Panel{
         dateTextField.setLabel(label);
 
         add(group);
+    }
+
+    protected DateTextFieldConfig getDateTextFieldConfig() {
+        return new DateTextFieldConfig()
+                .withFormat("dd.MM.yyyy")
+                .withLanguage("ru")
+                .autoClose(true)
+                .highlightToday(true);
     }
 
     public FormGroupDateTextField(String id, IModel<? extends Domain> domainModel, Long entityAttributeId){
