@@ -496,6 +496,7 @@ public class SaleModal extends Modal<Sale> {
         sale.setDate(new Date());
         sale.setInstallmentMonths(0L);
         sale.setStorageId(defaultStorageId);
+        sale.setSaleStatus(SaleStatus.CREATED);
 
         saleModel.setObject(sale);
 
