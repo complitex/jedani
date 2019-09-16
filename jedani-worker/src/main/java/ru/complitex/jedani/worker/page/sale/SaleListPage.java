@@ -127,6 +127,15 @@ public class SaleListPage extends DomainListModalPage<SaleItem> {
             }
         });
 
+        columns.add(index++, new AbstractDomainColumn<SaleItem>("contract") {
+            @Override
+            public void populateItem(Item<ICellPopulator<SaleItem>> cellItem, String componentId, IModel<SaleItem> rowModel) {
+                Sale sale = domainService.getDomain(Sale.class, rowModel.getObject().getParentId());
+
+                cellItem.add(new Label(componentId, sale.getContract()));
+            }
+        });
+
         if (isAdmin() || isStructureAdmin()) {
             columns.add(index++, new AbstractDomainColumn<SaleItem>(SaleItem.FILTER_SELLER_WORKER) {
                 @Override
@@ -138,22 +147,13 @@ public class SaleListPage extends DomainListModalPage<SaleItem> {
             });
         }
 
-        columns.add(index++, new AbstractDomainColumn<SaleItem>(SaleItem.FILTER_BUYER) {
+        columns.add(index, new AbstractDomainColumn<SaleItem>(SaleItem.FILTER_BUYER) {
             @Override
             public void populateItem(Item<ICellPopulator<SaleItem>> cellItem, String componentId, IModel<SaleItem> rowModel) {
                 Sale sale = domainService.getDomain(Sale.class, rowModel.getObject().getParentId());
 
                 cellItem.add(new Label(componentId, nameService.getFio(sale.getBuyerLastName(), sale.getBuyerFirstName(),
                         sale.getBuyerMiddleName())));
-            }
-        });
-
-        columns.add(index, new AbstractDomainColumn<SaleItem>("contract") {
-            @Override
-            public void populateItem(Item<ICellPopulator<SaleItem>> cellItem, String componentId, IModel<SaleItem> rowModel) {
-                Sale sale = domainService.getDomain(Sale.class, rowModel.getObject().getParentId());
-
-                cellItem.add(new Label(componentId, sale.getContract()));
             }
         });
 

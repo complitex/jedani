@@ -137,46 +137,6 @@ public class SaleModal extends Modal<Sale> {
             }
         }.setRequired(true).onUpdate(this::updatePrices));
 
-        container.add(new FormGroupSelectPanel("saleStatus", new BootstrapSelect<>(FormGroupPanel.COMPONENT_ID,
-                NumberAttributeModel.of(saleModel, Sale.STATUS),
-                Arrays.asList(SaleStatus.CREATED, SaleStatus.PAYING, SaleStatus.RISK, SaleStatus.NOT_PAYING,
-                        SaleStatus.CLOSED, SaleStatus.ARCHIVE),
-                new IChoiceRenderer<Long>() {
-                    @Override
-                    public Object getDisplayValue(Long object) {
-                        switch (object.intValue()){
-                            case (int) SaleStatus.CREATED:
-                                return getString("created");
-                            case (int) SaleStatus.PAYING:
-                                return getString("paying");
-                            case (int) SaleStatus.RISK:
-                                return getString("risk");
-                            case (int) SaleStatus.NOT_PAYING:
-                                return getString("not_paying");
-                            case (int) SaleStatus.CLOSED:
-                                return getString("closed");
-                            case (int) SaleStatus.ARCHIVE:
-                                return getString("archive");
-
-                            default:
-                                return null;
-                        }
-                    }
-
-                    @Override
-                    public String getIdValue(Long object, int index) {
-                        return object + "";
-                    }
-
-                    @Override
-                    public Long getObject(String id, IModel<? extends List<? extends Long>> choices) {
-                        return id != null && !id.isEmpty() ? Long.valueOf(id) : null;
-                    }
-                })
-                .with(new BootstrapSelectConfig().withNoneSelectedText(""))
-                .setNullValid(false)
-                .setRequired(true)));
-
         container.add(new FormGroupPanel("sasRequest", new BootstrapCheckbox(FormGroupPanel.COMPONENT_ID,
                 BooleanAttributeModel.of(saleModel, Sale.SAS_REQUEST), new ResourceModel("sasRequestLabel"))));
 
