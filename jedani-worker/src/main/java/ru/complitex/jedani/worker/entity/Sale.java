@@ -26,6 +26,7 @@ public class Sale extends Domain<Sale> {
     public static final long TOTAL_LOCAL = 12;
     public static final long INSTALLMENT_MONTHS = 13;
     public static final long INITIAL_PAYMENT = 14;
+    public static final long STATUS = 15;
 
     public Sale() {
         super(ENTITY_NAME);
@@ -129,5 +130,13 @@ public class Sale extends Domain<Sale> {
         setText(CONTRACT, contract);
 
         return this;
+    }
+
+    public void setSaleStatus(Long saleStatus){
+        setNumber(STATUS, saleStatus);
+    }
+
+    public Long getSaleStatus(){
+        return getNumber(STATUS);
     }
 }

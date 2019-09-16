@@ -477,6 +477,8 @@ INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `tex
 INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (28, 14, 4);
 INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (28, 14, 1, 'Первый платеж'), (28, 14, 2, 'Перший платіж');
 
+CALL createEntityAttribute(28, 15, 5, 'Статус', 'Статус');
+
 /* Sale Item*/
 
 CALL createEntity(29, 'sale_item', 'Позиция продажи', 'Позиція продажу');
@@ -651,4 +653,4 @@ CALL createEntityAttribute(37, 4, 5, 'Индекс', 'Індекс');
 
 -- Update
 
-INSERT INTO `update` (`version`) VALUE ('20190916_1.0.30');
+INSERT INTO `update` (`version`) VALUE ('20190916_1.0.31');

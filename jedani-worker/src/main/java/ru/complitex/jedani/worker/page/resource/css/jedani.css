@@ -289,3 +289,11 @@ form label[required=required]:after{
 .si-price{
     width: 101px;
 }
+
+tr.sale_status_closed>td{
+    background-color: #ede7f6;
+}
+
+tr:hover.sale_status_closed>td{
+    background-color: #d1c4e9;
+}

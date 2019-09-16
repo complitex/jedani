@@ -1,5 +1,6 @@
 package ru.complitex.jedani.worker.page.sale;
 
+import de.agilecoders.wicket.core.markup.html.bootstrap.behavior.CssClassNameAppender;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxButton;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.image.GlyphIconType;
@@ -26,6 +27,7 @@ import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.entity.Nomenclature;
 import ru.complitex.jedani.worker.entity.Sale;
 import ru.complitex.jedani.worker.entity.SaleItem;
+import ru.complitex.jedani.worker.entity.SaleStatus;
 import ru.complitex.jedani.worker.mapper.SaleItemMapper;
 import ru.complitex.jedani.worker.service.WorkerService;
 import ru.complitex.jedani.worker.util.Storages;
@@ -185,6 +187,40 @@ public class SaleListPage extends DomainListModalPage<SaleItem> {
                 cellItem.add(new Label(componentId, sale.getInstallmentMonths()));
             }
         });
+
+        columns.add(new AbstractDomainColumn<SaleItem>("status") {
+            @Override
+            public void populateItem(Item<ICellPopulator<SaleItem>> cellItem, String componentId, IModel<SaleItem> rowModel) {
+                Sale sale = domainService.getDomain(Sale.class, rowModel.getObject().getParentId());
+
+                String status = "";
+
+                if (sale.getSaleStatus() != null){
+                    switch (sale.getSaleStatus().intValue()){
+                        case (int) SaleStatus.CREATED:
+                            status = getString("created");
+                            break;
+                        case (int) SaleStatus.PAYING:
+                            status =  getString("paying");
+                            break;
+                        case (int) SaleStatus.RISK:
+                            status =  getString("risk");
+                            break;
+                        case (int) SaleStatus.NOT_PAYING:
+                            status =  getString("not_paying");
+                            break;
+                        case (int) SaleStatus.CLOSED:
+                            status =  getString("closed");
+                            break;
+                        case (int) SaleStatus.ARCHIVE:
+                            status =  getString("archive");
+                            break;
+                    }
+                }
+
+                cellItem.add(new Label(componentId, status));
+            }
+        });
     }
 
     @Override
@@ -228,5 +264,42 @@ public class SaleListPage extends DomainListModalPage<SaleItem> {
                 attributes.setEventPropagation(AjaxRequestAttributes.EventPropagation.STOP);
             }
         }.setIconType(GlyphIconType.remove)));
+    }
+
+    @Override
+    protected void onRowItem(Item<SaleItem> item) {
+        super.onRowItem(item);
+
+        Sale sale = domainService.getDomain(Sale.class, item.getModelObject().getParentId());
+
+        String statusClass = null;
+
+        if (sale.getSaleStatus() != null){
+            switch (sale.getSaleStatus().intValue()){
+                case (int) SaleStatus.CREATED:
+                    statusClass = "info";
+                    break;
+                case (int) SaleStatus.PAYING:
+                    statusClass = "success";
+                    break;
+                case (int) SaleStatus.RISK:
+                    statusClass = "warning";
+                    break;
+                case (int) SaleStatus.NOT_PAYING:
+                    statusClass = "danger";
+                    break;
+                case (int) SaleStatus.CLOSED:
+                    statusClass = "sale_status_closed";
+                    break;
+                case (int) SaleStatus.ARCHIVE:
+                    statusClass = "active";
+                    break;
+            }
+        }
+
+        if (statusClass != null){
+            item.add(new CssClassNameAppender(statusClass));
+        }
+
     }
 }
