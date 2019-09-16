@@ -144,20 +144,20 @@ public class PaymentModal extends AbstractEditModal<Payment> {
 
         SaleItem saleItem = saleItems.get(0);
 
-        BigDecimal pointPrice = priceService.getRate(sale.getStorageId(), saleItem.getNomenclatureId(),
+        BigDecimal rate = priceService.getRate(sale.getStorageId(), saleItem.getNomenclatureId(),
                 domainService.getDomain(SaleDecision.class, saleItem.getSaleDecisionId()),
                 payment.getDate(), sale.getTotal(), sale.getInstallmentMonths());
 
-        if (pointPrice == null){
-            error(getString("error_null_point_price"));
+        if (rate == null){
+            error(getString("error_null_rate"));
 
             target.add(getFeedback());
 
             return;
         }
 
-        payment.setRate(pointPrice);
-        payment.setPoint(payment.getPayment().divide(pointPrice, 2, RoundingMode.HALF_EVEN));
+        payment.setRate(rate);
+        payment.setPoint(payment.getPayment().divide(rate, 2, RoundingMode.HALF_EVEN));
         payment.setSaleId(sale.getObjectId());
 
         BigDecimal sum = domainService.getDomains(Payment.class, FilterWrapper.of(new Payment()
