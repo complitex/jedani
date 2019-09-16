@@ -53,7 +53,13 @@ public class ExchangeRateService implements Serializable {
 
             String uriDate = uri + (uri.contains("?") ? "&" : "?") + uriDateParam + "=" + localDate.format(dateTimeFormatter);
 
-            Response response = new OkHttpClient().newCall(new Request.Builder().url(uriDate).get().build()).execute();
+            OkHttpClient client = new OkHttpClient.Builder().build();
+
+            Response response = client.newCall(new Request.Builder().url(uriDate).get().build()).execute();
+
+            if (!response.isSuccessful()){
+                response = client.newCall(new Request.Builder().url(uriDate).get().build()).execute();
+            }
 
             Document document = factory.newDocumentBuilder().parse(Objects.requireNonNull(response.body()).byteStream());
 
@@ -62,7 +68,7 @@ public class ExchangeRateService implements Serializable {
 
             return new String[]{xPath.evaluate(xpathDate, document), xPath.evaluate(xpathValue, document)};
         } catch (Exception e) {
-            log.error("error get value: {}", e.getLocalizedMessage());
+            log.error("error get rate: {}", e.getLocalizedMessage());
 
             return null;
         }
