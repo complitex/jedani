@@ -1,6 +1,7 @@
 package ru.complitex.jedani.worker.page.payment;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
@@ -18,6 +19,9 @@ import ru.complitex.jedani.worker.service.WorkerService;
 import javax.inject.Inject;
 import java.util.List;
 
+import static ru.complitex.jedani.worker.security.JedaniRoles.*;
+
+@AuthorizeInstantiation({ADMINISTRATORS, STRUCTURE_ADMINISTRATORS, PAYMENT_ADMINISTRATORS})
 public class PaymentListPage extends DomainListModalPage<Payment> {
     @Inject
     private WorkerService workerService;

@@ -256,9 +256,9 @@ public class BasePage extends WebPage{
         sales.add(new MenuLink("price", PriceListPage.class).setVisible(isAdmin() || isStructureAdmin()));
         sales.add(new MenuLink("promotion", PromotionListPage.class).setVisible(isAdmin() || isPromotionAdmin()));
         sales.add(new MenuLink("saleDecision", SaleDecisionListPage.class).setVisible(isAdmin() || isStructureAdmin()));
-        sales.add(new MenuLink("sale", SaleListPage.class));
+        sales.add(new MenuLink("sale", SaleListPage.class).setVisible(isAdmin() || isStructureAdmin() || isSaleAdmin()));
         sales.add(new MenuLink("reward", RewardListPage.class).setVisible(isAdmin() || isStructureAdmin()));
-        sales.add(new MenuLink("payment", PaymentListPage.class).setVisible(isAdmin() || isStructureAdmin()));
+        sales.add(new MenuLink("payment", PaymentListPage.class).setVisible(isAdmin() || isStructureAdmin() || isPaymentAdmin()));
     }
 
     @Override
@@ -359,6 +359,14 @@ public class BasePage extends WebPage{
 
     public boolean isPromotionAdmin(){
         return getHttpServletRequest().isUserInRole(JedaniRoles.PROMOTION_ADMINISTRATORS);
+    }
+
+    public boolean isSaleAdmin(){
+        return getHttpServletRequest().isUserInRole(JedaniRoles.SALE_ADMINISTRATORS);
+    }
+
+    public boolean isPaymentAdmin(){
+        return getHttpServletRequest().isUserInRole(JedaniRoles.PAYMENT_ADMINISTRATORS);
     }
 
     public boolean isUser(){

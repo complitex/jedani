@@ -34,13 +34,19 @@
         <role-name>AUTHORIZED</role-name>
     </security-role>
     <security-role>
+        <role-name>USERS</role-name>
+    </security-role>
+    <security-role>
         <role-name>ADMINISTRATORS</role-name>
     </security-role>
     <security-role>
         <role-name>STRUCTURE_ADMINISTRATORS</role-name>
     </security-role>
     <security-role>
-        <role-name>USERS</role-name>
+        <role-name>SALE_ADMINISTRATORS</role-name>
+    </security-role>
+    <security-role>
+        <role-name>PAYMENT_ADMINISTRATORS</role-name>
     </security-role>
 
     <login-config>

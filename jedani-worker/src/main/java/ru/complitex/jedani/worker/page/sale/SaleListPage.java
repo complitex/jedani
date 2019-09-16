@@ -27,7 +27,6 @@ import ru.complitex.jedani.worker.entity.Nomenclature;
 import ru.complitex.jedani.worker.entity.Sale;
 import ru.complitex.jedani.worker.entity.SaleItem;
 import ru.complitex.jedani.worker.mapper.SaleItemMapper;
-import ru.complitex.jedani.worker.security.JedaniRoles;
 import ru.complitex.jedani.worker.service.WorkerService;
 import ru.complitex.jedani.worker.util.Storages;
 import ru.complitex.name.service.NameService;
@@ -37,11 +36,13 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import static ru.complitex.jedani.worker.security.JedaniRoles.*;
+
 /**
  * @author Anatoly A. Ivanov
  * 18.02.2019 15:22
  */
-@AuthorizeInstantiation({JedaniRoles.AUTHORIZED})
+@AuthorizeInstantiation({ADMINISTRATORS, STRUCTURE_ADMINISTRATORS, SALE_ADMINISTRATORS})
 public class SaleListPage extends DomainListModalPage<SaleItem> {
     @Inject
     private SaleItemMapper saleItemMapper;

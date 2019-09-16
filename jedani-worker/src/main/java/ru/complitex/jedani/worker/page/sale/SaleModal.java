@@ -245,8 +245,8 @@ public class SaleModal extends Modal<Sale> {
                         SaleDecision saleDecision = domainService.getDomain(SaleDecision.class, model.getObject().getSaleDecisionId());
 
                         String title = (saleDecision != null ? saleDecision.getName() : getString("basePrice")) +
-                                (model.getObject().getPointPrice() != null ? ", " + getString("pointRate") + ": " +
-                                model.getObject().getPointPrice().toPlainString() : "");
+                                (model.getObject().getRate() != null ? ", " + getString("rate") + ": " +
+                                model.getObject().getRate().toPlainString() : "");
 
                         tag.put("title",  title);
                     }
@@ -406,9 +406,9 @@ public class SaleModal extends Modal<Sale> {
             si.setPrice(priceService.getPrice(saleDecision, sale.getDate(), si.getBasePrice(), basePricesTotal,
                     sale.getInstallmentMonths()));
 
-            BigDecimal pointPrice = priceService.getPointPrice(sale.getStorageId(), si.getNomenclatureId(), sale.getDate());
+            BigDecimal pointPrice = priceService.getRate(sale.getStorageId(), si.getNomenclatureId(), sale.getDate());
 
-            si.setPointPrice(priceService.getPointPrice(saleDecision, sale.getDate(), pointPrice, basePricesTotal,
+            si.setRate(priceService.getRate(saleDecision, sale.getDate(), pointPrice, basePricesTotal,
                     sale.getInstallmentMonths()));
         });
     }
@@ -426,9 +426,9 @@ public class SaleModal extends Modal<Sale> {
                     .reduce(BigDecimal.ZERO, BigDecimal::add));
         }
 
-        if (saleItems.stream().noneMatch(si -> si.getPrice() == null || si.getQuantity() == null || si.getPointPrice() == null)){
+        if (saleItems.stream().noneMatch(si -> si.getPrice() == null || si.getQuantity() == null || si.getRate() == null)){
             sale.setTotalLocal(saleItems.stream().map(si -> si.getPrice().multiply(new BigDecimal(si.getQuantity()))
-                    .multiply(si.getPointPrice())
+                    .multiply(si.getRate())
                     .setScale(2, RoundingMode.HALF_EVEN))
                     .reduce(BigDecimal.ZERO, BigDecimal::add));
         }

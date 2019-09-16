@@ -15,6 +15,7 @@ import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.component.FormGroupWorker;
 import ru.complitex.jedani.worker.entity.Payment;
 import ru.complitex.jedani.worker.entity.Sale;
+import ru.complitex.jedani.worker.entity.SaleDecision;
 import ru.complitex.jedani.worker.entity.SaleItem;
 import ru.complitex.jedani.worker.service.PriceService;
 
@@ -30,6 +31,8 @@ public class PaymentModal extends AbstractEditModal<Payment> {
 
     @Inject
     private PriceService priceService;
+
+    private boolean warnTotal = false;
 
     public PaymentModal(String markupId) {
         super(markupId);
@@ -141,7 +144,9 @@ public class PaymentModal extends AbstractEditModal<Payment> {
 
         SaleItem saleItem = saleItems.get(0);
 
-        BigDecimal pointPrice = priceService.getPointPrice(sale.getStorageId(), saleItem.getNomenclatureId(), payment.getDate());
+        BigDecimal pointPrice = priceService.getRate(sale.getStorageId(), saleItem.getNomenclatureId(),
+                domainService.getDomain(SaleDecision.class, saleItem.getSaleDecisionId()),
+                payment.getDate(), sale.getTotal(), sale.getInstallmentMonths());
 
         if (pointPrice == null){
             error(getString("error_null_point_price"));
@@ -160,12 +165,15 @@ public class PaymentModal extends AbstractEditModal<Payment> {
                 .filter(p -> !p.getObjectId().equals(payment.getObjectId()) && p.getPoint() != null)
                 .map(Payment::getPoint).reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        if (sum.add(payment.getPoint()).compareTo(sale.getTotal()) > 0){
-            error(getString("error_payment_more_than_sale_total"));
-
+        if (sum.add(payment.getPoint()).compareTo(sale.getTotal()) > 0 && !warnTotal){
+            warn(getString("error_payment_more_than_sale_total"));
             target.add(getFeedback());
 
+            warnTotal = true;
+
             return;
+        }else {
+            warnTotal = false;
         }
 
         domainService.save(payment);

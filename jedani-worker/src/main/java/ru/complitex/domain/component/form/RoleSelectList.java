@@ -38,22 +38,25 @@ public class RoleSelectList extends Panel {
 
                 item.add(new BootstrapSelect<>("select", item.getModel(), list,
                         new IChoiceRenderer<String>() {
-                    @Override
-                    public Object getDisplayValue(String object) {
-                        return RoleSelectList.this.getDisplayValue(object);
-                    }
+                            @Override
+                            public Object getDisplayValue(String object) {
+                                return RoleSelectList.this.getDisplayValue(object);
+                            }
 
-                    @Override
-                    public String getIdValue(String object, int index) {
-                        return object;
-                    }
+                            @Override
+                            public String getIdValue(String object, int index) {
+                                return object;
+                            }
 
-                    @Override
-                    public String getObject(String id, IModel<? extends List<? extends String>> choices) {
-                        return id;
-                    }
-                }).with(new BootstrapSelectConfig().withNoneSelectedText("")).add(OnChangeAjaxBehavior.onChange(
-                        RoleSelectList.this::onChange)));
+                            @Override
+                            public String getObject(String id, IModel<? extends List<? extends String>> choices) {
+                                return id;
+                            }
+                        }).with(new BootstrapSelectConfig()
+                        .withNoneSelectedText(""))
+                        .setNullValid(false)
+                        .add(OnChangeAjaxBehavior.onChange(
+                                RoleSelectList.this::onChange)));
 
                 item.add(new AjaxLink<Void>("remove") {
                     @Override

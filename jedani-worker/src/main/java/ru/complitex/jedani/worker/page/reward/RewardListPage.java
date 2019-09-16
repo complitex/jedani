@@ -1,6 +1,7 @@
 package ru.complitex.jedani.worker.page.reward;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
@@ -19,6 +20,9 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
+import static ru.complitex.jedani.worker.security.JedaniRoles.*;
+
+@AuthorizeInstantiation({ADMINISTRATORS, STRUCTURE_ADMINISTRATORS})
 public class RewardListPage extends DomainListModalPage<Reward> {
     @Inject
     private WorkerService workerService;

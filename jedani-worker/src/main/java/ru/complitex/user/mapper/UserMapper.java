@@ -56,7 +56,7 @@ public class UserMapper extends BaseMapper {
                 .forEach(ug -> userGroupMapper.deleteUserGroup(ug.getId()));
 
         user.getUserGroups().stream()
-                .filter(ug -> !dbUser.hasRole(ug.getName()))
+                .filter(ug -> !ug.getName().isEmpty() && !dbUser.hasRole(ug.getName()))
                 .forEach(ug -> userGroupMapper.insertUserGroup(ug));
     }
 

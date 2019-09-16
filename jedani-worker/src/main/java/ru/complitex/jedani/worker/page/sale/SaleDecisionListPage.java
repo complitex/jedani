@@ -5,6 +5,7 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.image.GlyphIconType;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
+import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
@@ -24,6 +25,10 @@ import ru.complitex.jedani.worker.service.SaleDecisionService;
 import javax.inject.Inject;
 import java.util.List;
 
+import static ru.complitex.jedani.worker.security.JedaniRoles.ADMINISTRATORS;
+import static ru.complitex.jedani.worker.security.JedaniRoles.STRUCTURE_ADMINISTRATORS;
+
+@AuthorizeInstantiation({ADMINISTRATORS, STRUCTURE_ADMINISTRATORS})
 public class SaleDecisionListPage extends DomainListModalPage<SaleDecision> {
     @Inject
     private SaleDecisionService saleDecisionService;

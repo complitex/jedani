@@ -15,7 +15,7 @@ public class SaleItem extends Domain<SaleItem> {
     public static final long QUANTITY = 2;
     public static final long PRICE = 3;
     public static final long TOTAL = 4;
-    public static final long POINT_PRICE = 5;
+    public static final long RATE = 5;
     public static final long TOTAL_LOCAL = 6;
     public static final long BASE_PRICE = 7;
     public static final long SALE_DECISION = 8;
@@ -60,12 +60,12 @@ public class SaleItem extends Domain<SaleItem> {
         setDecimal(BASE_PRICE, basePrice);
     }
 
-    public BigDecimal getPointPrice(){
-        return getDecimal(POINT_PRICE);
+    public BigDecimal getRate(){
+        return getDecimal(RATE);
     }
 
-    public void setPointPrice(BigDecimal pointPrice){
-        setDecimal(POINT_PRICE, pointPrice);
+    public void setRate(BigDecimal rate){
+        setDecimal(RATE, rate);
     }
 
     public void setSaleDecisionId(Long saleDecisionId){

@@ -10,6 +10,13 @@
         <group-name>AUTHORIZED</group-name>
         <group-name>ADMINISTRATORS</group-name>
         <group-name>STRUCTURE_ADMINISTRATORS</group-name>
+        <group-name>SALE_ADMINISTRATORS</group-name>
+        <group-name>PAYMENT_ADMINISTRATORS</group-name>
+        <group-name>USERS</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>USERS</role-name>
         <group-name>USERS</group-name>
     </security-role-mapping>
 
@@ -24,7 +31,12 @@
     </security-role-mapping>
 
     <security-role-mapping>
-        <role-name>USERS</role-name>
-        <group-name>USERS</group-name>
+        <role-name>SALE_ADMINISTRATORS</role-name>
+        <group-name>SALE_ADMINISTRATORS</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>PAYMENT_ADMINISTRATORS</role-name>
+        <group-name>PAYMENT_ADMINISTRATORS</group-name>
     </security-role-mapping>
 </glassfish-web-app>
