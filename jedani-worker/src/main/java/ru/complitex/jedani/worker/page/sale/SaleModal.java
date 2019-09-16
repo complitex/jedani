@@ -573,6 +573,16 @@ public class SaleModal extends Modal<Sale> {
     private void save(AjaxRequestTarget target){
         Sale sale = saleModel.getObject();
 
+        List<Sale> sales = domainService.getDomains(Sale.class, FilterWrapper.of(new Sale().setContract(sale.getContract())));
+
+        if (sales.stream().anyMatch(s -> !s.getObjectId().equals(sale.getObjectId()))){
+            error(getString("error_sale_contract_exists"));
+
+            target.add(feedback);
+
+            return;
+        }
+
         sale.setBuyerLastName(nameService.getOrCreateLastName(lastName.getInput(), lastName.getObjectId()));
         sale.setBuyerFirstName(nameService.getOrCreateFirstName(firstName.getInput(), firstName.getObjectId()));
         sale.setBuyerMiddleName(nameService.getOrCreateMiddleName(middleName.getInput(), middleName.getObjectId()));
