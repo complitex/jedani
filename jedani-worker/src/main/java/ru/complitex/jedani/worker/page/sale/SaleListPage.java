@@ -113,7 +113,7 @@ public class SaleListPage extends DomainListModalPage<SaleItem> {
 
     @Override
     protected void onAddColumns(List<IColumn<SaleItem, SortProperty>> columns) {
-        columns.add(2, new AbstractDomainColumn<SaleItem>(SaleItem.FILTER_DATE) {
+        columns.add(1, new AbstractDomainColumn<SaleItem>(SaleItem.FILTER_DATE) {
             @Override
             public void populateItem(Item<ICellPopulator<SaleItem>> cellItem, String componentId, IModel<SaleItem> rowModel) {
                 Sale sale = domainService.getDomain(Sale.class, rowModel.getObject().getParentId());
@@ -122,16 +122,16 @@ public class SaleListPage extends DomainListModalPage<SaleItem> {
             }
         });
 
-        columns.add(1, new AbstractDomainColumn<SaleItem>("contract") {
+        columns.add(2, new AbstractDomainColumn<SaleItem>("contract") {
             @Override
             public void populateItem(Item<ICellPopulator<SaleItem>> cellItem, String componentId, IModel<SaleItem> rowModel) {
                 Sale sale = domainService.getDomain(Sale.class, rowModel.getObject().getParentId());
 
-                cellItem.add(new Label(componentId, sale.getObjectId()));
+                cellItem.add(new Label(componentId, sale.getContract()));
             }
         });
 
-        columns.add(4, new AbstractDomainColumn<SaleItem>(SaleItem.FILTER_BUYER) {
+        columns.add(3, new AbstractDomainColumn<SaleItem>(SaleItem.FILTER_BUYER) {
             @Override
             public void populateItem(Item<ICellPopulator<SaleItem>> cellItem, String componentId, IModel<SaleItem> rowModel) {
                 Sale sale = domainService.getDomain(Sale.class, rowModel.getObject().getParentId());

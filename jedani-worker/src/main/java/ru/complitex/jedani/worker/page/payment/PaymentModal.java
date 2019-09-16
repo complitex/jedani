@@ -108,10 +108,18 @@ public class PaymentModal extends AbstractEditModal<Payment> {
         payment.setPeriodEnd(Dates.lastDayOfMonth(payment.getPeriodEnd()));
 
         List<Sale> sales = domainService.getDomains(Sale.class, FilterWrapper.of(new Sale()
-                .setObjectId(Long.valueOf(payment.getContract()))));
+                .setContract(payment.getContract())).setFilter(FilterWrapper.FILTER_EQUAL));
 
-        if (sales.size() != 1){
+        if (sales.isEmpty()){
             error(getString("error_sale_not_found"));
+
+            target.add(getFeedback());
+
+            return;
+        }
+
+        if (sales.size() > 1){
+            error(getString("error_sale_more_than_one"));
 
             target.add(getFeedback());
 

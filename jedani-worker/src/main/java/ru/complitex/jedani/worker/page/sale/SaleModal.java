@@ -181,6 +181,7 @@ public class SaleModal extends Modal<Sale> {
                 }))));
 
         container.add(new FormGroupTextField<>("contract", new TextAttributeModel(saleModel, Sale.CONTRACT))
+                .setRequired(true)
                 .addValidator(new PatternValidator(MetaPattern.DIGITS){
                     @Override
                     protected IValidationError decorate(IValidationError error, IValidatable<String> validatable) {
@@ -546,8 +547,8 @@ public class SaleModal extends Modal<Sale> {
             if (!saleService.validateQuantity(sale, s)){
                 Nomenclature n = domainService.getDomain(Nomenclature.class, s.getNomenclatureId());
 
-                getSession().warn(Attributes.capitalize(n.getTextValue(Nomenclature.NAME)) + ": " +
-                        getString("warn_quantity"));
+                getSession().warn(getString("warn_quantity") + ": " +
+                        Attributes.capitalize(n.getTextValue(Nomenclature.NAME)));
             }
         });
 
