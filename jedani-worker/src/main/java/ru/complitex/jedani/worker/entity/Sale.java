@@ -28,6 +28,9 @@ public class Sale extends Domain<Sale> {
     public static final long INITIAL_PAYMENT = 14;
     public static final long STATUS = 15;
 
+    public static final String FILTER_SELLER_WORKER = "sellerWorker";
+    public static final String FILTER_REGION_IDS = "regionIds";
+
     public Sale() {
         super(ENTITY_NAME);
 

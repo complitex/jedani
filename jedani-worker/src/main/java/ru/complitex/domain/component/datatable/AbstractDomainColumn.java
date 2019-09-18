@@ -22,6 +22,8 @@ public abstract class AbstractDomainColumn<T extends Domain>  extends AbstractCo
 
     private String columnKey;
 
+    private Integer size;
+
     public AbstractDomainColumn() {
         super(Model.of(""), null);
     }
@@ -38,6 +40,12 @@ public abstract class AbstractDomainColumn<T extends Domain>  extends AbstractCo
         super(new ResourceModel(columnKey), new SortProperty(columnKey));
 
         this.columnKey = columnKey;
+    }
+
+    public AbstractDomainColumn(String columnKey, Integer size) {
+        this(columnKey);
+
+        this.size = size;
     }
 
 
@@ -60,6 +68,13 @@ public abstract class AbstractDomainColumn<T extends Domain>  extends AbstractCo
 
     @Override
     public Component getFilter(String componentId, FilterDataForm<?> form) {
-        return new TextDataFilter<>(componentId, new PropertyModel<>(form.getModel(), "map." + columnKey), form);
+        TextDataFilter textDataFilter =  new TextDataFilter<>(componentId, new PropertyModel<>(form.getModel(),
+                "map." + columnKey), form);
+
+        if (size != null){
+            textDataFilter.setSize(size);
+        }
+
+        return textDataFilter;
     }
 }

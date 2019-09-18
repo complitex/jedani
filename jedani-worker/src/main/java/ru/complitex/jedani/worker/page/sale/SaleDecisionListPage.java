@@ -51,10 +51,12 @@ public class SaleDecisionListPage extends DomainListModalPage<SaleDecision> {
 
     @Override
     protected List<EntityAttribute> getEntityAttributes(Entity entity) {
+
         entity.getEntityAttribute(SaleDecision.COUNTRY).withReference(Country.ENTITY_NAME, Country.NAME);
         entity.getEntityAttribute(SaleDecision.NOMENCLATURES).withReference(Nomenclature.ENTITY_NAME, Nomenclature.NAME);
 
-        return super.getEntityAttributes(entity);
+        return entity.getEntityAttributes(SaleDecision.DATE_BEGIN, SaleDecision.DATE_END, SaleDecision.NOMENCLATURE_TYPE,
+                SaleDecision.NAME, SaleDecision.COUNTRY, SaleDecision.NOMENCLATURES);
     }
 
     @Override

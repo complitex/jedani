@@ -476,7 +476,7 @@ public class SaleModal extends Modal<Sale> {
         }
     }
 
-    void sale(AjaxRequestTarget target){
+    void create(AjaxRequestTarget target){
         Long sellerWorkerId = getBasePage().getCurrentWorker().getObjectId();
 
         List<Long> regions = domainService.getNumberValues(Worker.ENTITY_NAME, sellerWorkerId, Worker.REGIONS);
@@ -512,19 +512,14 @@ public class SaleModal extends Modal<Sale> {
         open(target);
     }
 
-    void view(SaleItem saleItem, AjaxRequestTarget target, boolean edit){
-        Sale sale = domainService.getDomain(Sale.class, saleItem.getParentId());
-
+    void edit(Sale sale, AjaxRequestTarget target, boolean edit){
         saleModel.setObject(sale);
 
         lastName.setObjectId(sale.getBuyerLastName());
         firstName.setObjectId(sale.getBuyerFirstName());
         middleName.setObjectId(sale.getBuyerMiddleName());
 
-        List<SaleItem> saleItems = domainService.getDomains(SaleItem.class, FilterWrapper.of((SaleItem) new SaleItem()
-                .setParentId(saleItem.getParentId())));
-
-        saleItemsModel.setObject(saleItems);
+        saleItemsModel.setObject(saleService.getSaleItems(sale.getObjectId()));
 
         container.setEnabled(edit);
 

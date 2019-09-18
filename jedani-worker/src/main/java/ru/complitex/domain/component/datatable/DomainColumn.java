@@ -5,7 +5,8 @@ import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.DateTextField
 import org.apache.wicket.Component;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
-import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.slf4j.Logger;
@@ -81,7 +82,14 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
             case DATE:
                 return new InputPanel(componentId, new DateTextField(InputPanel.INPUT_COMPONENT_ID,
                         new DateAttributeModel(domain, entityAttributeId),
-                        new DateTextFieldConfig().withFormat("dd.MM.yyyy").withLanguage("ru").autoClose(true)));
+                        new DateTextFieldConfig().withFormat("dd.MM.yyyy").withLanguage("ru").autoClose(true)){
+                    @Override
+                    protected void onComponentTag(ComponentTag tag) {
+                        super.onComponentTag(tag);
+
+                        tag.put("size", 10);
+                    }
+                });
             default:
                 return new TextDataFilter<>(componentId, new TextAttributeModel(domain, entityAttributeId, StringType.DEFAULT), form);
         }
@@ -113,7 +121,7 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
                         text = values.stream()
                                 .filter(v -> v.getLocaleId() == null)
                                 .map(v -> Attributes.displayText(entityAttribute, v.getText()))
-                                .collect(Collectors.joining(", "));
+                                .collect(Collectors.joining("\n"));
                     }
                 }
 
@@ -173,13 +181,13 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
 
                                     return prefix.toLowerCase() + Attributes.displayText(referenceEntityAttribute, valueText);
                                 })
-                                .collect(Collectors.joining(", "));
+                                .collect(Collectors.joining("\n"));
                     }else{
                         List<String> list = attribute.getValues().stream()
                                 .map(v -> Attributes.displayText(entityAttribute, v.getText()))
                                 .collect(Collectors.toList());
 
-                        text = String.join(", ", list);
+                        text = String.join("\n", list);
                     }
                 }
 
@@ -188,7 +196,7 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
                 text = Attributes.displayText(entityAttribute, attribute.getText());
         }
 
-        Label label = new Label(componentId, text);
+        MultiLineLabel label = new MultiLineLabel(componentId, text);
 
         if (entityAttribute.getPrefixEntityAttribute() != null){
             label.add(AttributeAppender.append("style", "white-space: nowrap"));

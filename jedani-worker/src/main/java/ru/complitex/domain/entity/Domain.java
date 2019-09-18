@@ -279,10 +279,11 @@ public class Domain<T extends Domain<T>> implements Serializable{
         return parentId;
     }
 
-    public Domain setParentId(Long parentId) {
+    @SuppressWarnings("unchecked")
+    public T setParentId(Long parentId) {
         this.parentId = parentId;
 
-        return this;
+        return (T) this;
     }
 
     public Long getParentEntityId() {

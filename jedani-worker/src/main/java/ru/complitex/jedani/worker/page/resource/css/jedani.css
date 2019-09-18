@@ -297,3 +297,24 @@ tr.sale_status_closed>td{
 tr:hover.sale_status_closed>td{
     background-color: #d1c4e9;
 }
+
+p{
+    margin: 0;
+}
+
+td > div{
+    max-height: 120px;
+    overflow-y: auto;
+}
+
+td > div::-webkit-scrollbar {
+    width: 5px;
+}
+
+td > div::-webkit-scrollbar-thumb {
+    background: #d9d9d9;
+}
+
+td > div::-webkit-scrollbar-thumb:hover {
+    background: #b3b3b3;
+}

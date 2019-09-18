@@ -7,6 +7,7 @@ import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
 import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.exception.SaleException;
+import ru.complitex.jedani.worker.mapper.SaleItemMapper;
 
 import javax.inject.Inject;
 import java.io.Serializable;
@@ -26,6 +27,9 @@ public class SaleService implements Serializable {
 
     @Inject
     private StorageService storageService;
+
+    @Inject
+    private SaleItemMapper saleItemMapper;
 
     @Transactional(rollbackFor = SaleException.class)
     public void sale(Sale sale, List<SaleItem> saleItems) throws SaleException {
@@ -108,5 +112,9 @@ public class SaleService implements Serializable {
 
         return !products.isEmpty() &&
                 products.get(0).getQuantity() - products.get(0).getReserveQuantity() > saleItem.getQuantity();
+    }
+
+    public List<SaleItem> getSaleItems(Long saleObjectId){
+        return saleItemMapper.getSaleItems(FilterWrapper.of(new SaleItem().setParentId(saleObjectId)));
     }
 }
