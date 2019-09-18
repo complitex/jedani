@@ -174,7 +174,7 @@ public class SaleListPage extends DomainListModalPage<Sale> {
             }
         });
 
-        columns.add(new AbstractDomainColumn<Sale>("installmentMonths", 8) {
+        columns.add(new AbstractDomainColumn<Sale>("installmentMonths") {
             @Override
             public void populateItem(Item<ICellPopulator<Sale>> cellItem, String componentId, IModel<Sale> rowModel) {
                 Long installmentMonths = rowModel.getObject().getInstallmentMonths();
