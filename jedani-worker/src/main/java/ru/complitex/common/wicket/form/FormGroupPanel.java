@@ -3,6 +3,7 @@ package ru.complitex.common.wicket.form;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 
 /**
@@ -22,7 +23,7 @@ public class FormGroupPanel extends Panel {
         setOutputMarkupId(true);
         setOutputMarkupPlaceholderTag(true);
 
-        FormGroupBorder group = new FormGroupBorder("group", new ResourceModel(id)){
+        FormGroupBorder group = new FormGroupBorder("group", getLabelModel(id)){
             @Override
             protected boolean isRequired() {
                 if (component instanceof FormComponent){
@@ -37,8 +38,12 @@ public class FormGroupPanel extends Panel {
         group.add(component);
 
         if (component instanceof FormComponent){
-            ((FormComponent) component).setLabel(new ResourceModel(id));
+            ((FormComponent) component).setLabel(getLabelModel(id));
         }
+    }
+
+    protected IModel<String> getLabelModel(String id) {
+        return new ResourceModel(id);
     }
 
     public FormGroupPanel setRequired(boolean required){
@@ -48,4 +53,5 @@ public class FormGroupPanel extends Panel {
 
         return this;
     }
+
 }

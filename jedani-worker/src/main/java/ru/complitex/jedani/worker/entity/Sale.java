@@ -27,6 +27,7 @@ public class Sale extends Domain<Sale> {
     public static final long INSTALLMENT_MONTHS = 13;
     public static final long INITIAL_PAYMENT = 14;
     public static final long STATUS = 15;
+    public static final long FOR_YOURSELF = 16;
 
     public static final String FILTER_SELLER_WORKER = "sellerWorker";
     public static final String FILTER_REGION_IDS = "regionIds";
@@ -141,5 +142,13 @@ public class Sale extends Domain<Sale> {
 
     public Long getSaleStatus(){
         return getNumber(STATUS);
+    }
+
+    public boolean isForYourself(){
+        return isBoolean(FOR_YOURSELF);
+    }
+
+    public void setForYourself(Boolean forYourself){
+        setBoolean(FOR_YOURSELF, forYourself);
     }
 }

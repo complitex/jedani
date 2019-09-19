@@ -162,6 +162,22 @@ public class Domain<T extends Domain<T>> implements Serializable{
         setNumber(entityAttributeId, domain.getNumber(entityAttributeId));
     }
 
+    public void setBoolean(Long entityAttributeId, Boolean _boolean){
+        setNumber(entityAttributeId, _boolean != null ? _boolean ? 1L : 0 : null);
+    }
+
+    public Boolean getBoolean(Long entityAttributeId){
+        Long number = getNumber(entityAttributeId);
+
+        return number != null ? number.equals(1L) : null;
+    }
+
+    public boolean isBoolean(Long entityAttributeId){
+        Long number = getNumber(entityAttributeId);
+
+        return number != null && number.equals(1L);
+    }
+
     public BigDecimal getDecimal(Long entityAttributeId){
         String text = getOrCreateAttribute(entityAttributeId).getText();
 

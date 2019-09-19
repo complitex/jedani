@@ -20,6 +20,7 @@ import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.TextField;
@@ -91,11 +92,13 @@ public class SaleModal extends Modal<Sale> {
     private WebMarkupContainer container;
     private NotificationPanel feedback;
 
+    private WebMarkupContainer fioContainer;
     private FormGroupDomainAutoComplete lastName, firstName, middleName;
 
     private ListView<SaleItem> saleItems;
 
     private Long defaultStorageId;
+
 
     private Component saveButton;
 
@@ -138,7 +141,48 @@ public class SaleModal extends Modal<Sale> {
         }.setRequired(true).onUpdate(this::updatePrices));
 
         container.add(new FormGroupPanel("sasRequest", new BootstrapCheckbox(FormGroupPanel.COMPONENT_ID,
-                BooleanAttributeModel.of(saleModel, Sale.SAS_REQUEST), new ResourceModel("sasRequestLabel"))));
+                BooleanAttributeModel.of(saleModel, Sale.SAS_REQUEST), new ResourceModel("sasRequest")){
+            @Override
+            protected CheckBox newCheckBox(String id, IModel<Boolean> model) {
+                CheckBox checkBox = super.newCheckBox(id, model);
+
+                checkBox.setOutputMarkupId(true);
+
+                return checkBox;
+            }
+        }){
+            @Override
+            protected IModel<String> getLabelModel(String id) {
+                return Model.of("");
+            }
+        });
+
+        container.add(new FormGroupPanel("forYourself", new BootstrapCheckbox(FormGroupPanel.COMPONENT_ID,
+                BooleanAttributeModel.of(saleModel, Sale.FOR_YOURSELF), new ResourceModel("forYourself")){
+            @Override
+            protected CheckBox newCheckBox(String id, IModel<Boolean> model) {
+                CheckBox checkBox = super.newCheckBox(id, model);
+
+                checkBox.setOutputMarkupId(true);
+
+                checkBox.add(OnChangeAjaxBehavior.onChange(t -> {
+                    Sale sale = saleModel.getObject();
+
+                    sale.setBuyerLastName(null);
+                    sale.setBuyerFirstName(null);
+                    sale.setBuyerMiddleName(null);
+
+                    t.add(fioContainer);
+                }));
+
+                return checkBox;
+            }
+        }){
+            @Override
+            protected IModel<String> getLabelModel(String id) {
+                return Model.of("");
+            }
+        });
 
         container.add(new FormGroupSelectPanel("saleType", new BootstrapSelect<>(FormGroupPanel.COMPONENT_ID,
                 NumberAttributeModel.of(saleModel, Sale.TYPE),
@@ -191,7 +235,13 @@ public class SaleModal extends Modal<Sale> {
                     }
                 }));
 
-        WebMarkupContainer fioContainer = new WebMarkupContainer("fioContainer");
+        fioContainer = new WebMarkupContainer("fioContainer"){
+            @Override
+            public boolean isVisible() {
+                return !saleModel.getObject().isForYourself();
+            }
+        };
+        fioContainer.setOutputMarkupPlaceholderTag(true);
         fioContainer.setOutputMarkupId(true);
         container.add(fioContainer);
 
@@ -246,7 +296,7 @@ public class SaleModal extends Modal<Sale> {
 
                         String title = (saleDecision != null ? saleDecision.getName() : getString("basePrice")) +
                                 (model.getObject().getRate() != null ? ", " + getString("rate") + ": " +
-                                model.getObject().getRate().toPlainString() : "");
+                                        model.getObject().getRate().toPlainString() : "");
 
                         tag.put("title",  title);
                     }
@@ -539,9 +589,15 @@ public class SaleModal extends Modal<Sale> {
             return;
         }
 
-        sale.setBuyerLastName(nameService.getOrCreateLastName(lastName.getInput(), lastName.getObjectId()));
-        sale.setBuyerFirstName(nameService.getOrCreateFirstName(firstName.getInput(), firstName.getObjectId()));
-        sale.setBuyerMiddleName(nameService.getOrCreateMiddleName(middleName.getInput(), middleName.getObjectId()));
+        if (!sale.isForYourself()){
+            sale.setBuyerLastName(nameService.getOrCreateLastName(lastName.getInput(), lastName.getObjectId()));
+            sale.setBuyerFirstName(nameService.getOrCreateFirstName(firstName.getInput(), firstName.getObjectId()));
+            sale.setBuyerMiddleName(nameService.getOrCreateMiddleName(middleName.getInput(), middleName.getObjectId()));
+        }else{
+            sale.setBuyerLastName(null);
+            sale.setBuyerFirstName(null);
+            sale.setBuyerMiddleName(null);
+        }
 
         List<SaleItem> saleItems = saleItemsModel.getObject();
 
