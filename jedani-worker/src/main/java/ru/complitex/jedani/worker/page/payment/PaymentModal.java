@@ -14,9 +14,9 @@ import ru.complitex.domain.component.form.AbstractEditModal;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.entity.Payment;
 import ru.complitex.jedani.worker.entity.Sale;
-import ru.complitex.jedani.worker.entity.SaleDecision;
 import ru.complitex.jedani.worker.entity.SaleItem;
 import ru.complitex.jedani.worker.service.PriceService;
+import ru.complitex.jedani.worker.service.SaleDecisionService;
 
 import javax.inject.Inject;
 import java.math.BigDecimal;
@@ -30,6 +30,9 @@ public class PaymentModal extends AbstractEditModal<Payment> {
 
     @Inject
     private PriceService priceService;
+
+    @Inject
+    private SaleDecisionService saleDecisionService;
 
     private boolean warnTotal = false;
 
@@ -123,7 +126,7 @@ public class PaymentModal extends AbstractEditModal<Payment> {
 
         Sale sale = sales.get(0);
 
-        List<SaleItem> saleItems = domainService.getDomains(SaleItem.class, FilterWrapper.of((SaleItem) new SaleItem()
+        List<SaleItem> saleItems = domainService.getDomains(SaleItem.class, FilterWrapper.of(new SaleItem()
                 .setParentId(sale.getObjectId())));
 
         if (saleItems.isEmpty()){
@@ -137,7 +140,7 @@ public class PaymentModal extends AbstractEditModal<Payment> {
         SaleItem saleItem = saleItems.get(0);
 
         BigDecimal rate = priceService.getRate(sale.getStorageId(), saleItem.getNomenclatureId(),
-                domainService.getDomain(SaleDecision.class, saleItem.getSaleDecisionId()),
+                saleDecisionService.getSaleDecision(saleItem.getSaleDecisionId()),
                 payment.getDate(), sale.getTotal(), sale.getInstallmentMonths());
 
         if (rate == null){
