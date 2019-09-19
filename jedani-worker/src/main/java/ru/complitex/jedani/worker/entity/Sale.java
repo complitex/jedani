@@ -28,6 +28,8 @@ public class Sale extends Domain<Sale> {
     public static final long INITIAL_PAYMENT = 14;
     public static final long STATUS = 15;
     public static final long FOR_YOURSELF = 16;
+    public static final long MANAGER_MYCOOK_BONUS_WORKER = 17;
+    public static final long CULINARY_WORKSHOP_WORKER = 18;
 
     public static final String FILTER_SELLER_WORKER = "sellerWorker";
     public static final String FILTER_REGION_IDS = "regionIds";
@@ -150,5 +152,21 @@ public class Sale extends Domain<Sale> {
 
     public void setForYourself(Boolean forYourself){
         setBoolean(FOR_YOURSELF, forYourself);
+    }
+
+    public Long getManagerMycookBonusWorkerId(){
+        return getNumber(MANAGER_MYCOOK_BONUS_WORKER);
+    }
+
+    public void setManagerMycookBonusWorkerId(Long managerMycookBonusWorkerId){
+        setNumber(MANAGER_MYCOOK_BONUS_WORKER, managerMycookBonusWorkerId);
+    }
+
+    public Long getCulinaryWorkshopWorkerId(){
+        return getNumber(CULINARY_WORKSHOP_WORKER);
+    }
+
+    public void setCulinaryWorkshopWorkerId(Long culinaryWorkshopWorkerId){
+        setNumber(CULINARY_WORKSHOP_WORKER, culinaryWorkshopWorkerId);
     }
 }
