@@ -42,8 +42,8 @@ public class PaymentListPage extends DomainListModalPage<Payment> {
 
     @Override
     protected List<EntityAttribute> getEntityAttributes(Entity entity) {
-        return entity.getEntityAttributes(Payment.DATE, Payment.CONTRACT,
-                 Payment.PERIOD_START, Payment.PERIOD_END, Payment.POINT);
+        return entity.getEntityAttributes(Payment.DATE, Payment.CONTRACT, Payment.PERIOD_START, Payment.PERIOD_END,
+                Payment.POINT);
     }
 
     @Override
