@@ -48,14 +48,7 @@ public class PaymentListPage extends DomainListModalPage<Payment> {
 
     @Override
     protected AbstractDomainColumn<Payment> newDomainColumn(EntityAttribute a) {
-        if (a.getEntityAttributeId().equals(Payment.WORKER)){
-            return new AbstractDomainColumn<Payment>(a) {
-                @Override
-                public void populateItem(Item<ICellPopulator<Payment>> cellItem, String componentId, IModel<Payment> rowModel) {
-                    cellItem.add(new Label(componentId, workerService.getWorkerLabel(rowModel.getObject().getWorkerId())));
-                }
-            };
-        }else if (a.getEntityAttributeId().equals(Payment.SALE)){
+       if (a.getEntityAttributeId().equals(Payment.SALE)){
             return new AbstractDomainColumn<Payment>(a) {
                 @Override
                 public void populateItem(Item<ICellPopulator<Payment>> cellItem, String componentId, IModel<Payment> rowModel) {

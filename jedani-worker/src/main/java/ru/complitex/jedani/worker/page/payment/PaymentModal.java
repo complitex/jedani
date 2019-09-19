@@ -12,7 +12,6 @@ import ru.complitex.common.wicket.form.FormGroupDecimalField;
 import ru.complitex.common.wicket.form.FormGroupStringField;
 import ru.complitex.domain.component.form.AbstractEditModal;
 import ru.complitex.domain.service.DomainService;
-import ru.complitex.jedani.worker.component.FormGroupWorker;
 import ru.complitex.jedani.worker.entity.Payment;
 import ru.complitex.jedani.worker.entity.Sale;
 import ru.complitex.jedani.worker.entity.SaleDecision;
@@ -38,13 +37,6 @@ public class PaymentModal extends AbstractEditModal<Payment> {
         super(markupId);
 
         setModel(Model.of(new Payment()));
-
-        add(new FormGroupWorker("worker", getModel(), Payment.WORKER){
-            @Override
-            public boolean isVisible() {
-                return isAdmin() || isStructureAdmin();
-            }
-        }.setRequired(true));
 
         add(new FormGroupDateTextField("date", getModel(), Payment.DATE).setRequired(true));
 
