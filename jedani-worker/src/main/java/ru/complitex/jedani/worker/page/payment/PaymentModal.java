@@ -157,7 +157,7 @@ public class PaymentModal extends AbstractEditModal<Payment> {
                 .filter(p -> !p.getObjectId().equals(payment.getObjectId()) && p.getPoint() != null)
                 .map(Payment::getPoint).reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        if (sum.add(payment.getPoint()).compareTo(sale.getTotal()) > 0 && !warnTotal){
+        if (sale.getTotal() != null && sale.getTotal().compareTo(sum.add(payment.getPoint())) <= 0 && !warnTotal){
             warn(getString("error_payment_more_than_sale_total"));
             target.add(getFeedback());
 
