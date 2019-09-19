@@ -310,8 +310,8 @@ public class SaleModal extends Modal<Sale> {
 
                         SaleDecision saleDecision = domainService.getDomain(SaleDecision.class, model.getObject().getSaleDecisionId());
 
-                        String title = (saleDecision != null ? saleDecision.getName() : getString("basePrice")) +
-                                (model.getObject().getRate() != null ? ", " + getString("rate") + ": " +
+                        String title = (saleDecision != null ? saleDecision.getName() + "; " : "") +
+                                (model.getObject().getRate() != null ? getString("rate") + ": " +
                                         model.getObject().getRate().toPlainString() : "");
 
                         tag.put("title",  title);

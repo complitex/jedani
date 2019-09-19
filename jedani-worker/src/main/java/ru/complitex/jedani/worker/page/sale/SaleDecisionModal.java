@@ -488,12 +488,12 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
             return new BootstrapCheckbox("value", new IModel<Boolean>() {
                 @Override
                 public Boolean getObject() {
-                    return Objects.equals(domainModel.getObject().getNumber(valueAttributeId), 1L);
+                    return domainModel.getObject().isBoolean(valueAttributeId);
                 }
 
                 @Override
                 public void setObject(Boolean object) {
-                    domainModel.getObject().setNumber(valueAttributeId, object ? 1L : 0L);
+                    domainModel.getObject().setBoolean(valueAttributeId, object);
                 }
             }){
                 @Override

@@ -150,7 +150,7 @@ public class SaleListPage extends DomainListModalPage<Sale> {
             public void populateItem(Item<ICellPopulator<Sale>> cellItem, String componentId, IModel<Sale> rowModel) {
                 String nomenclatures = saleService.getSaleItems(rowModel.getObject().getObjectId()).stream()
                         .map(si -> Nomenclatures.getNomenclatureLabel(domainService.getDomain(Nomenclature.class,
-                                si.getNomenclatureId())) + " - " + si.getQuantity() + " " + getString("qty"))
+                                si.getNomenclatureId())) + " - " + si.getQuantity() + "\u00a0" + getString("qty"))
                         .collect(Collectors.joining("\n"));
 
                 cellItem.add(new MultiLineLabel(componentId, nomenclatures));

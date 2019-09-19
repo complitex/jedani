@@ -2,6 +2,7 @@ package ru.complitex.jedani.worker.service;
 
 import org.mybatis.cdi.Transactional;
 import ru.complitex.common.entity.FilterWrapper;
+import ru.complitex.common.util.Dates;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.ValueType;
 import ru.complitex.domain.service.DomainService;
@@ -65,6 +66,9 @@ public class SaleDecisionService implements Serializable {
                 }
             });
         }
+
+        saleDecision.setDate(SaleDecision.DATE_BEGIN, Dates.atStartOfDay(saleDecision.getDate(SaleDecision.DATE_BEGIN)));
+        saleDecision.setDate(SaleDecision.DATE_END, Dates.atEndOfDay(saleDecision.getDate(SaleDecision.DATE_END)));
 
         domainService.save(saleDecision);
 
@@ -140,6 +144,8 @@ public class SaleDecisionService implements Serializable {
                     !isCheck(ruleCondition, ruleCondition.getNumber(RuleCondition.CONDITION),
                             installmentMonths == 0 ? 100L : 0)){
                 return false;
+            }else if (RuleConditionType.FOR_YOURSELF.getId().equals(ruleCondition.getType())){
+                return ruleCondition.getBoolean(RuleCondition.CONDITION);
             }
         }
 
@@ -150,6 +156,10 @@ public class SaleDecisionService implements Serializable {
         if (condition != null && object != null && ruleCondition.getComparator() != null){
             switch (RuleConditionComparator.getValue(ruleCondition.getComparator())){
                 case EQUAL:
+                    if (condition instanceof Date && object instanceof Date){
+                        return Dates.isDayEquals((Date)condition, (Date)object);
+                    }
+
                     return object.compareTo(condition) == 0;
                 case NOT_EQUAL:
                     return object.compareTo(condition) != 0;

@@ -12,7 +12,8 @@ public enum RuleConditionType {
     PAYMENT_PERCENT(2L, ValueType.NUMBER),
     PAYMENT_PERIOD_MONTH(3L, ValueType.NUMBER),
     PAYMENT_MONTHLY(4L, ValueType.BOOLEAN),
-    PAYMENT_TOTAL(5L, ValueType.DECIMAL);
+    PAYMENT_TOTAL(5L, ValueType.DECIMAL),
+    FOR_YOURSELF(6L, ValueType.BOOLEAN),;
 
     private Long id;
     private ValueType valueType;

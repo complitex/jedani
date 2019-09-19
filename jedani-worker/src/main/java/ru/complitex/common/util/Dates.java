@@ -1,5 +1,6 @@
 package ru.complitex.common.util;
 
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Date;
@@ -22,4 +23,18 @@ public class Dates {
                 .toInstant());
     }
 
+    public static boolean isDayEquals(Date d1, Date d2){
+        return d1.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+                .isEqual(d2.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+    }
+
+    public static Date atStartOfDay(Date date){
+        return Date.from(date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().with(LocalTime.MIN)
+                .atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    public static Date atEndOfDay(Date date){
+        return Date.from(date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().with(LocalTime.MAX)
+                .withNano(0).atZone(ZoneId.systemDefault()).toInstant());
+    }
 }
