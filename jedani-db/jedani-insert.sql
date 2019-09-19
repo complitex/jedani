@@ -653,4 +653,4 @@ CALL createEntityAttribute(37, 4, 5, 'Индекс', 'Індекс');
 
 -- Update
 
-INSERT INTO `update` (`version`) VALUE ('20190916_1.0.31');
+INSERT INTO `update` (`version`) VALUE ('20190919_1.0.32');
