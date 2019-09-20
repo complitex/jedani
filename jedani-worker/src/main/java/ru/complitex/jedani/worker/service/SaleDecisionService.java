@@ -145,7 +145,7 @@ public class SaleDecisionService implements Serializable {
                             installmentMonths == 0 ? 100L : 0)){
                 return false;
             }else if (RuleConditionType.FOR_YOURSELF.getId().equals(ruleCondition.getType())){
-                return ruleCondition.getBoolean(RuleCondition.CONDITION);
+                return ruleCondition.isBoolean(RuleCondition.CONDITION);
             }
         }
 
