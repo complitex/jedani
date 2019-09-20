@@ -50,7 +50,7 @@ public class PriceService implements Serializable {
     }
 
     public SaleDecision getSaleDecision(Long storageId, Long nomenclatureId, Date date, BigDecimal total,
-                                        Long installmentMonths){
+                                        Long installmentMonths, boolean yourself){
         if (storageId == null || nomenclatureId == null || date == null || total == null){
             return null;
         }
@@ -62,7 +62,7 @@ public class PriceService implements Serializable {
             saleDecisionService.loadRules(saleDecision);
 
             for (Rule rule : saleDecision.getRules()){
-                if (saleDecisionService.check(rule, date, total, installmentMonths)){
+                if (saleDecisionService.check(rule, date, total, installmentMonths, yourself)){
                     return saleDecision;
                 }
             }
@@ -72,22 +72,24 @@ public class PriceService implements Serializable {
     }
 
     public BigDecimal getPrice(SaleDecision saleDecision, Date date, BigDecimal basePrice, BigDecimal total,
-                               Long installmentMonths){
+                               Long installmentMonths, boolean yourself){
         if (saleDecision == null || date == null || basePrice == null || total == null){
             return basePrice;
         }
 
         for (Rule rule : saleDecision.getRules()){
-            if (saleDecisionService.check(rule, date, total, installmentMonths)){
+            if (saleDecisionService.check(rule, date, total, installmentMonths, yourself)){
                 for (RuleAction a : rule.getActions()){
                     switch (RuleActionType.getValue(a.getType())){
                         case DISCOUNT:
-                            Long discount = a.getNumber(RuleAction.ACTION);
+                            BigDecimal discount = a.getDecimal(RuleAction.ACTION);
 
-                            if (discount != null && discount > 0 && discount < 100){
-                                return basePrice.multiply(new BigDecimal(100 - discount)
+                            BigDecimal BD_100 = new BigDecimal(100);
+
+                            if (discount != null && discount.compareTo(BigDecimal.ZERO) > 0 &&
+                                    discount.compareTo(BD_100) <= 0){
+                                return basePrice.multiply(BD_100.subtract(discount)
                                         .divide(new BigDecimal(100), 2, RoundingMode.HALF_EVEN));
-
                             }
 
                             break;
@@ -110,13 +112,13 @@ public class PriceService implements Serializable {
     }
 
     public BigDecimal getRate(SaleDecision saleDecision, Date paymentDate, BigDecimal rate, BigDecimal total,
-                              Long installmentMonths){
+                              Long installmentMonths, boolean yourself){
         if (saleDecision == null || paymentDate == null || rate == null || total == null){
             return rate;
         }
 
         for (Rule rule : saleDecision.getRules()){
-            if (saleDecisionService.check(rule, paymentDate, total, installmentMonths)){
+            if (saleDecisionService.check(rule, paymentDate, total, installmentMonths, yourself)){
                 for (RuleAction a : rule.getActions()){
                     if (RuleActionType.getValue(a.getType()) == RuleActionType.EURO_RATE_LESS_OR_EQUAL) {
                         BigDecimal actionRate = a.getDecimal(RuleAction.ACTION);
@@ -131,11 +133,11 @@ public class PriceService implements Serializable {
     }
 
     public BigDecimal getRate(Long storageId, Long nomenclatureId, SaleDecision saleDecision, Date paymentDate,
-                              BigDecimal total, Long installmentMonths){
+                              BigDecimal total, Long installmentMonths, boolean yourself){
         BigDecimal rate = getRate(storageId, nomenclatureId, paymentDate);
 
         if (saleDecision != null){
-            return getRate(saleDecision, paymentDate, rate, total, installmentMonths);
+            return getRate(saleDecision, paymentDate, rate, total, installmentMonths, yourself);
         }
 
         return rate;

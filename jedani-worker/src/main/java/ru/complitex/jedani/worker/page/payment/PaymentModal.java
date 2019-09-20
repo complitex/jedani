@@ -141,7 +141,7 @@ public class PaymentModal extends AbstractEditModal<Payment> {
 
         BigDecimal rate = priceService.getRate(sale.getStorageId(), saleItem.getNomenclatureId(),
                 saleDecisionService.getSaleDecision(saleItem.getSaleDecisionId()),
-                payment.getDate(), sale.getTotal(), sale.getInstallmentMonths());
+                payment.getDate(), sale.getTotal(), sale.getInstallmentMonths(), sale.isForYourself());
 
         if (rate == null){
             error(getString("error_null_rate"));

@@ -132,7 +132,7 @@ public class SaleDecisionService implements Serializable {
 
     }
 
-    public boolean check(Rule rule, Date paymentDate, BigDecimal total, Long installmentMonths){
+    public boolean check(Rule rule, Date paymentDate, BigDecimal total, Long installmentMonths, boolean youself){
         for (RuleCondition ruleCondition : rule.getConditions()){
             if (RuleConditionType.PAYMENT_DATE.getId().equals(ruleCondition.getType()) &&
                     !isCheck(ruleCondition, ruleCondition.getDate(RuleCondition.CONDITION), paymentDate)){
@@ -145,7 +145,7 @@ public class SaleDecisionService implements Serializable {
                             installmentMonths == 0 ? 100L : 0)){
                 return false;
             }else if (RuleConditionType.FOR_YOURSELF.getId().equals(ruleCondition.getType())){
-                return ruleCondition.isBoolean(RuleCondition.CONDITION);
+                return youself == ruleCondition.isBoolean(RuleCondition.CONDITION);
             }
         }
 
