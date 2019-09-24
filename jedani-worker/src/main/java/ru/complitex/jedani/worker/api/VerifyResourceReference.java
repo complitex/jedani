@@ -24,13 +24,17 @@ public class VerifyResourceReference extends ResourceReference {
             protected ResourceResponse newResourceResponse(Attributes attributes) {
                 ResourceResponse resourceResponse = new ResourceResponse();
 
+                resourceResponse.setContentType("application/json");
+
                 resourceResponse.setWriteCallback(new WriteCallback() {
                     @Override
                     public void writeData(Attributes attributes) {
+
+
                         String jId = attributes.getParameters().get("jId").toString();
 
-                        attributes.getResponse().write("{j_id: \"" + jId + "\"," +
-                                " is_exist: " + (isExistJId(jId) ? "1" : "0") + "}");
+                        attributes.getResponse().write("{\"j_id\": \"" + jId + "\"," +
+                                " \"is_exist\": " + (isExistJId(jId) ? "1" : "0") + "}");
                     }
                 });
 
