@@ -25,6 +25,7 @@ public class VerifyResourceReference extends ResourceReference {
                 ResourceResponse resourceResponse = new ResourceResponse();
 
                 resourceResponse.setContentType("application/json");
+                resourceResponse.setTextEncoding("utf-8");
 
                 resourceResponse.setWriteCallback(new WriteCallback() {
                     @Override
