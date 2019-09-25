@@ -88,8 +88,8 @@ public class PriceService implements Serializable {
 
                             if (discount != null && discount.compareTo(BigDecimal.ZERO) > 0 &&
                                     discount.compareTo(BD_100) <= 0){
-                                return basePrice.multiply(BD_100.subtract(discount)
-                                        .divide(new BigDecimal(100), 2, RoundingMode.HALF_EVEN));
+                                return basePrice.multiply(BD_100.subtract(discount))
+                                        .divide(BD_100, 2, RoundingMode.HALF_EVEN);
                             }
 
                             break;
