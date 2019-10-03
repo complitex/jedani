@@ -193,8 +193,10 @@ public class Attribute implements Serializable{
         return number;
     }
 
-    public void setNumber(Long number) {
+    public Attribute setNumber(Long number) {
         this.number = number;
+
+        return this;
     }
 
     public BigDecimal getDecimal(){

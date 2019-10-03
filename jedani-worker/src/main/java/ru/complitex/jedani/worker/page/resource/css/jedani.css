@@ -227,6 +227,23 @@ form label[required=required]:after{
     margin-bottom: 5px;
 }
 
+.sd-nomenclatures ul{
+    max-height: 220px;
+    overflow-y: auto;
+}
+
+.sd-nomenclatures ul::-webkit-scrollbar {
+    width: 5px;
+}
+
+.sd-nomenclatures ul::-webkit-scrollbar-thumb {
+    background: #d9d9d9;
+}
+
+.sd-nomenclatures ul::-webkit-scrollbar-thumb:hover {
+    background: #b3b3b3;
+}
+
 .sd-id{
     width: 33px;
 }

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<wicket:panel xmlns:wicket="http://wicket.apache.org">
+    <table class="table">
+        <thead>
+        <tr>
+            <th class="sd-id"><a href="#">№</a></th>
+            <th wicket:id="conditions">
+                <div wicket:id="type"></div>
+            </th>
+            <th class="sd-add-condition">
+                <a wicket:id="addCondition" class="btn btn-link"><i class="glyphicon glyphicon-plus"></i></a>
+            </th>
+            <th wicket:id="actions">
+                <div wicket:id="type"></div>
+            </th>
+            <th class="sd-add-action">
+                <a wicket:id="addAction" class="btn btn-link"><i class="glyphicon glyphicon-plus"></i></a>
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr wicket:id="rules">
+            <td wicket:id="id" class="sd-id-td"></td>
+            <td wicket:id="ruleConditions">
+                <div class="input-group">
+                            <span class="input-group-btn sd-comparator">
+                                <select wicket:id="comparator" class="form-control"></select>
+                            </span>
+                    <input wicket:id="value" class="form-control"/>
+                </div>
+            </td>
+            <td class="sd-add-condition"></td>
+            <td wicket:id="ruleActions">
+                <div class="input-group">
+                        <span class="input-group-btn sd-comparator">
+                                <select wicket:id="comparator" class="form-control"></select>
+                            </span>
+                    <input wicket:id="value" class="form-control"/>
+                </div>
+            </td>
+            <td style="">
+                <a wicket:id="remove"><i class="glyphicon glyphicon-remove"></i></a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="text-center">
+        <a wicket:id="addRule">Добавить</a>
+    </div>
+</wicket:panel>

@@ -173,8 +173,9 @@
         <if test="object.map.attributes != null">
             <foreach collection="object.map.attributes" index="i" item="b">
                 <if test="b.text != null or b.number != null or b.date != null">
-                    left join `${object.entityName}_attribute` b${i} on (b${i}.domain_id = d.id
-                        and b${i}.entity_attribute_id = #{b.entityAttributeId} and b${i}.status = 1)
+                    left join `${object.entityName}_attribute` b${i} on b${i}.domain_id = d.id
+                        and b${i}.entity_attribute_id = #{b.entityAttributeId} and b${i}.status = 1
+                    left join `${object.entityName}_value` bv${i} on bv${i}.attribute_id = b${i}.id
                 </if>
             </foreach>
         </if>
@@ -276,7 +277,7 @@
             <if test="object.map.attributes != null">
                 <foreach collection="object.map.attributes" index="i" item="b">
                     <if test="b.number != null">
-                        and b${i}.number = #{b.number}
+                        and (b${i}.number = #{b.number} or bv${i}.number = #{b.number})
                     </if>
                 </foreach>
             </if>

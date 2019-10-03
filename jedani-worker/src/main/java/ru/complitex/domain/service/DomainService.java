@@ -65,11 +65,22 @@ public class DomainService implements Serializable {
         return domainMapper.getDomain(getEntityName(referenceId), objectId);
     }
 
-    public <T extends Domain> List<T> getDomainsByParentId(Class<T> domainClass, Long parentId){
+    public <T extends Domain> List<T> getDomainsByParentId(Class<T> domainClass, Long parentId, Long parentEntityId){
         T domain = Domains.newObject(domainClass);
+
         domain.setParentId(parentId);
+        domain.setParentEntityId(parentEntityId);
 
         return getDomains(domainClass, FilterWrapper.of(domain));
+    }
+
+    public <T extends Domain> List<T> getDomainsByParentId(Class<T> domainClass,
+                                                           Class<? extends Domain> parentDomainClass, Long parentId){
+        return getDomainsByParentId(domainClass, parentId,  entityService.getEntity(parentDomainClass).getId());
+    }
+
+    public <T extends Domain> List<T> getDomainsByParentId(Class<T> domainClass, Long parentId){
+        return getDomainsByParentId(domainClass, parentId, null);
     }
 
     @Transactional

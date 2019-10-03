@@ -1,8 +1,7 @@
 package ru.complitex.domain.util;
 
-import java.util.Collection;
-import java.util.Locale;
-import java.util.Map;
+import java.io.IOException;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -24,6 +23,8 @@ public class Locales {
     public static final Long UA_ID = 2L;
 
     private static Locales instance = new Locales();
+
+    private Map<Class, Properties> propertiesMap = new ConcurrentHashMap<>();
 
     public Locales() {
         map.put(RU, RU_ID);
@@ -58,5 +59,27 @@ public class Locales {
 
     public static String getLanguage(Long localeId){
         return instance.mapId.get(localeId).getLanguage();
+    }
+
+    private static Properties getProperties(Class _class){
+        Properties properties = instance.propertiesMap.get(_class);
+
+        if (properties == null){
+            properties = new Properties();
+
+            try {
+                properties.load(_class.getResourceAsStream(_class.getSimpleName() + ".properties"));
+
+                instance.propertiesMap.put(_class, properties);
+            } catch (IOException e) {
+                return null;
+            }
+        }
+
+        return properties;
+    }
+
+    public static String getString(Class _class, String key){
+        return Objects.requireNonNull(getProperties(_class)).getProperty(key);
     }
 }

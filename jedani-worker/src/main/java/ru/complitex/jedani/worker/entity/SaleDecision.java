@@ -66,56 +66,6 @@ public class SaleDecision extends Domain<SaleDecision> {
         this.rules = rules;
     }
 
-    public SaleDecision addRule(){
-        if (rules.isEmpty()){
-            rules.add(new Rule());
-        } else {
-            rules.add(new Rule(rules.get(0)));
-        }
-
-        return this;
-    }
-
-    public void addCondition(){
-        rules.forEach(Rule::addCondition);
-    }
-
-    public void updateCondition(Long index){
-        int rulesSize = rules.size();
-
-        if (rulesSize > 1) {
-            Rule rule = rules.get(0);
-
-            rules.subList(1, rulesSize).forEach(r -> {
-                r.updateCondition(rule.getCondition(index));
-            });
-        }
-    }
-
-    public void removeCondition(Long index){
-        rules.forEach(r -> r.removeCondition(index));
-    }
-
-    public void addAction(){
-        rules.forEach(Rule::addAction);
-    }
-
-    public void updateAction(Long index){
-        int rulesSize = rules.size();
-
-        if (rulesSize > 1) {
-            Rule rule = rules.get(0);
-
-            rules.subList(1, rulesSize).forEach(r -> {
-                r.updateAction(rule.getAction(index));
-            });
-        }
-    }
-
-    public void removeAction(Long index){
-        rules.forEach(r -> r.removeAction(index));
-    }
-
     public void clearObjectId(){
         setObjectId(null);
 

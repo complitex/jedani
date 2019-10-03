@@ -28,6 +28,10 @@ import java.util.List;
 import static ru.complitex.jedani.worker.security.JedaniRoles.ADMINISTRATORS;
 import static ru.complitex.jedani.worker.security.JedaniRoles.STRUCTURE_ADMINISTRATORS;
 
+/**
+ * @author Anatoly A. Ivanov
+ * 25.05.2019 18:33
+ */
 @AuthorizeInstantiation({ADMINISTRATORS, STRUCTURE_ADMINISTRATORS})
 public class SaleDecisionListPage extends DomainListModalPage<SaleDecision> {
     @Inject

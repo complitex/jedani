@@ -99,7 +99,8 @@ public class SaleDecisionService implements Serializable {
     }
 
     public void loadRules(SaleDecision saleDecision){
-        saleDecision.setRules(domainService.getDomainsByParentId(Rule.class, saleDecision.getObjectId()));
+        saleDecision.setRules(domainService.getDomainsByParentId(Rule.class, SaleDecision.class,
+                saleDecision.getObjectId()));
 
         saleDecision.getRules().forEach(r -> {
             r.setConditions(domainService.getDomainsByParentId(RuleCondition.class, r.getObjectId()));
@@ -134,17 +135,17 @@ public class SaleDecisionService implements Serializable {
 
     public boolean check(Rule rule, Date paymentDate, BigDecimal total, Long installmentMonths, boolean youself){
         for (RuleCondition ruleCondition : rule.getConditions()){
-            if (RuleConditionType.PAYMENT_DATE.getId().equals(ruleCondition.getType()) &&
+            if (SaleDecisionConditionType.PAYMENT_DATE.getId().equals(ruleCondition.getType()) &&
                     !isCheck(ruleCondition, ruleCondition.getDate(RuleCondition.CONDITION), paymentDate)){
                 return false;
-            }else if (RuleConditionType.PAYMENT_TOTAL.getId().equals(ruleCondition.getType()) &&
+            }else if (SaleDecisionConditionType.PAYMENT_TOTAL.getId().equals(ruleCondition.getType()) &&
                     !isCheck(ruleCondition, ruleCondition.getDecimal(RuleCondition.CONDITION), total)){
                 return false;
-            }else if (RuleConditionType.PAYMENT_PERCENT.getId().equals(ruleCondition.getType()) &&
+            }else if (SaleDecisionConditionType.PAYMENT_PERCENT.getId().equals(ruleCondition.getType()) &&
                     !isCheck(ruleCondition, ruleCondition.getNumber(RuleCondition.CONDITION),
                             installmentMonths == 0 ? 100L : 0)){
                 return false;
-            }else if (RuleConditionType.FOR_YOURSELF.getId().equals(ruleCondition.getType())){
+            }else if (SaleDecisionConditionType.FOR_YOURSELF.getId().equals(ruleCondition.getType())){
                 return youself == ruleCondition.isBoolean(RuleCondition.CONDITION);
             }
         }

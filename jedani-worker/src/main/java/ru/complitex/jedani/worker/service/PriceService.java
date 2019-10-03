@@ -80,7 +80,7 @@ public class PriceService implements Serializable {
         for (Rule rule : saleDecision.getRules()){
             if (saleDecisionService.check(rule, date, total, installmentMonths, yourself)){
                 for (RuleAction a : rule.getActions()){
-                    switch (RuleActionType.getValue(a.getType())){
+                    switch (IActionType.getValue(SaleDecisionActionType.class, a.getType())){
                         case DISCOUNT:
                             BigDecimal discount = a.getDecimal(RuleAction.ACTION);
 
@@ -120,7 +120,8 @@ public class PriceService implements Serializable {
         for (Rule rule : saleDecision.getRules()){
             if (saleDecisionService.check(rule, paymentDate, total, installmentMonths, yourself)){
                 for (RuleAction a : rule.getActions()){
-                    if (RuleActionType.getValue(a.getType()) == RuleActionType.EURO_RATE_LESS_OR_EQUAL) {
+                    if (IActionType.getValue(SaleDecisionActionType.class, a.getType()) ==
+                            SaleDecisionActionType.EURO_RATE_LESS_OR_EQUAL) {
                         BigDecimal actionRate = a.getDecimal(RuleAction.ACTION);
 
                         return actionRate != null ? rate.min(actionRate) : rate;
