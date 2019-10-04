@@ -102,7 +102,7 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
         Attribute attribute = rowModel.getObject().getOrCreateAttribute(entityAttribute.getEntityAttributeId());
 
         switch (entityAttribute.getValueType()){
-            case TEXT_VALUE:
+            case TEXT_LIST:
                 List<Value> values = attribute.getValues();
 
                 if (values != null && !values.isEmpty()) {
@@ -138,7 +138,7 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
 
                 break;
 
-            case ENTITY_VALUE:
+            case ENTITY_LIST:
                 if (attribute.getValues() != null && entityAttribute.hasReferenceEntityAttributes()){
                     EntityAttribute referenceEntityAttribute = entityAttribute.getReferenceEntityAttributes().get(0);
 
@@ -212,7 +212,7 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
                             case ENTITY:
                                 text = displayEntity(ea, refDomain.getNumber(ea.getEntityAttributeId()));
                                 break;
-                            case TEXT_VALUE:
+                            case TEXT_LIST:
                                 text = refDomain.getTextValue(ea.getEntityAttributeId());
                                 break;
                             case TEXT:

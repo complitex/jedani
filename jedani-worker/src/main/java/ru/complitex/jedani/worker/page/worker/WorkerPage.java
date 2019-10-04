@@ -579,14 +579,14 @@ public class WorkerPage extends BasePage {
                 String value = "";
 
                 switch (entityAttribute.getValueType()){
-                    case TEXT_VALUE:
+                    case TEXT_LIST:
                         value = attribute.getValues().stream()
                                 .map(Value::getText)
                                 .collect(Collectors.joining(","));
 
                         break;
-                    case NUMBER_VALUE:
-                    case ENTITY_VALUE:
+                    case NUMBER_LIST:
+                    case ENTITY_LIST:
                         value = attribute.getValues().stream()
                                 .map(v -> String.valueOf(v.getNumber()))
                                 .collect(Collectors.joining(","));

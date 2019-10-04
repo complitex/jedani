@@ -50,7 +50,7 @@ public class DomainAutoComplete extends AbstractDomainAutoComplete{
         Attribute attribute = domain.getOrCreateAttribute(entityAttribute.getEntityAttributeId());
 
         switch (entityAttribute.getValueType()){
-            case TEXT_VALUE:
+            case TEXT_LIST:
                 String textValue = attribute.getOrCreateValue(Locales.getSystemLocaleId()).getText();
 
                 return Attributes.displayText(entityAttribute, textValue);

@@ -3,19 +3,17 @@ package ru.complitex.jedani.worker.service;
 import org.mybatis.cdi.Transactional;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.util.Dates;
-import ru.complitex.domain.entity.Domain;
-import ru.complitex.domain.entity.ValueType;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
 import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.mapper.SaleDecisionMapper;
+import ru.complitex.jedani.worker.util.Rules;
 
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 public class SaleDecisionService implements Serializable {
     @Inject
@@ -82,7 +80,7 @@ public class SaleDecisionService implements Serializable {
                 c.setParentEntityId(entityService.getEntity(Rule.ENTITY_NAME).getId());
                 c.setParentId(r.getObjectId());
 
-                updateValues(c, RuleCondition.VALUE_TYPE, RuleCondition.CONDITION, RuleCondition.COMPARATOR);
+                Rules.updateValues(c, RuleCondition.VALUE_TYPE, RuleCondition.CONDITION, RuleCondition.COMPARATOR);
 
                 domainService.save(c);
             });
@@ -91,7 +89,7 @@ public class SaleDecisionService implements Serializable {
                 a.setParentEntityId(entityService.getEntity(Rule.ENTITY_NAME).getId());
                 a.setParentId(r.getObjectId());
 
-                updateValues(a, RuleAction.VALUE_TYPE, RuleAction.ACTION, RuleAction.COMPARATOR);
+                Rules.updateValues(a, RuleAction.VALUE_TYPE, RuleAction.ACTION, RuleAction.COMPARATOR);
 
                 domainService.save(a);
             });
@@ -106,23 +104,6 @@ public class SaleDecisionService implements Serializable {
             r.setConditions(domainService.getDomainsByParentId(RuleCondition.class, r.getObjectId()));
             r.setActions(domainService.getDomainsByParentId(RuleAction.class, r.getObjectId()));
         });
-    }
-
-    private void updateValues(Domain domain, Long valueTypeEAId, Long valueEAId, Long comparatorEAId){
-        if (Objects.equals(domain.getNumber(valueTypeEAId), ValueType.BOOLEAN.getId())){
-            domain.setText(valueEAId, null);
-            domain.setDate(valueEAId, null);
-            domain.setNumber(comparatorEAId, null);
-        }else if (Objects.equals(domain.getNumber(valueTypeEAId), ValueType.DECIMAL.getId())){
-            domain.setNumber(valueEAId, null);
-            domain.setDate(valueEAId, null);
-        }else if (Objects.equals(domain.getNumber(valueTypeEAId), ValueType.NUMBER.getId())){
-            domain.setText(valueEAId, null);
-            domain.setDate(valueEAId, null);
-        }else if (Objects.equals(domain.getNumber(valueTypeEAId), ValueType.DATE.getId())){
-            domain.setNumber(valueEAId, null);
-            domain.setText(valueEAId, null);
-        }
     }
 
     public List<SaleDecision> getSaleDecisions(Long countryId, Long nomenclatureId, Date date){

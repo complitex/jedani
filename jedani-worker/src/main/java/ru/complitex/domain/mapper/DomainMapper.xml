@@ -94,6 +94,7 @@
 
         <where>
             <if test="parentId != null">and d.parent_id = #{parentId} and d.`status` > 0</if>
+            <if test="parentEntityId != null">and d.parent_entity_id = #{parentEntityId}</if>
             <if test="objectId != null">and d.object_id = #{objectId} and d.`status` > 0</if>
             <if test="attributes != null and !attributes.isEmpty">
                 <foreach collection="attributes" index="i" item="a">
@@ -203,9 +204,8 @@
 
             </if>
 
-            <if test="object.parentId != null">
-                and (d.parent_id = #{object.parentId})
-            </if>
+            <if test="object.parentId != null"> and d.parent_id = #{object.parentId}</if>
+            <if test="object.parentEntityId != null">and d.parent_entity_id = #{object.parentEntityId}</if>
 
             <if test="object.parentEntityAttribute != null and map.parentName != null">
                 and (p_a.text like concat('%', #{map.parentName}, '%') or p_v.text like concat('%', #{map.parentName}, '%'))

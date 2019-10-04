@@ -135,7 +135,7 @@ public class DomainEditModal<T extends Domain<T>> extends AbstractDomainEditModa
 
                             break;
                         case TEXT:
-                        case ENTITY_VALUE:
+                        case ENTITY_LIST:
                             input1 = new TextField<>("input1", new TextAttributeModel(attribute, entityAttribute.getStringType()));
                             break;
                         case DATE:
@@ -154,7 +154,7 @@ public class DomainEditModal<T extends Domain<T>> extends AbstractDomainEditModa
                         case NUMBER:
                             input1 = new TextField<>("input1", new PropertyModel<>(attribute, "number"));
                             break;
-                        case TEXT_VALUE:
+                        case TEXT_LIST:
                             input1 = new TextField<>("input1", new TextAttributeModel(attribute.getOrCreateValue(
                                     Locales.getLocaleId(Locales.RU)), entityAttribute.getStringType()));
                             input1.add(new AttributeModifier("placeholder", getString("RU")));

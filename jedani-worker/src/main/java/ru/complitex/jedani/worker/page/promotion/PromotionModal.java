@@ -4,42 +4,55 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxLink
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
 import de.agilecoders.wicket.core.markup.html.bootstrap.dialog.Modal;
+import de.agilecoders.wicket.core.markup.html.bootstrap.image.GlyphIconType;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
+import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.TextArea;
-import org.apache.wicket.markup.html.form.upload.FileUploadField;
-import org.apache.wicket.markup.html.link.DownloadLink;
-import org.apache.wicket.model.LoadableDetachableModel;
+import org.apache.wicket.markup.repeater.Item;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.complitex.address.entity.Country;
+import ru.complitex.common.entity.FilterWrapper;
+import ru.complitex.common.entity.SortProperty;
+import ru.complitex.common.model.ArrayListModel;
 import ru.complitex.common.wicket.component.MoneyTextField;
+import ru.complitex.common.wicket.datatable.FilterDataForm;
+import ru.complitex.common.wicket.datatable.FilterDataProvider;
+import ru.complitex.common.wicket.datatable.FilterDataTable;
 import ru.complitex.common.wicket.form.FormGroupBorder;
 import ru.complitex.common.wicket.form.FormGroupDateTextField;
 import ru.complitex.common.wicket.form.FormGroupPanel;
+import ru.complitex.common.wicket.panel.LinkPanel;
 import ru.complitex.common.wicket.util.Wickets;
+import ru.complitex.domain.component.datatable.DomainActionColumn;
+import ru.complitex.domain.component.datatable.DomainColumn;
+import ru.complitex.domain.component.datatable.DomainIdColumn;
 import ru.complitex.domain.component.form.FormGroupDomainAutoComplete;
-import ru.complitex.domain.entity.Status;
-import ru.complitex.domain.entity.StringType;
+import ru.complitex.domain.entity.*;
 import ru.complitex.domain.model.*;
 import ru.complitex.domain.service.DomainService;
+import ru.complitex.domain.service.EntityService;
 import ru.complitex.domain.util.Locales;
 import ru.complitex.jedani.worker.component.NomenclatureAutoCompleteList;
-import ru.complitex.jedani.worker.entity.Nomenclature;
-import ru.complitex.jedani.worker.entity.Promotion;
-import ru.complitex.jedani.worker.entity.Setting;
+import ru.complitex.jedani.worker.component.RuleTable;
+import ru.complitex.jedani.worker.entity.*;
+import ru.complitex.jedani.worker.service.PromotionService;
 
 import javax.inject.Inject;
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * @author Anatoly A. Ivanov
@@ -48,10 +61,14 @@ import java.nio.file.Path;
 public class PromotionModal extends Modal<Promotion> {
     private Logger log = LoggerFactory.getLogger(PromotionModal.class);
 
-    public final static String PROMOTION_FILE_PREFIX = "promotion_file_";
+    @Inject
+    private EntityService entityService;
 
     @Inject
     private DomainService domainService;
+
+    @Inject
+    private PromotionService promotionService;
 
     private String promotionDir;
 
@@ -59,7 +76,8 @@ public class PromotionModal extends Modal<Promotion> {
 
     private NotificationPanel feedback;
 
-    private FileUploadField file;
+    private FormGroupPanel nomenclatures;
+    private WebMarkupContainer nomenclatureContainer;
 
     private Component remove;
 
@@ -68,6 +86,7 @@ public class PromotionModal extends Modal<Promotion> {
 
         setBackdrop(Backdrop.FALSE);
         setCloseOnEscapeKey(false);
+        size(Size.Large);
 
         Setting promotionSetting = domainService.getDomain(Setting.class, Setting.PROMOTION);
 
@@ -85,50 +104,126 @@ public class PromotionModal extends Modal<Promotion> {
         feedback.setOutputMarkupId(true);
         container.add(feedback);
 
-        container.add(new FormGroupDateTextField("begin", new DateAttributeModel(getModel(), Promotion.BEGIN)));
-        container.add(new FormGroupDateTextField("end", new DateAttributeModel(getModel(), Promotion.END)));
         container.add(new FormGroupDomainAutoComplete("country", Country.ENTITY_NAME, Country.NAME,
-                new NumberAttributeModel(getModel(), Promotion.COUNTRY)).setRequired(true));
+                new NumberAttributeModel(getModel(), Promotion.COUNTRY)){
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                target.add(nomenclatures, nomenclatureContainer);
+            }
+        }.setRequired(true));
+
         container.add(new FormGroupBorder("name", new ResourceModel("name")){
             @Override
             protected boolean isRequired() {
                 return true;
             }
         }.add(new TextArea<>("name", new TextValueModel(getModel(), Promotion.NAME,
-                        Locales.getSystemLocaleId())).setRequired(true)));
+                Locales.getSystemLocaleId())).setRequired(true)));
 
-        container.add(new DownloadLink("downloadFile", new LoadableDetachableModel<File>() {
+
+        container.add(new FormGroupDateTextField("begin", new DateAttributeModel(getModel(), Promotion.DATE_BEGIN)));
+        container.add(new FormGroupDateTextField("end", new DateAttributeModel(getModel(), Promotion.DATE_END)));
+
+        container.add(new FormGroupBorder("rate", new ResourceModel("rate"))
+                .add(new MoneyTextField<>("rate", new TextAttributeModel(getModel(), Promotion.RATE,
+                        StringType.DEFAULT))));
+
+        container.add(nomenclatures = new FormGroupPanel("nomenclatures", new NomenclatureAutoCompleteList(FormGroupPanel.COMPONENT_ID,
+                Nomenclature.ENTITY_NAME, new AttributeModel(getModel(), Promotion.NOMENCLATURES)){
             @Override
-            protected File load() {
-                Path filePath = new File(promotionDir, PROMOTION_FILE_PREFIX + getModel().getObject().getObjectId()).toPath();
+            protected Nomenclature getFilterObject(String input) {
+                Nomenclature nomenclature = super.getFilterObject(input);
 
-                if (Files.exists(filePath)){
-                    return filePath.toFile();
+                List<Attribute> filterAttributes = new ArrayList<>();
+
+                filterAttributes.add(nomenclature.getOrCreateAttribute(Nomenclature.COUNTRIES)
+                        .setNumber(getModelObject().getCountryId()));
+
+                nomenclature.put(Domain.FILTER_ATTRIBUTES, filterAttributes);
+
+                List<Long> nomenclatureIds = getModelObject().getNomenclatureIds().stream()
+                        .filter(Objects::nonNull).collect(Collectors.toList());
+
+                if (!nomenclatureIds.isEmpty()) {
+                    nomenclature.put(Domain.FILTER_EXCLUDE_OBJECT_IDS, nomenclatureIds);
                 }
 
-                return null;
+                return nomenclature;
             }
-        }, new LoadableDetachableModel<String>() {
+        }));
+
+        FilterWrapper<Nomenclature> filterWrapper = FilterWrapper.of(new Nomenclature());
+
+        FilterDataProvider<Nomenclature> filterDataProvider = new FilterDataProvider<Nomenclature>(filterWrapper) {
             @Override
-            protected String load() {
-                return getModel().getObject().getText(Promotion.FILE);
+            public List<Nomenclature> getList() {
+                return domainService.getDomains(Nomenclature.class, getFilterState());
             }
-        }).add(new Label("name", new LoadableDetachableModel<String>() {
+
             @Override
-            protected String load() {
-                return getModel().getObject().getText(Promotion.FILE);
+            public Long getCount() {
+                Nomenclature nomenclature = getFilterState().getObject();
+
+                List<Attribute> filterAttributes = new ArrayList<>();
+
+                filterAttributes.add(nomenclature.getOrCreateAttribute(Nomenclature.COUNTRIES)
+                        .setNumber(getModelObject().getCountryId()));
+
+                nomenclature.put(Domain.FILTER_ATTRIBUTES, filterAttributes);
+
+                List<Long> nomenclatureIds = getModelObject().getNomenclatureIds().stream()
+                        .filter(Objects::nonNull).collect(Collectors.toList());
+
+                if (!nomenclatureIds.isEmpty()) {
+                    nomenclature.put(Domain.FILTER_EXCLUDE_OBJECT_IDS, nomenclatureIds);
+                }
+
+                return domainService.getDomainsCount(getFilterState());
             }
-        })));
+        };
 
-        file = new FileUploadField("file");
-        container.add(file);
+        nomenclatureContainer = new WebMarkupContainer("nomenclatureContainer"){
+            @Override
+            public boolean isVisible() {
+                return getModelObject().getCountryId() != null;
+            }
+        };
+        nomenclatureContainer.setOutputMarkupId(true);
+        nomenclatureContainer.setOutputMarkupPlaceholderTag(true);
+        container.add(nomenclatureContainer);
 
-        container.add(new FormGroupPanel("nomenclatures", new NomenclatureAutoCompleteList(FormGroupPanel.COMPONENT_ID,
-                Nomenclature.ENTITY_NAME, new AttributeModel(getModel(), Promotion.NOMENCLATURES))));
+        FilterDataForm<FilterWrapper<Nomenclature>> filterDataForm = new FilterDataForm<>("nomenclatureForm", filterDataProvider);
+        filterDataForm.setOutputMarkupId(true);
+        nomenclatureContainer.add(filterDataForm);
 
-        container.add(new FormGroupBorder("eur", new ResourceModel("eur"))
-                .add(new MoneyTextField<>("eur", new TextAttributeModel(getModel(), Promotion.EUR,
-                        StringType.DEFAULT))));
+        List<IColumn<Nomenclature, SortProperty>> columns = new ArrayList<>();
+
+        Entity entity = entityService.getEntity(Nomenclature.class);
+
+        columns.add(new DomainIdColumn<>());
+        columns.add(new DomainColumn<>(entity.getEntityAttribute(Nomenclature.CODE)));
+        columns.add(new DomainColumn<>(entity.getEntityAttribute(Nomenclature.NAME)));
+        columns.add(new DomainActionColumn<Nomenclature>(){
+            @Override
+            public void populateItem(Item<ICellPopulator<Nomenclature>> cellItem, String componentId, IModel<Nomenclature> rowModel) {
+                cellItem.add(new LinkPanel(componentId, new BootstrapAjaxLink<Nomenclature>(LinkPanel.LINK_COMPONENT_ID, Buttons.Type.Link) {
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        PromotionModal.this.getModelObject().addNomenclatureId(rowModel.getObject().getObjectId());
+
+                        target.add(nomenclatures, nomenclatureContainer.get("nomenclatureForm:nomenclatureTable"));
+                    }
+                }.setIconType(GlyphIconType.plus)));
+            }
+        });
+
+        FilterDataTable<Nomenclature> filterDataTable = new FilterDataTable<>("nomenclatureTable", columns,
+                filterDataProvider, filterDataForm, 5, "saleDecisionNomenclatureTable");
+        filterDataForm.add(filterDataTable);
+
+        container.add(new RuleTable("ruleTable", new PropertyModel<>(getModel(), "rules"),
+                new ArrayListModel<>(PromotionConditionType.values()),
+                new ArrayListModel<>(PromotionActionType.values())));
 
         addButton(new IndicatingAjaxButton(Modal.BUTTON_MARKUP_ID, new ResourceModel("save")) {
             @Override
@@ -168,12 +263,23 @@ public class PromotionModal extends Modal<Promotion> {
     }
 
     void create(AjaxRequestTarget target){
-        setModelObject(new Promotion());
+        Promotion promotion = new Promotion();
+
+        Rule rule = new Rule();
+
+        rule.addCondition();
+        rule.addAction();
+
+        promotion.getRules().add(rule);
+
+        setModelObject(promotion);
 
         open(target);
     }
 
     void edit(Promotion promotion, AjaxRequestTarget target){
+        promotionService.loadRules(promotion);
+
         setModelObject(promotion);
 
         open(target);
@@ -194,40 +300,9 @@ public class PromotionModal extends Modal<Promotion> {
     private void save(AjaxRequestTarget target){
         Promotion promotion = getModelObject();
 
-        if (file.getFileUpload() != null){
-            promotion.setText(Promotion.FILE, file.getFileUpload().getClientFileName());
-        }
+        promotionService.save(promotion);
 
-        domainService.save(promotion);
-
-        if (file.getFileUpload() != null) {
-            Path promotionPath = new File(promotionDir).toPath();
-
-            if (!Files.exists(promotionPath) || !Files.isWritable(promotionPath)){
-                error(getString("error_promotion_path") +  ": " + promotionPath.toString());
-
-                target.add(feedback);
-
-                return;
-            }
-
-            Path filePath = new File(promotionPath.toFile(), PROMOTION_FILE_PREFIX + promotion.getObjectId()).toPath();
-
-            try {
-                if (Files.exists(filePath)){
-                    Files.move(filePath, new File(filePath.getParent().toFile(), PROMOTION_FILE_PREFIX +
-                            promotion.getObjectId() + "_deleted_" + System.currentTimeMillis()).toPath());
-                }
-
-                Files.copy(file.getFileUpload().getInputStream(), filePath);
-            } catch (Exception e) {
-                log.error("promotion save error ", e);
-
-                target.add(feedback);
-
-                return;
-            }
-        }
+        container.visitChildren(FormComponent.class, (c, v) -> ((FormComponent) c).clearInput());
 
         success(getString("info_promotion_saved"));
 

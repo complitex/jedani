@@ -47,7 +47,7 @@ public abstract class DomainParentColumn<T extends Domain> extends AbstractDomai
 
         if (domain != null) {
             switch (entityAttribute.getValueType()){
-                case TEXT_VALUE:
+                case TEXT_LIST:
                     Value value = domain.getValue(entityAttribute.getEntityAttributeId(), Locales.RU);
                     model = Model.of(value != null ? Attributes.capitalize(value.getText()) : null);
 

@@ -126,7 +126,7 @@ public abstract class DomainEditPage<T extends Domain> extends BasePage{
                     switch (entityAttribute.getValueType()){
                         case TEXT:
                         case DECIMAL:
-                        case ENTITY_VALUE:
+                        case ENTITY_LIST:
                             input1 = new TextField<>("input1", new TextAttributeModel(attribute, StringType.UPPER_CASE));
                             break;
                         case DATE:
@@ -143,7 +143,7 @@ public abstract class DomainEditPage<T extends Domain> extends BasePage{
                         case NUMBER:
                             input1 = new TextField<>("input1", new PropertyModel<>(attribute, "number"));
                             break;
-                        case TEXT_VALUE:
+                        case TEXT_LIST:
                             input1 = new TextField<>("input1", new TextAttributeModel(attribute.getOrCreateValue(
                                     Locales.getLocaleId(Locales.RU)), StringType.UPPER_CASE));
                             input1.add(new AttributeModifier("placeholder", getString("RU")));

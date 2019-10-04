@@ -6,15 +6,15 @@ import java.util.Arrays;
 import java.util.Objects;
 
 public enum ValueType implements IdEnum {
-    TEXT_VALUE(0L, "value"),
-    NUMBER_VALUE(1L, "number_value"),
+    TEXT_LIST(0L, "value"),
+    NUMBER_LIST(1L, "number_value"),
     TEXT(2L, "text"),
     BOOLEAN(3L, "number"),
     DECIMAL(4L, "text"),
     NUMBER(5L, "number"),
     DATE(6L, "date"),
 
-    ENTITY_VALUE(10L, "entity_value"),
+    ENTITY_LIST(10L, "entity_value"),
     ENTITY(11L, "entity");
 
     private Long id;
