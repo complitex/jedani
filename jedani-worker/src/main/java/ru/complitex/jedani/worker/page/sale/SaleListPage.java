@@ -211,6 +211,9 @@ public class SaleListPage extends DomainListModalPage<Sale> {
                         case (int) SaleStatus.ARCHIVE:
                             status =  getString("archive");
                             break;
+                        case (int) SaleStatus.OVERPAYMENT:
+                            status =  getString("overpayment");
+                            break;
                     }
                 }
 
@@ -272,9 +275,6 @@ public class SaleListPage extends DomainListModalPage<Sale> {
 
         if (sale.getSaleStatus() != null){
             switch (sale.getSaleStatus().intValue()){
-                case (int) SaleStatus.CREATED:
-                    statusClass = "info";
-                    break;
                 case (int) SaleStatus.PAYING:
                     statusClass = "success";
                     break;
@@ -286,6 +286,9 @@ public class SaleListPage extends DomainListModalPage<Sale> {
                     break;
                 case (int) SaleStatus.CLOSED:
                     statusClass = "sale_status_closed";
+                    break;
+                case (int) SaleStatus.OVERPAYMENT:
+                    statusClass = "info";
                     break;
                 case (int) SaleStatus.ARCHIVE:
                     statusClass = "active";
