@@ -35,20 +35,14 @@ public class WorkerNodeService implements Serializable {
                 if (m != null){
                     m.getChildNodes().add(w);
                 }else{
-                    log.error("no manager found for " + w);
+                    log.error("getWorkerTree no manager found " + w);
                 }
             }else{
-                log.warn("no manager_id for " + w);
+                log.warn("getWorkerTree no manager id " + w);
             }
         });
 
         return map.get(rootObjectId);
-    }
-
-    public void validateWorkerTree(List<WorkerNode> workerNodes, Long rootObjectId){
-        WorkerNode rootWorkerNode = getWorkerTree(workerNodes, rootObjectId);
-
-        validateWorkerTree(rootWorkerNode);
     }
 
     private void validateWorkerTree(WorkerNode rootWorkerNode){
@@ -57,19 +51,19 @@ public class WorkerNodeService implements Serializable {
 
     private void validateWorkerNode(WorkerNode managerWorkerNode, WorkerNode workerNode){
         if (!workerNode.getManagerId().equals(managerWorkerNode.getObjectId())){
-            throw new RuntimeException("validate manager id error " + managerWorkerNode + " " + workerNode);
+            throw new RuntimeException("validateWorkerNode manager id error " + managerWorkerNode + " " + workerNode);
         }
 
         if (workerNode.getLeft() <= managerWorkerNode.getLeft()){
-            throw new RuntimeException("validate left error " + managerWorkerNode + " " + workerNode);
+            throw new RuntimeException("validateWorkerNode left error " + managerWorkerNode + " " + workerNode);
         }
 
         if (workerNode.getRight() >= managerWorkerNode.getRight()){
-            throw new RuntimeException("validate right error " + managerWorkerNode + " " + workerNode);
+            throw new RuntimeException("validateWorkerNode right error " + managerWorkerNode + " " + workerNode);
         }
 
         if (workerNode.getLevel() != managerWorkerNode.getLevel() + 1){
-            throw new RuntimeException("validate level error " + managerWorkerNode + " " + workerNode);
+            throw new RuntimeException("validateWorkerNode level error " + managerWorkerNode + " " + workerNode);
         }
 
         workerNode.getChildNodes().forEach(c -> validateWorkerNode(workerNode, c));
@@ -78,13 +72,11 @@ public class WorkerNodeService implements Serializable {
     public Map<Long, List<WorkerNode>> getWorkerNodeLevelMap(){
         List<WorkerNode> workerNodes = workerNodeMapper.getAllWorkerNodes();
 
-        validateWorkerTree(workerNodes, 2L);
+        validateWorkerTree(getWorkerTree(workerNodes, 2L));
 
         Map<Long, List<WorkerNode>> map = new HashMap<>();
 
-        workerNodes.forEach(w -> {
-            map.computeIfAbsent(w.getLevel(), k -> new ArrayList<>()).add(w);
-        });
+        workerNodes.forEach(w -> map.computeIfAbsent(w.getLevel(), k -> new ArrayList<>()).add(w));
 
         return map;
     }
