@@ -11,6 +11,7 @@ import ru.complitex.jedani.worker.mapper.SaleItemMapper;
 
 import javax.inject.Inject;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
@@ -34,7 +35,7 @@ public class SaleService implements Serializable {
     @Transactional(rollbackFor = SaleException.class)
     public void sale(Sale sale, List<SaleItem> saleItems) throws SaleException {
         if (sale.getObjectId() != null) {
-            domainService.getDomains(SaleItem.class, FilterWrapper.of((SaleItem) new SaleItem().setParentId(sale.getObjectId())))
+            domainService.getDomains(SaleItem.class, FilterWrapper.of(new SaleItem().setParentId(sale.getObjectId())))
                     .forEach(si -> {
                         if (saleItems.stream().noneMatch(si0 -> Objects.equals(si.getObjectId(), si0.getObjectId()))){
                             domainService.delete(si);
@@ -116,5 +117,10 @@ public class SaleService implements Serializable {
 
     public List<SaleItem> getSaleItems(Long saleObjectId){
         return saleItemMapper.getSaleItems(FilterWrapper.of(new SaleItem().setParentId(saleObjectId)));
+    }
+
+    public BigDecimal getSaleVolume(Long sellerWorkerId){
+        return domainService.getDomains(Sale.class, FilterWrapper.of(new Sale().setSellerWorkerId(sellerWorkerId))).stream()
+                .reduce(BigDecimal.ZERO, (v, s) -> s.getTotal(), BigDecimal::add);
     }
 }

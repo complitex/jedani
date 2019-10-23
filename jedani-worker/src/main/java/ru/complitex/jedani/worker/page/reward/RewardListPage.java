@@ -14,22 +14,19 @@ import ru.complitex.domain.page.DomainListModalPage;
 import ru.complitex.jedani.worker.entity.Rank;
 import ru.complitex.jedani.worker.entity.Reward;
 import ru.complitex.jedani.worker.entity.RewardType;
-import ru.complitex.jedani.worker.service.WorkerNodeService;
 import ru.complitex.jedani.worker.service.WorkerService;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ru.complitex.jedani.worker.security.JedaniRoles.*;
+import static ru.complitex.jedani.worker.security.JedaniRoles.ADMINISTRATORS;
+import static ru.complitex.jedani.worker.security.JedaniRoles.STRUCTURE_ADMINISTRATORS;
 
 @AuthorizeInstantiation({ADMINISTRATORS, STRUCTURE_ADMINISTRATORS})
 public class RewardListPage extends DomainListModalPage<Reward> {
     @Inject
     private WorkerService workerService;
-
-    @Inject
-    private WorkerNodeService workerNodeService;
 
     private RewardModal rewardModal;
 
@@ -72,9 +69,7 @@ public class RewardListPage extends DomainListModalPage<Reward> {
 
     @Override
     protected void onCreate(AjaxRequestTarget target) {
-//        rewardModal.create(target);
-        workerNodeService.getWorkerNodeLevelMap();
-
+        rewardModal.create(target);
     }
 
     @Override

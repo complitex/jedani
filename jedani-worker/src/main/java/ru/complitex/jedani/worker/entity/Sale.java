@@ -44,8 +44,10 @@ public class Sale extends Domain<Sale> {
         return getNumber(SELLER_WORKER);
     }
 
-    public void setSellerWorkerId(Long sellerWorkerId){
+    public Sale setSellerWorkerId(Long sellerWorkerId){
         setNumber(SELLER_WORKER, sellerWorkerId);
+
+        return this;
     }
 
     public Long getBuyerFirstName(){
