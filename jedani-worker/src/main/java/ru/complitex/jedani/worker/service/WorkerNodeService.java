@@ -8,6 +8,8 @@ import ru.complitex.jedani.worker.mapper.WorkerNodeMapper;
 
 import javax.inject.Inject;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -22,10 +24,8 @@ public class WorkerNodeService implements Serializable {
     @Inject
     private WorkerNodeMapper workerNodeMapper;
 
-    public WorkerNode getWorkerTree(Long rootObjectId){
-        List<WorkerNode> list = workerNodeMapper.getAllWorkerNodes();
-
-        Map<Long, WorkerNode> map = list.stream()
+    public WorkerNode getWorkerTree(List<WorkerNode> workerNodes, Long rootObjectId){
+        Map<Long, WorkerNode> map = workerNodes.stream()
                 .collect(Collectors.toMap(w -> Objects.defaultIfNull(w.getObjectId(), -1L), w -> w));
 
         map.forEach((k, w) -> {
@@ -45,8 +45,8 @@ public class WorkerNodeService implements Serializable {
         return map.get(rootObjectId);
     }
 
-    public void validateWorkerTree(){
-        WorkerNode rootWorkerNode = getWorkerTree(2L);
+    public void validateWorkerTree(List<WorkerNode> workerNodes, Long rootObjectId){
+        WorkerNode rootWorkerNode = getWorkerTree(workerNodes, rootObjectId);
 
         validateWorkerTree(rootWorkerNode);
     }
@@ -57,21 +57,35 @@ public class WorkerNodeService implements Serializable {
 
     private void validateWorkerNode(WorkerNode managerWorkerNode, WorkerNode workerNode){
         if (!workerNode.getManagerId().equals(managerWorkerNode.getObjectId())){
-            throw new RuntimeException("validation manager id error " + managerWorkerNode + " " + workerNode);
+            throw new RuntimeException("validate manager id error " + managerWorkerNode + " " + workerNode);
         }
 
         if (workerNode.getLeft() <= managerWorkerNode.getLeft()){
-            throw new RuntimeException("validation left error " + managerWorkerNode + " " + workerNode);
+            throw new RuntimeException("validate left error " + managerWorkerNode + " " + workerNode);
         }
 
         if (workerNode.getRight() >= managerWorkerNode.getRight()){
-            throw new RuntimeException("validation right error " + managerWorkerNode + " " + workerNode);
+            throw new RuntimeException("validate right error " + managerWorkerNode + " " + workerNode);
         }
 
         if (workerNode.getLevel() != managerWorkerNode.getLevel() + 1){
-            throw new RuntimeException("validation level error " + managerWorkerNode + " " + workerNode);
+            throw new RuntimeException("validate level error " + managerWorkerNode + " " + workerNode);
         }
 
         workerNode.getChildNodes().forEach(c -> validateWorkerNode(workerNode, c));
+    }
+
+    public Map<Long, List<WorkerNode>> getWorkerNodeLevelMap(){
+        List<WorkerNode> workerNodes = workerNodeMapper.getAllWorkerNodes();
+
+        validateWorkerTree(workerNodes, 2L);
+
+        Map<Long, List<WorkerNode>> map = new HashMap<>();
+
+        workerNodes.forEach(w -> {
+            map.computeIfAbsent(w.getLevel(), k -> new ArrayList<>()).add(w);
+        });
+
+        return map;
     }
 }

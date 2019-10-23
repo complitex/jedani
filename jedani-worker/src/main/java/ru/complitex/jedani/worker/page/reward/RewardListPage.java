@@ -73,7 +73,7 @@ public class RewardListPage extends DomainListModalPage<Reward> {
     @Override
     protected void onCreate(AjaxRequestTarget target) {
 //        rewardModal.create(target);
-        workerNodeService.validateWorkerTree();
+        workerNodeService.getWorkerNodeLevelMap();
 
     }
 
