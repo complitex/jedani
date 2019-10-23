@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ru.complitex.jedani.worker.mapper.WorkerNodeMapper">
+    <resultMap id="workerNodeResultMap" type="ru.complitex.jedani.worker.entity.WorkerNode">
+        <id column="object_id" property="objectId"/>
+        <result column="manager_id" property="managerId"/>
+        <result column="left" property="left"/>
+        <result column="right" property="right"/>
+        <result column="level" property="level"/>
+    </resultMap>
+
+    <select id="selectAllWorkerNodes" resultMap="workerNodeResultMap">
+        select w.object_id, wa.number manager_id, w.left, w.right, w.level from worker w
+            left join worker_attribute wa on wa.domain_id = w.id and wa.entity_attribute_id = 17 and wa.status = 1
+        where w.status = 1
+    </select>
+
+</mapper>

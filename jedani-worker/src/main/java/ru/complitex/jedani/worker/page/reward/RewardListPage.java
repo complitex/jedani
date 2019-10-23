@@ -14,6 +14,7 @@ import ru.complitex.domain.page.DomainListModalPage;
 import ru.complitex.jedani.worker.entity.Rank;
 import ru.complitex.jedani.worker.entity.Reward;
 import ru.complitex.jedani.worker.entity.RewardType;
+import ru.complitex.jedani.worker.service.WorkerNodeService;
 import ru.complitex.jedani.worker.service.WorkerService;
 
 import javax.inject.Inject;
@@ -26,6 +27,9 @@ import static ru.complitex.jedani.worker.security.JedaniRoles.*;
 public class RewardListPage extends DomainListModalPage<Reward> {
     @Inject
     private WorkerService workerService;
+
+    @Inject
+    private WorkerNodeService workerNodeService;
 
     private RewardModal rewardModal;
 
@@ -68,7 +72,9 @@ public class RewardListPage extends DomainListModalPage<Reward> {
 
     @Override
     protected void onCreate(AjaxRequestTarget target) {
-        rewardModal.create(target);
+//        rewardModal.create(target);
+        workerNodeService.validateWorkerTree();
+
     }
 
     @Override

@@ -35,6 +35,7 @@
         <mapper resource="ru/complitex/user/mapper/UserGroupMapper.xml"/>
 
         <mapper resource="ru/complitex/jedani/worker/mapper/WorkerMapper.xml"/>
+        <mapper resource="ru/complitex/jedani/worker/mapper/WorkerNodeMapper.xml"/>
         <mapper resource="ru/complitex/jedani/worker/mapper/StorageMapper.xml"/>
         <mapper resource="ru/complitex/jedani/worker/mapper/TransactionMapper.xml"/>
         <mapper resource="ru/complitex/jedani/worker/mapper/SaleMapper.xml"/>
