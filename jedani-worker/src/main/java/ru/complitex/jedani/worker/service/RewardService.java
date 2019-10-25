@@ -65,35 +65,37 @@ public class RewardService implements Serializable {
             if (s.getType() == SaleType.MYCOOK){
                 Worker w = workerService.getWorker(s.getSellerWorkerId());
 
-                boolean mkPremium = saleService.isMkPremiumSaleItem(s.getObjectId());
-                boolean mkTouch = saleService.isMkTouchSaleItem(s.getObjectId());
+                if (w.getMkStatus() != null) {
+                    boolean mkPremium = saleService.isMkPremiumSaleItem(s.getObjectId());
+                    boolean mkTouch = saleService.isMkTouchSaleItem(s.getObjectId());
 
-                Reward r = new Reward();
+                    Reward r = new Reward();
 
-                r.setType(7L);
+                    r.setType(7L);
 
-                if (w.getMkStatus() == MkStatus.STATUS_NO_MK){
-                    if (mkPremium){
-                        r.setPoint(new BigDecimal("80"));
-                    }else if (mkTouch){
-                        r.setPoint(new BigDecimal("90"));
+                    if (w.getMkStatus() == MkStatus.STATUS_NO_MK){
+                        if (mkPremium){
+                            r.setPoint(new BigDecimal("80"));
+                        }else if (mkTouch){
+                            r.setPoint(new BigDecimal("90"));
+                        }
+                    }else if (w.getMkStatus() == MkStatus.STATUS_INSTALMENT_MK){ //todo >10%
+                        if (mkPremium){
+                            r.setPoint(new BigDecimal("120"));
+                        }else if (mkTouch){
+                            r.setPoint(new BigDecimal("130"));
+                        }
+                    }else if (w.getMkStatus() == MkStatus.STATUS_HAS_MK){ //todo sap
+                        if (mkPremium){
+                            r.setPoint(new BigDecimal("170"));
+                        }else if (mkTouch){
+                            r.setPoint(new BigDecimal("195"));
+                        }
                     }
-                }else if (w.getMkStatus() == MkStatus.STATUS_INSTALMENT_MK){ //todo >10%
-                    if (mkPremium){
-                        r.setPoint(new BigDecimal("120"));
-                    }else if (mkTouch){
-                        r.setPoint(new BigDecimal("130"));
-                    }
-                }else if (w.getMkStatus() == MkStatus.STATUS_HAS_MK){ //todo sap
-                    if (mkPremium){
-                        r.setPoint(new BigDecimal("170"));
-                    }else if (mkTouch){
-                        r.setPoint(new BigDecimal("195"));
-                    }
-                }
 
-                if (r.getPoint() != null) {
-                    tree.getWorkerReward(s.getSellerWorkerId()).getRewards().add(r);
+                    if (r.getPoint() != null) {
+                        tree.getWorkerReward(s.getSellerWorkerId()).getRewards().add(r);
+                    }
                 }
             }
         });

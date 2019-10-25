@@ -50,7 +50,7 @@ public class RewardTreePage extends BasePage {
 
                     wr.getRewards().forEach(r -> rewards.append("\n\t")
                             .append("rewordPoint: ").append(r.getPoint())
-                            .append("rewordType: ").append(r.getType()));
+                            .append(", rewordType: ").append(r.getType()));
                 }
             }
 
