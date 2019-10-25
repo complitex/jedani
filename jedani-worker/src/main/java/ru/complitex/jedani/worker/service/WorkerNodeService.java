@@ -24,7 +24,7 @@ public class WorkerNodeService implements Serializable {
     @Inject
     private WorkerNodeMapper workerNodeMapper;
 
-    public WorkerNode getWorkerTree(List<WorkerNode> workerNodes, Long rootObjectId){
+    public WorkerNode getWorkerTree(List<WorkerNode> workerNodes, Long rootWorkerId){
         Map<Long, WorkerNode> map = workerNodes.stream()
                 .collect(Collectors.toMap(w -> Objects.defaultIfNull(w.getObjectId(), -1L), w -> w));
 
@@ -42,7 +42,7 @@ public class WorkerNodeService implements Serializable {
             }
         });
 
-        return map.get(rootObjectId);
+        return map.get(rootWorkerId);
     }
 
     private void validateWorkerTree(WorkerNode rootWorkerNode){

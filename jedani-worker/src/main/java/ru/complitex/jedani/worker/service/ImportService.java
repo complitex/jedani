@@ -232,7 +232,7 @@ public class ImportService implements Serializable {
                 worker.setText(Worker.IMPORT_MANAGER_RANK_ID, columns[16]);
 
                 if (!Strings.isNullOrEmpty(columns[17])) {
-                    worker.setDate(Worker.INVOLVED_AT, dateTimeFormat.parse(columns[17]));
+                    worker.setDate(Worker.REGISTRATION_DATE, dateTimeFormat.parse(columns[17]));
                 }
 
                 worker.setText(Worker.CONTACT_INFO, columns[21]);

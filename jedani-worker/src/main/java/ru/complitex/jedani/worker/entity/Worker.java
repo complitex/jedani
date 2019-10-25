@@ -29,7 +29,7 @@ public class Worker extends DomainNode<Worker> {
     public static final long POSITION = 11;
     public static final long CREATED_AT = 12;
     public static final long UPDATED_AT = 13;
-    public static final long INVOLVED_AT = 14;
+    public static final long REGISTRATION_DATE = 14;
     public static final long MK_STATUS = 15;
     public static final long STATUS = 16;
     public static final long MANAGER_ID = 17;
@@ -96,7 +96,7 @@ public class Worker extends DomainNode<Worker> {
     }
 
     public void init() {
-        setDate(INVOLVED_AT, new Date());
+        setDate(REGISTRATION_DATE, new Date());
         setNumber(LAST_NAME, null);
         setNumber(FIRST_NAME, null);
         setNumber(MIDDLE_NAME, null);

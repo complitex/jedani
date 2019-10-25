@@ -1,5 +1,6 @@
 package ru.complitex.common.util;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.temporal.TemporalAdjusters;
@@ -36,5 +37,12 @@ public class Dates {
     public static Date atEndOfDay(Date date){
         return Date.from(date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().with(LocalTime.MAX)
                 .withNano(0).atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    public static boolean isSameMonth(Date d1, Date d2){
+        LocalDate ld1 = d1.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate ld2 = d2.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+        return ld1.getYear() == ld2.getYear() && ld1.getMonthValue() == ld2.getMonthValue();
     }
 }

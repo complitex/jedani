@@ -9,7 +9,9 @@ import java.util.*;
 public class WorkerRewardTree extends HashMap<Long, List<WorkerReward>> {
     private Long treeDepth;
 
-    public WorkerRewardTree(Map<Long, List<WorkerNode>> workerNodeMap) {
+    private WorkerReward rootWorkerReward;
+
+    public WorkerRewardTree(Map<Long, List<WorkerNode>> workerNodeMap, Long rootWorkerId) {
         treeDepth = workerNodeMap.keySet().stream().max(Comparator.naturalOrder()).orElse(-1L);
 
         Map<Long, WorkerReward> map = new HashMap<>();
@@ -34,5 +36,9 @@ public class WorkerRewardTree extends HashMap<Long, List<WorkerReward>> {
 
     public Long getTreeDepth() {
         return treeDepth;
+    }
+
+    public WorkerReward getRootWorkerReward() {
+        return rootWorkerReward;
     }
 }

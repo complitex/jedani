@@ -440,7 +440,7 @@ public class WorkerPage extends BasePage {
 
         form.add(card);
 
-        form.add(new FormGroupDateTextField("registrationDate", new DateAttributeModel(worker, Worker.INVOLVED_AT)){
+        form.add(new FormGroupDateTextField("registrationDate", new DateAttributeModel(worker, Worker.REGISTRATION_DATE)){
             @Override
             public boolean isRequired() {
                 return worker.isParticipant();

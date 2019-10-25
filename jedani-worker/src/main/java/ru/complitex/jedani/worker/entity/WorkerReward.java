@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.math.BigDecimal.*;
+
 /**
  * @author Anatoly A. Ivanov
  * 16.10.2019 11:00 AM
@@ -13,11 +15,14 @@ public class WorkerReward {
 
     private List<WorkerReward> childRewards = new ArrayList<>();
 
-    private BigDecimal saleVolume = BigDecimal.ZERO;
-    private BigDecimal paymentVolume = BigDecimal.ZERO;
+    private BigDecimal saleVolume = ZERO;
+    private BigDecimal paymentVolume = ZERO;
 
-    private BigDecimal groupSaleVolume = BigDecimal.ZERO;
-    private BigDecimal groupPaymentVolume = BigDecimal.ZERO;
+    private BigDecimal groupSaleVolume = ZERO;
+    private BigDecimal groupPaymentVolume = ZERO;
+
+    private boolean manager;
+    private Long registrationCount = 0L;
 
     public WorkerReward(WorkerNode workerNode) {
         this.workerNode = workerNode;
@@ -69,5 +74,21 @@ public class WorkerReward {
 
     public void setGroupPaymentVolume(BigDecimal groupPaymentVolume) {
         this.groupPaymentVolume = groupPaymentVolume;
+    }
+
+    public boolean isManager() {
+        return manager;
+    }
+
+    public void setManager(boolean manager) {
+        this.manager = manager;
+    }
+
+    public Long getRegistrationCount() {
+        return registrationCount;
+    }
+
+    public void setRegistrationCount(Long registrationCount) {
+        this.registrationCount = registrationCount;
     }
 }

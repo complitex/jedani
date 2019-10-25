@@ -112,7 +112,7 @@ public class WorkerListPage extends DomainListPage<Worker>{
 
         list.add(entity.getEntityAttribute(Worker.PHONE));
         list.add(entity.getEntityAttribute(Worker.EMAIL).setStringType(StringType.LOWER_CASE));
-        list.add(entity.getEntityAttribute(Worker.INVOLVED_AT));
+        list.add(entity.getEntityAttribute(Worker.REGISTRATION_DATE));
 
 //        list.add(entity.getEntityAttribute(Worker.POSITION).withReference(Position.ENTITY_NAME, Position.NAME));
 //        list.add(entity.getEntityAttribute(Worker.TYPE));
@@ -195,7 +195,7 @@ public class WorkerListPage extends DomainListPage<Worker>{
         switch (entityAttribute.getEntityAttributeId().intValue()){
             case (int) Worker.J_ID:
                 return new ResourceModel("jId");
-            case (int) Worker.INVOLVED_AT:
+            case (int) Worker.REGISTRATION_DATE:
                 return new ResourceModel("involvedAt");
             case (int) Worker.TYPE:
                 return new ResourceModel("type");
