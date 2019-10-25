@@ -1,5 +1,6 @@
 package ru.complitex.jedani.worker.page.reward;
 
+import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.markup.html.basic.Label;
 import ru.complitex.jedani.worker.entity.WorkerNode;
 import ru.complitex.jedani.worker.entity.WorkerReward;
@@ -11,11 +12,13 @@ import javax.inject.Inject;
 import java.math.BigDecimal;
 import java.util.List;
 
+import static ru.complitex.jedani.worker.security.JedaniRoles.ADMINISTRATORS;
+
 /**
  * @author Anatoly A. Ivanov
  * 23.10.2019 11:15 PM
  */
-//@AuthorizeInstantiation({ADMINISTRATORS})
+@AuthorizeInstantiation({ADMINISTRATORS})
 public class RewardTreePage extends BasePage {
     @Inject
     private RewardService rewardService;

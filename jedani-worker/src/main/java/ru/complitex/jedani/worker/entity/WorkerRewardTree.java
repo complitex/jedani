@@ -1,6 +1,7 @@
 package ru.complitex.jedani.worker.entity;
 
 import java.util.*;
+import java.util.function.BiConsumer;
 
 /**
  * @author Anatoly A. Ivanov
@@ -40,5 +41,11 @@ public class WorkerRewardTree extends HashMap<Long, List<WorkerReward>> {
 
     public WorkerReward getRootWorkerReward() {
         return rootWorkerReward;
+    }
+
+    public void forEachLevel(BiConsumer<Long, List<WorkerReward>> action){
+        for (long l = treeDepth; l > 0 ; l--){
+            action.accept(l, get(l));
+        }
     }
 }

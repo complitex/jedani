@@ -8,7 +8,6 @@ import javax.inject.Inject;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
 
 /**
  * @author Anatoly A. Ivanov
@@ -39,23 +38,15 @@ public class RewardService implements Serializable {
     }
 
     private void calcGroupSaleVolume(WorkerRewardTree tree){
-        for (long l = tree.getTreeDepth(); l > 0 ; l--){
-            List<WorkerReward> list = tree.get(l);
-
-            list.forEach(r -> r.setGroupSaleVolume(r.getChildRewards().stream()
-                    .reduce(BigDecimal.ZERO, (v, c) -> v.add(c.getSaleVolume().add(c.getGroupSaleVolume())),
-                            BigDecimal::add)));
-        }
+        tree.forEachLevel((l, rl) -> rl.forEach(r -> r.setGroupSaleVolume(r.getChildRewards().stream()
+                .reduce(BigDecimal.ZERO, (v, c) -> v.add(c.getSaleVolume().add(c.getGroupSaleVolume())),
+                        BigDecimal::add))));
     }
 
     private void calcRegistrationCount(WorkerRewardTree tree, Date date){
-        for (long l = tree.getTreeDepth(); l > 0 ; l--){
-            List<WorkerReward> list = tree.get(l);
-
-            list.forEach(r -> r.setRegistrationCount(r.getChildRewards().stream()
-                    .filter(c -> !c.isManager() && c.getWorkerNode().getRegistrationDate() != null)
-                    .reduce(0L, (v, c) -> c.getRegistrationCount() + (isNewWorker(c, date) ? 1 : 0), Long::sum)));
-        }
+        tree.forEachLevel((l, rl) ->  rl.forEach(r -> r.setRegistrationCount(r.getChildRewards().stream()
+                .filter(c -> !c.isManager() && c.getWorkerNode().getRegistrationDate() != null)
+                .reduce(0L, (v, c) -> c.getRegistrationCount() + (isNewWorker(c, date) ? 1 : 0), Long::sum))));
     }
 
     private boolean isNewWorker(WorkerReward workerReward, Date date){
@@ -63,10 +54,6 @@ public class RewardService implements Serializable {
     }
 
     private void calcFirstLevelCount(WorkerRewardTree tree){
-        for (long l = tree.getTreeDepth(); l > 0 ; l--){
-            List<WorkerReward> list = tree.get(l);
-
-            list.forEach(r -> r.setFirstLevelCount(Long.valueOf(r.getChildRewards().size())));
-        }
+        tree.forEachLevel((l, rl) -> rl.forEach(r -> r.setFirstLevelCount(Long.valueOf(r.getChildRewards().size()))));
     }
 }
