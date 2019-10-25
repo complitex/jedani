@@ -33,20 +33,24 @@ public class RewardTreePage extends BasePage {
 
             rewards.append("Level: ").append(l).append("\n");
 
-            for (WorkerReward r : list){
-                if ((r.getSaleVolume() != null && r.getSaleVolume().compareTo(BigDecimal.ZERO) > 0) ||
-                        r.getGroupSaleVolume() != null && r.getGroupSaleVolume().compareTo(BigDecimal.ZERO) > 0 ||
-                        r.getRegistrationCount() > 0 ||
-                        r.getFirstLevelCount() > 0) {
-                    WorkerNode n = r.getWorkerNode();
+            for (WorkerReward wr : list){
+                if ((wr.getSaleVolume() != null && wr.getSaleVolume().compareTo(BigDecimal.ZERO) > 0) ||
+                        wr.getGroupSaleVolume() != null && wr.getGroupSaleVolume().compareTo(BigDecimal.ZERO) > 0 ||
+                        wr.getRegistrationCount() > 0 ||
+                        wr.getFirstLevelCount() > 0) {
+                    WorkerNode n = wr.getWorkerNode();
 
                     rewards.append("\n")
                             .append("objectId: ").append(n.getObjectId())
                             .append(", managerId: ").append(n.getManagerId())
-                            .append(", saleVolume: ").append(r.getSaleVolume())
-                            .append(", groupSaleVolume: ").append(r.getGroupSaleVolume())
-                            .append(", registrationCount: ").append(r.getRegistrationCount())
-                            .append(", firstLevelCount: ").append(r.getFirstLevelCount());
+                            .append(", saleVolume: ").append(wr.getSaleVolume())
+                            .append(", groupSaleVolume: ").append(wr.getGroupSaleVolume())
+                            .append(", registrationCount: ").append(wr.getRegistrationCount())
+                            .append(", firstLevelCount: ").append(wr.getFirstLevelCount());
+
+                    wr.getRewards().forEach(r -> rewards.append("\n\t")
+                            .append("rewordPoint: ").append(r.getPoint())
+                            .append("rewordType: ").append(r.getType()));
                 }
             }
 

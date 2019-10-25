@@ -2,6 +2,7 @@ package ru.complitex.jedani.worker.entity;
 
 import ru.complitex.domain.entity.Domain;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 public class Reward extends Domain<Reward> {
@@ -26,5 +27,21 @@ public class Reward extends Domain<Reward> {
 
     public Long getWorkerId(){
         return getNumber(WORKER);
+    }
+
+    public void setPoint(BigDecimal point){
+        setDecimal(POINT, point);
+    }
+
+    public BigDecimal getPoint(){
+        return getDecimal(POINT);
+    }
+
+    public Long getType(){
+        return getNumber(TYPE);
+    }
+
+    public void setType(Long type){
+        setNumber(TYPE, type);
     }
 }

@@ -1,8 +1,7 @@
 package ru.complitex.jedani.worker.service;
 
 import ru.complitex.common.util.Dates;
-import ru.complitex.jedani.worker.entity.WorkerReward;
-import ru.complitex.jedani.worker.entity.WorkerRewardTree;
+import ru.complitex.jedani.worker.entity.*;
 
 import javax.inject.Inject;
 import java.io.Serializable;
@@ -20,6 +19,9 @@ public class RewardService implements Serializable {
     @Inject
     private SaleService saleService;
 
+    @Inject
+    private WorkerService workerService;
+
     public WorkerRewardTree calcRewards(){
         WorkerRewardTree tree = new WorkerRewardTree(workerNodeService.getWorkerNodeLevelMap());
 
@@ -27,6 +29,7 @@ public class RewardService implements Serializable {
         calcGroupSaleVolume(tree);
         calcRegistrationCount(tree, Dates.currentDate());
         calcFirstLevelCount(tree);
+        calcPersonalReward(tree, new Date(0));
 
         return tree;
     }
@@ -57,7 +60,42 @@ public class RewardService implements Serializable {
         tree.forEachLevel((l, rl) -> rl.forEach(r -> r.setFirstLevelCount(Long.valueOf(r.getChildRewards().size()))));
     }
 
-    private void calcPersonalReward(WorkerRewardTree tree){
-        //todo calc personal reward
+    private void calcPersonalReward(WorkerRewardTree tree, Date date){
+        saleService.getSales(date).forEach(s -> {
+            if (s.getType() == SaleType.MYCOOK){
+                Worker w = workerService.getWorker(s.getSellerWorkerId());
+
+                boolean mkPremium = saleService.isMkPremiumSaleItem(s.getObjectId());
+                boolean mkTouch = saleService.isMkTouchSaleItem(s.getObjectId());
+
+                Reward r = new Reward();
+
+                r.setType(7L);
+
+                if (w.getMkStatus() == MkStatus.STATUS_NO_MK){
+                    if (mkPremium){
+                        r.setPoint(new BigDecimal("80"));
+                    }else if (mkTouch){
+                        r.setPoint(new BigDecimal("90"));
+                    }
+                }else if (w.getMkStatus() == MkStatus.STATUS_INSTALMENT_MK){ //todo >10%
+                    if (mkPremium){
+                        r.setPoint(new BigDecimal("120"));
+                    }else if (mkTouch){
+                        r.setPoint(new BigDecimal("130"));
+                    }
+                }else if (w.getMkStatus() == MkStatus.STATUS_HAS_MK){ //todo sap
+                    if (mkPremium){
+                        r.setPoint(new BigDecimal("170"));
+                    }else if (mkTouch){
+                        r.setPoint(new BigDecimal("195"));
+                    }
+                }
+
+                if (r.getPoint() != null) {
+                    tree.getWorkerReward(s.getSellerWorkerId()).getRewards().add(r);
+                }
+            }
+        });
     }
 }

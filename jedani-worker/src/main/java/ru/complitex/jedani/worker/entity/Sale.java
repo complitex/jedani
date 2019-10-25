@@ -33,6 +33,7 @@ public class Sale extends Domain<Sale> {
 
     public static final String FILTER_SELLER_WORKER = "sellerWorker";
     public static final String FILTER_REGION_IDS = "regionIds";
+    public static final String FILTER_DATE = "date";
 
     public Sale() {
         super(ENTITY_NAME);

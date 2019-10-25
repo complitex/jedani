@@ -102,4 +102,8 @@ public class WorkerReward {
     public void setFirstLevelCount(Long firstLevelCount) {
         this.firstLevelCount = firstLevelCount;
     }
+
+    public List<Reward> getRewards() {
+        return rewards;
+    }
 }

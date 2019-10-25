@@ -112,6 +112,12 @@ public class Worker extends DomainNode<Worker> {
         setLevel(0L);
     }
 
+    public Worker setStatus(Status status) {
+        super.setStatus(status);
+
+        return this;
+    }
+
     public Long getSubWorkerCount() {
         return subWorkerCount;
     }
@@ -184,11 +190,10 @@ public class Worker extends DomainNode<Worker> {
         return getNumberValuesString(REGIONS);
     }
 
-    public Worker setStatus(Status status) {
-        super.setStatus(status);
-
-        return this;
+    public Long getMkStatus(){
+        return getNumber(MK_STATUS);
     }
+
 
     public Long getWorkerStatus(){
         return getNumber(STATUS);

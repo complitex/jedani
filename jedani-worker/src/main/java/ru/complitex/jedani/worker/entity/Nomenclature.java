@@ -22,6 +22,10 @@ public class Nomenclature extends Domain<Nomenclature> {
         setUseNumberValue(true);
     }
 
+    public String getCode(){
+        return getText(CODE);
+    }
+
     public Long getType(){
         return getNumber(TYPE);
     }
