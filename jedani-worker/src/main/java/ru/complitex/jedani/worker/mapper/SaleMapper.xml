@@ -7,8 +7,8 @@
 
     <sql id="selectSalesWhere">
       <if test="map.sellerWorker != null">
-          and exists(select sa.id from sale_attribute sa on (sa.domain_id = d.id and sa.status = 1)
-            where d.status = 1 and sa.entity_attribute_id = 1 and sa.number = #{map.sellerWorker})
+          and exists(select sa.id from sale_attribute sa
+            where sa.domain_id = d.id and sa.status = 1 and d.status = 1 and sa.entity_attribute_id = 1 and sa.number = #{map.sellerWorker})
       </if>
 
         <if test="map.regionIds != null">
@@ -22,8 +22,8 @@
         </if>
 
         <if test="map.date != null">
-            and exists(select sa.id from sale_attribute sa on (sa.domain_id = d.id and sa.status = 1)
-                where d.status = 1 and sa.entity_attribute_id = 5 and sa.date > #{map.date})
+            and exists(select sa.id from sale_attribute sa on ()
+                where sa.domain_id = d.id and sa.status = 1 and d.status = 1 and sa.entity_attribute_id = 5 and sa.date > #{map.date})
         </if>
     </sql>
 
