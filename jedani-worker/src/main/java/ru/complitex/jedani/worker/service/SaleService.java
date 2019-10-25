@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
+
 /**
  * @author Anatoly A. Ivanov
  * 19.02.2019 20:26
@@ -121,6 +122,7 @@ public class SaleService implements Serializable {
 
     public BigDecimal getSaleVolume(Long sellerWorkerId){
         return domainService.getDomains(Sale.class, FilterWrapper.of(new Sale().setSellerWorkerId(sellerWorkerId))).stream()
-                .reduce(BigDecimal.ZERO, (v, s) -> s.getTotal(), BigDecimal::add);
+                .reduce(BigDecimal.ZERO, (v, s) -> s.getTotal() != null ? s.getTotal() : BigDecimal.ZERO,
+                        BigDecimal::add);
     }
 }

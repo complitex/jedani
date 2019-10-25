@@ -1,14 +1,12 @@
 package ru.complitex.jedani.worker.service;
 
 import ru.complitex.jedani.worker.entity.WorkerReward;
+import ru.complitex.jedani.worker.entity.WorkerRewardTree;
 
 import javax.inject.Inject;
 import java.io.Serializable;
-import java.util.Comparator;
-import java.util.HashMap;
+import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * @author Anatoly A. Ivanov
@@ -21,26 +19,31 @@ public class RewardService implements Serializable {
     @Inject
     private SaleService saleService;
 
-    public Map<Long, List<WorkerReward>> calcRewards(){
-        Map<Long, List<WorkerReward>> map = new HashMap<>();
+    public WorkerRewardTree calcRewards(){
+        WorkerRewardTree tree = new WorkerRewardTree(workerNodeService.getWorkerNodeLevelMap());
 
-        workerNodeService.getWorkerNodeLevelMap().forEach((k, v) -> {
-            map.put(k, v.stream().map(WorkerReward::new).collect(Collectors.toList()));
-        });
+        calcSaleVolume(tree);
+        calcGroupSaleVolume(tree);
 
-        calcSaleVolume(map);
-
-        return map;
+        return tree;
     }
 
-    public Long getTreeDepth(Map<Long, List<WorkerReward>> map){
-        return map.keySet().stream().max(Comparator.naturalOrder()).orElse(-1L);
-    }
-
-    private void calcSaleVolume(Map<Long, List<WorkerReward>> map){
-        map.forEach((k, v) -> {
+    private void calcSaleVolume(WorkerRewardTree tree){
+        tree.forEach((k, v) -> {
             v.forEach(w -> w.setSaleVolume(saleService.getSaleVolume(w.getWorkerNode().getObjectId())));
         });
+    }
+
+    private void calcGroupSaleVolume(WorkerRewardTree tree){
+        for (long l = tree.getTreeDepth(); l > 0 ; l--){
+            List<WorkerReward> list = tree.get(l);
+
+            list.forEach(r -> {
+                r.setGroupSaleVolume(r.getChildRewards().stream()
+                        .reduce(BigDecimal.ZERO, (v, c) -> c.getSaleVolume().add(c.getGroupSaleVolume()),
+                                BigDecimal::add));
+            });
+        }
     }
 
 }

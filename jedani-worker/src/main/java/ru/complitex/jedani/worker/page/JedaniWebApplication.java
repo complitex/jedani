@@ -50,7 +50,7 @@ import ru.complitex.jedani.worker.page.payment.PaymentListPage;
 import ru.complitex.jedani.worker.page.price.PriceListPage;
 import ru.complitex.jedani.worker.page.promotion.PromotionListPage;
 import ru.complitex.jedani.worker.page.resource.*;
-import ru.complitex.jedani.worker.page.reward.RewardCalcPage;
+import ru.complitex.jedani.worker.page.reward.RewardTreePage;
 import ru.complitex.jedani.worker.page.reward.RewardListPage;
 import ru.complitex.jedani.worker.page.sale.SaleDecisionListPage;
 import ru.complitex.jedani.worker.page.sale.SaleListPage;
@@ -133,7 +133,7 @@ public class JedaniWebApplication extends WebApplication{
         mountPage("ranks", RankListPage.class);
         mountPage("reward-types", RewardTypeListPage.class);
         mountPage("rewards", RewardListPage.class);
-        mountPage("rewards_calc", RewardCalcPage.class);
+        mountPage("rewards_tree", RewardTreePage.class);
         mountPage("payments", PaymentListPage.class);
 
         mountPage("error", InternalErrorPage.class);

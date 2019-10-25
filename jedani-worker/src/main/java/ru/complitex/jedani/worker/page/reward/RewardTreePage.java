@@ -4,13 +4,13 @@ import org.apache.wicket.authroles.authorization.strategies.role.annotations.Aut
 import org.apache.wicket.markup.html.basic.Label;
 import ru.complitex.jedani.worker.entity.WorkerNode;
 import ru.complitex.jedani.worker.entity.WorkerReward;
+import ru.complitex.jedani.worker.entity.WorkerRewardTree;
 import ru.complitex.jedani.worker.page.BasePage;
 import ru.complitex.jedani.worker.service.RewardService;
 
 import javax.inject.Inject;
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 
 import static ru.complitex.jedani.worker.security.JedaniRoles.ADMINISTRATORS;
 
@@ -19,24 +19,23 @@ import static ru.complitex.jedani.worker.security.JedaniRoles.ADMINISTRATORS;
  * 23.10.2019 11:15 PM
  */
 @AuthorizeInstantiation({ADMINISTRATORS})
-public class RewardCalcPage extends BasePage {
+public class RewardTreePage extends BasePage {
     @Inject
     private RewardService rewardService;
 
-    public RewardCalcPage() {
-        Map<Long, List<WorkerReward>> map = rewardService.calcRewards();
+    public RewardTreePage() {
+        WorkerRewardTree tree = rewardService.calcRewards();
 
         StringBuilder rewards = new StringBuilder();
 
-        Long treeDepth = rewardService.getTreeDepth(map);
-
-        for (long l = 1; l <= treeDepth; ++l){
-            List<WorkerReward> list = map.get(l);
+        for (long l = 1; l <= tree.getTreeDepth(); ++l){
+            List<WorkerReward> list = tree.get(l);
 
             rewards.append("Level: ").append(l).append("\n");
 
             for (WorkerReward r : list){
-                if ((r.getSaleVolume() != null && r.getSaleVolume().compareTo(BigDecimal.ZERO) > 0) || r.getGroupSaleVolume() != null) {
+                if ((r.getSaleVolume() != null && r.getSaleVolume().compareTo(BigDecimal.ZERO) > 0) ||
+                        r.getGroupSaleVolume() != null && r.getGroupSaleVolume().compareTo(BigDecimal.ZERO) > 0) {
                     WorkerNode n = r.getWorkerNode();
 
                     rewards.append("\n")

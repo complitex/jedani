@@ -1,6 +1,8 @@
 package ru.complitex.jedani.worker.entity;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Anatoly A. Ivanov
@@ -9,11 +11,13 @@ import java.math.BigDecimal;
 public class WorkerReward {
     private WorkerNode workerNode;
 
-    private BigDecimal saleVolume;
-    private BigDecimal paymentVolume;
+    private List<WorkerReward> childRewards = new ArrayList<>();
 
-    private BigDecimal groupSaleVolume;
-    private BigDecimal groupPaymentVolume;
+    private BigDecimal saleVolume = BigDecimal.ZERO;
+    private BigDecimal paymentVolume = BigDecimal.ZERO;
+
+    private BigDecimal groupSaleVolume = BigDecimal.ZERO;
+    private BigDecimal groupPaymentVolume = BigDecimal.ZERO;
 
     public WorkerReward(WorkerNode workerNode) {
         this.workerNode = workerNode;
@@ -25,6 +29,14 @@ public class WorkerReward {
 
     public void setWorkerNode(WorkerNode workerNode) {
         this.workerNode = workerNode;
+    }
+
+    public List<WorkerReward> getChildRewards() {
+        return childRewards;
+    }
+
+    public void setChildRewards(List<WorkerReward> childRewards) {
+        this.childRewards = childRewards;
     }
 
     public BigDecimal getSaleVolume() {
