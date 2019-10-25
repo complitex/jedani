@@ -23,6 +23,7 @@ public class WorkerReward {
 
     private boolean manager;
     private Long registrationCount = 0L;
+    private Long firstLevelCount = 0L;
 
     public WorkerReward(WorkerNode workerNode) {
         this.workerNode = workerNode;
@@ -90,5 +91,13 @@ public class WorkerReward {
 
     public void setRegistrationCount(Long registrationCount) {
         this.registrationCount = registrationCount;
+    }
+
+    public Long getFirstLevelCount() {
+        return firstLevelCount;
+    }
+
+    public void setFirstLevelCount(Long firstLevelCount) {
+        this.firstLevelCount = firstLevelCount;
     }
 }

@@ -7,7 +7,6 @@ import ru.complitex.jedani.worker.entity.WorkerRewardTree;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -28,6 +27,7 @@ public class RewardService implements Serializable {
         calcSaleVolume(tree);
         calcGroupSaleVolume(tree);
         calcRegistrationCount(tree, Dates.currentDate());
+        calcFirstLevelCount(tree);
 
         return tree;
     }
@@ -62,25 +62,11 @@ public class RewardService implements Serializable {
         return Dates.isSameMonth(workerReward.getWorkerNode().getRegistrationDate(), date);
     }
 
-    private void calcCreatedCount(WorkerReward workerReward){
-        workerReward.getChildRewards().forEach(this::calcCreatedCount);
+    private void calcFirstLevelCount(WorkerRewardTree tree){
+        for (long l = tree.getTreeDepth(); l > 0 ; l--){
+            List<WorkerReward> list = tree.get(l);
 
-
-
-
-    }
-
-    private List<WorkerReward> getPersonalGroup(WorkerReward workerReward){
-        List<WorkerReward> list = new ArrayList<>();
-
-        workerReward.getChildRewards().stream()
-                .filter(r -> !r.isManager())
-                .forEach(r -> {
-                    list.add(r);
-
-                    list.addAll(getPersonalGroup(r));
-                });
-
-        return list;
+            list.forEach(r -> r.setFirstLevelCount(Long.valueOf(r.getChildRewards().size())));
+        }
     }
 }
