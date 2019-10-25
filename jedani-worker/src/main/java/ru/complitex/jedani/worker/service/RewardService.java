@@ -40,7 +40,7 @@ public class RewardService implements Serializable {
 
             list.forEach(r -> {
                 r.setGroupSaleVolume(r.getChildRewards().stream()
-                        .reduce(BigDecimal.ZERO, (v, c) -> c.getSaleVolume().add(c.getGroupSaleVolume()),
+                        .reduce(BigDecimal.ZERO, (v, c) -> v.add(c.getSaleVolume().add(c.getGroupSaleVolume())),
                                 BigDecimal::add));
             });
         }
