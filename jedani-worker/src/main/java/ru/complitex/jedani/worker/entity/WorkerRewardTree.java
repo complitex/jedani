@@ -7,15 +7,14 @@ import java.util.function.BiConsumer;
  * @author Anatoly A. Ivanov
  * 25.10.2019 9:50 PM
  */
-public class WorkerRewardTree extends HashMap<Long, List<WorkerReward>> {
+public class WorkerRewardTree {
     private Long treeDepth;
 
-    private WorkerReward rootWorkerReward;
+    private Map<Long, WorkerReward> idMap = new HashMap<>();
+    private Map<Long, List<WorkerReward>> levelMap = new HashMap<>();
 
-    public WorkerRewardTree(Map<Long, List<WorkerNode>> workerNodeMap, Long rootWorkerId) {
+    public WorkerRewardTree(Map<Long, List<WorkerNode>> workerNodeMap) {
         treeDepth = workerNodeMap.keySet().stream().max(Comparator.naturalOrder()).orElse(-1L);
-
-        Map<Long, WorkerReward> map = new HashMap<>();
 
         for (long l = treeDepth; l > 0; l--){
             List<WorkerReward> list = new ArrayList<>();
@@ -25,13 +24,13 @@ public class WorkerRewardTree extends HashMap<Long, List<WorkerReward>> {
 
                 list.add(r);
 
-                map.put(n.getObjectId(), r);
+                idMap.put(n.getObjectId(), r);
 
                 r.getWorkerNode().getChildNodes()
-                        .forEach(c -> r.getChildRewards().add(map.get(c.getObjectId())));
+                        .forEach(c -> r.getChildRewards().add(idMap.get(c.getObjectId())));
             });
 
-            put(l, list);
+            levelMap.put(l, list);
         }
     }
 
@@ -39,13 +38,17 @@ public class WorkerRewardTree extends HashMap<Long, List<WorkerReward>> {
         return treeDepth;
     }
 
-    public WorkerReward getRootWorkerReward() {
-        return rootWorkerReward;
+    public WorkerReward getWorkerReward(Long workerId){
+        return idMap.get(workerId);
+    }
+
+    public List<WorkerReward> getWorkerRewards(Long level){
+        return levelMap.get(level);
     }
 
     public void forEachLevel(BiConsumer<Long, List<WorkerReward>> action){
         for (long l = treeDepth; l > 0 ; l--){
-            action.accept(l, get(l));
+            action.accept(l, levelMap.get(l));
         }
     }
 }

@@ -25,6 +25,8 @@ public class WorkerReward {
     private Long registrationCount = 0L;
     private Long firstLevelCount = 0L;
 
+    private List<Reward> rewards = new ArrayList<>();
+
     public WorkerReward(WorkerNode workerNode) {
         this.workerNode = workerNode;
     }

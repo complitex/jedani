@@ -21,7 +21,7 @@ public class RewardService implements Serializable {
     private SaleService saleService;
 
     public WorkerRewardTree calcRewards(){
-        WorkerRewardTree tree = new WorkerRewardTree(workerNodeService.getWorkerNodeLevelMap(), 2L);
+        WorkerRewardTree tree = new WorkerRewardTree(workerNodeService.getWorkerNodeLevelMap());
 
         calcSaleVolume(tree);
         calcGroupSaleVolume(tree);
@@ -32,8 +32,8 @@ public class RewardService implements Serializable {
     }
 
     private void calcSaleVolume(WorkerRewardTree tree){
-        tree.forEach((k, v) -> {
-            v.forEach(w -> w.setSaleVolume(saleService.getSaleVolume(w.getWorkerNode().getObjectId())));
+        tree.forEachLevel((l, rl) -> {
+            rl.forEach(w -> w.setSaleVolume(saleService.getSaleVolume(w.getWorkerNode().getObjectId())));
         });
     }
 
@@ -55,5 +55,9 @@ public class RewardService implements Serializable {
 
     private void calcFirstLevelCount(WorkerRewardTree tree){
         tree.forEachLevel((l, rl) -> rl.forEach(r -> r.setFirstLevelCount(Long.valueOf(r.getChildRewards().size()))));
+    }
+
+    private void calcPersonalReward(WorkerRewardTree tree){
+        //todo calc personal reward
     }
 }

@@ -29,7 +29,7 @@ public class RewardTreePage extends BasePage {
         StringBuilder rewards = new StringBuilder();
 
         for (long l = 1; l <= tree.getTreeDepth(); ++l){
-            List<WorkerReward> list = tree.get(l);
+            List<WorkerReward> list = tree.getWorkerRewards(l);
 
             rewards.append("Level: ").append(l).append("\n");
 
