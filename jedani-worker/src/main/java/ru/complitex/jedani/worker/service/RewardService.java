@@ -72,6 +72,7 @@ public class RewardService implements Serializable {
                     Reward r = new Reward();
 
                     r.setType(7L);
+                    r.setSaleId(s.getObjectId());
 
                     if (w.getMkStatus() == MkStatus.STATUS_NO_MK){
                         if (mkPremium){

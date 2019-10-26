@@ -49,7 +49,8 @@ public class RewardTreePage extends BasePage {
                             .append(", firstLevelCount: ").append(wr.getFirstLevelCount());
 
                     wr.getRewards().forEach(r -> rewards.append("\n\t")
-                            .append("rewordPoint: ").append(r.getPoint())
+                            .append("saleId: ").append(r.getSaleId())
+                            .append(", rewordPoint: ").append(r.getPoint())
                             .append(", rewordType: ").append(r.getType()));
                 }
             }

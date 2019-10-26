@@ -15,6 +15,8 @@ public class Reward extends Domain<Reward> {
     public static final long RANK = 5;
     public static final long DETAIL = 6;
 
+    private Long saleId;
+
     public Reward() {
         super(ENTITY_NAME);
 
@@ -43,5 +45,13 @@ public class Reward extends Domain<Reward> {
 
     public void setType(Long type){
         setNumber(TYPE, type);
+    }
+
+    public Long getSaleId() {
+        return saleId;
+    }
+
+    public void setSaleId(Long saleId) {
+        this.saleId = saleId;
     }
 }
