@@ -285,6 +285,9 @@ INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `tex
 INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (20, 21, 5);
 INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (20, 21, 1, 'Пользователь'), (20, 21, 2, 'Пользователь');
 
+CALL createEntityAttributeWithReference(20, 22, 11, 38, 'Ранг', 'Ранг');
+CALL createEntityAttribute(20, 23, 4, 'Баллы', 'Бали');
+
 INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (20, 100, 0);
 INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (20, 101, 0);
 INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (20, 102, 0);
@@ -620,7 +623,11 @@ INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `tex
 INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`, `reference_id`) VALUES (32, 4, 11, 1);
 INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (32, 4, 1, 'Страна'), (32, 4, 2, 'Країна');
 
+/* Rule */
+
 CALL createEntity(33, 'rule', 'Правило', 'Правило');
+
+/* Rule Condition */
 
 CALL createEntity(34, 'rule_condition', 'Условие правила', 'Умова правила');
 CALL createEntityAttribute(34, 1, 5, 'Индекс', 'Індекс');
@@ -629,12 +636,16 @@ CALL createEntityAttribute(34, 3, 5, 'Тип значения', 'Тип знач
 CALL createEntityAttribute(34, 4, 5, 'Компаратор', 'Компаратор');
 CALL createEntityAttribute(34, 5, 2, 'Условие', 'Умова');
 
+/* Rule Action */
+
 CALL createEntity(35, 'rule_action', 'Действие правила', 'Дії правила');
 CALL createEntityAttribute(35, 1, 5, 'Индекс', 'Індекс');
 CALL createEntityAttribute(35, 2, 5, 'Тип действия', 'Тип дії');
 CALL createEntityAttribute(35, 3, 5, 'Тип значения', 'Тип значення');
 CALL createEntityAttribute(35, 4, 5, 'Компаратор', 'Компаратор');
 CALL createEntityAttribute(35, 5, 2, 'Действие', 'Дія');
+
+/* Sale Decision */
 
 CALL createEntity(36, 'sale_decision', 'Условие продаж', 'Умова продажів');
 CALL createEntityAttribute(36, 1, 2, 'Название', 'Назва');
@@ -644,13 +655,71 @@ CALL createEntityAttributeWithReference(36, 4, 11, 1, 'Страна', 'Краї�
 CALL createEntityAttributeWithReference(36, 5, 10, 23, 'Товары', 'Товари');
 CALL createEntityAttribute(36, 6, 5, 'Тип', 'Тип');
 
+/* Card */
+
 CALL createEntity(37, 'card', 'Карта', 'Карта');
 CALL createEntityAttribute(37, 1, 2, 'Номер карты', 'Номер картки');
 CALL createEntityAttribute(37, 2, 6, 'Дата создания', 'Дата створення');
 CALL createEntityAttributeWithReference(37, 3, 11, 20, 'Сотрудник', 'Сотрудник');
 CALL createEntityAttribute(37, 4, 5, 'Индекс', 'Індекс');
 
+/* Rank */
+
+CALL createEntity(38, 'rank', 'Ранг', 'Ранг');
+CALL createEntityAttribute(38, 1, 0, 'Название', 'Название');
+
+CALL insertDomainText(1, 'rank', 'Рекомендующий гостей', 'Рекомендує гостей');
+CALL insertDomainText(2, 'rank', 'Профконсультант', 'Профконсультант');
+CALL insertDomainText(3, 'rank', 'Менеджер ассистент', 'Менеджер асистент');
+CALL insertDomainText(4, 'rank', 'Тим менеджер', 'Тім менеджер');
+CALL insertDomainText(5, 'rank', 'Ассистент сеньора', 'Асистент сеньйора');
+CALL insertDomainText(6, 'rank', 'Сеньор менеджер', 'Сеньйор менеджер');
+CALL insertDomainText(7, 'rank', 'Дивизион менеджер', 'Дивізіон менеджер');
+CALL insertDomainText(8, 'rank', 'Ареа менеджер', 'Ареа менеджер');
+CALL insertDomainText(9, 'rank', 'Региональный менеджер', 'Регіональний менеджер');
+CALL insertDomainText(10, 'rank', 'Серебряный директор', 'Срібний директор');
+CALL insertDomainText(11, 'rank', 'Золотой  директор', 'Золотий директор');
+CALL insertDomainText(12, 'rank', 'Платиновый  директор', 'Платиновий директор');
+
+/* Reward Type */
+
+CALL createEntity(39, 'reward_type', 'Тип вознаграждения', 'Тип винагорода');
+CALL createEntityAttribute(39, 1, 0, 'Название', 'Название');
+
+CALL insertDomainText(1, 'reward_type', 'Покупка Майкук', 'Купівля Майкук');
+CALL insertDomainText(2, 'reward_type', 'Покупка БА', 'Купівля БА');
+CALL insertDomainText(3, 'reward_type', 'Регистрация ПК', 'Реєстрація ПК');
+CALL insertDomainText(4, 'reward_type', 'Личная продажа за месяц Майкук', 'Особистий продаж за місяць Майкук');
+CALL insertDomainText(5, 'reward_type', 'Личная продажа за месяц БА', 'Особистий продаж за місяць БА');
+CALL insertDomainText(6, 'reward_type', 'Личный финансовый оборот', 'Особистий фінансовий оборот');
+CALL insertDomainText(7, 'reward_type', 'Личная продажа', 'Особистий продаж');
+CALL insertDomainText(8, 'reward_type', 'Кулинарный практикум', 'Кулінарний практикум');
+CALL insertDomainText(9, 'reward_type', 'Менеджерский Майкук бонус', 'Менеджерський Майкук бонус');
+
+/* Reward */
+
+CALL createEntity(40, 'reward', 'Вознагражднение', 'Винагорода');
+CALL createEntityAttribute(40, 1, 6, 'Дата', 'Дата');
+CALL createEntityAttributeWithReference(40, 2, 11, 20, 'Сотрудник', 'Співробітник');
+CALL createEntityAttribute(40, 3, 4, 'Баллы', 'Бали');
+CALL createEntityAttributeWithReference(40, 4, 11, 39, 'Тип', 'Тип');
+CALL createEntityAttributeWithReference(40, 5, 11, 38, 'Ранг', 'Ранг');
+CALL createEntityAttribute(40, 6, 2, 'Комментарий', 'Коментар');
+CALL createEntityAttributeWithReference(40, 7, 11, 28, 'Продажа', 'Продаж');
+
+/* Payment */
+
+CALL createEntity(41, 'payment', 'Оплата', 'Оплата');
+CALL createEntityAttributeWithReference(41, 1, 11, 20, 'Профконсультант', 'Профконсультант');
+CALL createEntityAttribute(41, 2, 6, 'Дата', 'Дата');
+CALL createEntityAttribute(41, 3, 6, 'Начало периода', 'Початок періоду');
+CALL createEntityAttribute(41, 4, 6, 'Окончание периода', 'Закінчення періоду');
+CALL createEntityAttribute(41, 5, 4, 'Сумма (в локальной валюте)', 'Сума (в локальній валюті)');
+CALL createEntityAttribute(41, 6, 4, 'Курс балла', 'Курс балла');
+CALL createEntityAttribute(41, 7, 4, 'Сумма (в баллах)', 'Сума (в балах)');
+CALL createEntityAttribute(41, 8, 2, 'Номер ДКП', 'Номер ДКП');
+CALL createEntityAttributeWithReference(41, 9, 11, 28, 'Продажа', 'Продаж');
 
 -- Update
 
-INSERT INTO `update` (`version`) VALUE ('20190919_1.0.33');
+INSERT INTO `update` (`version`) VALUE ('20191028_1.0.35');

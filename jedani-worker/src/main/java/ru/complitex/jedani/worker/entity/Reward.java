@@ -14,8 +14,7 @@ public class Reward extends Domain<Reward> {
     public static final long TYPE = 4;
     public static final long RANK = 5;
     public static final long DETAIL = 6;
-
-    private Long saleId;
+    public static final long SALE = 7;
 
     public Reward() {
         super(ENTITY_NAME);
@@ -29,6 +28,10 @@ public class Reward extends Domain<Reward> {
 
     public Long getWorkerId(){
         return getNumber(WORKER);
+    }
+
+    public void setWorkerId(Long workerId){
+        setNumber(WORKER, workerId);
     }
 
     public void setPoint(BigDecimal point){
@@ -48,10 +51,12 @@ public class Reward extends Domain<Reward> {
     }
 
     public Long getSaleId() {
-        return saleId;
+        return getNumber(SALE);
     }
 
-    public void setSaleId(Long saleId) {
-        this.saleId = saleId;
+    public Reward setSaleId(Long saleId) {
+        setNumber(SALE, saleId);
+
+        return this;
     }
 }

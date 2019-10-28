@@ -86,8 +86,10 @@ public class Payment extends Domain<Payment> {
         return getNumber(SALE);
     }
 
-    public void setSaleId(Long saleId){
+    public Payment setSaleId(Long saleId){
         setNumber(SALE, saleId);
+
+        return this;
     }
 
 }
