@@ -48,6 +48,8 @@ public class RewardService implements Serializable {
         calcSaleVolume(tree, month);
         calcGroupSaleVolume(tree, month);
 
+        calcPaymentVolume(tree, month);
+
         calcRegistrationCount(tree, Dates.currentDate());
         calcFirstLevelCount(tree);
         calcPersonalReward(tree, month);
@@ -57,7 +59,7 @@ public class RewardService implements Serializable {
 
     private void calcSaleVolume(WorkerRewardTree tree, Date date){
         tree.forEachLevel((l, rl) -> {
-            rl.forEach(w -> w.setSaleVolume(saleService.getSaleVolume(w.getWorkerNode().getObjectId())));
+            rl.forEach(r -> r.setSaleVolume(saleService.getSaleVolume(r.getWorkerNode().getObjectId())));
         });
     }
 
@@ -68,7 +70,9 @@ public class RewardService implements Serializable {
     }
 
     private void calcPaymentVolume(WorkerRewardTree tree, Date date){
-
+        tree.forEachLevel((l, rl) -> {
+            rl.forEach(r -> r.setPaymentVolume(paymentService.getPaymentsVolumeBySellerWorkerId(r.getWorkerNode().getObjectId())));
+        });
     }
 
     private void calcRegistrationCount(WorkerRewardTree tree, Date date){
@@ -163,7 +167,7 @@ public class RewardService implements Serializable {
             if (reward.getPoint() != null && s.getTotal() != null) {
                 BigDecimal rewardsTotal = getRewardsTotalBySaleId(s.getObjectId());
 
-                BigDecimal paidInterest  = paymentService.getPaymentsTotalBySaleId(s.getObjectId())
+                BigDecimal paidInterest  = paymentService.getPaymentsVolumeBySaleId(s.getObjectId())
                         .divide(s.getTotal(), 2, BigDecimal.ROUND_HALF_EVEN);
 
                 BigDecimal point = BigDecimal.ZERO;

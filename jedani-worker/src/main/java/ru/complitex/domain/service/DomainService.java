@@ -1,6 +1,5 @@
 package ru.complitex.domain.service;
 
-import org.mybatis.cdi.Transactional;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.mapper.AttributeMapper;
@@ -83,7 +82,6 @@ public class DomainService implements Serializable {
         return getDomainsByParentId(domainClass, parentId, null);
     }
 
-    @Transactional
     public void save(Domain domain){
         if (domain.getObjectId() != null){
             domainMapper.updateDomain(domain);
@@ -92,12 +90,10 @@ public class DomainService implements Serializable {
         }
     }
 
-    @Transactional
     public void insertDomain(Domain domain){
         domainMapper.insertDomain(domain);
     }
 
-    @Transactional
     public void updateDomain(Domain domain){
         domainMapper.updateDomain(domain);
     }

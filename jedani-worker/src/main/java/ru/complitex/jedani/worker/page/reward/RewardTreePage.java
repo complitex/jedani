@@ -9,9 +9,9 @@ import ru.complitex.jedani.worker.page.BasePage;
 import ru.complitex.jedani.worker.service.RewardService;
 
 import javax.inject.Inject;
-import java.math.BigDecimal;
 import java.util.List;
 
+import static java.math.BigDecimal.ZERO;
 import static ru.complitex.jedani.worker.security.JedaniRoles.ADMINISTRATORS;
 
 /**
@@ -34,19 +34,32 @@ public class RewardTreePage extends BasePage {
             rewards.append("Level: ").append(l).append("\n");
 
             for (WorkerReward wr : list){
-                if ((wr.getSaleVolume() != null && wr.getSaleVolume().compareTo(BigDecimal.ZERO) > 0) ||
-                        wr.getGroupSaleVolume() != null && wr.getGroupSaleVolume().compareTo(BigDecimal.ZERO) > 0 ||
+                if ((wr.getSaleVolume().compareTo(ZERO) > 0) ||
+                        wr.getGroupSaleVolume().compareTo(ZERO) > 0 ||
+                        wr.getPaymentVolume().compareTo(ZERO) > 0 ||
                         wr.getRegistrationCount() > 0 ||
                         wr.getFirstLevelCount() > 0) {
                     WorkerNode n = wr.getWorkerNode();
 
                     rewards.append("\n")
                             .append("objectId: ").append(n.getObjectId())
-                            .append(", managerId: ").append(n.getManagerId())
-                            .append(", saleVolume: ").append(wr.getSaleVolume())
-                            .append(", groupSaleVolume: ").append(wr.getGroupSaleVolume())
-                            .append(", registrationCount: ").append(wr.getRegistrationCount())
-                            .append(", firstLevelCount: ").append(wr.getFirstLevelCount());
+                            .append(", managerId: ").append(n.getManagerId());
+
+                    if (wr.getSaleVolume().compareTo(ZERO) > 0){
+                        rewards.append(", saleVolume: ").append(wr.getSaleVolume());
+                    }
+                    if (wr.getGroupSaleVolume().compareTo(ZERO) > 0){
+                        rewards.append(", groupSaleVolume: ").append(wr.getGroupSaleVolume());
+                    }
+                    if (wr.getPaymentVolume().compareTo(ZERO) > 0){
+                        rewards.append(", paymentVolume: ").append(wr.getPaymentVolume());
+                    }
+                    if (wr.getRegistrationCount() > 0){
+                        rewards.append(", registrationCount: ").append(wr.getRegistrationCount());
+                    }
+                    if (wr.getFirstLevelCount() > 0){
+                        rewards.append(", firstLevelCount: ").append(wr.getFirstLevelCount());
+                    }
 
                     wr.getRewards().forEach(r -> rewards.append("\n\t")
                             .append("saleId: ").append(r.getSaleId())

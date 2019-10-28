@@ -16,12 +16,14 @@ import de.agilecoders.wicket.extensions.markup.html.bootstrap.references.Bootstr
 import de.agilecoders.wicket.themes.markup.html.google.GoogleCssReference;
 import de.agilecoders.wicket.themes.markup.html.google.GoogleTheme;
 import de.agilecoders.wicket.webjars.request.resource.WebjarsCssResourceReference;
+import org.apache.wicket.Component;
 import org.apache.wicket.ConverterLocator;
 import org.apache.wicket.Page;
 import org.apache.wicket.Session;
 import org.apache.wicket.ajax.WicketAjaxJQueryResourceReference;
 import org.apache.wicket.cdi.CdiConfiguration;
 import org.apache.wicket.cdi.ConversationPropagation;
+import org.apache.wicket.cdi.NonContextual;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteBehavior;
 import org.apache.wicket.markup.html.pages.AccessDeniedPage;
 import org.apache.wicket.markup.html.pages.InternalErrorPage;
@@ -33,6 +35,9 @@ import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
 import org.apache.wicket.request.resource.SharedResourceReference;
 import org.apache.wicket.resource.JQueryResourceReference;
+import org.apache.wicket.serialize.java.JavaSerializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.complitex.address.page.CityListPage;
 import ru.complitex.address.page.CountryListPage;
 import ru.complitex.address.page.RegionListPage;
@@ -50,8 +55,8 @@ import ru.complitex.jedani.worker.page.payment.PaymentListPage;
 import ru.complitex.jedani.worker.page.price.PriceListPage;
 import ru.complitex.jedani.worker.page.promotion.PromotionListPage;
 import ru.complitex.jedani.worker.page.resource.*;
-import ru.complitex.jedani.worker.page.reward.RewardTreePage;
 import ru.complitex.jedani.worker.page.reward.RewardListPage;
+import ru.complitex.jedani.worker.page.reward.RewardTreePage;
 import ru.complitex.jedani.worker.page.sale.SaleDecisionListPage;
 import ru.complitex.jedani.worker.page.sale.SaleListPage;
 import ru.complitex.jedani.worker.page.storage.NomenclatureListPage;
@@ -65,6 +70,8 @@ import ru.complitex.name.page.FirstNameListPage;
 import ru.complitex.name.page.LastNameListPage;
 import ru.complitex.name.page.MiddleNameListPage;
 
+import javax.inject.Inject;
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 
 /**
@@ -72,6 +79,8 @@ import java.math.BigDecimal;
  * 21.11.2017 15:04
  */
 public class JedaniWebApplication extends WebApplication{
+    private Logger log = LoggerFactory.getLogger(JedaniWebApplication.class);
+
     public Class<? extends Page> getHomePage() {
         return HomePage.class;
     }
@@ -79,6 +88,51 @@ public class JedaniWebApplication extends WebApplication{
     @Override
     protected void init() {
         new CdiConfiguration().setPropagation(ConversationPropagation.ALL).configure(this);
+
+        getStoreSettings().setInmemoryCacheSize(1000);
+
+        getFrameworkSettings().setSerializer(new JavaSerializer(getApplicationKey()){
+            @Override
+            public Object deserialize(byte[] data) {
+                Object o = super.deserialize(data);
+
+                NonContextual.of(o).inject(o);
+
+                return o;
+            }
+
+            @Override
+            public byte[] serialize(Object object) {
+                Object o = super.deserialize(super.serialize(object));
+
+                try {
+                    clearInject(o.getClass(), o);
+                } catch (Exception e) {
+                    log.error("serialize error", e);
+                }
+
+                return super.serialize(o);
+            }
+
+            private void clearInject(Class<?> _class, Object object) throws IllegalAccessException {
+                for (Field field : _class.getDeclaredFields()){
+                    if (field.getAnnotation(Inject.class) != null){
+                        field.setAccessible(true);
+                        field.set(object, null);
+                    }
+
+                    if (field.getType().getName().contains("ru.complitex.jedani") &&
+                            Component.class.isAssignableFrom(field.getType())){
+                        field.setAccessible(true);
+                        clearInject(field.getType(), field.get(object));
+                    }
+                }
+
+                if (_class.getSuperclass() != null){
+                    clearInject(_class.getSuperclass(), object);
+                }
+            }
+        });
 
         configureBootstrap();
         configureMountPage();

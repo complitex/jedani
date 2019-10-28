@@ -14,8 +14,8 @@ import java.io.IOException;
  * 22.11.2017 15:12
  */
 public class SqlSessionFactoryProducer {
-    @ApplicationScoped
     @Produces
+    @ApplicationScoped
     @SessionFactoryProvider
     public SqlSessionFactory produceFactory() throws IOException {
         return new SqlSessionFactoryBuilder().build(Resources.getResourceAsStream("mybatis-config.xml"));

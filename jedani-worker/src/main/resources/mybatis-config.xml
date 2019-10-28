@@ -42,5 +42,6 @@
         <mapper resource="ru/complitex/jedani/worker/mapper/SaleItemMapper.xml"/>
         <mapper resource="ru/complitex/jedani/worker/mapper/PriceMapper.xml"/>
         <mapper resource="ru/complitex/jedani/worker/mapper/SaleDecisionMapper.xml"/>
+        <mapper resource="ru/complitex/jedani/worker/mapper/PaymentMapper.xml"/>
     </mappers>
 </configuration>

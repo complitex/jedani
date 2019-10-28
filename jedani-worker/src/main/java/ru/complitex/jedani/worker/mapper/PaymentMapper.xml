@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ru.complitex.jedani.worker.mapper.PaymentMapper">
+    <resultMap id="paymentResultMap" type="ru.complitex.jedani.worker.entity.Payment"
+               extends="ru.complitex.domain.mapper.DomainMapper.domainResultMapJoin">
+    </resultMap>
+
+    <sql id="selectPaymentsFrom">
+        <if test="map.sellerWorkerId != null">
+            left join payment_attribute pa_s on pa_s.domain_id = d.id and pa_s.entity_attribute_id = 9 and pa_s.status = 1
+        </if>
+    </sql>
+
+    <sql id="selectPaymentsWhere">
+        <if test="map.sellerWorkerId != null">
+            and exists(select s.id from sale s
+                left join sale_attribute sa on sa.domain_id = s.id and sa.entity_attribute_id = 1 and sa.status = 1
+                where s.status = 1 and s.object_id = pa_s.number and sa.number = #{map.sellerWorkerId})
+        </if>
+    </sql>
+    
+    <!--suppress SqlResolve -->
+    <select id="selectPayments" parameterType="ru.complitex.common.entity.FilterWrapper" resultMap="paymentResultMap">
+        select d.*, '${object.entityName}' entity_name,
+          <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsSelect"/>
+        from (
+          select dd.d_id dd_id
+        from (
+            select d.id d_id
+                <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFrom"/>
+                <include refid="selectPaymentsFrom"/>
+                <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromFilter"/>
+                <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromSort"/>
+                <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsWhere"/>
+                <include refid="selectPaymentsWhere"/>
+                group by d.id
+                <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsOrderSort"/>                
+            ) dd
+            ${limit}
+        ) o
+        left join `payment` d on d.id = o.dd_id
+        left join payment_attribute a on a.domain_id = d.id and a.status = 1
+        left join payment_value v on v.attribute_id = a.id
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromSort"/>
+        group by d.id, a.id, v.id
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsOrderSort"/>
+    </select>
+
+    <!--suppress SqlResolve -->
+    <select id="selectPaymentsCount" parameterType="ru.complitex.common.entity.FilterWrapper" resultType="long">
+        select count(distinct t.object_id) from (select d.object_id
+            <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFrom"/>
+            <include refid="selectPaymentsFrom"/>
+            <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromFilter"/>
+            <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsWhere"/>
+            <include refid="selectPaymentsWhere"/>
+        ) t
+    </select>
+</mapper>
