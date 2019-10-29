@@ -4,6 +4,7 @@ import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.DateTextField
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.DateTextFieldConfig;
 import org.apache.wicket.Component;
 import org.apache.wicket.behavior.AttributeAppender;
+import org.apache.wicket.cdi.NonContextual;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.repeater.Item;
@@ -24,6 +25,7 @@ import ru.complitex.domain.service.EntityService;
 import ru.complitex.domain.util.Attributes;
 
 import javax.inject.Inject;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -34,14 +36,14 @@ import java.util.stream.Collectors;
  * @author Anatoly A. Ivanov
  * 19.12.2017 7:55
  */
-public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
+public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> implements Serializable {
     private static Logger log = LoggerFactory.getLogger(DomainColumn.class);
 
     @Inject
-    private EntityService entityService;
+    private transient EntityService entityService;
 
     @Inject
-    private DomainService domainService;
+    private transient DomainService domainService;
 
     private EntityAttribute entityAttribute;
 
@@ -57,6 +59,22 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
         super(displayModel != null ? displayModel : displayModel(entityAttribute), sortProperty(entityAttribute));
 
         this.entityAttribute = entityAttribute;
+    }
+
+    public EntityService getEntityService() {
+        if (entityService == null){
+            NonContextual.of(this).inject(this);
+        }
+
+        return entityService;
+    }
+
+    public DomainService getDomainService() {
+        if (entityService == null){
+            NonContextual.of(this).inject(this);
+        }
+
+        return domainService;
     }
 
     @Override
@@ -92,7 +110,7 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
     @Override
     public void populateItem(Item<ICellPopulator<T>> cellItem, String componentId, IModel<T> rowModel) {
         if (loadReference){
-            entityService.loadReference(entityAttribute);
+            getEntityService().loadReference(entityAttribute);
 
             loadReference = false;
         }
@@ -151,7 +169,7 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
 
                         text = list.stream()
                                 .map(id -> {
-                                    Domain domain = domainService.getDomain(referenceEntityAttribute.getEntityName(), id);
+                                    Domain domain = getDomainService().getDomain(referenceEntityAttribute.getEntityName(), id);
 
                                     String prefix = "";
 
@@ -161,7 +179,7 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
                                         if (prefixDomainId != null && prefixEntityAttribute.hasReferenceEntityAttributes()) {
                                             EntityAttribute ea = prefixEntityAttribute.getReferenceEntityAttributes().get(0);
 
-                                            Domain prefixDomain = domainService.getDomain(ea.getEntityName(), prefixDomainId);
+                                            Domain prefixDomain = getDomainService().getDomain(ea.getEntityName(), prefixDomainId);
 
                                             prefix = prefixDomain.getTextValue(ea.getEntityAttributeId());
 
@@ -199,7 +217,7 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> {
 
     protected String displayEntity(EntityAttribute entityAttribute, Long objectId){
         if (entityAttribute.getReferenceId() != null) {
-            Domain refDomain = domainService.getDomainRef(entityAttribute.getReferenceId(), objectId);
+            Domain refDomain = getDomainService().getDomainRef(entityAttribute.getReferenceId(), objectId);
 
             if (refDomain != null){
                 if (entityAttribute.hasReferenceEntityAttributes()) {

@@ -96,7 +96,11 @@ public class JedaniWebApplication extends WebApplication{
             public Object deserialize(byte[] data) {
                 Object o = super.deserialize(data);
 
-                NonContextual.of(o).inject(o);
+                try {
+                    inject(o);
+                } catch (Exception e) {
+                    log.error("deserialize error", e);
+                }
 
                 return o;
             }
@@ -114,7 +118,28 @@ public class JedaniWebApplication extends WebApplication{
                 return super.serialize(o);
             }
 
+            private void inject(Object object) throws IllegalAccessException {
+                if (object == null){
+                    return;
+                }
+
+                NonContextual.of(object).inject(object);
+
+                for (Field field : object.getClass().getDeclaredFields()){
+                    if (field.getType().getName().contains("ru.complitex.jedani") &&
+                            Component.class.isAssignableFrom(field.getType()) &&
+                            !field.getName().contains("$")){
+                        field.setAccessible(true);
+                        inject(field.get(object));
+                    }
+                }
+            }
+
             private void clearInject(Class<?> _class, Object object) throws IllegalAccessException {
+                if (object == null){
+                    return;
+                }
+
                 for (Field field : _class.getDeclaredFields()){
                     if (field.getAnnotation(Inject.class) != null){
                         field.setAccessible(true);
@@ -122,7 +147,8 @@ public class JedaniWebApplication extends WebApplication{
                     }
 
                     if (field.getType().getName().contains("ru.complitex.jedani") &&
-                            Component.class.isAssignableFrom(field.getType())){
+                            Component.class.isAssignableFrom(field.getType()) &&
+                            !field.getName().contains("$")){
                         field.setAccessible(true);
                         clearInject(field.getType(), field.get(object));
                     }
