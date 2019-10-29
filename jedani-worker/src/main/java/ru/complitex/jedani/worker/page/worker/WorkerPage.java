@@ -1011,7 +1011,7 @@ public class WorkerPage extends BasePage {
                 rowItem.add(new CssClassNameAppender("pointer"));
 
                 if (rowItem.getModelObject().getStatus().equals(Status.ARCHIVE)){
-                    rowItem.add(new CssClassNameAppender("danger"));
+                    rowItem.add(new CssClassNameAppender("active"));
                 }else if (rowItem.getModelObject().getWorkerStatus() != null &&
                         rowItem.getModelObject().getWorkerStatus() == WorkerStatus.MANAGER_CHANGED){
                     rowItem.add(new CssClassNameAppender("info"));

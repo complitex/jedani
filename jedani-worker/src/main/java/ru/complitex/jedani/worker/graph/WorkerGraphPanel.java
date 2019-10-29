@@ -48,20 +48,18 @@ public class WorkerGraphPanel extends Panel {
 //                + "\\n" +
 //                nameService.getFirstName(worker.getNumber(Worker.FIRST_NAME)) + "\\n" +
 //                nameService.getMiddleName(worker.getNumber(Worker.MIDDLE_NAME))
-                + "'}, " + getStyle(worker, 223) + "}";
+                + "'}, " + getStyle(worker, 0) + "}";
 
         if (!workers.isEmpty()) {
             elements += "," + workers.stream()
                     .map(w -> {
-                        int color = Math.max((int) (255 - 16*(w.getLevel() - worker.getLevel())), 128);
-
                         return " {data: {id: '" + w.getObjectId() + "', " +
                                 "label: '" + w.getText(Worker.J_ID) + "\\n" +
                                 nameService.getLastName(w.getLastNameId())
 //                                + "\\n" +
 //                                nameService.getFirstName(w.getNumber(Worker.FIRST_NAME)) + "\\n" +
 //                                nameService.getMiddleName(w.getNumber(Worker.MIDDLE_NAME))
-                                + "'}, " + getStyle(w, color) + "}";
+                                + "'}, " + getStyle(w, worker.getLevel().intValue()) + "}";
                     })
                     .collect(Collectors.joining(","));
 
@@ -78,15 +76,14 @@ public class WorkerGraphPanel extends Panel {
                 nameService.getMiddleName(worker.getMiddleNameId());
     }
 
-    private String getStyle(Worker w, int color) {
+    private String getStyle(Worker w, int level) {
         String style = "";
         if (Objects.equals(w.getStatus(), Status.ARCHIVE)){
-            style = "style: {'background-color': 'hsl(0, 43%, "+(color-148)+"%)'}";
+            style = "style: {'background-color': '#f5f5f5'}";
         }else if (Objects.equals(w.getWorkerStatus(), WorkerStatus.MANAGER_CHANGED)){
-            style = "style: {'background-color': 'hsl(200, 65%, "+(color-148)+"%)'}";
-        }else{
-            style = "style: {'background-color': 'rgb("+color+", "+color+", "+color+")'}";
+            style = "style: {'background-color': '#d9edf7'}";
         }
+
         return style;
     }
 

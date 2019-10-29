@@ -235,7 +235,7 @@ public class DomainListPage<T extends Domain> extends BasePage{
         }
 
         if (item.getModelObject().getStatus().equals(Status.ARCHIVE)){
-            item.add(new CssClassNameAppender("danger"));
+            item.add(new CssClassNameAppender("active"));
         }
     }
 
