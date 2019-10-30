@@ -192,6 +192,40 @@ public class RewardService implements Serializable {
             if (managerReward.getPoint() != null){
                 tree.getWorkerReward(managerReward.getWorkerId()).getRewards().add(reward);
             }
+
+            BigDecimal paymentVolume = paymentService.getPaymentsVolumeBySaleId(s.getObjectId());
+
+            if (paymentVolume.compareTo(new BigDecimal("2000")) >= 0 &&
+                    paymentVolume.compareTo(new BigDecimal("2999")) <= 0){
+                Reward r = new Reward();
+
+                r.setType(RewardType.TYPE_PERSONAL_VOLUME);
+                r.setPoint(new BigDecimal("50"));
+
+                tree.getWorkerReward(reward.getWorkerId()).getRewards().add(r);
+            }else if (paymentVolume.compareTo(new BigDecimal("3000")) >= 0){
+                Reward r = new Reward();
+
+                r.setType(RewardType.TYPE_PERSONAL_VOLUME);
+                r.setPoint(new BigDecimal("100"));
+
+                tree.getWorkerReward(reward.getWorkerId()).getRewards().add(r);
+            }
+
+            if (paymentVolume.compareTo(s.getTotal()) >= 0){
+                Reward r = new Reward();
+
+                r.setType(RewardType.TYPE_CULINARY_WORKSHOP);
+
+                if (s.isSasRequest()){
+                    r.setPoint(new BigDecimal("15"));
+                }else{
+                    r.setPoint(new BigDecimal("25"));
+                }
+
+                tree.getWorkerReward(s.getCulinaryWorkerId() != null ? s.getCulinaryWorkerId() : reward.getWorkerId())
+                        .getRewards().add(r);
+            }
         });
     }
 }

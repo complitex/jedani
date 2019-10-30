@@ -70,7 +70,7 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> impl
     }
 
     public DomainService getDomainService() {
-        if (entityService == null){
+        if (domainService == null){
             NonContextual.of(this).inject(this);
         }
 
