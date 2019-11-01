@@ -212,7 +212,7 @@ public class RewardService implements Serializable {
                 tree.getWorkerReward(reward.getWorkerId()).getRewards().add(r);
             }
 
-            if (paymentVolume.compareTo(s.getTotal()) >= 0){
+            if (s.getTotal() != null && paymentVolume.compareTo(s.getTotal()) >= 0){
                 Reward r = new Reward();
 
                 r.setType(RewardType.TYPE_CULINARY_WORKSHOP);
