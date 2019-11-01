@@ -157,5 +157,7 @@ public class SaleService implements Serializable {
         return nomenclature != null && nomenclature.getCode().contains("MK-TOUCH");
     }
 
-
+    public Sale getSale(Long saleId){
+        return domainService.getDomain(Sale.class, saleId);
+    }
 }

@@ -194,6 +194,10 @@ public class Worker extends DomainNode<Worker> {
         return getNumber(MK_STATUS);
     }
 
+    public void setMkStatus(Long mkStatus){
+        setNumber(MK_STATUS, mkStatus);
+    }
+
 
     public Long getWorkerStatus(){
         return getNumber(STATUS);

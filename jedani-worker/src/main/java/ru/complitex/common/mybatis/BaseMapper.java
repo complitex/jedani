@@ -1,6 +1,7 @@
 package ru.complitex.common.mybatis;
 
 import org.apache.ibatis.session.SqlSession;
+import org.apache.wicket.cdi.NonContextual;
 
 import javax.inject.Inject;
 import java.io.Serializable;
@@ -14,6 +15,10 @@ public abstract class BaseMapper implements Serializable {
     private transient SqlSession sqlSession;
 
     public SqlSession sqlSession() {
+        if (sqlSession == null){
+            NonContextual.of(this).inject(this);
+        }
+
         return sqlSession;
     }
 }

@@ -16,6 +16,7 @@ import ru.complitex.jedani.worker.entity.Payment;
 import ru.complitex.jedani.worker.entity.Sale;
 import ru.complitex.jedani.worker.entity.SaleItem;
 import ru.complitex.jedani.worker.service.PriceService;
+import ru.complitex.jedani.worker.service.RewardService;
 import ru.complitex.jedani.worker.service.SaleDecisionService;
 
 import javax.inject.Inject;
@@ -33,6 +34,9 @@ public class PaymentModal extends AbstractEditModal<Payment> {
 
     @Inject
     private SaleDecisionService saleDecisionService;
+
+    @Inject
+    private RewardService rewardService;
 
     private boolean warnTotal = false;
 
@@ -172,6 +176,12 @@ public class PaymentModal extends AbstractEditModal<Payment> {
         }
 
         domainService.save(payment);
+
+        rewardService.calcPersonalRewards(payment.getSaleId(), payment.getDate()).forEach(r -> {
+            r.setDate(payment.getDate());
+
+            domainService.save(r);
+        });
 
         success(getString("info_payment_saved"));
 

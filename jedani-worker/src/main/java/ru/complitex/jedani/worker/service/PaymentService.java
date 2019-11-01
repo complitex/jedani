@@ -1,12 +1,14 @@
 package ru.complitex.jedani.worker.service;
 
 import ru.complitex.common.entity.FilterWrapper;
+import ru.complitex.common.util.Dates;
 import ru.complitex.jedani.worker.entity.Payment;
 import ru.complitex.jedani.worker.mapper.PaymentMapper;
 
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -23,6 +25,12 @@ public class PaymentService implements Serializable {
 
     public BigDecimal getPaymentsVolumeBySaleId(Long saleId){
         return getPaymentsBySaleId(saleId).stream()
+                .reduce(BigDecimal.ZERO, ((t, p) -> t.add(p.getPoint())), BigDecimal::add);
+    }
+
+    public BigDecimal getPaymentsVolumeBySaleId(Long saleId, Date date){
+        return getPaymentsBySaleId(saleId).stream()
+                .filter(p -> Dates.isSameMonth(p.getDate(), date))
                 .reduce(BigDecimal.ZERO, ((t, p) -> t.add(p.getPoint())), BigDecimal::add);
     }
 
