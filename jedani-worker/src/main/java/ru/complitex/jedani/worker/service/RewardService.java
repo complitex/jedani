@@ -173,32 +173,50 @@ public class RewardService implements Serializable {
         }
 
         if (reward.getPoint() != null && sale.getTotal() != null) {
-            BigDecimal rewardsTotal = getRewardsTotalBySaleId(sale.getObjectId(), reward.getType());
-
             BigDecimal paidInterest  = paymentService.getPaymentsVolumeBySaleId(sale.getObjectId())
                     .divide(sale.getTotal(), 2, BigDecimal.ROUND_HALF_EVEN);
 
             BigDecimal point = ZERO;
+            BigDecimal managerPoint = ZERO;
 
             if (paidInterest.compareTo(new BigDecimal("0.2")) >= 0){
                 point = point.add(reward.getPoint().multiply(new BigDecimal("0.25")));
+
+                if (managerReward.getPoint() != null){
+                    managerPoint = managerPoint.add(managerReward.getPoint().multiply(new BigDecimal("0.25")));
+                }
             }
 
             if (paidInterest.compareTo(new BigDecimal("0.7")) >= 0){
                 point = point.add(reward.getPoint().multiply(new BigDecimal("0.35")));
+
+                if (managerReward.getPoint() != null){
+                    managerPoint = managerPoint.add(managerReward.getPoint().multiply(new BigDecimal("0.35")));
+                }
             }
 
             if (paidInterest.compareTo(new BigDecimal("1")) >= 0){
                 point = point.add(reward.getPoint().multiply(new BigDecimal("0.40")));
+
+                if (managerReward.getPoint() != null){
+                    managerPoint = managerPoint.add(managerReward.getPoint().multiply(new BigDecimal("0.40")));
+                }
             }
 
             if (point.compareTo(ZERO) != 0) {
-                reward.setPoint(point.subtract(rewardsTotal).stripTrailingZeros());
+                reward.setPoint(point.subtract(getRewardsTotalBySaleId(sale.getObjectId(),
+                        reward.getType())).stripTrailingZeros());
 
-                rewards.add(reward);
+                if (reward.getPoint().compareTo(ZERO) != 0) {
+                    rewards.add(reward);
+                }
+            }
 
-                if (managerReward.getPoint() != null &&
-                        getRewardsTotalBySaleId(sale.getObjectId(), managerReward.getType()).compareTo(ZERO) == 0){
+            if (managerPoint.compareTo(ZERO) != 0){
+                managerReward.setPoint(managerPoint.subtract(getRewardsTotalBySaleId(sale.getObjectId(),
+                        managerReward.getType())).stripTrailingZeros());
+
+                if (managerReward.getPoint().compareTo(ZERO) != 0) {
                     rewards.add(managerReward);
                 }
             }
@@ -211,6 +229,7 @@ public class RewardService implements Serializable {
                     monthPaymentVolume.compareTo(new BigDecimal("2999")) <= 0){
                 Reward r = new Reward();
 
+                r.setSaleId(sale.getObjectId());
                 r.setType(RewardType.TYPE_PERSONAL_VOLUME);
                 r.setWorkerId(sale.getSellerWorkerId());
                 r.setPoint(new BigDecimal("50"));
@@ -219,6 +238,7 @@ public class RewardService implements Serializable {
             }else if (monthPaymentVolume.compareTo(new BigDecimal("3000")) >= 0){
                 Reward r = new Reward();
 
+                r.setSaleId(sale.getObjectId());
                 r.setType(RewardType.TYPE_PERSONAL_VOLUME);
                 r.setWorkerId(sale.getSellerWorkerId());
                 r.setPoint(new BigDecimal("100"));
@@ -233,6 +253,7 @@ public class RewardService implements Serializable {
                 getRewardsTotalBySaleId(sale.getObjectId(), RewardType.TYPE_CULINARY_WORKSHOP).compareTo(ZERO) == 0){
             Reward r = new Reward();
 
+            r.setSaleId(sale.getObjectId());
             r.setType(RewardType.TYPE_CULINARY_WORKSHOP);
             r.setWorkerId(sale.getCulinaryWorkerId() != null ? sale.getCulinaryWorkerId() : reward.getWorkerId());
 
