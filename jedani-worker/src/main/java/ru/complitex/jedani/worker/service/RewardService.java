@@ -196,12 +196,12 @@ public class RewardService implements Serializable {
                 reward.setPoint(point.subtract(rewardsTotal).stripTrailingZeros());
 
                 rewards.add(reward);
-            }
-        }
 
-        if (managerReward.getPoint() != null &&
-                getRewardsTotalBySaleId(sale.getObjectId(), managerReward.getType()).compareTo(ZERO) == 0){
-            rewards.add(managerReward);
+                if (managerReward.getPoint() != null &&
+                        getRewardsTotalBySaleId(sale.getObjectId(), managerReward.getType()).compareTo(ZERO) == 0){
+                    rewards.add(managerReward);
+                }
+            }
         }
 
         BigDecimal monthPaymentVolume = paymentService.getPaymentsVolumeBySaleId(sale.getObjectId(), date);
