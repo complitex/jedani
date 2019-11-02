@@ -28,8 +28,10 @@ public class Sale extends Domain<Sale> {
     public static final long INITIAL_PAYMENT = 14;
     public static final long STATUS = 15;
     public static final long FOR_YOURSELF = 16;
-    public static final long MANAGER_WORKER = 17;
+    public static final long MK_MANAGER_BONUS_WORKER = 17;
     public static final long CULINARY_WORKER = 18;
+    public static final long PERSONAL_REWARD_POINT = 19;
+    public static final long MK_MANAGER_BONUS_REWARD_POINT = 20;
 
     public static final String FILTER_SELLER_WORKER = "sellerWorker";
     public static final String FILTER_REGION_IDS = "regionIds";
@@ -161,12 +163,12 @@ public class Sale extends Domain<Sale> {
         setBoolean(FOR_YOURSELF, forYourself);
     }
 
-    public Long getManagerWorkerId(){
-        return getNumber(MANAGER_WORKER);
+    public Long getMkManagerBonusWorkerId(){
+        return getNumber(MK_MANAGER_BONUS_WORKER);
     }
 
-    public void setManagerWorkerId(Long managerWorkerId){
-        setNumber(MANAGER_WORKER, managerWorkerId);
+    public void setMkManagerBonusWorkerId(Long mkManagerBonusWorkerId){
+        setNumber(MK_MANAGER_BONUS_WORKER, mkManagerBonusWorkerId);
     }
 
     public Long getCulinaryWorkerId(){
@@ -176,4 +178,21 @@ public class Sale extends Domain<Sale> {
     public void setCulinaryWorkerId(Long culinaryWorkerId){
         setNumber(CULINARY_WORKER, culinaryWorkerId);
     }
+
+    public BigDecimal getPersonalRewardPoint(){
+        return getDecimal(PERSONAL_REWARD_POINT);
+    }
+
+    public void setPersonalRewardPoint(BigDecimal rewardPoint){
+        setDecimal(PERSONAL_REWARD_POINT, rewardPoint);
+    }
+
+    public BigDecimal getMkManagerBonusRewardPoint(){
+        return getDecimal(MK_MANAGER_BONUS_REWARD_POINT);
+    }
+
+    public void setMkManagerBonusRewardPoint(BigDecimal mkManagerBonusRewardPoint){
+        setDecimal(MK_MANAGER_BONUS_REWARD_POINT, mkManagerBonusRewardPoint);
+    }
+
 }

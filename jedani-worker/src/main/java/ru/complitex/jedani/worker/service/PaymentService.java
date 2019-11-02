@@ -42,4 +42,10 @@ public class PaymentService implements Serializable {
         return getPaymentsBySellerWorkerId(sellerWorkerId).stream()
                 .reduce(BigDecimal.ZERO, ((t, p) -> t.add(p.getPoint())), BigDecimal::add);
     }
+
+    public BigDecimal getPaymentsVolumeBySellerWorkerId(Long sellerWorkerId, Date date){
+        return getPaymentsBySellerWorkerId(sellerWorkerId).stream()
+                .filter(p -> Dates.isSameMonth(p.getDate(), date))
+                .reduce(BigDecimal.ZERO, ((t, p) -> t.add(p.getPoint())), BigDecimal::add);
+    }
 }

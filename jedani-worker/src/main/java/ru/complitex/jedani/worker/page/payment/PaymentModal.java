@@ -177,11 +177,7 @@ public class PaymentModal extends AbstractEditModal<Payment> {
 
         domainService.save(payment);
 
-        rewardService.calcPersonalRewards(payment.getSaleId(), payment.getDate()).forEach(r -> {
-            r.setDate(payment.getDate());
-
-            domainService.save(r);
-        });
+        //todo calc rewards
 
         success(getString("info_payment_saved"));
 

@@ -274,7 +274,7 @@ public class SaleModal extends Modal<Sale> {
                 .add(AjaxFormComponentUpdatingBehavior.onUpdate("change", this::updatePrices)));
 
         container.add(new FormGroupPanel("managerMycookBonusWorker", new WorkerAutoComplete(FormGroupPanel.COMPONENT_ID,
-                new NumberAttributeModel(saleModel, Sale.MANAGER_WORKER))){
+                new NumberAttributeModel(saleModel, Sale.MK_MANAGER_BONUS_WORKER))){
             @Override
             public boolean isVisible() {
                 return Objects.equals(saleModel.getObject().getType(), SaleType.MYCOOK);

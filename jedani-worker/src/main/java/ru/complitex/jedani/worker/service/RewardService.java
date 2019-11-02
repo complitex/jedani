@@ -8,7 +8,6 @@ import ru.complitex.jedani.worker.entity.*;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -57,7 +56,6 @@ public class RewardService implements Serializable {
 
         calcRegistrationCount(tree, Dates.currentDate());
         calcFirstLevelCount(tree);
-        calcPersonalRewardsTree(tree, month);
 
         return tree;
     }
@@ -94,25 +92,11 @@ public class RewardService implements Serializable {
         tree.forEachLevel((l, rl) -> rl.forEach(r -> r.setFirstLevelCount(Long.valueOf(r.getChildRewards().size()))));
     }
 
-    public List<Reward> calcPersonalRewards(Sale sale, Date date){
-        List<Reward> rewards = new ArrayList<>();
-
-        Reward reward = new Reward();
-
-        reward.setSaleId(sale.getObjectId());
-        reward.setWorkerId(sale.getSellerWorkerId());
-
-        Reward managerReward = new Reward();
-
-        managerReward.setSaleId(sale.getObjectId());
-        managerReward.setWorkerId(sale.getManagerWorkerId());
-
-        managerReward.setType(RewardType.TYPE_MANAGER_BONUS);
+    public BigDecimal getPersonalRewardPoint(Sale sale){
+        BigDecimal point = ZERO;
 
         if (sale.getType() == SaleType.MYCOOK){
-            reward.setType(RewardType.TYPE_MYCOOK_SALE);
-
-            Worker w = workerService.getWorker(reward.getWorkerId());
+            Worker w = workerService.getWorker(sale.getSellerWorkerId());
 
             if (w.getMkStatus() == null){
                 w.setMkStatus(MkStatus.STATUS_NO_MK);
@@ -122,162 +106,150 @@ public class RewardService implements Serializable {
             boolean mkTouch = saleService.isMkTouchSaleItem(sale.getObjectId());
 
             if (sale.isSasRequest()){
-                reward.setPoint(new BigDecimal("80"));
+                point = new BigDecimal("80");
             }else if (w.getMkStatus() == MkStatus.STATUS_NO_MK){
                 if (mkPremium){
-                    reward.setPoint(new BigDecimal("80"));
-
-                    if (managerReward.getWorkerId() != null){
-                        managerReward.setPoint(new BigDecimal("50"));
-                    }
+                    point = new BigDecimal("80");
                 }else if (mkTouch){
-                    reward.setPoint(new BigDecimal("90"));
-
-                    if (managerReward.getWorkerId() != null){
-                        managerReward.setPoint(new BigDecimal("65"));
-                    }
+                    point = new BigDecimal("90");
                 }
-            }else if (w.getMkStatus() == MkStatus.STATUS_INSTALMENT_MK &&
-                    sale.getTotal() != null && sale.getInitialPayment() != null &&
-                    sale.getInitialPayment().multiply(BigDecimal.TEN).compareTo(sale.getTotal()) > 0){
+            }else if (w.getMkStatus() == MkStatus.STATUS_INSTALMENT_MK){
                 if (mkPremium){
-                    reward.setPoint(new BigDecimal("120"));
-
-                    if (managerReward.getWorkerId() != null){
-                        managerReward.setPoint(new BigDecimal("50"));
-                    }
+                    point = new BigDecimal("120");
                 }else if (mkTouch){
-                    reward.setPoint(new BigDecimal("130"));
-
-                    if (managerReward.getWorkerId() != null){
-                        managerReward.setPoint(new BigDecimal("65"));
-                    }
+                    point = new BigDecimal("130");
                 }
             }else if (w.getMkStatus() == MkStatus.STATUS_HAS_MK){
-                if (managerReward.getWorkerId() != null){
+                if (sale.getMkManagerBonusWorkerId() != null){
                     if (mkPremium){
-                        reward.setPoint(new BigDecimal("120"));
+                        point = new BigDecimal("120");
                     }else if (mkTouch){
-                        reward.setPoint(new BigDecimal("130"));
+                        point = new BigDecimal("130");
                     }
                 }else if (mkPremium){
-                    reward.setPoint(new BigDecimal("170"));
+                    point = new BigDecimal("170");
                 }else if (mkTouch){
-                    reward.setPoint(new BigDecimal("195"));
+                    point = new BigDecimal("195");
                 }
             }
         }else if (sale.getType() == SaleType.BASE_ASSORTMENT && sale.getTotal() != null){
-            reward.setType(RewardType.TYPE_BASE_ASSORTMENT_SALE);
-
-            reward.setPoint(sale.getTotal().multiply(new BigDecimal("0.15")));
+            point = sale.getTotal().multiply(new BigDecimal("0.15"));
         }
 
-        if (reward.getPoint() != null && sale.getTotal() != null) {
+        return point;
+    }
+
+    public BigDecimal getMkManagerBonusRewardPoint(Sale sale){
+        BigDecimal point = ZERO;
+
+        if (sale.getType() == SaleType.MYCOOK){
+            Worker w = workerService.getWorker(sale.getSellerWorkerId());
+
+            if (w.getMkStatus() == null){
+                w.setMkStatus(MkStatus.STATUS_NO_MK);
+            }
+
+            boolean mkPremium = saleService.isMkPremiumSaleItem(sale.getObjectId());
+            boolean mkTouch = saleService.isMkTouchSaleItem(sale.getObjectId());
+
+            if (mkPremium){
+                point = new BigDecimal("50");
+            }else if (mkTouch){
+                point = new BigDecimal("65");
+            }
+        }
+
+        return point;
+    }
+
+    private BigDecimal calcRewardPoint(Sale sale, BigDecimal rewardPoint, Long rewardType){
+        BigDecimal point = ZERO;
+
+        if (rewardPoint.compareTo(ZERO) > 0 && sale.getTotal() != null) {
             BigDecimal paidInterest  = paymentService.getPaymentsVolumeBySaleId(sale.getObjectId())
                     .divide(sale.getTotal(), 2, BigDecimal.ROUND_HALF_EVEN);
 
-            BigDecimal point = ZERO;
-            BigDecimal managerPoint = ZERO;
-
             if (paidInterest.compareTo(new BigDecimal("0.2")) >= 0){
-                point = point.add(reward.getPoint().multiply(new BigDecimal("0.25")));
-
-                if (managerReward.getPoint() != null){
-                    managerPoint = managerPoint.add(managerReward.getPoint().multiply(new BigDecimal("0.25")));
-                }
+                point = point.add(rewardPoint).multiply(new BigDecimal("0.25"));
             }
 
             if (paidInterest.compareTo(new BigDecimal("0.7")) >= 0){
-                point = point.add(reward.getPoint().multiply(new BigDecimal("0.35")));
-
-                if (managerReward.getPoint() != null){
-                    managerPoint = managerPoint.add(managerReward.getPoint().multiply(new BigDecimal("0.35")));
-                }
+                point = point.add(rewardPoint.multiply(new BigDecimal("0.35")));
             }
 
             if (paidInterest.compareTo(new BigDecimal("1")) >= 0){
-                point = point.add(reward.getPoint().multiply(new BigDecimal("0.40")));
-
-                if (managerReward.getPoint() != null){
-                    managerPoint = managerPoint.add(managerReward.getPoint().multiply(new BigDecimal("0.40")));
-                }
+                point = point.add(rewardPoint.multiply(new BigDecimal("0.40")));
             }
 
-            if (point.compareTo(ZERO) != 0) {
-                reward.setPoint(point.subtract(getRewardsTotalBySaleId(sale.getObjectId(),
-                        reward.getType())).stripTrailingZeros());
+            point = point.subtract(getRewardsTotalBySaleId(sale.getObjectId(), rewardType)).stripTrailingZeros();
 
-                if (reward.getPoint().compareTo(ZERO) != 0) {
-                    rewards.add(reward);
-                }
-            }
-
-            if (managerPoint.compareTo(ZERO) != 0){
-                managerReward.setPoint(managerPoint.subtract(getRewardsTotalBySaleId(sale.getObjectId(),
-                        managerReward.getType())).stripTrailingZeros());
-
-                if (managerReward.getPoint().compareTo(ZERO) != 0) {
-                    rewards.add(managerReward);
-                }
-            }
         }
 
-        BigDecimal monthPaymentVolume = paymentService.getPaymentsVolumeBySaleId(sale.getObjectId(), date);
+        return point;
+    }
 
-        if (getRewardsTotalBySaleId(sale.getObjectId(), RewardType.TYPE_PERSONAL_VOLUME).compareTo(ZERO) == 0) {
-            if (monthPaymentVolume.compareTo(new BigDecimal("2000")) >= 0 &&
-                    monthPaymentVolume.compareTo(new BigDecimal("2999")) <= 0){
-                Reward r = new Reward();
+    public Reward calcPersonalReward(Sale sale, BigDecimal rewardPoint){
+        Reward reward = new Reward();
 
-                r.setSaleId(sale.getObjectId());
-                r.setType(RewardType.TYPE_PERSONAL_VOLUME);
-                r.setWorkerId(sale.getSellerWorkerId());
-                r.setPoint(new BigDecimal("50"));
+        reward.setSaleId(sale.getObjectId());
+        reward.setWorkerId(sale.getSellerWorkerId());
+        reward.setType(RewardType.TYPE_MYCOOK_SALE);
+        reward.setPoint(calcRewardPoint(sale, rewardPoint, RewardType.TYPE_MYCOOK_SALE));
 
-                rewards.add(r);
-            }else if (monthPaymentVolume.compareTo(new BigDecimal("3000")) >= 0){
-                Reward r = new Reward();
+        return reward;
+    }
 
-                r.setSaleId(sale.getObjectId());
-                r.setType(RewardType.TYPE_PERSONAL_VOLUME);
-                r.setWorkerId(sale.getSellerWorkerId());
-                r.setPoint(new BigDecimal("100"));
+    public Reward calcMkManagerBonusReward(Sale sale, BigDecimal rewardPoint){
+        Reward reward = new Reward();
 
-                rewards.add(r);
-            }
-        }
+        reward.setSaleId(sale.getObjectId());
+        reward.setWorkerId(sale.getMkManagerBonusWorkerId());
+        reward.setType(RewardType.TYPE_MYCOOK_SALE);
+        reward.setPoint(calcRewardPoint(sale, rewardPoint, RewardType.TYPE_MK_MANAGER_BONUS));
+
+        return reward;
+    }
+
+    public Reward calcPersonalVolumeReward(Sale sale, Date date){
+        Reward reward = new Reward();
+
+        reward.setSaleId(sale.getObjectId());
+        reward.setType(RewardType.TYPE_PERSONAL_VOLUME);
+        reward.setWorkerId(sale.getSellerWorkerId());
 
         BigDecimal paymentVolume = paymentService.getPaymentsVolumeBySaleId(sale.getObjectId(), date);
 
-        if (sale.getTotal() != null && paymentVolume.compareTo(sale.getTotal()) >= 0 &&
-                getRewardsTotalBySaleId(sale.getObjectId(), RewardType.TYPE_CULINARY_WORKSHOP).compareTo(ZERO) == 0){
-            Reward r = new Reward();
-
-            r.setSaleId(sale.getObjectId());
-            r.setType(RewardType.TYPE_CULINARY_WORKSHOP);
-            r.setWorkerId(sale.getCulinaryWorkerId() != null ? sale.getCulinaryWorkerId() : reward.getWorkerId());
-
-            if (sale.isSasRequest()){
-                r.setPoint(new BigDecimal("15"));
-            }else{
-                r.setPoint(new BigDecimal("25"));
+        if (getRewardsTotalBySaleId(sale.getObjectId(), RewardType.TYPE_PERSONAL_VOLUME).compareTo(ZERO) == 0) {
+            if (paymentVolume.compareTo(new BigDecimal("2000")) >= 0 &&
+                    paymentVolume.compareTo(new BigDecimal("2999")) <= 0){
+                reward.setPoint(new BigDecimal("50"));
+            }else if (paymentVolume.compareTo(new BigDecimal("3000")) >= 0){
+                reward.setPoint(new BigDecimal("100"));
             }
-
-            rewards.add(r);
         }
 
-        return rewards;
+        return reward;
     }
 
-    public List<Reward> calcPersonalRewards(Long saleId, Date date){
-        return calcPersonalRewards(saleService.getSale(saleId), date);
+    public Reward calcCulinaryReward(Sale sale){
+        Reward reward = new Reward();
+
+        reward.setSaleId(sale.getObjectId());
+        reward.setType(RewardType.TYPE_CULINARY_WORKSHOP);
+        reward.setWorkerId(sale.getCulinaryWorkerId() != null ? sale.getCulinaryWorkerId() : sale.getSellerWorkerId());
+
+        BigDecimal paymentVolume = paymentService.getPaymentsVolumeBySaleId(sale.getObjectId());
+
+        if (sale.getTotal() != null && paymentVolume.compareTo(sale.getTotal()) >= 0 &&
+                getRewardsTotalBySaleId(sale.getObjectId(), RewardType.TYPE_CULINARY_WORKSHOP).compareTo(ZERO) == 0){
+
+            if (sale.isSasRequest()){
+                reward.setPoint(new BigDecimal("15"));
+            }else{
+                reward.setPoint(new BigDecimal("25"));
+            }
+        }
+
+        return reward;
     }
-
-    private void calcPersonalRewardsTree(WorkerRewardTree tree, Date date){
-        saleService.getSales(date).stream().filter(s -> !s.isForYourself()).forEach(s -> {
-            calcPersonalRewards(s, date).forEach(r -> tree.getWorkerReward(r.getWorkerId()).getRewards().add(r));
-        });
-    }
-
-
 }

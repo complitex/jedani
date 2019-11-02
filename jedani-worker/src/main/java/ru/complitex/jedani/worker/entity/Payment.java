@@ -18,6 +18,7 @@ public class Payment extends Domain<Payment> {
     public final static long CONTRACT = 8;
     public final static long SALE = 9;
 
+    public final static String FILTER_SALE_ID = "saleId";
     public final static String FILTER_SELLER_WORKER_ID = "sellerWorkerId";
 
     public Payment() {
