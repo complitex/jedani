@@ -52,6 +52,7 @@ import ru.complitex.jedani.worker.page.card.CardListPage;
 import ru.complitex.jedani.worker.page.catalog.*;
 import ru.complitex.jedani.worker.page.login.LoginPage;
 import ru.complitex.jedani.worker.page.payment.PaymentListPage;
+import ru.complitex.jedani.worker.page.period.PeriodListPage;
 import ru.complitex.jedani.worker.page.price.PriceListPage;
 import ru.complitex.jedani.worker.page.promotion.PromotionListPage;
 import ru.complitex.jedani.worker.page.resource.*;
@@ -215,6 +216,7 @@ public class JedaniWebApplication extends WebApplication{
         mountPage("rewards", RewardListPage.class);
         mountPage("rewards_tree", RewardTreePage.class);
         mountPage("payments", PaymentListPage.class);
+        mountPage("periods", PeriodListPage.class);
 
         mountPage("error", InternalErrorPage.class);
         mountPage("access-denied", AccessDeniedPage.class);

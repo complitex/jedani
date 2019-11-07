@@ -15,6 +15,19 @@ public class Dates {
         return new Date();
     }
 
+    public static Date firstDayOfMonth(Date date){
+        return Date.from(date.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime()
+                .with(TemporalAdjusters.firstDayOfMonth())
+                .atZone(ZoneId.systemDefault())
+                .toInstant());
+    }
+
+    public static Date firstDayOfMonth(){
+        return firstDayOfMonth(currentDate());
+    }
+
     public static Date lastDayOfMonth(Date date){
         return Date.from(date.toInstant()
                 .atZone(ZoneId.systemDefault())
@@ -22,6 +35,10 @@ public class Dates {
                 .with(TemporalAdjusters.lastDayOfMonth())
                 .atZone(ZoneId.systemDefault())
                 .toInstant());
+    }
+
+    public static Date lastDayOfMonth(){
+        return lastDayOfMonth(currentDate());
     }
 
     public static boolean isDayEquals(Date d1, Date d2){

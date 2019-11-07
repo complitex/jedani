@@ -720,6 +720,15 @@ CALL createEntityAttribute(41, 7, 4, 'Сумма (в баллах)', 'Сума (
 CALL createEntityAttribute(41, 8, 2, 'Номер ДКП', 'Номер ДКП');
 CALL createEntityAttributeWithReference(41, 9, 11, 28, 'Продажа', 'Продаж');
 
+/* Period */
+
+CALL createEntity(42, 'period', 'Журнал расчетных периодов', 'Журнал розрахункових періодів');
+CALL createEntityAttribute(42, 1, 6, 'Операционный месяц', 'Операційний місяць');
+CALL createEntityAttribute(42, 2, 6, 'Дата начала', 'Дата початку');
+CALL createEntityAttribute(42, 3, 6, 'Дата окончания', 'Дата закінчення');
+CALL createEntityAttribute(42, 4, 6, 'Отметка времени закрытия', 'Відмітка часу закриття');
+CALL createEntityAttributeWithReference(42, 5, 11, 20, 'Пользователь', 'Користувач');
+
 -- Update
 
-INSERT INTO `update` (`version`) VALUE ('20191028_1.0.35');
+INSERT INTO `update` (`version`) VALUE ('20191104_1.0.36');
