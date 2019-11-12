@@ -706,6 +706,7 @@ CALL createEntityAttributeWithReference(40, 4, 11, 39, 'Тип', 'Тип');
 CALL createEntityAttributeWithReference(40, 5, 11, 38, 'Ранг', 'Ранг');
 CALL createEntityAttribute(40, 6, 2, 'Комментарий', 'Коментар');
 CALL createEntityAttributeWithReference(40, 7, 11, 28, 'Продажа', 'Продаж');
+CALL createEntityAttributeWithReference(40, 8, 11, 42, 'Период', 'Період');
 
 /* Payment */
 
@@ -731,4 +732,4 @@ CALL createEntityAttributeWithReference(42, 5, 11, 20, 'Пользователь
 
 -- Update
 
-INSERT INTO `update` (`version`) VALUE ('20191104_1.0.36');
+INSERT INTO `update` (`version`) VALUE ('20191112_1.0.37');

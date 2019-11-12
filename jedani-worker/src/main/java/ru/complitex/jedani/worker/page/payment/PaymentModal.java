@@ -15,6 +15,7 @@ import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.entity.Payment;
 import ru.complitex.jedani.worker.entity.Sale;
 import ru.complitex.jedani.worker.entity.SaleItem;
+import ru.complitex.jedani.worker.entity.SaleStatus;
 import ru.complitex.jedani.worker.service.PriceService;
 import ru.complitex.jedani.worker.service.RewardService;
 import ru.complitex.jedani.worker.service.SaleDecisionService;
@@ -159,12 +160,13 @@ public class PaymentModal extends AbstractEditModal<Payment> {
         payment.setPoint(payment.getPayment().divide(rate, 2, RoundingMode.HALF_EVEN));
         payment.setSaleId(sale.getObjectId());
 
-        BigDecimal sum = domainService.getDomains(Payment.class, FilterWrapper.of(new Payment()
+        BigDecimal paymentTotal = domainService.getDomains(Payment.class, FilterWrapper.of(new Payment()
                 .setContract(payment.getContract()))).stream()
                 .filter(p -> !p.getObjectId().equals(payment.getObjectId()) && p.getPoint() != null)
-                .map(Payment::getPoint).reduce(BigDecimal.ZERO, BigDecimal::add);
+                .map(Payment::getPoint).reduce(BigDecimal.ZERO, BigDecimal::add)
+                .add(payment.getPoint());
 
-        if (sale.getTotal() != null && sale.getTotal().compareTo(sum.add(payment.getPoint())) <= 0 && !warnTotal){
+        if (sale.getTotal() != null && sale.getTotal().compareTo(paymentTotal) < 0 && !warnTotal){
             warn(getString("error_payment_more_than_sale_total"));
             target.add(getFeedback());
 
@@ -177,7 +179,19 @@ public class PaymentModal extends AbstractEditModal<Payment> {
 
         domainService.save(payment);
 
-        //todo calc rewards
+        //Sale status
+
+        if (sale.getTotal() != null){
+            if (sale.getTotal().compareTo(paymentTotal) > 0){
+                sale.setSaleStatus(SaleStatus.PAYING);
+            }else if (sale.getTotal().compareTo(paymentTotal) == 0){
+                sale.setSaleStatus(SaleStatus.CLOSED);
+            }else if (sale.getTotal().compareTo(paymentTotal) < 0){
+                sale.setSaleStatus(SaleStatus.OVERPAYMENT);
+            }
+
+            domainService.save(sale);
+        }
 
         success(getString("info_payment_saved"));
 

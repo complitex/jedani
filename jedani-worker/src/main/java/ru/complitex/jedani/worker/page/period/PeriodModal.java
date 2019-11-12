@@ -70,7 +70,7 @@ public class PeriodModal extends AbstractEditModal<Period> {
 
             getSession().success(getString("info_period_saved"));
         } catch (Exception e) {
-            error(getString("error_period_save"));
+            error(getString("error_period_save") + ": " + e.getLocalizedMessage());
 
             target.add(getFeedback());
         }

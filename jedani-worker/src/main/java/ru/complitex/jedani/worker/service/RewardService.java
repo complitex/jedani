@@ -188,7 +188,7 @@ public class RewardService implements Serializable {
         return point;
     }
 
-    public Reward calcPersonalReward(Sale sale, BigDecimal rewardPoint){
+    public Reward getPersonalReward(Sale sale, BigDecimal rewardPoint){
         Reward reward = new Reward();
 
         reward.setSaleId(sale.getObjectId());
@@ -199,23 +199,24 @@ public class RewardService implements Serializable {
         return reward;
     }
 
-    public Reward calcMkManagerBonusReward(Sale sale, BigDecimal rewardPoint){
+    public Reward getMkManagerBonusReward(Sale sale, BigDecimal rewardPoint){
         Reward reward = new Reward();
 
         reward.setSaleId(sale.getObjectId());
         reward.setWorkerId(sale.getMkManagerBonusWorkerId());
-        reward.setType(RewardType.TYPE_MYCOOK_SALE);
+        reward.setType(RewardType.TYPE_MK_MANAGER_BONUS);
         reward.setPoint(calcRewardPoint(sale, rewardPoint, RewardType.TYPE_MK_MANAGER_BONUS));
 
         return reward;
     }
 
-    public Reward calcPersonalVolumeReward(Sale sale, Date date){
+    public Reward getPersonalVolumeReward(Sale sale, Date date){
         Reward reward = new Reward();
 
         reward.setSaleId(sale.getObjectId());
         reward.setType(RewardType.TYPE_PERSONAL_VOLUME);
         reward.setWorkerId(sale.getSellerWorkerId());
+        reward.setPoint(ZERO);
 
         BigDecimal paymentVolume = paymentService.getPaymentsVolumeBySaleId(sale.getObjectId(), date);
 
@@ -231,7 +232,7 @@ public class RewardService implements Serializable {
         return reward;
     }
 
-    public Reward calcCulinaryReward(Sale sale){
+    public Reward getCulinaryWorkshopReward(Sale sale){
         Reward reward = new Reward();
 
         reward.setSaleId(sale.getObjectId());

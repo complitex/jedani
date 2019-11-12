@@ -15,11 +15,16 @@ public class Reward extends Domain<Reward> {
     public static final long RANK = 5;
     public static final long DETAIL = 6;
     public static final long SALE = 7;
+    public static final long PERIOD = 8;
 
     public Reward() {
         super(ENTITY_NAME);
 
         setUseDateAttribute(true);
+    }
+
+    public boolean isAccrued(){
+        return getPoint() != null && getPoint().compareTo(BigDecimal.ZERO) > 0;
     }
 
     public void setDate(Date date){
@@ -58,5 +63,13 @@ public class Reward extends Domain<Reward> {
         setNumber(SALE, saleId);
 
         return this;
+    }
+
+    public Long getPeriodId(){
+        return getNumber(PERIOD);
+    }
+
+    public void setPeriodId(Long periodId){
+        setNumber(PERIOD, periodId);
     }
 }

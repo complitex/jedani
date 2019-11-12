@@ -259,7 +259,9 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage{
     }
 
     protected void onRowClick(T object, AjaxRequestTarget target) {
-        onEdit(object, target);
+        if (isEditEnabled()) {
+            onEdit(object, target);
+        }
     }
 
     protected List<T> getDomains(FilterWrapper<T> filterWrapper) {

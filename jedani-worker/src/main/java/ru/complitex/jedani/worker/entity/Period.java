@@ -47,8 +47,13 @@ public class Period extends Domain<Period> {
         setDate(PERIOD_END, periodEnd);
     }
 
+
     public void setPeriodClose(Date periodClose){
         setDate(PERIOD_CLOSE, periodClose);
+    }
+
+    public Long getWorkerId(){
+        return getNumber(WORKER);
     }
 
     public void setWorkerId(Long workerId){

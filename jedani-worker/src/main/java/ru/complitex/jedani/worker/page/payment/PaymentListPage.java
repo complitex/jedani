@@ -37,7 +37,7 @@ public class PaymentListPage extends DomainListModalPage<Payment> {
         Form paymentForm = new Form("paymentForm");
         getContainer().add(paymentForm);
 
-        paymentForm.add(paymentModal = new PaymentModal("paymentModal").onUpdate(t -> t.add(getContainer())));
+        paymentForm.add(paymentModal = new PaymentModal("paymentModal").onUpdate(t -> t.add(getFeedback(), getTable())));
     }
 
     @Override

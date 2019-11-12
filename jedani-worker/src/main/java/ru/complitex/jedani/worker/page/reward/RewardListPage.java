@@ -3,10 +3,12 @@ package ru.complitex.jedani.worker.page.reward;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
+import ru.complitex.common.entity.SortProperty;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
@@ -14,6 +16,7 @@ import ru.complitex.domain.page.DomainListModalPage;
 import ru.complitex.jedani.worker.entity.Rank;
 import ru.complitex.jedani.worker.entity.Reward;
 import ru.complitex.jedani.worker.entity.RewardType;
+import ru.complitex.jedani.worker.service.SaleService;
 import ru.complitex.jedani.worker.service.WorkerService;
 
 import javax.inject.Inject;
@@ -28,6 +31,9 @@ public class RewardListPage extends DomainListModalPage<Reward> {
     @Inject
     private WorkerService workerService;
 
+    @Inject
+    private SaleService saleService;
+
     private RewardModal rewardModal;
 
     public RewardListPage() {
@@ -36,7 +42,7 @@ public class RewardListPage extends DomainListModalPage<Reward> {
         Form rewardForm = new Form("rewardForm");
         getContainer().add(rewardForm);
 
-        rewardForm.add(rewardModal = new RewardModal("rewardModal").onUpdate(t -> t.add(getContainer())));
+        rewardForm.add(rewardModal = new RewardModal("rewardModal").onUpdate(t -> t.add(getFeedback(), getTable())));
     }
 
     @Override
@@ -65,6 +71,24 @@ public class RewardListPage extends DomainListModalPage<Reward> {
         }
 
         return super.newDomainColumn(a);
+    }
+
+    @Override
+    protected void onAddColumns(List<IColumn<Reward, SortProperty>> iColumns) {
+        super.onAddColumns(iColumns);
+
+        iColumns.add(new AbstractDomainColumn<Reward>("sale") {
+            @Override
+            public void populateItem(Item<ICellPopulator<Reward>> cellItem, String componentId, IModel<Reward> rowModel) {
+                String sale = "";
+
+                if (rowModel.getObject().getSaleId() != null) {
+                    sale = saleService.getSale(rowModel.getObject().getSaleId()).getContract();
+                }
+
+                cellItem.add(new Label(componentId, sale));
+            }
+        });
     }
 
     @Override
