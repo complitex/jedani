@@ -131,6 +131,10 @@ public abstract class AbstractEditModal<T> extends Modal<T> {
         return null;
     }
 
+    protected Long getCurrentWorkerId(){
+        return Objects.requireNonNull(getBasePage()).getCurrentWorker().getObjectId();
+    }
+
     protected boolean isAdmin(){
         return Objects.requireNonNull(getBasePage()).isAdmin();
     }

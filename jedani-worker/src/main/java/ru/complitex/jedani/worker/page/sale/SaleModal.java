@@ -52,6 +52,7 @@ import ru.complitex.jedani.worker.exception.SaleException;
 import ru.complitex.jedani.worker.mapper.StorageMapper;
 import ru.complitex.jedani.worker.page.BasePage;
 import ru.complitex.jedani.worker.service.PriceService;
+import ru.complitex.jedani.worker.service.RewardService;
 import ru.complitex.jedani.worker.service.SaleService;
 import ru.complitex.name.entity.FirstName;
 import ru.complitex.name.entity.LastName;
@@ -85,6 +86,9 @@ public class SaleModal extends Modal<Sale> {
 
     @Inject
     private PriceService priceService;
+
+    @Inject
+    private RewardService rewardService;
 
     private IModel<Sale> saleModel;
     private IModel<List<SaleItem>> saleItemsModel;
@@ -631,7 +635,14 @@ public class SaleModal extends Modal<Sale> {
         });
 
         try {
-            saleService.sale(sale, saleItems);
+            sale.setPersonalRewardPoint(rewardService.getPersonalRewardPoint(sale));
+            sale.setMkManagerBonusRewardPoint(rewardService.getMkManagerBonusRewardPoint(sale));
+
+            if (sale.getObjectId() == null){
+                sale.setSaleStatus(SaleStatus.CREATED);
+            }
+
+            saleService.save(sale, saleItems);
 
             getSession().success(getString("info_sold"));
 

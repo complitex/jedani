@@ -255,12 +255,12 @@ public class BasePage extends WebPage{
         sidebar.add(sales);
 
         sales.add(new MenuLink("price", PriceListPage.class).setVisible(isAdmin() || isStructureAdmin()));
-        sales.add(new MenuLink("promotion", PromotionListPage.class).setVisible(isAdmin() || isPromotionAdmin()));
         sales.add(new MenuLink("saleDecision", SaleDecisionListPage.class).setVisible(isAdmin() || isStructureAdmin()));
+        sales.add(new MenuLink("promotion", PromotionListPage.class).setVisible(isAdmin() || isPromotionAdmin()));
         sales.add(new MenuLink("sale", SaleListPage.class).setVisible(isAdmin() || isStructureAdmin() || isSaleAdmin()));
-        sales.add(new MenuLink("reward", RewardListPage.class).setVisible(isAdmin() || isStructureAdmin()));
         sales.add(new MenuLink("payment", PaymentListPage.class).setVisible(isAdmin() || isStructureAdmin() || isPaymentAdmin()));
         sales.add(new MenuLink("period", PeriodListPage.class).setVisible(isAdmin() || isPaymentAdmin()));
+        sales.add(new MenuLink("reward", RewardListPage.class).setVisible(isAdmin() || isStructureAdmin()));
     }
 
     @Override

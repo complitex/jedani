@@ -8,12 +8,18 @@ import ru.complitex.common.util.Dates;
 import ru.complitex.common.wicket.form.FormGroupDateTextField;
 import ru.complitex.domain.component.form.AbstractEditModal;
 import ru.complitex.jedani.worker.entity.Period;
+import ru.complitex.jedani.worker.service.PeriodService;
+
+import javax.inject.Inject;
 
 /**
  * @author Anatoly A. Ivanov
  * 05.11.2019 10:14 PM
  */
 public class PeriodModal extends AbstractEditModal<Period> {
+    @Inject
+    private PeriodService periodService;
+
     public PeriodModal(String markupId) {
         super(markupId);
 
@@ -40,12 +46,33 @@ public class PeriodModal extends AbstractEditModal<Period> {
         period.setOperatingMonth(Dates.firstDayOfMonth());
         period.setPeriodStart(Dates.firstDayOfMonth());
         period.setPeriodEnd(Dates.lastDayOfMonth());
+        period.setWorkerId(getCurrentWorkerId());
 
         setModelObject(period);
     }
 
     @Override
     protected void save(AjaxRequestTarget target) {
-        super.save(target);
+        Period period = getModelObject();
+
+        if (periodService.hasPeriod(period)){
+            error(getString("error_has_period"));
+
+            target.add(getFeedback());
+
+            return;
+        }
+
+        try {
+            periodService.save(period);
+
+            super.save(target);
+
+            getSession().success(getString("info_period_saved"));
+        } catch (Exception e) {
+            error(getString("error_period_save"));
+
+            target.add(getFeedback());
+        }
     }
 }

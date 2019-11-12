@@ -30,4 +30,9 @@ public class PeriodListPage extends DomainListModalPage<Period> {
     protected void onEdit(Period object, AjaxRequestTarget target) {
         periodModal.edit(object, target);
     }
+
+    @Override
+    protected boolean isEditEnabled() {
+        return false;
+    }
 }

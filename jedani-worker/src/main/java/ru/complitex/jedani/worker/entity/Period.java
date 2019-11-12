@@ -19,14 +19,28 @@ public class Period extends Domain<Period> {
 
     public Period() {
         super(ENTITY_NAME);
+
+        setUseDateAttribute(true);
+    }
+
+    public Date getOperatingMonth(){
+        return getDate(OPERATING_MONTH);
     }
 
     public void setOperatingMonth(Date operatingMonth){
         setDate(OPERATING_MONTH, operatingMonth);
     }
 
+    public Date getPeriodStart(){
+        return getDate(PERIOD_START);
+    }
+
     public void setPeriodStart(Date periodStart){
         setDate(PERIOD_START, periodStart);
+    }
+
+    public Date getPeriodEnd(){
+        return getDate(PERIOD_END);
     }
 
     public void setPeriodEnd(Date periodEnd){
@@ -35,5 +49,9 @@ public class Period extends Domain<Period> {
 
     public void setPeriodClose(Date periodClose){
         setDate(PERIOD_CLOSE, periodClose);
+    }
+
+    public void setWorkerId(Long workerId){
+        setNumber(WORKER, workerId);
     }
 }

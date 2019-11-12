@@ -39,7 +39,7 @@ public class SaleService implements Serializable {
     private SaleItemMapper saleItemMapper;
 
     @Transactional(rollbackFor = SaleException.class)
-    public void sale(Sale sale, List<SaleItem> saleItems) throws SaleException {
+    public void save(Sale sale, List<SaleItem> saleItems) throws SaleException {
         if (sale.getObjectId() != null) {
             domainService.getDomains(SaleItem.class, FilterWrapper.of(new SaleItem().setParentId(sale.getObjectId())))
                     .forEach(si -> {
@@ -50,8 +50,6 @@ public class SaleService implements Serializable {
         }
 
         //Sale
-
-        Entity saleEntity = entityService.getEntity(Sale.ENTITY_NAME);
 
         domainService.save(sale);
 
@@ -92,6 +90,8 @@ public class SaleService implements Serializable {
             domainService.save(t);
 
             //Sale Item
+
+            Entity saleEntity = entityService.getEntity(Sale.ENTITY_NAME);
 
             s.setParentEntityId(saleEntity.getId());
             s.setParentId(sale.getObjectId());
