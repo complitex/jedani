@@ -25,13 +25,13 @@ public class PaymentService implements Serializable {
 
     public BigDecimal getPaymentsVolumeBySaleId(Long saleId){
         return getPaymentsBySaleId(saleId).stream()
-                .reduce(BigDecimal.ZERO, ((t, p) -> t.add(p.getPoint())), BigDecimal::add);
+                .reduce(BigDecimal.ZERO, ((t, p) -> t.add(p.getPaymentPoint())), BigDecimal::add);
     }
 
-    public BigDecimal getPaymentsVolumeBySaleId(Long saleId, Date date){
+    public BigDecimal getPaymentsVolumeBySaleId(Long saleId, Date month){
         return getPaymentsBySaleId(saleId).stream()
-                .filter(p -> Dates.isSameMonth(p.getDate(), date))
-                .reduce(BigDecimal.ZERO, ((t, p) -> t.add(p.getPoint())), BigDecimal::add);
+                .filter(p -> p.getDate().before(Dates.lastDayOfMonth(month)))
+                .reduce(BigDecimal.ZERO, ((t, p) -> t.add(p.getPaymentPoint())), BigDecimal::add);
     }
 
     public List<Payment> getPaymentsBySellerWorkerId(Long sellerWorkerId){
@@ -40,12 +40,12 @@ public class PaymentService implements Serializable {
 
     public BigDecimal getPaymentsVolumeBySellerWorkerId(Long sellerWorkerId){
         return getPaymentsBySellerWorkerId(sellerWorkerId).stream()
-                .reduce(BigDecimal.ZERO, ((t, p) -> t.add(p.getPoint())), BigDecimal::add);
+                .reduce(BigDecimal.ZERO, ((t, p) -> t.add(p.getPaymentPoint())), BigDecimal::add);
     }
 
     public BigDecimal getPaymentsVolumeBySellerWorkerId(Long sellerWorkerId, Date date){
         return getPaymentsBySellerWorkerId(sellerWorkerId).stream()
                 .filter(p -> Dates.isSameMonth(p.getDate(), date))
-                .reduce(BigDecimal.ZERO, ((t, p) -> t.add(p.getPoint())), BigDecimal::add);
+                .reduce(BigDecimal.ZERO, ((t, p) -> t.add(p.getPaymentPoint())), BigDecimal::add);
     }
 }

@@ -15,7 +15,9 @@ public class Reward extends Domain<Reward> {
     public static final long RANK = 5;
     public static final long DETAIL = 6;
     public static final long SALE = 7;
-    public static final long PERIOD = 8;
+    public static final long MONTH = 8;
+    public static final long PERSONAL_VOLUME = 9;
+    public static final long GROUP_VOLUME = 10;
 
     public Reward() {
         super(ENTITY_NAME);
@@ -23,8 +25,9 @@ public class Reward extends Domain<Reward> {
         setUseDateAttribute(true);
     }
 
-    public boolean isAccrued(){
-        return getPoint() != null && getPoint().compareTo(BigDecimal.ZERO) > 0;
+
+    public Date getDate(){
+        return getDate(DATE);
     }
 
     public void setDate(Date date){
@@ -35,8 +38,10 @@ public class Reward extends Domain<Reward> {
         return getNumber(WORKER);
     }
 
-    public void setWorkerId(Long workerId){
+    public Reward setWorkerId(Long workerId){
         setNumber(WORKER, workerId);
+
+        return this;
     }
 
     public void setPoint(BigDecimal point){
@@ -55,6 +60,10 @@ public class Reward extends Domain<Reward> {
         setNumber(TYPE, type);
     }
 
+    public void setRankId(Long rankId){
+        setNumber(RANK, rankId);
+    }
+
     public Long getSaleId() {
         return getNumber(SALE);
     }
@@ -65,11 +74,19 @@ public class Reward extends Domain<Reward> {
         return this;
     }
 
-    public Long getPeriodId(){
-        return getNumber(PERIOD);
+    public void setMonth(Date month){
+        setDate(MONTH, month);
     }
 
-    public void setPeriodId(Long periodId){
-        setNumber(PERIOD, periodId);
+    public Date getMonth(){
+        return getDate(MONTH);
+    }
+
+    public void setPersonalVolume(BigDecimal personalVolume){
+        setDecimal(PERSONAL_VOLUME, personalVolume);
+    }
+
+    public void setGroupVolume(BigDecimal groupVolume){
+        setDecimal(GROUP_VOLUME, groupVolume);
     }
 }

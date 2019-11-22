@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ru.complitex.jedani.worker.mapper.RewardMapper">
+    <select id="selectRewardIdsMyMonth" parameterType="date" resultType="long">
+        select r.id from reward r
+            left join reward_attribute ra_m on r.id = ra_m.domain_id and ra_m.status = 1 and ra_m.entity_attribute_id = 8
+        where year(ra_m.date) = year(#{month}) and month(ra_m.date) = month(#{month})
+    </select>
+
+    <delete id="deleteRewardsByIds" parameterType="list">
+        delete from reward r
+        where id in <foreach collection="list" open="(" separator="," close=")" item="i">#{i}</foreach>
+    </delete>
+
+    <delete id="deleteRewardAttributesByDomainIds" parameterType="list">
+        delete from reward_attribute
+        where domain_id in <foreach collection="list" open="(" separator="," close=")" item="i">#{i}</foreach>
+    </delete>
+</mapper>

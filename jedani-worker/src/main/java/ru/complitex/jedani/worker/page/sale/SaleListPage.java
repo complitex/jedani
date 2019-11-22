@@ -121,7 +121,7 @@ public class SaleListPage extends DomainListModalPage<Sale> {
     }
 
     @Override
-    protected void onAddColumns(List<IColumn<Sale, SortProperty>> columns) {
+    protected void onInitColumns(List<IColumn<Sale, SortProperty>> columns) {
 
 
         if (isAdmin() || isStructureAdmin()) {
@@ -205,13 +205,13 @@ public class SaleListPage extends DomainListModalPage<Sale> {
                         case (int) SaleStatus.NOT_PAYING:
                             status =  getString("not_paying");
                             break;
-                        case (int) SaleStatus.CLOSED:
+                        case (int) SaleStatus.PAID:
                             status =  getString("closed");
                             break;
                         case (int) SaleStatus.ARCHIVE:
                             status =  getString("archive");
                             break;
-                        case (int) SaleStatus.OVERPAYMENT:
+                        case (int) SaleStatus.OVERPAID:
                             status =  getString("overpayment");
                             break;
                     }
@@ -248,7 +248,7 @@ public class SaleListPage extends DomainListModalPage<Sale> {
     }
 
     @Override
-    protected void onAddAction(RepeatingView repeatingView, IModel<Sale> rowModel) {
+    protected void onCreateAction(RepeatingView repeatingView, IModel<Sale> rowModel) {
         repeatingView.add(new LinkPanel(repeatingView.newChildId(), new BootstrapAjaxButton(LinkPanel.LINK_COMPONENT_ID,
                 Buttons.Type.Link) {
             @Override
@@ -284,10 +284,10 @@ public class SaleListPage extends DomainListModalPage<Sale> {
                 case (int) SaleStatus.NOT_PAYING:
                     statusClass = "danger";
                     break;
-                case (int) SaleStatus.CLOSED:
+                case (int) SaleStatus.PAID:
                     statusClass = "sale_status_closed";
                     break;
-                case (int) SaleStatus.OVERPAYMENT:
+                case (int) SaleStatus.OVERPAID:
                     statusClass = "info";
                     break;
                 case (int) SaleStatus.ARCHIVE:

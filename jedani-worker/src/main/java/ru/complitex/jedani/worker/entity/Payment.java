@@ -12,11 +12,12 @@ public class Payment extends Domain<Payment> {
     public final static long DATE = 2;
     public final static long PERIOD_START = 3;
     public final static long PERIOD_END = 4;
-    public final static long PAYMENT = 5;
+    public final static long PAYMENT_LOCAL = 5;
     public final static long RATE = 6;
-    public final static long POINT = 7;
+    public final static long PAYMENT_POINT = 7;
     public final static long CONTRACT = 8;
     public final static long SALE = 9;
+    public final static long TYPE = 10;
 
     public final static String FILTER_SALE_ID = "saleId";
     public final static String FILTER_SELLER_WORKER_ID = "sellerWorkerId";
@@ -59,20 +60,24 @@ public class Payment extends Domain<Payment> {
         setDate(PERIOD_END, periodEnd);
     }
 
-    public BigDecimal getPayment(){
-        return getDecimal(PAYMENT);
+    public BigDecimal getPaymentLocal(){
+        return getDecimal(PAYMENT_LOCAL);
+    }
+
+    public void setPaymentLocal(BigDecimal paymentLocal){
+        setDecimal(PAYMENT_LOCAL, paymentLocal);
     }
 
     public void setRate(BigDecimal rate){
         setDecimal(RATE, rate);
     }
 
-    public void setPoint(BigDecimal point){
-        setDecimal(POINT, point);
+    public void setPaymentPoint(BigDecimal paymentPoint){
+        setDecimal(PAYMENT_POINT, paymentPoint);
     }
 
-    public BigDecimal getPoint(){
-        return getDecimal(POINT);
+    public BigDecimal getPaymentPoint(){
+        return getDecimal(PAYMENT_POINT);
     }
 
     public String getContract(){
@@ -95,4 +100,11 @@ public class Payment extends Domain<Payment> {
         return this;
     }
 
+    public Long getType(){
+        return getNumber(TYPE);
+    }
+
+    public void setType(Long type){
+        setNumber(TYPE, type);
+    }
 }

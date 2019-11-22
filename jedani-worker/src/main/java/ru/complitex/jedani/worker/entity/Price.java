@@ -51,8 +51,4 @@ public class Price extends Domain<Price> {
 
         return this;
     }
-
-
-
-
 }

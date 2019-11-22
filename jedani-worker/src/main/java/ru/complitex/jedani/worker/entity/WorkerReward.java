@@ -21,11 +21,16 @@ public class WorkerReward {
     private BigDecimal groupSaleVolume = ZERO;
     private BigDecimal groupPaymentVolume = ZERO;
 
-    private boolean manager;
     private Long registrationCount = 0L;
     private Long firstLevelCount = 0L;
 
+    private Long rank = 0L;
+
     private List<Reward> rewards = new ArrayList<>();
+
+    public boolean isManager() {
+        return rank > 0;
+    }
 
     public WorkerReward(WorkerNode workerNode) {
         this.workerNode = workerNode;
@@ -79,14 +84,6 @@ public class WorkerReward {
         this.groupPaymentVolume = groupPaymentVolume;
     }
 
-    public boolean isManager() {
-        return manager;
-    }
-
-    public void setManager(boolean manager) {
-        this.manager = manager;
-    }
-
     public Long getRegistrationCount() {
         return registrationCount;
     }
@@ -101,6 +98,14 @@ public class WorkerReward {
 
     public void setFirstLevelCount(Long firstLevelCount) {
         this.firstLevelCount = firstLevelCount;
+    }
+
+    public Long getRank() {
+        return rank;
+    }
+
+    public void setRank(Long rank) {
+        this.rank = rank;
     }
 
     public List<Reward> getRewards() {

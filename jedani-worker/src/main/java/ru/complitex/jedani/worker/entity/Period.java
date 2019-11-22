@@ -12,10 +12,8 @@ public class Period extends Domain<Period> {
     public static final String ENTITY_NAME = "period";
 
     public static final long OPERATING_MONTH = 1;
-    public static final long PERIOD_START = 2;
-    public static final long PERIOD_END = 3;
-    public static final long PERIOD_CLOSE = 4;
-    public static final long WORKER = 5;
+    public static final long CLOSE_TIMESTAMP = 2;
+    public static final long WORKER = 3;
 
     public Period() {
         super(ENTITY_NAME);
@@ -31,25 +29,12 @@ public class Period extends Domain<Period> {
         setDate(OPERATING_MONTH, operatingMonth);
     }
 
-    public Date getPeriodStart(){
-        return getDate(PERIOD_START);
+    public void setCloseTimestamp(Date closeTimestamp){
+        setDate(CLOSE_TIMESTAMP, closeTimestamp);
     }
 
-    public void setPeriodStart(Date periodStart){
-        setDate(PERIOD_START, periodStart);
-    }
-
-    public Date getPeriodEnd(){
-        return getDate(PERIOD_END);
-    }
-
-    public void setPeriodEnd(Date periodEnd){
-        setDate(PERIOD_END, periodEnd);
-    }
-
-
-    public void setPeriodClose(Date periodClose){
-        setDate(PERIOD_CLOSE, periodClose);
+    public Date getCloseTimestamp(){
+        return getDate(CLOSE_TIMESTAMP);
     }
 
     public Long getWorkerId(){

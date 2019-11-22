@@ -3,13 +3,12 @@ package ru.complitex.jedani.worker.page.reward;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
-import ru.complitex.common.entity.SortProperty;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
+import ru.complitex.domain.component.datatable.DomainColumn;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.page.DomainListModalPage;
@@ -50,45 +49,54 @@ public class RewardListPage extends DomainListModalPage<Reward> {
         List<EntityAttribute> list = new ArrayList<>();
 
         list.add(entity.getEntityAttribute(Reward.DATE));
+        list.add(entity.getEntityAttribute(Reward.SALE));
         list.add(entity.getEntityAttribute(Reward.WORKER));
         list.add(entity.getEntityAttribute(Reward.TYPE).withReference(RewardType.ENTITY_NAME, RewardType.NAME));
-        list.add(entity.getEntityAttribute(Reward.RANK).withReference(Rank.ENTITY_NAME, Rank.NAME));
         list.add(entity.getEntityAttribute(Reward.POINT));
-        list.add(entity.getEntityAttribute(Reward.DETAIL));
+        list.add(entity.getEntityAttribute(Reward.PERSONAL_VOLUME));
+        list.add(entity.getEntityAttribute(Reward.GROUP_VOLUME));
+        list.add(entity.getEntityAttribute(Reward.RANK).withReference(Rank.ENTITY_NAME, Rank.NAME));
 
         return list;
     }
 
     @Override
     protected AbstractDomainColumn<Reward> newDomainColumn(EntityAttribute a) {
-        if (a.getEntityAttributeId().equals(Reward.WORKER)){
+        if (a.getEntityAttributeId().equals(Reward.SALE)){
+            return new AbstractDomainColumn<Reward>("sale") {
+                @Override
+                public void populateItem(Item<ICellPopulator<Reward>> cellItem, String componentId, IModel<Reward> rowModel) {
+                    String sale = "";
+
+                    if (rowModel.getObject().getSaleId() != null) {
+                        sale = saleService.getSale(rowModel.getObject().getSaleId()).getContract();
+                    }
+
+                    cellItem.add(new Label(componentId, sale));
+                }
+            };
+        }else if (a.getEntityAttributeId().equals(Reward.WORKER)){
             return new AbstractDomainColumn<Reward>(a) {
                 @Override
                 public void populateItem(Item<ICellPopulator<Reward>> cellItem, String componentId, IModel<Reward> rowModel) {
                     cellItem.add(new Label(componentId, workerService.getWorkerLabel(rowModel.getObject().getWorkerId())));
                 }
+
+                @Override
+                public String getCssClass() {
+                    return "domain-column-nowrap";
+                }
+            };
+        }else if (a.getEntityAttributeId().equals(Reward.TYPE)){
+            return new DomainColumn<Reward>(a){
+                @Override
+                public String getCssClass() {
+                    return "domain-column-nowrap";
+                }
             };
         }
 
         return super.newDomainColumn(a);
-    }
-
-    @Override
-    protected void onAddColumns(List<IColumn<Reward, SortProperty>> iColumns) {
-        super.onAddColumns(iColumns);
-
-        iColumns.add(new AbstractDomainColumn<Reward>("sale") {
-            @Override
-            public void populateItem(Item<ICellPopulator<Reward>> cellItem, String componentId, IModel<Reward> rowModel) {
-                String sale = "";
-
-                if (rowModel.getObject().getSaleId() != null) {
-                    sale = saleService.getSale(rowModel.getObject().getSaleId()).getContract();
-                }
-
-                cellItem.add(new Label(componentId, sale));
-            }
-        });
     }
 
     @Override

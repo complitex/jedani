@@ -33,8 +33,6 @@ public class PeriodModal extends AbstractEditModal<Period> {
                         .withMinViewMode(AbstractDateTextFieldConfig.View.Month);
             }
         }.setRequired(true));
-        add(new FormGroupDateTextField("start", getModel(), Period.PERIOD_START).setRequired(true));
-        add(new FormGroupDateTextField("end", getModel(), Period.PERIOD_END).setRequired(true));
     }
 
     @Override
@@ -44,8 +42,6 @@ public class PeriodModal extends AbstractEditModal<Period> {
         Period period = new Period();
 
         period.setOperatingMonth(Dates.firstDayOfMonth());
-        period.setPeriodStart(Dates.firstDayOfMonth());
-        period.setPeriodEnd(Dates.lastDayOfMonth());
         period.setWorkerId(getCurrentWorkerId());
 
         setModelObject(period);

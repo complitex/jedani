@@ -91,7 +91,7 @@ public class SaleDecisionListPage extends DomainListModalPage<SaleDecision> {
     }
 
     @Override
-    protected void onAddAction(RepeatingView repeatingView, IModel<SaleDecision> rowModel) {
+    protected void onCreateAction(RepeatingView repeatingView, IModel<SaleDecision> rowModel) {
         repeatingView.add(new LinkPanel(repeatingView.newChildId(), new BootstrapAjaxButton(LinkPanel.LINK_COMPONENT_ID,
                 Buttons.Type.Link) {
             @Override

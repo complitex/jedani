@@ -23,6 +23,7 @@ public class FormGroupTextField<T> extends Panel{
         super(id);
 
         setOutputMarkupId(true);
+        setOutputMarkupPlaceholderTag(true);
 
         FormGroupBorder group = new FormGroupBorder("group", label){
             @Override

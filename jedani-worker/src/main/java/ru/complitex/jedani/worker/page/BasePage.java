@@ -52,6 +52,7 @@ import ru.complitex.jedani.worker.page.price.PriceListPage;
 import ru.complitex.jedani.worker.page.promotion.PromotionListPage;
 import ru.complitex.jedani.worker.page.resource.*;
 import ru.complitex.jedani.worker.page.reward.RewardListPage;
+import ru.complitex.jedani.worker.page.reward.RewardParameterListPage;
 import ru.complitex.jedani.worker.page.sale.SaleDecisionListPage;
 import ru.complitex.jedani.worker.page.sale.SaleListPage;
 import ru.complitex.jedani.worker.page.storage.NomenclatureListPage;
@@ -249,18 +250,19 @@ public class BasePage extends WebPage{
         storages.add(new MenuLink("storage", StorageListPage.class).addMenuPageClass(StoragePage.class));
 
         WebMarkupContainer sales = new WebMarkupContainer("sales");
-        sales.setVisible(isParticipant());
+        sales.setVisible(isAdmin() || isParticipant());
         sales.add(newBehavior());
         sales.add(new WebMarkupContainer("link").add(newBehaviorLink()));
         sidebar.add(sales);
 
         sales.add(new MenuLink("price", PriceListPage.class).setVisible(isAdmin() || isStructureAdmin()));
-        sales.add(new MenuLink("saleDecision", SaleDecisionListPage.class).setVisible(isAdmin() || isStructureAdmin()));
         sales.add(new MenuLink("promotion", PromotionListPage.class).setVisible(isAdmin() || isPromotionAdmin()));
+        sales.add(new MenuLink("saleDecision", SaleDecisionListPage.class).setVisible(isAdmin() || isStructureAdmin()));
         sales.add(new MenuLink("sale", SaleListPage.class).setVisible(isAdmin() || isStructureAdmin() || isSaleAdmin()));
         sales.add(new MenuLink("payment", PaymentListPage.class).setVisible(isAdmin() || isStructureAdmin() || isPaymentAdmin()));
         sales.add(new MenuLink("period", PeriodListPage.class).setVisible(isAdmin() || isPaymentAdmin()));
         sales.add(new MenuLink("reward", RewardListPage.class).setVisible(isAdmin() || isStructureAdmin()));
+        sales.add(new MenuLink("rewardParameter", RewardParameterListPage.class).setVisible(isAdmin()));
     }
 
     @Override
@@ -417,6 +419,10 @@ public class BasePage extends WebPage{
             map = new HashMap<>();
 
             getSession().setMetaData(MENU_TOGGLE, map);
+
+            map.put("address", "");
+            map.put("catalog", "");
+            map.put("settings", "");
         }
 
         return map;

@@ -5,7 +5,6 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.image.GlyphIconType;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.extensions.ajax.markup.html.AjaxIndicatorAppender;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.markup.repeater.Item;
@@ -15,11 +14,13 @@ import ru.complitex.common.wicket.datatable.FilterDataForm;
 import ru.complitex.common.wicket.panel.LinkPanel;
 import ru.complitex.domain.entity.Domain;
 
+import java.util.List;
+
 /**
  * @author Anatoly A. Ivanov
- * 26.02.2019 20:22
+ * 17.11.2019 17:37
  */
-public abstract class DomainModalActionColumn<T extends Domain> extends AbstractDomainColumn<T> {
+public abstract class AbstractActionsColumn<T extends Domain> extends AbstractDomainColumn<T> {
 
     private AjaxIndicatorAppender ajaxIndicatorAppender = new AjaxIndicatorAppender(){
         @Override
@@ -43,29 +44,16 @@ public abstract class DomainModalActionColumn<T extends Domain> extends Abstract
         }.setIconType(GlyphIconType.search));
     }
 
+    protected abstract List<Component> getActions(String componentId, IModel<T> rowModel);
+
     @Override
     public void populateItem(Item<ICellPopulator<T>> cellItem, String componentId, IModel<T> rowModel) {
         RepeatingView repeatingView = new RepeatingView(componentId);
         cellItem.add(repeatingView);
 
-        repeatingView.add(new LinkPanel(repeatingView.newChildId(), new BootstrapAjaxButton(LinkPanel.LINK_COMPONENT_ID, Buttons.Type.Link) {
-            @Override
-            protected void onSubmit(AjaxRequestTarget target) {
-                DomainModalActionColumn.this.onAction(rowModel, target);
-            }
-
-            @Override
-            protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
-                super.updateAjaxAttributes(attributes);
-
-                attributes.setEventPropagation(AjaxRequestAttributes.EventPropagation.STOP);
-            }
-        }.setIconType(GlyphIconType.edit)));
-
-        onAddAction(repeatingView, rowModel);
+        getActions(LinkPanel.LINK_COMPONENT_ID, rowModel)
+                .forEach(a -> repeatingView.add(new LinkPanel(repeatingView.newChildId(), a)));
     }
-
-    protected abstract void onAction(IModel<T> rowModel, AjaxRequestTarget target);
 
     @Override
     public String getCssClass() {
@@ -76,7 +64,4 @@ public abstract class DomainModalActionColumn<T extends Domain> extends Abstract
         return ajaxIndicatorAppender;
     }
 
-    protected void onAddAction(RepeatingView repeatingView, IModel<T> rowModel){
-
-    }
 }

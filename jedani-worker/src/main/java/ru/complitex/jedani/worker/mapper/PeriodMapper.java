@@ -11,4 +11,8 @@ public class PeriodMapper extends BaseMapper {
     public boolean hasPeriod(Period period){
         return sqlSession().selectOne("selectHasPeriod", period);
     }
+
+    public Period getActualPeriod(){
+        return sqlSession().selectOne("selectActualPeriod");
+    }
 }

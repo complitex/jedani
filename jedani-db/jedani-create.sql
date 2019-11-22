@@ -1812,6 +1812,12 @@ CALL createDomainTables('reward_type', 'Тип вознаграждения');
 CALL createDomainTables('reward', 'Вознагражднение');
 
 -- ---------------------------
+-- Reward Parameter
+-- ---------------------------
+
+CALL createDomainTables('reward_parameter', 'Параметры вознаграждений');
+
+-- ---------------------------
 -- Payment
 -- ---------------------------
 

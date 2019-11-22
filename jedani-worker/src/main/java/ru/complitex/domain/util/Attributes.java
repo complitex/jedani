@@ -33,7 +33,7 @@ public class Attributes {
         return text;
     }
 
-    private static final Set<String> NAMES = Sets.newHashSet("Майкук", "БА", "ПК");
+    private static final Set<String> NAMES = Sets.newHashSet("Майкук", "БА", "ПК", "САП", "ММБ", "МК");
 
     public static String capitalize(String text){
         if (text == null){

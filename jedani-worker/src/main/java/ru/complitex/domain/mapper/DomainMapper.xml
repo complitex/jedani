@@ -75,13 +75,18 @@
     </sql>
 
     <!--suppress SqlResolve -->
-    <sql id="selectDomainSql">
+    <sql id="selectDomainSelectFrom">
         select d.*, '${entityName}' entity_name,
         <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainSelect"/>
 
         from `${entityName}` d
-          left join `${entityName}_attribute` a on a.domain_id = d.id and a.status = 1
-          left join `${entityName}_value` v on v.attribute_id = a.id
+        left join `${entityName}_attribute` a on a.domain_id = d.id and a.status = 1
+        left join `${entityName}_value` v on v.attribute_id = a.id
+    </sql>
+
+    <!--suppress SqlResolve -->
+    <sql id="selectDomainSql">
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainSelectFrom"/>
 
         <if test="attributes != null and !attributes.isEmpty">
             <foreach collection="attributes" index="i" item="a">

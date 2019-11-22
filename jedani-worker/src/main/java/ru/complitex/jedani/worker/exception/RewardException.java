@@ -2,10 +2,10 @@ package ru.complitex.jedani.worker.exception;
 
 /**
  * @author Anatoly A. Ivanov
- * 12.11.2019 6:25 PM
+ * 19.11.2019 10:56 AM
  */
-public class PeriodException extends Exception{
-    public PeriodException(String message) {
+public class RewardException extends Exception{
+    public RewardException(String message) {
         super(message);
     }
 }

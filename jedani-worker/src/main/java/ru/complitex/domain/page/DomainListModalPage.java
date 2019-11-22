@@ -141,18 +141,18 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage{
         getEntityAttributes(entityService.getEntity(domainObject.getEntityName()))
                 .forEach(a -> columns.add(newDomainColumn(a)));
 
-        onAddColumns(columns);
+        onInitColumns(columns);
 
         if (isEditEnabled()) {
-            columns.add(new DomainModalActionColumn<T>() {
+            columns.add(new DomainEditActionsColumn<T>() {
                 @Override
                 protected void onAction(IModel<T> rowModel, AjaxRequestTarget target) {
                     onEdit(rowModel.getObject(), target);
                 }
 
                 @Override
-                protected void onAddAction(RepeatingView repeatingView, IModel<T> rowModel) {
-                    DomainListModalPage.this.onAddAction(repeatingView, rowModel);
+                protected void onCreateAction(RepeatingView repeatingView, IModel<T> rowModel) {
+                    DomainListModalPage.this.onCreateAction(repeatingView, rowModel);
                 }
             });
         }
@@ -183,7 +183,7 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage{
 
             @Override
             public boolean isVisible() {
-                return isAddEnabled();
+                return isCreateEnabled();
             }
         });
 
@@ -283,7 +283,7 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage{
     protected void onDataLoad(List<T> list){
     }
 
-    protected void onAddColumns(List<IColumn<T, SortProperty>> columns){
+    protected void onInitColumns(List<IColumn<T, SortProperty>> columns){
     }
 
     public FilterWrapper<T> getFilterWrapper() {
@@ -314,11 +314,11 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage{
         return true;
     }
 
-    protected boolean isAddEnabled(){
+    protected boolean isCreateEnabled(){
         return true;
     }
 
-    protected void onAddAction(RepeatingView repeatingView, IModel<T> rowModel){
+    protected void onCreateAction(RepeatingView repeatingView, IModel<T> rowModel){
 
     }
 

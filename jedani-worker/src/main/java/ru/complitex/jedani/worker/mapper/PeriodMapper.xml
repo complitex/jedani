@@ -1,14 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="ru.complitex.jedani.worker.mapper.PeriodMapper">
+    <resultMap id="periodResultMap" type="ru.complitex.jedani.worker.entity.Period"
+               extends="ru.complitex.domain.mapper.DomainMapper.domainResultMapJoin">
+    </resultMap>
+
     <select id="selectHasPeriod" parameterType="ru.complitex.jedani.worker.entity.Period" resultType="boolean">
         select count(p.id) > 0 from `period` p
             left join period_attribute pa_m on p.id = pa_m.domain_id and pa_m.entity_attribute_id = 1 and pa_m.status = 1
-            left join period_attribute pa_s on p.id = pa_s.domain_id and pa_s.entity_attribute_id = 2 and pa_s.status = 1
-            left join period_attribute pa_e on p.id = pa_e.domain_id and pa_e.entity_attribute_id = 3 and pa_e.status = 1
         where pa_m.date = #{operatingMonth}
-            or (pa_s.date > #{periodStart} and #{periodEnd} > pa_s.date)
-            or (pa_e.date > #{periodStart} and #{periodEnd} > pa_e.date)
-            or (#{periodStart} > pa_s.date and pa_e.date > #{periodEnd})
+    </select>
+
+    <select id="selectActualPeriod" resultMap="periodResultMap">
+        <bind name="entityName" value="'period'"/>
+        <bind name="useDateAttribute" value="true"/>
+
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainSelectFrom"/>
+
+        where d.status = 1
+            and not exists (select pa.id from period_attribute pa where pa.domain_id = d.id and pa.status = 1
+                and pa.entity_attribute_id = 2 and pa.date is not null)
     </select>
 </mapper>

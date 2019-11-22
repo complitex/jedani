@@ -11,9 +11,9 @@ public class MkStatus extends Domain<MkStatus> {
 
     public static final long NAME = 1;
 
-    public static final long STATUS_NO_MK = 1;
-    public static final long STATUS_INSTALMENT_MK = 2;
-    public static final long STATUS_HAS_MK = 3;
+    public static final long STATUS_PROMO = 1;
+    public static final long STATUS_JUST = 2;
+    public static final long STATUS_VIP = 3;
 
     public MkStatus() {
         super(ENTITY_NAME);

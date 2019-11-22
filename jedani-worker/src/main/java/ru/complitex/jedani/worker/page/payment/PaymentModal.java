@@ -2,29 +2,29 @@ package ru.complitex.jedani.worker.page.payment;
 
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.AbstractDateTextFieldConfig;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.DateTextFieldConfig;
+import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.select.BootstrapSelect;
+import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.select.BootstrapSelectConfig;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.markup.html.form.FormComponent;
+import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.model.Model;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.util.Dates;
-import ru.complitex.common.wicket.form.FormGroupDateTextField;
-import ru.complitex.common.wicket.form.FormGroupDecimalField;
-import ru.complitex.common.wicket.form.FormGroupStringField;
+import ru.complitex.common.wicket.form.*;
 import ru.complitex.domain.component.form.AbstractEditModal;
+import ru.complitex.domain.model.NumberAttributeModel;
 import ru.complitex.domain.service.DomainService;
-import ru.complitex.jedani.worker.entity.Payment;
-import ru.complitex.jedani.worker.entity.Sale;
-import ru.complitex.jedani.worker.entity.SaleItem;
-import ru.complitex.jedani.worker.entity.SaleStatus;
+import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.service.PriceService;
-import ru.complitex.jedani.worker.service.RewardService;
 import ru.complitex.jedani.worker.service.SaleDecisionService;
+import ru.complitex.jedani.worker.service.SaleService;
 
 import javax.inject.Inject;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 public class PaymentModal extends AbstractEditModal<Payment> {
     @Inject
@@ -37,12 +37,14 @@ public class PaymentModal extends AbstractEditModal<Payment> {
     private SaleDecisionService saleDecisionService;
 
     @Inject
-    private RewardService rewardService;
+    private SaleService saleService;
 
     private boolean warnTotal = false;
 
     public PaymentModal(String markupId) {
         super(markupId);
+
+        size(Size.Large);
 
         setModel(Model.of(new Payment()));
 
@@ -77,7 +79,40 @@ public class PaymentModal extends AbstractEditModal<Payment> {
 
         add(new FormGroupStringField("contract", getModel(), Payment.CONTRACT).setRequired(true));
 
-        add(new FormGroupDecimalField("payment", getModel(), Payment.PAYMENT).setRequired(true));
+        add(new FormGroupSelectPanel("type", new BootstrapSelect<>(FormGroupPanel.COMPONENT_ID,
+                NumberAttributeModel.of(getModel(), Payment.TYPE),
+                Arrays.asList(PaymentType.POINT, PaymentType.LOCAL),
+                new LongChoiceRenderer() {
+                    @Override
+                    public Object getDisplayValue(Long object) {
+                        switch (object.intValue()){
+                            case (int) PaymentType.POINT:
+                                return getString("point");
+                            case (int) PaymentType.LOCAL:
+                                return getString("local");
+                            default:
+                                return null;
+                        }
+                    }
+                }).with(new BootstrapSelectConfig().withNoneSelectedText(""))
+                .setNullValid(false)
+                .setRequired(true)
+                .add(OnChangeAjaxBehavior.onChange(t -> {
+                    t.add(getContainer().get("paymentPoint"), getContainer().get("paymentLocal"));
+                }))));
+
+        add(new FormGroupDecimalField("paymentLocal", getModel(), Payment.PAYMENT_LOCAL){
+            @Override
+            public boolean isVisible() {
+                return Objects.equals(PaymentType.LOCAL, getModel().getObject().getType());
+            }
+        }.setRequired(true));
+        add(new FormGroupDecimalField("paymentPoint", getModel(), Payment.PAYMENT_POINT){
+            @Override
+            public boolean isVisible() {
+                return Objects.equals(PaymentType.POINT, getModel().getObject().getType());
+            }
+        }.setRequired(true));
     }
 
     @Override
@@ -91,6 +126,7 @@ public class PaymentModal extends AbstractEditModal<Payment> {
         payment.setDate(date);
         payment.setPeriodStart(date);
         payment.setPeriodEnd(date);
+        payment.setType(PaymentType.LOCAL);
 
         payment.setWorkerId(getBasePage().getCurrentWorker().getObjectId());
 
@@ -157,14 +193,20 @@ public class PaymentModal extends AbstractEditModal<Payment> {
         }
 
         payment.setRate(rate);
-        payment.setPoint(payment.getPayment().divide(rate, 2, RoundingMode.HALF_EVEN));
+
+        if (payment.getType().equals(PaymentType.LOCAL)){
+            payment.setPaymentPoint(payment.getPaymentLocal().divide(rate, 2, RoundingMode.HALF_EVEN));
+        }else if (payment.getType().equals(PaymentType.POINT)){
+            payment.setPaymentLocal(payment.getPaymentPoint().multiply(rate).setScale(2, RoundingMode.HALF_EVEN));
+        }
+
         payment.setSaleId(sale.getObjectId());
 
         BigDecimal paymentTotal = domainService.getDomains(Payment.class, FilterWrapper.of(new Payment()
                 .setContract(payment.getContract()))).stream()
-                .filter(p -> !p.getObjectId().equals(payment.getObjectId()) && p.getPoint() != null)
-                .map(Payment::getPoint).reduce(BigDecimal.ZERO, BigDecimal::add)
-                .add(payment.getPoint());
+                .filter(p -> !p.getObjectId().equals(payment.getObjectId()) && p.getPaymentPoint() != null)
+                .map(Payment::getPaymentPoint).reduce(BigDecimal.ZERO, BigDecimal::add)
+                .add(payment.getPaymentPoint());
 
         if (sale.getTotal() != null && sale.getTotal().compareTo(paymentTotal) < 0 && !warnTotal){
             warn(getString("error_payment_more_than_sale_total"));
@@ -179,26 +221,10 @@ public class PaymentModal extends AbstractEditModal<Payment> {
 
         domainService.save(payment);
 
-        //Sale status
-
-        if (sale.getTotal() != null){
-            if (sale.getTotal().compareTo(paymentTotal) > 0){
-                sale.setSaleStatus(SaleStatus.PAYING);
-            }else if (sale.getTotal().compareTo(paymentTotal) == 0){
-                sale.setSaleStatus(SaleStatus.CLOSED);
-            }else if (sale.getTotal().compareTo(paymentTotal) < 0){
-                sale.setSaleStatus(SaleStatus.OVERPAYMENT);
-            }
-
-            domainService.save(sale);
-        }
+        saleService.updateSale(sale, payment, paymentTotal);
 
         success(getString("info_payment_saved"));
 
-        getContainer().visitChildren(FormComponent.class, (c, v) -> ((FormComponent)c).clearInput());
-
-        if (getOnUpdate() != null) {
-            getOnUpdate().accept(target);
-        }
+        super.save(target);
     }
 }

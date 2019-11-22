@@ -98,7 +98,7 @@ public class ExchangeRateListPage extends DomainListModalPage<ExchangeRate> {
     }
 
     @Override
-    protected void onAddColumns(List<IColumn<ExchangeRate, SortProperty>> columns) {
+    protected void onInitColumns(List<IColumn<ExchangeRate, SortProperty>> columns) {
         columns.add(new AbstractDomainColumn<ExchangeRate>(new ResourceModel("date"), new SortProperty("date")) {
             @Override
             public void populateItem(Item<ICellPopulator<ExchangeRate>> cellItem, String componentId, IModel<ExchangeRate> rowModel) {
@@ -135,7 +135,7 @@ public class ExchangeRateListPage extends DomainListModalPage<ExchangeRate> {
     }
 
     @Override
-    protected boolean isAddEnabled() {
+    protected boolean isCreateEnabled() {
         return isAdmin();
     }
 }

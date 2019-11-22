@@ -2,6 +2,7 @@ package ru.complitex.jedani.worker.page.reward;
 
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.markup.html.basic.Label;
+import ru.complitex.common.util.Dates;
 import ru.complitex.jedani.worker.entity.WorkerNode;
 import ru.complitex.jedani.worker.entity.WorkerReward;
 import ru.complitex.jedani.worker.entity.WorkerRewardTree;
@@ -24,7 +25,7 @@ public class RewardTreePage extends BasePage {
     private RewardService rewardService;
 
     public RewardTreePage() {
-        WorkerRewardTree tree = rewardService.calcRewards();
+        WorkerRewardTree tree = rewardService.getWorkerRewardTree(Dates.currentDate());
 
         StringBuilder rewards = new StringBuilder();
 

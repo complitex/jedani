@@ -13,9 +13,11 @@ import ru.complitex.jedani.worker.mapper.SaleMapper;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 
 /**
@@ -125,39 +127,55 @@ public class SaleService implements Serializable {
         return saleItemMapper.getSaleItems(FilterWrapper.of(new SaleItem().setParentId(saleId)));
     }
 
-    public BigDecimal getSaleVolume(Long sellerWorkerId){
-        return domainService.getDomains(Sale.class, FilterWrapper.of(new Sale().setSellerWorkerId(sellerWorkerId))).stream()
+    public BigDecimal getSaleVolume(Long sellerWorkerId, Date month){
+        return saleMapper.getSales(FilterWrapper.of(new Sale().setSellerWorkerId(sellerWorkerId))
+                .put(Sale.FILTER_ACTIVE, true)
+                .put(Sale.FILTER_MONTH, month)).stream()
                 .reduce(BigDecimal.ZERO, (v, s) -> s.getTotal() != null ? s.getTotal() : BigDecimal.ZERO,
                         BigDecimal::add);
     }
 
-    public List<Sale> getSales(Date date){
-        return saleMapper.getSales(FilterWrapper.of(new Sale()).put(Sale.FILTER_DATE, date));
+    public List<Nomenclature> getNomenclatures(List<SaleItem> saleItems){
+        return saleItems.stream()
+                .map(si -> domainService.getDomain(Nomenclature.class, si.getNomenclatureId()))
+                .collect(Collectors.toList());
     }
 
-    public Nomenclature getSaleItemNomenclature(Long saleId){
-        List<SaleItem> saleItems = getSaleItems(saleId);
-
-        if (!saleItems.isEmpty()){
-            return domainService.getDomain(Nomenclature.class, saleItems.get(0).getNomenclatureId());
-        }
-
-        return null;
+    public boolean isMkPremiumSaleItems(List<SaleItem> saleItems){
+        return getNomenclatures(saleItems).stream()
+                .anyMatch(n -> n.getCode() != null && n.getCode().contains("MK-PREM"));
     }
 
-    public boolean isMkPremiumSaleItem(Long saleId){
-        Nomenclature nomenclature = getSaleItemNomenclature(saleId);
-
-        return nomenclature != null && nomenclature.getCode().contains("MK-PREM-UK");
+    public boolean isMkTouchSaleItems(List<SaleItem> saleItems){
+        return getNomenclatures(saleItems).stream()
+                .anyMatch(n -> n.getCode() != null && n.getCode().contains("MK-TOUCH"));
     }
 
-    public boolean isMkTouchSaleItem(Long saleId){
-        Nomenclature nomenclature = getSaleItemNomenclature(saleId);
-
-        return nomenclature != null && nomenclature.getCode().contains("MK-TOUCH");
+    public boolean isMkSaleItems(List<SaleItem> saleItems){
+        return getNomenclatures(saleItems).stream()
+                .anyMatch(n -> n.getCode() != null && (n.getCode().contains("MK-PREM") ||
+                        n.getCode().contains("MK-TOUCH")));
     }
 
     public Sale getSale(Long saleId){
         return domainService.getDomain(Sale.class, saleId);
+    }
+
+    public void updateSale(Sale sale, Payment payment, BigDecimal paymentTotal){
+        if (sale.getTotal() != null){
+            if (paymentTotal.compareTo(sale.getTotal().divide(BigDecimal.TEN, 2, RoundingMode.HALF_EVEN)) >= 0){ //todo sale decision
+                sale.setSaleStatus(SaleStatus.PAYING);
+            }else if (sale.getTotal().compareTo(paymentTotal) == 0){
+                sale.setSaleStatus(SaleStatus.PAID);
+            }else if (sale.getTotal().compareTo(paymentTotal) < 0){
+                sale.setSaleStatus(SaleStatus.OVERPAID);
+            }
+
+            domainService.save(sale);
+        }
+    }
+
+    public List<Sale> getActiveSales(){
+        return saleMapper.getSales(FilterWrapper.of(new Sale()).put(Sale.FILTER_ACTIVE, true));
     }
 }

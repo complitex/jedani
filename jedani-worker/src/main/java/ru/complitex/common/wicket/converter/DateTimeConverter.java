@@ -12,7 +12,7 @@ import java.util.Locale;
  * 24.02.2019 5:52
  */
 public class DateTimeConverter extends AbstractDateConverter<Date> {
-    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 
     @Override
     protected Date createDateLike(long date) {

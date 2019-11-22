@@ -26,6 +26,10 @@ public class SaleDecisionService implements Serializable {
     private DomainService domainService;
 
     public SaleDecision getSaleDecision(Long objectId){
+        if (objectId == null){
+            return null;
+        }
+
         SaleDecision saleDecision = domainService.getDomain(SaleDecision.class, objectId);
 
         loadRules(saleDecision);

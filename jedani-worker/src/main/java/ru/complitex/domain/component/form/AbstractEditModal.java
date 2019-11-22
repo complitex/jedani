@@ -1,16 +1,18 @@
 package ru.complitex.domain.component.form;
 
-import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxButton;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxLink;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
 import de.agilecoders.wicket.core.markup.html.bootstrap.dialog.Modal;
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.FormComponent;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.danekja.java.util.function.serializable.SerializableConsumer;
 import ru.complitex.jedani.worker.page.BasePage;
@@ -44,7 +46,7 @@ public abstract class AbstractEditModal<T> extends Modal<T> {
         feedback.showRenderedMessages(false);
         container.add(feedback);
 
-        addButton(new BootstrapAjaxButton(Modal.BUTTON_MARKUP_ID, Buttons.Type.Primary) {
+        addButton(new IndicatingAjaxButton(Modal.BUTTON_MARKUP_ID, getSaveLabelModel()) {
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
                 save(target);
@@ -54,7 +56,8 @@ public abstract class AbstractEditModal<T> extends Modal<T> {
             protected void onError(AjaxRequestTarget target) {
                 target.add(container);
             }
-        }.setLabel(new ResourceModel("save")));
+        }.setOutputMarkupPlaceholderTag(true)
+                .add(AttributeModifier.append("class", "btn btn-primary")));
 
         addButton(new BootstrapAjaxLink<Void>(Modal.BUTTON_MARKUP_ID, Buttons.Type.Default) {
             @Override
@@ -62,6 +65,10 @@ public abstract class AbstractEditModal<T> extends Modal<T> {
                 cancel(target);
             }
         }.setLabel(new ResourceModel("cancel")));
+    }
+
+    protected IModel<String> getSaveLabelModel() {
+        return new ResourceModel("save");
     }
 
     public WebMarkupContainer getContainer() {

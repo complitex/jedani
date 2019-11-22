@@ -37,7 +37,7 @@ public class FilterDataTable<T extends Serializable> extends DataTable<T, SortPr
         addTopToolbar(new AjaxFallbackHeadersToolbar<SortProperty>(this, dataProvider){
             @Override
             public boolean isVisible() {
-                return !hideOnEmpty || FilterDataTable.this.getRowCount() > 0;
+                return !hideOnEmpty || getRowCount() > 0;
             }
         });
 
@@ -52,11 +52,16 @@ public class FilterDataTable<T extends Serializable> extends DataTable<T, SortPr
 
             @Override
             public boolean isVisible() {
-                return !hideOnEmpty || FilterDataTable.this.getRowCount() > 0;
+                return !hideOnEmpty || getRowCount() > 0;
             }
         });
 
-        addBottomToolbar(new NavigationToolbar(this, tableKey));
+        addBottomToolbar(new NavigationToolbar(this, tableKey){
+            @Override
+            public boolean isVisible() {
+                return getRowCount() > 5;
+            }
+        });
     }
 
     @Override
