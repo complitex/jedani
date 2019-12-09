@@ -43,6 +43,7 @@ import ru.complitex.domain.model.NumberAttributeModel;
 import ru.complitex.domain.model.TextAttributeModel;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
+import ru.complitex.domain.util.Domains;
 import ru.complitex.jedani.worker.component.NomenclatureAutoCompleteList;
 import ru.complitex.jedani.worker.component.RuleTable;
 import ru.complitex.jedani.worker.component.TypeSelect;
@@ -276,6 +277,8 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
     }
 
     public void edit(SaleDecision saleDecision,  AjaxRequestTarget target){
+        saleDecision = Domains.copy(saleDecision);
+
         saleDecisionService.loadRules(saleDecision);
 
         setModelObject(saleDecision);

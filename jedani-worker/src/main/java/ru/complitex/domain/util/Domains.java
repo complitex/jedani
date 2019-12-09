@@ -20,7 +20,8 @@ public class Domains {
         }
     }
 
-    public static <T extends Domain> T newObject(Class<T> domainClass, Domain domain, boolean wrapAttributes){
+    @SuppressWarnings("unchecked")
+    public static <T extends Domain> T newObject(Class<T> domainClass, Domain domain, boolean initAttributes){
         if (domain == null){
             return null;
         }
@@ -28,7 +29,24 @@ public class Domains {
         try {
             T domainInstance = domainClass.newInstance();
 
-            domainInstance.copy(domain, wrapAttributes);
+            domainInstance.copy(domain, initAttributes);
+
+            return domainInstance;
+        } catch (Exception e) {
+            throw new RuntimeException("error create new object " + e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T extends Domain> T copy(T domain){
+        if (domain == null){
+            return null;
+        }
+
+        try {
+            T domainInstance = (T) domain.getClass().newInstance();
+
+            domainInstance.copy(domain, true);
 
             return domainInstance;
         } catch (Exception e) {
