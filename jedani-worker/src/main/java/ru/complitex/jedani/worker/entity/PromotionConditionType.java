@@ -7,7 +7,8 @@ import ru.complitex.domain.entity.ValueType;
  * 22.09.2019 22:19
  */
 public enum PromotionConditionType implements IConditionType{
-    INITIAL_PAYMENT_PERCENT(1L, ValueType.DECIMAL);
+    INITIAL_PAYMENT_PERCENT(1L, ValueType.DECIMAL),
+    QUANTITY(2L, ValueType.NUMBER);;
 
     private Long id;
     private ValueType valueType;

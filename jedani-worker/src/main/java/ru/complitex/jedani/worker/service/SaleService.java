@@ -178,4 +178,15 @@ public class SaleService implements Serializable {
     public List<Sale> getActiveSales(){
         return saleMapper.getSales(FilterWrapper.of(new Sale()).put(Sale.FILTER_ACTIVE, true));
     }
+
+    public BigDecimal getPaymentPercent(Sale sale){
+        if (sale.getTotal() != null && sale.getTotal().compareTo(BigDecimal.ZERO) > 0 &&
+                sale.getInitialPayment() != null) {
+            return sale.getInitialPayment().multiply(new BigDecimal(100))
+                    .divide(sale.getTotal(), 2, RoundingMode.HALF_EVEN);
+        }
+
+        return BigDecimal.ZERO;
+    }
+
 }

@@ -467,19 +467,21 @@ public class SaleModal extends Modal<Sale> {
 
         Sale sale = saleModel.getObject();
 
+        Long paymentPercent = saleService.getPaymentPercent(sale).longValue();
+
         saleItemsModel.getObject().forEach(si -> {
             SaleDecision saleDecision = priceService.getSaleDecision(sale.getStorageId(), si.getNomenclatureId(),
-                    sale.getDate(), basePricesTotal, sale.getInstallmentMonths(), sale.isForYourself(), si.getQuantity());
+                    sale.getDate(), basePricesTotal, sale.getInstallmentMonths(), sale.isForYourself(), si.getQuantity(), paymentPercent);
 
             si.setSaleDecisionId(saleDecision != null ? saleDecision.getObjectId() : null);
 
             si.setPrice(priceService.getPrice(saleDecision, sale.getDate(), si.getBasePrice(), basePricesTotal,
-                    sale.getInstallmentMonths(), sale.isForYourself(), si.getQuantity()));
+                    sale.getInstallmentMonths(), sale.isForYourself(), si.getQuantity(), paymentPercent));
 
             BigDecimal pointPrice = priceService.getRate(sale.getStorageId(), si.getNomenclatureId(), sale.getDate());
 
             si.setRate(priceService.getRate(saleDecision, sale.getDate(), pointPrice, basePricesTotal,
-                    sale.getInstallmentMonths(), sale.isForYourself(), si.getQuantity()));
+                    sale.getInstallmentMonths(), sale.isForYourself(), si.getQuantity(), paymentPercent));
         });
     }
 

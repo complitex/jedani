@@ -50,7 +50,7 @@ public class PriceService implements Serializable {
     }
 
     public SaleDecision getSaleDecision(Long storageId, Long nomenclatureId, Date date, BigDecimal total,
-                                        Long installmentMonths, boolean yourself, Long quantity){
+                                        Long installmentMonths, boolean yourself, Long quantity, Long paymentPercent){
         if (storageId == null || nomenclatureId == null || date == null || total == null){
             return null;
         }
@@ -62,7 +62,7 @@ public class PriceService implements Serializable {
             saleDecisionService.loadRules(saleDecision);
 
             for (Rule rule : saleDecision.getRules()){
-                if (saleDecisionService.check(rule, date, total, installmentMonths, yourself, quantity)){
+                if (saleDecisionService.check(rule, date, total, installmentMonths, yourself, quantity, paymentPercent)){
                     return saleDecision;
                 }
             }
@@ -72,13 +72,13 @@ public class PriceService implements Serializable {
     }
 
     public BigDecimal getPrice(SaleDecision saleDecision, Date date, BigDecimal basePrice, BigDecimal total,
-                               Long installmentMonths, boolean yourself, Long quantity){
+                               Long installmentMonths, boolean yourself, Long quantity, Long paymentPercent){
         if (saleDecision == null || date == null || basePrice == null || total == null){
             return basePrice;
         }
 
         for (Rule rule : saleDecision.getRules()){
-            if (saleDecisionService.check(rule, date, total, installmentMonths, yourself, quantity)){
+            if (saleDecisionService.check(rule, date, total, installmentMonths, yourself, quantity, paymentPercent)){
                 for (RuleAction a : rule.getActions()){
                     switch (IActionType.getValue(SaleDecisionActionType.class, a.getType())){
                         case DISCOUNT:
@@ -112,13 +112,13 @@ public class PriceService implements Serializable {
     }
 
     public BigDecimal getRate(SaleDecision saleDecision, Date paymentDate, BigDecimal rate, BigDecimal total,
-                              Long installmentMonths, boolean yourself, Long quantity){
+                              Long installmentMonths, boolean yourself, Long quantity, Long paymentPercent){
         if (saleDecision == null || paymentDate == null || rate == null || total == null){
             return rate;
         }
 
         for (Rule rule : saleDecision.getRules()){
-            if (saleDecisionService.check(rule, paymentDate, total, installmentMonths, yourself, quantity)){
+            if (saleDecisionService.check(rule, paymentDate, total, installmentMonths, yourself, quantity, paymentPercent)){
                 for (RuleAction a : rule.getActions()){
                     if (IActionType.getValue(SaleDecisionActionType.class, a.getType()) ==
                             SaleDecisionActionType.EURO_RATE_LESS_OR_EQUAL) {
@@ -134,11 +134,11 @@ public class PriceService implements Serializable {
     }
 
     public BigDecimal getRate(Long storageId, Long nomenclatureId, SaleDecision saleDecision, Date paymentDate,
-                              BigDecimal total, Long installmentMonths, boolean yourself, Long quantity){
+                              BigDecimal total, Long installmentMonths, boolean yourself, Long quantity, Long paymentPercent){
         BigDecimal rate = getRate(storageId, nomenclatureId, paymentDate);
 
         if (saleDecision != null){
-            return getRate(saleDecision, paymentDate, rate, total, installmentMonths, yourself, quantity);
+            return getRate(saleDecision, paymentDate, rate, total, installmentMonths, yourself, quantity, paymentPercent);
         }
 
         return rate;
