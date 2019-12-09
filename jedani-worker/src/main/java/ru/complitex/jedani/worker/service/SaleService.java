@@ -163,12 +163,12 @@ public class SaleService implements Serializable {
 
     public void updateSale(Sale sale, Payment payment, BigDecimal paymentTotal){
         if (sale.getTotal() != null){
-            if (paymentTotal.compareTo(sale.getTotal().divide(BigDecimal.TEN, 2, RoundingMode.HALF_EVEN)) >= 0){ //todo sale decision
-                sale.setSaleStatus(SaleStatus.PAYING);
-            }else if (sale.getTotal().compareTo(paymentTotal) == 0){
+            if (sale.getTotal().compareTo(paymentTotal) == 0){
                 sale.setSaleStatus(SaleStatus.PAID);
             }else if (sale.getTotal().compareTo(paymentTotal) < 0){
                 sale.setSaleStatus(SaleStatus.OVERPAID);
+            }else if (paymentTotal.compareTo(sale.getTotal().divide(BigDecimal.TEN, 2, RoundingMode.HALF_EVEN)) >= 0){ //todo sale decision
+                sale.setSaleStatus(SaleStatus.PAYING);
             }
 
             domainService.save(sale);
