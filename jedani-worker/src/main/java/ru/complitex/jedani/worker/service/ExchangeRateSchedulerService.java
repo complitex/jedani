@@ -43,16 +43,20 @@ public class ExchangeRateSchedulerService {
 
         future = Executors.newSingleThreadScheduledExecutor().scheduleWithFixedDelay(() -> {
             exchangeRates.forEach(exchangeRate -> {
-                LocalDateTime updated = updatedMap.get(exchangeRate);
+                try {
+                    LocalDateTime updated = updatedMap.get(exchangeRate);
 
-                if (updated == null || LocalDateTime.now().isAfter(updated.plusDays(1))){
-                    if (exchangeRateService.loadValues(exchangeRate)){
-                        updated = LocalDateTime.now().with(LocalTime.MIN);
+                    if (updated == null || LocalDateTime.now().isAfter(updated.plusDays(1))){
+                        if (exchangeRateService.loadValues(exchangeRate)){
+                            updated = LocalDateTime.now().with(LocalTime.MIN);
 
-                        updatedMap.put(exchangeRate, updated);
+                            updatedMap.put(exchangeRate, updated);
 
-                        log.info("exchange rate updated {} {}", updated, exchangeRate.getName());
+                            log.info("exchange rate updated {} {}", updated, exchangeRate.getName());
+                        }
                     }
+                } catch (Exception e) {
+                    log.error("error update exchange rates ", e);
                 }
             });
         }, 0, 1, TimeUnit.MINUTES);

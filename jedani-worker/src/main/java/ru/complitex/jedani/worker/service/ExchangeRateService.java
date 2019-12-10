@@ -21,13 +21,11 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.*;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.*;
 
 /**
  * @author Anatoly A. Ivanov
@@ -76,8 +74,11 @@ public class ExchangeRateService implements Serializable {
         List<Attribute> attributes = attributeMapper.getHistoryAttributes(exchangeRate.getEntityName(),
                 exchangeRate.getObjectId(), ExchangeRate.VALUE);
 
-        Map<Date, Attribute> map = attributes.stream()
-                .collect(Collectors.toMap(a -> Dates.atStartOfDay(a.getStartDate()), a -> a));
+        Map<Date, Attribute> map = new HashMap<>();
+
+         attributes.forEach(a -> {
+             map.put(Dates.atStartOfDay(a.getStartDate()), a);
+         });
 
         LocalDate tomorrow = LocalDate.now().plusDays(1);
 
