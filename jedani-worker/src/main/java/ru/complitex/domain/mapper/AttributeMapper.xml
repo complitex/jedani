@@ -69,7 +69,7 @@
         where d.object_id = #{object.objectId}
         <if test="object.entityAttributeId != null"> and a.entity_attribute_id = #{object.entityAttributeId}</if>
         <if test="object.text != null"> and a.text like concat('%', #{object.text}, '%')</if>
-        <if test="object.startDate != null"> and a.start_date = #{object.startDate}</if>
+        <if test="object.startDate != null">and date(a.start_date) = date(#{object.startDate})</if>
     </select>
 
     <!--suppress SqlResolve -->
