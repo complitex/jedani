@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import ru.complitex.address.entity.Country;
 import ru.complitex.common.entity.FilterWrapper;
+import ru.complitex.common.util.Dates;
 import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Status;
 import ru.complitex.domain.mapper.AttributeMapper;
@@ -20,10 +21,7 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
@@ -78,7 +76,8 @@ public class ExchangeRateService implements Serializable {
         List<Attribute> attributes = attributeMapper.getHistoryAttributes(exchangeRate.getEntityName(),
                 exchangeRate.getObjectId(), ExchangeRate.VALUE);
 
-        Map<Date, Attribute> map = attributes.stream().collect(Collectors.toMap(Attribute::getStartDate, a -> a));
+        Map<Date, Attribute> map = attributes.stream()
+                .collect(Collectors.toMap(a -> Dates.atStartOfDay(a.getStartDate()), a -> a));
 
         LocalDate tomorrow = LocalDate.now().plusDays(1);
 
@@ -86,9 +85,8 @@ public class ExchangeRateService implements Serializable {
 
         for (LocalDate date = tomorrow.minusDays(365); date.isBefore(tomorrow); date = date.plusDays(1)){
 
-            ZoneOffset zoneOffset = OffsetDateTime.now().getOffset();
-            Date startDate = Date.from(date.atTime(LocalTime.MIN).toInstant(zoneOffset));
-            Date endDate = Date.from(date.atTime(LocalTime.MAX).toInstant(zoneOffset));
+            Date startDate = Date.from(date.atTime(LocalTime.MIN).atZone(ZoneId.systemDefault()).toInstant());
+            Date endDate = Date.from(date.atTime(LocalTime.MAX).withNano(0).atZone(ZoneId.systemDefault()).toInstant());
 
             if (map.get(startDate) == null){
                 Attribute a = new Attribute();
