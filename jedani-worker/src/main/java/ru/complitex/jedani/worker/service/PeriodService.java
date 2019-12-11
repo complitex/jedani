@@ -9,12 +9,13 @@ import ru.complitex.jedani.worker.entity.Period;
 import ru.complitex.jedani.worker.mapper.PeriodMapper;
 
 import javax.inject.Inject;
+import java.io.Serializable;
 
 /**
  * @author Anatoly A. Ivanov
  * 09.11.2019 5:30 PM
  */
-public class PeriodService {
+public class PeriodService implements Serializable {
     private Logger log = LoggerFactory.getLogger(PeriodService.class);
 
     @Inject
