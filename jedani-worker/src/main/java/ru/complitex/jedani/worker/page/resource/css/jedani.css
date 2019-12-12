@@ -323,20 +323,20 @@ p{
     margin: 0;
 }
 
-td > div{
+td div p{
     max-height: 120px;
     overflow-y: auto;
 }
 
-td > div::-webkit-scrollbar {
+td div p::-webkit-scrollbar {
     width: 5px;
 }
 
-td > div::-webkit-scrollbar-thumb {
+td div p::-webkit-scrollbar-thumb {
     background: #d9d9d9;
 }
 
-td > div::-webkit-scrollbar-thumb:hover {
+td div p::-webkit-scrollbar-thumb:hover {
     background: #b3b3b3;
 }
 
