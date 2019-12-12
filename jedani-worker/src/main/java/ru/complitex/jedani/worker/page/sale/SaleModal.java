@@ -223,7 +223,7 @@ public class SaleModal extends Modal<Sale> {
                     saleItemsModel.getObject().clear();
                     saleItemsModel.getObject().add(new SaleItem());
 
-                    updateTotal();
+                    updateTotal(true);
 
                     target.add(container);
                 }))));
@@ -407,7 +407,8 @@ public class SaleModal extends Modal<Sale> {
                 .setEnabled(false));
         container.add(new FormGroupTextField<>("totalLocal", DecimalAttributeModel.of(saleModel, Sale.TOTAL_LOCAL), BigDecimal.class)
                 .setEnabled(false));
-        container.add(new FormGroupTextField<>("payment", DecimalAttributeModel.of(saleModel, Sale.INITIAL_PAYMENT), BigDecimal.class));
+        container.add(new FormGroupTextField<>("payment", DecimalAttributeModel.of(saleModel, Sale.INITIAL_PAYMENT), BigDecimal.class)
+                .onUpdate(t -> updatePrices(t, false)));
 
         addButton(saveButton = new IndicatingAjaxButton(Modal.BUTTON_MARKUP_ID, new ResourceModel("save")) {
             @Override
@@ -478,25 +479,25 @@ public class SaleModal extends Modal<Sale> {
             si.setPrice(priceService.getPrice(saleDecision, sale.getDate(), si.getBasePrice(), basePricesTotal,
                     sale.getInstallmentMonths(), sale.isForYourself(), si.getQuantity(), paymentPercent));
 
-            BigDecimal pointPrice = priceService.getRate(sale.getStorageId(), si.getNomenclatureId(), sale.getDate());
+            BigDecimal rate = priceService.getRate(sale.getStorageId(), si.getNomenclatureId(), sale.getDate());
 
-            si.setRate(priceService.getRate(saleDecision, sale.getDate(), pointPrice, basePricesTotal,
+            si.setRate(priceService.getRate(saleDecision, sale.getDate(), rate, basePricesTotal,
                     sale.getInstallmentMonths(), sale.isForYourself(), si.getQuantity(), paymentPercent));
         });
     }
 
-    private void updateTotal(){
+    private void updateTotal(boolean updateInitialPayment){
         Sale sale = saleModel.getObject();
         List<SaleItem> saleItems = saleItemsModel.getObject();
 
         sale.setTotal(BigDecimal.ZERO);
-        sale.setTotalLocal(BigDecimal.ZERO);
-        sale.setInitialPayment(BigDecimal.ZERO);
 
         if (saleItems.stream().noneMatch(si -> si.getQuantity() == null || si.getPrice() == null)) {
             sale.setTotal(saleItems.stream().map(si -> si.getPrice().multiply(new BigDecimal(si.getQuantity())))
                     .reduce(BigDecimal.ZERO, BigDecimal::add));
         }
+
+        sale.setTotalLocal(BigDecimal.ZERO);
 
         if (saleItems.stream().noneMatch(si -> si.getPrice() == null || si.getQuantity() == null || si.getRate() == null)){
             sale.setTotalLocal(saleItems.stream().map(si -> si.getPrice().multiply(new BigDecimal(si.getQuantity()))
@@ -505,17 +506,25 @@ public class SaleModal extends Modal<Sale> {
                     .reduce(BigDecimal.ZERO, BigDecimal::add));
         }
 
-        if (sale.getTotal() != null && sale.getInstallmentMonths() >= 0) {
-            sale.setInitialPayment(sale.getTotal().divide(BigDecimal.valueOf(1 + sale.getInstallmentMonths()), 2,
-                    BigDecimal.ROUND_HALF_EVEN));
+        if (updateInitialPayment) {
+            sale.setInitialPayment(BigDecimal.ZERO);
+
+            if (sale.getTotal() != null && sale.getInstallmentMonths() >= 0) {
+                sale.setInitialPayment(sale.getTotal().divide(BigDecimal.valueOf(1 + sale.getInstallmentMonths()), 2,
+                        BigDecimal.ROUND_HALF_EVEN));
+            }
         }
     }
 
     private void updatePrices(AjaxRequestTarget target){
+        updatePrices(target, true);
+    }
+
+    private void updatePrices(AjaxRequestTarget target, boolean updateInitialPayment){
         try {
             updateBasePrices();
             updatePrices();
-            updateTotal();
+            updateTotal(updateInitialPayment);
 
             saleItems.stream().forEach(c -> {
                 target.add(c.get("price"), c.get("basePrice"));

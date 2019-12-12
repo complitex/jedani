@@ -13,7 +13,8 @@ import java.util.stream.Collectors;
  * 30.11.2017 15:29
  */
 public class Attribute implements Serializable{
-    public final static String FILTER_DATE = "date";
+    public final static String FILTER_SAME_DAY = "same_day";
+    public final static String FILTER_BEFORE_OR_EQUAL_DATE = "before_or_equal_date";
 
     private Long id;
     private Long domainId;
@@ -33,6 +34,8 @@ public class Attribute implements Serializable{
     private EntityAttribute entityAttribute;
 
     private Long objectId;
+
+    private String filter;
 
     public Attribute() {
     }
@@ -269,6 +272,14 @@ public class Attribute implements Serializable{
 
     public void setEntityAttribute(EntityAttribute entityAttribute) {
         this.entityAttribute = entityAttribute;
+    }
+
+    public String getFilter() {
+        return filter;
+    }
+
+    public void setFilter(String filter) {
+        this.filter = filter;
     }
 
     @Override

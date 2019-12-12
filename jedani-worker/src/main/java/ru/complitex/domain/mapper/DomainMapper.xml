@@ -272,7 +272,20 @@
                         </if>
 
                         <if test="a.date != null">
-                            and (a${i}.date = #{a.date})
+                            <choose>
+                                <when test="a.filter == 'same_day'">
+                                    and (date(a${i}.date) = date(#{a.date}))
+                                </when>
+
+                                <when test="a.filter == 'before_or_equal_date'">
+                                    and (#{a.date} >= a${i}.date)
+                                </when>
+
+                                <otherwise>
+                                    and (a${i}.date = #{a.date})
+                                </otherwise>
+                            </choose>
+
                         </if>
                     </otherwise>
                 </choose>

@@ -827,6 +827,12 @@ CALL createEntityAttribute(42, 1, 6, 'Операционный месяц', 'О�
 CALL createEntityAttribute(42, 2, 6, 'Отметка времени закрытия', 'Відмітка часу закриття');
 CALL createEntityAttributeWithReference(42, 3, 11, 20, 'Пользователь', 'Користувач');
 
+/* Rate */
+
+CALL createEntity(44, 'rate', 'Курс', 'Курс');
+CALL createEntityAttribute(44, 1, 6, 'Дата', 'Дата');
+CALL createEntityAttribute(44, 2, 4, 'Курс', 'Курс');
+
 -- Update
 
 INSERT INTO `update` (`version`) VALUE ('20191120_1.0.39');

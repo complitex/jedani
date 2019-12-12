@@ -47,14 +47,6 @@ public class ExchangeRate extends Domain<ExchangeRate> {
         return getText(XPATH_VALUE);
     }
 
-    public String getValue(){
-        return getText(VALUE);
-    }
-
-    public void setValue(String value){
-        setText(VALUE, value);
-    }
-
     public String getUriDateParam(){
         return getText(URI_DATE_PARAM);
     }

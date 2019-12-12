@@ -406,6 +406,13 @@ public class Domain<T extends Domain<T>> implements Serializable{
         this.useNumberValue = useNumberValue;
     }
 
+    @SuppressWarnings("unchecked")
+    public T setFilter(Long entityAttributeId, String filter){
+        getOrCreateAttribute(entityAttributeId).setFilter(filter);
+
+        return (T) this;
+    }
+
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this).omitNullValues()

@@ -1828,3 +1828,9 @@ CALL createDomainTables('payment', 'Оплата');
 -- ---------------------------
 
 CALL createDomainTables('period', 'Журнал расчетных периодов');
+
+-- ---------------------------
+-- Rate
+-- ---------------------------
+
+CALL createDomainTables('rate', 'Курс');

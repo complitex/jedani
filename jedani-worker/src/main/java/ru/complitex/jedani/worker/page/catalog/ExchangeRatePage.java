@@ -13,32 +13,36 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
-import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.template.PackageTextTemplate;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
-import ru.complitex.common.wicket.datatable.*;
+import ru.complitex.common.wicket.datatable.AbstractFilterColumn;
+import ru.complitex.common.wicket.datatable.DataProvider;
+import ru.complitex.common.wicket.datatable.FilterDataForm;
+import ru.complitex.common.wicket.datatable.FilterDataTable;
 import ru.complitex.common.wicket.form.FormGroupTextField;
 import ru.complitex.common.wicket.panel.LinkPanel;
-import ru.complitex.domain.entity.Attribute;
-import ru.complitex.domain.mapper.AttributeMapper;
+import ru.complitex.domain.component.datatable.DomainColumn;
+import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.service.DomainService;
+import ru.complitex.domain.service.EntityService;
 import ru.complitex.jedani.worker.entity.ExchangeRate;
+import ru.complitex.jedani.worker.entity.Rate;
 import ru.complitex.jedani.worker.page.BasePage;
 import ru.complitex.jedani.worker.page.resource.ApexChartsJsResourceReference;
 import ru.complitex.jedani.worker.security.JedaniRoles;
-import ru.complitex.jedani.worker.service.ExchangeRateService;
 
 import javax.inject.Inject;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -48,25 +52,22 @@ import java.util.stream.Collectors;
 @AuthorizeInstantiation(JedaniRoles.AUTHORIZED)
 public class ExchangeRatePage extends BasePage {
     @Inject
-    private AttributeMapper attributeMapper;
+    private EntityService entityService;
 
     @Inject
     private DomainService domainService;
-
-    @Inject
-    private ExchangeRateService exchangeRateService;
 
     private String data;
 
     public ExchangeRatePage(PageParameters pageParameters) {
         ExchangeRate exchangeRate = domainService.getDomain(ExchangeRate.class, pageParameters.get("id").toLongObject());
 
-        List<Attribute> exchangeRateList = attributeMapper.getHistoryAttributes(exchangeRate.getEntityName(),
-                exchangeRate.getObjectId(), ExchangeRate.VALUE);
+        Rate rate = new Rate().setParentId(exchangeRate.getObjectId());
 
-        exchangeRateList.sort(Comparator.comparing(Attribute::getStartDate));
+        List<Rate> rates = domainService.getDomains(Rate.class, FilterWrapper.of(rate)
+                .sort("date", rate.getOrCreateAttribute(Rate.DATE), true));
 
-        data = exchangeRateList.stream().map(a -> "[" + a.getStartDate().getTime() + ", " + a.getText() + "]")
+        data = rates.stream().map(r -> "[" + r.getDate().getTime() + ", " + r.getRate().toPlainString() + "]")
                 .collect(Collectors.joining(","));
 
         FeedbackPanel feedback = new NotificationPanel("feedback");
@@ -76,14 +77,15 @@ public class ExchangeRatePage extends BasePage {
         add(new FormGroupTextField<>("name", Model.of(exchangeRate.getName())));
         add(new FormGroupTextField<>("code", Model.of(exchangeRate.getCode())));
 
-        FilterWrapper<Attribute> filterWrapper = FilterWrapper.of(new Attribute(exchangeRate.getEntityName(),
-                ExchangeRate.VALUE).setObjectId(exchangeRate.getObjectId()));
-        filterWrapper.setSortProperty(new SortProperty("start_date"));
+        Rate filterRate = new Rate().setParentId(exchangeRate.getObjectId());
 
-        DataProvider<Attribute> dataProvider = new DataProvider<Attribute>(filterWrapper) {
+        FilterWrapper<Rate> filterWrapper = FilterWrapper.of(filterRate)
+                .sort("date", filterRate.getOrCreateAttribute(Rate.DATE));
+
+        DataProvider<Rate> dataProvider = new DataProvider<Rate>(filterWrapper) {
             @Override
-            public Iterator<? extends Attribute> iterator(long first, long count) {
-                FilterWrapper<Attribute> filterWrapper = getFilterState();
+            public Iterator<? extends Rate> iterator(long first, long count) {
+                FilterWrapper<Rate> filterWrapper = getFilterState();
 
                 if (getSort() != null){
                     filterWrapper.setSortProperty(getSort().getProperty());
@@ -93,45 +95,28 @@ public class ExchangeRatePage extends BasePage {
                 filterWrapper.setFirst(first);
                 filterWrapper.setCount(count);
 
-                return exchangeRateService.getExchangeRateHistories(filterWrapper).iterator();
+                return domainService.getDomains(Rate.class, filterWrapper).iterator();
             }
 
             @Override
             public long size() {
-                return exchangeRateService.getExchangeRateHistoriesCount(getFilterState());
+                return domainService.getDomainsCount(getFilterState());
             }
         };
 
-        FilterDataForm<FilterWrapper<Attribute>> form = new FilterDataForm<>("form", dataProvider);
+        FilterDataForm<FilterWrapper<Rate>> form = new FilterDataForm<>("form", dataProvider);
         add(form);
 
-        List<IColumn<Attribute, SortProperty>> columns = new ArrayList<>();
 
-        columns.add(new AbstractFilterColumn<Attribute>(new ResourceModel("date"), new SortProperty("start_date")) {
-            @Override
-            public Component getFilter(String componentId, FilterDataForm<?> form) {
-                return new DateFilter(componentId, new PropertyModel<>(form.getModel(), "object.startDate"), form);
-            }
 
-            @Override
-            public void populateItem(Item<ICellPopulator<Attribute>> cellItem, String componentId, IModel<Attribute> rowModel) {
-                cellItem.add(new Label(componentId, rowModel.getObject().getStartDate()));
-            }
-        });
+        List<IColumn<Rate, SortProperty>> columns = new ArrayList<>();
 
-        columns.add(new AbstractFilterColumn<Attribute>(new ResourceModel("value"), new SortProperty("text")) {
-            @Override
-            public Component getFilter(String componentId, FilterDataForm<?> form) {
-                return new TextDataFilter<>(componentId, new PropertyModel<>(form.getModel(), "object.text"), form);
-            }
+        Entity rateEntity = entityService.getEntity(Rate.ENTITY_VALUE);
 
-            @Override
-            public void populateItem(Item<ICellPopulator<Attribute>> cellItem, String componentId, IModel<Attribute> rowModel) {
-                cellItem.add(new Label(componentId, rowModel.getObject().getText()));
-            }
-        });
+        columns.add(new DomainColumn<>(rateEntity.getEntityAttribute(Rate.DATE)));
+        columns.add(new DomainColumn<>(rateEntity.getEntityAttribute(Rate.RATE)));
 
-        columns.add(new AbstractFilterColumn<Attribute>(null) {
+        columns.add(new AbstractFilterColumn<Rate>(null) {
             @Override
             public Component getFilter(String componentId, FilterDataForm<?> form) {
                 return new LinkPanel(componentId, new BootstrapAjaxButton(LinkPanel.LINK_COMPONENT_ID, Buttons.Type.Link){
@@ -143,7 +128,7 @@ public class ExchangeRatePage extends BasePage {
             }
 
             @Override
-            public void populateItem(Item<ICellPopulator<Attribute>> cellItem, String componentId, IModel<Attribute> rowModel) {
+            public void populateItem(Item<ICellPopulator<Rate>> cellItem, String componentId, IModel<Rate> rowModel) {
                 cellItem.add(new EmptyPanel(componentId));
             }
 
@@ -153,7 +138,7 @@ public class ExchangeRatePage extends BasePage {
             }
         });
 
-        FilterDataTable<Attribute> table = new FilterDataTable<>("table", columns, dataProvider, form, 10, "exchangeRagePage");
+        FilterDataTable<Rate> table = new FilterDataTable<>("table", columns, dataProvider, form, 10, "exchangeRagePage");
         form.add(table);
 
         add(new AjaxLink<Object>("back") {

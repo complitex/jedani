@@ -10,10 +10,11 @@ import ru.complitex.address.entity.Country;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.util.Dates;
 import ru.complitex.domain.entity.Attribute;
-import ru.complitex.domain.entity.Status;
-import ru.complitex.domain.mapper.AttributeMapper;
+import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.service.DomainService;
+import ru.complitex.domain.service.EntityService;
 import ru.complitex.jedani.worker.entity.ExchangeRate;
+import ru.complitex.jedani.worker.entity.Rate;
 
 import javax.inject.Inject;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -35,10 +36,10 @@ public class ExchangeRateService implements Serializable {
     private Logger log = LoggerFactory.getLogger(getClass());
 
     @Inject
-    private AttributeMapper attributeMapper;
+    private DomainService domainService;
 
     @Inject
-    private DomainService domainService;
+    private EntityService entityService;
 
     public String[] getValue(String uri, String uriDateParam, String uriDateFormat, LocalDate localDate,
                              String xpathDate, String xpathValue){
@@ -71,44 +72,42 @@ public class ExchangeRateService implements Serializable {
     }
 
     public boolean loadValues(ExchangeRate exchangeRate){
-        List<Attribute> attributes = attributeMapper.getHistoryAttributes(exchangeRate.getEntityName(),
-                exchangeRate.getObjectId(), ExchangeRate.VALUE);
+        List<Rate> rates = domainService.getDomains(Rate.class, FilterWrapper.of(
+                new Rate().setParentId(exchangeRate.getObjectId())));
 
-        Map<Date, Attribute> map = new HashMap<>();
+        Map<Date, Rate> map = new HashMap<>();
 
-         attributes.forEach(a -> {
-             map.put(Dates.atStartOfDay(a.getStartDate()), a);
+        rates.forEach(r -> {
+             map.put(Dates.atStartOfDay(r.getDate()), r);
          });
 
         LocalDate tomorrow = LocalDate.now().plusDays(1);
 
         boolean updated = false;
 
-        for (LocalDate date = tomorrow.minusDays(365); date.isBefore(tomorrow); date = date.plusDays(1)){
+        Entity exchangeRateEntity = entityService.getEntity(ExchangeRate.ENTITY_NAME);
 
-            Date startDate = Date.from(date.atTime(LocalTime.MIN).atZone(ZoneId.systemDefault()).toInstant());
-            Date endDate = Date.from(date.atTime(LocalTime.MAX).withNano(0).atZone(ZoneId.systemDefault()).toInstant());
+        for (LocalDate localDate = tomorrow.minusDays(365); localDate.isBefore(tomorrow); localDate = localDate.plusDays(1)){
 
-            if (map.get(startDate) == null){
-                Attribute a = new Attribute();
+            Date date = Date.from(localDate.atTime(LocalTime.MIN).atZone(ZoneId.systemDefault()).toInstant());
 
-                a.setEntityName(exchangeRate.getEntityName());
-                a.setDomainId(exchangeRate.getId());
-                a.setEntityAttributeId(ExchangeRate.VALUE);
-                a.setStartDate(startDate);
-                a.setEndDate(endDate);
-                a.setStatus(Status.SYNC);
+            if (map.get(date) == null){
+                Rate rate = new Rate();
+
+                rate.setParentId(exchangeRate.getObjectId());
+                rate.setParentEntityId(exchangeRateEntity.getId());
+                rate.setDate(date);
 
                 String[] values = getValue(exchangeRate.getUriXml(), exchangeRate.getUriDateParam(),
-                        exchangeRate.getUriDateFormat(), date, exchangeRate.getXpathDate(),
+                        exchangeRate.getUriDateFormat(), localDate, exchangeRate.getXpathDate(),
                         exchangeRate.getXpathValue());
 
                 if (values != null && !values[1].isEmpty()){
-                    a.setText(values[1].replace(',', '.'));
+                    rate.setRate(new BigDecimal(values[1].replace(',', '.')));
 
-                    attributeMapper.insertAttribute(a, startDate);
+                    domainService.save(rate);
 
-                    map.put(startDate, a);
+                    map.put(date, rate);
 
                     updated = true;
                 }
@@ -118,28 +117,18 @@ public class ExchangeRateService implements Serializable {
         return updated;
     }
 
-    public List<Attribute> getExchangeRateHistories(FilterWrapper<Attribute> filterWrapper){
-        return attributeMapper.getHistoryAttributes(filterWrapper);
-    }
-
-    public Long getExchangeRateHistoriesCount(FilterWrapper<Attribute> filterWrapper){
-        return attributeMapper.getHistoryAttributesCount(filterWrapper);
-    }
-
     public BigDecimal getExchangeRateValue(Long countryId, Date date){
-        Long exchangeRateId = domainService.getNumber(Country.ENTITY_NAME, countryId, Country.EXCHANGE_RATE_EUR);
+        Rate rate = new Rate()
+                .setParentId(domainService.getNumber(Country.ENTITY_NAME, countryId, Country.EXCHANGE_RATE_EUR))
+                .setDate(date)
+                .setFilter(Rate.DATE, Attribute.FILTER_BEFORE_OR_EQUAL_DATE);
 
-        List<Attribute> values = attributeMapper.getHistoryAttributes(FilterWrapper.of(
-                new Attribute(ExchangeRate.ENTITY_NAME, ExchangeRate.VALUE)
-                        .setObjectId(exchangeRateId))
-                .put(Attribute.FILTER_DATE, date).sort("start_date", false));
+        List<Rate> rates = domainService.getDomains(Rate.class, FilterWrapper.of(rate)
+                        .sort("date", rate.getAttribute(Rate.DATE), false)
+                        .limit(0L, 1L));
 
-        if (!values.isEmpty()){
-            String value = values.get(0).getText();
-
-            if (value != null){
-                return new BigDecimal(value.replace(",", "."));
-            }
+        if (!rates.isEmpty()){
+            return rates.get(0).getRate();
         }
 
         return null;
