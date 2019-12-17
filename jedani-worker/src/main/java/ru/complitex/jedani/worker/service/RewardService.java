@@ -3,6 +3,7 @@ package ru.complitex.jedani.worker.service;
 import org.mybatis.cdi.Transactional;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.util.Dates;
+import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.exception.RewardException;
@@ -43,6 +44,9 @@ public class RewardService implements Serializable {
     @Inject
     private RewardMapper rewardMapper;
 
+    private static WorkerRewardTree workerRewardTreeCache = null;
+    private static long workerRewardTreeCacheTime = 0;
+
     public List<Reward> getRewardsBySaleId(Long saleId){
         return domainService.getDomains(Reward.class, FilterWrapper.of(new Reward().setSaleId(saleId)));
     }
@@ -77,13 +81,22 @@ public class RewardService implements Serializable {
         return tree;
     }
 
+    public WorkerRewardTree getWorkerRewardTreeCache(Date month){
+        if (System.currentTimeMillis()  - workerRewardTreeCacheTime > 1000*60*60){
+            workerRewardTreeCache = getWorkerRewardTree(month);
+
+            workerRewardTreeCacheTime = System.currentTimeMillis();
+        }
+
+        return workerRewardTreeCache;
+    }
+
     private void calcSaleVolumes(WorkerRewardTree tree, Date month){
         tree.forEachLevel((l, rl) -> {
             rl.forEach(r -> {
                 r.setSaleVolume(saleService.getSaleVolume(r.getWorkerNode().getObjectId(), month));
 
                 r.setGroupSaleVolume(r.getChildRewards().stream()
-                        .filter(c -> !c.isManager())
                         .reduce(ZERO, (v, c) -> v.add(c.getSaleVolume().add(c.getGroupSaleVolume())), BigDecimal::add));
 
                 r.setRank(getRank(r.getGroupSaleVolume()));
@@ -129,8 +142,16 @@ public class RewardService implements Serializable {
         tree.forEachLevel((l, rl) -> {
             rl.forEach(r -> {
                 r.setRegistrationCount(r.getChildRewards().stream()
+                        .filter(c -> c.getWorkerNode().getRegistrationDate() != null)
+                        .reduce(0L, (v, c) -> isNewWorker(c, month) ? 1L : 0L, Long::sum));
+
+                r.setGroupRegistrationCount(r.getChildRewards().stream()
                         .filter(c -> !c.isManager() && c.getWorkerNode().getRegistrationDate() != null)
-                        .reduce(0L, (v, c) -> c.getRegistrationCount() + (isNewWorker(c, month) ? 1 : 0), Long::sum));
+                        .reduce(0L, (v, c) -> c.getGroupRegistrationCount() + (isNewWorker(c, month) ? 1 : 0), Long::sum));
+
+                r.setGroupRegistrationCount(r.getChildRewards().stream()
+                        .filter(WorkerReward::isManager)
+                        .reduce(0L, (v, c) -> c.getGroupManagerCount() + 1, Long::sum));
             });
         });
     }
@@ -406,5 +427,22 @@ public class RewardService implements Serializable {
     public BigDecimal getParameter(Long rewardParameterId){
         //todo date
         return domainService.getDomain(RewardParameter.class, rewardParameterId).getDecimal(RewardParameter.VALUE);
+    }
+
+    public Reward getLastReward(Long workerId, Long rewardTypeId){
+        Reward reward = new Reward();
+
+        reward.setWorkerId(workerId);
+        reward.setType(rewardTypeId);
+        reward.setDate(new Date());
+        reward.getAttribute(Reward.DATE).setFilter(Attribute.FILTER_BEFORE_OR_EQUAL_DATE);
+
+        List<Reward> rewards =  domainService.getDomains(Reward.class, FilterWrapper.of(reward).limit(0L, 1L));
+
+        if (!rewards.isEmpty()){
+            return rewards.get(0);
+        }
+
+        return null;
     }
 }

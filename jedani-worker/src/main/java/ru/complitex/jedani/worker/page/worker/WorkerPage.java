@@ -44,6 +44,7 @@ import ru.complitex.address.entity.CityType;
 import ru.complitex.address.entity.Region;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
+import ru.complitex.common.util.Dates;
 import ru.complitex.common.wicket.component.DateTimeLabel;
 import ru.complitex.common.wicket.datatable.*;
 import ru.complitex.common.wicket.form.FormGroupDateTextField;
@@ -77,6 +78,8 @@ import ru.complitex.jedani.worker.mapper.WorkerMapper;
 import ru.complitex.jedani.worker.page.BasePage;
 import ru.complitex.jedani.worker.security.JedaniRoles;
 import ru.complitex.jedani.worker.service.CardService;
+import ru.complitex.jedani.worker.service.RewardService;
+import ru.complitex.jedani.worker.service.SaleService;
 import ru.complitex.jedani.worker.service.WorkerService;
 import ru.complitex.name.entity.FirstName;
 import ru.complitex.name.entity.LastName;
@@ -125,10 +128,13 @@ public class WorkerPage extends BasePage {
     private DomainNodeMapper domainNodeMapper;
 
     @Inject
-    private AttributeMapper attributeMapper;
+    private CardService cardService;
 
     @Inject
-    private CardService cardService;
+    private RewardService rewardService;
+
+    @Inject
+    private SaleService saleService;
 
     private Worker worker;
     private Worker manager;
@@ -231,7 +237,6 @@ public class WorkerPage extends BasePage {
 
         //Worker
         FilterDataForm<FilterWrapper<Worker>> form = new FilterDataForm<>("form", dataProvider);
-        form.setOutputMarkupId(true);
         add(form);
 
         form.add(new FormGroupSelectPanel("type", new TypeSelect(FormGroupPanel.COMPONENT_ID,
@@ -1039,6 +1044,134 @@ public class WorkerPage extends BasePage {
                         .add("level", filterWrapper.getMap().get("levelDepth")));
             }
         });
+
+        //Reward
+
+        WebMarkupContainer rewardContainer = new WebMarkupContainer("rewardContainer");
+        rewardContainer.setVisible(worker.getObjectId() != null);
+        form.add(rewardContainer);
+
+        if (worker.getObjectId() != null) {
+            WorkerReward workerReward = rewardService.getWorkerRewardTreeCache(Dates.firstDayOfMonth())
+                    .getWorkerReward(worker.getObjectId());
+
+            rewardContainer.add(new Label("sale_volume", workerReward.getSaleVolume()));
+            rewardContainer.add(new Label("payment_volume", workerReward.getPaymentVolume()));
+            rewardContainer.add(new Label("registration_count", workerReward.getRegistrationCount()));
+
+            {
+                Entity rewardEntity = entityService.getEntity(Reward.ENTITY_NAME);
+
+                List<IColumn<Reward, SortProperty>> rewardColumns = new ArrayList<>();
+
+                rewardColumns.add(new DomainColumn<>(rewardEntity.getEntityAttribute(Reward.DATE)));
+                rewardColumns.add(new AbstractDomainColumn<Reward>(rewardEntity.getEntityAttribute(Reward.SALE)) {
+                    @Override
+                    public void populateItem(Item<ICellPopulator<Reward>> cellItem, String componentId, IModel<Reward> rowModel) {
+                        String sale = "";
+
+                        if (rowModel.getObject().getSaleId() != null) {
+                            sale = saleService.getSale(rowModel.getObject().getSaleId()).getContract();
+                        }
+
+                        cellItem.add(new Label(componentId, sale));
+                    }
+                });
+                rewardColumns.add(new DomainColumn<>(rewardEntity.getEntityAttribute(Reward.TYPE)
+                        .withReference(RewardType.ENTITY_NAME, RewardType.NAME)));
+
+                rewardColumns.add(new DomainColumn<>(rewardEntity.getEntityAttribute(Reward.POINT)));
+
+                DataProvider<Reward> rewardDataProvider = new DataProvider<Reward>(FilterWrapper.of(new Reward()
+                        .setWorkerId(worker.getObjectId()))) {
+                    @Override
+                    public Iterator<? extends Reward> iterator(long first, long count) {
+                        FilterWrapper<Reward> rewardFilterWrapper = getFilterState().limit(first, count);
+
+                        if (getSort() != null) {
+                            rewardFilterWrapper.setSortProperty(getSort().getProperty());
+                            rewardFilterWrapper.setAscending(getSort().isAscending());
+                        }
+
+
+                        return domainService.getDomains(Reward.class, rewardFilterWrapper).iterator();
+                    }
+
+                    @Override
+                    public long size() {
+                        return domainService.getDomainsCount(getFilterState());
+                    }
+                };
+
+                FilterDataForm<FilterWrapper<Reward>> rewardForm = new FilterDataForm<>("rewardForm", rewardDataProvider);
+                rewardContainer.add(rewardForm);
+
+                FilterDataTable<Reward> rewardTable = new FilterDataTable<>("rewardTable", rewardColumns,
+                        rewardDataProvider, rewardForm, 5, "workerPageReward");
+                rewardTable.setHideOnEmpty(true);
+                rewardForm.add(rewardTable);
+            }
+
+            rewardContainer.add(new Label("rank", workerReward.getRank() !=  null && workerReward.getRank() > 0
+                    ? domainService.getDomain(Rank.class, workerReward.getRank()).getName()
+                    : ""));
+            rewardContainer.add(new Label("group_sale_volume", workerReward.getGroupSaleVolume()));
+            rewardContainer.add(new Label("group_payment_volume", workerReward.getGroupPaymentVolume()));
+            rewardContainer.add(new Label("group_registration_count", workerReward.getGroupRegistrationCount()));
+            rewardContainer.add(new Label("group_manager_count", workerReward.getGroupManagerCount()));
+
+            {
+                Entity rewardEntity = entityService.getEntity(Reward.ENTITY_NAME);
+
+                List<IColumn<Reward, SortProperty>> groupRewardColumns = new ArrayList<>();
+
+                groupRewardColumns.add(new DomainColumn<>(rewardEntity.getEntityAttribute(Reward.DATE)));
+                groupRewardColumns.add(new AbstractDomainColumn<Reward>(rewardEntity.getEntityAttribute(Reward.SALE)) {
+                    @Override
+                    public void populateItem(Item<ICellPopulator<Reward>> cellItem, String componentId, IModel<Reward> rowModel) {
+                        String sale = "";
+
+                        if (rowModel.getObject().getSaleId() != null) {
+                            sale = saleService.getSale(rowModel.getObject().getSaleId()).getContract();
+                        }
+
+                        cellItem.add(new Label(componentId, sale));
+                    }
+                });
+                groupRewardColumns.add(new DomainColumn<>(rewardEntity.getEntityAttribute(Reward.TYPE)
+                        .withReference(RewardType.ENTITY_NAME, RewardType.NAME)));
+
+                groupRewardColumns.add(new DomainColumn<>(rewardEntity.getEntityAttribute(Reward.POINT)));
+
+                DataProvider<Reward> groupRewardDataProvider = new DataProvider<Reward>(FilterWrapper.of(new Reward()
+                        .setWorkerId(worker.getObjectId()))) {
+                    @Override
+                    public Iterator<? extends Reward> iterator(long first, long count) {
+                        FilterWrapper<Reward> rewardFilterWrapper = getFilterState().limit(first, count);
+
+                        if (getSort() != null) {
+                            rewardFilterWrapper.setSortProperty(getSort().getProperty());
+                            rewardFilterWrapper.setAscending(getSort().isAscending());
+                        }
+
+                        return Collections.emptyIterator();
+                    }
+
+                    @Override
+                    public long size() {
+                        return 0;
+                    }
+                };
+
+                FilterDataForm<FilterWrapper<Reward>> groupRewardForm = new FilterDataForm<>("groupRewardForm", groupRewardDataProvider);
+                rewardContainer.add(groupRewardForm);
+
+                FilterDataTable<Reward> groupRewardTable = new FilterDataTable<>("groupRewardTable", groupRewardColumns,
+                        groupRewardDataProvider, groupRewardForm, 5, "workerPageReward");
+                groupRewardTable.setHideOnEmpty(true);
+                groupRewardForm.add(groupRewardTable);
+            }
+        }
     }
 
     protected FilterWrapper<Worker> newFilterWrapper() {

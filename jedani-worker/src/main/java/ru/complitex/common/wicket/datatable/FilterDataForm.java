@@ -25,6 +25,8 @@ public class FilterDataForm<T> extends Form<T> {
         });
 
         this.locator = locator;
+
+        setOutputMarkupId(true);
     }
 
     public IFilterStateLocator<T> getLocator() {

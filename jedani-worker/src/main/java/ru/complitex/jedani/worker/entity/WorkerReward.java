@@ -18,11 +18,16 @@ public class WorkerReward {
     private BigDecimal saleVolume = ZERO;
     private BigDecimal paymentVolume = ZERO;
 
+    private Long registrationCount = 0L;
+
+    private Long firstLevelCount = 0L;
+
     private BigDecimal groupSaleVolume = ZERO;
     private BigDecimal groupPaymentVolume = ZERO;
 
-    private Long registrationCount = 0L;
-    private Long firstLevelCount = 0L;
+    private Long groupRegistrationCount = 0L;
+
+    private Long groupManagerCount = 0L;
 
     private Long rank = 0L;
 
@@ -90,6 +95,22 @@ public class WorkerReward {
 
     public void setRegistrationCount(Long registrationCount) {
         this.registrationCount = registrationCount;
+    }
+
+    public Long getGroupRegistrationCount() {
+        return groupRegistrationCount;
+    }
+
+    public void setGroupRegistrationCount(Long groupRegistrationCount) {
+        this.groupRegistrationCount = groupRegistrationCount;
+    }
+
+    public Long getGroupManagerCount() {
+        return groupManagerCount;
+    }
+
+    public void setGroupManagerCount(Long groupManagerCount) {
+        this.groupManagerCount = groupManagerCount;
     }
 
     public Long getFirstLevelCount() {

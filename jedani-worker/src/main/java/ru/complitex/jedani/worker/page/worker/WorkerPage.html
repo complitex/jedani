@@ -100,6 +100,62 @@
 
             <br/>
 
+            <div wicket:id="rewardContainer">
+                <table class="table">
+                    <caption>Личный финансовый результат</caption>
+                    <thead>
+                    <tr>
+                        <th>Оборот</th>
+                        <th>Финансовый оборот</th>
+                        <th>Количество приглашенных</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td wicket:id="sale_volume"></td>
+                        <td wicket:id="payment_volume"></td>
+                        <td wicket:id="registration_count"></td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <br/>
+
+                <form wicket:id="rewardForm">
+                    <table wicket:id="rewardTable" class="table table-hover"></table>
+                </form>
+
+                <br/>
+
+                <table class="table">
+                    <caption>Финансовый результат структуры</caption>
+                    <thead>
+                    <tr>
+                        <th>Ранг</th>
+                        <th>Оборот</th>
+                        <th>Финансовый оборот</th>
+                        <th>Количество приглашенных</th>
+                        <th>Количество менеджеров</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td wicket:id="rank"></td>
+                        <td wicket:id="group_sale_volume"></td>
+                        <td wicket:id="group_payment_volume"></td>
+                        <td wicket:id="group_registration_count"></td>
+                        <td wicket:id="group_manager_count"></td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <br/>
+
+                <form wicket:id="groupRewardForm">
+                    <table wicket:id="groupRewardTable" class="table table-hover"></table>
+                </form>
+            </div>
+
             <div wicket:id="historyContainer" class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
                 <div class="panel panel-default">
                     <div class="panel-heading" role="tab" id="headingOne">
