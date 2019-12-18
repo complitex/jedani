@@ -277,6 +277,10 @@
                                     and (date(a${i}.date) = date(#{a.date}))
                                 </when>
 
+                                <when test="a.filter == 'same_month'">
+                                    and (year(a${i}.date) = year(#{a.date}) and month(a${i}.date) = month(#{a.date}))
+                                </when>
+
                                 <when test="a.filter == 'before_or_equal_date'">
                                     and (#{a.date} >= a${i}.date)
                                 </when>
@@ -438,6 +442,12 @@
         ) o
         left join `${object.entityName}` d on d.id = o.dd_id
         left join `${object.entityName}_attribute` a on a.domain_id = d.id and a.status = 1
+            <if test="!entityAttributeIds.empty">
+                and a.entity_attribute_id in
+                    <foreach collection="entityAttributeIds" open="(" close=")" separator="," item="i">
+                        ${i}
+                    </foreach>
+            </if>
         left join `${object.entityName}_value` v on v.attribute_id = a.id
         <include refid="selectDomainsFromSort"/>
         group by d.id, a.id, v.id

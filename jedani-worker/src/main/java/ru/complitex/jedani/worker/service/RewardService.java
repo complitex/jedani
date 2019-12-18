@@ -1,5 +1,8 @@
 package ru.complitex.jedani.worker.service;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import org.mybatis.cdi.Transactional;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.util.Dates;
@@ -15,6 +18,8 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import static java.math.BigDecimal.ZERO;
 
@@ -44,9 +49,6 @@ public class RewardService implements Serializable {
     @Inject
     private RewardMapper rewardMapper;
 
-    private static WorkerRewardTree workerRewardTreeCache = null;
-    private static long workerRewardTreeCacheTime = 0;
-
     public List<Reward> getRewardsBySaleId(Long saleId){
         return domainService.getDomains(Reward.class, FilterWrapper.of(new Reward().setSaleId(saleId)));
     }
@@ -57,15 +59,28 @@ public class RewardService implements Serializable {
                 .reduce(ZERO, ((t, p) -> t.add(p.getPoint())), BigDecimal::add);
     }
 
-    public List<Reward> getRewardsByWorkerId(Long workerId){
-        //todo opt
-        return domainService.getDomains(Reward.class, FilterWrapper.of(new Reward().setWorkerId(workerId)));
+    public List<Reward> getRewards(Long workerId, Date month){
+        return domainService.getDomains(Reward.class, FilterWrapper.of(new Reward()
+                .setWorkerId(workerId)
+                .setMonth(month)
+                .setFilter(Reward.MONTH, Attribute.FILTER_SAME_MONTH)
+        ));
     }
 
-    public BigDecimal getRewardsTotalByWorkerId(Long workerId, Long rewardTypeId, Date month){
-        return getRewardsByWorkerId(workerId).stream()
-                .filter(r -> Objects.equals(r.getType(), rewardTypeId) && Dates.isSameMonth(r.getDate(), month))
+    public BigDecimal getRewardsTotal(Long workerId, Long rewardTypeId, Date month){
+        return getRewards(workerId, month).stream()
+                .filter(r -> Objects.equals(r.getType(), rewardTypeId))
                 .reduce(ZERO, ((t, p) -> t.add(p.getPoint())), BigDecimal::add);
+    }
+
+    public BigDecimal getRewardsTotal(List<Reward> rewards, Long rewardTypeId, Date month, boolean current){
+        return rewards.stream()
+                .filter(r -> Objects.equals(r.getType(), rewardTypeId) && isCurrentSaleMonth(r, month) == current)
+                .reduce(ZERO, ((t, p) -> t.add(p.getPoint())), BigDecimal::add);
+    }
+
+    public boolean isCurrentSaleMonth(Reward reward, Date month){
+        return Dates.isSameMonth(saleService.getSale(reward.getSaleId()).getDate(), month);
     }
 
     public WorkerRewardTree getWorkerRewardTree(Date month){
@@ -81,20 +96,14 @@ public class RewardService implements Serializable {
         return tree;
     }
 
-    public WorkerRewardTree getWorkerRewardTreeCache(Date month){
-        if (System.currentTimeMillis()  - workerRewardTreeCacheTime > 1000*60*60){
-            workerRewardTreeCache = getWorkerRewardTree(month);
-
-            workerRewardTreeCacheTime = System.currentTimeMillis();
-        }
-
-        return workerRewardTreeCache;
-    }
-
     private void calcSaleVolumes(WorkerRewardTree tree, Date month){
+        Set<Long> activeSaleWorkerIds = saleService.getActiveSaleWorkerIds();
+
         tree.forEachLevel((l, rl) -> {
             rl.forEach(r -> {
-                r.setSaleVolume(saleService.getSaleVolume(r.getWorkerNode().getObjectId(), month));
+                if (activeSaleWorkerIds.contains(r.getWorkerNode().getObjectId())) {
+                    r.setSaleVolume(saleService.getSaleVolume(r.getWorkerNode().getObjectId(), month));
+                }
 
                 r.setGroupSaleVolume(r.getChildRewards().stream()
                         .reduce(ZERO, (v, c) -> v.add(c.getSaleVolume().add(c.getGroupSaleVolume())), BigDecimal::add));
@@ -131,9 +140,16 @@ public class RewardService implements Serializable {
     }
 
     private void calcPaymentVolume(WorkerRewardTree tree, Date month){
+        Set<Long> activeSaleWorkerIds = saleService.getActiveSaleWorkerIds();
+
         tree.forEachLevel((l, rl) -> {
             rl.forEach(r -> {
-                r.setPaymentVolume(paymentService.getPaymentsVolumeBySellerWorkerId(r.getWorkerNode().getObjectId(), month));
+                if (activeSaleWorkerIds.contains(r.getWorkerNode().getObjectId())) {
+                    r.setPaymentVolume(paymentService.getPaymentsVolumeBySellerWorkerId(r.getWorkerNode().getObjectId(), month));
+                }
+
+                r.setGroupPaymentVolume(r.getChildRewards().stream()
+                        .reduce(ZERO, (v, c) -> v.add(c.getGroupPaymentVolume().add(c.getGroupPaymentVolume())), BigDecimal::add));
             });
         });
     }
@@ -247,9 +263,6 @@ public class RewardService implements Serializable {
 
         return ZERO;
     }
-
-
-
 
     public BigDecimal getMkManagerBonusRewardPoint(Sale sale, List<SaleItem> saleItems){
         BigDecimal point = ZERO;
@@ -406,7 +419,7 @@ public class RewardService implements Serializable {
                         reward.setDate(Dates.currentDate());
                         reward.setMonth(month);
 
-                        if (getRewardsTotalByWorkerId(reward.getWorkerId(), RewardType.TYPE_PERSONAL_VOLUME,
+                        if (getRewardsTotal(reward.getWorkerId(), RewardType.TYPE_PERSONAL_VOLUME,
                                 month).compareTo(ZERO) == 0) {
                             if (r.getSaleVolume().compareTo(getParameter(44L)) < 0){
                                 reward.setPoint(getParameter(45L));
@@ -424,25 +437,18 @@ public class RewardService implements Serializable {
         }
     }
 
+    private LoadingCache<Long, BigDecimal> parameterCache = CacheBuilder.newBuilder()
+            .expireAfterAccess(1, TimeUnit.MINUTES)
+            .build(CacheLoader.from(rewardParameterId -> domainService.getDomain(RewardParameter.class, rewardParameterId)
+                    .getDecimal(RewardParameter.VALUE)));
+
     public BigDecimal getParameter(Long rewardParameterId){
-        //todo date
-        return domainService.getDomain(RewardParameter.class, rewardParameterId).getDecimal(RewardParameter.VALUE);
-    }
-
-    public Reward getLastReward(Long workerId, Long rewardTypeId){
-        Reward reward = new Reward();
-
-        reward.setWorkerId(workerId);
-        reward.setType(rewardTypeId);
-        reward.setDate(new Date());
-        reward.getAttribute(Reward.DATE).setFilter(Attribute.FILTER_BEFORE_OR_EQUAL_DATE);
-
-        List<Reward> rewards =  domainService.getDomains(Reward.class, FilterWrapper.of(reward).limit(0L, 1L));
-
-        if (!rewards.isEmpty()){
-            return rewards.get(0);
+        try {
+            return parameterCache.get(rewardParameterId);
+        } catch (Exception e) {
+            return null;
         }
-
-        return null;
     }
+
+
 }

@@ -108,6 +108,11 @@
                         <th>Оборот</th>
                         <th>Финансовый оборот</th>
                         <th>Количество приглашенных</th>
+                        <th>Базовое вознаграждение МК</th>
+                        <th>Базовое вознаграждение БА</th>
+                        <th>Менеджерский Майкук бонус</th>
+                        <th>Кулинарный практикум</th>
+                        <th>Бонус за финансовый оборот</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -115,15 +120,14 @@
                         <td wicket:id="sale_volume"></td>
                         <td wicket:id="payment_volume"></td>
                         <td wicket:id="registration_count"></td>
+                        <td wicket:id="reward_mk"></td>
+                        <td wicket:id="reward_ba"></td>
+                        <td wicket:id="reward_mkb"></td>
+                        <td wicket:id="reward_cw"></td>
+                        <td wicket:id="reward_pv"></td>
                     </tr>
                     </tbody>
                 </table>
-
-                <br/>
-
-                <form wicket:id="rewardForm">
-                    <table wicket:id="rewardTable" class="table table-hover"></table>
-                </form>
 
                 <br/>
 
@@ -135,6 +139,7 @@
                         <th>Оборот</th>
                         <th>Финансовый оборот</th>
                         <th>Количество приглашенных</th>
+                        <th>Менеджерская надбавка</th>
                         <th>Количество менеджеров</th>
                     </tr>
                     </thead>
@@ -144,17 +149,14 @@
                         <td wicket:id="group_sale_volume"></td>
                         <td wicket:id="group_payment_volume"></td>
                         <td wicket:id="group_registration_count"></td>
+                        <td wicket:id="reward_mp"></td>
                         <td wicket:id="group_manager_count"></td>
                     </tr>
                     </tbody>
                 </table>
-
-                <br/>
-
-                <form wicket:id="groupRewardForm">
-                    <table wicket:id="groupRewardTable" class="table table-hover"></table>
-                </form>
             </div>
+
+            <br/>
 
             <div wicket:id="historyContainer" class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
                 <div class="panel panel-default">

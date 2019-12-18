@@ -49,6 +49,7 @@ public class RewardListPage extends DomainListModalPage<Reward> {
         List<EntityAttribute> list = new ArrayList<>();
 
         list.add(entity.getEntityAttribute(Reward.DATE));
+        list.add(entity.getEntityAttribute(Reward.MONTH));
         list.add(entity.getEntityAttribute(Reward.SALE));
         list.add(entity.getEntityAttribute(Reward.WORKER));
         list.add(entity.getEntityAttribute(Reward.TYPE).withReference(RewardType.ENTITY_NAME, RewardType.NAME));

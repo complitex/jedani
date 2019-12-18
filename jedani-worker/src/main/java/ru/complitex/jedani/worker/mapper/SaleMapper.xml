@@ -53,6 +53,12 @@
         ) o
         left join sale d on d.id = o.dd_id
         left join sale_attribute a on a.domain_id = d.id and a.status = 1
+        <if test="!entityAttributeIds.empty">
+            and a.entity_attribute_id in
+                <foreach collection="entityAttributeIds" open="(" close=")" separator="," item="i">
+                    ${i}
+                </foreach>
+        </if>
         left join sale_value v on v.attribute_id = a.id
         <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromSort"/>
         group by d.id, a.id, v.id

@@ -17,6 +17,7 @@ import java.math.RoundingMode;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 
@@ -129,6 +130,7 @@ public class SaleService implements Serializable {
 
     public BigDecimal getSaleVolume(Long sellerWorkerId, Date month){
         return saleMapper.getSales(FilterWrapper.of(new Sale().setSellerWorkerId(sellerWorkerId))
+                .addEntityAttributeId(Sale.TOTAL)
                 .put(Sale.FILTER_ACTIVE, true)
                 .put(Sale.FILTER_MONTH, month)).stream()
                 .reduce(BigDecimal.ZERO, (v, s) -> s.getTotal() != null ? s.getTotal() : BigDecimal.ZERO,
@@ -177,6 +179,14 @@ public class SaleService implements Serializable {
 
     public List<Sale> getActiveSales(){
         return saleMapper.getSales(FilterWrapper.of(new Sale()).put(Sale.FILTER_ACTIVE, true));
+    }
+
+    public Set<Long> getActiveSaleWorkerIds(){
+        return saleMapper.getSales(FilterWrapper.of(new Sale())
+                        .addEntityAttributeId(Sale.SELLER_WORKER)
+                        .put(Sale.FILTER_ACTIVE, true)).stream()
+                .map(Sale::getSellerWorkerId)
+                .collect(Collectors.toSet());
     }
 
     public BigDecimal getPaymentPercent(Sale sale){

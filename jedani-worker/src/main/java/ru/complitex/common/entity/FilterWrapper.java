@@ -1,7 +1,9 @@
 package ru.complitex.common.entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -24,6 +26,8 @@ public class FilterWrapper<T extends Serializable> implements Serializable {
     private String filter;
 
     private String status;
+
+    private List<Long> entityAttributeIds = new ArrayList<>();
 
     public FilterWrapper() {
     }
@@ -162,5 +166,15 @@ public class FilterWrapper<T extends Serializable> implements Serializable {
         this.status = status;
 
         return this;
+    }
+
+    public FilterWrapper<T> addEntityAttributeId(Long entityAttributeId){
+        entityAttributeIds.add(entityAttributeId);
+
+        return this;
+    }
+
+    public List<Long> getEntityAttributeIds() {
+        return entityAttributeIds;
     }
 }

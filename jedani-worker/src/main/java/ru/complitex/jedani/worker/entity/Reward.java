@@ -74,8 +74,10 @@ public class Reward extends Domain<Reward> {
         return this;
     }
 
-    public void setMonth(Date month){
+    public Reward setMonth(Date month){
         setDate(MONTH, month);
+
+        return this;
     }
 
     public Date getMonth(){
