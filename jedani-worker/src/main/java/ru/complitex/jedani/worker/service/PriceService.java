@@ -28,6 +28,9 @@ public class PriceService implements Serializable {
     @Inject
     private StorageService storageService;
 
+    @Inject
+    private SaleService saleService;
+
     public BigDecimal getBasePrice(Long storageId, Long nomenclatureId, Date date){
         if (storageId == null || nomenclatureId == null || date == null){
             return null;
@@ -103,8 +106,8 @@ public class PriceService implements Serializable {
         return basePrice;
     }
 
-    public BigDecimal getRate(Long storageId, Long nomenclatureId, Date date){
-        if (storageId == null || nomenclatureId == null || date == null){
+    public BigDecimal getRate(Long storageId, Date date){
+        if (storageId == null || date == null){
             return null;
         }
 
@@ -133,14 +136,21 @@ public class PriceService implements Serializable {
         return rate;
     }
 
-    public BigDecimal getRate(Long storageId, Long nomenclatureId, SaleDecision saleDecision, Date paymentDate,
+    public BigDecimal getRate(Long storageId, SaleDecision saleDecision, Date paymentDate,
                               BigDecimal total, Long installmentMonths, boolean yourself, Long quantity, Long paymentPercent){
-        BigDecimal rate = getRate(storageId, nomenclatureId, paymentDate);
+        BigDecimal rate = getRate(storageId, paymentDate);
 
         if (saleDecision != null){
             return getRate(saleDecision, paymentDate, rate, total, installmentMonths, yourself, quantity, paymentPercent);
         }
 
         return rate;
+    }
+
+    public BigDecimal getRate(Sale sale, SaleItem saleItem, Date date){
+        BigDecimal rate = getRate(sale.getStorageId(), date);
+
+        return getRate(saleDecisionService.getSaleDecision(saleItem.getSaleDecisionId()), date, rate, sale.getTotal(),
+                sale.getInstallmentMonths(), sale.isForYourself(), saleItem.getQuantity(), saleService.getPaymentPercent(sale).longValue());
     }
 }

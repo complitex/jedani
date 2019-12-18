@@ -15,6 +15,7 @@ import ru.complitex.jedani.worker.mapper.RewardMapper;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -22,6 +23,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import static java.math.BigDecimal.ZERO;
+import static java.math.RoundingMode.HALF_EVEN;
 
 /**
  * @author Anatoly A. Ivanov
@@ -48,6 +50,12 @@ public class RewardService implements Serializable {
 
     @Inject
     private RewardMapper rewardMapper;
+
+    @Inject
+    private ExchangeRateService exchangeRateService;
+
+    @Inject
+    private PriceService priceService;
 
     public List<Reward> getRewardsBySaleId(Long saleId){
         return domainService.getDomains(Reward.class, FilterWrapper.of(new Reward().setSaleId(saleId)));
@@ -76,7 +84,13 @@ public class RewardService implements Serializable {
     public BigDecimal getRewardsTotal(List<Reward> rewards, Long rewardTypeId, Date month, boolean current){
         return rewards.stream()
                 .filter(r -> Objects.equals(r.getType(), rewardTypeId) && isCurrentSaleMonth(r, month) == current)
-                .reduce(ZERO, ((t, p) -> t.add(p.getPoint())), BigDecimal::add);
+                .reduce(ZERO, ((t, r) -> t.add(r.getPoint())), BigDecimal::add);
+    }
+
+    public BigDecimal getRewardsTotalLocal(List<Reward> rewards, Long rewardTypeId, Date month, boolean current){
+        return rewards.stream()
+                .filter(r -> Objects.equals(r.getType(), rewardTypeId) && isCurrentSaleMonth(r, month) == current)
+                .reduce(ZERO, ((t, r) -> t.add(r.getLocal())), BigDecimal::add);
     }
 
     public boolean isCurrentSaleMonth(Reward reward, Date month){
@@ -322,6 +336,40 @@ public class RewardService implements Serializable {
         return ZERO;
     }
 
+    private void updateLocal(Sale sale, Reward reward){
+        Date date = Dates.currentDate();
+
+        List<SaleItem> saleItems = saleService.getSaleItems(sale.getObjectId());
+
+        if (!saleItems.isEmpty()){
+            SaleItem saleItem = saleItems.get(0);
+
+            if (saleItem.getSaleDecisionId() != null){
+                reward.setRate(priceService.getRate(sale, saleItem, date));
+            }
+
+            reward.setDiscount(saleItem.getPrice().divide(saleItem.getBasePrice(), 2, HALF_EVEN));
+        }
+
+        if (reward.getRate() == null){
+            reward.setRate(priceService.getRate(sale.getStorageId(), date));
+        }
+
+        reward.setLocal(reward.getPoint().multiply(reward.getRate()).setScale(2, HALF_EVEN));
+
+        if (reward.getDiscount() != null){
+            reward.setLocal(reward.getLocal().multiply(reward.getDiscount()).setScale(2, HALF_EVEN));
+        }
+    }
+
+    private void updateLocal(Long countyId, Reward reward){
+        Date date = Dates.currentDate();
+
+        reward.setRate(exchangeRateService.getExchangeRateValue(countyId, date));
+
+        reward.setLocal(reward.getPoint().multiply(reward.getRate()).setScale(2, HALF_EVEN));
+    }
+
     @Transactional(rollbackFor = RewardException.class)
     public void calculateRewards() throws RewardException {
         try {
@@ -348,6 +396,8 @@ public class RewardService implements Serializable {
                         reward.setDate(Dates.currentDate());
                         reward.setMonth(month);
 
+                        updateLocal(s, reward);
+
                         domainService.save(reward);
                     }
 
@@ -369,6 +419,8 @@ public class RewardService implements Serializable {
                             reward.setGroupVolume(workerReward.getGroupSaleVolume());
                             reward.setRankId(workerReward.getRank());
 
+                            updateLocal(s, reward);
+
                             domainService.save(reward);
                         }
                     }
@@ -388,6 +440,8 @@ public class RewardService implements Serializable {
                         reward.setDate(Dates.currentDate());
                         reward.setMonth(month);
 
+                        updateLocal(s, reward);
+
                         domainService.save(reward);
                     }
                 }
@@ -403,6 +457,8 @@ public class RewardService implements Serializable {
                     reward.setPoint(s.getCulinaryRewardPoint());
                     reward.setDate(Dates.currentDate());
                     reward.setMonth(month);
+
+                    updateLocal(s, reward);
 
                     domainService.save(reward);
                 }
@@ -427,6 +483,8 @@ public class RewardService implements Serializable {
                                 reward.setPoint(getParameter(46L));
                             }
                         }
+
+                        updateLocal(2L, reward);
 
                         domainService.save(reward);
                     }

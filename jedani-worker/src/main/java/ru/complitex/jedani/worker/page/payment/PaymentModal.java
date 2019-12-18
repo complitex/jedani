@@ -101,13 +101,13 @@ public class PaymentModal extends AbstractEditModal<Payment> {
                     t.add(getContainer().get("paymentPoint"), getContainer().get("paymentLocal"));
                 }))));
 
-        add(new FormGroupDecimalField("paymentLocal", getModel(), Payment.PAYMENT_LOCAL){
+        add(new FormGroupDecimalField("paymentLocal", getModel(), Payment.LOCAL){
             @Override
             public boolean isVisible() {
                 return Objects.equals(PaymentType.LOCAL, getModel().getObject().getType());
             }
         }.setRequired(true));
-        add(new FormGroupDecimalField("paymentPoint", getModel(), Payment.PAYMENT_POINT){
+        add(new FormGroupDecimalField("paymentPoint", getModel(), Payment.POINT){
             @Override
             public boolean isVisible() {
                 return Objects.equals(PaymentType.POINT, getModel().getObject().getType());
@@ -180,7 +180,7 @@ public class PaymentModal extends AbstractEditModal<Payment> {
 
         SaleItem saleItem = saleItems.get(0);
 
-        BigDecimal rate = priceService.getRate(sale.getStorageId(), saleItem.getNomenclatureId(),
+        BigDecimal rate = priceService.getRate(sale.getStorageId(),
                 saleDecisionService.getSaleDecision(saleItem.getSaleDecisionId()),
                 payment.getDate(), sale.getTotal(), sale.getInstallmentMonths(), sale.isForYourself(),
                 saleItem.getQuantity(), saleService.getPaymentPercent(sale).longValue());
@@ -196,18 +196,18 @@ public class PaymentModal extends AbstractEditModal<Payment> {
         payment.setRate(rate);
 
         if (payment.getType().equals(PaymentType.LOCAL)){
-            payment.setPaymentPoint(payment.getPaymentLocal().divide(rate, 2, RoundingMode.HALF_EVEN));
+            payment.setPoint(payment.getLocal().divide(rate, 2, RoundingMode.HALF_EVEN));
         }else if (payment.getType().equals(PaymentType.POINT)){
-            payment.setPaymentLocal(payment.getPaymentPoint().multiply(rate).setScale(2, RoundingMode.HALF_EVEN));
+            payment.setLocal(payment.getPoint().multiply(rate).setScale(2, RoundingMode.HALF_EVEN));
         }
 
         payment.setSaleId(sale.getObjectId());
 
         BigDecimal paymentTotal = domainService.getDomains(Payment.class, FilterWrapper.of(new Payment()
                 .setContract(payment.getContract()))).stream()
-                .filter(p -> !p.getObjectId().equals(payment.getObjectId()) && p.getPaymentPoint() != null)
-                .map(Payment::getPaymentPoint).reduce(BigDecimal.ZERO, BigDecimal::add)
-                .add(payment.getPaymentPoint());
+                .filter(p -> !p.getObjectId().equals(payment.getObjectId()) && p.getPoint() != null)
+                .map(Payment::getPoint).reduce(BigDecimal.ZERO, BigDecimal::add)
+                .add(payment.getPoint());
 
         if (sale.getTotal() != null && sale.getTotal().compareTo(paymentTotal) < 0 && !warnTotal){
             warn(getString("error_payment_more_than_sale_total"));

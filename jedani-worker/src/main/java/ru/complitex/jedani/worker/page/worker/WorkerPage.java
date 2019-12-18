@@ -1082,8 +1082,11 @@ public class WorkerPage extends BasePage {
     }
 
     protected String getRewardString(List<Reward> rewards, Long rewardTypeId, Date month) {
-        return rewardService.getRewardsTotal(rewards,  rewardTypeId, month, true) + " / " +
-                rewardService.getRewardsTotal(rewards, rewardTypeId, month, false);
+        return rewardService.getRewardsTotal(rewards,  rewardTypeId, month, true) + " (" +
+                rewardService.getRewardsTotalLocal(rewards,  rewardTypeId, month, true) + ")" +
+                " / " +
+                rewardService.getRewardsTotal(rewards, rewardTypeId, month, false) + " (" +
+                rewardService.getRewardsTotalLocal(rewards, rewardTypeId, month, false)+ ")";
     }
 
     protected FilterWrapper<Worker> newFilterWrapper() {

@@ -708,12 +708,17 @@ CALL insertDomainText(10, 'reward_type', 'Менеджерская надбав�
 CALL createEntity(40, 'reward', 'Вознагражднение', 'Винагорода');
 CALL createEntityAttribute(40, 1, 6, 'Дата', 'Дата');
 CALL createEntityAttributeWithReference(40, 2, 11, 20, 'Сотрудник', 'Співробітник');
-CALL createEntityAttribute(40, 3, 4, 'Баллы', 'Бали');
+CALL createEntityAttribute(40, 3, 4, 'Сумма (в баллах)', 'Сума (в балах)');
 CALL createEntityAttributeWithReference(40, 4, 11, 39, 'Тип', 'Тип');
 CALL createEntityAttributeWithReference(40, 5, 11, 38, 'Ранг', 'Ранг');
 CALL createEntityAttribute(40, 6, 2, 'Комментарий', 'Коментар');
 CALL createEntityAttributeWithReference(40, 7, 11, 28, 'Продажа', 'Продаж');
 CALL createEntityAttribute(40, 8, 6, 'Операционный месяц', 'Операційний місяць');
+CALL createEntityAttribute(40, 9, 4, 'Личный оборот', 'Особистий оборот');
+CALL createEntityAttribute(40, 10, 4, 'Групповой оборот', 'Груповий оборот');
+CALL createEntityAttribute(40, 11, 4, 'Курс', 'Курс');
+CALL createEntityAttribute(40, 12, 4, 'Скидка', 'Знижка');
+CALL createEntityAttribute(40, 13, 4, 'Сумма (в локальной валюте)', 'Сума (в локальній валюті)');
 
 /* Reward Parameter */
 
@@ -835,4 +840,4 @@ CALL createEntityAttribute(44, 2, 4, 'Курс', 'Курс');
 
 -- Update
 
-INSERT INTO `update` (`version`) VALUE ('20191120_1.0.39');
+INSERT INTO `update` (`version`) VALUE ('20191218_1.0.41');

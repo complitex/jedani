@@ -12,9 +12,9 @@ public class Payment extends Domain<Payment> {
     public final static long DATE = 2;
     public final static long PERIOD_START = 3;
     public final static long PERIOD_END = 4;
-    public final static long PAYMENT_LOCAL = 5;
+    public final static long LOCAL = 5;
     public final static long RATE = 6;
-    public final static long PAYMENT_POINT = 7;
+    public final static long POINT = 7;
     public final static long CONTRACT = 8;
     public final static long SALE = 9;
     public final static long TYPE = 10;
@@ -60,24 +60,24 @@ public class Payment extends Domain<Payment> {
         setDate(PERIOD_END, periodEnd);
     }
 
-    public BigDecimal getPaymentLocal(){
-        return getDecimal(PAYMENT_LOCAL);
+    public BigDecimal getLocal(){
+        return getDecimal(LOCAL);
     }
 
-    public void setPaymentLocal(BigDecimal paymentLocal){
-        setDecimal(PAYMENT_LOCAL, paymentLocal);
+    public void setLocal(BigDecimal local){
+        setDecimal(LOCAL, local);
     }
 
     public void setRate(BigDecimal rate){
         setDecimal(RATE, rate);
     }
 
-    public void setPaymentPoint(BigDecimal paymentPoint){
-        setDecimal(PAYMENT_POINT, paymentPoint);
+    public void setPoint(BigDecimal point){
+        setDecimal(POINT, point);
     }
 
-    public BigDecimal getPaymentPoint(){
-        return getDecimal(PAYMENT_POINT);
+    public BigDecimal getPoint(){
+        return getDecimal(POINT);
     }
 
     public String getContract(){

@@ -479,7 +479,7 @@ public class SaleModal extends Modal<Sale> {
             si.setPrice(priceService.getPrice(saleDecision, sale.getDate(), si.getBasePrice(), basePricesTotal,
                     sale.getInstallmentMonths(), sale.isForYourself(), si.getQuantity(), paymentPercent));
 
-            BigDecimal rate = priceService.getRate(sale.getStorageId(), si.getNomenclatureId(), sale.getDate());
+            BigDecimal rate = priceService.getRate(sale.getStorageId(), sale.getDate());
 
             si.setRate(priceService.getRate(saleDecision, sale.getDate(), rate, basePricesTotal,
                     sale.getInstallmentMonths(), sale.isForYourself(), si.getQuantity(), paymentPercent));

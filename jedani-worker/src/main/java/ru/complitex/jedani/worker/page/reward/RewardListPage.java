@@ -54,6 +54,9 @@ public class RewardListPage extends DomainListModalPage<Reward> {
         list.add(entity.getEntityAttribute(Reward.WORKER));
         list.add(entity.getEntityAttribute(Reward.TYPE).withReference(RewardType.ENTITY_NAME, RewardType.NAME));
         list.add(entity.getEntityAttribute(Reward.POINT));
+        list.add(entity.getEntityAttribute(Reward.RATE));
+        list.add(entity.getEntityAttribute(Reward.DISCOUNT));
+        list.add(entity.getEntityAttribute(Reward.LOCAL));
         list.add(entity.getEntityAttribute(Reward.PERSONAL_VOLUME));
         list.add(entity.getEntityAttribute(Reward.GROUP_VOLUME));
         list.add(entity.getEntityAttribute(Reward.RANK).withReference(Rank.ENTITY_NAME, Rank.NAME));
