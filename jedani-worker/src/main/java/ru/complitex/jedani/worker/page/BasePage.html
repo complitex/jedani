@@ -9,7 +9,7 @@
     <nav id="header" class="navbar navbar-masthead navbar-default navbar-inverse" role="navigation">
         <div class="container-fluid">
             <div class="nav navbar-nav navbar-left menu-header">
-                <a data-toggle="collapse" href="#sidebar" aria-expanded="false" aria-controls="sidebar">
+                <a wicket:id="headerMenu" data-toggle="collapse" href="#sidebar" aria-expanded="false" aria-controls="sidebar">
                     МЕНЮ
                 </a>
             </div>
@@ -40,9 +40,9 @@
             </div>
         </div>
 
-        <div id="sidebar" class="sidebar collapse">
+        <div wicket:id="sidebar" id="sidebar" class="sidebar collapse" aria-expanded="false">
             <div class="sidebar-nav">
-                <ul wicket:id="sidebar" id="menu" class="nav metismenu">
+                <ul wicket:id="menu" id="menu" class="nav metismenu">
                     <li><a wicket:id="worker">Личный кабинет</a></li>
                     <li><a wicket:id="regionalLeader">Кабинет РР</a></li>
                     <li class="mm-active" wicket:id="userStorages" id="userStorages">

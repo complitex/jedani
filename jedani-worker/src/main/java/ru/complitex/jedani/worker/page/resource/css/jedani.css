@@ -25,7 +25,7 @@ a:focus {
 .navbar-header{
     position: absolute;
     top: 0;
-    left: 42.5%;
+    left: 44%;
 }
 
 .navbar-header a img{
@@ -36,7 +36,7 @@ a:focus {
 .menu-header a{
     margin-top:10px;
     color: #f28100;
-    font-size: 18px;
+    font-size: 17px;
     float: left;
     margin-right: 15px;
     margin-left: 15px;

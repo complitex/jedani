@@ -2,6 +2,7 @@ package ru.complitex.jedani.worker.page;
 
 import de.agilecoders.wicket.core.markup.html.bootstrap.list.BootstrapListView;
 import org.apache.wicket.Component;
+import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.MetaDataKey;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -111,7 +112,7 @@ public class BasePage extends WebPage{
 
     private Worker currentWorker;
 
-    private WebMarkupContainer sidebar;
+    private WebMarkupContainer menu;
 
     protected BasePage(PageParameters pageParameters) {
         this.pageParameters = pageParameters;
@@ -122,6 +123,17 @@ public class BasePage extends WebPage{
 
         currentUser = userMapper.getUser(login);
         currentWorker = workerService.getWorker(login);
+
+        add(new WebMarkupContainer("headerMenu"){
+            @Override
+            protected void onComponentTag(ComponentTag tag) {
+                super.onComponentTag(tag);
+
+                if ("true".equals(getMenuToggleMap().get("showMenu"))){
+                    tag.put("aria-expanded", "true");
+                }
+            }
+        });
 
         MenuLink menuLink = new MenuLink("home", HomePage.class);
         add(menuLink);
@@ -151,19 +163,47 @@ public class BasePage extends WebPage{
             }
         });
 
-        sidebar = new WebMarkupContainer("sidebar");
-        sidebar.add(newAjaxEventMenuBehavior());
+        WebMarkupContainer sidebar = new WebMarkupContainer("sidebar"){
+            @Override
+            protected void onComponentTag(ComponentTag tag) {
+                super.onComponentTag(tag);
+
+                if ("true".equals(getMenuToggleMap().get("showMenu"))){
+                    tag.put("class", "sidebar collapse in");
+                    tag.put("aria-expanded", "true");
+                }
+            }
+        };
+
+        sidebar.add(new AjaxEventBehavior("show.bs.collapse") {
+            @Override
+            protected void onEvent(AjaxRequestTarget target) {
+                getMenuToggleMap().put("showMenu", "true");
+            }
+        });
+
+        sidebar.add(new AjaxEventBehavior("hide.bs.collapse") {
+            @Override
+            protected void onEvent(AjaxRequestTarget target) {
+                getMenuToggleMap().remove("showMenu");
+            }
+        });
+
         add(sidebar);
 
-        sidebar.add(new MenuLink("worker", WorkerPage.class));
-        sidebar.add(new MenuLink("regionalLeader", RegionalLeaderPage.class)
+        menu = new WebMarkupContainer("menu");
+        menu.add(newAjaxEventMenuBehavior());
+        sidebar.add(menu);
+
+        menu.add(new MenuLink("worker", WorkerPage.class));
+        menu.add(new MenuLink("regionalLeader", RegionalLeaderPage.class)
                 .setVisible(getCurrentWorker().isRegionalLeader()));
 
         WebMarkupContainer userStorages = new WebMarkupContainer("userStorages");
         userStorages.setVisible(isUser() && !isAdmin() && isParticipant());
         userStorages.add(newBehavior());
         userStorages.add(new WebMarkupContainer("link").add(newBehaviorLink()));
-        sidebar.add(userStorages);
+        menu.add(userStorages);
 
         if (getCurrentStorage() != null) {
             userStorages.add(new MenuLink("storage", StoragePage.class, new PageParameters()
@@ -200,7 +240,7 @@ public class BasePage extends WebPage{
         settings.setVisible(isAdmin());
         settings.add(newBehavior());
         settings.add(new WebMarkupContainer("link").add(newBehaviorLink()));
-        sidebar.add(settings);
+        menu.add(settings);
 
         settings.add(new MenuLink("setting", SettingPage.class).setVisible(isAdmin()));
         settings.add(new MenuLink("import", ImportPage.class).setVisible(isAdmin()));
@@ -209,7 +249,7 @@ public class BasePage extends WebPage{
         address.setVisible(isAdmin());
         address.add(newBehavior());
         address.add(new WebMarkupContainer("link").add(newBehaviorLink()));
-        sidebar.add(address);
+        menu.add(address);
 
         address.add(new MenuLink("countries", CountryListPage.class).setVisible(isAdmin()));
         address.add(new MenuLink("regions", RegionListPage.class).setVisible(isAdmin()));
@@ -219,7 +259,7 @@ public class BasePage extends WebPage{
         WebMarkupContainer catalog = new WebMarkupContainer("catalog");
         catalog.add(newBehavior());
         catalog.add(new WebMarkupContainer("link").add(newBehaviorLink()));
-        sidebar.add(catalog);
+        menu.add(catalog);
 
         catalog.add(new MenuLink("first_name", FirstNameListPage.class).setVisible(isAdmin()));
         catalog.add(new MenuLink("middle_name", MiddleNameListPage.class).setVisible(isAdmin()));
@@ -235,7 +275,7 @@ public class BasePage extends WebPage{
         workers.setVisible(isAdmin() || isStructureAdmin());
         workers.add(newBehavior());
         workers.add(new WebMarkupContainer("link").add(newBehaviorLink()));
-        sidebar.add(workers);
+        menu.add(workers);
 
         workers.add(new MenuLink("workers", WorkerListPage.class).addMenuPageClass(WorkerPage.class));
         workers.add(new MenuLink("cards", CardListPage.class));
@@ -244,7 +284,7 @@ public class BasePage extends WebPage{
         storages.setVisible(isAdmin());
         storages.add(newBehavior());
         storages.add(new WebMarkupContainer("link").add(newBehaviorLink()));
-        sidebar.add(storages);
+        menu.add(storages);
 
         storages.add(new MenuLink("nomenclature", NomenclatureListPage.class));
         storages.add(new MenuLink("storage", StorageListPage.class).addMenuPageClass(StoragePage.class));
@@ -253,7 +293,7 @@ public class BasePage extends WebPage{
         sales.setVisible(isAdmin() || isParticipant());
         sales.add(newBehavior());
         sales.add(new WebMarkupContainer("link").add(newBehaviorLink()));
-        sidebar.add(sales);
+        menu.add(sales);
 
         sales.add(new MenuLink("price", PriceListPage.class).setVisible(isAdmin() || isStructureAdmin()));
         sales.add(new MenuLink("promotion", PromotionListPage.class).setVisible(isAdmin() || isPromotionAdmin()));
@@ -269,7 +309,7 @@ public class BasePage extends WebPage{
     protected void onBeforeRender() {
         super.onBeforeRender();
 
-        sidebar.visitChildren(MenuLink.class, (IVisitor<MenuLink, IVisit>) (m, v) -> {
+        menu.visitChildren(MenuLink.class, (IVisitor<MenuLink, IVisit>) (m, v) -> {
             if ((getClass().equals(m.getPageClass()) && (m.getMenuKey() == null ||
                     m.getPageParameters().get(m.getMenuKey()).equals(pageParameters.get(m.getMenuKey())))) ||
                     m.hasMenuPageClass(getClass())){
@@ -343,6 +383,10 @@ public class BasePage extends WebPage{
         response.render(JavaScriptHeaderItem.forReference(MenuJsResourceReference.INSTANCE));
 
         response.render(OnDomReadyHeaderItem.forScript("$('#menu').metisMenu({toggle: true})"));
+
+        if ("true".equals(getMenuToggleMap().get("showMenu"))) {
+            response.render(OnDomReadyHeaderItem.forScript(" $('#content').css('margin', '0 0 0 185px')"));
+        }
     }
 
     private HttpServletRequest getHttpServletRequest(){
