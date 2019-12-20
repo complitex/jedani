@@ -2,6 +2,17 @@ body {
     font-family: Montserrat, sans-serif;
     color: #2c2927;
 }
+
+a {
+    color: #a0c969;
+}
+
+a:hover,
+a:focus {
+    color: #f28100;
+    outline: none;
+}
+
 #page{
     width: 100%;
 }
@@ -22,14 +33,20 @@ body {
     height: 44px;
 }
 
-a {
-    color: #a0c969;
+.menu-header a{
+    margin-top:10px;
+    color: #f28100;
+    font-size: 18px;
+    float: left;
+    margin-right: 15px;
+    margin-left: 15px;
 }
 
-a:hover,
-a:focus {
-    color: #f28100;
+.menu-header a:hover,
+.menu-header a:focus{
+    text-decoration: none;
 }
+
 
 .navbar-masthead.navbar-inverse .navbar-nav > li > a {
     color: #f28100;
@@ -267,7 +284,7 @@ fieldset[disabled] .btn-flat-default.focus {
 @media (min-width: 768px) {
     #content {
         position: inherit;
-        margin: 0 0 0 185px;
+        margin: 0;
         padding: 15px;
     }
 

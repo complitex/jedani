@@ -8,6 +8,11 @@
 <div id="page">
     <nav id="header" class="navbar navbar-masthead navbar-default navbar-inverse" role="navigation">
         <div class="container-fluid">
+            <div class="nav navbar-nav navbar-left menu-header">
+                <a data-toggle="collapse" href="#sidebar" aria-expanded="false" aria-controls="sidebar">
+                    МЕНЮ
+                </a>
+            </div>
 
             <div class="navbar-header">
                 <a wicket:id="home">
@@ -35,7 +40,7 @@
             </div>
         </div>
 
-        <div  class="sidebar">
+        <div id="sidebar" class="sidebar collapse">
             <div class="sidebar-nav">
                 <ul wicket:id="sidebar" id="menu" class="nav metismenu">
                     <li><a wicket:id="worker">Личный кабинет</a></li>
@@ -116,6 +121,16 @@
     <div id="content" class="row">
         <wicket:child/>
     </div>
+
+    <script>
+        $('#sidebar')
+            .on('show.bs.collapse', function () {
+                $('#content').css('margin', '0 0 0 185px');
+            })
+            .on('hidden.bs.collapse', function () {
+                $('#content').css('margin', '0');
+            });
+    </script>
 </div>
 </body>
 </html>
