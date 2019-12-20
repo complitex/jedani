@@ -10,6 +10,6 @@ public class JedaniLogoImgResourceReference extends PackageResourceReference {
     public static final JedaniLogoImgResourceReference INSTANCE = new JedaniLogoImgResourceReference();
 
     public JedaniLogoImgResourceReference() {
-        super(JedaniLogoImgResourceReference.class, "img/jedani.svg");
+        super(JedaniLogoImgResourceReference.class, "img/jedani.png");
     }
 }

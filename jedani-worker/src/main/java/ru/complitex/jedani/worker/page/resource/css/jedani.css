@@ -1,5 +1,6 @@
 body {
-
+    font-family: Montserrat, sans-serif;
+    color: #2c2927;
 }
 #page{
     width: 100%;
@@ -7,11 +8,256 @@ body {
 
 #header {
     margin-bottom: 0;
+    height: 56px;
 }
 
-#header .navbar-brand{
-    padding: 3px 0;
-    margin-left: 0;
+.navbar-header{
+    position: absolute;
+    top: 0;
+    left: 42.5%;
+}
+
+.navbar-header a img{
+    padding: 6px 0;
+    height: 44px;
+}
+
+a {
+    color: #a0c969;
+}
+
+a:hover,
+a:focus {
+    color: #f28100;
+}
+
+.navbar-masthead.navbar-inverse .navbar-nav > li > a {
+    color: #f28100;
+}
+
+.bootstrap-select > .dropdown-toggle{
+    color: #222;
+}
+
+.form-control:focus {
+    border-color: #a0c969;
+    outline: 0;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+
+.btn-link {
+    color: #a0c969;
+}
+
+.btn-link:hover,
+.btn-link:focus,
+.btn-link.focus {
+    color: #f28100;
+}
+
+.btn-primary,
+.btn-flat-primary {
+    color: #a0c969;
+    border: 1px solid #a0c969;
+    background-image: none;
+    background-color: #fff;
+}
+
+.btn-primary:hover,
+.btn-flat-primary:hover,
+.btn-primary:focus,
+.btn-flat-primary:focus,
+.btn-primary.focus,
+.btn-flat-primary.focus,
+.btn-primary:active,
+.btn-flat-primary:active,
+.btn-primary.active,
+.btn-flat-primary.active {
+    color: #a0c969;
+    border: 1px solid #a0c969;
+    background-image: none;
+    background-color: #fff;
+}
+.btn-primary:active,
+.btn-flat-primary:active,
+.btn-primary.active,
+.btn-flat-primary.active,
+.open > .dropdown-toggle.btn-primary,
+.open > .dropdown-toggle.btn-flat-primary {
+    color: #a0c969;
+    border: 1px solid #a0c969;
+    background-image: none;
+    background-color: #fff;
+}
+.btn-primary:focus:not(:active):not(.active):not(.btn-default),
+.btn-flat-primary:focus:not(:active):not(.active):not(.btn-default),
+.btn-primary.focus:not(:active):not(.active):not(.btn-default),
+.btn-flat-primary.focus:not(:active):not(.active):not(.btn-default) {
+    border: 1px solid #a0c969;
+    background-color: #fff;
+}
+.btn-primary.disabled:hover,
+.btn-flat-primary.disabled:hover,
+.btn-primary[disabled]:hover,
+.btn-flat-primary[disabled]:hover,
+fieldset[disabled] .btn-primary:hover,
+fieldset[disabled] .btn-flat-primary:hover,
+.btn-primary.disabled:focus,
+.btn-flat-primary.disabled:focus,
+.btn-primary[disabled]:focus,
+.btn-flat-primary[disabled]:focus,
+fieldset[disabled] .btn-primary:focus,
+fieldset[disabled] .btn-flat-primary:focus,
+.btn-primary.disabled.focus,
+.btn-flat-primary.disabled.focus,
+.btn-primary[disabled].focus,
+.btn-flat-primary[disabled].focus,
+fieldset[disabled] .btn-primary.focus,
+fieldset[disabled] .btn-flat-primary.focus {
+    color: #a0c969;
+    border: 1px solid #a0c969;
+    background-image: none;
+    background-color: #fff;
+}
+
+.btn-primary:active:hover,
+.btn-primary.active:hover,
+.open > .dropdown-toggle.btn-primary:hover,
+.btn-primary:active:focus,
+.btn-primary.active:focus,
+.open > .dropdown-toggle.btn-primary:focus,
+.btn-primary:active.focus,
+.btn-primary.active.focus,
+.open > .dropdown-toggle.btn-primary.focus {
+    color: #a0c969;
+    background-color: #fff;
+    border-color: #a0c969;
+}
+
+.btn-default,
+.btn-flat-default {
+    color: #a0c969;
+    border: 1px solid #a0c969;
+    background-image: none;
+    background-color: #fff;
+}
+
+.btn-default:hover,
+.btn-flat-default:hover,
+.btn-default:focus,
+.btn-flat-default:focus,
+.btn-default.focus,
+.btn-flat-default.focus,
+.btn-default:active,
+.btn-flat-default:active,
+.btn-default.active,
+.btn-flat-default.active {
+    color: #a0c969;
+    border: 1px solid #a0c969;
+    background-image: none;
+    background-color: #fff;
+}
+
+.btn-default:active,
+.btn-flat-default:active,
+.btn-default.active,
+.btn-flat-default.active,
+.open > .dropdown-toggle.btn-default,
+.open > .dropdown-toggle.btn-flat-default {
+    color: #a0c969;
+    border: 1px solid #a0c969;
+    background-image: none;
+    background-color: #fff;
+}
+.btn-default:focus:not(:active):not(.active):not(.btn-default),
+.btn-flat-default:focus:not(:active):not(.active):not(.btn-default),
+.btn-default.focus:not(:active):not(.active):not(.btn-default),
+.btn-flat-default.focus:not(:active):not(.active):not(.btn-default) {
+    border: 1px solid #a0c969;
+}
+.btn-default.disabled:hover,
+.btn-flat-default.disabled:hover,
+.btn-default[disabled]:hover,
+.btn-flat-default[disabled]:hover,
+fieldset[disabled] .btn-default:hover,
+fieldset[disabled] .btn-flat-default:hover,
+.btn-default.disabled:focus,
+.btn-flat-default.disabled:focus,
+.btn-default[disabled]:focus,
+.btn-flat-default[disabled]:focus,
+fieldset[disabled] .btn-default:focus,
+fieldset[disabled] .btn-flat-default:focus,
+.btn-default.disabled.focus,
+.btn-flat-default.disabled.focus,
+.btn-default[disabled].focus,
+.btn-flat-default[disabled].focus,
+fieldset[disabled] .btn-default.focus,
+fieldset[disabled] .btn-flat-default.focus {
+    color: #a0c969;
+    border: 1px solid #a0c969;
+    background-image: none;
+    background-color: #fff;
+}
+
+.btn-default:active:hover,
+.btn-default.active:hover,
+.open > .dropdown-toggle.btn-default:hover,
+.btn-default:active:focus,
+.btn-default.active:focus,
+.open > .dropdown-toggle.btn-default:focus,
+.btn-default:active.focus,
+.btn-default.active.focus,
+.open > .dropdown-toggle.btn-default.focus {
+    color: #a0c969;
+    background-color: #fff;
+    border-color: #a0c969;
+}
+
+.pagination > li > a,
+.pagination > li > span {
+    color: #a0c969;
+    background-color: #fff;
+}
+.pagination > li > a:hover,
+.pagination > li > span:hover,
+.pagination > li > a:focus,
+.pagination > li > span:focus {
+    color: #a0c969;
+    background-color: #fff;
+    border-color: #a0c969;
+}
+
+.pagination > li > a:active {
+    background-image: none;
+    background-color: #fff;
+}
+.pagination > .active > a,
+.pagination > .active > span,
+.pagination > .active > a:hover,
+.pagination > .active > span:hover,
+.pagination > .active > a:focus,
+.pagination > .active > span:focus {
+    color: #a0c969;
+    background-color: #fff;
+    border-color: #a0c969;
+}
+.pagination > .disabled > span,
+.pagination > .disabled > span:hover,
+.pagination > .disabled > span:focus,
+.pagination > .disabled > a,
+.pagination > .disabled > a:hover,
+.pagination > .disabled > a:focus {
+    color: #a0c969;
+    text-shadow: none;
+    background-color: #fff;
+    border-color: #a0c969;
+    background-image: none;
+}
+
+.bootstrap-select > select.mobile-device:focus + .dropdown-toggle,
+.bootstrap-select .dropdown-toggle:focus {
+    outline: none !important;
 }
 
 #content {
@@ -184,9 +430,9 @@ form label[required=required]:after{
     vertical-align: top;
     font-weight: normal;
     line-height: 1.4;
-    color: #333;
-    background-color: #f3f3f3;
-    border: 1px solid #dcdcdc;
+    color: #a0c969;
+    background-color: #fff;
+    border: 1px solid #a0c969;
 }
 
 .select-list .list-group{
@@ -207,7 +453,11 @@ form label[required=required]:after{
 
 .nav > li > a.selected{
     text-decoration: none;
-    background-color: #eee;
+    color: #f28100;
+}
+
+.nav > li > a:hover, .nav > li > a:focus{
+    background-color: #fff;
 }
 
 .bootstrap-touchspin .input-group-btn-vertical>.btn {
@@ -311,6 +561,10 @@ form label[required=required]:after{
     width: 101px;
 }
 
+.table-hover > tbody > tr:hover{
+    background-color: #f5f5f5;
+}
+
 tr.sale_status_closed>td{
     background-color: #ede7f6;
 }
@@ -395,8 +649,8 @@ td div p::-webkit-scrollbar-thumb:hover {
 .open .dropdown-toggle.datepicker table tr td.active.disabled,
 .open .dropdown-toggle.datepicker table tr td.active.disabled:hover {
     color: #ffffff;
-    background-color: #337ab7;
-    background-image: linear-gradient(to bottom, #4d90fe 0%, #4787ed 100%);
+    background-color: #f28100;
+    background-image: linear-gradient(to bottom, #f28100 0%, #f28100 100%);
     background-repeat: repeat-x;
 }
 
@@ -421,7 +675,7 @@ td div p::-webkit-scrollbar-thumb:hover {
 .open .dropdown-toggle.datepicker table tr td span.active.disabled,
 .open .dropdown-toggle.datepicker table tr td span.active.disabled:hover {
     color: #ffffff;
-    background-color: #337ab7;
-    background-image: linear-gradient(to bottom, #4d90fe 0%, #4787ed 100%);
+    background-color: #f28100;
+    background-image: linear-gradient(to bottom, #f28100 0%, #f28100 100%);
     background-repeat: repeat-x;
 }
