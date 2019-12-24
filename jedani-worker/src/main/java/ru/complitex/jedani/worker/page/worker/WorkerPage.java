@@ -2,7 +2,6 @@ package ru.complitex.jedani.worker.page.worker;
 
 import com.google.common.base.Strings;
 import com.google.common.hash.Hashing;
-import com.sun.org.apache.bcel.internal.generic.RET;
 import de.agilecoders.wicket.core.markup.html.bootstrap.behavior.CssClassNameAppender;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxLink;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapBookmarkablePageLink;
@@ -31,6 +30,9 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.form.upload.FileUploadField;
+import org.apache.wicket.markup.html.image.Image;
+import org.apache.wicket.markup.html.link.DownloadLink;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
@@ -38,7 +40,7 @@ import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.*;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.jetbrains.annotations.NotNull;
+import org.apache.wicket.resource.FileSystemResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.complitex.address.entity.City;
@@ -46,6 +48,7 @@ import ru.complitex.address.entity.CityType;
 import ru.complitex.address.entity.Region;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
+import ru.complitex.common.util.Dates;
 import ru.complitex.common.wicket.component.DateTimeLabel;
 import ru.complitex.common.wicket.datatable.*;
 import ru.complitex.common.wicket.form.FormGroupDateTextField;
@@ -76,6 +79,7 @@ import ru.complitex.jedani.worker.component.WorkerAutoComplete;
 import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.mapper.WorkerMapper;
 import ru.complitex.jedani.worker.page.BasePage;
+import ru.complitex.jedani.worker.page.admin.SettingPage;
 import ru.complitex.jedani.worker.security.JedaniRoles;
 import ru.complitex.jedani.worker.service.*;
 import ru.complitex.name.entity.FirstName;
@@ -86,7 +90,12 @@ import ru.complitex.user.entity.User;
 import ru.complitex.user.mapper.UserMapper;
 
 import javax.inject.Inject;
+import java.io.File;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
@@ -99,6 +108,8 @@ import java.util.stream.LongStream;
 @AuthorizeInstantiation(JedaniRoles.AUTHORIZED)
 public class WorkerPage extends BasePage {
     private Logger log = LoggerFactory.getLogger(Worker.class);
+
+    private final static String PHOTO_FILE_PREFIX = "photo_";
 
     @Inject
     private EntityMapper entityMapper;
@@ -133,13 +144,13 @@ public class WorkerPage extends BasePage {
     @Inject
     private RewardService rewardService;
 
-    @Inject
-    private SaleService saleService;
-
     private Worker worker;
     private Worker manager;
 
     private IModel<Boolean> showGraph = Model.of(false);
+
+    private String photoDir;
+    private FileUploadField photoFile;
 
     public WorkerPage(PageParameters parameters) {
         Long id = parameters.get("id").toOptionalLong();
@@ -253,6 +264,33 @@ public class WorkerPage extends BasePage {
                 return worker.getObjectId() == null && (isAdmin() || isStructureAdmin());
             }
         });
+
+        //Photo
+
+        Setting photoSetting = domainService.getDomain(Setting.class, Setting.PHOTO_ID);
+
+        if (photoSetting == null){
+            getSession().error(getString("error_photo_dir_not_exist"));
+
+            setResponsePage(SettingPage.class);
+
+            return;
+        }
+
+        photoDir = photoSetting.getText(Setting.VALUE);
+
+        Path photoPath = new File(photoDir,PHOTO_FILE_PREFIX + worker.getObjectId()).toPath();
+
+        form.add(new Image("photo", new FileSystemResource(photoPath)){
+            @Override
+            public boolean isVisible() {
+                return Files.exists(photoPath);
+            }
+        });
+
+        photoFile = new FileUploadField("photoFile");
+        form.add(photoFile);
+
 
         FormGroupDomainAutoComplete lastName, firstName, middleName;
 
@@ -786,7 +824,7 @@ public class WorkerPage extends BasePage {
 
                     if (worker.getObjectId() == null){
                         try {
-                            domainService.insertDomain(worker);
+                            domainService.insert(worker);
 
                             if (cardNumber != null){
                                 cardObject.setWorkerId(worker.getObjectId());
@@ -815,7 +853,7 @@ public class WorkerPage extends BasePage {
                             worker.setWorkerStatus(WorkerStatus.MANAGER_CHANGED);
                         }
 
-                        domainService.updateDomain(worker);
+                        domainService.update(worker);
 
                         if (moveIndex){
                             workerService.moveIndex(manager, worker);
@@ -833,6 +871,22 @@ public class WorkerPage extends BasePage {
                         }
 
                         success(getString("info_updated"));
+                    }
+
+                    //photo
+
+                    if (photoFile.getFileUpload() != null) {
+                        Path photoPath = new File(photoDir).toPath();
+
+                        Path filePath = new File(photoPath.toFile(), PHOTO_FILE_PREFIX + worker.getObjectId()).toPath();
+
+                        if (Files.exists(filePath)){
+                            Files.move(filePath, new File(filePath.getParent().toFile(), PHOTO_FILE_PREFIX +
+                                    worker.getObjectId() + "_deleted_" +
+                                    LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"))).toPath());
+                        }
+
+                        Files.copy(photoFile.getFileUpload().getInputStream(), filePath);
                     }
 
                     target.add(feedback, form);

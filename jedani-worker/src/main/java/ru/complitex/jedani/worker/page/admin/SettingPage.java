@@ -21,6 +21,8 @@ public class SettingPage extends BasePage {
     @Inject
     private DomainService domainService;
 
+    private Setting photoSetting;
+
     public SettingPage() {
         FeedbackPanel feedback = new NotificationPanel("feedback");
         feedback.setOutputMarkupId(true);
@@ -30,15 +32,25 @@ public class SettingPage extends BasePage {
         form.setOutputMarkupId(true);
         add(form);
 
-        Setting promotionSetting = domainService.getDomain(Setting.class, Setting.PROMOTION);
+        photoSetting = domainService.getDomain(Setting.class, Setting.PHOTO_ID);
 
-        TextField<String> promotionDir = new TextField<>("promotionDir", new TextAttributeModel(promotionSetting, Setting.VALUE));
-        form.add(promotionDir);
+        if (photoSetting == null){
+            photoSetting = new Setting();
+        }
+
+        TextField<String> photoDir = new TextField<>("photoDir", new TextAttributeModel(photoSetting, Setting.VALUE));
+        form.add(photoDir);
 
         form.add(new AjaxButton("save") {
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
-                domainService.save(promotionSetting);
+                if (photoSetting.getObjectId() == null){
+                    photoSetting.setObjectId(Setting.PHOTO_ID);
+
+                    domainService.insert(photoSetting);
+                }else{
+                    domainService.update(photoSetting);
+                }
 
                 info(getString("info_saved"));
 

@@ -70,8 +70,6 @@ public class PromotionModal extends Modal<Promotion> {
     @Inject
     private PromotionService promotionService;
 
-    private String promotionDir;
-
     private WebMarkupContainer container;
 
     private NotificationPanel feedback;
@@ -87,10 +85,6 @@ public class PromotionModal extends Modal<Promotion> {
         setBackdrop(Backdrop.FALSE);
         setCloseOnEscapeKey(false);
         size(Size.Large);
-
-        Setting promotionSetting = domainService.getDomain(Setting.class, Setting.PROMOTION);
-
-        promotionDir = promotionSetting.getText(Setting.VALUE);
 
         header(new ResourceModel("header"));
 

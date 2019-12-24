@@ -13,65 +13,86 @@
             <div class="row">
                 <div class="col-md-2" wicket:id="type"></div>
             </div>
-            <div class="row">
-                <div class="col-md-2" wicket:id="lastName"></div>
-                <div class="col-md-2" wicket:id="firstName"></div>
-                <div class="col-md-2" wicket:id="middleName"></div>
-                <div class="col-md-2" wicket:id="position"></div>
-                <div class="col-md-2" wicket:id="jId"></div>
-                <div class="col-md-2" wicket:id="card"></div>
-            </div>
 
             <div class="row">
                 <div class="col-md-2">
-                    <div wicket:id="email"></div>
-
                     <div class="form-group">
-                        <label for="userLogin" required="required">Логин</label>
-                        <input wicket:id="userLogin" id="userLogin" class="form-control" autocomplete="new-login"/>
+                        <label for="file">Фото</label>
                         <div>
-                            <table>
-                                <tr>
-                                    <td>
-                                        <input wicket:id="userPassword" type="password" class="form-control" placeholder="Пароль" autocomplete="new-password">
-                                    </td>
-                                    <td>
-                                        <input wicket:id="confirmPassword" type="password" class="form-control" placeholder="Подтверждение пароля" autocomplete="new-password">
-                                    </td>
-                                </tr>
-                            </table>
+                            <img wicket:id="photo" style="width: 100%; max-height: 190px"/>
+                            <span id="photoName"></span>
+                            <span class="input-group-btn text-center">
+                                <label class="btn btn-link btn-file" style="font-weight: normal">
+                                    Выбрать
+                                    <input wicket:id="photoFile" id="file" type="file" accept="images/jpeg" style="display: none"
+                                           onchange="$('#photoName').html(this.files[0].name)"/>
+                                </label>
+                            </span>
                         </div>
                     </div>
+                </div>
 
-                    <div wicket:id="role"></div>
-                </div>
-                <div class="col-md-2">
-                    <div wicket:id="birthday"></div>
-                    <span wicket:id="registrationDate"></span>
+                <div class="col-md-10">
+                    <div class="row">
+                        <div class="col-md-2" wicket:id="lastName"></div>
+                        <div class="col-md-2" wicket:id="firstName"></div>
+                        <div class="col-md-2" wicket:id="middleName"></div>
+                        <div class="col-md-2" wicket:id="position"></div>
+                        <div class="col-md-2" wicket:id="jId"></div>
+                        <div class="col-md-2" wicket:id="card"></div>
+                    </div>
 
-                </div>
-                <div class="col-md-2">
-                    <div wicket:id="phone"></div>
-                </div>
-                <div class="col-md-2">
-                    <div wicket:id="region"></div>
-                </div>
-                <div class="col-md-2">
-                    <div wicket:id="city"></div>
-                </div>
-                <div class="col-md-2">
-                    <div wicket:id="mkStatus"></div>
+                    <div class="row">
+                        <div class="col-md-2" wicket:id="email"></div>
+                        <div class="col-md-2" wicket:id="birthday"></div>
+                        <div class="col-md-2" wicket:id="phone"></div>
+                        <div class="col-md-2" wicket:id="region"></div>
+                        <div class="col-md-2" wicket:id="city"></div>
+                        <div class="col-md-2" wicket:id="mkStatus"></div>
+                    </div>
 
-                    <div class="form-group" wicket:id="manager">
-                        <div>
-                            <label for="managerFio">Вышестоящий ПК*</label>
-                            <a wicket:id="managerLink" class="pull-right" style="padding-right: 12px">
-                                <i class="glyphicon glyphicon-share-alt"></i>
-                            </a>
+                    <div class="row">
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label for="userLogin" required="required">Логин</label>
+                                <input wicket:id="userLogin" id="userLogin" class="form-control" autocomplete="new-login"/>
+                                <div>
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                <input wicket:id="userPassword" type="password" class="form-control" placeholder="Пароль" autocomplete="new-password">
+                                            </td>
+                                            <td>
+                                                <input wicket:id="confirmPassword" type="password" class="form-control" placeholder="Подтверждение пароля" autocomplete="new-password">
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
-                        <div wicket:id="managerFio" id="managerFio"></div>
-                        <div wicket:id="managerPhones" class="form-control form-control-info" id="managerPhones" disabled></div>
-                        <span wicket:id="managerEmail" class="form-control form-control-info" id="managerEmail" disabled></span>
+
+                        <div class="col-md-2" wicket:id="registrationDate"></div>
+
+                        <div class="col-md-2" wicket:id="role"></div>
+
+                        <div class="col-md-2"></div>
+                        <div class="col-md-2"></div>
+
+                        <div class="col-md-2">
+                            <div class="form-group" wicket:id="manager">
+                                <div>
+                                    <label for="managerFio">Вышестоящий ПК*</label>
+                                    <a wicket:id="managerLink" class="pull-right" style="padding-right: 12px">
+                                        <i class="glyphicon glyphicon-share-alt"></i>
+                                    </a>
+                                </div>
+                                <div wicket:id="managerFio" id="managerFio"></div>
+                                <div wicket:id="managerPhones" class="form-control form-control-info" id="managerPhones" disabled></div>
+                                <span wicket:id="managerEmail" class="form-control form-control-info" id="managerEmail" disabled></span>
+                            </div>
+                        </div>
+
+
                     </div>
                 </div>
             </div>

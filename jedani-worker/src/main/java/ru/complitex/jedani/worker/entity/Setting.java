@@ -11,7 +11,7 @@ public class Setting extends Domain<Setting> {
 
     public static final long VALUE = 1;
 
-    public static final long PROMOTION = 1;
+    public static final long PHOTO_ID = 2;
 
     public Setting() {
         super(ENTITY_NAME);

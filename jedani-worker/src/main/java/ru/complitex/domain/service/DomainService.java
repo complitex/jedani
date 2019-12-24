@@ -90,11 +90,11 @@ public class DomainService implements Serializable {
         }
     }
 
-    public void insertDomain(Domain domain){
+    public void insert(Domain domain){
         domainMapper.insertDomain(domain);
     }
 
-    public void updateDomain(Domain domain){
+    public void update(Domain domain){
         domainMapper.updateDomain(domain);
     }
 

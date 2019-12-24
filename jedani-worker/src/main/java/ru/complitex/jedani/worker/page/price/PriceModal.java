@@ -280,7 +280,7 @@ public class PriceModal extends AbstractDomainEditModal<Price> {
 
             prevPrice.setUserId(currentUserId);
 
-            domainService.updateDomain(prevPrice);
+            domainService.update(prevPrice);
         }
 
         price.setUserId(currentUserId);
@@ -288,7 +288,7 @@ public class PriceModal extends AbstractDomainEditModal<Price> {
         price.setStartDate(Dates.currentDate());
         price.setEndDate(null);
 
-        domainService.insertDomain(price);
+        domainService.insert(price);
 
         getSession().success(getString("info_saved"));
 
