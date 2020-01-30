@@ -30,9 +30,10 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.markup.html.image.Image;
-import org.apache.wicket.markup.html.link.DownloadLink;
+import org.apache.wicket.markup.html.image.NonCachingImage;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
@@ -48,7 +49,7 @@ import ru.complitex.address.entity.CityType;
 import ru.complitex.address.entity.Region;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
-import ru.complitex.common.util.Dates;
+import ru.complitex.common.util.Images;
 import ru.complitex.common.wicket.component.DateTimeLabel;
 import ru.complitex.common.wicket.datatable.*;
 import ru.complitex.common.wicket.form.FormGroupDateTextField;
@@ -91,6 +92,7 @@ import ru.complitex.user.mapper.UserMapper;
 
 import javax.inject.Inject;
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -150,7 +152,7 @@ public class WorkerPage extends BasePage {
     private IModel<Boolean> showGraph = Model.of(false);
 
     private String photoDir;
-    private FileUploadField photoFile;
+    private FileUploadField photoUploadFiled;
 
     public WorkerPage(PageParameters parameters) {
         Long id = parameters.get("id").toOptionalLong();
@@ -269,27 +271,19 @@ public class WorkerPage extends BasePage {
 
         Setting photoSetting = domainService.getDomain(Setting.class, Setting.PHOTO_ID);
 
-        if (photoSetting == null){
-            getSession().error(getString("error_photo_dir_not_exist"));
-
-            setResponsePage(SettingPage.class);
-
-            return;
-        }
-
         photoDir = photoSetting.getText(Setting.VALUE);
 
         Path photoPath = new File(photoDir,PHOTO_FILE_PREFIX + worker.getObjectId()).toPath();
 
-        form.add(new Image("photo", new FileSystemResource(photoPath)){
+        form.add(new NonCachingImage("photo", new FileSystemResource(photoPath)){
             @Override
             public boolean isVisible() {
                 return Files.exists(photoPath);
             }
         });
 
-        photoFile = new FileUploadField("photoFile");
-        form.add(photoFile);
+        photoUploadFiled = new FileUploadField("photoUploadFiled");
+        form.add(photoUploadFiled);
 
 
         FormGroupDomainAutoComplete lastName, firstName, middleName;
@@ -875,18 +869,29 @@ public class WorkerPage extends BasePage {
 
                     //photo
 
-                    if (photoFile.getFileUpload() != null) {
-                        Path photoPath = new File(photoDir).toPath();
+                    FileUpload photoFileUpload = photoUploadFiled.getFileUpload();
 
-                        Path filePath = new File(photoPath.toFile(), PHOTO_FILE_PREFIX + worker.getObjectId()).toPath();
+                    if (photoFileUpload != null) {
+                        if (photoFileUpload.getSize() <= 314572800){
+                            try {
+                                File photoFileDir = new File(photoDir);
 
-                        if (Files.exists(filePath)){
-                            Files.move(filePath, new File(filePath.getParent().toFile(), PHOTO_FILE_PREFIX +
-                                    worker.getObjectId() + "_deleted_" +
-                                    LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"))).toPath());
+                                File photoFile = new File(photoFileDir, PHOTO_FILE_PREFIX + worker.getObjectId());
+
+                                if (Files.exists(photoFile.toPath())){
+                                    Files.move(photoFile.toPath(), new File(photoFile.getParentFile(), PHOTO_FILE_PREFIX +
+                                            worker.getObjectId() + "_deleted_" +
+                                            LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"))).toPath());
+                                }
+
+                                Images.write(photoUploadFiled.getFileUpload().getInputStream(), 1920, 1080,
+                                        "jpeg", photoFile);
+                            } catch (Exception e) {
+                                error(getString("error_photo_load"));
+                            }
+                        }else{
+                            error(getString("error_photo_size"));
                         }
-
-                        Files.copy(photoFile.getFileUpload().getInputStream(), filePath);
                     }
 
                     target.add(feedback, form);
