@@ -1093,12 +1093,12 @@ public class WorkerPage extends BasePage {
         };
         structure.add(table);
 
-        Long workerLevelDepth = worker.getObjectId() != null ? workerMapper.getWorkerLevelDepth(worker.getObjectId()) + 1 : 2;
+        Long workerLevelDepth = worker.getObjectId() != null ? workerMapper.getWorkerLevelDepth(worker.getObjectId()) : 1;
 
         IModel<Long> graphLevelDepthModel = Model.of(workerLevelDepth);
 
         DropDownChoice levelDepth = new DropDownChoice<>("levelDepth", graphLevelDepthModel,
-                LongStream.range(1, workerLevelDepth).boxed().sorted(Collections.reverseOrder())
+                LongStream.rangeClosed(1, workerLevelDepth).boxed().sorted(Collections.reverseOrder())
                         .collect(Collectors.toList()));
         levelDepth.setNullValid(false);
         levelDepth.add(OnChangeAjaxBehavior.onChange(target -> {}));
