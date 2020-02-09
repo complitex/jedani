@@ -55,9 +55,13 @@ public class DomainActionColumn<T extends Domain> extends AbstractDomainColumn<T
         return new LinkPanel(componentId, new BootstrapAjaxButton(LinkPanel.LINK_COMPONENT_ID, Buttons.Type.Link){
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
-                target.add(form);
+                onAction(target, form);
             }
         }.setIconType(GlyphIconType.search));
+    }
+
+    protected void onAction(AjaxRequestTarget target, FilterDataForm<?> form) {
+        target.add(form);
     }
 
     @Override

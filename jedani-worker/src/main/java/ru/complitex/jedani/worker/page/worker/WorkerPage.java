@@ -3,6 +3,7 @@ package ru.complitex.jedani.worker.page.worker;
 import com.google.common.base.Strings;
 import com.google.common.hash.Hashing;
 import de.agilecoders.wicket.core.markup.html.bootstrap.behavior.CssClassNameAppender;
+import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxButton;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxLink;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapBookmarkablePageLink;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
@@ -148,8 +149,6 @@ public class WorkerPage extends BasePage {
 
     private Worker worker;
     private Worker manager;
-
-    private IModel<Boolean> showGraph = Model.of(false);
 
     private String photoDir;
     private FileUploadField photoUploadFiled;
@@ -564,7 +563,9 @@ public class WorkerPage extends BasePage {
         WebMarkupContainer structure = new WebMarkupContainer("structure"){
             @Override
             public boolean isVisible() {
-                return worker.getObjectId() != null && dataProvider.size() > 0;
+                return worker.getObjectId() != null && workerMapper.getWorkersCount(FilterWrapper.of(
+                        new Worker(worker.getLeft(), worker.getRight(), worker.getLevel()))
+                        .setStatus(FilterWrapper.STATUS_ACTIVE_AND_ARCHIVE)) > 0;
             }
         };
 
@@ -1016,6 +1017,11 @@ public class WorkerPage extends BasePage {
         //noinspection Duplicates
         columns.add(new DomainActionColumn<Worker>(WorkerPage.class){
             @Override
+            protected void onAction(AjaxRequestTarget target, FilterDataForm<?> form) {
+                target.add(structure);
+            }
+
+            @Override
             public void populateItem(Item<ICellPopulator<Worker>> cellItem, String componentId, IModel<Worker> rowModel) {
                 PageParameters pageParameters = new PageParameters();
                 pageParameters.add("id", rowModel.getObject().getObjectId());
@@ -1058,11 +1064,6 @@ public class WorkerPage extends BasePage {
         });
 
         FilterDataTable<Worker> table = new FilterDataTable<Worker>("table", columns, dataProvider, form, 5, "workerPage"){
-            @Override
-            public boolean isVisible() {
-                return !showGraph.getObject();
-            }
-
             @Override
             protected Item<Worker> newRowItem(String id, int index, final IModel<Worker> model) {
                 Item<Worker> rowItem = super.newRowItem(id, index, model);
