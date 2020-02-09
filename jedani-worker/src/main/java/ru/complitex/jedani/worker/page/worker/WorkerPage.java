@@ -462,6 +462,11 @@ public class WorkerPage extends BasePage {
             public boolean isVisible() {
                 return worker.isParticipant();
             }
+
+            @Override
+            public boolean isRequired() {
+                return (worker.getObjectId() == null && worker.isParticipant());
+            }
         };
 
 
@@ -674,14 +679,14 @@ public class WorkerPage extends BasePage {
         SortableDataProvider<Attribute, String> historyDataProvider = new SortableDataProvider<Attribute, String>() {
             @Override
             public Iterator<? extends Attribute> iterator(long first, long count) {
-                return workerMapper.getWorkerUserHistories(new FilterWrapper(first, count)
+                return workerMapper.getWorkerUserHistories(new FilterWrapper<>(first, count)
                         .put("objectId", worker.getObjectId())
                         .put("userId", worker.getParentId())).iterator();
             }
 
             @Override
             public long size() {
-                return workerMapper.getWorkerUserHistoriesCount(new FilterWrapper()
+                return workerMapper.getWorkerUserHistoriesCount(new FilterWrapper<>()
                         .put("objectId", worker.getObjectId())
                         .put("userId", worker.getParentId()));
             }
@@ -1087,20 +1092,22 @@ public class WorkerPage extends BasePage {
         };
         structure.add(table);
 
-        filterWrapper.getMap().put("levelDepth", 1L);
+        Long workerLevelDepth = worker.getObjectId() != null ? workerMapper.getWorkerLevelDepth(worker.getObjectId()) + 1 : 2;
 
-        DropDownChoice levelDepth = new DropDownChoice<>("levelDepth", new PropertyModel<>(filterWrapper, "map.levelDepth"),
-                LongStream.range(1, worker.getObjectId() != null ? workerMapper.getWorkerLevelDepth(worker.getObjectId()) + 1 : 2)
-                        .boxed().collect(Collectors.toList()));
+        IModel<Long> graphLevelDepthModel = Model.of(workerLevelDepth);
+
+        DropDownChoice levelDepth = new DropDownChoice<>("levelDepth", graphLevelDepthModel,
+                LongStream.range(1, workerLevelDepth).boxed().sorted(Collections.reverseOrder())
+                        .collect(Collectors.toList()));
         levelDepth.setNullValid(false);
-        levelDepth.add(OnChangeAjaxBehavior.onChange(target -> target.add(table)));
+        levelDepth.add(OnChangeAjaxBehavior.onChange(target -> {}));
         structure.add(levelDepth );
 
         structure.add(new Link<Void>("structureLink") {
             @Override
             public void onClick() {
                 setResponsePage(WorkerStructurePage.class, new PageParameters().add("id", worker.getObjectId())
-                        .add("level", filterWrapper.getMap().get("levelDepth")));
+                        .add("level", graphLevelDepthModel.getObject()));
             }
         });
 
@@ -1150,7 +1157,8 @@ public class WorkerPage extends BasePage {
 
     protected FilterWrapper<Worker> newFilterWrapper() {
         return FilterWrapper.of(new Worker(worker.getLeft(), worker.getRight(), worker.getLevel()))
-                .setStatus(FilterWrapper.STATUS_ACTIVE_AND_ARCHIVE);
+                .setStatus(FilterWrapper.STATUS_ACTIVE_AND_ARCHIVE)
+                .sort("level", true);
     }
 
     @SuppressWarnings("Duplicates")
