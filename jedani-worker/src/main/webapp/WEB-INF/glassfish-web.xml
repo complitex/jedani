@@ -39,4 +39,6 @@
         <role-name>PAYMENT_ADMINISTRATORS</role-name>
         <group-name>PAYMENT_ADMINISTRATORS</group-name>
     </security-role-mapping>
+
+    <parameter-encoding default-charset="UTF-8"/>
 </glassfish-web-app>

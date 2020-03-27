@@ -29,11 +29,10 @@ public class JSessionIdFilter implements Filter {
 
         if (jsessionid != null){
             HttpServletResponse httpServletResponse = ((HttpServletResponse)response);
-            HttpServletRequest httpServletRequest = (HttpServletRequest) request;
 
             httpServletResponse.addCookie(new Cookie("jsessionid", jsessionid));
 
-            httpServletResponse.sendRedirect(httpServletRequest.getRequestURI());
+            httpServletResponse.sendRedirect(((HttpServletRequest) request).getRequestURI());
         }else {
             chain.doFilter(request, response);
         }
