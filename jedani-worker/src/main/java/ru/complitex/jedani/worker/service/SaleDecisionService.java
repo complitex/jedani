@@ -166,6 +166,6 @@ public class SaleDecisionService implements Serializable {
             }
         }
 
-        return false;
+        return true;
     }
 }
