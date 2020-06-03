@@ -525,6 +525,8 @@ public class SaleModal extends Modal<Sale> {
             updateBasePrices();
             updatePrices();
             updateTotal(updateInitialPayment);
+            updatePrices();
+            updateTotal(updateInitialPayment);
 
             saleItems.stream().forEach(c -> {
                 target.add(c.get("price"), c.get("basePrice"));
