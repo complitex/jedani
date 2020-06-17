@@ -498,7 +498,7 @@ public class WorkerPage extends BasePage {
         WebMarkupContainer managerContainer = new WebMarkupContainer("manager"){
             @Override
             public boolean isVisible() {
-                return worker.isParticipant() && worker.getObjectId() > 2L;
+                return worker.isParticipant() && (worker.getObjectId() == null || worker.getObjectId() > 2L);
             }
 
             @Override
