@@ -223,7 +223,8 @@ public class SaleModal extends Modal<Sale> {
                     saleItemsModel.getObject().clear();
                     saleItemsModel.getObject().add(new SaleItem());
 
-                    updateTotal(true);
+                    updateTotal();
+                    updateInitialPayment();
 
                     target.add(container);
                 }))));
@@ -459,7 +460,7 @@ public class SaleModal extends Modal<Sale> {
         });
     }
 
-    private void updatePrices(){
+    private void updatePrices(boolean updateInitialPayment){
         BigDecimal basePricesTotal = saleItemsModel.getObject().stream()
                 .map(si -> si.getQuantity() != null && si.getBasePrice() != null
                         ? si.getBasePrice().multiply(new BigDecimal(si.getQuantity()))
@@ -474,9 +475,13 @@ public class SaleModal extends Modal<Sale> {
 
             si.setPrice(priceService.getPrice(saleDecision, sale.getDate(), si.getBasePrice(), basePricesTotal,
                     sale.getInstallmentMonths(), sale.isForYourself(), si.getQuantity(), null));
-
-            updateTotal(false);
         });
+
+        updateTotal();
+
+        if (updateInitialPayment){
+            updateInitialPayment();
+        }
 
         Long paymentPercent = saleService.getPaymentPercent(sale).longValue();
 
@@ -494,9 +499,15 @@ public class SaleModal extends Modal<Sale> {
             si.setRate(priceService.getRate(saleDecision, sale.getDate(), rate, basePricesTotal,
                     sale.getInstallmentMonths(), sale.isForYourself(), si.getQuantity(), paymentPercent));
         });
+
+        updateTotal();
+
+        if (updateInitialPayment){
+            updateInitialPayment();
+        }
     }
 
-    private void updateTotal(boolean updateInitialPayment){
+    private void updateTotal(){
         Sale sale = saleModel.getObject();
         List<SaleItem> saleItems = saleItemsModel.getObject();
 
@@ -515,14 +526,16 @@ public class SaleModal extends Modal<Sale> {
                     .setScale(2, RoundingMode.HALF_EVEN))
                     .reduce(BigDecimal.ZERO, BigDecimal::add));
         }
+    }
 
-        if (updateInitialPayment) {
-            sale.setInitialPayment(BigDecimal.ZERO);
+    private void updateInitialPayment(){
+        Sale sale = saleModel.getObject();
 
-            if (sale.getTotal() != null && sale.getInstallmentMonths() >= 0) {
-                sale.setInitialPayment(sale.getTotal().divide(BigDecimal.valueOf(1 + sale.getInstallmentMonths()), 2,
-                        BigDecimal.ROUND_HALF_EVEN));
-            }
+        sale.setInitialPayment(BigDecimal.ZERO);
+
+        if (sale.getTotal() != null && sale.getInstallmentMonths() >= 0) {
+            sale.setInitialPayment(sale.getTotal().divide(BigDecimal.valueOf(1 + sale.getInstallmentMonths()), 2,
+                    BigDecimal.ROUND_HALF_EVEN));
         }
     }
 
@@ -533,8 +546,7 @@ public class SaleModal extends Modal<Sale> {
     private void updatePrices(AjaxRequestTarget target, boolean updateInitialPayment){
         try {
             updateBasePrices();
-            updatePrices();
-            updateTotal(updateInitialPayment);
+            updatePrices(updateInitialPayment);
 
             saleItems.stream().forEach(c -> {
                 target.add(c.get("price"), c.get("basePrice"));
