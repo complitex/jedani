@@ -275,7 +275,7 @@ public class SaleModal extends Modal<Sale> {
 
         months.add(new Spinner<>("input", NumberAttributeModel.of(saleModel, Sale.INSTALLMENT_MONTHS),
                 new SpinnerConfig().withVerticalbuttons(true).withMin(0).withMax(24)).setType(Long.class)
-                .add(AjaxFormComponentUpdatingBehavior.onUpdate("change", this::updatePrices)));
+                .add(OnChangeAjaxBehavior.onChange(this::updatePrices)));
 
         container.add(new FormGroupPanel("managerMycookBonusWorker", new WorkerAutoComplete(FormGroupPanel.COMPONENT_ID,
                 new NumberAttributeModel(saleModel, Sale.MK_MANAGER_BONUS_WORKER))){
@@ -536,7 +536,11 @@ public class SaleModal extends Modal<Sale> {
             container.get("totalLocal").modelChanged();
             container.get("payment").modelChanged();
 
-            target.add(container.get("total"), container.get("totalLocal"), container.get("payment"));
+            target.add(container.get("total"), container.get("totalLocal"));
+
+            if (updateInitialPayment){
+                target.add(container.get("payment"));
+            }
         } catch (Exception e) {
             log.error("error update prices", e);
         }

@@ -2,6 +2,7 @@ package ru.complitex.common.wicket.form;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
+import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -64,7 +65,7 @@ public class FormGroupTextField<T> extends Panel{
     }
 
     public FormGroupTextField onUpdate(SerializableConsumer<AjaxRequestTarget> onUpdate){
-        textField.add(AjaxFormComponentUpdatingBehavior.onUpdate("change", onUpdate));
+        textField.add(OnChangeAjaxBehavior.onChange(onUpdate));
 
         return this;
     }
