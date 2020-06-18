@@ -468,6 +468,16 @@ public class SaleModal extends Modal<Sale> {
 
         Sale sale = saleModel.getObject();
 
+        saleItemsModel.getObject().forEach(si -> {
+            SaleDecision saleDecision = priceService.getSaleDecision(sale.getStorageId(), si.getNomenclatureId(),
+                    sale.getDate(), basePricesTotal, sale.getInstallmentMonths(), sale.isForYourself(), si.getQuantity(), null);
+
+            si.setPrice(priceService.getPrice(saleDecision, sale.getDate(), si.getBasePrice(), basePricesTotal,
+                    sale.getInstallmentMonths(), sale.isForYourself(), si.getQuantity(), null));
+
+            updateTotal(false);
+        });
+
         Long paymentPercent = saleService.getPaymentPercent(sale).longValue();
 
         saleItemsModel.getObject().forEach(si -> {
@@ -523,8 +533,6 @@ public class SaleModal extends Modal<Sale> {
     private void updatePrices(AjaxRequestTarget target, boolean updateInitialPayment){
         try {
             updateBasePrices();
-            updatePrices();
-            updateTotal(updateInitialPayment);
             updatePrices();
             updateTotal(updateInitialPayment);
 

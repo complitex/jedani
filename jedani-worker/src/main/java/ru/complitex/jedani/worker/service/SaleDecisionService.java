@@ -127,7 +127,8 @@ public class SaleDecisionService implements Serializable {
             }else if (SaleDecisionConditionType.PAYMENT_TOTAL.getId().equals(ruleCondition.getType()) &&
                     !isCheck(ruleCondition, ruleCondition.getDecimal(RuleCondition.CONDITION), total)){
                 return false;
-            }else if (SaleDecisionConditionType.PAYMENT_PERCENT.getId().equals(ruleCondition.getType()) &&
+            }else if (paymentPercent != null &&
+                    SaleDecisionConditionType.PAYMENT_PERCENT.getId().equals(ruleCondition.getType()) &&
                     !isCheck(ruleCondition, ruleCondition.getNumber(RuleCondition.CONDITION), paymentPercent)){
                 return false;
             }else if (SaleDecisionConditionType.PAYMENT_PERIOD_MONTH.getId().equals(ruleCondition.getType()) &&
