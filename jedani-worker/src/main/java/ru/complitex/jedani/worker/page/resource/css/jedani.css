@@ -71,7 +71,7 @@ a:focus {
 .btn-link:focus,
 .btn-link.focus {
     color: #f28100;
-    border: none;
+    border-color: transparent;
 }
 
 .btn-primary,
