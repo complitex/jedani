@@ -15,7 +15,6 @@ import ru.complitex.jedani.worker.mapper.RewardMapper;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -147,7 +146,9 @@ public class RewardService implements Serializable {
         }else if (saleVolume.compareTo(getParameter(12L)) >= 0){
             return RankType.TEAM_MANAGER;
         }else if (saleVolume.compareTo(getParameter(11L)) >= 0){
-            return RankType.MANAGER_ASSISTANT;
+            return RankType.MANAGER_JUNIOR;
+        }else if (saleVolume.compareTo(getParameter(47L)) >= 0){
+            return RankType.MANAGER_JUNIOR;
         }
 
         return 0L;
@@ -244,6 +245,8 @@ public class RewardService implements Serializable {
     private BigDecimal getManagerPremiumPoint(Sale sale, Long rank){
         switch (rank.intValue()){
             case (int) RankType.MANAGER_ASSISTANT:
+                return calcManagerPremiumPoint(sale, 48L, 49L);
+            case (int) RankType.MANAGER_JUNIOR:
                 return calcManagerPremiumPoint(sale, 21L, 31L);
             case (int) RankType.TEAM_MANAGER:
                 return calcManagerPremiumPoint(sale, 22L, 32L);

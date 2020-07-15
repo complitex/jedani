@@ -7,7 +7,7 @@ package ru.complitex.jedani.worker.entity;
 public class RankType {
     public static final long RECOMMENDING_GUESTS = 1;
     public static final long PROFESSIONAL_CONSULTANT = 2;
-    public static final long MANAGER_ASSISTANT = 3;
+    public static final long MANAGER_JUNIOR = 3;
     public static final long TEAM_MANAGER = 4;
     public static final long SENIOR_ASSISTANT = 5;
     public static final long SENIOR_MANAGER = 6;
@@ -17,4 +17,5 @@ public class RankType {
     public static final long SILVER_DIRECTOR = 10;
     public static final long GOLD_DIRECTOR = 11;
     public static final long PLATINUM_DIRECTOR = 12;
+    public static final long MANAGER_ASSISTANT = 13;
 }
