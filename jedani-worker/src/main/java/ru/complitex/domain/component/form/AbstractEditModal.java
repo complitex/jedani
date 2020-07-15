@@ -36,7 +36,12 @@ public abstract class AbstractEditModal<T> extends Modal<T> {
         setCloseOnEscapeKey(false);
         header(new ResourceModel("header"));
 
-        container = new WebMarkupContainer("container");
+        container = new WebMarkupContainer("container"){
+            @Override
+            public boolean isEnabled() {
+                return AbstractEditModal.this.isEditable();
+            }
+        };
         container.setOutputMarkupId(true);
         container.setOutputMarkupPlaceholderTag(true);
         super.add(container);
@@ -56,6 +61,11 @@ public abstract class AbstractEditModal<T> extends Modal<T> {
             protected void onError(AjaxRequestTarget target) {
                 target.add(container);
             }
+
+            @Override
+            public boolean isVisible() {
+                return AbstractEditModal.this.isEditable();
+            }
         }.setOutputMarkupPlaceholderTag(true)
                 .add(AttributeModifier.append("class", "btn btn-primary")));
 
@@ -65,6 +75,10 @@ public abstract class AbstractEditModal<T> extends Modal<T> {
                 cancel(target);
             }
         }.setLabel(new ResourceModel("cancel")));
+    }
+
+    protected boolean isEditable(){
+        return true;
     }
 
     protected IModel<String> getSaveLabelModel() {

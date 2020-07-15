@@ -14,4 +14,8 @@ public class PaymentMapper extends BaseMapper {
     public List<Payment> getPayments(FilterWrapper<Payment> filterWrapper){
         return sqlSession().selectList("selectPayments", filterWrapper);
     }
+
+    public Long getPaymentsCount(FilterWrapper<Payment> filterWrapper){
+        return sqlSession().selectOne("selectPaymentsCount", filterWrapper);
+    }
 }

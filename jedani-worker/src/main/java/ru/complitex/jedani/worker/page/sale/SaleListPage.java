@@ -48,7 +48,7 @@ import static ru.complitex.jedani.worker.security.JedaniRoles.*;
  * @author Anatoly A. Ivanov
  * 18.02.2019 15:22
  */
-@AuthorizeInstantiation({ADMINISTRATORS, STRUCTURE_ADMINISTRATORS, SALE_ADMINISTRATORS})
+@AuthorizeInstantiation({AUTHORIZED})
 public class SaleListPage extends DomainListModalPage<Sale> {
     @Inject
     private SaleMapper saleMapper;
@@ -108,6 +108,16 @@ public class SaleListPage extends DomainListModalPage<Sale> {
         }
 
         return filterWrapper;
+    }
+
+    @Override
+    protected List<Sale> getDomains(FilterWrapper<Sale> filterWrapper) {
+        return saleMapper.getSales(filterWrapper);
+    }
+
+    @Override
+    protected Long getDomainsCount(FilterWrapper<Sale> filterWrapper) {
+        return saleMapper.getSalesCount(filterWrapper);
     }
 
     @Override
@@ -233,36 +243,28 @@ public class SaleListPage extends DomainListModalPage<Sale> {
     }
 
     @Override
-    protected List<Sale> getDomains(FilterWrapper<Sale> filterWrapper) {
-        return saleMapper.getSales(filterWrapper);
-    }
-
-    @Override
-    protected Long getDomainsCount(FilterWrapper<Sale> filterWrapper) {
-        return saleMapper.getSalesCount(filterWrapper);
-    }
-
-    @Override
-    protected boolean isEditEnabled() {
-        return isAdmin() || isStructureAdmin();
+    protected boolean isCreateEnabled() {
+        return isAdmin() || isStructureAdmin() || isSaleAdmin();
     }
 
     @Override
     protected void onCreateAction(RepeatingView repeatingView, IModel<Sale> rowModel) {
-        repeatingView.add(new LinkPanel(repeatingView.newChildId(), new BootstrapAjaxButton(LinkPanel.LINK_COMPONENT_ID,
-                Buttons.Type.Link) {
-            @Override
-            protected void onSubmit(AjaxRequestTarget target) {
-                saleRemoveModal.delete(target, rowModel.getObject());
-            }
+        if (isAdmin() || isStructureAdmin() || isSaleAdmin()) {
+            repeatingView.add(new LinkPanel(repeatingView.newChildId(), new BootstrapAjaxButton(LinkPanel.LINK_COMPONENT_ID,
+                    Buttons.Type.Link) {
+                @Override
+                protected void onSubmit(AjaxRequestTarget target) {
+                    saleRemoveModal.delete(target, rowModel.getObject());
+                }
 
-            @Override
-            protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
-                super.updateAjaxAttributes(attributes);
+                @Override
+                protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
+                    super.updateAjaxAttributes(attributes);
 
-                attributes.setEventPropagation(AjaxRequestAttributes.EventPropagation.STOP);
-            }
-        }.setIconType(GlyphIconType.remove)));
+                    attributes.setEventPropagation(AjaxRequestAttributes.EventPropagation.STOP);
+                }
+            }.setIconType(GlyphIconType.remove)));
+        }
     }
 
     @Override

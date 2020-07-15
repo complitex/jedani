@@ -118,7 +118,12 @@ public class SaleModal extends Modal<Sale> {
 
         header(new ResourceModel("header"));
 
-        container = new WebMarkupContainer("container");
+        container = new WebMarkupContainer("container"){
+            @Override
+            public boolean isEnabled() {
+                return getBasePage().isAdmin() || getBasePage().isStructureAdmin() || getBasePage().isSaleAdmin();
+            }
+        };
         container.setOutputMarkupId(true)
                 .setOutputMarkupPlaceholderTag(true)
                 .setVisible(false);
@@ -130,19 +135,10 @@ public class SaleModal extends Modal<Sale> {
         container.add(feedback);
 
         container.add(new FormGroupPanel("sellerWorker", new WorkerAutoComplete(FormGroupPanel.COMPONENT_ID,
-                new NumberAttributeModel(saleModel, Sale.SELLER_WORKER)){
-            @Override
-            public boolean isVisible() {
-                return getBasePage().isAdmin() || getBasePage().isStructureAdmin();
-            }
-        }.setRequired(true)));
+                new NumberAttributeModel(saleModel, Sale.SELLER_WORKER)).setRequired(true)));
 
-        container.add(new FormGroupDateTextField("saleDate", DateAttributeModel.of(saleModel, Sale.DATE)){
-            @Override
-            public boolean isVisible() {
-                return getBasePage().isAdmin() || getBasePage().isStructureAdmin();
-            }
-        }.setRequired(true).onUpdate(this::updatePrices));
+        container.add(new FormGroupDateTextField("saleDate", DateAttributeModel.of(saleModel, Sale.DATE))
+                .setRequired(true).onUpdate(this::updatePrices));
 
         container.add(new FormGroupPanel("sasRequest", new BootstrapCheckbox(FormGroupPanel.COMPONENT_ID,
                 BooleanAttributeModel.of(saleModel, Sale.SAS_REQUEST), new ResourceModel("sasRequest")){

@@ -116,6 +116,11 @@ public class PaymentModal extends AbstractEditModal<Payment> {
     }
 
     @Override
+    public boolean isEditable() {
+        return getBasePage().isAdmin() || getBasePage().isStructureAdmin() || getBasePage().isPaymentAdmin();
+    }
+
+    @Override
     public void create(AjaxRequestTarget target) {
         super.create(target);
 
