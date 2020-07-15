@@ -148,7 +148,7 @@ public class RewardService implements Serializable {
         }else if (saleVolume.compareTo(getParameter(11L)) >= 0){
             return RankType.MANAGER_JUNIOR;
         }else if (saleVolume.compareTo(getParameter(47L)) >= 0){
-            return RankType.MANAGER_JUNIOR;
+            return RankType.MANAGER_ASSISTANT;
         }
 
         return 0L;
