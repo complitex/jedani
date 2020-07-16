@@ -498,18 +498,25 @@ public class RewardService implements Serializable {
         }
     }
 
-    private LoadingCache<Long, BigDecimal> parameterCache = CacheBuilder.newBuilder()
-            .expireAfterAccess(1, TimeUnit.MINUTES)
-            .build(CacheLoader.from(rewardParameterId -> domainService.getDomain(RewardParameter.class, rewardParameterId)
-                    .getDecimal(RewardParameter.VALUE)));
+    private transient LoadingCache<Long, BigDecimal> parameterCache;
+
+    public LoadingCache<Long, BigDecimal> getParameterCache(){
+        if (parameterCache == null){
+            parameterCache = CacheBuilder.newBuilder()
+                    .expireAfterAccess(1, TimeUnit.MINUTES)
+                    .build(CacheLoader.from(rewardParameterId -> domainService.getDomain(RewardParameter.class, rewardParameterId)
+                            .getDecimal(RewardParameter.VALUE)));
+
+        }
+
+        return parameterCache;
+    }
 
     public BigDecimal getParameter(Long rewardParameterId){
         try {
-            return parameterCache.get(rewardParameterId);
+            return getParameterCache().get(rewardParameterId);
         } catch (Exception e) {
             return null;
         }
     }
-
-
 }
