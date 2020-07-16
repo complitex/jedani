@@ -205,12 +205,14 @@ public class BasePage extends WebPage{
         userStorages.add(new WebMarkupContainer("link").add(newBehaviorLink()));
         menu.add(userStorages);
 
-        if (getCurrentStorage() != null) {
+        Storage currentStorage = getCurrentStorage();
+
+        if (currentStorage != null) {
             userStorages.add(new MenuLink("storage", StoragePage.class, new PageParameters()
-                            .add("id", getCurrentStorage().getObjectId())
+                            .add("id", currentStorage.getObjectId())
                             .add("nsl", ""), "id"));
         }else{
-            userStorages.add(new EmptyPanel("storage"));
+            userStorages.add(new EmptyPanel("storage").setVisible(false));
         }
 
         userStorages.add(new BootstrapListView<Storage>("storages", new LoadableDetachableModel<List<Storage>>() {

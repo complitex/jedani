@@ -306,7 +306,7 @@ public class WorkerPage extends BasePage {
                 return !isViewOnly() && (isAdmin() || (isStructureAdmin() && !Objects.equals(worker.getObjectId(),
                         getCurrentWorker().getObjectId())));
             }
-        });
+        }.setNullValid(true));
 
         FormGroupTextField<String> jId = new FormGroupTextField<String>("jId", new TextAttributeModel(worker, Worker.J_ID)){
             @Override

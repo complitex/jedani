@@ -76,4 +76,12 @@ public class FormGroupAttributeSelect extends Panel {
 
         return this;
     }
+
+    public FormGroupAttributeSelect setNullValid(boolean nullValid){
+        if (attributeSelect != null) {
+            attributeSelect.setNullValid(nullValid);
+        }
+
+        return this;
+    }
 }
