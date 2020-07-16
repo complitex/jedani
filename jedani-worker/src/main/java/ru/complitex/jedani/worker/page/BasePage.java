@@ -446,14 +446,10 @@ public class BasePage extends WebPage{
             return null;
         }
 
-        List<Storage> storages = storageMapper.getStorages(FilterWrapper.of((Storage) new Storage()
+        List<Storage> storages = storageMapper.getStorages(FilterWrapper.of(new Storage()
                 .setParentId(getCurrentWorker().getObjectId())));
 
-        if (storages.isEmpty()){
-            return storageService.createVirtualStorage(getCurrentWorker().getObjectId());
-        }
-
-        return storages.get(0);
+        return !storages.isEmpty() ? storages.get(0) : null;
     }
 
     private Map<String, String> getMenuToggleMap(){
@@ -471,6 +467,4 @@ public class BasePage extends WebPage{
 
         return map;
     }
-
-
 }

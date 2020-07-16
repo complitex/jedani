@@ -12,6 +12,7 @@ import javax.inject.Inject;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Anatoly A. Ivanov
@@ -29,7 +30,7 @@ public class StorageService implements Serializable {
 
         storage.setParentEntityId(entityService.getEntity(Worker.ENTITY_NAME).getId());
         storage.setParentId(workerId);
-        storage.setType(StorageType.VIRTUAL);
+        storage.setType(StorageType.PERSONAL);
 
         domainService.save(storage);
 
@@ -150,7 +151,7 @@ public class StorageService implements Serializable {
 
                     storage.setParentEntityId(entityService.getEntity(Worker.ENTITY_NAME).getId());
                     storage.setParentId(t.getWorkerIdTo());
-                    storage.setType(StorageType.VIRTUAL);
+                    storage.setType(StorageType.PERSONAL);
 
                     domainService.save(storage);
                 } else {
@@ -263,13 +264,29 @@ public class StorageService implements Serializable {
     public Long getCountryId(Long storageId){
         Storage storage = domainService.getDomain(Storage.class, storageId);
 
-        if (storage.getCityId() == null){
-            return null;
+        if (Objects.equals(storage.getType(), StorageType.REAL)){
+            if (storage.getCityId() == null){
+                return null;
+            }
+
+            City city = domainService.getDomain(City.class, storage.getCityId());
+            Region region = domainService.getDomain(Region.class, city.getParentId());
+
+            return region.getParentId();
+        }else if (Objects.equals(storage.getType(), StorageType.PERSONAL)){
+            Worker worker = domainService.getDomain(Worker.class, storage.getParentId());
+
+            if (worker == null){
+                return null;
+            }
+
+            List<Long> regionIds = worker.getNumberValues(Worker.REGIONS);
+
+            if (!regionIds.isEmpty()){
+                return domainService.getDomain(Region.class, regionIds.get(0)).getParentId();
+            }
         }
 
-        City city = domainService.getDomain(City.class, storage.getCityId());
-        Region region = domainService.getDomain(Region.class, city.getParentId());
-
-        return region.getParentId();
+        return null;
     }
 }

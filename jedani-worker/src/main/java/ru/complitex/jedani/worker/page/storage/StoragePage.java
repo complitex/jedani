@@ -172,12 +172,12 @@ public class StoragePage extends BasePage {
                 .setEnabled(storageId == null)){
             @Override
             public boolean isVisible() {
-                return Objects.equals(storage.getType(), StorageType.VIRTUAL);
+                return Objects.equals(storage.getType(), StorageType.PERSONAL);
             }
         });
 
         form.add(new FormGroupSelectPanel("storageType", new BootstrapSelect<>(FormGroupPanel.COMPONENT_ID,
-                new NumberAttributeModel(storage, Storage.TYPE), Arrays.asList(StorageType.REAL, StorageType.VIRTUAL),
+                new NumberAttributeModel(storage, Storage.TYPE), Arrays.asList(StorageType.REAL, StorageType.PERSONAL),
                 new IChoiceRenderer<Long>() {
                     @Override
                     public Object getDisplayValue(Long object) {
@@ -185,8 +185,8 @@ public class StoragePage extends BasePage {
                             case (int) StorageType.REAL:
                                 return getString("real");
 
-                            case (int) StorageType.VIRTUAL:
-                                return getString("virtual");
+                            case (int) StorageType.PERSONAL:
+                                return getString("personal");
                         }
 
                         return null;

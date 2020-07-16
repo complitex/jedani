@@ -6,5 +6,5 @@ package ru.complitex.jedani.worker.entity;
  */
 public class StorageType {
     public static final long REAL = 1;
-    public static final long VIRTUAL = 2;
+    public static final long PERSONAL = 2;
 }
