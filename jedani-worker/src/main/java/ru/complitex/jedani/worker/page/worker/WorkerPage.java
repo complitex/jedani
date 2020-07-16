@@ -272,12 +272,11 @@ public class WorkerPage extends BasePage {
 
         photoDir = photoSetting.getText(Setting.VALUE);
 
-        Path photoPath = new File(photoDir,PHOTO_FILE_PREFIX + worker.getObjectId()).toPath();
-
-        form.add(new NonCachingImage("photo", new FileSystemResource(photoPath)){
+        form.add(new NonCachingImage("photo", new FileSystemResource(new File(photoDir,
+                PHOTO_FILE_PREFIX + worker.getObjectId()).toPath())){
             @Override
             public boolean isVisible() {
-                return Files.exists(photoPath);
+                return Files.exists(new File(photoDir,PHOTO_FILE_PREFIX + worker.getObjectId()).toPath());
             }
         });
 
