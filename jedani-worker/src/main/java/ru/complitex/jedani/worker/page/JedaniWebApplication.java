@@ -50,6 +50,7 @@ import ru.complitex.common.wicket.application.ServletUnauthorizedListener;
 import ru.complitex.common.wicket.application.ServletWebSession;
 import ru.complitex.common.wicket.converter.BigDecimalConverter;
 import ru.complitex.jedani.worker.api.VerifyResourceReference;
+import ru.complitex.jedani.worker.api.WorkerResourceReference;
 import ru.complitex.jedani.worker.page.admin.ImportPage;
 import ru.complitex.jedani.worker.page.admin.SettingPage;
 import ru.complitex.jedani.worker.page.card.CardListPage;
@@ -203,6 +204,7 @@ public class JedaniWebApplication extends WebApplication{
 
     private void configureMountApi(){
         mountResource("api/verify/${jId}", VerifyResourceReference.INSTANCE);
+        mountResource("api/worker", WorkerResourceReference.INSTANCE);
     }
 
     @Override

@@ -13,8 +13,23 @@ import ru.complitex.jedani.worker.service.WorkerService;
 public class VerifyResourceReference extends ResourceReference {
     public static final VerifyResourceReference INSTANCE = new VerifyResourceReference();
 
+    private WorkerService workerService;
+
     public VerifyResourceReference() {
         super("VerifyResourceReference");
+    }
+
+    private WorkerService getWorkerService(){
+        if (workerService == null){
+            workerService = new WorkerService();
+            NonContextual.of(WorkerService.class).inject(workerService);
+        }
+
+        return workerService;
+    }
+
+    private boolean isExistJId(String jId){
+        return getWorkerService().isExistJId(jId);
     }
 
     @Override
@@ -30,8 +45,6 @@ public class VerifyResourceReference extends ResourceReference {
                 resourceResponse.setWriteCallback(new WriteCallback() {
                     @Override
                     public void writeData(Attributes attributes) {
-
-
                         String jId = attributes.getParameters().get("jId").toString();
 
                         attributes.getResponse().write("{\"j_id\": \"" + jId + "\"," +
@@ -44,18 +57,5 @@ public class VerifyResourceReference extends ResourceReference {
         };
     }
 
-    private boolean isExistJId(String jId){
-        return getWorkerService().isExistJId(jId);
-    }
 
-    private WorkerService workerService;
-
-    private WorkerService getWorkerService(){
-        if (workerService == null){
-            workerService = new WorkerService();
-            NonContextual.of(WorkerService.class).inject(workerService);
-        }
-
-        return workerService;
-    }
 }

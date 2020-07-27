@@ -519,4 +519,10 @@ public class RewardService implements Serializable {
             return null;
         }
     }
+
+    public WorkerReward getWorkerReward(Worker worker){
+        Date month = periodService.getActualPeriod().getOperatingMonth();
+
+        return getWorkerRewardTree(month).getWorkerReward(worker.getObjectId());
+    }
 }

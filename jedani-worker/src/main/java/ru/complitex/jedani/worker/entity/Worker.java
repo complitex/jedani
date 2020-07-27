@@ -5,6 +5,7 @@ import ru.complitex.domain.entity.DomainNode;
 import ru.complitex.domain.entity.Status;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -158,6 +159,22 @@ public class Worker extends DomainNode<Worker> {
         setNumber(LAST_NAME, lastNameId);
     }
 
+    public Date getBirthday(){
+        return getDate(BIRTHDAY);
+    }
+
+    public String getEmail(){
+        return getText(EMAIL);
+    }
+
+    public Long getPosition(){
+        return getNumber(POSITION);
+    }
+
+    public Date getRegistrationDate(){
+        return getDate(REGISTRATION_DATE);
+    }
+
     public Long getManagerId(){
         return getNumber(MANAGER_ID);
     }
@@ -188,6 +205,14 @@ public class Worker extends DomainNode<Worker> {
 
     public String getRegionIdsString(){
         return getNumberValuesString(REGIONS);
+    }
+
+    public List<Long> getRegionIds(){
+        return getNumberValues(REGIONS);
+    }
+
+    public List<Long> getCityIds(){
+        return getNumberValues(CITIES);
     }
 
     public Long getMkStatus(){

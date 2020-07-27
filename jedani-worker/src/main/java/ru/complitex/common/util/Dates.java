@@ -15,6 +15,7 @@ import java.util.Date;
  */
 public class Dates {
     public static SimpleDateFormat monthDateFormat = new SimpleDateFormat("LLLL yyyy", Locales.getSystemLocale());
+    public static SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy", Locales.getSystemLocale());
 
     public static Date currentDate(){
         return new Date();
@@ -80,5 +81,11 @@ public class Dates {
     public static String getMonthText(Date date){
         return date != null ? monthDateFormat.format(date) : "";
     }
+
+    public static String getDateText(Date date){
+        return date != null ? dateFormat.format(date) : "";
+    }
+
+
 
 }
