@@ -64,15 +64,16 @@ public class WorkerResourceReference extends ResourceReference {
                         Worker worker = workerService.getWorker(login);
 
                         if (worker != null){
+                            json.add("worker_id", worker.getObjectId());
                             json.add("last_name", workerService.getLastName(worker));
                             json.add("first_name", workerService.getFirstName(worker));
                             json.add("middle_name", workerService.getMiddleName(worker));
-                            json.add("j_id", worker.getJId());
+                            json.add("j_id", worker.getJId() != null ? worker.getJId() : "");
 
                             json.add("status", worker.getMkStatus() != null ? worker.getMkStatus() : 0);
 
                             json.add("login", login);
-                            json.add("email", worker.getEmail());
+                            json.add("email", worker.getEmail() != null ? worker.getEmail() : "");
 
                             RewardService rewardService = new RewardService();
                             NonContextual.of(RewardService.class).inject(rewardService);

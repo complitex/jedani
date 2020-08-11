@@ -99,11 +99,11 @@ public class WorkerService implements Serializable {
     }
 
     public String getFirstName(Worker worker){
-        return Attributes.capitalize(nameService.getLastName(worker.getNumber(Worker.FIRST_NAME)));
+        return Attributes.capitalize(nameService.getFirstName(worker.getNumber(Worker.FIRST_NAME)));
     }
 
     public String getMiddleName(Worker worker){
-        return Attributes.capitalize(nameService.getLastName(worker.getNumber(Worker.MIDDLE_NAME)));
+        return Attributes.capitalize(nameService.getMiddleName(worker.getNumber(Worker.MIDDLE_NAME)));
     }
 
     public List<String> getRegions(Worker worker){
