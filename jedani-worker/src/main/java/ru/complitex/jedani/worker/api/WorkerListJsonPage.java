@@ -47,6 +47,11 @@ public class WorkerListJsonPage extends WebPage {
                         User u = workerService.getUser(w);
 
                         json.add("login", u != null ? u.getLogin() : "");
+
+                        JsonArrayBuilder phones = Json.createArrayBuilder();
+                        w.getPhones().forEach(phones::add);
+                        json.add("phones", phones.build());
+
                         json.add("email", w.getEmail() != null ? w.getEmail() : "");
 
                         JsonArrayBuilder regions = Json.createArrayBuilder();

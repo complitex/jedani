@@ -163,6 +163,10 @@ public class Worker extends DomainNode<Worker> {
         return getDate(BIRTHDAY);
     }
 
+    public List<String> getPhones(){
+        return getTextValues(PHONE);
+    }
+
     public String getEmail(){
         return getText(EMAIL);
     }

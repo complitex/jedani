@@ -73,6 +73,11 @@ public class WorkerResourceReference extends ResourceReference {
                             json.add("status", worker.getMkStatus() != null ? worker.getMkStatus() : 0);
 
                             json.add("login", login);
+
+                            JsonArrayBuilder phones = Json.createArrayBuilder();
+                            worker.getPhones().forEach(phones::add);
+                            json.add("phones", phones.build());
+
                             json.add("email", worker.getEmail() != null ? worker.getEmail() : "");
 
                             RewardService rewardService = new RewardService();
