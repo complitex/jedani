@@ -16,6 +16,7 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.lang.Objects;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
@@ -69,7 +70,7 @@ public class SaleListPage extends DomainListModalPage<Sale> {
 
     private SaleRemoveModal saleRemoveModal;
 
-    public SaleListPage() {
+    public SaleListPage(PageParameters parameters) {
         super(Sale.class);
 
         title(new ResourceModel("title"));
@@ -94,6 +95,12 @@ public class SaleListPage extends DomainListModalPage<Sale> {
                 target.add(getFeedback(), getTable());
             }
         });
+
+        String jid = parameters.get("jid").toOptionalString();
+
+        if (jid != null){
+            getFilterWrapper().put(Sale.FILTER_SELLER_WORKER, jid);
+        }
     }
 
     @Override

@@ -8,14 +8,15 @@
     <sql id="selectSalesWhere">
       <if test="map.sellerWorker != null">
           and exists(select sa.id from sale_attribute sa
-            where sa.domain_id = d.id and sa.status = 1 and d.status = 1 and sa.entity_attribute_id = 1 and sa.number = #{map.sellerWorker})
+            left join worker w on (w.object_id = sa.number and w.status = 1 and sa.entity_attribute_id = 1)
+            left join worker_attribute wa_j on (wa_j.domain_id = w.id and wa_j.entity_attribute_id = 1 and wa_j.status = 1)
+            where sa.domain_id = d.id and sa.status = 1 and d.status = 1  and wa_j.text = #{map.sellerWorker})
       </if>
 
         <if test="map.regionIds != null">
             and exists(select sa.id from sale_attribute sa
                 left join worker w on (w.object_id = sa.number and w.status = 1)
-                left join worker_attribute wa_r on (wa_r.domain_id = w.id and wa_r.entity_attribute_id = 6
-                    and wa_r.status = 1)
+                left join worker_attribute wa_r on (wa_r.domain_id = w.id and wa_r.entity_attribute_id = 6 and wa_r.status = 1)
                 left join worker_value wv_r on (wv_r.attribute_id = wa_r.id)
                 where sa.domain_id = d.id and sa.status = 1 and sa.entity_attribute_id = 1
                     and d.status = 1 and wv_r.number in (#{map.regionIds}))
