@@ -274,13 +274,12 @@ public class BasePage extends WebPage{
         catalog.add(new MenuLink("reward_type", RewardTypeListPage.class).setVisible(isAdmin()));
 
         WebMarkupContainer workers = new WebMarkupContainer("workers");
-        workers.setVisible(isAdmin() || isStructureAdmin());
         workers.add(newBehavior());
         workers.add(new WebMarkupContainer("link").add(newBehaviorLink()));
         menu.add(workers);
 
         workers.add(new MenuLink("workers", WorkerListPage.class).addMenuPageClass(WorkerPage.class));
-        workers.add(new MenuLink("cards", CardListPage.class));
+        workers.add(new MenuLink("cards", CardListPage.class).setVisible(isAdmin() || isStructureAdmin()));
 
         WebMarkupContainer storages = new WebMarkupContainer("storages");
         storages.setVisible(isAdmin());

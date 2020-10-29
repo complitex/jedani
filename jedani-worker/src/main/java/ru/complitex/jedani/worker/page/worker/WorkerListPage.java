@@ -53,7 +53,7 @@ import java.util.Objects;
  * @author Anatoly A. Ivanov
  * 20.12.2017 7:11
  */
-@AuthorizeInstantiation({JedaniRoles.ADMINISTRATORS, JedaniRoles.STRUCTURE_ADMINISTRATORS})
+@AuthorizeInstantiation({JedaniRoles.AUTHORIZED})
 public class WorkerListPage extends DomainListPage<Worker>{
     @Inject
     private EntityService entityService;
@@ -86,8 +86,14 @@ public class WorkerListPage extends DomainListPage<Worker>{
 
         filterWrapper.setStatus(FilterWrapper.STATUS_ACTIVE_AND_ARCHIVE);
 
-        if (getCurrentWorker().isRegionalLeader()) {
+        Worker currentWorker = getCurrentWorker();
+
+        if (currentWorker.isRegionalLeader()) {
             filterWrapper.put(Worker.FILTER_REGION_IDS, getCurrentWorker().getRegionIdsString());
+        } else if (currentWorker.isParticipant() && isUser() && !isAdmin() && !isStructureAdmin()){
+            worker.setLeft(currentWorker.getLeft());
+            worker.setRight(currentWorker.getRight());
+            worker.setLevel(currentWorker.getLevel());
         }
 
         return filterWrapper;
