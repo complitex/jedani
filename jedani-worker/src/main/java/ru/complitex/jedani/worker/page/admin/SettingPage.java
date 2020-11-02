@@ -21,7 +21,8 @@ public class SettingPage extends BasePage {
     @Inject
     private DomainService domainService;
 
-    private Setting photoSetting;
+    private Setting photoDirSetting;
+    private Setting inviteSecretSetting;
 
     public SettingPage() {
         FeedbackPanel feedback = new NotificationPanel("feedback");
@@ -32,24 +33,42 @@ public class SettingPage extends BasePage {
         form.setOutputMarkupId(true);
         add(form);
 
-        photoSetting = domainService.getDomain(Setting.class, Setting.PHOTO_ID);
+        photoDirSetting = domainService.getDomain(Setting.class, Setting.PHOTO_ID);
 
-        if (photoSetting == null){
-            photoSetting = new Setting();
+        if (photoDirSetting == null){
+            photoDirSetting = new Setting();
         }
 
-        TextField<String> photoDir = new TextField<>("photoDir", new TextAttributeModel(photoSetting, Setting.VALUE));
+        TextField<String> photoDir = new TextField<>("photoDir", new TextAttributeModel(photoDirSetting, Setting.VALUE));
         form.add(photoDir);
+
+
+        inviteSecretSetting = domainService.getDomain(Setting.class, Setting.INVITE_SECRET);
+
+        if (inviteSecretSetting == null){
+            inviteSecretSetting = new Setting();
+        }
+
+        TextField<String> inviteKey = new TextField<>("inviteSecret", new TextAttributeModel(inviteSecretSetting, Setting.VALUE));
+        form.add(inviteKey);
 
         form.add(new AjaxButton("save") {
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
-                if (photoSetting.getObjectId() == null){
-                    photoSetting.setObjectId(Setting.PHOTO_ID);
+                if (photoDirSetting.getObjectId() == null){
+                    photoDirSetting.setObjectId(Setting.PHOTO_ID);
 
-                    domainService.insert(photoSetting);
+                    domainService.insert(photoDirSetting);
                 }else{
-                    domainService.update(photoSetting);
+                    domainService.update(photoDirSetting);
+                }
+
+                if (inviteSecretSetting.getObjectId() == null){
+                    inviteSecretSetting.setObjectId(Setting.INVITE_SECRET);
+
+                    domainService.insert(inviteSecretSetting);
+                }else{
+                    domainService.update(inviteSecretSetting);
                 }
 
                 info(getString("info_saved"));

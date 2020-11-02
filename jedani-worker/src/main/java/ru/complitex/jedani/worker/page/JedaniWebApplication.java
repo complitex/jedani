@@ -50,6 +50,7 @@ import ru.complitex.jedani.worker.page.admin.ImportPage;
 import ru.complitex.jedani.worker.page.admin.SettingPage;
 import ru.complitex.jedani.worker.page.card.CardListPage;
 import ru.complitex.jedani.worker.page.catalog.*;
+import ru.complitex.jedani.worker.page.invite.InvitePage;
 import ru.complitex.jedani.worker.page.login.LoginPage;
 import ru.complitex.jedani.worker.page.payment.PaymentListPage;
 import ru.complitex.jedani.worker.page.period.PeriodListPage;
@@ -79,7 +80,7 @@ import java.math.BigDecimal;
  * 21.11.2017 15:04
  */
 public class JedaniWebApplication extends WebApplication{
-    private Logger log = LoggerFactory.getLogger(JedaniWebApplication.class);
+    private final Logger log = LoggerFactory.getLogger(JedaniWebApplication.class);
 
     public Class<? extends Page> getHomePage() {
         return HomePage.class;
@@ -150,6 +151,7 @@ public class JedaniWebApplication extends WebApplication{
         mountPage("rewards_tree", RewardTreePage.class);
         mountPage("payments", PaymentListPage.class);
         mountPage("periods", PeriodListPage.class);
+        mountPage("invite/${key}", InvitePage.class);
 
         mountPage("error", InternalErrorPage.class);
         mountPage("access-denied", AccessDeniedPage.class);

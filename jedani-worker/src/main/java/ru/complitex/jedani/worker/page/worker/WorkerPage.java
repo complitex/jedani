@@ -112,7 +112,7 @@ import java.util.stream.LongStream;
 public class WorkerPage extends BasePage {
     private Logger log = LoggerFactory.getLogger(Worker.class);
 
-    private final static String PHOTO_FILE_PREFIX = "photo_";
+    public final static String PHOTO_FILE_PREFIX = "photo_";
 
     @Inject
     private EntityMapper entityMapper;
@@ -973,6 +973,18 @@ public class WorkerPage extends BasePage {
 
         form.add(back);
 
+
+        WorkerInviteModal workerInviteModal = new WorkerInviteModal("inviteModal");
+        form.add(workerInviteModal);
+
+        form.add(new AjaxLink<Worker>("invite") {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                workerInviteModal.invite(target, worker);
+            }
+        });
+
+
         List<IColumn<Worker, SortProperty>> columns = new ArrayList<>();
 
         columns.add(new DomainIdColumn<>());
@@ -1142,8 +1154,6 @@ public class WorkerPage extends BasePage {
             rewardContainer.add(new Label("group_registration_count", workerReward.getGroupRegistrationCount()));
             rewardContainer.add(new Label("reward_mp", getRewardString(rewards, RewardType.TYPE_MANAGER_PREMIUM, month)));
             rewardContainer.add(new Label("group_manager_count", workerReward.getGroupManagerCount()));
-
-
         }
     }
 

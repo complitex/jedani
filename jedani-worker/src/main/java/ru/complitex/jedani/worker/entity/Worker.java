@@ -40,6 +40,7 @@ public class Worker extends DomainNode<Worker> {
     public static final long TYPE = 21;
     public static final long RANK = 22;
     public static final long POINT = 23;
+    public static final long INVITE = 24;
 
     public static final long IMPORT_ID = 100;
     public static final long IMPORT_ANCESTRY = 101;
@@ -131,8 +132,10 @@ public class Worker extends DomainNode<Worker> {
         return getText(J_ID);
     }
 
-    public void setJId(String jId){
+    public Worker setJId(String jId){
         setText(J_ID, jId);
+
+        return this;
     }
 
     public Long getFistNameId(){

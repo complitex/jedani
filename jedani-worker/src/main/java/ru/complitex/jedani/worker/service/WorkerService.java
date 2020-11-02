@@ -61,6 +61,16 @@ public class WorkerService implements Serializable {
         return workerMapper.getWorker(workerId);
     }
 
+    public Worker getWorkerByJId(String JId){
+        List<Worker> list = workerMapper.getWorkers(FilterWrapper.of(new Worker().setJId(JId)).setFilter(FilterWrapper.FILTER_EQUAL));
+
+        if (!list.isEmpty()){
+            return list.get(0);
+        }
+
+        return null;
+    }
+
     @Transactional
     public void rebuildIndex(){
         domainNodeService.rebuildRootIndex(Worker.ENTITY_NAME, 1L, Worker.MANAGER_ID);
@@ -106,6 +116,14 @@ public class WorkerService implements Serializable {
         return Attributes.capitalize(nameService.getMiddleName(worker.getNumber(Worker.MIDDLE_NAME)));
     }
 
+    public String getWorkerFio(Worker worker){
+        if (worker == null){
+            return "";
+        }
+
+        return getLastName(worker) + " " + getFirstName(worker) + " " + getMiddleName(worker);
+    }
+
     public List<String> getRegions(Worker worker){
         return worker.getRegionIds().stream()
                 .map(objectId -> domainService.getTextValue(Region.ENTITY_NAME, objectId, Region.NAME))
@@ -129,6 +147,14 @@ public class WorkerService implements Serializable {
     public String getSimpleWorkerLabel(Domain worker){
         return Objects.defaultIfNull(worker.getText(Worker.J_ID), "") + ", " +
                 Attributes.capitalize(nameService.getLastName(worker.getNumber(Worker.LAST_NAME)));
+    }
+
+    public void save(Worker worker){
+        if (worker.getObjectId() == null) {
+            domainService.insert(worker);
+        }else {
+            domainService.update(worker);
+        }
     }
 
     @Transactional
@@ -183,6 +209,10 @@ public class WorkerService implements Serializable {
         userMapper.updateUserGroups(user);
 
         workerMapper.insert(new UserHistory(user.getId(), workerId).setUserGroups(user.getUserGroups()));
+    }
+
+    public String getNewJId(){
+        return workerMapper.getNewJId();
     }
 
     public boolean isExistJId(String jId){

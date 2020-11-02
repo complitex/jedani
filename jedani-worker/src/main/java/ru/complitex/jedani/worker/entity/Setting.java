@@ -12,8 +12,17 @@ public class Setting extends Domain<Setting> {
     public static final long VALUE = 1;
 
     public static final long PHOTO_ID = 2;
+    public static final long INVITE_SECRET = 3;
 
     public Setting() {
         super(ENTITY_NAME);
+    }
+
+    public String getValue(){
+        return getText(VALUE);
+    }
+
+    public void setValue(String value){
+        setText(VALUE, value);
     }
 }
