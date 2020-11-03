@@ -66,7 +66,7 @@ public class WorkerInviteModal extends Modal<Worker> {
             public void onClick(AjaxRequestTarget target) {
                 appendCloseDialogJavaScript(target);
             }
-        }.setLabel(new ResourceModel("cancel")));
+        }.setLabel(new ResourceModel("ok")));
     }
 
     public void invite(AjaxRequestTarget target, Worker worker){
