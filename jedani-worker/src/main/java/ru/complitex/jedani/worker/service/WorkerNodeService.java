@@ -35,10 +35,10 @@ public class WorkerNodeService implements Serializable {
                 if (m != null){
                     m.getChildNodes().add(w);
                 }else{
-                    log.error("getWorkerTree no manager found " + w);
+                    //log.error("getWorkerTree no manager found " + w);
                 }
             }else{
-                log.warn("getWorkerTree no manager id " + w);
+                //log.warn("getWorkerTree no manager id " + w);
             }
         });
 

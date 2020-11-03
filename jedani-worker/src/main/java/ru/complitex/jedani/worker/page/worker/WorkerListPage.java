@@ -42,6 +42,7 @@ import ru.complitex.jedani.worker.security.JedaniRoles;
 import ru.complitex.name.entity.FirstName;
 import ru.complitex.name.entity.LastName;
 import ru.complitex.name.entity.MiddleName;
+import ru.complitex.user.entity.User;
 import ru.complitex.user.mapper.UserMapper;
 
 import javax.inject.Inject;
@@ -134,7 +135,9 @@ public class WorkerListPage extends DomainListPage<Worker>{
             public void populateItem(Item<ICellPopulator<Worker>> cellItem, String componentId, IModel<Worker> rowModel) {
                 Long userId = rowModel.getObject().getParentId();
 
-                cellItem.add(new Label(componentId, userId != null ? userMapper.getUser(userId).getLogin() : ""));
+                User user = userMapper.getUser(userId);
+
+                cellItem.add(new Label(componentId, user != null ? user.getLogin() : ""));
             }
 
             @Override

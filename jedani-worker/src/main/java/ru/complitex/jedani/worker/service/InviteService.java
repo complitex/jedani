@@ -10,6 +10,7 @@ import ru.complitex.jedani.worker.entity.Setting;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import javax.inject.Inject;
+import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.UUID;
@@ -19,7 +20,7 @@ import java.util.UUID;
  * 01.11.2020 19:06
  */
 
-public class InviteService {
+public class InviteService implements Serializable {
     private final Logger log = LoggerFactory.getLogger(InviteService.class);
 
     @Inject

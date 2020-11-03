@@ -5,6 +5,8 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.dialog.Modal;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
@@ -26,6 +28,7 @@ public class WorkerInviteModal extends Modal<Worker> {
     private final IModel<Worker> workerModel = Model.of(new Worker());
 
     private final Component key;
+    private final Component copy;
 
     public WorkerInviteModal(String markupId) {
         super(markupId);
@@ -40,12 +43,23 @@ public class WorkerInviteModal extends Modal<Worker> {
             }
         });
 
-        add(key = new Label("key", new LoadableDetachableModel<String>() {
+        IModel<String> inviteModel = new LoadableDetachableModel<String>() {
             @Override
             protected String load() {
                 return "https://stru.jedani-mycook.com/invite/" + inviteService.encodeKey(workerModel.getObject().getJId());
             }
-        }).setOutputMarkupId(true));
+        };
+
+        add(key = new Label("key", inviteModel).setOutputMarkupId(true));
+
+        add(copy = new WebMarkupContainer("copy"){
+            @Override
+            protected void onComponentTag(ComponentTag tag) {
+                super.onComponentTag(tag);
+
+                tag.put("onclick", "copyToClipboard('" + inviteModel.getObject()  +"')");
+            }
+        }.setOutputMarkupId(true));
 
         addButton(new BootstrapAjaxLink<Void>(Modal.BUTTON_MARKUP_ID, Buttons.Type.Default) {
             @Override
@@ -58,7 +72,7 @@ public class WorkerInviteModal extends Modal<Worker> {
     public void invite(AjaxRequestTarget target, Worker worker){
         workerModel.setObject(worker);
 
-        target.add(key);
+        target.add(key, copy);
 
         appendShowDialogJavaScript(target);
     }
