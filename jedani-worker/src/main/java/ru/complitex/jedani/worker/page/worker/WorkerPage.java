@@ -3,7 +3,6 @@ package ru.complitex.jedani.worker.page.worker;
 import com.google.common.base.Strings;
 import com.google.common.hash.Hashing;
 import de.agilecoders.wicket.core.markup.html.bootstrap.behavior.CssClassNameAppender;
-import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxButton;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxLink;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapBookmarkablePageLink;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
@@ -33,7 +32,6 @@ import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
-import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.image.NonCachingImage;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
@@ -81,9 +79,11 @@ import ru.complitex.jedani.worker.component.WorkerAutoComplete;
 import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.mapper.WorkerMapper;
 import ru.complitex.jedani.worker.page.BasePage;
-import ru.complitex.jedani.worker.page.admin.SettingPage;
 import ru.complitex.jedani.worker.security.JedaniRoles;
-import ru.complitex.jedani.worker.service.*;
+import ru.complitex.jedani.worker.service.CardService;
+import ru.complitex.jedani.worker.service.PeriodService;
+import ru.complitex.jedani.worker.service.RewardService;
+import ru.complitex.jedani.worker.service.WorkerService;
 import ru.complitex.name.entity.FirstName;
 import ru.complitex.name.entity.LastName;
 import ru.complitex.name.entity.MiddleName;
@@ -93,10 +93,8 @@ import ru.complitex.user.mapper.UserMapper;
 
 import javax.inject.Inject;
 import java.io.File;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -981,6 +979,11 @@ public class WorkerPage extends BasePage {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 workerInviteModal.invite(target, worker);
+            }
+
+            @Override
+            public boolean isVisible() {
+                return worker.getObjectId() != null;
             }
         });
 
