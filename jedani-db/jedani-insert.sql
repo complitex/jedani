@@ -487,6 +487,7 @@ CALL createEntityAttributeWithReference(28, 18, 11, 20, 'Кулінарний п
 CALL createEntityAttribute(28, 19, 4, 'Сумма вознаграждения', 'Сума винагороди');
 CALL createEntityAttribute(28, 20, 4, 'Сумма вознаграждения ММБ', 'Сума винагороди ММБ');
 CALL createEntityAttribute(28, 21, 4, 'Сумма вознаграждения КП', 'Сума ММБ винагороди КП');
+CALL createEntityAttribute(28, 22, 3, 'Комиссия изъята', 'Комісія вилучена');
 
 /* Sale Item*/
 

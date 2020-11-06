@@ -33,6 +33,8 @@ public class Sale extends Domain<Sale> {
     public static final long PERSONAL_REWARD_POINT = 19;
     public static final long MK_MANAGER_BONUS_REWARD_POINT = 20;
     public static final long CULINARY_REWARD_POINT = 21;
+    public static final long FEE_WITHDRAW = 22;
+
 
     public static final String FILTER_SELLER_WORKER = "sellerWorker";
     public static final String FILTER_REGION_IDS = "regionIds";
@@ -203,6 +205,14 @@ public class Sale extends Domain<Sale> {
 
     public void setCulinaryRewardPoint(BigDecimal culinaryRewardPoint){
         setDecimal(CULINARY_REWARD_POINT, culinaryRewardPoint);
+    }
+
+    public boolean isFeeWithdraw(){
+        return isBoolean(FEE_WITHDRAW);
+    }
+
+    public void setFeeWithdraw(Boolean feeWithdraw){
+        setBoolean(FEE_WITHDRAW, feeWithdraw);
     }
 
 }

@@ -13,7 +13,6 @@ import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.spinner.Spinn
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
@@ -99,6 +98,8 @@ public class SaleModal extends Modal<Sale> {
     private WebMarkupContainer fioContainer;
     private FormGroupDomainAutoComplete lastName, firstName, middleName;
 
+    private Component feeWithdraw;
+
     private ListView<SaleItem> saleItems;
 
     private Long defaultStorageId;
@@ -181,6 +182,30 @@ public class SaleModal extends Modal<Sale> {
             @Override
             protected IModel<String> getLabelModel(String id) {
                 return Model.of("");
+            }
+        });
+
+        container.add(feeWithdraw = new FormGroupPanel("feeWithdraw", new BootstrapCheckbox(FormGroupPanel.COMPONENT_ID,
+                BooleanAttributeModel.of(saleModel, Sale.FEE_WITHDRAW), new ResourceModel("feeWithdraw")){
+            @Override
+            protected CheckBox newCheckBox(String id, IModel<Boolean> model) {
+                CheckBox checkBox = super.newCheckBox(id, model);
+
+                checkBox.setOutputMarkupId(true);
+
+                checkBox.add(OnChangeAjaxBehavior.onChange(SaleModal.this::updatePrices));
+
+                return checkBox;
+            }
+        }){
+            @Override
+            protected IModel<String> getLabelModel(String id) {
+                return Model.of("");
+            }
+
+            @Override
+            public boolean isVisible() {
+                return saleModel.getObject().getType() == SaleType.MYCOOK && saleModel.getObject().getInstallmentMonths() == 0;
             }
         });
 
@@ -272,7 +297,11 @@ public class SaleModal extends Modal<Sale> {
 
         months.add(new Spinner<>("input", NumberAttributeModel.of(saleModel, Sale.INSTALLMENT_MONTHS),
                 new SpinnerConfig().withVerticalbuttons(true).withMin(0).withMax(24)).setType(Long.class)
-                .add(OnChangeAjaxBehavior.onChange(this::updatePrices)));
+                .add(OnChangeAjaxBehavior.onChange(target -> {
+                    target.add(feeWithdraw);
+
+                    updatePrices(target);
+                })));
 
         container.add(new FormGroupPanel("managerMycookBonusWorker", new WorkerAutoComplete(FormGroupPanel.COMPONENT_ID,
                 new NumberAttributeModel(saleModel, Sale.MK_MANAGER_BONUS_WORKER))){
@@ -465,12 +494,22 @@ public class SaleModal extends Modal<Sale> {
 
         Sale sale = saleModel.getObject();
 
+        if (sale.getType() != SaleType.MYCOOK || sale.getInstallmentMonths() != 0){
+            sale.setFeeWithdraw(null);
+        }
+
         saleItemsModel.getObject().forEach(si -> {
             SaleDecision saleDecision = priceService.getSaleDecision(sale.getStorageId(), si.getNomenclatureId(),
                     sale.getDate(), basePricesTotal, sale.getInstallmentMonths(), sale.isForYourself(), si.getQuantity(), null);
 
-            si.setPrice(priceService.getPrice(saleDecision, sale.getDate(), si.getBasePrice(), basePricesTotal,
-                    sale.getInstallmentMonths(), sale.isForYourself(), si.getQuantity(), null));
+            BigDecimal price = priceService.getPrice(saleDecision, sale.getDate(), si.getBasePrice(), basePricesTotal,
+                    sale.getInstallmentMonths(), sale.isForYourself(), si.getQuantity(), null);
+
+            if (sale.isFeeWithdraw()){
+                price = price.subtract(rewardService.getPersonalRewardPoint(sale, saleItemsModel.getObject()));
+            }
+
+            si.setPrice(price);
         });
 
         updateTotal();
@@ -487,8 +526,14 @@ public class SaleModal extends Modal<Sale> {
 
             si.setSaleDecisionId(saleDecision != null ? saleDecision.getObjectId() : null);
 
-            si.setPrice(priceService.getPrice(saleDecision, sale.getDate(), si.getBasePrice(), basePricesTotal,
-                    sale.getInstallmentMonths(), sale.isForYourself(), si.getQuantity(), paymentPercent));
+            BigDecimal price = priceService.getPrice(saleDecision, sale.getDate(), si.getBasePrice(), basePricesTotal,
+                    sale.getInstallmentMonths(), sale.isForYourself(), si.getQuantity(), paymentPercent);
+
+            if (sale.isFeeWithdraw()){
+                price = price.subtract(rewardService.getPersonalRewardPoint(sale, saleItemsModel.getObject()));
+            }
+
+            si.setPrice(price);
 
             BigDecimal rate = priceService.getRate(sale.getStorageId(), sale.getDate());
 
@@ -669,7 +714,9 @@ public class SaleModal extends Modal<Sale> {
         });
 
         try {
-            sale.setPersonalRewardPoint(rewardService.getPersonalRewardPoint(sale, saleItems));
+            sale.setPersonalRewardPoint(!sale.isFeeWithdraw()
+                    ? rewardService.getPersonalRewardPoint(sale, saleItems)
+                    : BigDecimal.ZERO);
 
             if (saleService.isMkSaleItems(saleItems)) {
                 sale.setMkManagerBonusRewardPoint(rewardService.getMkManagerBonusRewardPoint(sale, saleItems));
