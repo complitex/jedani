@@ -9,6 +9,7 @@ import ru.complitex.common.util.Dates;
 import ru.complitex.jedani.worker.entity.Worker;
 import ru.complitex.jedani.worker.entity.WorkerReward;
 import ru.complitex.jedani.worker.security.JedaniRoles;
+import ru.complitex.jedani.worker.service.InviteService;
 import ru.complitex.jedani.worker.service.RewardService;
 import ru.complitex.jedani.worker.service.WorkerService;
 
@@ -61,6 +62,9 @@ public class WorkerResourceReference extends ResourceReference {
                         WorkerService workerService = new WorkerService();
                         NonContextual.of(WorkerService.class).inject(workerService);
 
+                        InviteService inviteService = new InviteService();
+                        NonContextual.of(InviteService.class).inject(inviteService);
+
                         Worker worker = workerService.getWorker(login);
 
                         if (worker != null){
@@ -106,6 +110,8 @@ public class WorkerResourceReference extends ResourceReference {
                             JsonArrayBuilder roles = Json.createArrayBuilder();
                             workerService.getUser(worker).getRoles().forEach(roles::add);
                             json.add("roles", roles.build());
+
+                            json.add("invite_key", inviteService.encodeKey(worker.getJId()));
                         }else {
                             json.add("error", -2);
                             json.add("error_message", "worker not found");
