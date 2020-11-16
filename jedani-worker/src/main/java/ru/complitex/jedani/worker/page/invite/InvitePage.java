@@ -31,10 +31,10 @@ import ru.complitex.common.wicket.util.Wickets;
 import ru.complitex.domain.component.form.FormGroupAttributeInputList;
 import ru.complitex.domain.component.form.FormGroupDomainAutoComplete;
 import ru.complitex.domain.entity.StringType;
-import ru.complitex.domain.mapper.DomainNodeMapper;
 import ru.complitex.domain.model.DateAttributeModel;
 import ru.complitex.domain.model.NumberAttributeModel;
 import ru.complitex.domain.model.TextAttributeModel;
+import ru.complitex.domain.service.DomainNodeService;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.page.login.LoginPage;
@@ -84,7 +84,7 @@ public class InvitePage extends WebPage {
     private NameService nameService;
 
     @Inject
-    private DomainNodeMapper domainNodeMapper;
+    private DomainNodeService domainNodeService;
 
     @Inject
     private InviteService inviteService;
@@ -288,7 +288,7 @@ public class InvitePage extends WebPage {
                         throw e;
                     }
 
-                    domainNodeMapper.updateIndex(manager, worker);
+                    domainNodeService.updateIndex(manager, worker);
 
                     getSession().success(getString("info_worker_created"));
 

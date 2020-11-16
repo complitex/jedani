@@ -4,6 +4,7 @@ import org.mybatis.cdi.Transactional;
 import ru.complitex.domain.entity.DomainNode;
 import ru.complitex.domain.mapper.DomainNodeMapper;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.List;
  * @author Anatoly A. Ivanov
  * 05.06.2018 15:37
  */
+@ApplicationScoped
 public class DomainNodeService implements Serializable {
     @Inject
     private DomainNodeMapper domainNodeMapper;
@@ -80,5 +82,10 @@ public class DomainNodeService implements Serializable {
                 domainNodeMapper.validateDomainNodeMaxRight(entityName) &&
                 domainNodeMapper.validateDomainNodeDiff(entityName) &&
                 domainNodeMapper.validateDomainNodeLevel(entityName);
+    }
+
+    @Transactional
+    public void updateIndex(DomainNode parent, DomainNode domainNode){
+        domainNodeMapper.updateIndex(parent, domainNode);
     }
 }

@@ -66,11 +66,11 @@ import ru.complitex.domain.component.form.FormGroupAttributeSelect;
 import ru.complitex.domain.component.form.FormGroupAttributeSelectList;
 import ru.complitex.domain.component.form.FormGroupDomainAutoComplete;
 import ru.complitex.domain.entity.*;
-import ru.complitex.domain.mapper.DomainNodeMapper;
 import ru.complitex.domain.mapper.EntityMapper;
 import ru.complitex.domain.model.DateAttributeModel;
 import ru.complitex.domain.model.NumberAttributeModel;
 import ru.complitex.domain.model.TextAttributeModel;
+import ru.complitex.domain.service.DomainNodeService;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
 import ru.complitex.jedani.worker.component.JedaniRoleSelectList;
@@ -134,7 +134,7 @@ public class WorkerPage extends BasePage {
     private EntityService entityService;
 
     @Inject
-    private DomainNodeMapper domainNodeMapper;
+    private DomainNodeService domainNodeService;
 
     @Inject
     private CardService cardService;
@@ -835,10 +835,10 @@ public class WorkerPage extends BasePage {
                         }
 
                         if (manager != null) {
-                            domainNodeMapper.updateIndex(manager, worker);
+                            domainNodeService.updateIndex(manager, worker);
                         }else{
 
-                            domainNodeMapper.updateIndex(new Worker(1L, 1L, 2L, 0L), worker);
+                            domainNodeService.updateIndex(new Worker(1L, 1L, 2L, 0L), worker);
                         }
 
                         success(getString(worker.isParticipant() ? "info_worker_created" : "info_user_created"));
