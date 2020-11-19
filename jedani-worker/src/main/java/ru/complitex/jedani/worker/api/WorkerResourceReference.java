@@ -72,9 +72,14 @@ public class WorkerResourceReference extends ResourceReference {
                             json.add("last_name", workerService.getLastName(worker));
                             json.add("first_name", workerService.getFirstName(worker));
                             json.add("middle_name", workerService.getMiddleName(worker));
-                            json.add("j_id", worker.getJId() != null ? worker.getJId() : "");
 
-                            json.add("status", worker.getMkStatus() != null ? worker.getMkStatus() : 0);
+                            if (worker.getJId() != null) {
+                                json.add("j_id", worker.getJId());
+                            }
+
+                            if (worker.getMkStatus() != null) {
+                                json.add("status", worker.getMkStatus());
+                            }
 
                             json.add("login", login);
 
@@ -82,7 +87,9 @@ public class WorkerResourceReference extends ResourceReference {
                             worker.getPhones().forEach(phones::add);
                             json.add("phones", phones.build());
 
-                            json.add("email", worker.getEmail() != null ? worker.getEmail() : "");
+                            if (worker.getEmail() != null) {
+                                json.add("email", worker.getEmail());
+                            }
 
                             RewardService rewardService = new RewardService();
                             NonContextual.of(RewardService.class).inject(rewardService);
@@ -94,7 +101,10 @@ public class WorkerResourceReference extends ResourceReference {
                             json.add("group_sale_volume", workerReward.getGroupSaleVolume());
                             json.add("group_payment_volume", workerReward.getGroupSaleVolume());
 
-                            json.add("birthday", Dates.getDateText(worker.getBirthday()));
+                            if (worker.getBirthday() != null) {
+                                json.add("birthday", Dates.getDateText(worker.getBirthday()));
+                            }
+
                             json.add("registration_date", Dates.getDateText(worker.getRegistrationDate()));
 
                             JsonArrayBuilder regions = Json.createArrayBuilder();
@@ -105,13 +115,17 @@ public class WorkerResourceReference extends ResourceReference {
                             workerService.getCities(worker).forEach(cities::add);
                             json.add("cities", cities.build());
 
-                            json.add("position", worker.getPosition() != null ? worker.getPosition() : 0);
+                            if (worker.getPosition() != null) {
+                                json.add("position", worker.getPosition());
+                            }
 
                             JsonArrayBuilder roles = Json.createArrayBuilder();
                             workerService.getUser(worker).getRoles().forEach(roles::add);
                             json.add("roles", roles.build());
 
-                            json.add("invite_key", inviteService.encodeKey(worker.getJId()));
+                            if (worker.getJId() != null) {
+                                json.add("invite_key", inviteService.encodeKey(worker.getJId()));
+                            }
                         }else {
                             json.add("error", -2);
                             json.add("error_message", "worker not found");
