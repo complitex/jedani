@@ -28,6 +28,7 @@ import ru.complitex.jedani.worker.service.ExchangeRateService;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -85,11 +86,11 @@ public class ExchangeRateListPage extends DomainListModalPage<ExchangeRate> {
         List<ExchangeRate> list = super.getDomains(filterWrapper);
 
         list.forEach(r -> {
-            String[] values = exchangeRateService.getValue(r.getUriXml(), r.getUriDateParam(),r.getUriDateFormat(),
+            String[] values = exchangeRateService.getValue(r.getUriXml(), r.getUriDateParam(), r.getUriDateFormat(),
                     LocalDate.now(), r.getXpathDate(), r.getXpathValue());
 
             if (values != null) {
-                r.getMap().put("date", values[0]);
+                r.getMap().put("date", LocalDate.parse(values[0], DateTimeFormatter.ofPattern(r.getUriDateFormat())));
                 r.getMap().put("value", values[1].replace(",", "."));
             }
         });
@@ -102,7 +103,9 @@ public class ExchangeRateListPage extends DomainListModalPage<ExchangeRate> {
         columns.add(new AbstractDomainColumn<ExchangeRate>(new ResourceModel("date"), new SortProperty("date")) {
             @Override
             public void populateItem(Item<ICellPopulator<ExchangeRate>> cellItem, String componentId, IModel<ExchangeRate> rowModel) {
-                cellItem.add(new Label(componentId, (Serializable) rowModel.getObject().getMap().get("date")));
+                LocalDate date = (LocalDate) rowModel.getObject().getMap().get("date");
+
+                cellItem.add(new Label(componentId, date != null ? date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) : null));
             }
 
             @Override

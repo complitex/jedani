@@ -2,7 +2,6 @@ package ru.complitex.jedani.worker.page;
 
 import de.agilecoders.wicket.core.markup.html.bootstrap.list.BootstrapListView;
 import org.apache.wicket.Component;
-import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.MetaDataKey;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -291,7 +290,8 @@ public class BasePage extends WebPage{
         storages.add(new MenuLink("storage", StorageListPage.class).addMenuPageClass(StoragePage.class));
 
         WebMarkupContainer sales = new WebMarkupContainer("sales");
-        sales.setVisible(isAdmin() || isParticipant());
+        sales.setVisible(isAdmin() || isStructureAdmin() || isPromotionAdmin() || isSaleAdmin() || isPaymentAdmin() ||
+                isParticipant());
         sales.add(newBehavior());
         sales.add(new WebMarkupContainer("link").add(newBehaviorLink()));
         menu.add(sales);
