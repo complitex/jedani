@@ -14,8 +14,8 @@
     </modules>
 
     <properties>
-        <wicket.version>8.6.1</wicket.version>
-        <wicket-bootstrap.version>2.0.9</wicket-bootstrap.version>
+        <wicket.version>8.10.0</wicket.version>
+        <wicket-bootstrap.version>2.0.14</wicket-bootstrap.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -118,7 +118,13 @@
             <dependency>
                 <groupId>com.squareup.okhttp3</groupId>
                 <artifactId>okhttp</artifactId>
-                <version>4.1.0</version>
+                <version>3.14.9</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.conscrypt</groupId>
+                <artifactId>conscrypt-openjdk-uber</artifactId>
+                <version>2.5.1</version>
             </dependency>
 
             <dependency>

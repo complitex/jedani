@@ -33,6 +33,7 @@ import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
 import org.apache.wicket.request.resource.SharedResourceReference;
 import org.apache.wicket.resource.JQueryResourceReference;
+import org.conscrypt.Conscrypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.complitex.address.page.CityListPage;
@@ -74,6 +75,7 @@ import ru.complitex.name.page.LastNameListPage;
 import ru.complitex.name.page.MiddleNameListPage;
 
 import java.math.BigDecimal;
+import java.security.Security;
 
 /**
  * @author Anatoly A. Ivanov
@@ -105,6 +107,8 @@ public class JedaniWebApplication extends WebApplication{
         getSecuritySettings().setUnauthorizedComponentInstantiationListener(new ServletUnauthorizedListener(LoginPage.class));
 
         ((ConverterLocator)getConverterLocator()).set(BigDecimal.class, new BigDecimalConverter());
+
+        Security.insertProviderAt(Conscrypt.newProvider(), 1);
     }
 
     private void configureBootstrap() {
