@@ -129,7 +129,7 @@ public class PaymentListPage extends DomainListModalPage<Payment> {
     @Override
     protected void populateAction(RepeatingView repeatingView, IModel<Payment> rowModel) {
         if ((isAdmin() || isStructureAdmin() || isPaymentAdmin()) &&
-                rowModel.getObject().getDate().after(periodService.getActualPeriod().getOperatingMonth())) {
+                rowModel.getObject().getStartDate().after(periodService.getActualPeriod().getOperatingMonth())) {
             repeatingView.add(new LinkPanel(repeatingView.newChildId(), new BootstrapAjaxButton(LinkPanel.LINK_COMPONENT_ID,
                     Buttons.Type.Link) {
                 @Override
