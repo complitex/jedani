@@ -90,7 +90,15 @@ public class ExchangeRateListPage extends DomainListModalPage<ExchangeRate> {
                     LocalDate.now(), r.getXpathDate(), r.getXpathValue());
 
             if (values != null) {
-                r.getMap().put("date", LocalDate.parse(values[0], DateTimeFormatter.ofPattern(r.getUriDateFormat())));
+                DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ISO_DATE;
+
+                if (values[0].contains(".")){
+                    dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+                }else if (values[0].contains("/")){
+                    dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+                }
+
+                r.getMap().put("date", LocalDate.parse(values[0], dateTimeFormatter));
                 r.getMap().put("value", values[1].replace(",", "."));
             }
         });
