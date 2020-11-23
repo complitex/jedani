@@ -1,13 +1,19 @@
 package ru.complitex.jedani.worker.page.payment;
 
+import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxButton;
+import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
+import de.agilecoders.wicket.core.markup.html.bootstrap.image.GlyphIconType;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.repeater.Item;
+import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import ru.complitex.common.entity.FilterWrapper;
+import ru.complitex.common.wicket.panel.LinkPanel;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
@@ -16,12 +22,12 @@ import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.entity.Payment;
 import ru.complitex.jedani.worker.entity.Sale;
 import ru.complitex.jedani.worker.mapper.PaymentMapper;
-import ru.complitex.jedani.worker.service.WorkerService;
+import ru.complitex.jedani.worker.service.PeriodService;
 
 import javax.inject.Inject;
 import java.util.List;
 
-import static ru.complitex.jedani.worker.security.JedaniRoles.*;
+import static ru.complitex.jedani.worker.security.JedaniRoles.AUTHORIZED;
 
 @AuthorizeInstantiation({AUTHORIZED})
 public class PaymentListPage extends DomainListModalPage<Payment> {
@@ -31,7 +37,12 @@ public class PaymentListPage extends DomainListModalPage<Payment> {
     @Inject
     private PaymentMapper paymentMapper;
 
+    @Inject
+    private PeriodService periodService;
+
     private PaymentModal paymentModal;
+
+    private PaymentRemoveModal paymentRemoveModal;
 
     public PaymentListPage() {
         super(Payment.class);
@@ -40,6 +51,16 @@ public class PaymentListPage extends DomainListModalPage<Payment> {
         getContainer().add(paymentForm);
 
         paymentForm.add(paymentModal = new PaymentModal("paymentModal").onUpdate(t -> t.add(getFeedback(), getTable())));
+
+        Form form = new Form("paymentRemoveForm");
+        getContainer().add(form);
+
+        form.add(paymentRemoveModal = new PaymentRemoveModal("paymentRemoveModal"){
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                target.add(getFeedback(), getTable());
+            }
+        });
     }
 
     @Override
@@ -103,5 +124,26 @@ public class PaymentListPage extends DomainListModalPage<Payment> {
     @Override
     protected boolean isDomainModalEditEnabled() {
         return false;
+    }
+
+    @Override
+    protected void populateAction(RepeatingView repeatingView, IModel<Payment> rowModel) {
+        if ((isAdmin() || isStructureAdmin() || isPaymentAdmin()) &&
+                rowModel.getObject().getDate().after(periodService.getActualPeriod().getOperatingMonth())) {
+            repeatingView.add(new LinkPanel(repeatingView.newChildId(), new BootstrapAjaxButton(LinkPanel.LINK_COMPONENT_ID,
+                    Buttons.Type.Link) {
+                @Override
+                protected void onSubmit(AjaxRequestTarget target) {
+                    paymentRemoveModal.delete(target, rowModel.getObject());
+                }
+
+                @Override
+                protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
+                    super.updateAjaxAttributes(attributes);
+
+                    attributes.setEventPropagation(AjaxRequestAttributes.EventPropagation.STOP);
+                }
+            }.setIconType(GlyphIconType.remove)));
+        }
     }
 }

@@ -255,7 +255,7 @@ public class SaleListPage extends DomainListModalPage<Sale> {
     }
 
     @Override
-    protected void onCreateAction(RepeatingView repeatingView, IModel<Sale> rowModel) {
+    protected void populateAction(RepeatingView repeatingView, IModel<Sale> rowModel) {
         if (isAdmin() || isStructureAdmin() || isSaleAdmin()) {
             repeatingView.add(new LinkPanel(repeatingView.newChildId(), new BootstrapAjaxButton(LinkPanel.LINK_COMPONENT_ID,
                     Buttons.Type.Link) {

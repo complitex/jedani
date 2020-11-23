@@ -51,7 +51,7 @@ public abstract class DomainEditActionsColumn<T extends Domain> extends Abstract
         repeatingView.add(new LinkPanel(repeatingView.newChildId(), new BootstrapAjaxButton(LinkPanel.LINK_COMPONENT_ID, Buttons.Type.Link) {
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
-                DomainEditActionsColumn.this.onAction(rowModel, target);
+                DomainEditActionsColumn.this.onEdit(rowModel, target);
             }
 
             @Override
@@ -62,10 +62,10 @@ public abstract class DomainEditActionsColumn<T extends Domain> extends Abstract
             }
         }.setIconType(GlyphIconType.edit)));
 
-        onCreateAction(repeatingView, rowModel);
+        populateAction(repeatingView, rowModel);
     }
 
-    protected abstract void onAction(IModel<T> rowModel, AjaxRequestTarget target);
+    protected abstract void onEdit(IModel<T> rowModel, AjaxRequestTarget target);
 
     @Override
     public String getCssClass() {
@@ -76,7 +76,7 @@ public abstract class DomainEditActionsColumn<T extends Domain> extends Abstract
         return ajaxIndicatorAppender;
     }
 
-    protected void onCreateAction(RepeatingView repeatingView, IModel<T> rowModel){
+    protected void populateAction(RepeatingView repeatingView, IModel<T> rowModel){
 
     }
 }

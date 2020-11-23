@@ -146,13 +146,13 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage{
         if (isEditEnabled()) {
             columns.add(new DomainEditActionsColumn<T>() {
                 @Override
-                protected void onAction(IModel<T> rowModel, AjaxRequestTarget target) {
-                    onEdit(rowModel.getObject(), target);
+                protected void onEdit(IModel<T> rowModel, AjaxRequestTarget target) {
+                    DomainListModalPage.this.onEdit(rowModel.getObject(), target);
                 }
 
                 @Override
-                protected void onCreateAction(RepeatingView repeatingView, IModel<T> rowModel) {
-                    DomainListModalPage.this.onCreateAction(repeatingView, rowModel);
+                protected void populateAction(RepeatingView repeatingView, IModel<T> rowModel) {
+                    DomainListModalPage.this.populateAction(repeatingView, rowModel);
                 }
             });
         }
@@ -318,7 +318,7 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage{
         return true;
     }
 
-    protected void onCreateAction(RepeatingView repeatingView, IModel<T> rowModel){
+    protected void populateAction(RepeatingView repeatingView, IModel<T> rowModel){
 
     }
 
