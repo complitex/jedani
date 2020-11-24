@@ -697,3 +697,11 @@ td div p::-webkit-scrollbar-thumb:hover {
     background-image: linear-gradient(to bottom, #f28100 0%, #f28100 100%);
     background-repeat: repeat-x;
 }
+
+.list-group-item .dropdown{
+    display: block;
+}
+
+.filter-option-inner-inner{
+    display: inline-block;
+}

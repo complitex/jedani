@@ -133,8 +133,8 @@ public class SaleService implements Serializable {
                 .addEntityAttributeId(Sale.TOTAL)
                 .put(Sale.FILTER_ACTIVE, true)
                 .put(Sale.FILTER_MONTH, month)).stream()
-                .reduce(BigDecimal.ZERO, (v, s) -> s.getTotal() != null ? s.getTotal() : BigDecimal.ZERO,
-                        BigDecimal::add);
+                .map(s -> s.getTotal() != null ? s.getTotal() : BigDecimal.ZERO)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     public List<Nomenclature> getNomenclatures(List<SaleItem> saleItems){
