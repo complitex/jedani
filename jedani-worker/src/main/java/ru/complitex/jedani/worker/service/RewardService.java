@@ -93,7 +93,11 @@ public class RewardService implements Serializable {
     }
 
     public boolean isCurrentSaleMonth(Reward reward, Date month){
-        return Dates.isSameMonth(saleService.getSale(reward.getSaleId()).getDate(), month);
+        Sale sale = saleService.getSale(reward.getSaleId());
+
+        return sale != null
+                ? Dates.isSameMonth(saleService.getSale(reward.getSaleId()).getDate(), month)
+                : Dates.isSameMonth(reward.getMonth(), month);
     }
 
     public WorkerRewardTree getWorkerRewardTree(Date month){
@@ -119,7 +123,8 @@ public class RewardService implements Serializable {
                 }
 
                 r.setGroupSaleVolume(r.getChildRewards().stream()
-                        .reduce(ZERO, (v, c) -> v.add(c.getSaleVolume().add(c.getGroupSaleVolume())), BigDecimal::add));
+                        .reduce(r.getSaleVolume() != null ? r.getSaleVolume() : ZERO,
+                                (v, c) -> v.add(c.getSaleVolume().add(c.getGroupSaleVolume())), BigDecimal::add));
 
                 r.setRank(getRank(r.getGroupSaleVolume()));
             });
@@ -164,7 +169,8 @@ public class RewardService implements Serializable {
                 }
 
                 r.setGroupPaymentVolume(r.getChildRewards().stream()
-                        .reduce(ZERO, (v, c) -> v.add(c.getGroupPaymentVolume().add(c.getGroupPaymentVolume())), BigDecimal::add));
+                        .reduce(r.getPaymentVolume() != null ? r.getPaymentVolume() : ZERO,
+                                (v, c) -> v.add(c.getGroupPaymentVolume().add(c.getGroupPaymentVolume())), BigDecimal::add));
             });
         });
     }
