@@ -8,7 +8,7 @@
     </select>
 
     <delete id="deleteRewardsByIds" parameterType="list">
-        delete from reward r
+        delete from reward
         where id in <foreach collection="list" open="(" separator="," close=")" item="i">#{i}</foreach>
     </delete>
 
