@@ -703,5 +703,5 @@ td div p::-webkit-scrollbar-thumb:hover {
 }
 
 .filter-option-inner-inner{
-    display: inline-block;
+    display: inline-flex;
 }
