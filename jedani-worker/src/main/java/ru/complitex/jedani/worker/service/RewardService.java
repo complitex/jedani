@@ -475,7 +475,7 @@ public class RewardService implements Serializable {
 
             tree.forEachLevel((l, rl) -> {
                 rl.forEach(r -> {
-                    if (r.getSaleVolume().compareTo(getParameter(43L)) >= 0){
+                    if (r.getPaymentVolume().compareTo(getParameter(43L)) >= 0){
                         Reward reward = new Reward();
 
                         reward.setType(RewardType.TYPE_PERSONAL_VOLUME);
@@ -486,16 +486,18 @@ public class RewardService implements Serializable {
 
                         if (getRewardsTotal(reward.getWorkerId(), RewardType.TYPE_PERSONAL_VOLUME,
                                 month).compareTo(ZERO) == 0) {
-                            if (r.getSaleVolume().compareTo(getParameter(44L)) < 0){
+                            if (r.getPaymentVolume().compareTo(getParameter(44L)) < 0){
                                 reward.setPoint(getParameter(45L));
-                            }else if (r.getSaleVolume().compareTo(getParameter(44L)) >= 0){
+                            }else if (r.getPaymentVolume().compareTo(getParameter(44L)) >= 0){
                                 reward.setPoint(getParameter(46L));
                             }
                         }
 
                         updateLocal(2L, reward);
 
-                        domainService.save(reward);
+                        if (reward.getPoint().compareTo(ZERO) > 0) {
+                            domainService.save(reward);
+                        }
                     }
                 });
             });
