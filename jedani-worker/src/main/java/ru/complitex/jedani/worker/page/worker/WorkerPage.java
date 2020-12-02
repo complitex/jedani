@@ -1152,11 +1152,11 @@ public class WorkerPage extends BasePage {
             rewardContainer.add(new Label("rank", workerReward.getRank() !=  null && workerReward.getRank() > 0
                     ? domainService.getDomain(Rank.class, workerReward.getRank()).getName()
                     : ""));
-            rewardContainer.add(new Label("group_sale_volume", workerReward.getGroupSaleVolume()));
-            rewardContainer.add(new Label("group_payment_volume", workerReward.getGroupPaymentVolume()));
+            rewardContainer.add(new Label("structure_sale_volume", workerReward.getStructureSaleVolume()));
+            rewardContainer.add(new Label("structure_payment_volume", workerReward.getStructurePaymentVolume()));
             rewardContainer.add(new Label("group_registration_count", workerReward.getGroupRegistrationCount()));
             rewardContainer.add(new Label("reward_mp", getRewardString(rewards, RewardType.TYPE_MANAGER_PREMIUM, month)));
-            rewardContainer.add(new Label("group_manager_count", workerReward.getGroupManagerCount()));
+            rewardContainer.add(new Label("structure_manager_count", workerReward.getStructureManagerCount()));
         }
     }
 

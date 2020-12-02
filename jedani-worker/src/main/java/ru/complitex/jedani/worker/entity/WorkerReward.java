@@ -22,12 +22,12 @@ public class WorkerReward {
 
     private Long firstLevelCount = 0L;
 
-    private BigDecimal groupSaleVolume = ZERO;
-    private BigDecimal groupPaymentVolume = ZERO;
+    private BigDecimal structureSaleVolume = ZERO;
+    private BigDecimal structurePaymentVolume = ZERO;
 
     private Long groupRegistrationCount = 0L;
 
-    private Long groupManagerCount = 0L;
+    private Long structureManagerCount = 0L;
 
     private Long rank = 0L;
 
@@ -73,20 +73,20 @@ public class WorkerReward {
         this.paymentVolume = paymentVolume;
     }
 
-    public BigDecimal getGroupSaleVolume() {
-        return groupSaleVolume;
+    public BigDecimal getStructureSaleVolume() {
+        return structureSaleVolume;
     }
 
-    public void setGroupSaleVolume(BigDecimal groupSaleVolume) {
-        this.groupSaleVolume = groupSaleVolume;
+    public void setStructureSaleVolume(BigDecimal structureSaleVolume) {
+        this.structureSaleVolume = structureSaleVolume;
     }
 
-    public BigDecimal getGroupPaymentVolume() {
-        return groupPaymentVolume;
+    public BigDecimal getStructurePaymentVolume() {
+        return structurePaymentVolume;
     }
 
-    public void setGroupPaymentVolume(BigDecimal groupPaymentVolume) {
-        this.groupPaymentVolume = groupPaymentVolume;
+    public void setStructurePaymentVolume(BigDecimal structurePaymentVolume) {
+        this.structurePaymentVolume = structurePaymentVolume;
     }
 
     public Long getRegistrationCount() {
@@ -105,12 +105,12 @@ public class WorkerReward {
         this.groupRegistrationCount = groupRegistrationCount;
     }
 
-    public Long getGroupManagerCount() {
-        return groupManagerCount;
+    public Long getStructureManagerCount() {
+        return structureManagerCount;
     }
 
-    public void setGroupManagerCount(Long groupManagerCount) {
-        this.groupManagerCount = groupManagerCount;
+    public void setStructureManagerCount(Long structureManagerCount) {
+        this.structureManagerCount = structureManagerCount;
     }
 
     public Long getFirstLevelCount() {

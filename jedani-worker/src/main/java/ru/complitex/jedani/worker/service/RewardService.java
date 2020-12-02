@@ -122,11 +122,11 @@ public class RewardService implements Serializable {
                     r.setSaleVolume(saleService.getSaleVolume(r.getWorkerNode().getObjectId(), month));
                 }
 
-                r.setGroupSaleVolume(r.getChildRewards().stream()
+                r.setStructureSaleVolume(r.getChildRewards().stream()
                         .reduce(r.getSaleVolume() != null ? r.getSaleVolume() : ZERO,
-                                (v, c) -> v.add(c.getGroupSaleVolume()), BigDecimal::add));
+                                (v, c) -> v.add(c.getStructureSaleVolume()), BigDecimal::add));
 
-                r.setRank(getRank(r.getGroupSaleVolume()));
+                r.setRank(getRank(r.getStructureSaleVolume()));
             });
         });
     }
@@ -168,9 +168,9 @@ public class RewardService implements Serializable {
                     r.setPaymentVolume(paymentService.getPaymentsVolumeBySellerWorkerId(r.getWorkerNode().getObjectId(), month));
                 }
 
-                r.setGroupPaymentVolume(r.getChildRewards().stream()
+                r.setStructurePaymentVolume(r.getChildRewards().stream()
                         .reduce(r.getPaymentVolume() != null ? r.getPaymentVolume() : ZERO,
-                                (v, c) -> v.add(c.getGroupPaymentVolume()), BigDecimal::add));
+                                (v, c) -> v.add(c.getStructurePaymentVolume()), BigDecimal::add));
             });
         });
     }
@@ -188,7 +188,7 @@ public class RewardService implements Serializable {
 
                 r.setGroupRegistrationCount(r.getChildRewards().stream()
                         .filter(WorkerReward::isManager)
-                        .reduce(0L, (v, c) -> c.getGroupManagerCount() + 1, Long::sum));
+                        .reduce(0L, (v, c) -> c.getStructureManagerCount() + 1, Long::sum));
             });
         });
     }
@@ -425,7 +425,7 @@ public class RewardService implements Serializable {
                             reward.setPoint(premium);
                             reward.setDate(Dates.currentDate());
                             reward.setMonth(month);
-                            reward.setGroupVolume(workerReward.getGroupSaleVolume());
+                            reward.setGroupVolume(workerReward.getStructureSaleVolume());
                             reward.setRankId(workerReward.getRank());
 
                             updateLocal(s, reward);

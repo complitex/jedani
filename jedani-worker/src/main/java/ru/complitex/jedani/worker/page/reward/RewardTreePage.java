@@ -36,7 +36,7 @@ public class RewardTreePage extends BasePage {
 
             for (WorkerReward wr : list){
                 if ((wr.getSaleVolume().compareTo(ZERO) > 0) ||
-                        wr.getGroupSaleVolume().compareTo(ZERO) > 0 ||
+                        wr.getStructureSaleVolume().compareTo(ZERO) > 0 ||
                         wr.getPaymentVolume().compareTo(ZERO) > 0 ||
                         wr.getGroupRegistrationCount() > 0 ||
                         wr.getFirstLevelCount() > 0) {
@@ -49,8 +49,8 @@ public class RewardTreePage extends BasePage {
                     if (wr.getSaleVolume().compareTo(ZERO) > 0){
                         rewards.append(", saleVolume: ").append(wr.getSaleVolume());
                     }
-                    if (wr.getGroupSaleVolume().compareTo(ZERO) > 0){
-                        rewards.append(", groupSaleVolume: ").append(wr.getGroupSaleVolume());
+                    if (wr.getStructureSaleVolume().compareTo(ZERO) > 0){
+                        rewards.append(", groupSaleVolume: ").append(wr.getStructureSaleVolume());
                     }
                     if (wr.getPaymentVolume().compareTo(ZERO) > 0){
                         rewards.append(", paymentVolume: ").append(wr.getPaymentVolume());
