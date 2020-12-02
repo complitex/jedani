@@ -16,8 +16,8 @@ public class Locales {
     private Map<Locale, Long> map = new ConcurrentHashMap<>();
     private Map<Long, Locale> mapId = new ConcurrentHashMap<>();
 
-    public static final Locale RU = new Locale("ru");
-    public static final Locale UA = new Locale("uk");
+    public static final Locale RU = new Locale("ru", "RU");
+    public static final Locale UA = new Locale("uk", "UA");
 
     public static final Long RU_ID = 1L;
     public static final Long UA_ID = 2L;

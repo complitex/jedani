@@ -22,6 +22,9 @@ public class WorkerReward {
 
     private Long firstLevelCount = 0L;
 
+    private BigDecimal groupSaleVolume = ZERO;
+    private BigDecimal groupPaymentVolume = ZERO;
+
     private BigDecimal structureSaleVolume = ZERO;
     private BigDecimal structurePaymentVolume = ZERO;
 
@@ -71,6 +74,22 @@ public class WorkerReward {
 
     public void setPaymentVolume(BigDecimal paymentVolume) {
         this.paymentVolume = paymentVolume;
+    }
+
+    public BigDecimal getGroupSaleVolume() {
+        return groupSaleVolume;
+    }
+
+    public void setGroupSaleVolume(BigDecimal groupSaleVolume) {
+        this.groupSaleVolume = groupSaleVolume;
+    }
+
+    public BigDecimal getGroupPaymentVolume() {
+        return groupPaymentVolume;
+    }
+
+    public void setGroupPaymentVolume(BigDecimal groupPaymentVolume) {
+        this.groupPaymentVolume = groupPaymentVolume;
     }
 
     public BigDecimal getStructureSaleVolume() {
@@ -131,5 +150,9 @@ public class WorkerReward {
 
     public List<Reward> getRewards() {
         return rewards;
+    }
+
+    public Long getWorkerId(){
+        return workerNode.getObjectId();
     }
 }

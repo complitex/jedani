@@ -185,7 +185,7 @@ public class Domain<T extends Domain<T>> implements Serializable{
     }
 
     public Domain setDecimal(Long entityAttributeId, BigDecimal decimal){
-        setText(entityAttributeId, decimal != null ? decimal.toPlainString() : null);
+        setText(entityAttributeId, decimal != null ? decimal.stripTrailingZeros().toPlainString() : null);
 
         return this;
     }

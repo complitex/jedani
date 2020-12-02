@@ -7,6 +7,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
@@ -29,19 +30,19 @@ import javax.inject.Inject;
 import java.util.Collections;
 import java.util.List;
 
+import static ru.complitex.jedani.worker.security.JedaniRoles.ADMINISTRATORS;
+
 /**
  * @author Anatoly A. Ivanov
  * 05.11.2019 9:49 PM
  */
+@AuthorizeInstantiation({ADMINISTRATORS})
 public class PeriodListPage extends DomainListModalPage<Period> {
     @Inject
     private WorkerService workerService;
 
     @Inject
     private PeriodService periodService;
-
-    @Inject
-    private RewardService rewardService;
 
     private PeriodModal periodModal;
     private PeriodCalculateModal periodCalculateModal;

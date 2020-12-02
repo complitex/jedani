@@ -21,6 +21,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import static java.math.BigDecimal.ROUND_HALF_EVEN;
 import static java.math.BigDecimal.ZERO;
 import static java.math.RoundingMode.HALF_EVEN;
 
@@ -113,24 +114,6 @@ public class RewardService implements Serializable {
         return tree;
     }
 
-    private void calcSaleVolumes(WorkerRewardTree tree, Date month){
-        Set<Long> activeSaleWorkerIds = saleService.getActiveSaleWorkerIds();
-
-        tree.forEachLevel((l, rl) -> {
-            rl.forEach(r -> {
-                if (activeSaleWorkerIds.contains(r.getWorkerNode().getObjectId())) {
-                    r.setSaleVolume(saleService.getSaleVolume(r.getWorkerNode().getObjectId(), month));
-                }
-
-                r.setStructureSaleVolume(r.getChildRewards().stream()
-                        .reduce(r.getSaleVolume() != null ? r.getSaleVolume() : ZERO,
-                                (v, c) -> v.add(c.getStructureSaleVolume()), BigDecimal::add));
-
-                r.setRank(getRank(r.getStructureSaleVolume()));
-            });
-        });
-    }
-
     private Long getRank(BigDecimal saleVolume){
         if (saleVolume.compareTo(getParameter(20L)) >= 0){
             return RankType.PLATINUM_DIRECTOR;
@@ -159,6 +142,27 @@ public class RewardService implements Serializable {
         return 0L;
     }
 
+    private void calcSaleVolumes(WorkerRewardTree tree, Date month){
+        Set<Long> activeSaleWorkerIds = saleService.getActiveSaleWorkerIds();
+
+        tree.forEachLevel((l, rl) -> {
+            rl.forEach(r -> {
+                if (activeSaleWorkerIds.contains(r.getWorkerNode().getObjectId())) {
+                    r.setSaleVolume(saleService.getSaleVolume(r.getWorkerNode().getObjectId(), month));
+                }
+
+                r.setGroupSaleVolume(r.getChildRewards().stream()
+                        .filter(WorkerReward::isManager)
+                        .reduce(r.getSaleVolume(), (v, c) -> v.add(c.getGroupSaleVolume()), BigDecimal::add));
+
+                r.setRank(getRank(r.getGroupSaleVolume()));
+
+                r.setStructureSaleVolume(r.getChildRewards().stream()
+                        .reduce(r.getSaleVolume(), (v, c) -> v.add(c.getStructureSaleVolume()), BigDecimal::add));
+            });
+        });
+    }
+
     private void calcPaymentVolume(WorkerRewardTree tree, Date month){
         Set<Long> activeSaleWorkerIds = saleService.getActiveSaleWorkerIds();
 
@@ -168,9 +172,12 @@ public class RewardService implements Serializable {
                     r.setPaymentVolume(paymentService.getPaymentsVolumeBySellerWorkerId(r.getWorkerNode().getObjectId(), month));
                 }
 
+                r.setGroupPaymentVolume(r.getChildRewards().stream()
+                        .filter(WorkerReward::isManager)
+                        .reduce(r.getPaymentVolume(), (v, c) -> v.add(c.getGroupPaymentVolume()), BigDecimal::add));
+
                 r.setStructurePaymentVolume(r.getChildRewards().stream()
-                        .reduce(r.getPaymentVolume() != null ? r.getPaymentVolume() : ZERO,
-                                (v, c) -> v.add(c.getStructurePaymentVolume()), BigDecimal::add));
+                        .reduce(r.getPaymentVolume(), (v, c) -> v.add(c.getStructurePaymentVolume()), BigDecimal::add));
             });
         });
     }
@@ -186,7 +193,7 @@ public class RewardService implements Serializable {
                         .filter(c -> !c.isManager() && c.getWorkerNode().getRegistrationDate() != null)
                         .reduce(0L, (v, c) -> c.getGroupRegistrationCount() + (isNewWorker(c, month) ? 1 : 0), Long::sum));
 
-                r.setGroupRegistrationCount(r.getChildRewards().stream()
+                r.setStructureManagerCount(r.getChildRewards().stream()
                         .filter(WorkerReward::isManager)
                         .reduce(0L, (v, c) -> c.getStructureManagerCount() + 1, Long::sum));
             });
@@ -198,7 +205,7 @@ public class RewardService implements Serializable {
     }
 
     private void calcFirstLevelCount(WorkerRewardTree tree){
-        tree.forEachLevel((l, rl) -> rl.forEach(r -> r.setFirstLevelCount(Long.valueOf(r.getChildRewards().size()))));
+        tree.forEachLevel((l, rl) -> rl.forEach(r -> r.setFirstLevelCount((long) r.getChildRewards().size())));
     }
 
     public BigDecimal getPersonalRewardPoint(Sale sale, List<SaleItem> saleItems){
@@ -248,45 +255,6 @@ public class RewardService implements Serializable {
         return point;
     }
 
-    private BigDecimal getManagerPremiumPoint(Sale sale, Long rank){
-        switch (rank.intValue()){
-            case (int) RankType.MANAGER_ASSISTANT:
-                return calcManagerPremiumPoint(sale, 48L, 49L);
-            case (int) RankType.MANAGER_JUNIOR:
-                return calcManagerPremiumPoint(sale, 21L, 31L);
-            case (int) RankType.TEAM_MANAGER:
-                return calcManagerPremiumPoint(sale, 22L, 32L);
-            case (int) RankType.SENIOR_ASSISTANT:
-                return calcManagerPremiumPoint(sale, 23L, 33L);
-            case (int) RankType.SENIOR_MANAGER:
-                return calcManagerPremiumPoint(sale, 24L, 34L);
-            case (int) RankType.DIVISION_MANAGER:
-                return calcManagerPremiumPoint(sale, 25L, 35L);
-            case (int) RankType.AREA_MANAGER:
-                return calcManagerPremiumPoint(sale, 26L, 36L);
-            case (int) RankType.REGIONAL_MANAGER:
-                return calcManagerPremiumPoint(sale, 27L, 37L);
-            case (int) RankType.SILVER_DIRECTOR:
-                return calcManagerPremiumPoint(sale, 28L, 38L);
-            case (int) RankType.GOLD_DIRECTOR:
-                return calcManagerPremiumPoint(sale, 29L, 39L);
-            case (int) RankType.PLATINUM_DIRECTOR:
-                return calcManagerPremiumPoint(sale, 30L, 40L);
-        }
-
-        return ZERO;
-    }
-
-    private BigDecimal calcManagerPremiumPoint(Sale sale, Long mkParameterId, Long baParameterId){
-        if (sale.getType() == SaleType.MYCOOK){
-            return getParameter(mkParameterId);
-        }else if (sale.getType() == SaleType.BASE_ASSORTMENT && sale.getTotal() != null){
-            return sale.getTotal().multiply(getParameter(baParameterId));
-        }
-
-        return ZERO;
-    }
-
     public BigDecimal getMkManagerBonusRewardPoint(Sale sale, List<SaleItem> saleItems){
         BigDecimal point = ZERO;
 
@@ -302,32 +270,6 @@ public class RewardService implements Serializable {
             }else if (saleService.isMkTouchSaleItems(saleItems)){
                 point = getParameter(10L);
             }
-        }
-
-        return point;
-    }
-
-    private BigDecimal calcRewardPoint(Sale sale, Date month, BigDecimal rewardPoint, Long rewardType){
-        BigDecimal point = ZERO;
-
-        if (rewardPoint.compareTo(ZERO) > 0 && sale.getTotal() != null) {
-            BigDecimal paidInterest  = paymentService.getPaymentsVolumeBySaleId(sale.getObjectId(), month)
-                    .divide(sale.getTotal(), 2, BigDecimal.ROUND_HALF_EVEN);
-
-            if (paidInterest.compareTo(new BigDecimal("0.2")) >= 0){
-                point = point.add(rewardPoint).multiply(new BigDecimal("0.25"));
-            }
-
-            if (paidInterest.compareTo(new BigDecimal("0.7")) >= 0){
-                point = point.add(rewardPoint.multiply(new BigDecimal("0.35")));
-            }
-
-            if (paidInterest.compareTo(new BigDecimal("1")) >= 0){
-                point = point.add(rewardPoint.multiply(new BigDecimal("0.40")));
-            }
-
-            point = point.subtract(getRewardsTotalBySaleId(sale.getObjectId(), rewardType)).stripTrailingZeros();
-
         }
 
         return point;
@@ -379,6 +321,125 @@ public class RewardService implements Serializable {
         reward.setLocal(reward.getPoint().multiply(reward.getRate()).setScale(2, HALF_EVEN));
     }
 
+    private BigDecimal calcManagerPremiumPoint(Sale sale, Long rank){
+        switch (rank.intValue()){
+            case (int) RankType.MANAGER_ASSISTANT:
+                return calcManagerPremiumPoint(sale, 48L, 49L);
+            case (int) RankType.MANAGER_JUNIOR:
+                return calcManagerPremiumPoint(sale, 21L, 31L);
+            case (int) RankType.TEAM_MANAGER:
+                return calcManagerPremiumPoint(sale, 22L, 32L);
+            case (int) RankType.SENIOR_ASSISTANT:
+                return calcManagerPremiumPoint(sale, 23L, 33L);
+            case (int) RankType.SENIOR_MANAGER:
+                return calcManagerPremiumPoint(sale, 24L, 34L);
+            case (int) RankType.DIVISION_MANAGER:
+                return calcManagerPremiumPoint(sale, 25L, 35L);
+            case (int) RankType.AREA_MANAGER:
+                return calcManagerPremiumPoint(sale, 26L, 36L);
+            case (int) RankType.REGIONAL_MANAGER:
+                return calcManagerPremiumPoint(sale, 27L, 37L);
+            case (int) RankType.SILVER_DIRECTOR:
+                return calcManagerPremiumPoint(sale, 28L, 38L);
+            case (int) RankType.GOLD_DIRECTOR:
+                return calcManagerPremiumPoint(sale, 29L, 39L);
+            case (int) RankType.PLATINUM_DIRECTOR:
+                return calcManagerPremiumPoint(sale, 30L, 40L);
+        }
+
+        return ZERO;
+    }
+
+    private BigDecimal calcManagerPremiumPoint(Sale sale, Long mkParameterId, Long baParameterId){
+        if (sale.getType() == SaleType.MYCOOK){
+            return getParameter(mkParameterId);
+        }else if (sale.getType() == SaleType.BASE_ASSORTMENT && sale.getTotal() != null){
+            return sale.getTotal().multiply(getParameter(baParameterId));
+        }
+
+        return ZERO;
+    }
+
+    private BigDecimal getGroupVolumePercent(Long rank){
+        switch (rank.intValue()){
+            case (int) RankType.MANAGER_ASSISTANT:
+                return getParameter(50L);
+            case (int) RankType.MANAGER_JUNIOR:
+                return getParameter(51L);
+            case (int) RankType.TEAM_MANAGER:
+                return getParameter(52L);
+            case (int) RankType.SENIOR_ASSISTANT:
+                return getParameter(53L);
+            case (int) RankType.SENIOR_MANAGER:
+                return getParameter(54L);
+            case (int) RankType.DIVISION_MANAGER:
+                return getParameter(55L);
+            case (int) RankType.AREA_MANAGER:
+                return getParameter(56L);
+            case (int) RankType.REGIONAL_MANAGER:
+                return getParameter(57L);
+            case (int) RankType.SILVER_DIRECTOR:
+                return getParameter(58L);
+            case (int) RankType.GOLD_DIRECTOR:
+                return getParameter(59L);
+            case (int) RankType.PLATINUM_DIRECTOR:
+                return getParameter(60L);
+        }
+
+        return ZERO;
+    }
+
+    private BigDecimal calcRewardPoint(Sale sale, Long rewardType, Date month, BigDecimal rewardPoint){
+        BigDecimal point = ZERO;
+
+        if (rewardPoint.compareTo(ZERO) > 0 && sale.getTotal() != null) {
+            BigDecimal paidInterest = paymentService.getPaymentsVolumeBySaleId(sale.getObjectId(), month)
+                    .divide(sale.getTotal(), 5, BigDecimal.ROUND_HALF_EVEN);
+
+            if (paidInterest.compareTo(new BigDecimal("0.2")) >= 0){
+                point = point.add(rewardPoint).multiply(new BigDecimal("0.25"));
+            }
+
+            if (paidInterest.compareTo(new BigDecimal("0.7")) >= 0){
+                point = point.add(rewardPoint.multiply(new BigDecimal("0.35")));
+            }
+
+            if (paidInterest.compareTo(new BigDecimal("1")) >= 0){
+                point = point.add(rewardPoint.multiply(new BigDecimal("0.40")));
+            }
+
+            point = point.subtract(getRewardsTotalBySaleId(sale.getObjectId(), rewardType));
+
+        }
+
+        return point;
+    }
+
+    private BigDecimal calcRewardPoint(Long workerId, Long rewardType, Date month, BigDecimal saleVolume,
+                                       BigDecimal paymentVolume, BigDecimal rewardPoint){
+        BigDecimal point = ZERO;
+
+        if (rewardPoint.compareTo(ZERO) > 0) {
+            BigDecimal paidInterest = paymentVolume.divide(saleVolume, 5, BigDecimal.ROUND_HALF_EVEN);
+
+            if (paidInterest.compareTo(new BigDecimal("0.2")) >= 0){
+                point = point.add(rewardPoint).multiply(new BigDecimal("0.25"));
+            }
+
+            if (paidInterest.compareTo(new BigDecimal("0.7")) >= 0){
+                point = point.add(rewardPoint.multiply(new BigDecimal("0.35")));
+            }
+
+            if (paidInterest.compareTo(new BigDecimal("1")) >= 0){
+                point = point.add(rewardPoint.multiply(new BigDecimal("0.40")));
+            }
+
+            point = point.subtract(getRewardsTotal(workerId, rewardType, month));
+        }
+
+        return point;
+    }
+
     @Transactional(rollbackFor = RewardException.class)
     public void calculateRewards() throws RewardException {
         try {
@@ -392,8 +453,8 @@ public class RewardService implements Serializable {
 
             saleService.getActiveSales().forEach(s -> {
                 if (s.getPersonalRewardPoint() != null){
-                    BigDecimal point = calcRewardPoint(s, month, s.getPersonalRewardPoint(),
-                            RewardType.TYPE_MYCOOK_SALE);
+                    BigDecimal point = calcRewardPoint(s, RewardType.TYPE_MYCOOK_SALE, month, s.getPersonalRewardPoint()
+                    );
 
                     if (point.compareTo(ZERO) > 0){
                         Reward reward = new Reward();
@@ -413,8 +474,8 @@ public class RewardService implements Serializable {
                     WorkerReward workerReward = tree.getWorkerReward(s.getSellerWorkerId());
 
                     if (workerReward.getRank() > 0){
-                        BigDecimal premium = calcRewardPoint(s, month,
-                                getManagerPremiumPoint(s, workerReward.getRank()), RewardType.TYPE_MANAGER_PREMIUM);
+                        BigDecimal premium = calcRewardPoint(s, RewardType.TYPE_MANAGER_PREMIUM, month,
+                                calcManagerPremiumPoint(s, workerReward.getRank()));
 
                         if (premium.compareTo(ZERO) > 0){
                             Reward reward = new Reward();
@@ -425,7 +486,7 @@ public class RewardService implements Serializable {
                             reward.setPoint(premium);
                             reward.setDate(Dates.currentDate());
                             reward.setMonth(month);
-                            reward.setGroupVolume(workerReward.getStructureSaleVolume());
+                            reward.setGroupSaleVolume(workerReward.getGroupSaleVolume());
                             reward.setRankId(workerReward.getRank());
 
                             updateLocal(s, reward);
@@ -436,8 +497,8 @@ public class RewardService implements Serializable {
                 }
 
                 if (s.getMkManagerBonusRewardPoint() != null){
-                    BigDecimal point = calcRewardPoint(s, month, s.getMkManagerBonusRewardPoint(),
-                            RewardType.TYPE_MK_MANAGER_BONUS);
+                    BigDecimal point = calcRewardPoint(s, RewardType.TYPE_MK_MANAGER_BONUS, month,
+                            s.getMkManagerBonusRewardPoint());
 
                     if (point.compareTo(ZERO) > 0){
                         Reward reward = new Reward();
@@ -480,7 +541,7 @@ public class RewardService implements Serializable {
 
                         reward.setType(RewardType.TYPE_PERSONAL_VOLUME);
                         reward.setWorkerId(r.getWorkerNode().getObjectId());
-                        reward.setPersonalVolume(r.getSaleVolume());
+                        reward.setPersonalSaleVolume(r.getSaleVolume());
                         reward.setDate(Dates.currentDate());
                         reward.setMonth(month);
 
@@ -496,6 +557,31 @@ public class RewardService implements Serializable {
                         updateLocal(2L, reward);
 
                         if (reward.getPoint().compareTo(ZERO) > 0) {
+                            domainService.save(reward);
+                        }
+                    }
+
+                    if (r.getRank() > 0){
+                        BigDecimal point = getGroupVolumePercent(r.getRank()).multiply(r.getGroupSaleVolume())
+                                .divide(new BigDecimal("100"), 5, ROUND_HALF_EVEN);
+
+                        point = calcRewardPoint(r.getWorkerId(), RewardType.TYPE_GROUP_VOLUME, month,
+                                r.getGroupSaleVolume(), r.getGroupPaymentVolume(), point);
+
+                        if (point.compareTo(ZERO) > 0) {
+                            Reward reward = new Reward();
+
+                            reward.setWorkerId(r.getWorkerId());
+                            reward.setType(RewardType.TYPE_GROUP_VOLUME);
+                            reward.setPoint(point);
+                            reward.setGroupSaleVolume(r.getGroupSaleVolume());
+                            reward.setGroupPaymentVolume(r.getGroupPaymentVolume());
+                            reward.setRankId(r.getRank());
+                            reward.setDate(Dates.currentDate());
+                            reward.setMonth(month);
+
+                            updateLocal(2L, reward);
+
                             domainService.save(reward);
                         }
                     }

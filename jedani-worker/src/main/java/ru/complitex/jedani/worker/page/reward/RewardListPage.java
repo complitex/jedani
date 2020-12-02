@@ -1,6 +1,7 @@
 package ru.complitex.jedani.worker.page.reward;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.markup.html.basic.Label;
@@ -15,6 +16,7 @@ import ru.complitex.domain.page.DomainListModalPage;
 import ru.complitex.jedani.worker.entity.Rank;
 import ru.complitex.jedani.worker.entity.Reward;
 import ru.complitex.jedani.worker.entity.RewardType;
+import ru.complitex.jedani.worker.page.period.PeriodCalculateModal;
 import ru.complitex.jedani.worker.service.SaleService;
 import ru.complitex.jedani.worker.service.WorkerService;
 
@@ -35,6 +37,8 @@ public class RewardListPage extends DomainListModalPage<Reward> {
 
     private RewardModal rewardModal;
 
+    private PeriodCalculateModal periodCalculateModal;
+
     public RewardListPage() {
         super(Reward.class);
 
@@ -42,6 +46,18 @@ public class RewardListPage extends DomainListModalPage<Reward> {
         getContainer().add(rewardForm);
 
         rewardForm.add(rewardModal = new RewardModal("rewardModal").onUpdate(t -> t.add(getFeedback(), getTable())));
+
+        Form periodCalculateForm = new Form("periodCalculateForm");
+        getContainer().add(periodCalculateForm);
+        periodCalculateForm.add(periodCalculateModal = new PeriodCalculateModal("periodCalculateModal")
+                .onUpdate(t -> t.add(getFeedback(), getTable())));
+
+        getContainer().add(new AjaxLink<Void>("calculateRewards") {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                periodCalculateModal.create(target);
+            }
+        });
     }
 
     @Override
@@ -57,8 +73,9 @@ public class RewardListPage extends DomainListModalPage<Reward> {
         list.add(entity.getEntityAttribute(Reward.RATE));
         list.add(entity.getEntityAttribute(Reward.DISCOUNT));
         list.add(entity.getEntityAttribute(Reward.LOCAL));
-        list.add(entity.getEntityAttribute(Reward.PERSONAL_VOLUME));
-        list.add(entity.getEntityAttribute(Reward.GROUP_VOLUME));
+        list.add(entity.getEntityAttribute(Reward.PERSONAL_SALE_VOLUME));
+        list.add(entity.getEntityAttribute(Reward.GROUP_SALE_VOLUME));
+        list.add(entity.getEntityAttribute(Reward.GROUP_PAYMENT_VOLUME));
         list.add(entity.getEntityAttribute(Reward.RANK).withReference(Rank.ENTITY_NAME, Rank.NAME));
 
         return list;

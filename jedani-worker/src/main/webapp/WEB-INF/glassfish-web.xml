@@ -10,6 +10,7 @@
         <group-name>AUTHORIZED</group-name>
         <group-name>ADMINISTRATORS</group-name>
         <group-name>STRUCTURE_ADMINISTRATORS</group-name>
+        <group-name>PROMOTION_ADMINISTRATORS</group-name>
         <group-name>SALE_ADMINISTRATORS</group-name>
         <group-name>PAYMENT_ADMINISTRATORS</group-name>
         <group-name>USERS</group-name>
