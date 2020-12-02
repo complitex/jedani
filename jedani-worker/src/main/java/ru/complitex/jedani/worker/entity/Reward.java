@@ -25,6 +25,8 @@ public class Reward extends Domain<Reward> {
     public static final long GROUP_PAYMENT_VOLUME = 15;
     public static final long STRUCTURE_SALE_VOLUME = 16;
     public static final long STRUCTURE_PAYMENT_VOLUME = 17;
+    public static final long MANAGER = 18;
+    public static final long MANAGER_RANK = 19;
 
     public Reward() {
         super(ENTITY_NAME);
@@ -103,6 +105,14 @@ public class Reward extends Domain<Reward> {
         setDecimal(GROUP_PAYMENT_VOLUME, volume);
     }
 
+    public void setStructureSaleVolume(BigDecimal volume){
+        setDecimal(STRUCTURE_SALE_VOLUME, volume);
+    }
+
+    public void setStructurePaymentVolume(BigDecimal volume){
+        setDecimal(STRUCTURE_PAYMENT_VOLUME, volume);
+    }
+
     public BigDecimal getRate(){
         return getDecimal(RATE);
     }
@@ -125,5 +135,13 @@ public class Reward extends Domain<Reward> {
 
     public void setLocal(BigDecimal local){
         setDecimal(LOCAL, local);
+    }
+
+    public void setManagerId(Long managerId){
+        setNumber(MANAGER, managerId);
+    }
+
+    public void setManagerRankId(Long managerRankId){
+        setNumber(MANAGER_RANK, managerRankId);
     }
 }

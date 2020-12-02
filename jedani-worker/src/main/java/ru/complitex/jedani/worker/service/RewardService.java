@@ -15,10 +15,7 @@ import ru.complitex.jedani.worker.mapper.RewardMapper;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static java.math.BigDecimal.ROUND_HALF_EVEN;
@@ -155,10 +152,10 @@ public class RewardService implements Serializable {
                         .filter(WorkerReward::isManager)
                         .reduce(r.getSaleVolume(), (v, c) -> v.add(c.getGroupSaleVolume()), BigDecimal::add));
 
-                r.setRank(getRank(r.getGroupSaleVolume()));
-
                 r.setStructureSaleVolume(r.getChildRewards().stream()
                         .reduce(r.getSaleVolume(), (v, c) -> v.add(c.getStructureSaleVolume()), BigDecimal::add));
+
+                r.setRank(getRank(r.getGroupSaleVolume().add(r.getSaleVolume())));
             });
         });
     }
@@ -440,6 +437,20 @@ public class RewardService implements Serializable {
         return point;
     }
 
+    public List<WorkerReward> getStructureManagers(WorkerReward r){
+        List<WorkerReward> managers = new ArrayList<>();
+
+        for (WorkerReward c : r.getChildRewards()){
+            if (c.isManager()){
+                managers.add(c);
+
+                managers.addAll(getStructureManagers(c));
+            }
+        }
+
+        return managers;
+    }
+
     @Transactional(rollbackFor = RewardException.class)
     public void calculateRewards() throws RewardException {
         try {
@@ -534,6 +545,7 @@ public class RewardService implements Serializable {
                 }
             });
 
+
             tree.forEachLevel((l, rl) -> {
                 rl.forEach(r -> {
                     if (r.getPaymentVolume().compareTo(getParameter(43L)) >= 0){
@@ -584,6 +596,37 @@ public class RewardService implements Serializable {
 
                             domainService.save(reward);
                         }
+                    }
+
+                    if (r.getRank() > 0){
+                        getStructureManagers(r).forEach(m -> {
+                            BigDecimal point = getGroupVolumePercent(r.getRank())
+                                    .subtract(getGroupVolumePercent(m.getRank()))
+                                    .multiply(m.getStructureSaleVolume())
+                                    .divide(new BigDecimal("100"), 5, ROUND_HALF_EVEN);
+
+                            point = calcRewardPoint(r.getWorkerId(), RewardType.TYPE_STRUCTURE_VOLUME, month,
+                                    m.getStructureSaleVolume(), m.getStructurePaymentVolume(), point);
+
+                            if (point.compareTo(ZERO) > 0) {
+                                Reward reward = new Reward();
+
+                                reward.setWorkerId(r.getWorkerId());
+                                reward.setType(RewardType.TYPE_STRUCTURE_VOLUME);
+                                reward.setPoint(point);
+                                reward.setRankId(r.getRank());
+                                reward.setManagerId(m.getWorkerId());
+                                reward.setManagerRankId(m.getRank());
+                                reward.setStructureSaleVolume(m.getStructureSaleVolume());
+                                reward.setStructurePaymentVolume(m.getStructurePaymentVolume());
+                                reward.setDate(Dates.currentDate());
+                                reward.setMonth(month);
+
+                                updateLocal(2L, reward);
+
+                                domainService.save(reward);
+                            }
+                        });
                     }
                 });
             });

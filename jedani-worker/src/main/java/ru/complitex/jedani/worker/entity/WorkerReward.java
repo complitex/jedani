@@ -34,7 +34,7 @@ public class WorkerReward {
 
     private Long rank = 0L;
 
-    private List<Reward> rewards = new ArrayList<>();
+    private final List<Reward> rewards = new ArrayList<>();
 
     public boolean isManager() {
         return rank > 0;
