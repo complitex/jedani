@@ -622,7 +622,7 @@ public class RewardService implements Serializable {
                     }
                 }
 
-                if (s.getMkManagerBonusRewardPoint() != null){
+                if (s.getMkManagerBonusRewardPoint() != null && s.getMkManagerBonusWorkerId() != null){
                     BigDecimal point = calcRewardPoint(s, RewardType.TYPE_MK_MANAGER_BONUS, month,
                             s.getMkManagerBonusRewardPoint());
 
