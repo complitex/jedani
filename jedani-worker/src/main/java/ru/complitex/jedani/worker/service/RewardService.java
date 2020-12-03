@@ -474,6 +474,109 @@ public class RewardService implements Serializable {
 
             WorkerRewardTree tree = getWorkerRewardTree(month);
 
+            tree.forEachLevel((l, rl) -> {
+                rl.forEach(r -> {
+                    if (r.getPaymentVolume().compareTo(getParameter(43L)) >= 0){
+                        Reward reward = new Reward();
+
+                        reward.setType(RewardType.TYPE_PERSONAL_VOLUME);
+                        reward.setWorkerId(r.getWorkerNode().getObjectId());
+                        reward.setSaleVolume(r.getSaleVolume());
+                        reward.setPaymentVolume(r.getPaymentVolume());
+                        reward.setDate(Dates.currentDate());
+                        reward.setMonth(month);
+
+                        if (getRewardsTotal(reward.getWorkerId(), RewardType.TYPE_PERSONAL_VOLUME,
+                                month).compareTo(ZERO) == 0) {
+                            if (r.getPaymentVolume().compareTo(getParameter(44L)) < 0){
+                                reward.setPoint(getParameter(45L));
+                            }else if (r.getPaymentVolume().compareTo(getParameter(44L)) >= 0){
+                                reward.setPoint(getParameter(46L));
+                            }
+                        }
+
+                        updateLocal(2L, reward);
+
+                        if (reward.getPoint().compareTo(ZERO) > 0) {
+                            domainService.save(reward);
+                        }
+                    }
+
+                    if (r.getRank() > 0){
+                        {
+                            Reward reward = new Reward();
+
+                            reward.setWorkerId(r.getWorkerId());
+                            reward.setType(RewardType.TYPE_RANK);
+                            reward.setSaleVolume(r.getSaleVolume());
+                            reward.setPaymentVolume(r.getPaymentVolume());
+                            reward.setGroupSaleVolume(r.getGroupSaleVolume());
+                            reward.setGroupPaymentVolume(r.getGroupPaymentVolume());
+                            reward.setStructureSaleVolume(r.getStructureSaleVolume());
+                            reward.setStructurePaymentVolume(r.getStructurePaymentVolume());
+                            reward.setRankId(r.getRank());
+                            reward.setDate(Dates.currentDate());
+                            reward.setMonth(month);
+
+                            domainService.save(reward);
+                        }
+
+
+                        BigDecimal point = getGroupVolumePercent(r.getRank()).multiply(r.getGroupSaleVolume())
+                                .divide(new BigDecimal("100"), 5, ROUND_HALF_EVEN);
+
+                        point = calcRewardPoint(r.getWorkerId(), RewardType.TYPE_GROUP_VOLUME, month,
+                                r.getGroupSaleVolume(), r.getGroupPaymentVolume(), point);
+
+                        if (point.compareTo(ZERO) > 0) {
+                            Reward reward = new Reward();
+
+                            reward.setWorkerId(r.getWorkerId());
+                            reward.setType(RewardType.TYPE_GROUP_VOLUME);
+                            reward.setPoint(point);
+                            reward.setGroupSaleVolume(r.getGroupSaleVolume());
+                            reward.setGroupPaymentVolume(r.getGroupPaymentVolume());
+                            reward.setRankId(r.getRank());
+                            reward.setDate(Dates.currentDate());
+                            reward.setMonth(month);
+
+                            updateLocal(2L, reward);
+
+                            domainService.save(reward);
+                        }
+
+                        getStructureManagers(r).forEach(m -> {
+                            BigDecimal p = getGroupVolumePercent(r.getRank())
+                                    .subtract(getGroupVolumePercent(m.getRank()))
+                                    .multiply(m.getStructureSaleVolume())
+                                    .divide(new BigDecimal("100"), 5, ROUND_HALF_EVEN);
+
+                            p = calcRewardPoint(r.getWorkerId(), RewardType.TYPE_STRUCTURE_VOLUME, month,
+                                    m.getStructureSaleVolume(), m.getStructurePaymentVolume(), p);
+
+                            if (p.compareTo(ZERO) > 0) {
+                                Reward reward = new Reward();
+
+                                reward.setWorkerId(r.getWorkerId());
+                                reward.setType(RewardType.TYPE_STRUCTURE_VOLUME);
+                                reward.setPoint(p);
+                                reward.setRankId(r.getRank());
+                                reward.setManagerId(m.getWorkerId());
+                                reward.setManagerRankId(m.getRank());
+                                reward.setStructureSaleVolume(m.getStructureSaleVolume());
+                                reward.setStructurePaymentVolume(m.getStructurePaymentVolume());
+                                reward.setDate(Dates.currentDate());
+                                reward.setMonth(month);
+
+                                updateLocal(2L, reward);
+
+                                domainService.save(reward);
+                            }
+                        });
+                    }
+                });
+            });
+
             saleService.getActiveSales().forEach(s -> {
                 if (s.getPersonalRewardPoint() != null){
                     BigDecimal point = calcRewardPoint(s, RewardType.TYPE_MYCOOK_SALE, month, s.getPersonalRewardPoint()
@@ -555,92 +658,6 @@ public class RewardService implements Serializable {
 
                     domainService.save(reward);
                 }
-            });
-
-
-            tree.forEachLevel((l, rl) -> {
-                rl.forEach(r -> {
-                    if (r.getPaymentVolume().compareTo(getParameter(43L)) >= 0){
-                        Reward reward = new Reward();
-
-                        reward.setType(RewardType.TYPE_PERSONAL_VOLUME);
-                        reward.setWorkerId(r.getWorkerNode().getObjectId());
-                        reward.setPersonalSaleVolume(r.getSaleVolume());
-                        reward.setDate(Dates.currentDate());
-                        reward.setMonth(month);
-
-                        if (getRewardsTotal(reward.getWorkerId(), RewardType.TYPE_PERSONAL_VOLUME,
-                                month).compareTo(ZERO) == 0) {
-                            if (r.getPaymentVolume().compareTo(getParameter(44L)) < 0){
-                                reward.setPoint(getParameter(45L));
-                            }else if (r.getPaymentVolume().compareTo(getParameter(44L)) >= 0){
-                                reward.setPoint(getParameter(46L));
-                            }
-                        }
-
-                        updateLocal(2L, reward);
-
-                        if (reward.getPoint().compareTo(ZERO) > 0) {
-                            domainService.save(reward);
-                        }
-                    }
-
-                    if (r.getRank() > 0){
-                        BigDecimal point = getGroupVolumePercent(r.getRank()).multiply(r.getGroupSaleVolume())
-                                .divide(new BigDecimal("100"), 5, ROUND_HALF_EVEN);
-
-                        point = calcRewardPoint(r.getWorkerId(), RewardType.TYPE_GROUP_VOLUME, month,
-                                r.getGroupSaleVolume(), r.getGroupPaymentVolume(), point);
-
-                        if (point.compareTo(ZERO) > 0) {
-                            Reward reward = new Reward();
-
-                            reward.setWorkerId(r.getWorkerId());
-                            reward.setType(RewardType.TYPE_GROUP_VOLUME);
-                            reward.setPoint(point);
-                            reward.setGroupSaleVolume(r.getGroupSaleVolume());
-                            reward.setGroupPaymentVolume(r.getGroupPaymentVolume());
-                            reward.setRankId(r.getRank());
-                            reward.setDate(Dates.currentDate());
-                            reward.setMonth(month);
-
-                            updateLocal(2L, reward);
-
-                            domainService.save(reward);
-                        }
-                    }
-
-                    if (r.getRank() > 0){
-                        getStructureManagers(r).forEach(m -> {
-                            BigDecimal point = getGroupVolumePercent(r.getRank())
-                                    .subtract(getGroupVolumePercent(m.getRank()))
-                                    .multiply(m.getStructureSaleVolume())
-                                    .divide(new BigDecimal("100"), 5, ROUND_HALF_EVEN);
-
-                            point = calcRewardPoint(r.getWorkerId(), RewardType.TYPE_STRUCTURE_VOLUME, month,
-                                    m.getStructureSaleVolume(), m.getStructurePaymentVolume(), point);
-
-                            if (point.compareTo(ZERO) > 0) {
-                                Reward reward = new Reward();
-
-                                reward.setWorkerId(r.getWorkerId());
-                                reward.setType(RewardType.TYPE_STRUCTURE_VOLUME);
-                                reward.setPoint(point);
-                                reward.setRankId(r.getRank());
-                                reward.setManagerId(m.getWorkerId());
-                                reward.setManagerRankId(m.getRank());
-                                reward.setStructureSaleVolume(m.getStructureSaleVolume());
-                                reward.setStructurePaymentVolume(m.getStructurePaymentVolume());
-                                reward.setDate(Dates.currentDate());
-                                reward.setMonth(month);
-
-                                updateLocal(2L, reward);
-
-                                domainService.save(reward);
-                            }
-                        });
-                    }
-                });
             });
         } catch (Exception e) {
             throw new RewardException(e.getMessage());

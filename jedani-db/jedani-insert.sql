@@ -706,6 +706,7 @@ CALL insertDomainText(9, 'reward_type', 'Менеджерский Майкук �
 CALL insertDomainText(10, 'reward_type', 'Менеджерская надбавка', 'Менеджерська надбавка');
 CALL insertDomainText(11, 'reward_type', 'Оборот группы', 'Оборот групи');
 CALL insertDomainText(12, 'reward_type', 'Оборот структуры', 'Оборот структури');
+CALL insertDomainText(13, 'reward_type', 'Ранг', 'Ранг');
 
 /* Reward */
 

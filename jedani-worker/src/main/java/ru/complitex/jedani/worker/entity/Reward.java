@@ -16,12 +16,12 @@ public class Reward extends Domain<Reward> {
     public static final long DETAIL = 6;
     public static final long SALE = 7;
     public static final long MONTH = 8;
-    public static final long PERSONAL_SALE_VOLUME = 9;
+    public static final long SALE_VOLUME = 9;
     public static final long GROUP_SALE_VOLUME = 10;
     public static final long RATE = 11;
     public static final long DISCOUNT = 12;
     public static final long LOCAL = 13;
-    public static final long PERSONAL_PAYMENT_VOLUME = 14;
+    public static final long PAYMENT_VOLUME = 14;
     public static final long GROUP_PAYMENT_VOLUME = 15;
     public static final long STRUCTURE_SALE_VOLUME = 16;
     public static final long STRUCTURE_PAYMENT_VOLUME = 17;
@@ -93,8 +93,12 @@ public class Reward extends Domain<Reward> {
         return getDate(MONTH);
     }
 
-    public void setPersonalSaleVolume(BigDecimal volume){
-        setDecimal(PERSONAL_SALE_VOLUME, volume);
+    public void setSaleVolume(BigDecimal volume){
+        setDecimal(SALE_VOLUME, volume);
+    }
+
+    public void setPaymentVolume(BigDecimal volume){
+        setDecimal(PAYMENT_VOLUME, volume);
     }
 
     public void setGroupSaleVolume(BigDecimal volume){

@@ -13,6 +13,7 @@ public class RewardType extends Domain<RewardType> {
     public static final long TYPE_MANAGER_PREMIUM = 10L;
     public static final long TYPE_GROUP_VOLUME = 11L;
     public static final long TYPE_STRUCTURE_VOLUME = 12L;
+    public static final long TYPE_RANK = 13L;
 
     public static final long NAME = 1;
 
