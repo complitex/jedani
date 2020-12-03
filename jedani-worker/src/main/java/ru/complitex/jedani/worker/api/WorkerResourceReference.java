@@ -98,6 +98,8 @@ public class WorkerResourceReference extends ResourceReference {
 
                             json.add("sale_volume", workerReward.getSaleVolume());
                             json.add("payment_volume", workerReward.getPaymentVolume());
+                            json.add("group_sale_volume", workerReward.getGroupSaleVolume());
+                            json.add("group_payment_volume", workerReward.getGroupPaymentVolume());
                             json.add("structure_sale_volume", workerReward.getStructureSaleVolume());
                             json.add("structure_payment_volume", workerReward.getStructurePaymentVolume());
 

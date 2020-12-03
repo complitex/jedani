@@ -105,8 +105,6 @@ public class JedaniWebApplication extends WebApplication{
         getSecuritySettings().setUnauthorizedComponentInstantiationListener(new ServletUnauthorizedListener(LoginPage.class));
 
         ((ConverterLocator)getConverterLocator()).set(BigDecimal.class, new BigDecimalConverter());
-
-        //Security.insertProviderAt(Conscrypt.newProvider(), 1);
     }
 
     private void configureBootstrap() {
