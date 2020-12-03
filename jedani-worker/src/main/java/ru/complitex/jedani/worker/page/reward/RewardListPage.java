@@ -108,18 +108,9 @@ public class RewardListPage extends DomainListModalPage<Reward> {
                     cellItem.add(new Label(componentId, workerService.getWorkerLabel(rowModel.getObject().getWorkerId())));
                 }
 
-                @Override
-                public String getCssClass() {
-                    return "domain-column-nowrap";
-                }
             };
         }else if (a.getEntityAttributeId().equals(Reward.TYPE)){
-            return new DomainColumn<Reward>(a){
-                @Override
-                public String getCssClass() {
-                    return "domain-column-nowrap";
-                }
-            };
+            return new DomainColumn<>(a);
         }
 
         return super.newDomainColumn(a);
