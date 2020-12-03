@@ -70,7 +70,7 @@ public class RewardListPage extends DomainListModalPage<Reward> {
         list.add(entity.getEntityAttribute(Reward.WORKER));
         list.add(entity.getEntityAttribute(Reward.TYPE).withReference(RewardType.ENTITY_NAME, RewardType.NAME));
         list.add(entity.getEntityAttribute(Reward.POINT));
-        list.add(entity.getEntityAttribute(Reward.RATE));
+        list.add(entity.getEntityAttribute(Reward.TOTAL));
         list.add(entity.getEntityAttribute(Reward.DISCOUNT));
         list.add(entity.getEntityAttribute(Reward.LOCAL));
         list.add(entity.getEntityAttribute(Reward.SALE_VOLUME));
@@ -79,7 +79,7 @@ public class RewardListPage extends DomainListModalPage<Reward> {
         list.add(entity.getEntityAttribute(Reward.GROUP_PAYMENT_VOLUME));
         list.add(entity.getEntityAttribute(Reward.RANK).withReference(Rank.ENTITY_NAME, Rank.NAME));
         list.add(entity.getEntityAttribute(Reward.MANAGER));
-        list.add(entity.getEntityAttribute(Reward.MANAGER_RANK));
+        list.add(entity.getEntityAttribute(Reward.MANAGER_RANK).withReference(Rank.ENTITY_NAME, Rank.NAME));
         list.add(entity.getEntityAttribute(Reward.STRUCTURE_SALE_VOLUME));
         list.add(entity.getEntityAttribute(Reward.STRUCTURE_PAYMENT_VOLUME));
 
@@ -106,6 +106,14 @@ public class RewardListPage extends DomainListModalPage<Reward> {
                 @Override
                 public void populateItem(Item<ICellPopulator<Reward>> cellItem, String componentId, IModel<Reward> rowModel) {
                     cellItem.add(new Label(componentId, workerService.getWorkerLabel(rowModel.getObject().getWorkerId())));
+                }
+
+            };
+        }else if (a.getEntityAttributeId().equals(Reward.MANAGER)){
+            return new AbstractDomainColumn<Reward>(a) {
+                @Override
+                public void populateItem(Item<ICellPopulator<Reward>> cellItem, String componentId, IModel<Reward> rowModel) {
+                    cellItem.add(new Label(componentId, workerService.getWorkerLabel(rowModel.getObject().getManagerId())));
                 }
 
             };

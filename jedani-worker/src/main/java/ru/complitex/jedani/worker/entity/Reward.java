@@ -27,6 +27,7 @@ public class Reward extends Domain<Reward> {
     public static final long STRUCTURE_PAYMENT_VOLUME = 17;
     public static final long MANAGER = 18;
     public static final long MANAGER_RANK = 19;
+    public static final long TOTAL = 20;
 
     public Reward() {
         super(ENTITY_NAME);
@@ -59,6 +60,14 @@ public class Reward extends Domain<Reward> {
 
     public BigDecimal getPoint(){
         return getDecimal(POINT);
+    }
+
+    public void setTotal(BigDecimal total){
+        setDecimal(TOTAL, total);
+    }
+
+    public BigDecimal getTotal(){
+        return getDecimal(TOTAL);
     }
 
     public Long getType(){
@@ -141,8 +150,14 @@ public class Reward extends Domain<Reward> {
         setDecimal(LOCAL, local);
     }
 
-    public void setManagerId(Long managerId){
+    public Long getManagerId(){
+        return getNumber(MANAGER);
+    }
+
+    public Reward setManagerId(Long managerId){
         setNumber(MANAGER, managerId);
+
+        return this;
     }
 
     public void setManagerRankId(Long managerRankId){
