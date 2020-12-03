@@ -325,7 +325,9 @@ public class RewardService implements Serializable {
                 reward.setRate(priceService.getRate(sale, saleItem, date));
             }
 
-            reward.setDiscount(saleItem.getPrice().divide(saleItem.getBasePrice(), 2, HALF_EVEN));
+            if (reward.getPoint().compareTo(ZERO) > 0) {
+                reward.setDiscount(saleItem.getPrice().divide(saleItem.getBasePrice(), 2, HALF_EVEN));
+            }
         }
 
         if (reward.getRate() == null){
@@ -333,7 +335,6 @@ public class RewardService implements Serializable {
         }
 
         if (reward.getPoint().compareTo(ZERO) > 0) {
-
             reward.setLocal(reward.getPoint().multiply(reward.getRate()).setScale(5, HALF_EVEN));
 
             if (reward.getDiscount() != null){
@@ -500,6 +501,68 @@ public class RewardService implements Serializable {
 
             WorkerRewardTree tree = getWorkerRewardTree(month);
 
+            saleService.getActiveSales().forEach(s -> {
+                if (s.getPersonalRewardPoint() != null){
+                    {
+                        BigDecimal total = s.getPersonalRewardPoint();
+
+                        if (total.compareTo(ZERO) > 0) {
+                            Reward reward = new Reward();
+
+                            reward.setSaleId(s.getObjectId());
+                            reward.setWorkerId(s.getSellerWorkerId());
+                            reward.setType(RewardType.TYPE_MYCOOK_SALE);
+                            reward.setPoint(calcRewardPoint(s, RewardType.TYPE_MYCOOK_SALE, month, total));
+                            reward.setTotal(total);
+                            reward.setDate(Dates.currentDate());
+                            reward.setMonth(month);
+
+                            updateLocal(s, reward);
+
+                            domainService.save(reward);
+                        }
+                    }
+                }
+
+                if (s.getMkManagerBonusRewardPoint() != null && s.getMkManagerBonusWorkerId() != null){
+                    BigDecimal total = s.getMkManagerBonusRewardPoint();
+
+                    if (total.compareTo(ZERO) > 0){
+                        Reward reward = new Reward();
+
+                        reward.setSaleId(s.getObjectId());
+                        reward.setWorkerId(s.getMkManagerBonusWorkerId());
+                        reward.setType(RewardType.TYPE_MK_MANAGER_BONUS);
+                        reward.setPoint(calcRewardPoint(s, RewardType.TYPE_MK_MANAGER_BONUS, month, total));
+                        reward.setTotal(total);
+                        reward.setDate(Dates.currentDate());
+                        reward.setMonth(month);
+
+                        updateLocal(s, reward);
+
+                        domainService.save(reward);
+                    }
+                }
+
+                if (s.getCulinaryRewardPoint() != null && s.getTotal() != null &&
+                        paymentService.getPaymentsVolumeBySaleId(s.getObjectId(), month).compareTo(s.getTotal()) >= 0 &&
+                        getRewardsTotalBySaleId(s.getObjectId(), RewardType.TYPE_CULINARY_WORKSHOP).compareTo(ZERO) == 0){
+                    Reward reward = new Reward();
+
+                    reward.setSaleId(s.getObjectId());
+                    reward.setType(RewardType.TYPE_CULINARY_WORKSHOP);
+                    reward.setWorkerId(s.getCulinaryWorkerId() != null ? s.getCulinaryWorkerId() : s.getSellerWorkerId());
+                    reward.setPoint(s.getCulinaryRewardPoint());
+                    reward.setTotal(s.getCulinaryRewardPoint());
+                    reward.setDate(Dates.currentDate());
+                    reward.setMonth(month);
+
+                    updateLocal(s, reward);
+
+                    domainService.save(reward);
+                }
+            });
+
             tree.forEachLevel((l, rl) -> {
                 rl.forEach(r -> {
                     if (r.getRank() > 0){
@@ -520,6 +583,32 @@ public class RewardService implements Serializable {
                         domainService.save(reward);
                     }
                 });
+            });
+
+            saleService.getActiveSales().forEach(s -> {
+                WorkerReward workerReward = tree.getWorkerReward(s.getSellerWorkerId());
+
+                if (workerReward.getRank() > 0){
+                    BigDecimal total = calcManagerPremiumPoint(s, workerReward.getRank());
+
+                    if (total.compareTo(ZERO) > 0){
+                        Reward reward = new Reward();
+
+                        reward.setSaleId(s.getObjectId());
+                        reward.setWorkerId(s.getSellerWorkerId());
+                        reward.setType(RewardType.TYPE_MANAGER_PREMIUM);
+                        reward.setPoint(calcRewardPoint(s, RewardType.TYPE_MANAGER_PREMIUM, month, total));
+                        reward.setTotal(total);
+                        reward.setDate(Dates.currentDate());
+                        reward.setMonth(month);
+                        reward.setStructureSaleVolume(workerReward.getStructureSaleVolume());
+                        reward.setRankId(workerReward.getRank());
+
+                        updateLocal(s, reward);
+
+                        domainService.save(reward);
+                    }
+                }
             });
 
             tree.forEachLevel((l, rl) -> {
@@ -603,92 +692,6 @@ public class RewardService implements Serializable {
                         });
                     }
                 });
-            });
-
-            saleService.getActiveSales().forEach(s -> {
-                if (s.getPersonalRewardPoint() != null){
-                    {
-                        BigDecimal total = s.getPersonalRewardPoint();
-
-                        if (total.compareTo(ZERO) > 0) {
-                            Reward reward = new Reward();
-
-                            reward.setSaleId(s.getObjectId());
-                            reward.setWorkerId(s.getSellerWorkerId());
-                            reward.setType(RewardType.TYPE_MYCOOK_SALE);
-                            reward.setPoint(calcRewardPoint(s, RewardType.TYPE_MYCOOK_SALE, month, total));
-                            reward.setTotal(total);
-                            reward.setDate(Dates.currentDate());
-                            reward.setMonth(month);
-
-                            updateLocal(s, reward);
-
-                            domainService.save(reward);
-                        }
-                    }
-
-                    WorkerReward workerReward = tree.getWorkerReward(s.getSellerWorkerId());
-
-                    if (workerReward.getRank() > 0){
-                        BigDecimal total = calcManagerPremiumPoint(s, workerReward.getRank());
-
-                        if (total.compareTo(ZERO) > 0){
-                            Reward reward = new Reward();
-
-                            reward.setSaleId(s.getObjectId());
-                            reward.setWorkerId(s.getSellerWorkerId());
-                            reward.setType(RewardType.TYPE_MANAGER_PREMIUM);
-                            reward.setPoint(calcRewardPoint(s, RewardType.TYPE_MANAGER_PREMIUM, month, total));
-                            reward.setTotal(total);
-                            reward.setDate(Dates.currentDate());
-                            reward.setMonth(month);
-                            reward.setStructureSaleVolume(workerReward.getStructureSaleVolume());
-                            reward.setRankId(workerReward.getRank());
-
-                            updateLocal(s, reward);
-
-                            domainService.save(reward);
-                        }
-                    }
-                }
-
-                if (s.getMkManagerBonusRewardPoint() != null && s.getMkManagerBonusWorkerId() != null){
-                    BigDecimal total = s.getMkManagerBonusRewardPoint();
-
-                    if (total.compareTo(ZERO) > 0){
-                        Reward reward = new Reward();
-
-                        reward.setSaleId(s.getObjectId());
-                        reward.setWorkerId(s.getMkManagerBonusWorkerId());
-                        reward.setType(RewardType.TYPE_MK_MANAGER_BONUS);
-                        reward.setPoint(calcRewardPoint(s, RewardType.TYPE_MK_MANAGER_BONUS, month, total));
-                        reward.setTotal(total);
-                        reward.setDate(Dates.currentDate());
-                        reward.setMonth(month);
-
-                        updateLocal(s, reward);
-
-                        domainService.save(reward);
-                    }
-                }
-
-                if (s.getCulinaryRewardPoint() != null && s.getTotal() != null &&
-                        paymentService.getPaymentsVolumeBySaleId(s.getObjectId(), month).compareTo(s.getTotal()) >= 0 &&
-                        getRewardsTotalBySaleId(s.getObjectId(), RewardType.TYPE_CULINARY_WORKSHOP).compareTo(ZERO) == 0){
-                    Reward reward = new Reward();
-
-                    reward.setSaleId(s.getObjectId());
-                    reward.setType(RewardType.TYPE_CULINARY_WORKSHOP);
-                    reward.setWorkerId(s.getCulinaryWorkerId() != null ? s.getCulinaryWorkerId() : s.getSellerWorkerId());
-                    reward.setPoint(s.getCulinaryRewardPoint());
-                    reward.setTotal(s.getCulinaryRewardPoint());
-                    reward.setDate(Dates.currentDate());
-                    reward.setMonth(month);
-
-                    updateLocal(s, reward);
-
-                    domainService.save(reward);
-                }
             });
         } catch (Exception e) {
             throw new RewardException(e.getMessage());
