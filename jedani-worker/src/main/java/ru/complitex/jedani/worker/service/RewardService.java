@@ -100,6 +100,12 @@ public class RewardService implements Serializable {
                 .reduce(ZERO, ((t, r) -> t.add(r.getTotal())), BigDecimal::add);
     }
 
+    public BigDecimal getRewardsPoint(List<Reward> rewards, Long rewardTypeId, Date month, boolean current){
+        return rewards.stream()
+                .filter(r -> Objects.equals(r.getType(), rewardTypeId) && isCurrentSaleMonth(r, month) == current)
+                .reduce(ZERO, ((t, r) -> t.add(r.getPoint())), BigDecimal::add);
+    }
+
     public BigDecimal getRewardsTotalLocal(List<Reward> rewards, Long rewardTypeId, Date month, boolean current){
         return rewards.stream()
                 .filter(r -> Objects.equals(r.getType(), rewardTypeId) && isCurrentSaleMonth(r, month) == current)

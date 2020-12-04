@@ -1144,11 +1144,12 @@ public class WorkerPage extends BasePage {
 
             List<Reward> rewards = rewardService.getRewards(worker.getObjectId(), month);
 
+            rewardContainer.add(new Label("reward_pv", getRewardPointString(rewards, RewardType.TYPE_PERSONAL_VOLUME, month)));
             rewardContainer.add(new Label("reward_mk", getRewardString(rewards, RewardType.TYPE_MYCOOK_SALE, month)));
             rewardContainer.add(new Label("reward_ba", getRewardString(rewards, RewardType.TYPE_BASE_ASSORTMENT_SALE, month)));
             rewardContainer.add(new Label("reward_mkb", getRewardString(rewards, RewardType.TYPE_MK_MANAGER_BONUS, month)));
             rewardContainer.add(new Label("reward_cw", getRewardString(rewards, RewardType.TYPE_CULINARY_WORKSHOP, month)));
-            rewardContainer.add(new Label("reward_pv", getRewardString(rewards, RewardType.TYPE_PERSONAL_VOLUME, month)));
+
 
             rewardContainer.add(new Label("rank", workerReward.getRank() !=  null && workerReward.getRank() > 0
                     ? domainService.getDomain(Rank.class, workerReward.getRank()).getName()
@@ -1168,12 +1169,19 @@ public class WorkerPage extends BasePage {
 
     protected String getRewardString(List<Reward> rewards, Long rewardTypeId, Date month) {
 
-        BigDecimal total0 = rewardService.getRewardsTotal(rewards, rewardTypeId, month, false);
+        BigDecimal total = rewardService.getRewardsTotal(rewards, rewardTypeId, month, false);
 
         return rewardService.getRewardsTotal(rewards,  rewardTypeId, month, true)
                 //+ " (" + rewardService.getRewardsTotalLocal(rewards,  rewardTypeId, month, true) + ")" +
-                + (total0.compareTo(BigDecimal.ZERO) > 0 ?  (" / " + total0) : "");
+                + (total.compareTo(BigDecimal.ZERO) > 0 ?  (" / " + total) : "");
                 //+ " (" + rewardService.getRewardsTotalLocal(rewards, rewardTypeId, month, false)+ ")";
+    }
+
+    protected String getRewardPointString(List<Reward> rewards, Long rewardTypeId, Date month) {
+        BigDecimal point = rewardService.getRewardsPoint(rewards, rewardTypeId, month, false);
+
+        return rewardService.getRewardsPoint(rewards,  rewardTypeId, month, true)
+                + (point.compareTo(BigDecimal.ZERO) > 0 ?  (" / " + point) : "");
     }
 
     protected FilterWrapper<Worker> newFilterWrapper() {
