@@ -123,6 +123,7 @@ public class RewardService implements Serializable {
         calcPaymentVolume(tree, month);
 
         calcRegistrationCount(tree, month);
+
         calcFirstLevelCount(tree);
 
         return tree;
@@ -160,9 +161,9 @@ public class RewardService implements Serializable {
         List<WorkerReward> group = new ArrayList<>();
 
         for (WorkerReward c : r.getChildRewards()){
-            group.add(c);
-
             if (!c.isManager()){
+                group.add(c);
+
                 group.addAll(getPrivateGroup(c));
             }
         }
@@ -613,7 +614,7 @@ public class RewardService implements Serializable {
 
             tree.forEachLevel((l, rl) -> {
                 rl.forEach(r -> {
-                    if (r.getPaymentVolume().compareTo(getParameter(43L)) >= 0){
+                    if (r.getSaleVolume().compareTo(getParameter(43L)) >= 0){
                         Reward reward = new Reward();
 
                         reward.setType(RewardType.TYPE_PERSONAL_VOLUME);
@@ -632,9 +633,15 @@ public class RewardService implements Serializable {
                             }
                         }
 
+                        if (r.getSaleVolume().compareTo(getParameter(44L)) < 0){
+                            reward.setTotal(getParameter(45L));
+                        }else if (r.getSaleVolume().compareTo(getParameter(44L)) >= 0){
+                            reward.setTotal(getParameter(46L));
+                        }
+
                         updateLocal(reward);
 
-                        if (reward.getPoint().compareTo(ZERO) > 0) {
+                        if (reward.getTotal().compareTo(ZERO) > 0) {
                             domainService.save(reward);
                         }
                     }

@@ -93,6 +93,7 @@ import ru.complitex.user.mapper.UserMapper;
 
 import javax.inject.Inject;
 import java.io.File;
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
@@ -1166,10 +1167,12 @@ public class WorkerPage extends BasePage {
     }
 
     protected String getRewardString(List<Reward> rewards, Long rewardTypeId, Date month) {
+
+        BigDecimal total0 = rewardService.getRewardsTotal(rewards, rewardTypeId, month, false);
+
         return rewardService.getRewardsTotal(rewards,  rewardTypeId, month, true)
                 //+ " (" + rewardService.getRewardsTotalLocal(rewards,  rewardTypeId, month, true) + ")" +
-                + " / " +
-                rewardService.getRewardsTotal(rewards, rewardTypeId, month, false);
+                + (total0.compareTo(BigDecimal.ZERO) > 0 ?  (" / " + total0) : "");
                 //+ " (" + rewardService.getRewardsTotalLocal(rewards, rewardTypeId, month, false)+ ")";
     }
 
