@@ -20,8 +20,8 @@ public class SaleListPage extends BasePage {
             }
 
             @Override
-            protected boolean isSellerWorkerColumnVisible() {
-                return true;
+            protected boolean isCurrentWorkerFilter() {
+                return false;
             }
         };
 

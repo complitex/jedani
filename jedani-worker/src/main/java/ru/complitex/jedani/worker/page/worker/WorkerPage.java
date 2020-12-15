@@ -84,6 +84,7 @@ import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.mapper.WorkerMapper;
 import ru.complitex.jedani.worker.page.BasePage;
 import ru.complitex.jedani.worker.page.payment.PaymentPanel;
+import ru.complitex.jedani.worker.page.reward.RewardPanel;
 import ru.complitex.jedani.worker.page.sale.SalePanel;
 import ru.complitex.jedani.worker.security.JedaniRoles;
 import ru.complitex.jedani.worker.service.CardService;
@@ -1009,7 +1010,7 @@ public class WorkerPage extends BasePage {
             public WebMarkupContainer getPanel(String panelId) {
                 Fragment reward = new Fragment(panelId, "reward", WorkerPage.this);
 
-                //todo rewards
+                reward.add(new RewardPanel("reward", worker));
 
                 return reward;
             }

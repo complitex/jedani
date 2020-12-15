@@ -67,7 +67,9 @@ public class SalePanel extends DomainListModalPanel<Sale> {
 
         FilterWrapper<Sale> filterWrapper = getFilterWrapper();
 
-        filterWrapper.put(Sale.FILTER_SELLER_WORKER, worker.getJId());
+        if (isCurrentWorkerFilter()) {
+            filterWrapper.put(Sale.FILTER_SELLER_WORKER, worker.getJId());
+        }
 
         if (worker.isRegionalLeader()){
             filterWrapper.put(Sale.FILTER_REGION_IDS, worker.getRegionIdsString());
@@ -127,13 +129,13 @@ public class SalePanel extends DomainListModalPanel<Sale> {
         return list;
     }
 
-    protected boolean isSellerWorkerColumnVisible(){
-        return false;
+    protected boolean isCurrentWorkerFilter(){
+        return true;
     }
 
     @Override
     protected void onInitColumns(List<IColumn<Sale, SortProperty>> columns) {
-        if (isSellerWorkerColumnVisible()) {
+        if (!isCurrentWorkerFilter()) {
             columns.add(new AbstractDomainColumn<Sale>(SaleItem.FILTER_SELLER_WORKER) {
                 @Override
                 public void populateItem(Item<ICellPopulator<Sale>> cellItem, String componentId, IModel<Sale> rowModel) {
