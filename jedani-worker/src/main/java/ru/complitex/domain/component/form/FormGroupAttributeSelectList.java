@@ -16,7 +16,7 @@ import java.util.List;
  * 16.04.2018 21:39
  */
 public class FormGroupAttributeSelectList extends Panel {
-    private AttributeSelectList attributeSelectList;
+    private final AttributeSelectList attributeSelectList;
 
     private boolean required;
 
@@ -36,7 +36,7 @@ public class FormGroupAttributeSelectList extends Panel {
         group.add(attributeSelectList = new AttributeSelectList("select", model, refEntityName,
                 refEntityAttributeId, parentListModel, upperCase){
             @Override
-            protected String getPrefix(Domain domain) {
+            protected String getPrefix(Domain<?> domain) {
                 return FormGroupAttributeSelectList.this.getPrefix(domain);
             }
 
@@ -77,7 +77,7 @@ public class FormGroupAttributeSelectList extends Panel {
 
         return this;
     }
-    protected String getPrefix(Domain domain){
+    protected String getPrefix(Domain<?> domain){
         return "";
     }
 }

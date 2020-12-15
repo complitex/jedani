@@ -131,7 +131,7 @@ public class SaleService implements Serializable {
     public BigDecimal getSaleVolume(Long sellerWorkerId, Date month){
         return saleMapper.getSales(FilterWrapper.of(new Sale().setSellerWorkerId(sellerWorkerId))
                 .addEntityAttributeId(Sale.TOTAL)
-                .put(Sale.FILTER_ACTIVE, true)
+                .put(Sale.FILTER_ACTUAL, true)
                 .put(Sale.FILTER_MONTH, month)).stream()
                 .map(s -> s.getTotal() != null ? s.getTotal() : BigDecimal.ZERO)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -180,13 +180,13 @@ public class SaleService implements Serializable {
     }
 
     public List<Sale> getActiveSales(){
-        return saleMapper.getSales(FilterWrapper.of(new Sale()).put(Sale.FILTER_ACTIVE, true));
+        return saleMapper.getSales(FilterWrapper.of(new Sale()).put(Sale.FILTER_ACTUAL, true));
     }
 
     public Set<Long> getActiveSaleWorkerIds(){
         return saleMapper.getSales(FilterWrapper.of(new Sale())
                         .addEntityAttributeId(Sale.SELLER_WORKER)
-                        .put(Sale.FILTER_ACTIVE, true)).stream()
+                        .put(Sale.FILTER_ACTUAL, true)).stream()
                 .map(Sale::getSellerWorkerId)
                 .collect(Collectors.toSet());
     }

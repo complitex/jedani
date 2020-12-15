@@ -8,6 +8,7 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapBookmark
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
 import de.agilecoders.wicket.core.markup.html.bootstrap.image.GlyphIconType;
+import de.agilecoders.wicket.core.markup.html.bootstrap.tabs.AjaxBootstrapTabbedPanel;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxEventBehavior;
@@ -25,6 +26,8 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColu
 import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
+import org.apache.wicket.extensions.markup.html.tabs.AbstractTab;
+import org.apache.wicket.extensions.markup.html.tabs.ITab;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -35,6 +38,7 @@ import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.markup.html.image.NonCachingImage;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
+import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.*;
@@ -79,6 +83,8 @@ import ru.complitex.jedani.worker.component.WorkerAutoComplete;
 import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.mapper.WorkerMapper;
 import ru.complitex.jedani.worker.page.BasePage;
+import ru.complitex.jedani.worker.page.payment.PaymentPanel;
+import ru.complitex.jedani.worker.page.sale.SalePanel;
 import ru.complitex.jedani.worker.security.JedaniRoles;
 import ru.complitex.jedani.worker.service.CardService;
 import ru.complitex.jedani.worker.service.PeriodService;
@@ -343,8 +349,10 @@ public class WorkerPage extends BasePage {
                 return isEditEnabled();
             }
         }.setRequired(true));
+
         form.add(new FormGroupDateTextField("birthday", new DateAttributeModel(worker, Worker.BIRTHDAY))
                 .setEnabled(!isViewOnly()));
+
         form.add(new FormGroupAttributeInputList("phone", Model.of(worker.getOrCreateAttribute(Worker.PHONE))){
             @Override
             public boolean isRequired() {
@@ -356,11 +364,14 @@ public class WorkerPage extends BasePage {
                 return !isViewOnly();
             }
         });
+
         form.add(new FormGroupTextField<>("email", new TextAttributeModel(worker, Worker.EMAIL, StringType.LOWER_CASE))
                 .setRequired(true)
                 .setEnabled(!isViewOnly()));
 
+
         FormGroupAttributeSelectList city, region;
+
         form.add(region = new FormGroupAttributeSelectList("region", Model.of(worker.getOrCreateAttribute(Worker.REGIONS)),
                 Region.ENTITY_NAME, Region.NAME, true){
             @Override
@@ -373,10 +384,11 @@ public class WorkerPage extends BasePage {
                 return isEditEnabled();
             }
         });
+
         form.add(city = new FormGroupAttributeSelectList("city", Model.of(worker.getOrCreateAttribute(Worker.CITIES)),
                 City.ENTITY_NAME, City.NAME, region.getListModel(), true){
             @Override
-            protected String getPrefix(Domain domain) {
+            protected String getPrefix(Domain<?> domain) {
                 Long cityTypeId = domain.getNumber(City.CITY_TYPE);
 
                 if (cityTypeId != null){
@@ -401,8 +413,6 @@ public class WorkerPage extends BasePage {
             }
         });
         region.onChange(t -> t.add(city));
-
-        //Roles
 
         List<String> roles = new ArrayList<>();
 
@@ -452,7 +462,6 @@ public class WorkerPage extends BasePage {
         confirmPassword.setVisible(!isViewOnly());
         form.add(confirmPassword);
 
-        //Card
 
         FormGroupTextField<String> card = new FormGroupTextField<String>("card", new Model<>()){
             @Override
@@ -491,7 +500,6 @@ public class WorkerPage extends BasePage {
             }
         }.onUpdate(t -> t.add(get("form:registrationDate"))));
 
-        //Manager
 
         WebMarkupContainer managerContainer = new WebMarkupContainer("manager"){
             @Override
@@ -555,158 +563,6 @@ public class WorkerPage extends BasePage {
 
                     target.add(managerPhone, managerEmail);
                 }));
-
-        //Structure
-
-        WebMarkupContainer structure = new WebMarkupContainer("structure"){
-            @Override
-            public boolean isVisible() {
-                return worker.getObjectId() != null && workerMapper.getWorkersCount(FilterWrapper.of(
-                        new Worker(worker.getLeft(), worker.getRight(), worker.getLevel()))
-                        .setStatus(FilterWrapper.STATUS_ACTIVE_AND_ARCHIVE)) > 0;
-            }
-        };
-
-        structure.setOutputMarkupId(true);
-        form.add(structure);
-
-        //History
-
-        WebMarkupContainer historyContainer = new WebMarkupContainer("historyContainer"){
-            @Override
-            public boolean isVisible() {
-                return worker.getObjectId() != null && (isAdmin() || isStructureAdmin());
-            }
-        };
-        form.add(historyContainer);
-
-        Entity workerEntity = entityMapper.getEntity(Worker.ENTITY_NAME);
-
-        List<IColumn<Attribute, String>> historyColumns = new ArrayList<>();
-
-        historyColumns.add(new AbstractColumn<Attribute, String>(new ResourceModel("date"), "date") {
-            @Override
-            public void populateItem(Item<ICellPopulator<Attribute>> cellItem, String componentId, IModel<Attribute> rowModel) {
-                cellItem.add(new DateTimeLabel(componentId, rowModel.getObject().getStartDate()));
-            }
-        });
-        historyColumns.add(new AbstractColumn<Attribute, String>(new ResourceModel("name"), "name") {
-            @Override
-            public void populateItem(Item<ICellPopulator<Attribute>> cellItem, String componentId, IModel<Attribute> rowModel) {
-                if (rowModel.getObject().getEntityAttributeId() == 1000){
-                    cellItem.add(new Label(componentId, getString("role")));
-                }else{
-                    EntityAttribute entityAttribute = workerEntity.getEntityAttribute(rowModel.getObject().getEntityAttributeId());
-
-                    cellItem.add(new Label(componentId, entityAttribute.getValue() != null
-                            ? entityAttribute.getValue().getText()
-                            : entityAttribute.getEntityAttributeId().toString()));
-                }
-            }
-        });
-        historyColumns.add(new AbstractColumn<Attribute, String>(new ResourceModel("value"), "value") {
-            @Override
-            public void populateItem(Item<ICellPopulator<Attribute>> cellItem, String componentId, IModel<Attribute> rowModel) {
-                Attribute attribute = rowModel.getObject();
-
-                if (attribute.getEntityAttributeId() == 1000){
-                    cellItem.add(new Label(componentId, attribute.getText()));
-
-                    return;
-                }
-
-                EntityAttribute entityAttribute = workerEntity.getEntityAttribute(attribute.getEntityAttributeId());
-
-                String value = "";
-
-                switch (entityAttribute.getValueType()){
-                    case TEXT_LIST:
-                        value = attribute.getValues().stream()
-                                .map(Value::getText)
-                                .collect(Collectors.joining(","));
-
-                        break;
-                    case NUMBER_LIST:
-                    case ENTITY_LIST:
-                        value = attribute.getValues().stream()
-                                .map(v -> String.valueOf(v.getNumber()))
-                                .collect(Collectors.joining(","));
-
-                        break;
-                    case TEXT:
-                    case DECIMAL:
-                        value = attribute.getText();
-
-                        break;
-                    case BOOLEAN:
-                    case NUMBER:
-                    case ENTITY:
-                        value = String.valueOf(attribute.getNumber());
-
-                        break;
-                    case DATE:
-                        value = String.valueOf(attribute.getDate());
-
-                        break;
-                }
-
-                cellItem.add(new Label(componentId, value));
-            }
-        });
-
-        historyColumns.add(new AbstractColumn<Attribute, String>(new ResourceModel("user"), "user") {
-            @Override
-            public void populateItem(Item<ICellPopulator<Attribute>> cellItem, String componentId, IModel<Attribute> rowModel) {
-                if (rowModel.getObject().getEntityAttributeId() == 1000) {
-                    cellItem.add(new Label(componentId, workerService.getSimpleWorkerLabel(rowModel.getObject().getUserId())));
-                }else{
-                    Worker w = new Worker();
-                    w.setParentId(rowModel.getObject().getUserId());
-
-                    List<Worker> list = workerMapper.getWorkers(FilterWrapper.of(w));
-
-                    if (!list.isEmpty()){
-                        w = list.get(0);
-                    }
-
-                    cellItem.add(new Label(componentId, w.getObjectId() != null
-                            ? workerService.getSimpleWorkerLabel(w.getObjectId()) : "null"));
-                }
-            }
-        });
-
-        SortableDataProvider<Attribute, String> historyDataProvider = new SortableDataProvider<Attribute, String>() {
-            @Override
-            public Iterator<? extends Attribute> iterator(long first, long count) {
-                return workerMapper.getWorkerUserHistories(new FilterWrapper<>(first, count)
-                        .put("objectId", worker.getObjectId())
-                        .put("userId", worker.getParentId())).iterator();
-            }
-
-            @Override
-            public long size() {
-                return workerMapper.getWorkerUserHistoriesCount(new FilterWrapper<>()
-                        .put("objectId", worker.getObjectId())
-                        .put("userId", worker.getParentId()));
-            }
-
-            @Override
-            public IModel<Attribute> model(Attribute object) {
-                return Model.of(object);
-            }
-        };
-
-        DataTable<Attribute, String> historyDataTable = new DataTable<Attribute, String>("history", historyColumns,
-                historyDataProvider, 5){
-            @Override
-            public boolean isVisible() {
-                return worker.getObjectId() != null;
-            }
-        };
-        historyDataTable.addTopToolbar(new AjaxFallbackHeadersToolbar<>(historyDataTable, historyDataProvider));
-        historyDataTable.addBottomToolbar(new NavigationToolbar(historyDataTable, "workerPage_history"));
-        historyDataTable.setOutputMarkupId(true);
-        historyContainer.add(historyDataTable);
 
         form.add(new IndicatingAjaxButton("save") {
             @Override
@@ -934,6 +790,375 @@ public class WorkerPage extends BasePage {
             }
         });
 
+        List<ITab> tabs = new ArrayList<>();
+
+        tabs.add(new AbstractTab(new ResourceModel("structure")) {
+            @Override
+            public WebMarkupContainer getPanel(String panelId) {
+                Fragment structure = new Fragment(panelId, "structure", WorkerPage.this);
+
+                WorkerRemoveModal workerRemoveModal = new WorkerRemoveModal("workerRemove"){
+                    @Override
+                    protected void onUpdate(AjaxRequestTarget target) {
+                        target.add(feedback, structure);
+                    }
+                };
+                structure.add(workerRemoveModal);
+
+                List<IColumn<Worker, SortProperty>> columns = new ArrayList<>();
+
+                columns.add(new DomainIdColumn<>());
+                getEntityAttributes().forEach(a -> columns.add(new DomainColumn<>(a)));
+
+                columns.add(new AbstractDomainColumn<Worker>(new ResourceModel("subWorkersCount"),
+                        new SortProperty("subWorkersCount")) {
+                    @Override
+                    public void populateItem(Item<ICellPopulator<Worker>> cellItem, String componentId, IModel<Worker> rowModel) {
+                        cellItem.add(new Label(componentId, rowModel.getObject().getSubWorkerCount()));
+                    }
+
+                    @Override
+                    public Component getFilter(String componentId, FilterDataForm<?> form) {
+                        return new TextDataFilter<>(componentId, Model.of(""), form);
+                    }
+                });
+
+                columns.add(new AbstractDomainColumn<Worker>(new ResourceModel("level"), new SortProperty("level")) {
+                    @Override
+                    public void populateItem(Item<ICellPopulator<Worker>> cellItem, String componentId, IModel<Worker> rowModel) {
+                        cellItem.add(new Label(componentId, rowModel.getObject().getLevel() - getCurrentWorker().getLevel()));
+                    }
+
+                    @Override
+                    public Component getFilter(String componentId, FilterDataForm<?> form) {
+                        return new TextDataFilter<>(componentId, Model.of(""), form);
+                    }
+                });
+
+                columns.add(new DomainActionColumn<Worker>(WorkerPage.class){
+                    @Override
+                    protected void onAction(AjaxRequestTarget target, FilterDataForm<?> form) {
+                        target.add(structure);
+                    }
+
+                    @Override
+                    public void populateItem(Item<ICellPopulator<Worker>> cellItem, String componentId, IModel<Worker> rowModel) {
+                        PageParameters pageParameters = new PageParameters();
+                        pageParameters.add("id", rowModel.getObject().getObjectId());
+
+                        RepeatingView repeatingView = new RepeatingView(componentId);
+                        cellItem.add(repeatingView);
+
+                        repeatingView.add(new LinkPanel(repeatingView.newChildId(), new BootstrapBookmarkablePageLink<>(LinkPanel.LINK_COMPONENT_ID,
+                                WorkerPage.this.getClass(), pageParameters, Buttons.Type.Link).setIconType(GlyphIconType.edit)));
+
+                        if (!isViewOnly()) {
+                            repeatingView.add(new LinkPanel(repeatingView.newChildId(), new BootstrapAjaxLink<Worker>(LinkPanel.LINK_COMPONENT_ID,
+                                    Buttons.Type.Link) {
+                                @Override
+                                public void onClick(AjaxRequestTarget target) {
+                                    workerRemoveModal.delete(target, rowModel.getObject());
+                                }
+
+                                @Override
+                                protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
+                                    super.updateAjaxAttributes(attributes);
+
+                                    attributes.setEventPropagation(AjaxRequestAttributes.EventPropagation.STOP);
+                                }
+
+                                @Override
+                                public boolean isVisible() {
+                                    return  !rowModel.getObject().getStatus().equals(Status.ARCHIVE) &&
+                                            !Objects.equals(rowModel.getObject().getObjectId(), 1L) &&
+                                            !Objects.equals(rowModel.getObject().getObjectId(), getCurrentWorker().getObjectId());
+                                }
+                            }.setIconType(GlyphIconType.remove)));
+                        }
+                    }
+
+                    @Override
+                    public String getCssClass() {
+                        return "domain-id-column" + (!isViewOnly() ? " domain-action" : "");
+                    }
+                });
+
+                FilterDataTable<Worker> table = new FilterDataTable<Worker>("table", columns, dataProvider, form, 5, "workerPage"){
+                    @Override
+                    protected Item<Worker> newRowItem(String id, int index, final IModel<Worker> model) {
+                        Item<Worker> rowItem = super.newRowItem(id, index, model);
+
+                        rowItem.add(new AjaxEventBehavior("click") {
+                            @Override
+                            protected void onEvent(AjaxRequestTarget target) {
+                                PageParameters pageParameters = new PageParameters();
+                                pageParameters.add("id", model.getObject().getObjectId());
+
+                                setResponsePage(WorkerPage.this.getClass(), new PageParameters().add("id", model.getObject().getObjectId()));
+                            }
+                        });
+
+                        rowItem.add(new CssClassNameAppender("pointer"));
+
+                        if (rowItem.getModelObject().getStatus().equals(Status.ARCHIVE)){
+                            rowItem.add(new CssClassNameAppender("active"));
+                        }else if (rowItem.getModelObject().getWorkerStatus() != null &&
+                                rowItem.getModelObject().getWorkerStatus() == WorkerStatus.MANAGER_CHANGED){
+                            rowItem.add(new CssClassNameAppender("info"));
+                        }
+
+                        return rowItem;
+
+                    }
+                };
+                structure.add(table);
+
+                long workerLevelDepth = worker.getObjectId() != null ? workerMapper.getWorkerLevelDepth(worker.getObjectId()) : 1;
+
+                IModel<Long> graphLevelDepthModel = Model.of(workerLevelDepth);
+
+                DropDownChoice<Long> levelDepth = new DropDownChoice<>("levelDepth", graphLevelDepthModel,
+                        LongStream.rangeClosed(1, workerLevelDepth).boxed().sorted(Collections.reverseOrder())
+                                .collect(Collectors.toList()));
+                levelDepth.setNullValid(false);
+                levelDepth.add(OnChangeAjaxBehavior.onChange(target -> {}));
+                structure.add(levelDepth );
+
+                structure.add(new Link<Void>("structureLink") {
+                    @Override
+                    public void onClick() {
+                        setResponsePage(WorkerStructurePage.class, new PageParameters().add("id", worker.getObjectId())
+                                .add("level", graphLevelDepthModel.getObject()));
+                    }
+                });
+
+                return structure;
+            }
+        });
+
+        tabs.add(new AbstractTab(new ResourceModel("sale")) {
+            @Override
+            public WebMarkupContainer getPanel(String panelId) {
+                Fragment sale = new Fragment(panelId, "sale", WorkerPage.this);
+
+                sale.add(new SalePanel("sale", worker));
+
+                return sale;
+            }
+        });
+
+        tabs.add(new AbstractTab(new ResourceModel("payment")) {
+            @Override
+            public WebMarkupContainer getPanel(String panelId) {
+                Fragment payment = new Fragment(panelId, "payment", WorkerPage.this);
+
+                payment.add(new PaymentPanel("payment", worker));
+
+                return payment;
+            }
+        });
+
+        tabs.add(new AbstractTab(new ResourceModel("finance")) {
+            @Override
+            public WebMarkupContainer getPanel(String panelId) {
+                Fragment finance = new Fragment(panelId, "finance", WorkerPage.this){
+                    @Override
+                    public boolean isVisible() {
+                        return worker.getObjectId() != null;
+                    }
+                };
+
+                if (worker.getObjectId() != null) {
+                    Date month = periodService.getActualPeriod().getOperatingMonth();
+
+                    WorkerReward workerReward = rewardService.getWorkerRewardTree(month).getWorkerReward(worker.getObjectId());
+
+                    finance.add(new Label("sale_volume", workerReward.getSaleVolume()));
+                    finance.add(new Label("payment_volume", workerReward.getPaymentVolume()));
+                    finance.add(new Label("registration_count", workerReward.getRegistrationCount()));
+
+                    List<Reward> rewards = rewardService.getRewards(worker.getObjectId(), month);
+
+                    finance.add(new Label("reward_pv", getRewardPointString(rewards, RewardType.TYPE_PERSONAL_VOLUME, month)));
+                    finance.add(new Label("reward_mk", getRewardString(rewards, RewardType.TYPE_MYCOOK_SALE, month)));
+                    finance.add(new Label("reward_ba", getRewardString(rewards, RewardType.TYPE_BASE_ASSORTMENT_SALE, month)));
+                    finance.add(new Label("reward_mkb", getRewardString(rewards, RewardType.TYPE_MK_MANAGER_BONUS, month)));
+                    finance.add(new Label("reward_cw", getRewardString(rewards, RewardType.TYPE_CULINARY_WORKSHOP, month)));
+
+                    finance.add(new Label("rank", workerReward.getRank() !=  null && workerReward.getRank() > 0
+                            ? domainService.getDomain(Rank.class, workerReward.getRank()).getName()
+                            : ""));
+
+                    finance.add(new Label("group_sale_volume", workerReward.getGroupSaleVolume()));
+                    finance.add(new Label("group_payment_volume", workerReward.getGroupPaymentVolume()));
+                    finance.add(new Label("structure_sale_volume", workerReward.getStructureSaleVolume()));
+                    finance.add(new Label("structure_payment_volume", workerReward.getStructurePaymentVolume()));
+                    finance.add(new Label("group_registration_count", workerReward.getGroupRegistrationCount()));
+                    finance.add(new Label("structure_manager_count", workerReward.getStructureManagerCount()));
+                    finance.add(new Label("reward_mp", getRewardString(rewards, RewardType.TYPE_MANAGER_PREMIUM, month)));
+                    finance.add(new Label("reward_gv", getRewardString(rewards, RewardType.TYPE_GROUP_VOLUME, month)));
+                    finance.add(new Label("reward_sv", getRewardString(rewards, RewardType.TYPE_STRUCTURE_VOLUME, month)));
+                }
+
+                return finance;
+            }
+        });
+
+        tabs.add(new AbstractTab(new ResourceModel("reward")) {
+            @Override
+            public WebMarkupContainer getPanel(String panelId) {
+                Fragment reward = new Fragment(panelId, "reward", WorkerPage.this);
+
+                //todo rewards
+
+                return reward;
+            }
+        });
+
+        if (isAdmin()) {
+            tabs.add(new AbstractTab(new ResourceModel("history")) {
+                @Override
+                public WebMarkupContainer getPanel(String panelId) {
+                    Fragment history = new Fragment(panelId, "history", WorkerPage.this);
+
+                    Entity workerEntity = entityMapper.getEntity(Worker.ENTITY_NAME);
+
+                    List<IColumn<Attribute, String>> historyColumns = new ArrayList<>();
+
+                    historyColumns.add(new AbstractColumn<Attribute, String>(new ResourceModel("date"), "date") {
+                        @Override
+                        public void populateItem(Item<ICellPopulator<Attribute>> cellItem, String componentId, IModel<Attribute> rowModel) {
+                            cellItem.add(new DateTimeLabel(componentId, rowModel.getObject().getStartDate()));
+                        }
+                    });
+
+                    historyColumns.add(new AbstractColumn<Attribute, String>(new ResourceModel("name"), "name") {
+                        @Override
+                        public void populateItem(Item<ICellPopulator<Attribute>> cellItem, String componentId, IModel<Attribute> rowModel) {
+                            if (rowModel.getObject().getEntityAttributeId() == 1000){
+                                cellItem.add(new Label(componentId, getString("role")));
+                            }else{
+                                EntityAttribute entityAttribute = workerEntity.getEntityAttribute(rowModel.getObject().getEntityAttributeId());
+
+                                cellItem.add(new Label(componentId, entityAttribute.getValue() != null
+                                        ? entityAttribute.getValue().getText()
+                                        : entityAttribute.getEntityAttributeId().toString()));
+                            }
+                        }
+                    });
+
+                    historyColumns.add(new AbstractColumn<Attribute, String>(new ResourceModel("value"), "value") {
+                        @Override
+                        public void populateItem(Item<ICellPopulator<Attribute>> cellItem, String componentId, IModel<Attribute> rowModel) {
+                            Attribute attribute = rowModel.getObject();
+
+                            if (attribute.getEntityAttributeId() == 1000){
+                                cellItem.add(new Label(componentId, attribute.getText()));
+
+                                return;
+                            }
+
+                            EntityAttribute entityAttribute = workerEntity.getEntityAttribute(attribute.getEntityAttributeId());
+
+                            String value = "";
+
+                            switch (entityAttribute.getValueType()){
+                                case TEXT_LIST:
+                                    value = attribute.getValues().stream()
+                                            .map(Value::getText)
+                                            .collect(Collectors.joining(","));
+
+                                    break;
+                                case NUMBER_LIST:
+                                case ENTITY_LIST:
+                                    value = attribute.getValues().stream()
+                                            .map(v -> String.valueOf(v.getNumber()))
+                                            .collect(Collectors.joining(","));
+
+                                    break;
+                                case TEXT:
+                                case DECIMAL:
+                                    value = attribute.getText();
+
+                                    break;
+                                case BOOLEAN:
+                                case NUMBER:
+                                case ENTITY:
+                                    value = String.valueOf(attribute.getNumber());
+
+                                    break;
+                                case DATE:
+                                    value = String.valueOf(attribute.getDate());
+
+                                    break;
+                            }
+
+                            cellItem.add(new Label(componentId, value));
+                        }
+                    });
+
+                    historyColumns.add(new AbstractColumn<Attribute, String>(new ResourceModel("user"), "user") {
+                        @Override
+                        public void populateItem(Item<ICellPopulator<Attribute>> cellItem, String componentId, IModel<Attribute> rowModel) {
+                            if (rowModel.getObject().getEntityAttributeId() == 1000) {
+                                cellItem.add(new Label(componentId, workerService.getSimpleWorkerLabel(rowModel.getObject().getUserId())));
+                            }else{
+                                Worker w = new Worker();
+                                w.setParentId(rowModel.getObject().getUserId());
+
+                                List<Worker> list = workerMapper.getWorkers(FilterWrapper.of(w));
+
+                                if (!list.isEmpty()){
+                                    w = list.get(0);
+                                }
+
+                                cellItem.add(new Label(componentId, w.getObjectId() != null
+                                        ? workerService.getSimpleWorkerLabel(w.getObjectId()) : "null"));
+                            }
+                        }
+                    });
+
+                    SortableDataProvider<Attribute, String> historyDataProvider = new SortableDataProvider<Attribute, String>() {
+                        @Override
+                        public Iterator<? extends Attribute> iterator(long first, long count) {
+                            return workerMapper.getWorkerUserHistories(new FilterWrapper<>(first, count)
+                                    .put("objectId", worker.getObjectId())
+                                    .put("userId", worker.getParentId())).iterator();
+                        }
+
+                        @Override
+                        public long size() {
+                            return workerMapper.getWorkerUserHistoriesCount(new FilterWrapper<>()
+                                    .put("objectId", worker.getObjectId())
+                                    .put("userId", worker.getParentId()));
+                        }
+
+                        @Override
+                        public IModel<Attribute> model(Attribute object) {
+                            return Model.of(object);
+                        }
+                    };
+
+                    DataTable<Attribute, String> historyDataTable = new DataTable<Attribute, String>("history", historyColumns,
+                            historyDataProvider, 5){
+                        @Override
+                        public boolean isVisible() {
+                            return worker.getObjectId() != null;
+                        }
+                    };
+                    historyDataTable.addTopToolbar(new AjaxFallbackHeadersToolbar<>(historyDataTable, historyDataProvider));
+                    historyDataTable.addBottomToolbar(new NavigationToolbar(historyDataTable, "workerPage_history"));
+                    historyDataTable.setOutputMarkupId(true);
+
+                    history.add(historyDataTable);
+
+                    return history;
+                }
+            });
+        }
+
+        form.add(new AjaxBootstrapTabbedPanel<>("info", tabs).setVisible(worker.getObjectId() != null));
+
         form.add(new AjaxButton("create") {
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
@@ -947,7 +1172,7 @@ public class WorkerPage extends BasePage {
             }
         }.setDefaultFormProcessing(false));
 
-        Link back = new Link<Void>("back") {
+        Link<Worker> back = new Link<Worker>("back") {
             @Override
             public void onClick() {
                 if (backToWorkerList && (isAdmin() || isStructureAdmin())){
@@ -987,184 +1212,6 @@ public class WorkerPage extends BasePage {
                 return worker.getObjectId() != null;
             }
         });
-
-
-        List<IColumn<Worker, SortProperty>> columns = new ArrayList<>();
-
-        columns.add(new DomainIdColumn<>());
-        getEntityAttributes().forEach(a -> columns.add(new DomainColumn<>(a)));
-
-        //noinspection Duplicates
-        columns.add(new AbstractDomainColumn<Worker>(new ResourceModel("subWorkersCount"),
-                new SortProperty("subWorkersCount")) {
-            @Override
-            public void populateItem(Item<ICellPopulator<Worker>> cellItem, String componentId, IModel<Worker> rowModel) {
-                cellItem.add(new Label(componentId, rowModel.getObject().getSubWorkerCount()));
-            }
-
-            @Override
-            public Component getFilter(String componentId, FilterDataForm<?> form) {
-                return new TextDataFilter<>(componentId, Model.of(""), form);
-            }
-        });
-
-        //noinspection Duplicates
-        columns.add(new AbstractDomainColumn<Worker>(new ResourceModel("level"), new SortProperty("level")) {
-            @Override
-            public void populateItem(Item<ICellPopulator<Worker>> cellItem, String componentId, IModel<Worker> rowModel) {
-                cellItem.add(new Label(componentId, rowModel.getObject().getLevel() - getCurrentWorker().getLevel()));
-            }
-
-            @Override
-            public Component getFilter(String componentId, FilterDataForm<?> form) {
-                return new TextDataFilter<>(componentId, Model.of(""), form);
-            }
-        });
-
-        WorkerRemoveModal workerRemoveModal = new WorkerRemoveModal("workerRemove"){
-            @Override
-            protected void onUpdate(AjaxRequestTarget target) {
-                target.add(feedback, structure);
-            }
-        };
-        structure.add(workerRemoveModal);
-
-        //noinspection Duplicates
-        columns.add(new DomainActionColumn<Worker>(WorkerPage.class){
-            @Override
-            protected void onAction(AjaxRequestTarget target, FilterDataForm<?> form) {
-                target.add(structure);
-            }
-
-            @Override
-            public void populateItem(Item<ICellPopulator<Worker>> cellItem, String componentId, IModel<Worker> rowModel) {
-                PageParameters pageParameters = new PageParameters();
-                pageParameters.add("id", rowModel.getObject().getObjectId());
-
-                RepeatingView repeatingView = new RepeatingView(componentId);
-                cellItem.add(repeatingView);
-
-                repeatingView.add(new LinkPanel(repeatingView.newChildId(), new BootstrapBookmarkablePageLink<>(LinkPanel.LINK_COMPONENT_ID,
-                        WorkerPage.this.getClass(), pageParameters, Buttons.Type.Link).setIconType(GlyphIconType.edit)));
-
-                if (!isViewOnly()) {
-                    repeatingView.add(new LinkPanel(repeatingView.newChildId(), new BootstrapAjaxLink<Worker>(LinkPanel.LINK_COMPONENT_ID,
-                            Buttons.Type.Link) {
-                        @Override
-                        public void onClick(AjaxRequestTarget target) {
-                            workerRemoveModal.delete(target, rowModel.getObject());
-                        }
-
-                        @Override
-                        protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
-                            super.updateAjaxAttributes(attributes);
-
-                            attributes.setEventPropagation(AjaxRequestAttributes.EventPropagation.STOP);
-                        }
-
-                        @Override
-                        public boolean isVisible() {
-                            return  !rowModel.getObject().getStatus().equals(Status.ARCHIVE) &&
-                                    !Objects.equals(rowModel.getObject().getObjectId(), 1L) &&
-                                    !Objects.equals(rowModel.getObject().getObjectId(), getCurrentWorker().getObjectId());
-                        }
-                    }.setIconType(GlyphIconType.remove)));
-                }
-            }
-
-            @Override
-            public String getCssClass() {
-                return "domain-id-column" + (!isViewOnly() ? " domain-action" : "");
-            }
-        });
-
-        FilterDataTable<Worker> table = new FilterDataTable<Worker>("table", columns, dataProvider, form, 5, "workerPage"){
-            @Override
-            protected Item<Worker> newRowItem(String id, int index, final IModel<Worker> model) {
-                Item<Worker> rowItem = super.newRowItem(id, index, model);
-
-                rowItem.add(new AjaxEventBehavior("click") {
-                    @Override
-                    protected void onEvent(AjaxRequestTarget target) {
-                        PageParameters pageParameters = new PageParameters();
-                        pageParameters.add("id", model.getObject().getObjectId());
-
-                        setResponsePage(WorkerPage.this.getClass(), new PageParameters().add("id", model.getObject().getObjectId()));
-                    }
-                });
-
-                rowItem.add(new CssClassNameAppender("pointer"));
-
-                if (rowItem.getModelObject().getStatus().equals(Status.ARCHIVE)){
-                    rowItem.add(new CssClassNameAppender("active"));
-                }else if (rowItem.getModelObject().getWorkerStatus() != null &&
-                        rowItem.getModelObject().getWorkerStatus() == WorkerStatus.MANAGER_CHANGED){
-                    rowItem.add(new CssClassNameAppender("info"));
-                }
-
-                return rowItem;
-
-            }
-        };
-        structure.add(table);
-
-        Long workerLevelDepth = worker.getObjectId() != null ? workerMapper.getWorkerLevelDepth(worker.getObjectId()) : 1;
-
-        IModel<Long> graphLevelDepthModel = Model.of(workerLevelDepth);
-
-        DropDownChoice levelDepth = new DropDownChoice<>("levelDepth", graphLevelDepthModel,
-                LongStream.rangeClosed(1, workerLevelDepth).boxed().sorted(Collections.reverseOrder())
-                        .collect(Collectors.toList()));
-        levelDepth.setNullValid(false);
-        levelDepth.add(OnChangeAjaxBehavior.onChange(target -> {}));
-        structure.add(levelDepth );
-
-        structure.add(new Link<Void>("structureLink") {
-            @Override
-            public void onClick() {
-                setResponsePage(WorkerStructurePage.class, new PageParameters().add("id", worker.getObjectId())
-                        .add("level", graphLevelDepthModel.getObject()));
-            }
-        });
-
-        //Reward
-
-        WebMarkupContainer rewardContainer = new WebMarkupContainer("rewardContainer");
-        rewardContainer.setVisible(worker.getObjectId() != null);
-        form.add(rewardContainer);
-
-        if (worker.getObjectId() != null) {
-            Date month = periodService.getActualPeriod().getOperatingMonth();
-
-            WorkerReward workerReward = rewardService.getWorkerRewardTree(month).getWorkerReward(worker.getObjectId());
-
-            rewardContainer.add(new Label("sale_volume", workerReward.getSaleVolume()));
-            rewardContainer.add(new Label("payment_volume", workerReward.getPaymentVolume()));
-            rewardContainer.add(new Label("registration_count", workerReward.getRegistrationCount()));
-
-            List<Reward> rewards = rewardService.getRewards(worker.getObjectId(), month);
-
-            rewardContainer.add(new Label("reward_pv", getRewardPointString(rewards, RewardType.TYPE_PERSONAL_VOLUME, month)));
-            rewardContainer.add(new Label("reward_mk", getRewardString(rewards, RewardType.TYPE_MYCOOK_SALE, month)));
-            rewardContainer.add(new Label("reward_ba", getRewardString(rewards, RewardType.TYPE_BASE_ASSORTMENT_SALE, month)));
-            rewardContainer.add(new Label("reward_mkb", getRewardString(rewards, RewardType.TYPE_MK_MANAGER_BONUS, month)));
-            rewardContainer.add(new Label("reward_cw", getRewardString(rewards, RewardType.TYPE_CULINARY_WORKSHOP, month)));
-
-
-            rewardContainer.add(new Label("rank", workerReward.getRank() !=  null && workerReward.getRank() > 0
-                    ? domainService.getDomain(Rank.class, workerReward.getRank()).getName()
-                    : ""));
-
-            rewardContainer.add(new Label("group_sale_volume", workerReward.getGroupSaleVolume()));
-            rewardContainer.add(new Label("group_payment_volume", workerReward.getGroupPaymentVolume()));
-            rewardContainer.add(new Label("structure_sale_volume", workerReward.getStructureSaleVolume()));
-            rewardContainer.add(new Label("structure_payment_volume", workerReward.getStructurePaymentVolume()));
-            rewardContainer.add(new Label("group_registration_count", workerReward.getGroupRegistrationCount()));
-            rewardContainer.add(new Label("structure_manager_count", workerReward.getStructureManagerCount()));
-            rewardContainer.add(new Label("reward_mp", getRewardString(rewards, RewardType.TYPE_MANAGER_PREMIUM, month)));
-            rewardContainer.add(new Label("reward_gv", getRewardString(rewards, RewardType.TYPE_GROUP_VOLUME, month)));
-            rewardContainer.add(new Label("reward_sv", getRewardString(rewards, RewardType.TYPE_STRUCTURE_VOLUME, month)));
-        }
     }
 
     protected String getRewardString(List<Reward> rewards, Long rewardTypeId, Date month) {

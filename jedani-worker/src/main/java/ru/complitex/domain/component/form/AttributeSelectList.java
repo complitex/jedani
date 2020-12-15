@@ -184,7 +184,7 @@ public class AttributeSelectList extends FormComponentPanel<Attribute> {
         return !isRequired() || !listModel.getObject().isEmpty();
     }
 
-    protected String getPrefix(Domain domain){
+    protected String getPrefix(Domain<?> domain){
         return "";
     }
 }

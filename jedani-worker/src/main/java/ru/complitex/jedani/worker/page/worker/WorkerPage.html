@@ -95,126 +95,7 @@
                 </div>
             </div>
 
-            <div class="panel-group" id="structure" role="tablist" aria-multiselectable="true">
-                <div class="panel panel-default">
-                    <div class="panel-heading" role="tab" id="structureHeading">
-                        <h4 class="panel-title">
-                            <a role="button" data-toggle="collapse" data-parent="#structure" href="#structureCollapse"
-                               aria-expanded="false" aria-controls="structureCollapse">
-                                Структура и финансовый результат
-                            </a>
-                        </h4>
-                    </div>
-                    <div id="structureCollapse" class="panel-collapse collapse" role="tabpanel" aria-labelledby="structureHeading">
-                        <div class="panel-body">
-                            <div wicket:id="structure" style="z-index: 1000">
-                                <table class="pull-right">
-                                    <tr>
-                                        <td>
-                                            <label for="levels" style="margin-top: 7px; margin-right: 2px">Уровней </label>
-                                        </td>
-                                        <td>
-                                            <select id="levels" wicket:id="levelDepth" class="form-control" style="width: 35px; margin-right: 10px"></select>
-                                        </td>
-                                        <td>
-                                            <a wicket:id="structureLink" class="btn btn-default">Структура</a>
-                                        </td>
-                                    </tr>
-                                </table>
-
-                                <br/>
-
-                                <table wicket:id="table" class="table table-hover"></table>
-
-                                <div wicket:id="workerRemove"></div>
-                            </div>
-
-                            <br/>
-
-                            <div wicket:id="rewardContainer">
-                                <table class="table">
-                                    <caption>Личный финансовый результат</caption>
-                                    <thead>
-                                    <tr>
-                                        <th>Оборот</th>
-                                        <th>Финансовый оборот</th>
-                                        <th>Количество приглашенных</th>
-                                        <th>Базовое вознаграждение МК</th>
-                                        <th>Базовое вознаграждение БА</th>
-                                        <th>Менеджерский Майкук бонус</th>
-                                        <th>Кулинарный практикум</th>
-                                        <th>Бонус за личный фин. оборот</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr>
-                                        <td wicket:id="sale_volume"></td>
-                                        <td wicket:id="payment_volume"></td>
-                                        <td wicket:id="registration_count"></td>
-                                        <td wicket:id="reward_mk"></td>
-                                        <td wicket:id="reward_ba"></td>
-                                        <td wicket:id="reward_mkb"></td>
-                                        <td wicket:id="reward_cw"></td>
-                                        <td wicket:id="reward_pv"></td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-
-                                <br/>
-
-                                <table class="table">
-                                    <caption>Финансовый результат структуры</caption>
-                                    <thead>
-                                    <tr>
-                                        <th>Ранг</th>
-                                        <th>Менеджерская надбавка</th>
-                                        <th>Количество менеджеров</th>
-                                        <th>Количество приглашенных</th>
-                                        <th>Оборот личной группы</th>
-                                        <th>Оборот структуры</th>
-                                        <th>Финансовый оборот личной группы</th>
-                                        <th>Финансовый оборот структуры</th>
-                                        <th>Вознаграждение за работу с личной группы</th>
-                                        <th>Вознаграждение за работу со структурой</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr>
-                                        <td wicket:id="rank"></td>
-                                        <td wicket:id="reward_mp"></td>
-                                        <td wicket:id="structure_manager_count"></td>
-                                        <td wicket:id="group_registration_count"></td>
-                                        <td wicket:id="group_sale_volume"></td>
-                                        <td wicket:id="structure_sale_volume"></td>
-                                        <td wicket:id="group_payment_volume"></td>
-                                        <td wicket:id="structure_payment_volume"></td>
-                                        <td wicket:id="reward_gv"></td>
-                                        <td wicket:id="reward_sv"></td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div wicket:id="historyContainer" class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-                <div class="panel panel-default">
-                    <div class="panel-heading" role="tab" id="headingOne">
-                        <h4 class="panel-title">
-                            <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-                                Журнал изменений
-                            </a>
-                        </h4>
-                    </div>
-                    <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
-                        <div class="panel-body">
-                            <table wicket:id="history" class="table table-hover"></table>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <div wicket:id="info"></div>
 
             <br/>
 
@@ -228,6 +109,112 @@
             <div wicket:id="inviteModal"></div>
         </form>
     </div>
+
+    <wicket:fragment wicket:id="structure">
+        <br/>
+
+        <table class="pull-right">
+            <tr>
+                <td>
+                    <label for="levels" style="margin-top: 7px; margin-right: 2px">Уровней </label>
+                </td>
+                <td>
+                    <select id="levels" wicket:id="levelDepth" class="form-control" style="width: 35px; margin-right: 10px"></select>
+                </td>
+                <td>
+                    <a wicket:id="structureLink" class="btn btn-default">Структура</a>
+                </td>
+            </tr>
+        </table>
+
+        <br/>
+
+        <table wicket:id="table" class="table table-hover"></table>
+
+        <div wicket:id="workerRemove"></div>
+    </wicket:fragment>
+
+    <wicket:fragment wicket:id="sale">
+        <div wicket:id="sale"></div>
+    </wicket:fragment>
+
+    <wicket:fragment wicket:id="payment">
+        <div wicket:id="payment"></div>
+    </wicket:fragment>
+
+    <wicket:fragment wicket:id="finance">
+        <br/>
+
+        <table class="table">
+            <caption>Личный финансовый результат</caption>
+            <thead>
+            <tr>
+                <th>Оборот</th>
+                <th>Финансовый оборот</th>
+                <th>Количество приглашенных</th>
+                <th>Базовое вознаграждение МК</th>
+                <th>Базовое вознаграждение БА</th>
+                <th>Менеджерский Майкук бонус</th>
+                <th>Кулинарный практикум</th>
+                <th>Бонус за личный фин. оборот</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td wicket:id="sale_volume"></td>
+                <td wicket:id="payment_volume"></td>
+                <td wicket:id="registration_count"></td>
+                <td wicket:id="reward_mk"></td>
+                <td wicket:id="reward_ba"></td>
+                <td wicket:id="reward_mkb"></td>
+                <td wicket:id="reward_cw"></td>
+                <td wicket:id="reward_pv"></td>
+            </tr>
+            </tbody>
+        </table>
+
+        <br/>
+
+        <table class="table">
+            <caption>Финансовый результат структуры</caption>
+            <thead>
+            <tr>
+                <th>Ранг</th>
+                <th>Менеджерская надбавка</th>
+                <th>Количество менеджеров</th>
+                <th>Количество приглашенных</th>
+                <th>Оборот личной группы</th>
+                <th>Оборот структуры</th>
+                <th>Финансовый оборот личной группы</th>
+                <th>Финансовый оборот структуры</th>
+                <th>Вознаграждение за работу с личной группы</th>
+                <th>Вознаграждение за работу со структурой</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td wicket:id="rank"></td>
+                <td wicket:id="reward_mp"></td>
+                <td wicket:id="structure_manager_count"></td>
+                <td wicket:id="group_registration_count"></td>
+                <td wicket:id="group_sale_volume"></td>
+                <td wicket:id="structure_sale_volume"></td>
+                <td wicket:id="group_payment_volume"></td>
+                <td wicket:id="structure_payment_volume"></td>
+                <td wicket:id="reward_gv"></td>
+                <td wicket:id="reward_sv"></td>
+            </tr>
+            </tbody>
+        </table>
+    </wicket:fragment>
+
+    <wicket:fragment wicket:id="reward">
+
+    </wicket:fragment>
+
+    <wicket:fragment wicket:id="history">
+        <table wicket:id="history" class="table table-hover"></table>
+    </wicket:fragment>
 </wicket:extend>
 </body>
 </html>

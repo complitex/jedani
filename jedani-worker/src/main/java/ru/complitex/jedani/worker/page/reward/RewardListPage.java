@@ -25,9 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static ru.complitex.jedani.worker.security.JedaniRoles.ADMINISTRATORS;
-import static ru.complitex.jedani.worker.security.JedaniRoles.STRUCTURE_ADMINISTRATORS;
 
-@AuthorizeInstantiation({ADMINISTRATORS, STRUCTURE_ADMINISTRATORS})
+@AuthorizeInstantiation({ADMINISTRATORS})
 public class RewardListPage extends DomainListModalPage<Reward> {
     @Inject
     private WorkerService workerService;
@@ -35,19 +34,19 @@ public class RewardListPage extends DomainListModalPage<Reward> {
     @Inject
     private SaleService saleService;
 
-    private RewardModal rewardModal;
+    private final RewardModal rewardModal;
 
-    private PeriodCalculateModal periodCalculateModal;
+    private final PeriodCalculateModal periodCalculateModal;
 
     public RewardListPage() {
         super(Reward.class);
 
-        Form rewardForm = new Form("rewardForm");
+        Form<?> rewardForm = new Form<>("rewardForm");
         getContainer().add(rewardForm);
 
         rewardForm.add(rewardModal = new RewardModal("rewardModal").onUpdate(t -> t.add(getFeedback(), getTable())));
 
-        Form periodCalculateForm = new Form("periodCalculateForm");
+        Form<?> periodCalculateForm = new Form<>("periodCalculateForm");
         getContainer().add(periodCalculateForm);
         periodCalculateForm.add(periodCalculateModal = new PeriodCalculateModal("periodCalculateModal")
                 .onUpdate(t -> t.add(getFeedback(), getTable())));

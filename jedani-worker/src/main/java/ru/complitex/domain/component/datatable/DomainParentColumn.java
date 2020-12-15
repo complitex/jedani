@@ -21,9 +21,8 @@ import ru.complitex.domain.util.Locales;
  * @author Anatoly A. Ivanov
  * 22.12.2017 13:12
  */
-public abstract class DomainParentColumn<T extends Domain> extends AbstractDomainColumn<T>{
-
-    private EntityAttribute entityAttribute;
+public abstract class DomainParentColumn<T extends Domain<T>> extends AbstractDomainColumn<T>{
+    private final EntityAttribute entityAttribute;
 
     public DomainParentColumn(IModel<String> displayModel, EntityAttribute entityAttribute) {
         super(displayModel, new SortProperty("parent", entityAttribute));
@@ -33,7 +32,8 @@ public abstract class DomainParentColumn<T extends Domain> extends AbstractDomai
 
     @Override
     public Component getFilter(String componentId, FilterDataForm<?> form) {
-        Domain domain = (Domain) ((FilterWrapper)form.getDefaultModelObject()).getObject();
+        Domain<?> domain = (Domain<?>) ((FilterWrapper<?>)form.getDefaultModelObject()).getObject();
+
         domain.setParentEntityAttribute(entityAttribute);
 
         return new TextDataFilter<>(componentId, new PropertyModel<>(form.getModel(), "map.parentName"), form);
@@ -41,9 +41,9 @@ public abstract class DomainParentColumn<T extends Domain> extends AbstractDomai
 
     @Override
     public void populateItem(Item<ICellPopulator<T>> cellItem, String componentId, IModel<T> rowModel) {
-        IModel model = Model.of("");
+        IModel<?> model = Model.of("");
 
-        Domain domain = getDomain(rowModel.getObject().getParentId());
+        Domain<?> domain = getDomain(rowModel.getObject().getParentId());
 
         if (domain != null) {
             switch (entityAttribute.getValueType()){
@@ -66,5 +66,5 @@ public abstract class DomainParentColumn<T extends Domain> extends AbstractDomai
 
     }
 
-    protected abstract Domain getDomain(Long objectId);
+    protected abstract Domain<?> getDomain(Long objectId);
 }
