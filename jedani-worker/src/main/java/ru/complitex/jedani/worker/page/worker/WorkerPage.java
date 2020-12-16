@@ -687,7 +687,7 @@ public class WorkerPage extends BasePage {
                                 cardService.save(cardObject);
                             }
                         } catch (Exception e) {
-                            userMapper.deleteUser(user.getId());
+                            userMapper.deleteUser(user);
 
                             throw e;
                         }
@@ -759,7 +759,7 @@ public class WorkerPage extends BasePage {
                 } catch (Exception e) {
                     if (worker.getObjectId() == null && user.getId() != null){
                         try {
-                            userMapper.deleteUser(user.getId());
+                            userMapper.deleteUser(user);
                         } catch (Exception ex) {
                             log.error("error save worker ", ex);
                         }

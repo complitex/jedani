@@ -49,6 +49,11 @@ public class RewardPanel extends DomainListModalPanel<Reward> {
     }
 
     @Override
+    public boolean isEditEnabled() {
+        return false;
+    }
+
+    @Override
     protected List<EntityAttribute> getEntityAttributes(Entity entity) {
         List<EntityAttribute> list = new ArrayList<>();
 

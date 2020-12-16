@@ -95,6 +95,8 @@ public class InvitePage extends WebPage {
     private final FileUploadField photoUploadFiled;
 
     public InvitePage(PageParameters parameters) {
+        setVersioned(false);
+
         String key = parameters.get("key").toString();
 
         String JId = inviteService.decodeJId(key);
@@ -283,7 +285,7 @@ public class InvitePage extends WebPage {
                             cardService.save(cardObject);
                         }
                     } catch (Exception e) {
-                        userMapper.deleteUser(user.getId());
+                        userMapper.deleteUser(user);
 
                         throw e;
                     }
@@ -324,11 +326,7 @@ public class InvitePage extends WebPage {
                     target.add(feedback, form);
                 } catch (Exception e) {
                     if (worker.getObjectId() == null && user.getId() != null){
-                        try {
-                            userMapper.deleteUser(user.getId());
-                        } catch (Exception ex) {
-                            log.error("error save worker ", ex);
-                        }
+                        userMapper.deleteUser(user);
                     }
 
                     error("Ошибка: " + e.getMessage());

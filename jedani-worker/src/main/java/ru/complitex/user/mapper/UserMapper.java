@@ -60,8 +60,13 @@ public class UserMapper extends BaseMapper {
                 .forEach(ug -> userGroupMapper.insertUserGroup(ug));
     }
 
-    public void deleteUser(Long id){
-        userGroupMapper.deleteUserGroupsByUserId(id);
-        sqlSession().delete("deleteUser", id);
+    public void deleteUser(User user){
+        if (user.getId() != null) {
+            userGroupMapper.deleteUserGroupsByUserId(user.getId());
+
+            sqlSession().delete("deleteUser", user.getId());
+
+            user.setId(null);
+        }
     }
 }

@@ -30,6 +30,11 @@ public class RewardListPage extends BasePage {
             protected boolean isCurrentWorkerFilter() {
                 return false;
             }
+
+            @Override
+            public boolean isEditEnabled() {
+                return true;
+            }
         };
         add(rewardPanel);
 
