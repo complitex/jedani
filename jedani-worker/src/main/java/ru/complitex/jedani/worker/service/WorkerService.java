@@ -7,7 +7,6 @@ import ru.complitex.address.entity.Region;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.Status;
-import ru.complitex.domain.mapper.DomainMapper;
 import ru.complitex.domain.service.DomainNodeService;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.util.Attributes;
@@ -184,7 +183,7 @@ public class WorkerService implements Serializable {
     }
 
     @Transactional
-    public void insert(User user, Long workerId){
+    public void save(User user, Long workerId){
         userMapper.insert(user);
 
         workerMapper.insert(new UserHistory(user, workerId));

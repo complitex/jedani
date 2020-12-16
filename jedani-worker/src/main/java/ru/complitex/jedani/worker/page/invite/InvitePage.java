@@ -254,15 +254,13 @@ public class InvitePage extends WebPage {
                     user.setPassword(Hashing.sha256().hashString(user.getPassword(), StandardCharsets.UTF_8).toString());
 
 
-                    if (user.getId() == null){
-                        if (userMapper.getUser(user.getLogin()) != null){
-                            login.error(getString("error_login_exist"));
-                            target.add(feedback);
-                            return;
-                        }
-
-                        workerService.insert(user, null);
+                    if (userMapper.getUser(user.getLogin()) != null){
+                        login.error(getString("error_login_exist"));
+                        target.add(feedback);
+                        return;
                     }
+
+                    workerService.save(user, null);
 
                     worker.setParentId(user.getId());
                     worker.setParentEntityId(User.ENTITY_ID);

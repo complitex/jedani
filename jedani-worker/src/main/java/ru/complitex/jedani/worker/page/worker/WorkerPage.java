@@ -632,7 +632,7 @@ public class WorkerPage extends BasePage {
                             user.setPassword(Hashing.sha256().hashString(UUID.randomUUID().toString(), StandardCharsets.UTF_8).toString());
                         }
 
-                        workerService.insert(user, currentWorkerId);
+                        workerService.save(user, currentWorkerId);
                     }else{
                         if (!Objects.equals(user.getLogin(), userMapper.getUser(user.getId()).getLogin())){
                             if (userMapper.getUser(user.getLogin()) != null){
