@@ -6,7 +6,7 @@
         <result column="left" property="left"/>
         <result column="right" property="right"/>
         <result column="level" property="level"/>
-        <result column="sub_worker_count" property="subWorkerCount"/>
+        <association property="subWorkerCount" select="selectSubWorkerCount" column="{left=left,right=right}"/>
     </resultMap>
 
     <select id="selectMaxJId" resultType="string">
@@ -89,11 +89,13 @@
         </if>
     </sql>
 
+    <select id="selectSubWorkerCount" parameterType="map" resultType="long">
+        select count(w.object_id) from worker w where w.left > ${left} and ${right} > w.right and w.status = 1
+    </select>
+
     <!--suppress SqlResolve -->
     <select id="selectWorkers" parameterType="ru.complitex.common.entity.FilterWrapper" resultMap="workerResultMap">
         select d.*, '${object.entityName}' entity_name,
-            (select count(w.object_id) from worker w where w.left > (select d.left) and (select d.right) > w.right
-                and w.status = 1) sub_worker_count,
             <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsSelect"/>
         from (
             select (dd.d_id) dd_id

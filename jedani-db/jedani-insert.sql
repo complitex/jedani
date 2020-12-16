@@ -287,6 +287,7 @@ INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `tex
 
 CALL createEntityAttributeWithReference(20, 22, 11, 38, 'Ранг', 'Ранг');
 CALL createEntityAttribute(20, 23, 4, 'Баллы', 'Бали');
+CALL createEntityAttribute(20, 24, 2, 'Приглашение', 'Запрошення');
 
 INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (20, 100, 0);
 INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (20, 101, 0);

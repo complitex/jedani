@@ -1105,16 +1105,19 @@ public class WorkerPage extends BasePage {
                                 cellItem.add(new Label(componentId, workerService.getSimpleWorkerLabel(rowModel.getObject().getUserId())));
                             }else{
                                 Worker w = new Worker();
-                                w.setParentId(rowModel.getObject().getUserId());
 
-                                List<Worker> list = workerMapper.getWorkers(FilterWrapper.of(w));
+                                if (rowModel.getObject().getUserId() != null) {
+                                    w.setParentId(rowModel.getObject().getUserId());
 
-                                if (!list.isEmpty()){
-                                    w = list.get(0);
+                                    List<Worker> list = workerMapper.getWorkers(FilterWrapper.of(w));
+
+                                    if (!list.isEmpty()){
+                                        w = list.get(0);
+                                    }
                                 }
 
                                 cellItem.add(new Label(componentId, w.getObjectId() != null
-                                        ? workerService.getSimpleWorkerLabel(w.getObjectId()) : "null"));
+                                        ? workerService.getSimpleWorkerLabel(w.getObjectId()) : ""));
                             }
                         }
                     });
