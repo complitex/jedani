@@ -1101,19 +1101,15 @@ public class WorkerPage extends BasePage {
                     historyColumns.add(new AbstractColumn<Attribute, String>(new ResourceModel("user"), "user") {
                         @Override
                         public void populateItem(Item<ICellPopulator<Attribute>> cellItem, String componentId, IModel<Attribute> rowModel) {
+                            Long userId = rowModel.getObject().getUserId();
+
                             if (rowModel.getObject().getEntityAttributeId() == 1000) {
-                                cellItem.add(new Label(componentId, workerService.getSimpleWorkerLabel(rowModel.getObject().getUserId())));
+                                cellItem.add(new Label(componentId, workerService.getSimpleWorkerLabel(userId)));
                             }else{
                                 Worker w = new Worker();
 
-                                if (rowModel.getObject().getUserId() != null) {
-                                    w.setParentId(rowModel.getObject().getUserId());
-
-                                    List<Worker> list = workerMapper.getWorkers(FilterWrapper.of(w));
-
-                                    if (!list.isEmpty()){
-                                        w = list.get(0);
-                                    }
+                                if (userId != null) {
+                                    w = workerMapper.getWorkerByUserId(userId);
                                 }
 
                                 cellItem.add(new Label(componentId, w.getObjectId() != null
