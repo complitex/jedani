@@ -710,9 +710,7 @@ public class SaleModal extends Modal<Sale> {
         });
 
         try {
-            sale.setPersonalRewardPoint(!sale.isFeeWithdraw()
-                    ? rewardService.getPersonalRewardPoint(sale, saleItems)
-                    : BigDecimal.ZERO);
+            sale.setPersonalRewardPoint(rewardService.getPersonalRewardPoint(sale, saleItems));
 
             if (saleService.isMkSaleItems(saleItems)) {
                 sale.setMkManagerBonusRewardPoint(rewardService.getMkManagerBonusRewardPoint(sale, saleItems));
