@@ -21,6 +21,7 @@ public class Payment extends Domain<Payment> {
 
     public final static String FILTER_SALE_ID = "saleId";
     public final static String FILTER_SELLER_WORKER_ID = "sellerWorkerId";
+    public final static String FILTER_MONTH = "month";
 
     public Payment() {
         super(ENTITY_NAME);

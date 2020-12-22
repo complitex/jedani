@@ -9,6 +9,10 @@
         <if test="map.sellerWorkerId != null">
             left join payment_attribute pa_s on pa_s.domain_id = d.id and pa_s.entity_attribute_id = 9 and pa_s.status = 1
         </if>
+
+        <if test="map.month != null">
+            left join payment_attribute pa_d on pa_d.domain_id = d.id and pa_d.entity_attribute_id = 2 and pa_d.status = 1
+        </if>
     </sql>
 
     <sql id="selectPaymentsWhere">
@@ -16,6 +20,10 @@
             and exists(select s.id from sale s
                 left join sale_attribute sa on sa.domain_id = s.id and sa.entity_attribute_id = 1 and sa.status = 1
                 where s.status = 1 and s.object_id = pa_s.number and sa.number = #{map.sellerWorkerId})
+        </if>
+
+        <if test="map.month != null">
+            and month(pa_d.date) = month(#{map.month}) and year(pa_d.date) = year(#{map.month})
         </if>
     </sql>
     
@@ -48,12 +56,12 @@
 
     <!--suppress SqlResolve -->
     <select id="selectPaymentsCount" parameterType="ru.complitex.common.entity.FilterWrapper" resultType="long">
-        select count(distinct t.object_id) from (select d.object_id
+        select count(distinct p.object_id) from (select d.object_id
             <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFrom"/>
             <include refid="selectPaymentsFrom"/>
             <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromFilter"/>
             <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsWhere"/>
             <include refid="selectPaymentsWhere"/>
-        ) t
+        ) p
     </select>
 </mapper>

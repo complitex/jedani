@@ -29,6 +29,9 @@ public class Reward extends Domain<Reward> {
     public static final long MANAGER_RANK = 19;
     public static final long TOTAL = 20;
 
+    public final static String FILTER_MONTH = "month";
+    public final static String FILTER_ACTUAL_MONTH = "actualMonth";
+
     public Reward() {
         super(ENTITY_NAME);
 

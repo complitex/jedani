@@ -1,18 +1,21 @@
 package ru.complitex.jedani.worker.page.reward;
 
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.ResourceModel;
+import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.component.datatable.DomainColumn;
 import ru.complitex.domain.component.panel.DomainListModalPanel;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
-import ru.complitex.jedani.worker.entity.Rank;
-import ru.complitex.jedani.worker.entity.Reward;
-import ru.complitex.jedani.worker.entity.RewardType;
-import ru.complitex.jedani.worker.entity.Worker;
+import ru.complitex.jedani.worker.component.PeriodPanel;
+import ru.complitex.jedani.worker.entity.*;
+import ru.complitex.jedani.worker.mapper.RewardMapper;
+import ru.complitex.jedani.worker.service.PeriodService;
 import ru.complitex.jedani.worker.service.SaleService;
 import ru.complitex.jedani.worker.service.WorkerService;
 
@@ -26,16 +29,35 @@ import java.util.List;
  */
 public class RewardPanel extends DomainListModalPanel<Reward> {
     @Inject
+    private RewardMapper rewardMapper;
+
+    @Inject
     private WorkerService workerService;
 
     @Inject
     private SaleService saleService;
 
+    @Inject
+    private PeriodService periodService;
+
     public RewardPanel(String id, Worker worker) {
         super(id, Reward.class);
 
+        getContainer().add(new PeriodPanel("period"){
+            @Override
+            protected void onChange(AjaxRequestTarget target, Period period) {
+                getFilterWrapper().put(Reward.FILTER_MONTH, period != null ? period.getOperatingMonth() : null);
+
+                target.add(getTable());
+            }
+        });
+
         if (isCurrentWorkerFilter()) {
             getFilterWrapper().getObject().setWorkerId(worker.getObjectId());
+        }
+
+        if (isActualMonthFilter()){
+            getFilterWrapper().put(Reward.FILTER_ACTUAL_MONTH, periodService.getActualPeriod().getOperatingMonth());
         }
     }
 
@@ -51,6 +73,10 @@ public class RewardPanel extends DomainListModalPanel<Reward> {
     @Override
     public boolean isEditEnabled() {
         return false;
+    }
+
+    protected boolean isActualMonthFilter() {
+        return true;
     }
 
     @Override
@@ -117,6 +143,30 @@ public class RewardPanel extends DomainListModalPanel<Reward> {
             return new DomainColumn<>(a);
         }
 
+        if (a.getEntityAttributeId().equals(Reward.MONTH)){
+            return new DomainColumn<>(a, new ResourceModel("month"));
+        }else if (a.getEntityAttributeId().equals(Reward.LOCAL)){
+            return new DomainColumn<>(a, new ResourceModel("local"));
+        }else if (a.getEntityAttributeId().equals(Reward.PAYMENT_VOLUME)){
+            return new DomainColumn<>(a, new ResourceModel("paymentVolume"));
+        }else if (a.getEntityAttributeId().equals(Reward.GROUP_PAYMENT_VOLUME)){
+            return new DomainColumn<>(a, new ResourceModel("groupPaymentVolume"));
+        }else if (a.getEntityAttributeId().equals(Reward.STRUCTURE_PAYMENT_VOLUME)){
+            return new DomainColumn<>(a, new ResourceModel("structurePaymentVolume"));
+        }
+
         return super.newDomainColumn(a);
     }
+
+    @Override
+    protected List<Reward> getDomains(FilterWrapper<Reward> filterWrapper) {
+        return rewardMapper.getRewards(filterWrapper);
+    }
+
+    @Override
+    protected Long getDomainsCount(FilterWrapper<Reward> filterWrapper) {
+        return rewardMapper.getRewardsCount(filterWrapper);
+    }
+
+
 }

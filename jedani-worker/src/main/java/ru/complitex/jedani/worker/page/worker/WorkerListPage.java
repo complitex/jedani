@@ -190,16 +190,6 @@ public class WorkerListPage extends DomainListPage<Worker>{
     }
 
     @Override
-    protected void onEditPageParameters(PageParameters pageParameters) {
-        pageParameters.add("wl", "");
-    }
-
-    @Override
-    protected void onAddPageParameters(PageParameters pageParameters) {
-        pageParameters.add("wl", "");
-    }
-
-    @Override
     protected IModel<String> displayModel(EntityAttribute entityAttribute) {
         switch (entityAttribute.getEntityAttributeId().intValue()){
             case (int) Worker.J_ID:

@@ -10,6 +10,7 @@ import ru.complitex.jedani.worker.mapper.PeriodMapper;
 
 import javax.inject.Inject;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @author Anatoly A. Ivanov
@@ -48,11 +49,14 @@ public class PeriodService implements Serializable {
 
         save(period);
 
-
         Period actualPeriod = new Period();
 
         actualPeriod.setOperatingMonth(Dates.nextMonth(period.getOperatingMonth()));
 
         save(actualPeriod);
+    }
+
+    public List<Period> getPeriods(){
+        return periodMapper.getPeriods();
     }
 }

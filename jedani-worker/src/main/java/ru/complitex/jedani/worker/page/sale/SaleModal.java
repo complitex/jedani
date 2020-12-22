@@ -119,12 +119,8 @@ public class SaleModal extends Modal<Sale> {
 
         header(new ResourceModel("header"));
 
-        container = new WebMarkupContainer("container"){
-            @Override
-            public boolean isEnabled() {
-                return getBasePage().isAdmin() || getBasePage().isStructureAdmin() || getBasePage().isSaleAdmin();
-            }
-        };
+        container = new WebMarkupContainer("container");
+
         container.setOutputMarkupId(true)
                 .setOutputMarkupPlaceholderTag(true)
                 .setVisible(false);

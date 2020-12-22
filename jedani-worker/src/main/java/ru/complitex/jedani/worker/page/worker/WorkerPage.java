@@ -162,8 +162,6 @@ public class WorkerPage extends BasePage {
     public WorkerPage(PageParameters parameters) {
         Long id = parameters.get("id").toOptionalLong();
 
-        boolean backToWorkerList = !parameters.get("wl").isNull();
-
         if (!parameters.get("new").isNull()){
             worker = new Worker();
             worker.init();
@@ -884,7 +882,7 @@ public class WorkerPage extends BasePage {
                     }
                 });
 
-                FilterDataTable<Worker> table = new FilterDataTable<Worker>("table", columns, dataProvider, form, 5, "workerPage"){
+                FilterDataTable<Worker> table = new FilterDataTable<Worker>("table", columns, dataProvider, form, 10, "workerPage"){
                     @Override
                     protected Item<Worker> newRowItem(String id, int index, final IModel<Worker> model) {
                         Item<Worker> rowItem = super.newRowItem(id, index, model);
@@ -930,6 +928,34 @@ public class WorkerPage extends BasePage {
                     public void onClick() {
                         setResponsePage(WorkerStructurePage.class, new PageParameters().add("id", worker.getObjectId())
                                 .add("level", graphLevelDepthModel.getObject()));
+                    }
+                });
+
+                structure.add(new AjaxButton("create") {
+                    @Override
+                    protected void onSubmit(AjaxRequestTarget target) {
+                        setResponsePage(WorkerPage.class, new PageParameters().add("id", worker.getObjectId())
+                                .add("new", ""));
+                    }
+
+                    @Override
+                    public boolean isVisible() {
+                        return !isViewOnly() && worker.getObjectId() != null && worker.isParticipant();
+                    }
+                }.setDefaultFormProcessing(false));
+
+                WorkerInviteModal workerInviteModal = new WorkerInviteModal("inviteModal");
+                structure.add(workerInviteModal);
+
+                structure.add(new AjaxLink<Worker>("invite") {
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        workerInviteModal.invite(target, worker);
+                    }
+
+                    @Override
+                    public boolean isVisible() {
+                        return worker.getObjectId() != null;
                     }
                 });
 
@@ -1140,7 +1166,7 @@ public class WorkerPage extends BasePage {
                     };
 
                     DataTable<Attribute, String> historyDataTable = new DataTable<Attribute, String>("history", historyColumns,
-                            historyDataProvider, 5){
+                            historyDataProvider, 10){
                         @Override
                         public boolean isVisible() {
                             return worker.getObjectId() != null;
@@ -1159,33 +1185,16 @@ public class WorkerPage extends BasePage {
 
         form.add(new AjaxBootstrapTabbedPanel<>("info", tabs).setVisible(worker.getObjectId() != null));
 
-        form.add(new AjaxButton("create") {
-            @Override
-            protected void onSubmit(AjaxRequestTarget target) {
-                setResponsePage(WorkerPage.class, new PageParameters().add("id", worker.getObjectId())
-                        .add("new", ""));
-            }
-
-            @Override
-            public boolean isVisible() {
-                return !isViewOnly() && worker.getObjectId() != null && worker.isParticipant();
-            }
-        }.setDefaultFormProcessing(false));
-
         Link<Worker> back = new Link<Worker>("back") {
             @Override
             public void onClick() {
-                if (backToWorkerList && (isAdmin() || isStructureAdmin())){
-                    setResponsePage(WorkerListPage.class);
-                }else{
-                    PageParameters pageParameters = new PageParameters();
+                PageParameters pageParameters = new PageParameters();
 
-                    if (manager != null && manager.getObjectId() != null && !isCurrentWorkerPage()){
-                        pageParameters.add("id", manager.getObjectId());
-                    }
-
-                    setResponsePage(WorkerPage.this.getClass(), pageParameters);
+                if (manager != null && manager.getObjectId() != null && !isCurrentWorkerPage()){
+                    pageParameters.add("id", manager.getObjectId());
                 }
+
+                setResponsePage(WorkerPage.this.getClass(), pageParameters);
             }
 
             @Override
@@ -1197,21 +1206,6 @@ public class WorkerPage extends BasePage {
 
         form.add(back);
 
-
-        WorkerInviteModal workerInviteModal = new WorkerInviteModal("inviteModal");
-        form.add(workerInviteModal);
-
-        form.add(new AjaxLink<Worker>("invite") {
-            @Override
-            public void onClick(AjaxRequestTarget target) {
-                workerInviteModal.invite(target, worker);
-            }
-
-            @Override
-            public boolean isVisible() {
-                return worker.getObjectId() != null;
-            }
-        });
     }
 
     protected String getRewardString(List<Reward> rewards, Long rewardTypeId, Date month) {

@@ -1,7 +1,9 @@
 package ru.complitex.jedani.worker.mapper;
 
 import org.mybatis.cdi.Transactional;
+import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.mybatis.BaseMapper;
+import ru.complitex.jedani.worker.entity.Reward;
 
 import java.util.Date;
 import java.util.List;
@@ -19,5 +21,13 @@ public class RewardMapper extends BaseMapper {
             sqlSession().delete("deleteRewardAttributesByDomainIds", ids);
             sqlSession().delete("deleteRewardsByIds", ids);
         }
+    }
+
+    public List<Reward> getRewards(FilterWrapper<Reward> filterWrapper){
+        return sqlSession().selectList("selectRewards", filterWrapper);
+    }
+
+    public Long getRewardsCount(FilterWrapper<Reward> filterWrapper){
+        return sqlSession().selectOne("selectRewardsCount", filterWrapper);
     }
 }

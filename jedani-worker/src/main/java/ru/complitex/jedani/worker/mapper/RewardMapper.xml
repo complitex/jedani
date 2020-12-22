@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="ru.complitex.jedani.worker.mapper.RewardMapper">
+    <resultMap id="rewardResultMap" type="ru.complitex.jedani.worker.entity.Reward"
+               extends="ru.complitex.domain.mapper.DomainMapper.domainResultMapJoin">
+    </resultMap>
+    
     <select id="selectRewardIdsMyMonth" parameterType="date" resultType="long">
         select r.id from reward r
             left join reward_attribute ra_m on r.id = ra_m.domain_id and ra_m.status = 1 and ra_m.entity_attribute_id = 8
@@ -16,4 +20,58 @@
         delete from reward_attribute
         where domain_id in <foreach collection="list" open="(" separator="," close=")" item="i">#{i}</foreach>
     </delete>
+
+    <sql id="selectRewardsFrom"> 
+        <if test="map.month != null or map.actualMonth != null">
+            left join reward_attribute ra_m on ra_m.domain_id = d.id and ra_m.entity_attribute_id = 8 and ra_m.status = 1
+        </if>
+    </sql>
+
+    <sql id="selectRewardsWhere">
+        <if test="map.month != null">
+            and month(ra_m.date) = month(#{map.month}) and year(ra_m.date) = year(#{map.month})
+        </if>
+
+        <if test="map.actualMonth != null">
+            and #{map.actualMonth} > ra_m.date
+        </if>
+    </sql>    
+    
+    <!--suppress SqlResolve -->
+    <select id="selectRewards" parameterType="ru.complitex.common.entity.FilterWrapper" resultMap="rewardResultMap">
+        select d.*, '${object.entityName}' entity_name,
+          <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsSelect"/>
+        from (
+          select dd.d_id dd_id
+        from (
+            select d.id d_id
+                <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFrom"/>
+                <include refid="selectRewardsFrom"/>
+                <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromFilter"/>
+                <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromSort"/>
+                <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsWhere"/>
+                <include refid="selectRewardsWhere"/>
+                group by d.id
+                <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsOrderSort"/>                
+            ) dd
+            ${limit}
+        ) o
+        left join `reward` d on d.id = o.dd_id
+        left join reward_attribute a on a.domain_id = d.id and a.status = 1
+        left join reward_value v on v.attribute_id = a.id
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromSort"/>
+        group by d.id, a.id, v.id
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsOrderSort"/>
+    </select>
+
+    <!--suppress SqlResolve -->
+    <select id="selectRewardsCount" parameterType="ru.complitex.common.entity.FilterWrapper" resultType="long">
+        select count(distinct r.object_id) from (select d.object_id
+            <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFrom"/>
+            <include refid="selectRewardsFrom"/>
+            <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromFilter"/>
+            <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsWhere"/>
+            <include refid="selectRewardsWhere"/>
+        ) r
+    </select>    
 </mapper>

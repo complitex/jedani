@@ -35,6 +35,12 @@ public class RewardListPage extends BasePage {
             public boolean isEditEnabled() {
                 return true;
             }
+
+
+            @Override
+            protected boolean isActualMonthFilter() {
+                return false;
+            }
         };
         add(rewardPanel);
 

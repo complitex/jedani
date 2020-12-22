@@ -18,11 +18,12 @@ import ru.complitex.domain.component.panel.DomainListModalPanel;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.service.DomainService;
+import ru.complitex.jedani.worker.component.PeriodPanel;
 import ru.complitex.jedani.worker.entity.Payment;
+import ru.complitex.jedani.worker.entity.Period;
 import ru.complitex.jedani.worker.entity.Sale;
 import ru.complitex.jedani.worker.entity.Worker;
 import ru.complitex.jedani.worker.mapper.PaymentMapper;
-import ru.complitex.jedani.worker.security.JedaniRoles;
 import ru.complitex.jedani.worker.service.PeriodService;
 
 import javax.inject.Inject;
@@ -51,6 +52,15 @@ public class PaymentPanel extends DomainListModalPanel<Payment> {
 
         setSellerWorkerIdFilter(worker.getObjectId());
 
+        getContainer().add(new PeriodPanel("period"){
+            @Override
+            protected void onChange(AjaxRequestTarget target, Period period) {
+                getFilterWrapper().put(Payment.FILTER_MONTH, period != null ? period.getOperatingMonth() : null);
+
+                target.add(getTable());
+            }
+        });
+
         Form<?> paymentForm = new Form<>("paymentForm");
         getContainer().add(paymentForm);
 
@@ -69,6 +79,10 @@ public class PaymentPanel extends DomainListModalPanel<Payment> {
 
     protected void setSellerWorkerIdFilter(Long workerId){
         getFilterWrapper().put(Payment.FILTER_SELLER_WORKER_ID, workerId);
+    }
+
+    protected boolean isActualMonthFilter(){
+        return true;
     }
 
     @Override
@@ -120,11 +134,16 @@ public class PaymentPanel extends DomainListModalPanel<Payment> {
 
     @Override
     protected boolean isCreateEnabled() {
-        return isUserInRole(JedaniRoles.ADMINISTRATORS) || isUserInRole(JedaniRoles.PAYMENT_ADMINISTRATORS);
+        return false;
     }
 
     protected boolean isRemoveEnabled() {
-        return isUserInRole(JedaniRoles.ADMINISTRATORS) || isUserInRole(JedaniRoles.PAYMENT_ADMINISTRATORS);
+        return false;
+    }
+
+    @Override
+    public boolean isEditEnabled() {
+        return false;
     }
 
     @Override

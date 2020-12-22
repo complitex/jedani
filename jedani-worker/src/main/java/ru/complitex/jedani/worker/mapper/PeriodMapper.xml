@@ -21,4 +21,15 @@
             and not exists (select pa.id from period_attribute pa where pa.domain_id = d.id and pa.status = 1
                 and pa.entity_attribute_id = 2 and pa.date is not null)
     </select>
+
+    <select id="selectPeriods" resultMap="periodResultMap">
+        <bind name="entityName" value="'period'"/>
+        <bind name="useDateAttribute" value="true"/>
+
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainSelectFrom"/>
+
+        left join period_attribute pa_m on d.id = pa_m.domain_id and pa_m.entity_attribute_id = 1 and pa_m.status = 1
+
+        order by pa_m.date desc
+    </select>
 </mapper>

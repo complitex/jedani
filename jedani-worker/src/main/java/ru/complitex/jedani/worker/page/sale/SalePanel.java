@@ -25,7 +25,6 @@ import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.mapper.SaleMapper;
-import ru.complitex.jedani.worker.security.JedaniRoles;
 import ru.complitex.jedani.worker.service.SaleService;
 import ru.complitex.jedani.worker.service.WorkerService;
 import ru.complitex.jedani.worker.util.Nomenclatures;
@@ -240,18 +239,30 @@ public class SalePanel extends DomainListModalPanel<Sale> {
 
     @Override
     protected void onEdit(Sale sale, AjaxRequestTarget target) {
-        saleModal.edit(sale, target, isUserInRole(JedaniRoles.ADMINISTRATORS) ||
-                isUserInRole(JedaniRoles.SALE_ADMINISTRATORS));
+        saleModal.edit(sale, target, !isViewOnly());
     }
 
     @Override
     protected boolean isCreateEnabled() {
-        return isUserInRole(JedaniRoles.ADMINISTRATORS) || isUserInRole(JedaniRoles.SALE_ADMINISTRATORS);
+        return false;
+    }
+
+    @Override
+    public boolean isEditEnabled() {
+        return true;
+    }
+
+    public boolean isViewOnly() {
+        return true;
+    }
+
+    public boolean isRemoveEnabled() {
+        return false;
     }
 
     @Override
     protected void populateAction(RepeatingView repeatingView, IModel<Sale> rowModel) {
-        if (isUserInRole(JedaniRoles.ADMINISTRATORS) || isUserInRole(JedaniRoles.SALE_ADMINISTRATORS)) {
+        if (isRemoveEnabled()) {
             repeatingView.add(new LinkPanel(repeatingView.newChildId(),
                     new BootstrapAjaxButton(LinkPanel.LINK_COMPONENT_ID, Buttons.Type.Link) {
                 @Override

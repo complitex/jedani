@@ -75,7 +75,16 @@
 
                         <div class="col-md-2"><div wicket:id="role"></div></div>
 
-                        <div class="col-md-2"></div>
+                        <div class="col-md-2 text-center">
+                            <div  class="form-group">
+                                <label class="form-label">&nbsp;</label>
+                                <div>
+                                    <button wicket:id="save" class="btn btn-primary">Сохранить</button>
+                                    <button class="btn btn-default" wicket:id="back"><span wicket:id="label"></span></button>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="col-md-2"></div>
 
                         <div class="col-md-2">
@@ -98,40 +107,33 @@
             <div wicket:id="info"></div>
 
             <br/>
-
-            <div>
-                <button wicket:id="save" class="btn btn-primary">Сохранить</button>
-                <button wicket:id="create" class="btn btn-default">Создать</button>
-                <button wicket:id="invite" class="btn btn-default">Пригласить</button>
-                <button class="btn btn-default" wicket:id="back"><span wicket:id="label"></span></button>
-            </div>
-
-            <div wicket:id="inviteModal"></div>
         </form>
     </div>
 
     <wicket:fragment wicket:id="structure">
         <br/>
 
-        <table class="pull-right">
-            <tr>
-                <td>
-                    <label for="levels" style="margin-top: 7px; margin-right: 2px">Уровней </label>
-                </td>
-                <td>
-                    <select id="levels" wicket:id="levelDepth" class="form-control" style="width: 35px; margin-right: 10px"></select>
-                </td>
-                <td>
-                    <a wicket:id="structureLink" class="btn btn-default">Структура</a>
-                </td>
-            </tr>
-        </table>
+        <div class="pull-right">
+            <div class="form-inline">
+                <div class="form-group">
+                    <label for="level">Уровень</label>
+                    <select id="level" wicket:id="levelDepth" class="form-control"></select>
+                </div>
+                <button wicket:id="structureLink" class="btn btn-default">Структура</button>
+            </div>
+        </div>
 
         <br/>
 
         <table wicket:id="table" class="table table-hover"></table>
 
+        <div>
+            <button wicket:id="create" class="btn btn-default">Создать</button>
+            <button wicket:id="invite" class="btn btn-default">Пригласить</button>
+        </div>
+
         <div wicket:id="workerRemove"></div>
+        <div wicket:id="inviteModal"></div>
     </wicket:fragment>
 
     <wicket:fragment wicket:id="sale">
@@ -183,11 +185,11 @@
                 <th>Менеджерская надбавка</th>
                 <th>Количество менеджеров</th>
                 <th>Количество приглашенных</th>
-                <th>Оборот личной группы</th>
+                <th>Оборот группы</th>
                 <th>Оборот структуры</th>
-                <th>Финансовый оборот личной группы</th>
-                <th>Финансовый оборот структуры</th>
-                <th>Вознаграждение за работу с личной группы</th>
+                <th>Фин. оборот группы</th>
+                <th>Фин. оборот структуры</th>
+                <th>Вознаграждение за работу с группой</th>
                 <th>Вознаграждение за работу со структурой</th>
             </tr>
             </thead>
