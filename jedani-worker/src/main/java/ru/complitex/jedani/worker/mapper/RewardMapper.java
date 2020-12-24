@@ -15,7 +15,7 @@ import java.util.List;
 public class RewardMapper extends BaseMapper {
     @Transactional
     public void deleteRewards(Date month){
-        List<Long> ids = sqlSession().selectList("selectRewardIdsMyMonth", month);
+        List<Long> ids = sqlSession().selectList("selectCalculatedRewardIdsMyMonth", month);
 
         if (!ids.isEmpty()) {
             sqlSession().delete("deleteRewardAttributesByDomainIds", ids);

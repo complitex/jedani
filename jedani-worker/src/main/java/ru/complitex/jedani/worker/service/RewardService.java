@@ -320,7 +320,7 @@ public class RewardService implements Serializable {
         return ZERO;
     }
 
-    private void updateLocal(Sale sale, Reward reward){
+    public void updateLocal(Sale sale, Reward reward){
         Date date = Dates.currentDate();
 
         List<SaleItem> saleItems = saleService.getSaleItems(sale.getObjectId());
@@ -343,12 +343,14 @@ public class RewardService implements Serializable {
             reward.setRate(priceService.getRate(sale.getStorageId(), date));
         }
 
-        if (reward.getPoint().compareTo(ZERO) > 0) {
+        if (reward.getPoint().compareTo(ZERO) != 0) {
             reward.setLocal(reward.getPoint().multiply(reward.getRate()).setScale(5, HALF_EVEN));
 
             if (reward.getDiscount() != null){
                 reward.setLocal(reward.getLocal().multiply(reward.getDiscount()).setScale(5, HALF_EVEN));
             }
+        }else {
+            reward.setLocal(ZERO);
         }
     }
 
@@ -434,7 +436,7 @@ public class RewardService implements Serializable {
         return ZERO;
     }
 
-    private BigDecimal calcRewardPoint(Sale sale, Long rewardType, Date month, BigDecimal rewardPoint){
+    public BigDecimal calcRewardPoint(Sale sale, Long rewardType, Date month, BigDecimal rewardPoint){
         BigDecimal point = ZERO;
 
         if (rewardPoint.compareTo(ZERO) > 0 && sale.getTotal() != null) {
@@ -511,29 +513,6 @@ public class RewardService implements Serializable {
             WorkerRewardTree tree = getWorkerRewardTree(month);
 
             saleService.getActiveSales().forEach(s -> {
-                if (s.getPersonalRewardPoint() != null){
-                    {
-                        BigDecimal total = s.getPersonalRewardPoint();
-
-                        if (total.compareTo(ZERO) > 0) {
-                            Reward reward = new Reward();
-
-                            reward.setSaleId(s.getObjectId());
-                            reward.setWorkerId(s.getSellerWorkerId());
-                            reward.setType(RewardType.MYCOOK_SALE);
-                            reward.setPoint(calcRewardPoint(s, RewardType.MYCOOK_SALE, month, total));
-                            reward.setTotal(total);
-                            reward.setDate(Dates.currentDate());
-                            reward.setMonth(month);
-                            reward.setRewardStatus(accrue ? RewardStatus.ACCRUED : RewardStatus.CALCULATED);
-
-                            updateLocal(s, reward);
-
-                            domainService.save(reward);
-                        }
-                    }
-                }
-
                 if (s.getMkManagerBonusRewardPoint() != null && s.getMkManagerBonusWorkerId() != null){
                     BigDecimal total = s.getMkManagerBonusRewardPoint();
 

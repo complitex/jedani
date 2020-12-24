@@ -36,6 +36,7 @@ import org.apache.wicket.validation.validator.PatternValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.complitex.common.entity.FilterWrapper;
+import ru.complitex.common.util.Dates;
 import ru.complitex.common.wicket.form.*;
 import ru.complitex.domain.component.form.FormGroupDomainAutoComplete;
 import ru.complitex.domain.entity.Attribute;
@@ -48,6 +49,7 @@ import ru.complitex.jedani.worker.component.StorageAutoComplete;
 import ru.complitex.jedani.worker.component.WorkerAutoComplete;
 import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.exception.SaleException;
+import ru.complitex.jedani.worker.mapper.PeriodMapper;
 import ru.complitex.jedani.worker.mapper.StorageMapper;
 import ru.complitex.jedani.worker.page.BasePage;
 import ru.complitex.jedani.worker.service.PriceService;
@@ -88,6 +90,9 @@ public class SaleModal extends Modal<Sale> {
 
     @Inject
     private RewardService rewardService;
+
+    @Inject
+    private PeriodMapper periodMapper;
 
     private IModel<Sale> saleModel;
     private IModel<List<SaleItem>> saleItemsModel;
@@ -722,6 +727,31 @@ public class SaleModal extends Modal<Sale> {
             }
 
             saleService.save(sale, saleItems);
+
+            if (sale.isFeeWithdraw()) {
+                Reward reward = new Reward();
+
+                Date month = periodMapper.getActualPeriod().getOperatingMonth();
+
+                Long rewardType = saleService.isMkSaleItems(saleItems) ? RewardType.MYCOOK_SALE : RewardType.BASE_ASSORTMENT_SALE;
+
+                BigDecimal total = sale.getPersonalRewardPoint();
+
+                reward.setSaleId(sale.getObjectId());
+                reward.setWorkerId(sale.getSellerWorkerId());
+                reward.setType(rewardType);
+                reward.setTotal(total);
+                reward.setPoint(total.subtract(rewardService.getRewardsTotalBySaleId(sale.getObjectId(), rewardType)));
+                reward.setDate(Dates.currentDate());
+                reward.setMonth(month);
+                reward.setRewardStatus(RewardStatus.ACCRUED);
+
+                rewardService.updateLocal(sale, reward);
+
+                if (reward.getPoint().compareTo(BigDecimal.ZERO) != 0) {
+                    domainService.save(reward);
+                }
+            }
 
             getSession().success(getString("info_sold"));
 
