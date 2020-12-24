@@ -28,6 +28,7 @@ public class Reward extends Domain<Reward> {
     public static final long MANAGER = 18;
     public static final long MANAGER_RANK = 19;
     public static final long TOTAL = 20;
+    public static final long STATUS = 21;
 
     public final static String FILTER_MONTH = "month";
     public final static String FILTER_ACTUAL_MONTH = "actualMonth";
@@ -165,5 +166,13 @@ public class Reward extends Domain<Reward> {
 
     public void setManagerRankId(Long managerRankId){
         setNumber(MANAGER_RANK, managerRankId);
+    }
+
+    public Long getRewardStatus(){
+        return getNumber(STATUS);
+    }
+
+    public void setRewardStatus(Long rewardStatus){
+        setNumber(STATUS, rewardStatus);
     }
 }

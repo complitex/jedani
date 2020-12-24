@@ -5,15 +5,15 @@ import ru.complitex.domain.entity.Domain;
 public class RewardType extends Domain<RewardType> {
     public static final String ENTITY_NAME = "reward_type";
 
-    public static final long TYPE_MYCOOK_SALE = 4L;
-    public static final long TYPE_BASE_ASSORTMENT_SALE = 5L;
-    public static final long TYPE_PERSONAL_VOLUME = 6L;
-    public static final long TYPE_CULINARY_WORKSHOP = 8L;
-    public static final long TYPE_MK_MANAGER_BONUS = 9L;
-    public static final long TYPE_MANAGER_PREMIUM = 10L;
-    public static final long TYPE_GROUP_VOLUME = 11L;
-    public static final long TYPE_STRUCTURE_VOLUME = 12L;
-    public static final long TYPE_RANK = 13L;
+    public static final long MYCOOK_SALE = 4;
+    public static final long BASE_ASSORTMENT_SALE = 5;
+    public static final long PERSONAL_VOLUME = 6;
+    public static final long CULINARY_WORKSHOP = 8;
+    public static final long MK_MANAGER_BONUS = 9;
+    public static final long MANAGER_PREMIUM = 10;
+    public static final long GROUP_VOLUME = 11;
+    public static final long STRUCTURE_VOLUME = 12;
+    public static final long RANK = 13;
 
     public static final long NAME = 1;
 

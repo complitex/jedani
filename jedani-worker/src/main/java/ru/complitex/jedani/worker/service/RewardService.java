@@ -328,7 +328,9 @@ public class RewardService implements Serializable {
         if (!saleItems.isEmpty()){
             SaleItem saleItem = saleItems.get(0);
 
-            if (saleItem.getSaleDecisionId() != null){
+            reward.setRate(saleItem.getRate());
+
+            if (reward.getRate() == null && saleItem.getSaleDecisionId() != null){
                 reward.setRate(priceService.getRate(sale, saleItem, date));
             }
 
@@ -498,7 +500,7 @@ public class RewardService implements Serializable {
     }
 
     @Transactional(rollbackFor = RewardException.class)
-    public void calculateRewards() throws RewardException {
+    public void calculateRewards(boolean accrue) throws RewardException {
         try {
             Period period = periodService.getActualPeriod();
 
@@ -518,11 +520,12 @@ public class RewardService implements Serializable {
 
                             reward.setSaleId(s.getObjectId());
                             reward.setWorkerId(s.getSellerWorkerId());
-                            reward.setType(RewardType.TYPE_MYCOOK_SALE);
-                            reward.setPoint(calcRewardPoint(s, RewardType.TYPE_MYCOOK_SALE, month, total));
+                            reward.setType(RewardType.MYCOOK_SALE);
+                            reward.setPoint(calcRewardPoint(s, RewardType.MYCOOK_SALE, month, total));
                             reward.setTotal(total);
                             reward.setDate(Dates.currentDate());
                             reward.setMonth(month);
+                            reward.setRewardStatus(accrue ? RewardStatus.ACCRUED : RewardStatus.CALCULATED);
 
                             updateLocal(s, reward);
 
@@ -539,11 +542,12 @@ public class RewardService implements Serializable {
 
                         reward.setSaleId(s.getObjectId());
                         reward.setWorkerId(s.getMkManagerBonusWorkerId());
-                        reward.setType(RewardType.TYPE_MK_MANAGER_BONUS);
-                        reward.setPoint(calcRewardPoint(s, RewardType.TYPE_MK_MANAGER_BONUS, month, total));
+                        reward.setType(RewardType.MK_MANAGER_BONUS);
+                        reward.setPoint(calcRewardPoint(s, RewardType.MK_MANAGER_BONUS, month, total));
                         reward.setTotal(total);
                         reward.setDate(Dates.currentDate());
                         reward.setMonth(month);
+                        reward.setRewardStatus(accrue ? RewardStatus.ACCRUED : RewardStatus.CALCULATED);
 
                         updateLocal(s, reward);
 
@@ -553,16 +557,17 @@ public class RewardService implements Serializable {
 
                 if (s.getCulinaryRewardPoint() != null && s.getTotal() != null &&
                         paymentService.getPaymentsVolumeBySaleId(s.getObjectId(), month).compareTo(s.getTotal()) >= 0 &&
-                        getRewardsTotalBySaleId(s.getObjectId(), RewardType.TYPE_CULINARY_WORKSHOP).compareTo(ZERO) == 0){
+                        getRewardsTotalBySaleId(s.getObjectId(), RewardType.CULINARY_WORKSHOP).compareTo(ZERO) == 0){
                     Reward reward = new Reward();
 
                     reward.setSaleId(s.getObjectId());
-                    reward.setType(RewardType.TYPE_CULINARY_WORKSHOP);
+                    reward.setType(RewardType.CULINARY_WORKSHOP);
                     reward.setWorkerId(s.getCulinaryWorkerId() != null ? s.getCulinaryWorkerId() : s.getSellerWorkerId());
                     reward.setPoint(s.getCulinaryRewardPoint());
                     reward.setTotal(s.getCulinaryRewardPoint());
                     reward.setDate(Dates.currentDate());
                     reward.setMonth(month);
+                    reward.setRewardStatus(accrue ? RewardStatus.ACCRUED : RewardStatus.CALCULATED);
 
                     updateLocal(s, reward);
 
@@ -576,7 +581,7 @@ public class RewardService implements Serializable {
                         Reward reward = new Reward();
 
                         reward.setWorkerId(r.getWorkerId());
-                        reward.setType(RewardType.TYPE_RANK);
+                        reward.setType(RewardType.RANK);
                         reward.setSaleVolume(r.getSaleVolume());
                         reward.setPaymentVolume(r.getPaymentVolume());
                         reward.setGroupSaleVolume(r.getGroupSaleVolume());
@@ -586,6 +591,7 @@ public class RewardService implements Serializable {
                         reward.setRankId(r.getRank());
                         reward.setDate(Dates.currentDate());
                         reward.setMonth(month);
+                        reward.setRewardStatus(accrue ? RewardStatus.ACCRUED : RewardStatus.CALCULATED);
 
                         domainService.save(reward);
                     }
@@ -603,13 +609,14 @@ public class RewardService implements Serializable {
 
                         reward.setSaleId(s.getObjectId());
                         reward.setWorkerId(s.getSellerWorkerId());
-                        reward.setType(RewardType.TYPE_MANAGER_PREMIUM);
-                        reward.setPoint(calcRewardPoint(s, RewardType.TYPE_MANAGER_PREMIUM, month, total));
+                        reward.setType(RewardType.MANAGER_PREMIUM);
+                        reward.setPoint(calcRewardPoint(s, RewardType.MANAGER_PREMIUM, month, total));
                         reward.setTotal(total);
                         reward.setDate(Dates.currentDate());
                         reward.setMonth(month);
                         reward.setStructureSaleVolume(workerReward.getStructureSaleVolume());
                         reward.setRankId(workerReward.getRank());
+                        reward.setRewardStatus(accrue ? RewardStatus.ACCRUED : RewardStatus.CALCULATED);
 
                         updateLocal(s, reward);
 
@@ -623,14 +630,15 @@ public class RewardService implements Serializable {
                     if (r.getSaleVolume().compareTo(getParameter(43L)) >= 0){
                         Reward reward = new Reward();
 
-                        reward.setType(RewardType.TYPE_PERSONAL_VOLUME);
+                        reward.setType(RewardType.PERSONAL_VOLUME);
                         reward.setWorkerId(r.getWorkerNode().getObjectId());
                         reward.setSaleVolume(r.getSaleVolume());
                         reward.setPaymentVolume(r.getPaymentVolume());
                         reward.setDate(Dates.currentDate());
                         reward.setMonth(month);
+                        reward.setRewardStatus(accrue ? RewardStatus.ACCRUED : RewardStatus.CALCULATED);
 
-                        if (getRewardsTotal(reward.getWorkerId(), RewardType.TYPE_PERSONAL_VOLUME,
+                        if (getRewardsTotal(reward.getWorkerId(), RewardType.PERSONAL_VOLUME,
                                 month).compareTo(ZERO) == 0) {
                             if (r.getPaymentVolume().compareTo(getParameter(44L)) < 0){
                                 reward.setPoint(getParameter(45L));
@@ -660,8 +668,8 @@ public class RewardService implements Serializable {
                             Reward reward = new Reward();
 
                             reward.setWorkerId(r.getWorkerId());
-                            reward.setType(RewardType.TYPE_GROUP_VOLUME);
-                            reward.setPoint(calcRewardPoint(r.getWorkerId(), null, RewardType.TYPE_GROUP_VOLUME, month,
+                            reward.setType(RewardType.GROUP_VOLUME);
+                            reward.setPoint(calcRewardPoint(r.getWorkerId(), null, RewardType.GROUP_VOLUME, month,
                                     r.getGroupSaleVolume(), r.getGroupPaymentVolume(), total));
                             reward.setTotal(total);
                             reward.setGroupSaleVolume(r.getGroupSaleVolume());
@@ -669,6 +677,7 @@ public class RewardService implements Serializable {
                             reward.setRankId(r.getRank());
                             reward.setDate(Dates.currentDate());
                             reward.setMonth(month);
+                            reward.setRewardStatus(accrue ? RewardStatus.ACCRUED : RewardStatus.CALCULATED);
 
                             updateLocal(reward);
 
@@ -685,9 +694,9 @@ public class RewardService implements Serializable {
                                 Reward reward = new Reward();
 
                                 reward.setWorkerId(r.getWorkerId());
-                                reward.setType(RewardType.TYPE_STRUCTURE_VOLUME);
+                                reward.setType(RewardType.STRUCTURE_VOLUME);
                                 reward.setPoint(calcRewardPoint(r.getWorkerId(), m.getWorkerId(),
-                                        RewardType.TYPE_STRUCTURE_VOLUME, month,
+                                        RewardType.STRUCTURE_VOLUME, month,
                                         m.getStructureSaleVolume(), m.getStructurePaymentVolume(), t));
                                 reward.setTotal(t);
                                 reward.setRankId(r.getRank());
@@ -697,6 +706,7 @@ public class RewardService implements Serializable {
                                 reward.setStructurePaymentVolume(m.getStructurePaymentVolume());
                                 reward.setDate(Dates.currentDate());
                                 reward.setMonth(month);
+                                reward.setRewardStatus(accrue ? RewardStatus.ACCRUED : RewardStatus.CALCULATED);
 
                                 updateLocal(reward);
 

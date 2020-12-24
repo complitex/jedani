@@ -105,6 +105,7 @@ public class RewardPanel extends DomainListModalPanel<Reward> {
         list.add(entity.getEntityAttribute(Reward.MANAGER_RANK).withReference(Rank.ENTITY_NAME, Rank.NAME));
         list.add(entity.getEntityAttribute(Reward.STRUCTURE_SALE_VOLUME));
         list.add(entity.getEntityAttribute(Reward.STRUCTURE_PAYMENT_VOLUME));
+        list.add(entity.getEntityAttribute(Reward.STATUS));
 
         return list;
     }
@@ -141,6 +142,13 @@ public class RewardPanel extends DomainListModalPanel<Reward> {
             };
         }else if (a.getEntityAttributeId().equals(Reward.TYPE)){
             return new DomainColumn<>(a);
+        }else if (a.getEntityAttributeId().equals(Reward.STATUS)){
+            return new AbstractDomainColumn<Reward>(a) {
+                @Override
+                public void populateItem(Item<ICellPopulator<Reward>> cellItem, String componentId, IModel<Reward> rowModel) {
+                    cellItem.add(new Label(componentId, new ResourceModel("status." + rowModel.getObject().getRewardStatus())));
+                }
+            };
         }
 
         if (a.getEntityAttributeId().equals(Reward.MONTH)){

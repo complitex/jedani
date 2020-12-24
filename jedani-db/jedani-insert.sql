@@ -731,6 +731,8 @@ CALL createEntityAttribute(40, 16, 4, 'Оборот структуры', 'Обо
 CALL createEntityAttribute(40, 17, 4, 'Финансовый оборот структуры', 'Фінансовий оборот структури');
 CALL createEntityAttributeWithReference(40, 18, 11, 20, 'Менеджер', 'Менеджер');
 CALL createEntityAttributeWithReference(40, 19, 11, 38, 'Ранг менеджера', 'Ранг менеджера');
+CALL createEntityAttribute(40, 20, 4, 'Всего', 'Всього');
+CALL createEntityAttribute(40, 21, 5, 'Статус', 'Статус');
 
 /* Reward Parameter */
 

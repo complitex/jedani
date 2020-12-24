@@ -1006,11 +1006,11 @@ public class WorkerPage extends BasePage {
 
                     List<Reward> rewards = rewardService.getRewards(worker.getObjectId(), month);
 
-                    finance.add(new Label("reward_pv", getRewardPointString(rewards, RewardType.TYPE_PERSONAL_VOLUME, month)));
-                    finance.add(new Label("reward_mk", getRewardString(rewards, RewardType.TYPE_MYCOOK_SALE, month)));
-                    finance.add(new Label("reward_ba", getRewardString(rewards, RewardType.TYPE_BASE_ASSORTMENT_SALE, month)));
-                    finance.add(new Label("reward_mkb", getRewardString(rewards, RewardType.TYPE_MK_MANAGER_BONUS, month)));
-                    finance.add(new Label("reward_cw", getRewardString(rewards, RewardType.TYPE_CULINARY_WORKSHOP, month)));
+                    finance.add(new Label("reward_pv", getRewardPointString(rewards, RewardType.PERSONAL_VOLUME, month)));
+                    finance.add(new Label("reward_mk", getRewardString(rewards, RewardType.MYCOOK_SALE, month)));
+                    finance.add(new Label("reward_ba", getRewardString(rewards, RewardType.BASE_ASSORTMENT_SALE, month)));
+                    finance.add(new Label("reward_mkb", getRewardString(rewards, RewardType.MK_MANAGER_BONUS, month)));
+                    finance.add(new Label("reward_cw", getRewardString(rewards, RewardType.CULINARY_WORKSHOP, month)));
 
                     finance.add(new Label("rank", workerReward.getRank() !=  null && workerReward.getRank() > 0
                             ? domainService.getDomain(Rank.class, workerReward.getRank()).getName()
@@ -1022,9 +1022,9 @@ public class WorkerPage extends BasePage {
                     finance.add(new Label("structure_payment_volume", workerReward.getStructurePaymentVolume()));
                     finance.add(new Label("group_registration_count", workerReward.getGroupRegistrationCount()));
                     finance.add(new Label("structure_manager_count", workerReward.getStructureManagerCount()));
-                    finance.add(new Label("reward_mp", getRewardString(rewards, RewardType.TYPE_MANAGER_PREMIUM, month)));
-                    finance.add(new Label("reward_gv", getRewardString(rewards, RewardType.TYPE_GROUP_VOLUME, month)));
-                    finance.add(new Label("reward_sv", getRewardString(rewards, RewardType.TYPE_STRUCTURE_VOLUME, month)));
+                    finance.add(new Label("reward_mp", getRewardString(rewards, RewardType.MANAGER_PREMIUM, month)));
+                    finance.add(new Label("reward_gv", getRewardString(rewards, RewardType.GROUP_VOLUME, month)));
+                    finance.add(new Label("reward_sv", getRewardString(rewards, RewardType.STRUCTURE_VOLUME, month)));
                 }
 
                 return finance;

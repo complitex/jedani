@@ -46,7 +46,7 @@ public class PeriodCloseModal extends AbstractEditModal<Period> {
 
         calculateModel = Model.of(false);
 
-        add(new BootstrapCheckbox("calculateRewards", calculateModel, new ResourceModel("calculateRewards")));
+        add(new BootstrapCheckbox("calculateRewards", calculateModel, new ResourceModel("accrueRewards")));
     }
 
     @Override
@@ -60,18 +60,18 @@ public class PeriodCloseModal extends AbstractEditModal<Period> {
     protected void save(AjaxRequestTarget target) {
         try {
             if (calculateModel.getObject()) {
-                rewardService.calculateRewards();
+                rewardService.calculateRewards(true);
 
-                getSession().success(getString("info_rewards_calculated"));
+                getSession().success(getString("info_rewards_accrued"));
             }
 
             periodService.closeOperatingMonth(getCurrentWorkerId());
 
             getSession().success(getString("info_period_closed"));
         } catch (Exception e) {
-            log.error("error calculate rewards ", e);
+            log.error("error accrue rewards ", e);
 
-            getSession().error(getString("error_calculate_rewards"));
+            getSession().error(getString("error_accrue_rewards"));
         }
 
         super.save(target);
