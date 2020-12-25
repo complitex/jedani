@@ -62,9 +62,11 @@ import ru.complitex.name.service.NameService;
 
 import javax.inject.Inject;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.math.BigDecimal.ZERO;
+import static java.math.RoundingMode.HALF_EVEN;
 
 /**
  * @author Anatoly A. Ivanov
@@ -490,8 +492,8 @@ public class SaleModal extends Modal<Sale> {
         BigDecimal basePricesTotal = saleItemsModel.getObject().stream()
                 .map(si -> si.getQuantity() != null && si.getBasePrice() != null
                         ? si.getBasePrice().multiply(new BigDecimal(si.getQuantity()))
-                        : BigDecimal.ZERO)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+                        : ZERO)
+                .reduce(ZERO, BigDecimal::add);
 
         Sale sale = saleModel.getObject();
 
@@ -553,27 +555,27 @@ public class SaleModal extends Modal<Sale> {
         Sale sale = saleModel.getObject();
         List<SaleItem> saleItems = saleItemsModel.getObject();
 
-        sale.setTotal(BigDecimal.ZERO);
+        sale.setTotal(ZERO);
 
         if (saleItems.stream().noneMatch(si -> si.getQuantity() == null || si.getPrice() == null)) {
             sale.setTotal(saleItems.stream().map(si -> si.getPrice().multiply(new BigDecimal(si.getQuantity())))
-                    .reduce(BigDecimal.ZERO, BigDecimal::add));
+                    .reduce(ZERO, BigDecimal::add));
         }
 
-        sale.setTotalLocal(BigDecimal.ZERO);
+        sale.setTotalLocal(ZERO);
 
         if (saleItems.stream().noneMatch(si -> si.getPrice() == null || si.getQuantity() == null || si.getRate() == null)){
             sale.setTotalLocal(saleItems.stream().map(si -> si.getPrice().multiply(new BigDecimal(si.getQuantity()))
                     .multiply(si.getRate())
-                    .setScale(2, RoundingMode.HALF_EVEN))
-                    .reduce(BigDecimal.ZERO, BigDecimal::add));
+                    .setScale(2, HALF_EVEN))
+                    .reduce(ZERO, BigDecimal::add));
         }
     }
 
     private void updateInitialPayment(){
         Sale sale = saleModel.getObject();
 
-        sale.setInitialPayment(BigDecimal.ZERO);
+        sale.setInitialPayment(ZERO);
 
         if (sale.getTotal() != null && sale.getInstallmentMonths() >= 0) {
             sale.setInitialPayment(sale.getTotal().divide(BigDecimal.valueOf(1 + sale.getInstallmentMonths()), 2,
@@ -748,7 +750,7 @@ public class SaleModal extends Modal<Sale> {
 
                 rewardService.updateLocal(sale, reward);
 
-                if (reward.getPoint().compareTo(BigDecimal.ZERO) != 0) {
+                if (reward.getPoint().compareTo(ZERO) != 0) {
                     domainService.save(reward);
                 }
             }

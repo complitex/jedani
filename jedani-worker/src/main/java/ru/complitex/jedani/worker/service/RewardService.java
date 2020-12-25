@@ -335,7 +335,11 @@ public class RewardService implements Serializable {
             }
 
             if (reward.getPoint().compareTo(ZERO) > 0) {
-                reward.setDiscount(saleItem.getPrice().divide(saleItem.getBasePrice(), 2, HALF_EVEN));
+                if (sale.isFeeWithdraw()) {
+                    reward.setDiscount(saleItem.getPrice().add(reward.getTotal()).divide(saleItem.getBasePrice(), 2, HALF_EVEN));
+                }else{
+                    reward.setDiscount(saleItem.getPrice().divide(saleItem.getBasePrice(), 2, HALF_EVEN));
+                }
             }
         }
 
