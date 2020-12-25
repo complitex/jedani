@@ -565,10 +565,22 @@ public class SaleModal extends Modal<Sale> {
         sale.setTotalLocal(ZERO);
 
         if (saleItems.stream().noneMatch(si -> si.getPrice() == null || si.getQuantity() == null || si.getRate() == null)){
-            sale.setTotalLocal(saleItems.stream().map(si -> si.getPrice().multiply(new BigDecimal(si.getQuantity()))
-                    .multiply(si.getRate())
-                    .setScale(2, HALF_EVEN))
-                    .reduce(ZERO, BigDecimal::add));
+            sale.setTotalLocal(saleItems.stream().map(si -> {
+                if (sale.isFeeWithdraw()) {
+                    BigDecimal reward = rewardService.getPersonalRewardPoint(sale, saleItemsModel.getObject());
+                    BigDecimal price = si.getPrice().add(reward);
+                    BigDecimal discount = price.divide(si.getBasePrice(), 2, HALF_EVEN);
+
+                    return price.subtract(reward.multiply(discount))
+                            .multiply(new BigDecimal(si.getQuantity()))
+                            .multiply(si.getRate())
+                            .setScale(2, HALF_EVEN);
+                } else {
+                    return si.getPrice().multiply(new BigDecimal(si.getQuantity()))
+                            .multiply(si.getRate())
+                            .setScale(2, HALF_EVEN);
+                }
+            }).reduce(ZERO, BigDecimal::add));
         }
     }
 
