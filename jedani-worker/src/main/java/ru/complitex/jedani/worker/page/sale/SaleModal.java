@@ -349,6 +349,11 @@ public class SaleModal extends Modal<Sale> {
 
                         tag.put("title",  title);
                     }
+
+                    @Override
+                    protected String getModelValue() {
+                        return model.getObject().getQuantity() != null ? super.getModelValue() : null;
+                    }
                 };
                 price.setOutputMarkupId(true);
                 price.setEnabled(false);
@@ -555,14 +560,10 @@ public class SaleModal extends Modal<Sale> {
         Sale sale = saleModel.getObject();
         List<SaleItem> saleItems = saleItemsModel.getObject();
 
-        sale.setTotal(ZERO);
-
         if (saleItems.stream().noneMatch(si -> si.getQuantity() == null || si.getPrice() == null)) {
             sale.setTotal(saleItems.stream().map(si -> si.getPrice().multiply(new BigDecimal(si.getQuantity())))
                     .reduce(ZERO, BigDecimal::add));
         }
-
-        sale.setTotalLocal(ZERO);
 
         if (saleItems.stream().noneMatch(si -> si.getPrice() == null || si.getQuantity() == null || si.getRate() == null)){
             sale.setTotalLocal(saleItems.stream().map(si -> {
@@ -586,8 +587,6 @@ public class SaleModal extends Modal<Sale> {
 
     private void updateInitialPayment(){
         Sale sale = saleModel.getObject();
-
-        sale.setInitialPayment(ZERO);
 
         if (sale.getTotal() != null && sale.getInstallmentMonths() >= 0) {
             sale.setInitialPayment(sale.getTotal().divide(BigDecimal.valueOf(1 + sale.getInstallmentMonths()), 2,
