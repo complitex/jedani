@@ -570,7 +570,7 @@ public class SaleModal extends Modal<Sale> {
                 if (sale.isFeeWithdraw()) {
                     BigDecimal reward = rewardService.getPersonalRewardPoint(sale, saleItemsModel.getObject());
                     BigDecimal price = si.getPrice().add(reward);
-                    BigDecimal discount = price.divide(si.getBasePrice(), 5, HALF_EVEN);
+                    BigDecimal discount = price.divide(si.getBasePrice(), 7, HALF_EVEN);
 
                     return price.subtract(reward.multiply(discount))
                             .multiply(new BigDecimal(si.getQuantity()))

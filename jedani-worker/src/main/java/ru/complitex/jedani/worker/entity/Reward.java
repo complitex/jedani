@@ -29,6 +29,8 @@ public class Reward extends Domain<Reward> {
     public static final long MANAGER_RANK = 19;
     public static final long TOTAL = 20;
     public static final long STATUS = 21;
+    public static final long BASE_PRICE = 22;
+    public static final long PRICE = 23;
 
     public final static String FILTER_MONTH = "month";
     public final static String FILTER_ACTUAL_MONTH = "actualMonth";
@@ -174,5 +176,21 @@ public class Reward extends Domain<Reward> {
 
     public void setRewardStatus(Long rewardStatus){
         setNumber(STATUS, rewardStatus);
+    }
+
+    public void setBasePrice(BigDecimal basePrice){
+        setDecimal(BASE_PRICE, basePrice);
+    }
+
+    public BigDecimal getBasePrice(){
+        return getDecimal(BASE_PRICE);
+    }
+
+    public void setPrice(BigDecimal price){
+        setDecimal(PRICE, price);
+    }
+
+    public BigDecimal getPrice(){
+        return getDecimal(PRICE);
     }
 }
