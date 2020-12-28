@@ -1,5 +1,6 @@
 package ru.complitex.jedani.worker.page.reward;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
@@ -41,8 +42,17 @@ public class RewardListPage extends BasePage {
             protected boolean isActualMonthFilter() {
                 return false;
             }
+
+            @Override
+            protected Component getPagingLeft(String id) {
+                return null;
+            }
         };
         add(rewardPanel);
+
+        if (isAdmin()) {
+            rewardPanel.getFilterWrapper().put(Reward.FILTER_MONTH, null);
+        }
 
         Form<?> rewardForm = new Form<>("rewardForm");
         add(rewardForm);

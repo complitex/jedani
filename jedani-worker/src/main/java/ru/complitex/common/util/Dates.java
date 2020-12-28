@@ -56,7 +56,7 @@ public class Dates {
                 .toInstant());
     }
 
-    public static boolean isDayEquals(Date d1, Date d2){
+    public static boolean isSameDay(Date d1, Date d2){
         return d1.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
                 .isEqual(d2.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
     }
