@@ -53,7 +53,7 @@ public class PaymentPanel extends DomainListModalPanel<Payment> {
 
         setSellerWorkerIdFilter(worker.getObjectId());
 
-        getFilterWrapper().put(Payment.FILTER_MONTH, periodService.getActualPeriod());
+        getFilterWrapper().put(Payment.FILTER_MONTH, periodService.getActualPeriod().getOperatingMonth());
 
         Form<?> paymentForm = new Form<>("paymentForm");
         getContainer().add(paymentForm);
