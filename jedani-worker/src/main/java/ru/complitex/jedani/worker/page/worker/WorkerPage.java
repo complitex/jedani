@@ -78,6 +78,7 @@ import ru.complitex.domain.service.DomainNodeService;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
 import ru.complitex.jedani.worker.component.JedaniRoleSelectList;
+import ru.complitex.jedani.worker.component.PeriodPanel;
 import ru.complitex.jedani.worker.component.TypeSelect;
 import ru.complitex.jedani.worker.component.WorkerAutoComplete;
 import ru.complitex.jedani.worker.entity.*;
@@ -994,37 +995,71 @@ public class WorkerPage extends BasePage {
                         return worker.getObjectId() != null;
                     }
                 };
+                finance.setOutputMarkupId(true);
+                finance.setOutputMarkupPlaceholderTag(true);
 
                 if (worker.getObjectId() != null) {
-                    Date month = periodService.getActualPeriod().getOperatingMonth();
+                    IModel<Date> monthModel = Model.of(periodService.getActualPeriod().getOperatingMonth());
 
-                    WorkerReward workerReward = rewardService.getWorkerRewardTree(month).getWorkerReward(worker.getObjectId());
+                    IModel<WorkerReward> rewardModel = LoadableDetachableModel.of(() ->
+                            rewardService.getWorkerRewardTree(monthModel.getObject()).getWorkerReward(worker.getObjectId()));
 
-                    finance.add(new Label("sale_volume", workerReward.getSaleVolume()));
-                    finance.add(new Label("payment_volume", workerReward.getPaymentVolume()));
-                    finance.add(new Label("registration_count", workerReward.getRegistrationCount()));
+                    finance.add(new Label("sale_volume", LoadableDetachableModel.of(() ->
+                            rewardModel.getObject().getSaleVolume())));
+                    finance.add(new Label("payment_volume", LoadableDetachableModel.of(() ->
+                            rewardModel.getObject().getPaymentVolume())));
+                    finance.add(new Label("registration_count", LoadableDetachableModel.of(() ->
+                            rewardModel.getObject().getRegistrationCount())));
 
-                    List<Reward> rewards = rewardService.getRewards(worker.getObjectId(), month);
+                    IModel<List<Reward>> rewardsModel = LoadableDetachableModel.of(() ->
+                            rewardService.getRewards(worker.getObjectId(), monthModel.getObject()));
 
-                    finance.add(new Label("reward_pv", getRewardPointString(rewards, RewardType.PERSONAL_VOLUME, month)));
-                    finance.add(new Label("reward_mk", getRewardString(rewards, RewardType.MYCOOK_SALE, month)));
-                    finance.add(new Label("reward_ba", getRewardString(rewards, RewardType.BASE_ASSORTMENT_SALE, month)));
-                    finance.add(new Label("reward_mkb", getRewardString(rewards, RewardType.MK_MANAGER_BONUS, month)));
-                    finance.add(new Label("reward_cw", getRewardString(rewards, RewardType.CULINARY_WORKSHOP, month)));
+                    finance.add(new Label("reward_pv", LoadableDetachableModel.of(() ->
+                            getRewardPointString(rewardsModel.getObject(), RewardType.PERSONAL_VOLUME, monthModel.getObject()))));
+                    finance.add(new Label("reward_mk", LoadableDetachableModel.of(() ->
+                            getRewardString(rewardsModel.getObject(), RewardType.MYCOOK_SALE, monthModel.getObject()))));
+                    finance.add(new Label("reward_ba", LoadableDetachableModel.of(() ->
+                            getRewardString(rewardsModel.getObject(), RewardType.BASE_ASSORTMENT_SALE, monthModel.getObject()))));
+                    finance.add(new Label("reward_mkb", LoadableDetachableModel.of(() ->
+                            getRewardString(rewardsModel.getObject(), RewardType.MK_MANAGER_BONUS, monthModel.getObject()))));
+                    finance.add(new Label("reward_cw", LoadableDetachableModel.of(() ->
+                            getRewardString(rewardsModel.getObject(), RewardType.CULINARY_WORKSHOP, monthModel.getObject()))));
 
-                    finance.add(new Label("rank", workerReward.getRank() !=  null && workerReward.getRank() > 0
-                            ? domainService.getDomain(Rank.class, workerReward.getRank()).getName()
-                            : ""));
+                    finance.add(new Label("rank", LoadableDetachableModel.of(() ->
+                            rewardModel.getObject().getRank() !=  null && rewardModel.getObject().getRank() > 0
+                                    ? domainService.getDomain(Rank.class, rewardModel.getObject().getRank()).getName()
+                                    : "")));
 
-                    finance.add(new Label("group_sale_volume", workerReward.getGroupSaleVolume()));
-                    finance.add(new Label("group_payment_volume", workerReward.getGroupPaymentVolume()));
-                    finance.add(new Label("structure_sale_volume", workerReward.getStructureSaleVolume()));
-                    finance.add(new Label("structure_payment_volume", workerReward.getStructurePaymentVolume()));
-                    finance.add(new Label("group_registration_count", workerReward.getGroupRegistrationCount()));
-                    finance.add(new Label("structure_manager_count", workerReward.getStructureManagerCount()));
-                    finance.add(new Label("reward_mp", getRewardString(rewards, RewardType.MANAGER_PREMIUM, month)));
-                    finance.add(new Label("reward_gv", getRewardString(rewards, RewardType.GROUP_VOLUME, month)));
-                    finance.add(new Label("reward_sv", getRewardString(rewards, RewardType.STRUCTURE_VOLUME, month)));
+                    finance.add(new Label("group_sale_volume", LoadableDetachableModel.of(() ->
+                            (rewardModel.getObject().getGroupSaleVolume()))));
+                    finance.add(new Label("group_payment_volume", LoadableDetachableModel.of(() ->
+                            rewardModel.getObject().getGroupPaymentVolume())));
+                    finance.add(new Label("structure_sale_volume", LoadableDetachableModel.of(() ->
+                            rewardModel.getObject().getStructureSaleVolume())));
+                    finance.add(new Label("structure_payment_volume", LoadableDetachableModel.of(() ->
+                            rewardModel.getObject().getStructurePaymentVolume())));
+                    finance.add(new Label("group_registration_count", LoadableDetachableModel.of(() ->
+                            rewardModel.getObject().getGroupRegistrationCount())));
+                    finance.add(new Label("structure_manager_count", LoadableDetachableModel.of(() ->
+                            rewardModel.getObject().getStructureManagerCount())));
+                    finance.add(new Label("reward_mp", LoadableDetachableModel.of(() ->
+                            getRewardString(rewardsModel.getObject(), RewardType.MANAGER_PREMIUM, monthModel.getObject()))));
+                    finance.add(new Label("reward_gv", LoadableDetachableModel.of(() ->
+                            getRewardString(rewardsModel.getObject(), RewardType.GROUP_VOLUME, monthModel.getObject()))));
+                    finance.add(new Label("reward_sv", LoadableDetachableModel.of(() ->
+                            getRewardString(rewardsModel.getObject(), RewardType.STRUCTURE_VOLUME, monthModel.getObject()))));
+
+                    finance.add(new PeriodPanel("period"){
+                        @Override
+                        protected void onChange(AjaxRequestTarget target, Period period) {
+                            monthModel.setObject(period.getOperatingMonth());
+
+                            rewardModel.detach();
+                            rewardsModel.detach();
+
+                            target.add(finance);
+                        }
+                    });
                 }
 
                 return finance;

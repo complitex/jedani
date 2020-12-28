@@ -66,13 +66,13 @@ public class PaymentRemoveModal extends Modal<Sale> {
 
                 domainService.delete(paymentModel.getObject());
 
-                BigDecimal paymentTotal = domainService.getDomains(Payment.class, FilterWrapper.of(new Payment()
+                BigDecimal paymentTotalLocal = domainService.getDomains(Payment.class, FilterWrapper.of(new Payment()
                         .setContract(payment.getContract()))).stream()
-                        .map(Payment::getPoint).reduce(BigDecimal.ZERO, BigDecimal::add);
+                        .map(Payment::getLocal).reduce(BigDecimal.ZERO, BigDecimal::add);
 
                 Sale sale = saleService.getSale(payment.getSaleId());
 
-                saleService.updateSale(sale, null, paymentTotal);
+                saleService.updateSale(sale, paymentTotalLocal);
 
                 getSession().success(getString("info_deleted"));
 

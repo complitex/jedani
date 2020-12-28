@@ -1,9 +1,9 @@
 package ru.complitex.jedani.worker.component;
 
+import de.agilecoders.wicket.core.markup.html.bootstrap.navigation.ajax.BootstrapAjaxPagingNavigator;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
-import org.apache.wicket.markup.html.form.DropDownChoice;
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.navigation.paging.IPageable;
+import org.apache.wicket.markup.html.navigation.paging.IPagingLabelProvider;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -25,34 +25,34 @@ public class PeriodPanel extends Panel {
     public PeriodPanel(String id) {
         super(id);
 
-        DropDownChoice<Period> period = new DropDownChoice<>("period", Model.of(new Period()),
-                periodService.getPeriods(), new IChoiceRenderer<Period>() {
+        IModel<List<Period>> periodModel = Model.ofList(periodService.getPeriods());
+
+        IModel<Long> pageModel = Model.of(0L);
+
+        BootstrapAjaxPagingNavigator navigator = new BootstrapAjaxPagingNavigator("navigator",
+                new IPageable() {
+                    @Override
+                    public long getCurrentPage() {
+                        return pageModel.getObject();
+                    }
+
+                    @Override
+                    public void setCurrentPage(long page) {
+                        pageModel.setObject(page);
+                    }
+
+                    @Override
+                    public long getPageCount() {
+                        return periodModel.getObject().size();
+                    }
+                }, (IPagingLabelProvider) page -> Dates.getMonthText(periodModel.getObject().get((int) page).getOperatingMonth())){
             @Override
-            public Object getDisplayValue(Period period) {
-                return Dates.getMonthText(period.getOperatingMonth());
+            protected void onAjaxEvent(AjaxRequestTarget target) {
+                onChange(target, periodModel.getObject().get(pageModel.getObject().intValue()));
             }
+        };
 
-            @Override
-            public String getIdValue(Period period, int index) {
-                return period.getObjectId() + "";
-            }
-
-            @Override
-            public Period getObject(String id, IModel<? extends List<? extends Period>> choices) {
-                return choices.getObject().stream()
-                        .filter(p -> (p.getObjectId() + "").equals(id))
-                        .findFirst()
-                        .orElse(null);
-            }
-        });
-
-        period.setNullValid(true);
-
-        period.add(OnChangeAjaxBehavior.onChange(target -> {
-            onChange(target, period.getModelObject());
-        }));
-
-        add(period);
+        add(navigator);
     }
 
     protected void onChange(AjaxRequestTarget target, Period period){

@@ -14,7 +14,7 @@ import java.util.Date;
  * 22.04.2019 0:50
  */
 public class Dates {
-    public static SimpleDateFormat monthFormat = new SimpleDateFormat("LLLL yyyy", Locales.getSystemLocale());
+    public static SimpleDateFormat monthFormat = new SimpleDateFormat("LL.yy", Locales.getSystemLocale());
     public static SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy", Locales.getSystemLocale());
 
     public static Date currentDate(){

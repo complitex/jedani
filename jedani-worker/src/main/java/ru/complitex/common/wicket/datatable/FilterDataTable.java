@@ -1,6 +1,7 @@
 package ru.complitex.common.wicket.datatable;
 
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.IAjaxIndicatorAware;
 import org.apache.wicket.cdi.NonContextual;
 import org.apache.wicket.extensions.ajax.markup.html.AjaxIndicatorAppender;
@@ -8,6 +9,8 @@ import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFal
 import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
 import ru.complitex.domain.component.datatable.DomainActionColumn;
@@ -31,7 +34,7 @@ public class FilterDataTable<T extends Serializable> extends DataTable<T, SortPr
 
         ajaxIndicatorAppender = getColumns().stream().filter(c -> c instanceof DomainActionColumn)
                 .findAny()
-                .map(c -> ((DomainActionColumn) c).getAjaxIndicatorAppender())
+                .map(c -> ((DomainActionColumn<?>) c).getAjaxIndicatorAppender())
                 .orElse(null);
 
         addTopToolbar(new AjaxFallbackHeadersToolbar<SortProperty>(this, dataProvider){
@@ -56,10 +59,21 @@ public class FilterDataTable<T extends Serializable> extends DataTable<T, SortPr
             }
         });
 
+        IModel<Boolean> visibleModel = Model.of(false);
+
         addBottomToolbar(new NavigationToolbar(this, tableKey){
             @Override
             public boolean isVisible() {
-                return getRowCount() > 5;
+                return visibleModel.getObject() || getRowCount() > 5;
+            }
+
+            @Override
+            protected Component getPagingLeft(String id) {
+                Component component =  FilterDataTable.this.getPagingLeft(id);
+
+                visibleModel.setObject(component != null);
+
+                return component;
             }
         });
     }
@@ -95,8 +109,12 @@ public class FilterDataTable<T extends Serializable> extends DataTable<T, SortPr
 
         getColumns().forEach(c -> {
             if (c instanceof DomainColumn){
-                NonContextual.of(DomainColumn.class).inject((DomainColumn) c);
+                NonContextual.of(DomainColumn.class).inject((DomainColumn<?>) c);
             }
         });
+    }
+
+    protected Component getPagingLeft(String id){
+        return null;
     }
 }

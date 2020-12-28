@@ -162,6 +162,11 @@ public class DomainListModalPanel<T extends Domain<T>> extends Panel {
 
                 return item;
             }
+
+            @Override
+            protected Component getPagingLeft(String id) {
+                return DomainListModalPanel.this.getPagingLeft(id);
+            }
         };
         form.add(table);
 
@@ -315,5 +320,9 @@ public class DomainListModalPanel<T extends Domain<T>> extends Panel {
 
     protected boolean isUserInRole(String role){
         return getHttpServletRequest().isUserInRole(role);
+    }
+
+    protected Component getPagingLeft(String id) {
+        return null;
     }
 }

@@ -441,8 +441,12 @@ public class SaleModal extends Modal<Sale> {
                 .setEnabled(false));
         container.add(new FormGroupTextField<>("totalLocal", DecimalAttributeModel.of(saleModel, Sale.TOTAL_LOCAL), BigDecimal.class)
                 .setEnabled(false));
-        container.add(new FormGroupTextField<>("payment", DecimalAttributeModel.of(saleModel, Sale.INITIAL_PAYMENT), BigDecimal.class)
-                .onUpdate(t -> updatePrices(t, false)));
+        container.add(new FormGroupTextField<BigDecimal>("payment", DecimalAttributeModel.of(saleModel, Sale.INITIAL_PAYMENT), BigDecimal.class){
+            @Override
+            public boolean isEnabled() {
+                return !saleModel.getObject().isFeeWithdraw();
+            }
+        }.onUpdate(t -> updatePrices(t, false)));
 
         addButton(saveButton = new IndicatingAjaxButton(Modal.BUTTON_MARKUP_ID, new ResourceModel("save")) {
             @Override

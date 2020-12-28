@@ -3,6 +3,7 @@ package ru.complitex.jedani.worker.page.payment;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxButton;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.image.GlyphIconType;
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
@@ -52,14 +53,7 @@ public class PaymentPanel extends DomainListModalPanel<Payment> {
 
         setSellerWorkerIdFilter(worker.getObjectId());
 
-        getContainer().add(new PeriodPanel("period"){
-            @Override
-            protected void onChange(AjaxRequestTarget target, Period period) {
-                getFilterWrapper().put(Payment.FILTER_MONTH, period != null ? period.getOperatingMonth() : null);
-
-                target.add(getTable());
-            }
-        });
+        getFilterWrapper().put(Payment.FILTER_MONTH, periodService.getActualPeriod());
 
         Form<?> paymentForm = new Form<>("paymentForm");
         getContainer().add(paymentForm);
@@ -165,5 +159,17 @@ public class PaymentPanel extends DomainListModalPanel<Payment> {
                 }
             }.setIconType(GlyphIconType.remove)));
         }
+    }
+
+    @Override
+    protected Component getPagingLeft(String id) {
+        return new PeriodPanel(id){
+            @Override
+            protected void onChange(AjaxRequestTarget target, Period period) {
+                getFilterWrapper().put(Payment.FILTER_MONTH, period != null ? period.getOperatingMonth() : null);
+
+                target.add(getTable());
+            }
+        };
     }
 }

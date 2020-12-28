@@ -1,5 +1,6 @@
 package ru.complitex.jedani.worker.page.reward;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.markup.html.basic.Label;
@@ -43,21 +44,13 @@ public class RewardPanel extends DomainListModalPanel<Reward> {
     public RewardPanel(String id, Worker worker) {
         super(id, Reward.class);
 
-        getContainer().add(new PeriodPanel("period"){
-            @Override
-            protected void onChange(AjaxRequestTarget target, Period period) {
-                getFilterWrapper().put(Reward.FILTER_MONTH, period != null ? period.getOperatingMonth() : null);
-
-                target.add(getTable());
-            }
-        });
-
         if (isCurrentWorkerFilter()) {
             getFilterWrapper().getObject().setWorkerId(worker.getObjectId());
         }
 
         if (isActualMonthFilter()){
             getFilterWrapper().put(Reward.FILTER_ACTUAL_MONTH, periodService.getActualPeriod().getOperatingMonth());
+            getFilterWrapper().put(Reward.FILTER_MONTH, periodService.getActualPeriod().getOperatingMonth());
         }
     }
 
@@ -176,5 +169,15 @@ public class RewardPanel extends DomainListModalPanel<Reward> {
         return rewardMapper.getRewardsCount(filterWrapper);
     }
 
+    @Override
+    protected Component getPagingLeft(String id) {
+        return new PeriodPanel(id){
+            @Override
+            protected void onChange(AjaxRequestTarget target, Period period) {
+                getFilterWrapper().put(Reward.FILTER_MONTH, period != null ? period.getOperatingMonth() : null);
 
+                target.add(getTable());
+            }
+        };
+    }
 }

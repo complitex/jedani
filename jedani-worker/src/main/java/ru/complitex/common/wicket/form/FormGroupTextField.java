@@ -1,7 +1,6 @@
 package ru.complitex.common.wicket.form;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.form.TextField;
@@ -45,6 +44,11 @@ public class FormGroupTextField<T> extends Panel{
             @Override
             public boolean isRequired() {
                 return FormGroupTextField.this.isRequired();
+            }
+
+            @Override
+            public boolean isEnabled() {
+                return FormGroupTextField.this.isEnabled();
             }
         });
         textField.setLabel(label);
@@ -104,5 +108,9 @@ public class FormGroupTextField<T> extends Panel{
 
     protected void onTextFieldTag(ComponentTag tag){
 
+    }
+
+    public boolean isEnabled() {
+        return true;
     }
 }
