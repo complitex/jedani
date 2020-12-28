@@ -150,7 +150,7 @@ public class SaleDecisionService implements Serializable {
             switch (RuleConditionComparator.getValue(ruleCondition.getComparator())){
                 case EQUAL:
                     if (condition instanceof Date && object instanceof Date){
-                        return Dates.isDayEquals((Date)condition, (Date)object);
+                        return Dates.isSameDay((Date)condition, (Date)object);
                     }
 
                     return object.compareTo(condition) == 0;

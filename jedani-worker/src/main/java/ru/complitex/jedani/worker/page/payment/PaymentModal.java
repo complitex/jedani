@@ -225,6 +225,14 @@ public class PaymentModal extends AbstractEditModal<Payment> {
             warnTotal = false;
         }
 
+        if (sale.isFeeWithdraw() && !Dates.isSameDay(sale.getDate(), payment.getDate())){
+            error(getString("error_fee_withdraw_same_day"));
+
+            target.add(getFeedback());
+
+            return;
+        }
+
         domainService.save(payment);
 
         saleService.updateSale(sale, paymentTotalLocal);
