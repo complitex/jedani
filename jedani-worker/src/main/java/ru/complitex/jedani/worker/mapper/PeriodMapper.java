@@ -21,4 +21,8 @@ public class PeriodMapper extends BaseMapper {
     public List<Period> getPeriods(){
         return sqlSession().selectList("selectPeriods");
     }
+
+    public Period getPeriod(Long periodId){
+        return sqlSession().selectOne("selectPeriod", periodId);
+    }
 }

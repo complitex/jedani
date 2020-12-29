@@ -489,6 +489,7 @@ CALL createEntityAttribute(28, 19, 4, 'Сумма вознаграждения',
 CALL createEntityAttribute(28, 20, 4, 'Сумма вознаграждения ММБ', 'Сума винагороди ММБ');
 CALL createEntityAttribute(28, 21, 4, 'Сумма вознаграждения КП', 'Сума ММБ винагороди КП');
 CALL createEntityAttribute(28, 22, 3, 'Комиссия изъята', 'Комісія вилучена');
+CALL createEntityAttributeWithReference(28, 23, 11, 42, 'Операционный месяц', 'Операційний місяць');
 
 /* Sale Item*/
 
@@ -735,6 +736,7 @@ CALL createEntityAttribute(40, 20, 4, 'Всего', 'Всього');
 CALL createEntityAttribute(40, 21, 5, 'Статус', 'Статус');
 CALL createEntityAttribute(40, 22, 4, 'Базования цена', 'Базованія ціна');
 CALL createEntityAttribute(40, 23, 4, 'Цена', 'Ціна');
+CALL createEntityAttributeWithReference(40, 24, 11, 42, 'Операционный месяц', 'Операційний місяць');
 
 /* Reward Parameter */
 
@@ -855,6 +857,7 @@ CALL createEntityAttribute(41, 7, 4, 'Сумма (в баллах)', 'Сума (
 CALL createEntityAttribute(41, 8, 2, 'Номер ДКП', 'Номер ДКП');
 CALL createEntityAttributeWithReference(41, 9, 11, 28, 'Продажа', 'Продаж');
 CALL createEntityAttribute(41, 10, 5, 'Тип', 'Тип');
+CALL createEntityAttributeWithReference(41, 11, 11, 42, 'Операционный месяц', 'Операційний місяць');
 
 /* Period */
 

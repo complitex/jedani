@@ -32,4 +32,13 @@
 
         order by pa_m.date desc
     </select>
+
+    <select id="selectPeriod" resultMap="periodResultMap" parameterType="long">
+        <bind name="entityName" value="'period'"/>
+        <bind name="useDateAttribute" value="true"/>
+
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainSelectFrom"/>
+
+        where d.object_id = #{objectId}
+    </select>
 </mapper>

@@ -31,9 +31,11 @@ public class Reward extends Domain<Reward> {
     public static final long STATUS = 21;
     public static final long BASE_PRICE = 22;
     public static final long PRICE = 23;
+    public final static long PERIOD = 24;
 
     public final static String FILTER_MONTH = "month";
     public final static String FILTER_ACTUAL_MONTH = "actualMonth";
+    public final static String FILTER_PERIOD = "period";
 
     public Reward() {
         super(ENTITY_NAME);
@@ -192,5 +194,13 @@ public class Reward extends Domain<Reward> {
 
     public BigDecimal getPrice(){
         return getDecimal(PRICE);
+    }
+
+    public Long getPeriodId(){
+        return getNumber(PERIOD);
+    }
+
+    public void setPeriodId(Long periodId){
+        setNumber(PERIOD, periodId);
     }
 }

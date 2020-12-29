@@ -6,8 +6,12 @@ import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulato
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import ru.complitex.common.entity.FilterWrapper;
+import ru.complitex.common.util.Dates;
+import ru.complitex.common.wicket.datatable.FilterDataForm;
+import ru.complitex.common.wicket.datatable.TextDataFilter;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.component.datatable.DomainColumn;
 import ru.complitex.domain.component.panel.DomainListModalPanel;
@@ -50,7 +54,7 @@ public class RewardPanel extends DomainListModalPanel<Reward> {
 
         if (isActualMonthFilter()){
             getFilterWrapper().put(Reward.FILTER_ACTUAL_MONTH, periodService.getActualPeriod().getOperatingMonth());
-            getFilterWrapper().put(Reward.FILTER_MONTH, periodService.getActualPeriod().getOperatingMonth());
+            getFilterWrapper().put(Reward.FILTER_PERIOD, periodService.getActualPeriod().getObjectId());
         }
     }
 
@@ -77,7 +81,7 @@ public class RewardPanel extends DomainListModalPanel<Reward> {
         List<EntityAttribute> list = new ArrayList<>();
 
         list.add(entity.getEntityAttribute(Reward.DATE));
-        list.add(entity.getEntityAttribute(Reward.MONTH));
+        list.add(entity.getEntityAttribute(Reward.PERIOD));
         list.add(entity.getEntityAttribute(Reward.SALE));
 
         if (!isCurrentWorkerFilter()) {
@@ -105,7 +109,21 @@ public class RewardPanel extends DomainListModalPanel<Reward> {
 
     @Override
     protected AbstractDomainColumn<Reward> newDomainColumn(EntityAttribute a) {
-        if (a.getEntityAttributeId().equals(Reward.SALE)){
+        if (a.getEntityAttributeId() == Reward.PERIOD){
+            return new AbstractDomainColumn<Reward>("period") {
+                @Override
+                public void populateItem(Item<ICellPopulator<Reward>> cellItem, String componentId, IModel<Reward> rowModel) {
+                    Period period = periodService.getPeriod(rowModel.getObject().getPeriodId());
+
+                    cellItem.add(new Label(componentId, period != null ? Dates.getMonthText(period.getOperatingMonth()) : ""));
+                }
+
+                @Override
+                public Component getFilter(String componentId, FilterDataForm<?> form) {
+                    return new TextDataFilter<>(componentId, Model.of(), form);
+                }
+            };
+        } else if (a.getEntityAttributeId().equals(Reward.SALE)){
             return new AbstractDomainColumn<Reward>("sale") {
                 @Override
                 public void populateItem(Item<ICellPopulator<Reward>> cellItem, String componentId, IModel<Reward> rowModel) {
@@ -174,7 +192,7 @@ public class RewardPanel extends DomainListModalPanel<Reward> {
         return new PeriodPanel(id){
             @Override
             protected void onChange(AjaxRequestTarget target, Period period) {
-                getFilterWrapper().put(Reward.FILTER_MONTH, period != null ? period.getOperatingMonth() : null);
+                getFilterWrapper().put(Reward.FILTER_PERIOD, period != null ? period.getObjectId() : null);
 
                 target.add(getTable());
             }

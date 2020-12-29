@@ -37,7 +37,6 @@ public class RewardListPage extends BasePage {
                 return true;
             }
 
-
             @Override
             protected boolean isActualMonthFilter() {
                 return false;

@@ -762,6 +762,7 @@ public class SaleModal extends Modal<Sale> {
                 reward.setDate(Dates.currentDate());
                 reward.setMonth(month);
                 reward.setRewardStatus(RewardStatus.ACCRUED);
+                reward.setPeriodId(periodMapper.getActualPeriod().getObjectId());
 
                 rewardService.updateLocal(sale, reward);
 

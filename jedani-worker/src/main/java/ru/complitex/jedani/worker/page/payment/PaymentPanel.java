@@ -12,7 +12,11 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import ru.complitex.common.entity.FilterWrapper;
+import ru.complitex.common.util.Dates;
+import ru.complitex.common.wicket.datatable.FilterDataForm;
+import ru.complitex.common.wicket.datatable.TextDataFilter;
 import ru.complitex.common.wicket.panel.LinkPanel;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.component.panel.DomainListModalPanel;
@@ -53,7 +57,7 @@ public class PaymentPanel extends DomainListModalPanel<Payment> {
 
         setSellerWorkerIdFilter(worker.getObjectId());
 
-        getFilterWrapper().put(Payment.FILTER_MONTH, periodService.getActualPeriod().getOperatingMonth());
+        getFilterWrapper().put(Payment.FILTER_PERIOD, periodService.getActualPeriod().getObjectId());
 
         Form<?> paymentForm = new Form<>("paymentForm");
         getContainer().add(paymentForm);
@@ -81,8 +85,8 @@ public class PaymentPanel extends DomainListModalPanel<Payment> {
 
     @Override
     protected List<EntityAttribute> getEntityAttributes(Entity entity) {
-        return entity.getEntityAttributes(Payment.DATE, Payment.CONTRACT, Payment.PERIOD_START, Payment.PERIOD_END,
-                Payment.POINT);
+        return entity.getEntityAttributes(Payment.DATE, Payment.PERIOD, Payment.CONTRACT,
+                Payment.PERIOD_START, Payment.PERIOD_END, Payment.POINT);
     }
 
     @Override
@@ -97,7 +101,21 @@ public class PaymentPanel extends DomainListModalPanel<Payment> {
 
     @Override
     protected AbstractDomainColumn<Payment> newDomainColumn(EntityAttribute a) {
-        if (a.getEntityAttributeId().equals(Payment.SALE)){
+        if (a.getEntityAttributeId() == Payment.PERIOD){
+            return new AbstractDomainColumn<Payment>("period") {
+                @Override
+                public void populateItem(Item<ICellPopulator<Payment>> cellItem, String componentId, IModel<Payment> rowModel) {
+                    Period period = periodService.getPeriod(rowModel.getObject().getPeriodId());
+
+                    cellItem.add(new Label(componentId, period != null ? Dates.getMonthText(period.getOperatingMonth()) : ""));
+                }
+
+                @Override
+                public Component getFilter(String componentId, FilterDataForm<?> form) {
+                    return new TextDataFilter<>(componentId, Model.of(), form);
+                }
+            };
+        } else if (a.getEntityAttributeId().equals(Payment.SALE)){
             return new AbstractDomainColumn<Payment>(a) {
                 @Override
                 public void populateItem(Item<ICellPopulator<Payment>> cellItem, String componentId, IModel<Payment> rowModel) {
@@ -166,7 +184,7 @@ public class PaymentPanel extends DomainListModalPanel<Payment> {
         return new PeriodPanel(id){
             @Override
             protected void onChange(AjaxRequestTarget target, Period period) {
-                getFilterWrapper().put(Payment.FILTER_MONTH, period != null ? period.getOperatingMonth() : null);
+                getFilterWrapper().put(Payment.FILTER_PERIOD, period != null ? period.getObjectId() : null);
 
                 target.add(getTable());
             }

@@ -26,6 +26,11 @@
         <if test="map.month != null">
             and #{map.month} between pa_ps.date and pa_pe.date
         </if>
+
+        <if test="map.period != null">
+            and exists(select pa.id from payment_attribute pa where pa.domain_id = d.id and pa.status = 1 and d.status = 1 and
+                pa.entity_attribute_id = 11 and pa.number = #{map.period})
+        </if>
     </sql>
     
     <!--suppress SqlResolve -->

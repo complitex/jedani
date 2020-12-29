@@ -34,12 +34,14 @@ public class Sale extends Domain<Sale> {
     public static final long MK_MANAGER_BONUS_REWARD_POINT = 20;
     public static final long CULINARY_REWARD_POINT = 21;
     public static final long FEE_WITHDRAW = 22;
+    public final static long PERIOD = 23;
 
 
     public static final String FILTER_SELLER_WORKER = "sellerWorker";
     public static final String FILTER_REGION_IDS = "regionIds";
     public static final String FILTER_MONTH = "month";
     public static final String FILTER_ACTUAL = "actual";
+    public static final String FILTER_PERIOD = "period";
 
     public Sale() {
         super(ENTITY_NAME);
@@ -215,4 +217,11 @@ public class Sale extends Domain<Sale> {
         setBoolean(FEE_WITHDRAW, feeWithdraw);
     }
 
+    public Long getPeriodId(){
+        return getNumber(PERIOD);
+    }
+
+    public void setPeriodId(Long periodId){
+        setNumber(PERIOD, periodId);
+    }
 }

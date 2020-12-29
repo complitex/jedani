@@ -14,6 +14,7 @@ import ru.complitex.domain.component.form.AbstractEditModal;
 import ru.complitex.domain.model.NumberAttributeModel;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.entity.*;
+import ru.complitex.jedani.worker.service.PeriodService;
 import ru.complitex.jedani.worker.service.PriceService;
 import ru.complitex.jedani.worker.service.SaleDecisionService;
 import ru.complitex.jedani.worker.service.SaleService;
@@ -38,6 +39,9 @@ public class PaymentModal extends AbstractEditModal<Payment> {
 
     @Inject
     private SaleService saleService;
+
+    @Inject
+    private PeriodService periodService;
 
     private boolean warnTotal = false;
 
@@ -223,6 +227,10 @@ public class PaymentModal extends AbstractEditModal<Payment> {
             return;
         }else {
             warnTotal = false;
+        }
+
+        if (payment.getObjectId() == null){
+            payment.setPeriodId(periodService.getActualPeriod().getObjectId());
         }
 
         if (sale.isFeeWithdraw() && !Dates.isSameDay(sale.getDate(), payment.getDate())){

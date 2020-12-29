@@ -59,4 +59,8 @@ public class PeriodService implements Serializable {
     public List<Period> getPeriods(){
         return periodMapper.getPeriods();
     }
+
+    public Period getPeriod(Long periodId){
+        return periodMapper.getPeriod(periodId);
+    }
 }

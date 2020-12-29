@@ -17,6 +17,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.lang.Objects;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
+import ru.complitex.common.util.Dates;
 import ru.complitex.common.wicket.panel.LinkPanel;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.component.panel.DomainListModalPanel;
@@ -25,6 +26,7 @@ import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.mapper.SaleMapper;
+import ru.complitex.jedani.worker.service.PeriodService;
 import ru.complitex.jedani.worker.service.SaleService;
 import ru.complitex.jedani.worker.service.WorkerService;
 import ru.complitex.jedani.worker.util.Nomenclatures;
@@ -56,6 +58,9 @@ public class SalePanel extends DomainListModalPanel<Sale> {
 
     @Inject
     private NameService nameService;
+
+    @Inject
+    private PeriodService periodService;
 
     private final SaleModal saleModal;
 
@@ -123,6 +128,7 @@ public class SalePanel extends DomainListModalPanel<Sale> {
         List<EntityAttribute> list = new ArrayList<>();
 
         list.add(entity.getEntityAttribute(Sale.DATE));
+        list.add(entity.getEntityAttribute(Sale.PERIOD));
         list.add(entity.getEntityAttribute(Sale.CONTRACT));
 
         return list;
@@ -130,6 +136,22 @@ public class SalePanel extends DomainListModalPanel<Sale> {
 
     protected boolean isCurrentWorkerFilter(){
         return true;
+    }
+
+    @Override
+    protected AbstractDomainColumn<Sale> newDomainColumn(EntityAttribute a) {
+        if (a.getEntityAttributeId() == Sale.PERIOD){
+            return new AbstractDomainColumn<Sale>("period") {
+                @Override
+                public void populateItem(Item<ICellPopulator<Sale>> cellItem, String componentId, IModel<Sale> rowModel) {
+                    Period period = periodService.getPeriod(rowModel.getObject().getPeriodId());
+
+                    cellItem.add(new Label(componentId, period != null ? Dates.getMonthText(period.getOperatingMonth()) : ""));
+                }
+            };
+        }
+
+        return super.newDomainColumn(a);
     }
 
     @Override

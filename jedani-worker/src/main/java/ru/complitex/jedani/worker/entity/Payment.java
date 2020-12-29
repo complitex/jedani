@@ -18,10 +18,12 @@ public class Payment extends Domain<Payment> {
     public final static long CONTRACT = 8;
     public final static long SALE = 9;
     public final static long TYPE = 10;
+    public final static long PERIOD = 11;
 
     public final static String FILTER_SALE_ID = "saleId";
     public final static String FILTER_SELLER_WORKER_ID = "sellerWorkerId";
     public final static String FILTER_MONTH = "month";
+    public final static String FILTER_PERIOD = "period";
 
     public Payment() {
         super(ENTITY_NAME);
@@ -107,5 +109,13 @@ public class Payment extends Domain<Payment> {
 
     public void setType(Long type){
         setNumber(TYPE, type);
+    }
+
+    public Long getPeriodId(){
+        return getNumber(PERIOD);
+    }
+
+    public void setPeriodId(Long periodId){
+        setNumber(PERIOD, periodId);
     }
 }

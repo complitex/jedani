@@ -41,9 +41,14 @@ public class SaleService implements Serializable {
     @Inject
     private SaleItemMapper saleItemMapper;
 
+    @Inject
+    private PeriodService periodService;
+
     @Transactional(rollbackFor = SaleException.class)
     public void save(Sale sale, List<SaleItem> saleItems) throws SaleException {
-        if (sale.getObjectId() != null) {
+        if (sale.getObjectId() == null) {
+            sale.setPeriodId(periodService.getActualPeriod().getObjectId());
+        } else {
             domainService.getDomains(SaleItem.class, FilterWrapper.of(new SaleItem().setParentId(sale.getObjectId())))
                     .forEach(si -> {
                         if (saleItems.stream().noneMatch(si0 -> Objects.equals(si.getObjectId(), si0.getObjectId()))){
@@ -52,13 +57,9 @@ public class SaleService implements Serializable {
                     });
         }
 
-        //Sale
-
         domainService.save(sale);
 
         for (SaleItem s : saleItems) {
-            //Product
-
             Product filter = new Product();
 
             filter.setParentId(sale.getStorageId());
@@ -78,7 +79,6 @@ public class SaleService implements Serializable {
 
             domainService.save(product);
 
-            //Transaction
 
             Transaction t = new Transaction();
 
@@ -92,7 +92,6 @@ public class SaleService implements Serializable {
 
             domainService.save(t);
 
-            //Sale Item
 
             Entity saleEntity = entityService.getEntity(Sale.ENTITY_NAME);
 

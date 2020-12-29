@@ -535,6 +535,7 @@ public class RewardService implements Serializable {
                         reward.setDate(Dates.currentDate());
                         reward.setMonth(month);
                         reward.setRewardStatus(accrue ? RewardStatus.ACCRUED : RewardStatus.CALCULATED);
+                        reward.setPeriodId(period.getObjectId());
 
                         updateLocal(s, reward);
 
@@ -555,6 +556,7 @@ public class RewardService implements Serializable {
                     reward.setDate(Dates.currentDate());
                     reward.setMonth(month);
                     reward.setRewardStatus(accrue ? RewardStatus.ACCRUED : RewardStatus.CALCULATED);
+                    reward.setPeriodId(period.getObjectId());
 
                     updateLocal(s, reward);
 
@@ -579,6 +581,7 @@ public class RewardService implements Serializable {
                         reward.setDate(Dates.currentDate());
                         reward.setMonth(month);
                         reward.setRewardStatus(accrue ? RewardStatus.ACCRUED : RewardStatus.CALCULATED);
+                        reward.setPeriodId(period.getObjectId());
 
                         domainService.save(reward);
                     }
@@ -604,6 +607,7 @@ public class RewardService implements Serializable {
                         reward.setStructureSaleVolume(workerReward.getStructureSaleVolume());
                         reward.setRankId(workerReward.getRank());
                         reward.setRewardStatus(accrue ? RewardStatus.ACCRUED : RewardStatus.CALCULATED);
+                        reward.setPeriodId(period.getObjectId());
 
                         updateLocal(s, reward);
 
@@ -624,6 +628,7 @@ public class RewardService implements Serializable {
                         reward.setDate(Dates.currentDate());
                         reward.setMonth(month);
                         reward.setRewardStatus(accrue ? RewardStatus.ACCRUED : RewardStatus.CALCULATED);
+                        reward.setPeriodId(period.getObjectId());
 
                         if (getRewardsTotal(reward.getWorkerId(), RewardType.PERSONAL_VOLUME,
                                 month).compareTo(ZERO) == 0) {
@@ -665,6 +670,7 @@ public class RewardService implements Serializable {
                             reward.setDate(Dates.currentDate());
                             reward.setMonth(month);
                             reward.setRewardStatus(accrue ? RewardStatus.ACCRUED : RewardStatus.CALCULATED);
+                            reward.setPeriodId(period.getObjectId());
 
                             updateLocal(reward);
 
@@ -694,6 +700,7 @@ public class RewardService implements Serializable {
                                 reward.setDate(Dates.currentDate());
                                 reward.setMonth(month);
                                 reward.setRewardStatus(accrue ? RewardStatus.ACCRUED : RewardStatus.CALCULATED);
+                                reward.setPeriodId(period.getObjectId());
 
                                 updateLocal(reward);
 
