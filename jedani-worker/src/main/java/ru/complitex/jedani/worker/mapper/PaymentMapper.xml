@@ -11,8 +11,7 @@
         </if>
 
         <if test="map.month != null">
-            left join payment_attribute pa_ps on pa_ps.domain_id = d.id and pa_ps.entity_attribute_id = 3 and pa_ps.status = 1
-            left join payment_attribute pa_pe on pa_pe.domain_id = d.id and pa_pe.entity_attribute_id = 4 and pa_pe.status = 1
+            left join payment_attribute pa_d on pa_d.domain_id = d.id and pa_d.entity_attribute_id = 2 and pa_d.status = 1
         </if>
     </sql>
 
@@ -24,7 +23,7 @@
         </if>
 
         <if test="map.month != null">
-            and #{map.month} between pa_ps.date and pa_pe.date
+            and month(pa_d.date) = month(#{map.month}) and year(pa_d.date) = year(#{map.month})
         </if>
 
         <if test="map.period != null">

@@ -35,8 +35,7 @@ public class PaymentListPage extends BasePage {
 
         if (isAdmin() || isPaymentAdmin()){
             paymentPanel.setSellerWorkerIdFilter(null);
-
-            paymentPanel.getFilterWrapper().put(Payment.FILTER_MONTH, null);
+            paymentPanel.getFilterWrapper().put(Payment.FILTER_PERIOD, null);
         }
 
         add(paymentPanel);

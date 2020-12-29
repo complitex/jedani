@@ -36,6 +36,11 @@
         <if test="map.actualMonth != null">
             and #{map.actualMonth} > ra_m.date
         </if>
+
+        <if test="map.period != null">
+            and exists(select ra.id from reward_attribute ra where ra.domain_id = d.id and ra.status = 1 and d.status = 1 and
+                ra.entity_attribute_id = 24 and ra.number = #{map.period})
+        </if>
     </sql>    
     
     <!--suppress SqlResolve -->

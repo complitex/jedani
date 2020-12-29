@@ -50,7 +50,7 @@ public class RewardListPage extends BasePage {
         add(rewardPanel);
 
         if (isAdmin()) {
-            rewardPanel.getFilterWrapper().put(Reward.FILTER_MONTH, null);
+            rewardPanel.getFilterWrapper().put(Reward.FILTER_PERIOD, null);
         }
 
         Form<?> rewardForm = new Form<>("rewardForm");
