@@ -52,7 +52,25 @@ public class PaymentModal extends AbstractEditModal<Payment> {
 
         setModel(Model.of(new Payment()));
 
-        add(new FormGroupDateTextField("date", getModel(), Payment.DATE).setRequired(true));
+        add(new FormGroupDateTextField("date", getModel(), Payment.DATE)
+                .onUpdate(t -> {
+                    Payment payment = getModelObject();
+
+                    List<Sale> sales = domainService.getDomains(Sale.class, FilterWrapper.of(new Sale()
+                            .setContract(getModelObject().getContract()))
+                            .setFilter(FilterWrapper.FILTER_EQUAL));
+
+                    Sale sale = !sales.isEmpty() ? sales.get(0) : null;
+
+                    if (sale != null && sale.isFeeWithdraw()) {
+                        if (!Dates.isSameDay(sale.getDate(), payment.getDate())) {
+                            error(getString("error_fee_withdraw_same_day"));
+                        }
+                    }
+
+                    t.add(getFeedback());
+                })
+                .setRequired(true));
 
         DateTextFieldConfig monthDateTextFieldConfig = new DateTextFieldConfig()
                 .withFormat("MM.yyyy")
@@ -81,7 +99,18 @@ public class PaymentModal extends AbstractEditModal<Payment> {
             t.add(periodEnd);
         }).setRequired(true));
 
-        add(new FormGroupStringField("contract", getModel(), Payment.CONTRACT).setRequired(true));
+        add(new FormGroupStringField("contract", getModel(), Payment.CONTRACT)
+                .onBlur(t -> {
+                    if (domainService.getDomains(Sale.class, FilterWrapper.of(new Sale()
+                            .setContract(getModelObject().getContract()))
+                            .setFilter(FilterWrapper.FILTER_EQUAL))
+                            .isEmpty()){
+                        error(getString("error_sale_not_found"));
+                    }
+
+                    t.add(getFeedback());
+                })
+                .setRequired(true));
 
         add(new FormGroupSelectPanel("type", new BootstrapSelect<>(FormGroupPanel.COMPONENT_ID,
                 NumberAttributeModel.of(getModel(), Payment.TYPE),
@@ -110,7 +139,28 @@ public class PaymentModal extends AbstractEditModal<Payment> {
             public boolean isVisible() {
                 return Objects.equals(PaymentType.LOCAL, getModel().getObject().getType());
             }
-        }.setRequired(true));
+        }.onBlur(t -> {
+            Payment payment = getModelObject();
+
+            List<Sale> sales = domainService.getDomains(Sale.class, FilterWrapper.of(new Sale()
+                    .setContract(getModelObject().getContract()))
+                    .setFilter(FilterWrapper.FILTER_EQUAL));
+
+            Sale sale = !sales.isEmpty() ? sales.get(0) : null;
+
+            if (sale != null && sale.isFeeWithdraw()) {
+                if (!Dates.isSameDay(sale.getDate(), payment.getDate())) {
+                    error(getString("error_fee_withdraw_same_day"));
+                }
+
+                if (payment.getLocal().compareTo(sale.getTotalLocal()) != 0) {
+                    error(getString("error_fee_withdraw_local"));
+                }
+            }
+
+            t.add(getFeedback());
+        })
+        .setRequired(true));
         add(new FormGroupDecimalField("paymentPoint", getModel(), Payment.POINT){
             @Override
             public boolean isVisible() {
@@ -233,12 +283,22 @@ public class PaymentModal extends AbstractEditModal<Payment> {
             payment.setPeriodId(periodService.getActualPeriod().getObjectId());
         }
 
-        if (sale.isFeeWithdraw() && !Dates.isSameDay(sale.getDate(), payment.getDate())){
-            error(getString("error_fee_withdraw_same_day"));
+        if (sale.isFeeWithdraw()){
+            if (!Dates.isSameDay(sale.getDate(), payment.getDate())) {
+                error(getString("error_fee_withdraw_same_day"));
 
-            target.add(getFeedback());
+                target.add(getFeedback());
 
-            return;
+                return;
+            }
+
+            if (payment.getLocal().compareTo(sale.getTotalLocal()) != 0) {
+                error(getString("error_fee_withdraw_local"));
+
+                target.add(getFeedback());
+
+                return;
+            }
         }
 
         domainService.save(payment);
