@@ -42,7 +42,7 @@
 
         <dependency>
             <groupId>org.apache.wicket</groupId>
-            <artifactId>wicket-cdi-1.1</artifactId>
+            <artifactId>wicket-cdi</artifactId>
         </dependency>
 
         <dependency>

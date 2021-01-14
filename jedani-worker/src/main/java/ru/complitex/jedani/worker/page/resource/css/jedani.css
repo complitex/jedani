@@ -18,8 +18,8 @@ a:focus {
 }
 
 #header {
+    border-radius: 0;
     margin-bottom: 0;
-    height: 56px;
 }
 
 .navbar-header{
@@ -278,23 +278,19 @@ fieldset[disabled] .btn-flat-default.focus {
     outline: none !important;
 }
 
-#content {
-    background-color: white;
-}
-
 @media (min-width: 768px) {
-    #content {
-        position: inherit;
-        margin: 0;
-        padding: 15px;
+    #content > table {
+        width: 100%;
     }
 
-    .sidebar {
-        z-index: 1;
-        position: absolute;
-        width: 185px;
-        padding: 15px 0 15px 0;
+    #sidebar {
+        width: 190px;
         border-right: 1px solid #e7e7e7;
+    }
+
+    .content-right {
+        padding-top: 5px;
+        vertical-align: top;
     }
 }
 
@@ -306,7 +302,6 @@ fieldset[disabled] .btn-flat-default.focus {
 
 .navbar{
     border: none !important;
-    border-bottom: 1px solid #ebebeb !important;
 }
 
 .sidebar-nav{

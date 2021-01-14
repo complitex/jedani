@@ -384,10 +384,6 @@ public class BasePage extends WebPage{
         response.render(JavaScriptHeaderItem.forReference(MenuJsResourceReference.INSTANCE));
 
         response.render(OnDomReadyHeaderItem.forScript("$('#menu').metisMenu({toggle: true})"));
-
-        if ("true".equals(getMenuToggleMap().get("showMenu"))) {
-            response.render(OnDomReadyHeaderItem.forScript(" $('#content').css('margin', '0 0 0 185px')"));
-        }
     }
 
     private HttpServletRequest getHttpServletRequest(){

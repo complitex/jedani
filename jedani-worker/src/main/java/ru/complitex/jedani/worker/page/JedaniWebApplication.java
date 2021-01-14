@@ -90,8 +90,6 @@ public class JedaniWebApplication extends WebApplication{
     protected void init() {
         new CdiConfiguration().setPropagation(ConversationPropagation.ALL).configure(this);
 
-        getStoreSettings().setInmemoryCacheSize(1000);
-
         getFrameworkSettings().setSerializer(new CdiJavaSerializer(getApplicationKey()));
 
         configureBootstrap();

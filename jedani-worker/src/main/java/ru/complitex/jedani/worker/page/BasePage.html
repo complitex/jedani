@@ -40,131 +40,130 @@
                 </ul>
             </div>
         </div>
-
-        <div wicket:id="sidebar" id="sidebar" class="sidebar collapse" aria-expanded="false">
-            <div class="sidebar-nav">
-                <ul wicket:id="menu" id="menu" class="nav metismenu">
-                    <li><a wicket:id="worker">Личный кабинет</a></li>
-                    <li><a wicket:id="regionalLeader">Кабинет РР</a></li>
-                    <li class="mm-active"  wicket:id="address" id="address">
-                        <a wicket:id="link" href="#" class="has-arrow" aria-expanded="true">Адреса</a>
-                        <ul class="nav">
-                            <li><a wicket:id="countries">Страны</a></li>
-                            <li><a wicket:id="regions">Регионы</a></li>
-                            <li><a wicket:id="cityTypes">Типы нас.пунктов</a></li>
-                            <li><a wicket:id="cities">Нас.пункты</a></li>
-                        </ul>
-                    </li>
-                    <li class="mm-active"  wicket:id="catalog" id="catalog">
-                        <a wicket:id="link" href="#" class="has-arrow" aria-expanded="true">Справочники</a>
-                        <ul class="nav">
-                            <li><a wicket:id="first_name">Имена</a></li>
-                            <li><a wicket:id="middle_name">Отчества</a></li>
-                            <li><a wicket:id="last_name">Фамилии</a></li>
-                            <li><a wicket:id="position">Должности</a></li>
-                            <li><a wicket:id="mk_status">Статусы</a></li>
-                            <li><a wicket:id="currency">Валюты</a></li>
-                            <li><a wicket:id="exchangeRate">Курсы</a></li>
-                            <li><a wicket:id="rank">Ранги</a></li>
-                            <li><a wicket:id="reward_type">Типы вознаграждений</a></li>
-                        </ul>
-                    </li>
-                    <li class="mm-active"  wicket:id="workers" id="workers">
-                        <a wicket:id="link" href="#" class="has-arrow" aria-expanded="true">Сотрудники</a>
-                        <ul class="nav">
-                            <li><a wicket:id="cards">Ключи</a></li>
-                            <li><a wicket:id="workers">Сотрудники</a></li>
-                        </ul>
-                    </li>
-                    <li class="mm-active"  wicket:id="storages" id="storages">
-                        <a wicket:id="link" href="#" class="has-arrow" aria-expanded="true">Склады</a>
-                        <ul class="nav">
-                            <li><a wicket:id="nomenclature">Товары</a></li>
-                            <li><a wicket:id="storage">Склады</a></li>
-                        </ul>
-                    </li>
-                    <li class="mm-active" wicket:id="userStorages" id="userStorages">
-                        <a wicket:id="link" href="#" class="has-arrow" aria-expanded="true">Склады</a>
-                        <ul class="nav">
-                            <li><a wicket:id="storage">Личный склад</a></li>
-                            <li wicket:id="storages">
-                                <a wicket:id="link"><span wicket:id="label"></span></a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="mm-active" wicket:id="sales" id="sales">
-                        <a wicket:id="link" href="#" class="has-arrow" aria-expanded="true">Продажи</a>
-                        <ul class="nav">
-                            <li><a wicket:id="promotion">Акции</a></li>
-                            <li><a wicket:id="price">Цены</a></li>
-                            <li><a wicket:id="saleDecision">Условия</a></li>
-                            <li><a wicket:id="sale">Договоры</a></li>
-                            <li><a wicket:id="payment">Оплаты</a></li>
-                            <li><a wicket:id="period">Месяцы</a></li>
-                            <li><a wicket:id="rewardParameter">Параметры</a></li>
-                            <li><a wicket:id="reward">Вознаграждения</a></li>
-                        </ul>
-                    </li>
-
-                    <li class="mm-active">
-                        <a href="https://info.smartcook.vip/lk/conditions/">Действующие условия</a>
-                    </li>
-                    <li class="mm-active">
-                        <a href="https://info.smartcook.vip/lk/users/">Онлайн напарники</a>
-                    </li>
-                    <li class="mm-active">
-                        <a href="https://info.smartcook.vip/lk/akademija-dzhedani/">Академия Джедани</a>
-                    </li>
-                    <li class="mm-active">
-                        <a href="https://info.smartcook.vip/lk/marketing/">Маркетинг план</a>
-                    </li>
-                    <li class="mm-active">
-                        <a href="https://info.smartcook.vip/lk/events/">События Джедани</a>
-                    </li>
-                    <li class="mm-active">
-                        <a href="https://info.smartcook.vip/lk/charity/">Благотоворительный проект</a>
-                    </li>
-                    <li class="mm-active">
-                        <a href="https://info.smartcook.vip/lk/vopros-otvet/">Вопрос-Ответ</a>
-                    </li>
-                    <li class="mm-active">
-                        <a href="https://info.smartcook.vip/lk/delovaja-perepiska/">Деловая переписка</a>
-                    </li>
-                    <li class="mm-active">
-                        <a href="https://info.smartcook.vip/lk/nagrady/">Награды</a>
-                    </li>
-                    <li class="mm-active">
-                        <a href="https://info.smartcook.vip/lk/gifts/">Подарки</a>
-                    </li>
-                    <li class="mm-active">
-                        <a href="https://info.smartcook.vip/lk/ratings/">Рейтинги</a>
-                    </li>
-
-                    <li class="mm-active" wicket:id="settings" id="settings">
-                        <a wicket:id="link" href="#" class="has-arrow" aria-expanded="true">Настройки</a>
-                        <ul class="nav">
-                            <li><a wicket:id="setting">Настройки</a></li>
-                            <li><a wicket:id="import">Импорт</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-        </div>
     </nav>
 
-    <div id="content" class="container-fluid">
-        <wicket:child/>
-    </div>
+    <div id="content">
+        <table>
+            <tr>
+                <td wicket:id="sidebar" id="sidebar" class="collapse" aria-expanded="false">
+                    <div >
+                        <div class="sidebar-nav">
+                            <ul wicket:id="menu" id="menu" class="nav metismenu">
+                                <li><a wicket:id="worker">Личный кабинет</a></li>
+                                <li><a wicket:id="regionalLeader">Кабинет РР</a></li>
+                                <li class="mm-active"  wicket:id="address" id="address">
+                                    <a wicket:id="link" href="#" class="has-arrow" aria-expanded="true">Адреса</a>
+                                    <ul class="nav">
+                                        <li><a wicket:id="countries">Страны</a></li>
+                                        <li><a wicket:id="regions">Регионы</a></li>
+                                        <li><a wicket:id="cityTypes">Типы нас.пунктов</a></li>
+                                        <li><a wicket:id="cities">Нас.пункты</a></li>
+                                    </ul>
+                                </li>
+                                <li class="mm-active"  wicket:id="catalog" id="catalog">
+                                    <a wicket:id="link" href="#" class="has-arrow" aria-expanded="true">Справочники</a>
+                                    <ul class="nav">
+                                        <li><a wicket:id="first_name">Имена</a></li>
+                                        <li><a wicket:id="middle_name">Отчества</a></li>
+                                        <li><a wicket:id="last_name">Фамилии</a></li>
+                                        <li><a wicket:id="position">Должности</a></li>
+                                        <li><a wicket:id="mk_status">Статусы</a></li>
+                                        <li><a wicket:id="currency">Валюты</a></li>
+                                        <li><a wicket:id="exchangeRate">Курсы</a></li>
+                                        <li><a wicket:id="rank">Ранги</a></li>
+                                        <li><a wicket:id="reward_type">Типы вознаграждений</a></li>
+                                    </ul>
+                                </li>
+                                <li class="mm-active"  wicket:id="workers" id="workers">
+                                    <a wicket:id="link" href="#" class="has-arrow" aria-expanded="true">Сотрудники</a>
+                                    <ul class="nav">
+                                        <li><a wicket:id="cards">Ключи</a></li>
+                                        <li><a wicket:id="workers">Сотрудники</a></li>
+                                    </ul>
+                                </li>
+                                <li class="mm-active"  wicket:id="storages" id="storages">
+                                    <a wicket:id="link" href="#" class="has-arrow" aria-expanded="true">Склады</a>
+                                    <ul class="nav">
+                                        <li><a wicket:id="nomenclature">Товары</a></li>
+                                        <li><a wicket:id="storage">Склады</a></li>
+                                    </ul>
+                                </li>
+                                <li class="mm-active" wicket:id="userStorages" id="userStorages">
+                                    <a wicket:id="link" href="#" class="has-arrow" aria-expanded="true">Склады</a>
+                                    <ul class="nav">
+                                        <li><a wicket:id="storage">Личный склад</a></li>
+                                        <li wicket:id="storages">
+                                            <a wicket:id="link"><span wicket:id="label"></span></a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="mm-active" wicket:id="sales" id="sales">
+                                    <a wicket:id="link" href="#" class="has-arrow" aria-expanded="true">Продажи</a>
+                                    <ul class="nav">
+                                        <li><a wicket:id="promotion">Акции</a></li>
+                                        <li><a wicket:id="price">Цены</a></li>
+                                        <li><a wicket:id="saleDecision">Условия</a></li>
+                                        <li><a wicket:id="sale">Договоры</a></li>
+                                        <li><a wicket:id="payment">Оплаты</a></li>
+                                        <li><a wicket:id="period">Месяцы</a></li>
+                                        <li><a wicket:id="rewardParameter">Параметры</a></li>
+                                        <li><a wicket:id="reward">Вознаграждения</a></li>
+                                    </ul>
+                                </li>
 
-    <script>
-        $('#sidebar')
-            .on('show.bs.collapse', function () {
-                $('#content').css('margin', '0 0 0 185px');
-            })
-            .on('hidden.bs.collapse', function () {
-                $('#content').css('margin', '0');
-            });
-    </script>
+                                <li class="mm-active">
+                                    <a href="https://info.smartcook.vip/lk/conditions/">Действующие условия</a>
+                                </li>
+                                <li class="mm-active">
+                                    <a href="https://info.smartcook.vip/lk/users/">Онлайн напарники</a>
+                                </li>
+                                <li class="mm-active">
+                                    <a href="https://info.smartcook.vip/lk/akademija-dzhedani/">Академия Джедани</a>
+                                </li>
+                                <li class="mm-active">
+                                    <a href="https://info.smartcook.vip/lk/marketing/">Маркетинг план</a>
+                                </li>
+                                <li class="mm-active">
+                                    <a href="https://info.smartcook.vip/lk/events/">События Джедани</a>
+                                </li>
+                                <li class="mm-active">
+                                    <a href="https://info.smartcook.vip/lk/charity/">Благотоворительный проект</a>
+                                </li>
+                                <li class="mm-active">
+                                    <a href="https://info.smartcook.vip/lk/vopros-otvet/">Вопрос-Ответ</a>
+                                </li>
+                                <li class="mm-active">
+                                    <a href="https://info.smartcook.vip/lk/delovaja-perepiska/">Деловая переписка</a>
+                                </li>
+                                <li class="mm-active">
+                                    <a href="https://info.smartcook.vip/lk/nagrady/">Награды</a>
+                                </li>
+                                <li class="mm-active">
+                                    <a href="https://info.smartcook.vip/lk/gifts/">Подарки</a>
+                                </li>
+                                <li class="mm-active">
+                                    <a href="https://info.smartcook.vip/lk/ratings/">Рейтинги</a>
+                                </li>
+
+                                <li class="mm-active" wicket:id="settings" id="settings">
+                                    <a wicket:id="link" href="#" class="has-arrow" aria-expanded="true">Настройки</a>
+                                    <ul class="nav">
+                                        <li><a wicket:id="setting">Настройки</a></li>
+                                        <li><a wicket:id="import">Импорт</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </td>
+                <td class="content-right">
+                    <div class="container-fluid">
+                        <wicket:child/>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
 </div>
 </body>
 </html>
