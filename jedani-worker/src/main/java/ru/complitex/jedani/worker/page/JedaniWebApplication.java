@@ -170,7 +170,7 @@ public class JedaniWebApplication extends WebApplication{
         mountResource("img/checkmark.png", new SharedResourceReference(GoogleCssReference.class,
                 "img/checkmark.png"));
 
-        mountResource("img/jedani.svg", JedaniLogoImgResourceReference.INSTANCE);
+        mountResource("img/jedani.png", JedaniLogoImgResourceReference.INSTANCE);
         mountResource("favicon.ico", JedaniFaviconResourceReference.INSTANCE);
 
         mountResource("fonts/glyphicons-halflings-regular.woff2", new WebjarsCssResourceReference(
