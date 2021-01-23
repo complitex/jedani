@@ -25,7 +25,7 @@ a:focus {
 .navbar-header{
     position: absolute;
     top: 0;
-    left: 44%;
+    left: 48%;
 }
 
 .navbar-header a img{
@@ -33,13 +33,13 @@ a:focus {
     height: 44px;
 }
 
-.menu-header a{
-    margin-top:10px;
+.menu-header {
+    margin: 13px 0;
+}
+
+.menu-header a {
+    padding-left: 15px;
     color: #f28100;
-    font-size: 17px;
-    float: left;
-    margin-right: 15px;
-    margin-left: 15px;
 }
 
 .menu-header a:hover,
@@ -51,22 +51,21 @@ a:focus {
 .navbar-masthead.navbar-inverse .navbar-nav > li > a {
     color: #f28100;
 }
-@media (min-width: 768px) {
-    #content > table {
-        width: 100%;
-    }
 
-    #sidebar {
-        width: 210px;
-        border-right: 1px solid #e7e7e7;
-        background: #1b1818;
-    }
+#content > table {
+    width: 100%;
+}
 
-    .main {
-        padding-top: 5px;
-        vertical-align: top;
-        width: 100%;
-    }
+#sidebar {
+    width: 210px;
+    border-right: 1px solid #e7e7e7;
+    background: #1b1818;
+}
+
+.main {
+    padding-top: 5px;
+    vertical-align: top;
+    width: 100%;
 }
 
 @media print {
@@ -130,7 +129,7 @@ form label[required=required]:after{
 }
 
 .domain-action a{
-    padding: 5px;
+    padding: 8px;
 }
 
 .domain-column-nowrap{

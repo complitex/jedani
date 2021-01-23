@@ -1,7 +1,9 @@
-$(function () {
+$(function() {
     $("#menu").metisMenu({
         toggle: false
     });
+
+    $.support.transition = false;
 });
 
 function copyToClipboard(text) {

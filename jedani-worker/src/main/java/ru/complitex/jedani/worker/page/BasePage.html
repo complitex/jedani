@@ -8,11 +8,13 @@
 <body>
 <div id="page">
     <nav id="header" class="navbar navbar-masthead navbar-default navbar-inverse" role="navigation">
-        <div class="container-fluid">
-            <div class="nav navbar-nav navbar-left menu-header">
-                <a wicket:id="headerMenu" data-toggle="collapse" href="#sidebar" aria-expanded="false" aria-controls="sidebar">
-                    МЕНЮ
-                </a>
+        <div>
+            <div class="nav navbar-nav">
+                <div class="menu-header">
+                    <a wicket:id="headerMenu" data-toggle="collapse" href="#sidebar" aria-expanded="false" aria-controls="sidebar">
+                        МЕНЮ
+                    </a>
+                </div>
             </div>
 
             <div class="navbar-header">
@@ -45,8 +47,8 @@
     <div id="content">
         <table>
             <tr>
-                <td wicket:id="sidebar" id="sidebar" class="collapse" aria-expanded="false">
-                    <div >
+                <td>
+                    <div wicket:id="sidebar" id="sidebar" class="collapse" aria-expanded="false">
                         <div class="sidebar-nav">
                             <ul wicket:id="menu" id="menu" class="nav metismenu">
                                 <li><a wicket:id="worker">Личный кабинет</a></li>
