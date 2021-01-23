@@ -110,6 +110,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
+import static com.google.common.io.Files.getFileExtension;
+
 /**
  * @author Anatoly A. Ivanov
  * 22.12.2017 5:57
@@ -745,7 +747,7 @@ public class WorkerPage extends BasePage {
                                 }
 
                                 Images.write(photoUploadFiled.getFileUpload().getInputStream(), 1920, 1080,
-                                        "jpeg", photoFile);
+                                        getFileExtension(photoUploadFiled.getFileUpload().getClientFileName()), photoFile);
                             } catch (Exception e) {
                                 error(getString("error_photo_load"));
                             }

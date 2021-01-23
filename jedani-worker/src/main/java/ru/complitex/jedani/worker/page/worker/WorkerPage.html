@@ -11,11 +11,9 @@
 
         <form wicket:id="form" autocomplete="off">
             <div class="row">
-                <div class="col-md-2" wicket:id="type"></div>
-            </div>
-
-            <div class="row">
                 <div class="col-md-2">
+                    <div wicket:id="type"></div>
+
                     <div class="form-group">
                         <label for="file">Фото</label>
                         <div>
@@ -24,7 +22,7 @@
                             <span class="input-group-btn text-center">
                                 <label class="btn btn-link btn-file" style="font-weight: normal">
                                     Выбрать
-                                    <input wicket:id="photoUploadFiled" id="file" type="file" accept="image/*" style="display: none"
+                                    <input wicket:id="photoUploadFiled" id="file" type="file" class="hidden" accept="image/*"
                                            onchange="$('#photoName').html(this.files[0].name)"/>
                                 </label>
                             </span>
@@ -63,7 +61,7 @@
                                                 <input wicket:id="userPassword" type="password" class="form-control" placeholder="Пароль" autocomplete="new-password">
                                             </td>
                                             <td>
-                                                <input wicket:id="confirmPassword" type="password" class="form-control" placeholder="Подтверждение пароля" autocomplete="new-password">
+                                                <input wicket:id="confirmPassword" type="password" class="form-control" placeholder="Подтверждение" autocomplete="new-password">
                                             </td>
                                         </tr>
                                     </table>
