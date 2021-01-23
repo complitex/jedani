@@ -43,7 +43,7 @@ a:focus {
 }
 
 .menu-header a:hover,
-.menu-header a:focus{
+.menu-header a:focus {
     text-decoration: none;
 }
 
@@ -82,12 +82,15 @@ a:focus {
     color: #acacac;
 }
 
-.sidebar-nav .nav > li > a:hover,
-.sidebar-nav .nav > li > a:focus {
+.sidebar-nav .nav > li > a:hover {
     color: #a0c969;
     background-color: transparent;
     text-decoration: none;
     outline: none;
+}
+
+.sidebar-nav .nav > li > a:focus {
+    background-color: transparent;
 }
 
 .navbar{
