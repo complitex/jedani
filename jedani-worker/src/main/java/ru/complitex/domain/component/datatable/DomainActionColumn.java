@@ -12,8 +12,8 @@ import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import ru.complitex.common.wicket.table.FilterForm;
 import ru.complitex.common.wicket.panel.LinkPanel;
+import ru.complitex.common.wicket.table.Table;
 import ru.complitex.domain.entity.Domain;
 
 /**
@@ -51,17 +51,17 @@ public class DomainActionColumn<T extends Domain<T>> extends AbstractDomainColum
     }
 
     @Override
-    public Component getFilter(String componentId, FilterForm<?> form) {
+    public Component getHeader(String componentId, Table<T> table) {
         return new LinkPanel(componentId, new BootstrapAjaxButton(LinkPanel.LINK_COMPONENT_ID, Buttons.Type.Link){
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
-                onAction(target, form);
+                onAction(target, table);
             }
         }.setIconType(GlyphIconType.search));
     }
 
-    protected void onAction(AjaxRequestTarget target, FilterForm<?> form) {
-        target.add(form);
+    protected void onAction(AjaxRequestTarget target, Table<T> table) {
+        target.add(table.getBody());
     }
 
     @Override

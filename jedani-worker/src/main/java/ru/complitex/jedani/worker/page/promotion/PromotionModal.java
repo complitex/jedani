@@ -212,7 +212,7 @@ public class PromotionModal extends Modal<Promotion> {
         });
 
         Table<Nomenclature> table = new Table<>("nomenclatureTable", columns,
-                filterDataProvider, filterForm, 5, "saleDecisionNomenclatureTable");
+                filterDataProvider, 15, "saleDecisionNomenclatureTable");
         filterForm.add(table);
 
         container.add(new RuleTable("ruleTable", new PropertyModel<>(getModel(), "rules"),

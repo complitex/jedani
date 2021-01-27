@@ -13,8 +13,7 @@ import org.apache.wicket.model.ResourceModel;
 import ru.complitex.address.entity.City;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.Sort;
-import ru.complitex.common.model.FilterMapModel;
-import ru.complitex.common.wicket.table.FilterForm;
+import ru.complitex.common.wicket.table.Table;
 import ru.complitex.common.wicket.table.TextFilter;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.entity.Entity;
@@ -86,24 +85,24 @@ public class StorageListPage extends DomainListPage<Storage> {
             }
 
             @Override
-            public Component getFilter(String componentId, FilterForm<?> form) {
-                return new TextFilter<>(componentId, new PropertyModel<>(form.getModel(), "map.workers"), form);
+            public Component getHeader(String componentId, Table<Storage> table) {
+                return new TextFilter<>(componentId, PropertyModel.of(table.getFilterWrapper(), "map.workers"));
             }
         });
 
-        columns.add(new AbstractDomainColumn<Storage>(new ResourceModel("worker"), new Sort("worker")) {
+        columns.add(new AbstractDomainColumn<>(new ResourceModel("worker"), new Sort("worker")) {
             @Override
             public void populateItem(Item<ICellPopulator<Storage>> cellItem, String componentId, IModel<Storage> rowModel) {
                 cellItem.add(new Label(componentId, workerService.getWorkerLabel(rowModel.getObject().getParentId())));
             }
 
             @Override
-            public Component getFilter(String componentId, FilterForm<?> form) {
-                return new TextFilter<>(componentId, new PropertyModel<>(form.getModel(), "map.worker"), form);
+            public Component getHeader(String componentId, Table<Storage> table) {
+                return new TextFilter<>(componentId, PropertyModel.of(table.getFilterWrapper(), "map.worker"));
             }
         });
 
-        columns.add(new AbstractDomainColumn<Storage>(new ResourceModel("nomenclatureCount"),
+        columns.add(new AbstractDomainColumn<>(new ResourceModel("nomenclatureCount"),
                 new Sort("nomenclatureCount")) {
             @Override
             public void populateItem(Item<ICellPopulator<Storage>> cellItem, String componentId, IModel<Storage> rowModel) {
@@ -111,12 +110,12 @@ public class StorageListPage extends DomainListPage<Storage> {
             }
 
             @Override
-            public Component getFilter(String componentId, FilterForm<?> form) {
-                return new TextFilter<>(componentId,  FilterMapModel.of(form.getModel(), Storage.FILTER_NOMENCLATURE_COUNT), form);
+            public Component getHeader(String componentId, Table<Storage> table) {
+                return new TextFilter<>(componentId, PropertyModel.of(table.getFilterWrapper(), "map." + Storage.FILTER_NOMENCLATURE_COUNT));
             }
         });
 
-        columns.add(new AbstractDomainColumn<Storage>(new ResourceModel("transactionCount"),
+        columns.add(new AbstractDomainColumn<>(new ResourceModel("transactionCount"),
                 new Sort("transactionCount")) {
             @Override
             public void populateItem(Item<ICellPopulator<Storage>> cellItem, String componentId, IModel<Storage> rowModel) {
@@ -124,8 +123,8 @@ public class StorageListPage extends DomainListPage<Storage> {
             }
 
             @Override
-            public Component getFilter(String componentId, FilterForm<?> form) {
-                return new TextFilter<>(componentId, FilterMapModel.of(form.getModel(), Storage.FILTER_TRANSACTION_COUNT), form);
+            public Component getHeader(String componentId, Table<Storage> table) {
+                return new TextFilter<>(componentId, PropertyModel.of(table.getFilterWrapper(), "map." + Storage.FILTER_TRANSACTION_COUNT));
             }
         });
     }

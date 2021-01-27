@@ -412,8 +412,7 @@ public class StoragePage extends BasePage {
             });
         }
 
-        Table<Product> productTable = new Table<Product>("table", productColumns, productProvider,
-                productForm, 5, "storagePageProduct"){
+        Table<Product> productTable = new Table<Product>("table", productColumns, productProvider, 15, "storagePageProduct"){
             @Override
             public boolean isVisible() {
                 return storageId != null;
@@ -456,11 +455,11 @@ public class StoragePage extends BasePage {
         if (storageId != null && edit) {
             transactionColumns.add(new DomainIdColumn<>());
 
-            transactionColumns.add(new AbstractDomainColumn<Transaction>(new ResourceModel("startDate"),
+            transactionColumns.add(new AbstractDomainColumn<>(new ResourceModel("startDate"),
                     new Sort("startDate")) {
                 @Override
-                public Component getFilter(String componentId, FilterForm<?> form) {
-                    return new DateFilter(componentId, new PropertyModel<>(form.getModel(),"object.startDate"), form);
+                public Component getHeader(String componentId, Table<Transaction> table) {
+                    return new DateFilter(componentId, new PropertyModel<>(form.getModel(),"object.startDate"));
                 }
 
                 @Override
@@ -476,20 +475,20 @@ public class StoragePage extends BasePage {
                     .withReferences(Nomenclature.ENTITY_NAME, Nomenclature.CODE, Nomenclature.NAME)));
 
             transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.QUANTITY)));
-            transactionColumns.add(new DomainColumn<Transaction>(transactionEntity.getEntityAttribute(Transaction.STORAGE_FROM)){
+            transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.STORAGE_FROM)){
                 @Override
                 protected String displayEntity(EntityAttribute entityAttribute, Long objectId) {
                     return Storages.getStorageLabel(objectId, domainService, nameService);
                 }
             });
-            transactionColumns.add(new DomainColumn<Transaction>(transactionEntity.getEntityAttribute(Transaction.STORAGE_TO)){
+            transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.STORAGE_TO)){
                 @Override
                 protected String displayEntity(EntityAttribute entityAttribute, Long objectId) {
                     return Storages.getStorageLabel(objectId, domainService, nameService);
                 }
             });
 
-            transactionColumns.add(new AbstractDomainColumn<Transaction>(new ResourceModel("worker"),
+            transactionColumns.add(new AbstractDomainColumn<>(new ResourceModel("worker"),
                     new Sort("worker")) {
                 @Override
                 public void populateItem(Item<ICellPopulator<Transaction>> cellItem, String componentId,
@@ -498,12 +497,12 @@ public class StoragePage extends BasePage {
                 }
 
                 @Override
-                public Component getFilter(String componentId, FilterForm<?> form) {
-                    return new TextFilter<>(componentId, new PropertyModel<>(form.getModel(), "map.worker"), form);
+                public Component getHeader(String componentId, Table<Transaction> table) {
+                    return new TextFilter<>(componentId, new PropertyModel<>(form.getModel(), "map.worker"));
                 }
             });
 
-            transactionColumns.add(new AbstractDomainColumn<Transaction>(new ResourceModel("client"),
+            transactionColumns.add(new AbstractDomainColumn<>(new ResourceModel("client"),
                     new Sort("client")) {
                 @Override
                 public void populateItem(Item<ICellPopulator<Transaction>> cellItem, String componentId, IModel<Transaction> rowModel) {
@@ -514,19 +513,19 @@ public class StoragePage extends BasePage {
                 }
 
                 @Override
-                public Component getFilter(String componentId, FilterForm<?> form) {
-                    return new TextFilter<>(componentId, new PropertyModel<>(form.getModel(), "map.client"), form);
+                public Component getHeader(String componentId, Table<Transaction> table) {
+                    return new TextFilter<>(componentId, new PropertyModel<>(form.getModel(), "map.client"));
                 }
             });
 
             transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.SERIAL_NUMBER)));
             transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.COMMENTS)));
 
-            transactionColumns.add(new AbstractDomainColumn<Transaction>(transactionEntity
+            transactionColumns.add(new AbstractDomainColumn<>(transactionEntity
                     .getEntityAttribute(Transaction.TRANSFER_TYPE)) {
                 @Override
-                public Component getFilter(String componentId, FilterForm<?> form) {
-                    Transaction transaction = (Transaction)((FilterWrapper)form.getModelObject()).getObject();
+                public Component getHeader(String componentId, Table<Transaction> table) {
+                    Transaction transaction = (Transaction)((FilterWrapper<?>)form.getModelObject()).getObject();
 
                     return new SelectPanel(componentId, new BootstrapSelect<>(SelectPanel.SELECT_COMPONENT_ID,
                             new NumberAttributeModel(transaction,
@@ -580,11 +579,11 @@ public class StoragePage extends BasePage {
                 }
             });
 
-            transactionColumns.add(new AbstractDomainColumn<Transaction>(transactionEntity
+            transactionColumns.add(new AbstractDomainColumn<>(transactionEntity
                     .getEntityAttribute(Transaction.TYPE)) {
                 @Override
-                public Component getFilter(String componentId, FilterForm<?> form) {
-                    Transaction transaction = (Transaction)((FilterWrapper)form.getModelObject()).getObject();
+                public Component getHeader(String componentId, Table<Transaction> table) {
+                    Transaction transaction = (Transaction)((FilterWrapper<?>)form.getModelObject()).getObject();
 
                     return new SelectPanel(componentId, new BootstrapSelect<>(SelectPanel.SELECT_COMPONENT_ID,
                             new NumberAttributeModel(transaction,
@@ -674,8 +673,8 @@ public class StoragePage extends BasePage {
             });
         }
 
-        Table<Transaction> transactionDataTable = new Table<Transaction>("table", transactionColumns,
-                transactionProvider, transactionForm, 5, "storagePageTransaction"){
+        Table<Transaction> transactionDataTable = new Table<Transaction>("table", transactionColumns, transactionProvider, 15,
+                "storagePageTransaction"){
             @Override
             public boolean isVisible() {
                 return storageId != null;

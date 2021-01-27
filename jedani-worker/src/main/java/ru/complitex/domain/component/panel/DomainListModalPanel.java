@@ -135,7 +135,7 @@ public class DomainListModalPanel<T extends Domain<T>> extends Panel {
             });
         }
 
-        table = new Table<T>("table", columns, provider, form, 10,
+        table = new Table<T>("table", columns, provider, 15,
                 "domainListModalPage" + domainClass.getName()){
             @Override
             protected Item<T> newRowItem(String id, int index, IModel<T> model) {

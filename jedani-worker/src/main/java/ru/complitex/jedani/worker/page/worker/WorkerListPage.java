@@ -24,9 +24,9 @@ import ru.complitex.address.entity.CityType;
 import ru.complitex.address.entity.Region;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.Sort;
-import ru.complitex.common.wicket.table.FilterForm;
-import ru.complitex.common.wicket.table.TextFilter;
 import ru.complitex.common.wicket.panel.LinkPanel;
+import ru.complitex.common.wicket.table.Table;
+import ru.complitex.common.wicket.table.TextFilter;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.component.datatable.DomainActionColumn;
 import ru.complitex.domain.entity.Entity;
@@ -141,8 +141,8 @@ public class WorkerListPage extends DomainListPage<Worker>{
             }
 
             @Override
-            public Component getFilter(String componentId, FilterForm<?> form) {
-                return new TextFilter<>(componentId, new PropertyModel<>(form.getModel(), "map.login"), form);
+            public Component getHeader(String componentId, Table<Worker> table) {
+                return new TextFilter<>(componentId, PropertyModel.of(table.getFilterWrapper(), "map.login"));
             }
         });
 
@@ -155,8 +155,8 @@ public class WorkerListPage extends DomainListPage<Worker>{
             }
 
             @Override
-            public Component getFilter(String componentId, FilterForm<?> form) {
-                return new TextFilter<>(componentId, new PropertyModel<>(form.getModel(), "map.subWorkersCount"), form);
+            public Component getHeader(String componentId, Table<Worker> table) {
+                return new TextFilter<>(componentId, PropertyModel.of(table.getFilterWrapper(), "map.subWorkersCount"));
             }
         });
 
@@ -168,8 +168,8 @@ public class WorkerListPage extends DomainListPage<Worker>{
             }
 
             @Override
-            public Component getFilter(String componentId, FilterForm<?> form) {
-                return new TextFilter<>(componentId, new PropertyModel<>(form.getModel(), "map.level"), form);
+            public Component getHeader(String componentId, Table<Worker> table) {
+                return new TextFilter<>(componentId, PropertyModel.of(table.getFilterWrapper(), "map.level"));
             }
         });
     }

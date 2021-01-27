@@ -141,7 +141,7 @@ public class DomainListPage<T extends Domain<T>> extends BasePage{
             columns.add(newDomainActionColumn());
         }
 
-        table = new Table<T>("table", columns, provider, form, 15, "domainListPage" + entity.getName()){
+        table = new Table<T>("table", columns, provider,15, "domainListPage" + entity.getName()){
             @Override
             protected Item<T> newRowItem(String id, int index, IModel<T> model) {
                 Item<T> item = super.newRowItem(id, index, model);

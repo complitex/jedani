@@ -814,8 +814,8 @@ public class WorkerPage extends BasePage {
                     }
 
                     @Override
-                    public Component getFilter(String componentId, FilterForm<?> form) {
-                        return new TextFilter<>(componentId, Model.of(""), form);
+                    public Component getHeader(String componentId, Table<Worker> table) {
+                        return new TextFilter<>(componentId, Model.of(""));
                     }
                 });
 
@@ -826,14 +826,14 @@ public class WorkerPage extends BasePage {
                     }
 
                     @Override
-                    public Component getFilter(String componentId, FilterForm<?> form) {
-                        return new TextFilter<>(componentId, Model.of(""), form);
+                    public Component getHeader(String componentId, Table<Worker> table) {
+                        return new TextFilter<>(componentId, Model.of(""));
                     }
                 });
 
                 columns.add(new DomainActionColumn<Worker>(WorkerPage.class){
                     @Override
-                    protected void onAction(AjaxRequestTarget target, FilterForm<?> form) {
+                    protected void onAction(AjaxRequestTarget target, Table<Worker> table) {
                         target.add(structure);
                     }
 
@@ -879,7 +879,7 @@ public class WorkerPage extends BasePage {
                     }
                 });
 
-                Table<Worker> table = new Table<Worker>("table", columns, provider, form, 10, "workerPage"){
+                Table<Worker> table = new Table<Worker>("table", columns, provider, 15, "workerPage"){
                     @Override
                     protected Item<Worker> newRowItem(String id, int index, final IModel<Worker> model) {
                         Item<Worker> rowItem = super.newRowItem(id, index, model);

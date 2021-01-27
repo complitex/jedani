@@ -1,14 +1,12 @@
 package ru.complitex.common.wicket.table;
 
-import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.IAjaxIndicatorAware;
 import org.apache.wicket.cdi.NonContextual;
 import org.apache.wicket.extensions.ajax.markup.html.AjaxIndicatorAppender;
-import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackHeadersToolbar;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
-import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import ru.complitex.common.entity.FilterWrapper;
@@ -28,31 +26,19 @@ public class Table<T extends Serializable> extends DataTable<T, Sort> implements
 
     private boolean hideOnEmpty = false;
 
-    public Table(String id, List<? extends IColumn<T, Sort>> columns, Provider<T> provider,
-                 FilterForm<FilterWrapper<T>> filterForm, long rowsPerPage, String tableKey) {
+    private Provider<T> provider;
+
+    public Table(String id, List<? extends IColumn<T, Sort>> columns, Provider<T> provider, long rowsPerPage, String tableKey) {
         super(id, columns, provider, rowsPerPage);
+
+        this.provider = provider;
 
         ajaxIndicatorAppender = getColumns().stream().filter(c -> c instanceof DomainActionColumn)
                 .findAny()
                 .map(c -> ((DomainActionColumn<?>) c).getAjaxIndicatorAppender())
                 .orElse(null);
 
-        addTopToolbar(new AjaxFallbackHeadersToolbar<Sort>(this, provider){
-            @Override
-            public boolean isVisible() {
-                return !hideOnEmpty || getRowCount() > 0;
-            }
-        });
-
-        addTopToolbar(new FilterToolbar(this, filterForm){
-            @Override
-            protected void onBeforeRender() {
-                super.onBeforeRender();
-
-                visitChildren(TextField.class, (component, visit) ->
-                        component.add(new AttributeModifier("class", "form-control")));
-            }
-
+        addTopToolbar(new HeadersToolbar(this){
             @Override
             public boolean isVisible() {
                 return !hideOnEmpty || getRowCount() > 0;
@@ -116,5 +102,14 @@ public class Table<T extends Serializable> extends DataTable<T, Sort> implements
 
     protected Component getPagingLeft(String id){
         return null;
+    }
+
+    @Override
+    protected WebMarkupContainer newBodyContainer(String id) {
+        return (WebMarkupContainer) super.newBodyContainer(id).setOutputMarkupId(true);
+    }
+
+    public FilterWrapper<T> getFilterWrapper(){
+        return provider.getFilterState();
     }
 }

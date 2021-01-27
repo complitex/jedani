@@ -10,8 +10,8 @@ import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulato
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
-import ru.complitex.common.wicket.table.FilterForm;
 import ru.complitex.common.wicket.panel.LinkPanel;
+import ru.complitex.common.wicket.table.Table;
 import ru.complitex.domain.entity.Domain;
 
 import java.util.List;
@@ -35,11 +35,11 @@ public abstract class AbstractActionsColumn<T extends Domain<T>> extends Abstrac
     }
 
     @Override
-    public Component getFilter(String componentId, FilterForm<?> form) {
+    public Component getHeader(String componentId, Table<T> table) {
         return new LinkPanel(componentId, new BootstrapAjaxButton(LinkPanel.LINK_COMPONENT_ID, Buttons.Type.Link){
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
-                target.add(form);
+                target.add(table.getBody());
             }
         }.setIconType(GlyphIconType.search));
     }

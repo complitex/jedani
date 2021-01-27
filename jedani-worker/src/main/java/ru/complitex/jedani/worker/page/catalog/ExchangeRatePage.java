@@ -107,11 +107,11 @@ public class ExchangeRatePage extends BasePage {
 
         columns.add(new Column<Rate>(null) {
             @Override
-            public Component getFilter(String componentId, FilterForm<?> form) {
+            public Component getHeader(String componentId, Table<Rate> table) {
                 return new LinkPanel(componentId, new BootstrapAjaxButton(LinkPanel.LINK_COMPONENT_ID, Buttons.Type.Link){
                     @Override
                     protected void onSubmit(AjaxRequestTarget target) {
-                        target.add(form);
+                        target.add(table.getBody());
                     }
                 }.setIconType(GlyphIconType.search));
             }
@@ -127,10 +127,10 @@ public class ExchangeRatePage extends BasePage {
             }
         });
 
-        Table<Rate> table = new Table<>("table", columns, provider, form, 10, "exchangeRagePage");
+        Table<Rate> table = new Table<>("table", columns, provider, 15, "exchangeRagePage");
         form.add(table);
 
-        add(new AjaxLink<Object>("back") {
+        add(new AjaxLink<>("back") {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 setResponsePage(ExchangeRateListPage.class);

@@ -9,7 +9,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import ru.complitex.address.entity.City;
 import ru.complitex.common.entity.Sort;
-import ru.complitex.common.wicket.table.FilterForm;
+import ru.complitex.common.wicket.table.Table;
 import ru.complitex.common.wicket.table.TextFilter;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.entity.Domain;
@@ -47,8 +47,8 @@ public class Storages {
             }
 
             @Override
-            public Component getFilter(String componentId, FilterForm<?> form) {
-                return new TextFilter<>(componentId, Model.of(""), form);
+            public Component getHeader(String componentId, Table<Product> table) {
+                return new TextFilter<>(componentId, Model.of(""));
             }
         });
     }

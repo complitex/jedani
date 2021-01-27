@@ -143,7 +143,7 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage{
             });
         }
 
-        table = new Table<T>("table", columns, provider, form, 15, "domainListModalPage" + entity.getName()){
+        table = new Table<T>("table", columns, provider, 15, "domainListModalPage" + entity.getName()){
             @Override
             protected Item<T> newRowItem(String id, int index, IModel<T> model) {
                 Item<T> item = super.newRowItem(id, index, model);

@@ -7,9 +7,8 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
-import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.Sort;
-import ru.complitex.common.wicket.table.FilterForm;
+import ru.complitex.common.wicket.table.Table;
 import ru.complitex.common.wicket.table.TextFilter;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.EntityAttribute;
@@ -31,12 +30,12 @@ public abstract class DomainParentColumn<T extends Domain<T>> extends AbstractDo
     }
 
     @Override
-    public Component getFilter(String componentId, FilterForm<?> form) {
-        Domain<?> domain = (Domain<?>) ((FilterWrapper<?>)form.getDefaultModelObject()).getObject();
+    public Component getHeader(String componentId, Table<T> table) {
+        Domain<?> domain = table.getFilterWrapper().getObject();
 
         domain.setParentEntityAttribute(entityAttribute);
 
-        return new TextFilter<>(componentId, new PropertyModel<>(form.getModel(), "map.parentName"), form);
+        return new TextFilter<>(componentId, new PropertyModel<>(table.getFilterWrapper(), "map.parentName"));
     }
 
     @Override

@@ -1,5 +1,7 @@
 package ru.complitex.common.wicket.table;
 
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractToolbar;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.basic.Label;
@@ -21,12 +23,29 @@ public class HeadersToolbar extends AbstractToolbar {
         ListView<IColumn<T, Sort>> headers = new ListView<>("headers", new ArrayList<>(table.getColumns())) {
             @Override
             protected void populateItem(ListItem<IColumn<T, Sort>> item) {
-                IColumn<T, Sort> column = item.getModelObject();
+                if (item.getModelObject() instanceof Column) {
+                    Column<T> column = (Column<T>) item.getModelObject();
 
-                if (column instanceof Column) {
-                    item.add(new Label("header", ((Column<T>) column).getDisplayModel()));
+                    AjaxLink<String> link =  new AjaxLink<>("link") {
+                        @Override
+                        public void onClick(AjaxRequestTarget target) {
+
+                        }
+
+                        @Override
+                        public boolean isVisible() {
+                            return super.isVisible();
+                        }
+                    };
+
+                    link.add(new Label("label", column.getDisplayModel()));
+
+                    item.add(link);
+
+                    item.add(new EmptyPanel("input"));
                 } else {
-                    item.add(new EmptyPanel("header"));
+                    item.add(new EmptyPanel("link"));
+                    item.add(new EmptyPanel("input"));
                 }
             }
         };

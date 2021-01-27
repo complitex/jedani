@@ -200,7 +200,7 @@ public class PriceModal extends AbstractDomainEditModal<Price> {
             }
         });
 
-        historyForm.add(new Table<>("history", columns, provider, historyForm, 5, "PriceModal"));
+        historyForm.add(new Table<>("history", columns, provider, 15, "PriceModal"));
 
         addButton(new BootstrapAjaxButton(Modal.BUTTON_MARKUP_ID, Buttons.Type.Primary) {
             @Override

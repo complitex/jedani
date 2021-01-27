@@ -3,7 +3,6 @@ package ru.complitex.common.wicket.table;
 import org.apache.wicket.Component;
 import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractToolbar;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IStyledColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.NoFilter;
@@ -13,7 +12,9 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.lang.Args;
 import org.apache.wicket.util.string.Strings;
+import ru.complitex.common.entity.Sort;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -24,25 +25,25 @@ import java.util.List;
 public class FilterToolbar extends AbstractToolbar {
     private static final String FILTER_ID = "filter";
 
-    public <T, S, F> FilterToolbar(final DataTable<T, S> table, final FilterForm<F> form) {
+    public <T extends Serializable, F> FilterToolbar(Table<T> table, FilterForm<F> form) {
         super(table);
 
         Args.notNull(table, "table");
 
-        IModel<List<IColumn<T, S>>> model = (IModel<List<IColumn<T, S>>>) () -> new LinkedList<>(table.getColumns());
+        IModel<List<IColumn<T, Sort>>> model = (IModel<List<IColumn<T, Sort>>>) () -> new LinkedList<>(table.getColumns());
 
-        ListView<IColumn<T, S>> filters = new ListView<IColumn<T, S>>("filters", model) {
+        ListView<IColumn<T, Sort>> filters = new ListView<IColumn<T, Sort>>("filters", model) {
 
             @Override
-            protected void populateItem(ListItem<IColumn<T, S>> item) {
-                final IColumn<T, S> col = item.getModelObject();
+            protected void populateItem(ListItem<IColumn<T, Sort>> item) {
+                final IColumn<T, Sort> col = item.getModelObject();
                 item.setRenderBodyOnly(true);
 
                 Component filter = null;
 
                 if (col instanceof Column) {
                     Column<T> filteredCol = (Column<T>) col;
-                    filter = filteredCol.getFilter(FILTER_ID, form);
+                    filter = filteredCol.getHeader(FILTER_ID, table);
                 }
 
                 if (filter == null) {
@@ -62,7 +63,7 @@ public class FilterToolbar extends AbstractToolbar {
                     filter.add(new Behavior() {
                         @Override
                         public void onComponentTag(final Component component, final ComponentTag tag) {
-                            String className = ((IStyledColumn<?, S>) col).getCssClass();
+                            String className = ((IStyledColumn<?, Sort>) col).getCssClass();
                             if (!Strings.isEmpty(className)) {
                                 tag.append("class", className, " ");
                             }

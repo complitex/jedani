@@ -11,10 +11,9 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.complitex.common.entity.FilterWrapper;
-import ru.complitex.common.wicket.table.FilterForm;
-import ru.complitex.common.wicket.table.TextFilter;
 import ru.complitex.common.wicket.panel.InputPanel;
+import ru.complitex.common.wicket.table.Table;
+import ru.complitex.common.wicket.table.TextFilter;
 import ru.complitex.domain.entity.*;
 import ru.complitex.domain.model.DateAttributeModel;
 import ru.complitex.domain.model.DecimalAttributeModel;
@@ -78,21 +77,21 @@ public class DomainColumn<T extends Domain<T>> extends AbstractDomainColumn<T> i
     }
 
     @Override
-    public Component getFilter(String componentId, FilterForm<?> form) {
+    public Component getHeader(String componentId, Table<T> table) {
         Long entityAttributeId = entityAttribute.getEntityAttributeId();
 
-        Domain domain = (Domain)((FilterWrapper)form.getModelObject()).getObject();
+        T domain = table.getFilterWrapper().getObject();
 
         domain.getOrCreateAttribute(entityAttributeId).setEntityAttribute(entityAttribute);
 
         switch (entityAttribute.getValueType()){
             case NUMBER:
-                TextFilter<Long> textFilter = new TextFilter<>(componentId, new NumberAttributeModel(domain, entityAttributeId), form);
+                TextFilter<Long> textFilter = new TextFilter<>(componentId, new NumberAttributeModel(domain, entityAttributeId));
                 textFilter.getFilter().setType(Long.class);
 
                 return textFilter;
             case DECIMAL:
-                TextFilter<BigDecimal> decimalFilter = new TextFilter<>(componentId, new DecimalAttributeModel(domain, entityAttributeId), form);
+                TextFilter<BigDecimal> decimalFilter = new TextFilter<>(componentId, new DecimalAttributeModel(domain, entityAttributeId));
                 decimalFilter.getFilter().setType(BigDecimal.class);
 
                 return decimalFilter;
@@ -101,11 +100,11 @@ public class DomainColumn<T extends Domain<T>> extends AbstractDomainColumn<T> i
                         new DateAttributeModel(domain, entityAttributeId),
                         new DateTextFieldConfig().withFormat("dd.MM.yyyy").withLanguage("ru").autoClose(true)));
             default:
-                return new TextFilter<>(componentId, new TextAttributeModel(domain, entityAttributeId, StringType.DEFAULT), form);
+                return new TextFilter<>(componentId, new TextAttributeModel(domain, entityAttributeId, StringType.DEFAULT));
         }
     }
 
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
 
     @Override
     public void populateItem(Item<ICellPopulator<T>> cellItem, String componentId, IModel<T> rowModel) {
@@ -169,7 +168,7 @@ public class DomainColumn<T extends Domain<T>> extends AbstractDomainColumn<T> i
 
                         text = list.stream()
                                 .map(id -> {
-                                    Domain domain = getDomainService().getDomain(referenceEntityAttribute.getEntityName(), id);
+                                    Domain<?> domain = getDomainService().getDomain(referenceEntityAttribute.getEntityName(), id);
 
                                     String prefix = "";
 
@@ -179,7 +178,7 @@ public class DomainColumn<T extends Domain<T>> extends AbstractDomainColumn<T> i
                                         if (prefixDomainId != null && prefixEntityAttribute.hasReferenceEntityAttributes()) {
                                             EntityAttribute ea = prefixEntityAttribute.getReferenceEntityAttributes().get(0);
 
-                                            Domain prefixDomain = getDomainService().getDomain(ea.getEntityName(), prefixDomainId);
+                                            Domain<?> prefixDomain = getDomainService().getDomain(ea.getEntityName(), prefixDomainId);
 
                                             prefix = prefixDomain.getTextValue(ea.getEntityAttributeId());
 
