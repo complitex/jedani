@@ -7,9 +7,9 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import ru.complitex.common.entity.SortProperty;
-import ru.complitex.common.wicket.datatable.FilterDataForm;
-import ru.complitex.common.wicket.datatable.IFilterDataColumn;
-import ru.complitex.common.wicket.datatable.TextDataFilter;
+import ru.complitex.common.wicket.table.FilterForm;
+import ru.complitex.common.wicket.table.IFilterColumn;
+import ru.complitex.common.wicket.table.TextFilter;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.EntityAttribute;
 
@@ -18,7 +18,7 @@ import ru.complitex.domain.entity.EntityAttribute;
  * 20.12.2017 3:20
  */
 public abstract class AbstractDomainColumn<T extends Domain>  extends AbstractColumn<T, SortProperty>
-        implements IFilterDataColumn<T, SortProperty> {
+        implements IFilterColumn<T, SortProperty> {
 
     private String columnKey;
 
@@ -67,8 +67,8 @@ public abstract class AbstractDomainColumn<T extends Domain>  extends AbstractCo
     }
 
     @Override
-    public Component getFilter(String componentId, FilterDataForm<?> form) {
-        TextDataFilter textDataFilter =  new TextDataFilter<>(componentId, new PropertyModel<>(form.getModel(),
+    public Component getFilter(String componentId, FilterForm<?> form) {
+        TextFilter textDataFilter =  new TextFilter<>(componentId, new PropertyModel<>(form.getModel(),
                 "map." + columnKey), form);
 
         if (size != null){

@@ -20,6 +20,7 @@ a:focus {
 #header {
     border-radius: 0;
     margin-bottom: 0;
+    height: 55px;
 }
 
 .navbar-header{

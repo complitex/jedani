@@ -1,4 +1,4 @@
-package ru.complitex.common.wicket.datatable;
+package ru.complitex.common.wicket.table;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
@@ -23,28 +23,28 @@ import java.util.List;
  * @author Anatoly A. Ivanov
  * 28.11.2017 17:09
  */
-public class FilterDataTable<T extends Serializable> extends DataTable<T, SortProperty> implements IAjaxIndicatorAware {
+public class Table<T extends Serializable> extends DataTable<T, SortProperty> implements IAjaxIndicatorAware {
     private AjaxIndicatorAppender ajaxIndicatorAppender;
 
     private boolean hideOnEmpty = false;
 
-    public FilterDataTable(String id, List<? extends IColumn<T, SortProperty>> columns, DataProvider<T> dataProvider,
-                           FilterDataForm<FilterWrapper<T>> filterDataForm, long rowsPerPage, String tableKey) {
-        super(id, columns, dataProvider, rowsPerPage);
+    public Table(String id, List<? extends IColumn<T, SortProperty>> columns, Provider<T> provider,
+                 FilterForm<FilterWrapper<T>> filterForm, long rowsPerPage, String tableKey) {
+        super(id, columns, provider, rowsPerPage);
 
         ajaxIndicatorAppender = getColumns().stream().filter(c -> c instanceof DomainActionColumn)
                 .findAny()
                 .map(c -> ((DomainActionColumn<?>) c).getAjaxIndicatorAppender())
                 .orElse(null);
 
-        addTopToolbar(new AjaxFallbackHeadersToolbar<SortProperty>(this, dataProvider){
+        addTopToolbar(new AjaxFallbackHeadersToolbar<SortProperty>(this, provider){
             @Override
             public boolean isVisible() {
                 return !hideOnEmpty || getRowCount() > 0;
             }
         });
 
-        addTopToolbar(new FilterDataToolbar(this, filterDataForm){
+        addTopToolbar(new FilterToolbar(this, filterForm){
             @Override
             protected void onBeforeRender() {
                 super.onBeforeRender();
@@ -69,7 +69,7 @@ public class FilterDataTable<T extends Serializable> extends DataTable<T, SortPr
 
             @Override
             protected Component getPagingLeft(String id) {
-                Component component =  FilterDataTable.this.getPagingLeft(id);
+                Component component =  Table.this.getPagingLeft(id);
 
                 visibleModel.setObject(component != null);
 

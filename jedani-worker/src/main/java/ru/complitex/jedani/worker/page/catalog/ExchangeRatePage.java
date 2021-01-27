@@ -22,10 +22,10 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.template.PackageTextTemplate;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
-import ru.complitex.common.wicket.datatable.AbstractFilterColumn;
-import ru.complitex.common.wicket.datatable.DataProvider;
-import ru.complitex.common.wicket.datatable.FilterDataForm;
-import ru.complitex.common.wicket.datatable.FilterDataTable;
+import ru.complitex.common.wicket.table.Column;
+import ru.complitex.common.wicket.table.Provider;
+import ru.complitex.common.wicket.table.FilterForm;
+import ru.complitex.common.wicket.table.Table;
 import ru.complitex.common.wicket.form.FormGroupTextField;
 import ru.complitex.common.wicket.panel.LinkPanel;
 import ru.complitex.domain.component.datatable.DomainColumn;
@@ -82,7 +82,7 @@ public class ExchangeRatePage extends BasePage {
         FilterWrapper<Rate> filterWrapper = FilterWrapper.of(filterRate)
                 .sort("date", filterRate.getOrCreateAttribute(Rate.DATE));
 
-        DataProvider<Rate> dataProvider = new DataProvider<Rate>(filterWrapper) {
+        Provider<Rate> provider = new Provider<Rate>(filterWrapper) {
             @Override
             public Iterator<? extends Rate> iterator(long first, long count) {
                 FilterWrapper<Rate> filterWrapper = getFilterState();
@@ -104,7 +104,7 @@ public class ExchangeRatePage extends BasePage {
             }
         };
 
-        FilterDataForm<FilterWrapper<Rate>> form = new FilterDataForm<>("form", dataProvider);
+        FilterForm<FilterWrapper<Rate>> form = new FilterForm<>("form", provider);
         add(form);
 
 
@@ -116,9 +116,9 @@ public class ExchangeRatePage extends BasePage {
         columns.add(new DomainColumn<>(rateEntity.getEntityAttribute(Rate.DATE)));
         columns.add(new DomainColumn<>(rateEntity.getEntityAttribute(Rate.RATE)));
 
-        columns.add(new AbstractFilterColumn<Rate>(null) {
+        columns.add(new Column<Rate>(null) {
             @Override
-            public Component getFilter(String componentId, FilterDataForm<?> form) {
+            public Component getFilter(String componentId, FilterForm<?> form) {
                 return new LinkPanel(componentId, new BootstrapAjaxButton(LinkPanel.LINK_COMPONENT_ID, Buttons.Type.Link){
                     @Override
                     protected void onSubmit(AjaxRequestTarget target) {
@@ -138,7 +138,7 @@ public class ExchangeRatePage extends BasePage {
             }
         });
 
-        FilterDataTable<Rate> table = new FilterDataTable<>("table", columns, dataProvider, form, 10, "exchangeRagePage");
+        Table<Rate> table = new Table<>("table", columns, provider, form, 10, "exchangeRagePage");
         form.add(table);
 
         add(new AjaxLink<Object>("back") {

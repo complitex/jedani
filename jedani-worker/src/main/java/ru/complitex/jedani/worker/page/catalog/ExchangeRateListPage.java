@@ -13,8 +13,8 @@ import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
-import ru.complitex.common.wicket.datatable.FilterDataForm;
-import ru.complitex.common.wicket.datatable.TextDataFilter;
+import ru.complitex.common.wicket.table.FilterForm;
+import ru.complitex.common.wicket.table.TextFilter;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
@@ -117,8 +117,8 @@ public class ExchangeRateListPage extends DomainListModalPage<ExchangeRate> {
             }
 
             @Override
-            public Component getFilter(String componentId, FilterDataForm<?> form) {
-                return new TextDataFilter<>(componentId, new PropertyModel<>(form.getModel(), "map.date"), form);
+            public Component getFilter(String componentId, FilterForm<?> form) {
+                return new TextFilter<>(componentId, new PropertyModel<>(form.getModel(), "map.date"), form);
             }
         });
 
@@ -129,8 +129,8 @@ public class ExchangeRateListPage extends DomainListModalPage<ExchangeRate> {
             }
 
             @Override
-            public Component getFilter(String componentId, FilterDataForm<?> form) {
-                return new TextDataFilter<>(componentId, new PropertyModel<>(form.getModel(), "map.value"), form);
+            public Component getFilter(String componentId, FilterForm<?> form) {
+                return new TextFilter<>(componentId, new PropertyModel<>(form.getModel(), "map.value"), form);
             }
         });
     }

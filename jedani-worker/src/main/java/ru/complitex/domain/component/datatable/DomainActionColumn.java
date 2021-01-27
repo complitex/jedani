@@ -12,7 +12,7 @@ import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import ru.complitex.common.wicket.datatable.FilterDataForm;
+import ru.complitex.common.wicket.table.FilterForm;
 import ru.complitex.common.wicket.panel.LinkPanel;
 import ru.complitex.domain.entity.Domain;
 
@@ -51,7 +51,7 @@ public class DomainActionColumn<T extends Domain> extends AbstractDomainColumn<T
     }
 
     @Override
-    public Component getFilter(String componentId, FilterDataForm<?> form) {
+    public Component getFilter(String componentId, FilterForm<?> form) {
         return new LinkPanel(componentId, new BootstrapAjaxButton(LinkPanel.LINK_COMPONENT_ID, Buttons.Type.Link){
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
@@ -60,7 +60,7 @@ public class DomainActionColumn<T extends Domain> extends AbstractDomainColumn<T
         }.setIconType(GlyphIconType.search));
     }
 
-    protected void onAction(AjaxRequestTarget target, FilterDataForm<?> form) {
+    protected void onAction(AjaxRequestTarget target, FilterForm<?> form) {
         target.add(form);
     }
 

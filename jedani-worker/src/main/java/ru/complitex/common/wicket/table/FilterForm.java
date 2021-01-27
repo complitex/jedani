@@ -1,4 +1,4 @@
-package ru.complitex.common.wicket.datatable;
+package ru.complitex.common.wicket.table;
 
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.IFilterStateLocator;
 import org.apache.wicket.markup.html.form.Form;
@@ -8,10 +8,10 @@ import org.apache.wicket.model.IModel;
  * @author Anatoly A. Ivanov
  * 12.12.2018 18:07
  */
-public class FilterDataForm<T> extends Form<T> {
+public class FilterForm<T> extends Form<T> {
     private IFilterStateLocator<T> locator;
 
-    public FilterDataForm(String id, IFilterStateLocator<T> locator) {
+    public FilterForm(String id, IFilterStateLocator<T> locator) {
         super(id, new IModel<T>() {
             @Override
             public T getObject() {

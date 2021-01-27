@@ -22,9 +22,9 @@ import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
 import ru.complitex.common.util.Dates;
 import ru.complitex.common.wicket.component.DateTimeLabel;
-import ru.complitex.common.wicket.datatable.DataProvider;
-import ru.complitex.common.wicket.datatable.FilterDataForm;
-import ru.complitex.common.wicket.datatable.FilterDataTable;
+import ru.complitex.common.wicket.table.Provider;
+import ru.complitex.common.wicket.table.FilterForm;
+import ru.complitex.common.wicket.table.Table;
 import ru.complitex.common.wicket.form.FormGroupDateTextField;
 import ru.complitex.common.wicket.form.FormGroupPanel;
 import ru.complitex.common.wicket.form.FormGroupTextField;
@@ -123,7 +123,7 @@ public class PriceModal extends AbstractDomainEditModal<Price> {
         container.add(new FormGroupTextField<>("price", DecimalAttributeModel.of(priceModel, Price.PRICE),
                 BigDecimal.class).setRequired(true));
 
-        DataProvider<Price> dataProvider = new DataProvider<Price>(FilterWrapper.of(new Price()).sort("id", false)) {
+        Provider<Price> provider = new Provider<Price>(FilterWrapper.of(new Price()).sort("id", false)) {
             @Override
             public Iterator<? extends Price> iterator(long first, long count) {
                 FilterWrapper<Price> filterWrapper = getFilterState();
@@ -148,12 +148,12 @@ public class PriceModal extends AbstractDomainEditModal<Price> {
         WebMarkupContainer historyContainer = new WebMarkupContainer("historyContainer"){
             @Override
             public boolean isVisible() {
-                return priceModel.getObject().getObjectId() != null && dataProvider.size() > 0;
+                return priceModel.getObject().getObjectId() != null && provider.size() > 0;
             }
         };
         container.add(historyContainer);
 
-        FilterDataForm<FilterWrapper<Price>> historyForm = new FilterDataForm<>("historyForm", dataProvider);
+        FilterForm<FilterWrapper<Price>> historyForm = new FilterForm<>("historyForm", provider);
         historyContainer.add(historyForm);
 
         List<IColumn<Price, SortProperty>> columns = new ArrayList<>();
@@ -208,7 +208,7 @@ public class PriceModal extends AbstractDomainEditModal<Price> {
             }
         });
 
-        historyForm.add(new FilterDataTable<>("history", columns, dataProvider, historyForm, 5, "PriceModal"));
+        historyForm.add(new Table<>("history", columns, provider, historyForm, 5, "PriceModal"));
 
         addButton(new BootstrapAjaxButton(Modal.BUTTON_MARKUP_ID, Buttons.Type.Primary) {
             @Override

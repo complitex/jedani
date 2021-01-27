@@ -1,4 +1,4 @@
-package ru.complitex.common.wicket.datatable;
+package ru.complitex.common.wicket.table;
 
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
@@ -7,8 +7,8 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 
-public abstract class FilterDataProvider<T extends Serializable> extends DataProvider<T> {
-    public FilterDataProvider(FilterWrapper<T> filterState) {
+public abstract class FilterProvider<T extends Serializable> extends Provider<T> {
+    public FilterProvider(FilterWrapper<T> filterState) {
         super(filterState);
     }
 

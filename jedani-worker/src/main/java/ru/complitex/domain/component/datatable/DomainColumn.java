@@ -12,8 +12,8 @@ import org.apache.wicket.model.IModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.complitex.common.entity.FilterWrapper;
-import ru.complitex.common.wicket.datatable.FilterDataForm;
-import ru.complitex.common.wicket.datatable.TextDataFilter;
+import ru.complitex.common.wicket.table.FilterForm;
+import ru.complitex.common.wicket.table.TextFilter;
 import ru.complitex.common.wicket.panel.InputPanel;
 import ru.complitex.domain.entity.*;
 import ru.complitex.domain.model.DateAttributeModel;
@@ -78,7 +78,7 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> impl
     }
 
     @Override
-    public Component getFilter(String componentId, FilterDataForm<?> form) {
+    public Component getFilter(String componentId, FilterForm<?> form) {
         Long entityAttributeId = entityAttribute.getEntityAttributeId();
 
         Domain domain = (Domain)((FilterWrapper)form.getModelObject()).getObject();
@@ -87,12 +87,12 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> impl
 
         switch (entityAttribute.getValueType()){
             case NUMBER:
-                TextDataFilter<Long> textFilter = new TextDataFilter<>(componentId, new NumberAttributeModel(domain, entityAttributeId), form);
+                TextFilter<Long> textFilter = new TextFilter<>(componentId, new NumberAttributeModel(domain, entityAttributeId), form);
                 textFilter.getFilter().setType(Long.class);
 
                 return textFilter;
             case DECIMAL:
-                TextDataFilter<BigDecimal> decimalFilter = new TextDataFilter<>(componentId, new DecimalAttributeModel(domain, entityAttributeId), form);
+                TextFilter<BigDecimal> decimalFilter = new TextFilter<>(componentId, new DecimalAttributeModel(domain, entityAttributeId), form);
                 decimalFilter.getFilter().setType(BigDecimal.class);
 
                 return decimalFilter;
@@ -101,7 +101,7 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> impl
                         new DateAttributeModel(domain, entityAttributeId),
                         new DateTextFieldConfig().withFormat("dd.MM.yyyy").withLanguage("ru").autoClose(true)));
             default:
-                return new TextDataFilter<>(componentId, new TextAttributeModel(domain, entityAttributeId, StringType.DEFAULT), form);
+                return new TextFilter<>(componentId, new TextAttributeModel(domain, entityAttributeId, StringType.DEFAULT), form);
         }
     }
 

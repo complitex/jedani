@@ -19,9 +19,9 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.request.cycle.RequestCycle;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
-import ru.complitex.common.wicket.datatable.DataProvider;
-import ru.complitex.common.wicket.datatable.FilterDataForm;
-import ru.complitex.common.wicket.datatable.FilterDataTable;
+import ru.complitex.common.wicket.table.Provider;
+import ru.complitex.common.wicket.table.FilterForm;
+import ru.complitex.common.wicket.table.Table;
 import ru.complitex.domain.component.datatable.*;
 import ru.complitex.domain.entity.*;
 import ru.complitex.domain.page.AbstractDomainEditModal;
@@ -57,7 +57,7 @@ public class DomainListModalPanel<T extends Domain<T>> extends Panel {
 
     private final FeedbackPanel feedback;
 
-    private final FilterDataTable<T> table;
+    private final Table<T> table;
 
     private AbstractDomainEditModal<T> domainEditModal;
 
@@ -84,7 +84,7 @@ public class DomainListModalPanel<T extends Domain<T>> extends Panel {
 
         filterWrapper = newFilterWrapper(domainObject);
 
-        DataProvider<T> dataProvider = new DataProvider<T>(filterWrapper) {
+        Provider<T> provider = new Provider<T>(filterWrapper) {
             @Override
             public Iterator<? extends T> iterator(long first, long count) {
                 FilterWrapper<T> filterWrapper = getFilterState().limit(first, count);
@@ -109,7 +109,7 @@ public class DomainListModalPanel<T extends Domain<T>> extends Panel {
 
         };
 
-        FilterDataForm<FilterWrapper<T>> form = new FilterDataForm<>("form", dataProvider);
+        FilterForm<FilterWrapper<T>> form = new FilterForm<>("form", provider);
         form.setOutputMarkupId(true);
         container.add(form);
 
@@ -148,7 +148,7 @@ public class DomainListModalPanel<T extends Domain<T>> extends Panel {
             });
         }
 
-        table = new FilterDataTable<T>("table", columns, dataProvider, form, 10,
+        table = new Table<T>("table", columns, provider, form, 10,
                 "domainListModalPage" + domainClass.getName()){
             @Override
             protected Item<T> newRowItem(String id, int index, IModel<T> model) {
@@ -290,7 +290,7 @@ public class DomainListModalPanel<T extends Domain<T>> extends Panel {
         return feedback;
     }
 
-    public FilterDataTable<T> getTable() {
+    public Table<T> getTable() {
         return table;
     }
 

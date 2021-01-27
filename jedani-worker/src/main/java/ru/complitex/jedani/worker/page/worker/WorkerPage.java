@@ -54,7 +54,7 @@ import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
 import ru.complitex.common.util.Images;
 import ru.complitex.common.wicket.component.DateTimeLabel;
-import ru.complitex.common.wicket.datatable.*;
+import ru.complitex.common.wicket.table.*;
 import ru.complitex.common.wicket.form.FormGroupDateTextField;
 import ru.complitex.common.wicket.form.FormGroupPanel;
 import ru.complitex.common.wicket.form.FormGroupSelectPanel;
@@ -235,7 +235,7 @@ public class WorkerPage extends BasePage {
         //Data provider
         FilterWrapper<Worker> filterWrapper = newFilterWrapper();
 
-        DataProvider<Worker> dataProvider = new DataProvider<Worker>(filterWrapper) {
+        Provider<Worker> provider = new Provider<Worker>(filterWrapper) {
             @Override
             public Iterator<Worker> iterator(long first, long count) {
                 FilterWrapper<Worker> filterWrapper = getFilterState().limit(first, count);
@@ -255,7 +255,7 @@ public class WorkerPage extends BasePage {
         };
 
         //Worker
-        FilterDataForm<FilterWrapper<Worker>> form = new FilterDataForm<>("form", dataProvider);
+        FilterForm<FilterWrapper<Worker>> form = new FilterForm<>("form", provider);
         add(form);
 
         form.add(new FormGroupSelectPanel("type", new TypeSelect(FormGroupPanel.COMPONENT_ID,
@@ -820,8 +820,8 @@ public class WorkerPage extends BasePage {
                     }
 
                     @Override
-                    public Component getFilter(String componentId, FilterDataForm<?> form) {
-                        return new TextDataFilter<>(componentId, Model.of(""), form);
+                    public Component getFilter(String componentId, FilterForm<?> form) {
+                        return new TextFilter<>(componentId, Model.of(""), form);
                     }
                 });
 
@@ -832,14 +832,14 @@ public class WorkerPage extends BasePage {
                     }
 
                     @Override
-                    public Component getFilter(String componentId, FilterDataForm<?> form) {
-                        return new TextDataFilter<>(componentId, Model.of(""), form);
+                    public Component getFilter(String componentId, FilterForm<?> form) {
+                        return new TextFilter<>(componentId, Model.of(""), form);
                     }
                 });
 
                 columns.add(new DomainActionColumn<Worker>(WorkerPage.class){
                     @Override
-                    protected void onAction(AjaxRequestTarget target, FilterDataForm<?> form) {
+                    protected void onAction(AjaxRequestTarget target, FilterForm<?> form) {
                         target.add(structure);
                     }
 
@@ -885,7 +885,7 @@ public class WorkerPage extends BasePage {
                     }
                 });
 
-                FilterDataTable<Worker> table = new FilterDataTable<Worker>("table", columns, dataProvider, form, 10, "workerPage"){
+                Table<Worker> table = new Table<Worker>("table", columns, provider, form, 10, "workerPage"){
                     @Override
                     protected Item<Worker> newRowItem(String id, int index, final IModel<Worker> model) {
                         Item<Worker> rowItem = super.newRowItem(id, index, model);

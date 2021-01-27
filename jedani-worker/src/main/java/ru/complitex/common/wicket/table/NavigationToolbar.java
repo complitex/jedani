@@ -1,4 +1,4 @@
-package ru.complitex.common.wicket.datatable;
+package ru.complitex.common.wicket.table;
 
 import de.agilecoders.wicket.core.markup.html.bootstrap.navigation.ajax.BootstrapAjaxPagingNavigator;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.select.BootstrapSelect;

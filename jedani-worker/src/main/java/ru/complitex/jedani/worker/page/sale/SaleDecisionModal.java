@@ -22,9 +22,9 @@ import ru.complitex.address.entity.Country;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
 import ru.complitex.common.model.ArrayListModel;
-import ru.complitex.common.wicket.datatable.FilterDataForm;
-import ru.complitex.common.wicket.datatable.FilterDataProvider;
-import ru.complitex.common.wicket.datatable.FilterDataTable;
+import ru.complitex.common.wicket.table.FilterForm;
+import ru.complitex.common.wicket.table.FilterProvider;
+import ru.complitex.common.wicket.table.Table;
 import ru.complitex.common.wicket.form.FormGroupDateTextField;
 import ru.complitex.common.wicket.form.FormGroupPanel;
 import ru.complitex.common.wicket.form.FormGroupSelectPanel;
@@ -165,7 +165,7 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
 
         FilterWrapper<Nomenclature> filterWrapper = FilterWrapper.of(new Nomenclature());
 
-        FilterDataProvider<Nomenclature> filterDataProvider = new FilterDataProvider<Nomenclature>(filterWrapper) {
+        FilterProvider<Nomenclature> filterDataProvider = new FilterProvider<Nomenclature>(filterWrapper) {
             @Override
             public List<Nomenclature> getList() {
                 return domainService.getDomains(Nomenclature.class, getFilterState());
@@ -205,9 +205,9 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
         nomenclatureContainer.setOutputMarkupPlaceholderTag(true);
         container.add(nomenclatureContainer);
 
-        FilterDataForm<FilterWrapper<Nomenclature>> filterDataForm = new FilterDataForm<>("nomenclatureForm", filterDataProvider);
-        filterDataForm.setOutputMarkupId(true);
-        nomenclatureContainer.add(filterDataForm);
+        FilterForm<FilterWrapper<Nomenclature>> filterForm = new FilterForm<>("nomenclatureForm", filterDataProvider);
+        filterForm.setOutputMarkupId(true);
+        nomenclatureContainer.add(filterForm);
 
         List<IColumn<Nomenclature, SortProperty>> columns = new ArrayList<>();
 
@@ -230,9 +230,9 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
             }
         });
 
-        FilterDataTable<Nomenclature> filterDataTable = new FilterDataTable<>("nomenclatureTable", columns,
-                filterDataProvider, filterDataForm, 5, "saleDecisionNomenclatureTable");
-        filterDataForm.add(filterDataTable);
+        Table<Nomenclature> table = new Table<>("nomenclatureTable", columns,
+                filterDataProvider, filterForm, 5, "saleDecisionNomenclatureTable");
+        filterForm.add(table);
 
         container.add(new RuleTable("ruleTable", new PropertyModel<>(getModel(), "rules"),
                 new ArrayListModel<>(SaleDecisionConditionType.values()),

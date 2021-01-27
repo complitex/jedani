@@ -16,9 +16,9 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
-import ru.complitex.common.wicket.datatable.DataProvider;
-import ru.complitex.common.wicket.datatable.FilterDataForm;
-import ru.complitex.common.wicket.datatable.FilterDataTable;
+import ru.complitex.common.wicket.table.Provider;
+import ru.complitex.common.wicket.table.FilterForm;
+import ru.complitex.common.wicket.table.Table;
 import ru.complitex.domain.component.datatable.DomainActionColumn;
 import ru.complitex.domain.component.datatable.DomainColumn;
 import ru.complitex.domain.component.datatable.DomainIdColumn;
@@ -63,7 +63,7 @@ public class DomainListPage<T extends Domain<T>> extends BasePage{
 
     private FeedbackPanel feedback;
 
-    private FilterDataTable<T> table;
+    private Table<T> table;
 
     private Label titleLabel;
 
@@ -93,7 +93,7 @@ public class DomainListPage<T extends Domain<T>> extends BasePage{
 
         filterWrapper = newFilterWrapper(domainObject);
 
-        DataProvider<T> dataProvider = new DataProvider<T>(filterWrapper) {
+        Provider<T> provider = new Provider<T>(filterWrapper) {
             @Override
             public Iterator<? extends T> iterator(long first, long count) {
                 FilterWrapper<T> filterWrapper = getFilterState().limit(first, count);
@@ -120,7 +120,7 @@ public class DomainListPage<T extends Domain<T>> extends BasePage{
 
         };
 
-        FilterDataForm<FilterWrapper<T>> form = new FilterDataForm<>("form", dataProvider);
+        FilterForm<FilterWrapper<T>> form = new FilterForm<>("form", provider);
         form.setOutputMarkupId(true);
         container.add(form);
 
@@ -157,7 +157,7 @@ public class DomainListPage<T extends Domain<T>> extends BasePage{
             columns.add(newDomainActionColumn());
         }
 
-        table = new FilterDataTable<T>("table", columns, dataProvider, form, 15, "domainListPage" + entity.getName()){
+        table = new Table<T>("table", columns, provider, form, 15, "domainListPage" + entity.getName()){
             @Override
             protected Item<T> newRowItem(String id, int index, IModel<T> model) {
                 Item<T> item = super.newRowItem(id, index, model);
@@ -283,7 +283,7 @@ public class DomainListPage<T extends Domain<T>> extends BasePage{
         return feedback;
     }
 
-    public FilterDataTable<T> getTable() {
+    public Table<T> getTable() {
         return table;
     }
 

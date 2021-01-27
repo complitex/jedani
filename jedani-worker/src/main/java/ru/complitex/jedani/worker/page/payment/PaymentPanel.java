@@ -15,8 +15,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.util.Dates;
-import ru.complitex.common.wicket.datatable.FilterDataForm;
-import ru.complitex.common.wicket.datatable.TextDataFilter;
+import ru.complitex.common.wicket.table.FilterForm;
+import ru.complitex.common.wicket.table.TextFilter;
 import ru.complitex.common.wicket.panel.LinkPanel;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.component.panel.DomainListModalPanel;
@@ -111,8 +111,8 @@ public class PaymentPanel extends DomainListModalPanel<Payment> {
                 }
 
                 @Override
-                public Component getFilter(String componentId, FilterDataForm<?> form) {
-                    return new TextDataFilter<>(componentId, Model.of(), form);
+                public Component getFilter(String componentId, FilterForm<?> form) {
+                    return new TextFilter<>(componentId, Model.of(), form);
                 }
             };
         } else if (a.getEntityAttributeId().equals(Payment.SALE)){

@@ -14,8 +14,8 @@ import ru.complitex.address.entity.City;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
 import ru.complitex.common.model.FilterMapModel;
-import ru.complitex.common.wicket.datatable.FilterDataForm;
-import ru.complitex.common.wicket.datatable.TextDataFilter;
+import ru.complitex.common.wicket.table.FilterForm;
+import ru.complitex.common.wicket.table.TextFilter;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
@@ -86,8 +86,8 @@ public class StorageListPage extends DomainListPage<Storage> {
             }
 
             @Override
-            public Component getFilter(String componentId, FilterDataForm<?> form) {
-                return new TextDataFilter<>(componentId, new PropertyModel<>(form.getModel(), "map.workers"), form);
+            public Component getFilter(String componentId, FilterForm<?> form) {
+                return new TextFilter<>(componentId, new PropertyModel<>(form.getModel(), "map.workers"), form);
             }
         });
 
@@ -98,8 +98,8 @@ public class StorageListPage extends DomainListPage<Storage> {
             }
 
             @Override
-            public Component getFilter(String componentId, FilterDataForm<?> form) {
-                return new TextDataFilter<>(componentId, new PropertyModel<>(form.getModel(), "map.worker"), form);
+            public Component getFilter(String componentId, FilterForm<?> form) {
+                return new TextFilter<>(componentId, new PropertyModel<>(form.getModel(), "map.worker"), form);
             }
         });
 
@@ -111,8 +111,8 @@ public class StorageListPage extends DomainListPage<Storage> {
             }
 
             @Override
-            public Component getFilter(String componentId, FilterDataForm<?> form) {
-                return new TextDataFilter<>(componentId,  FilterMapModel.of(form.getModel(), Storage.FILTER_NOMENCLATURE_COUNT), form);
+            public Component getFilter(String componentId, FilterForm<?> form) {
+                return new TextFilter<>(componentId,  FilterMapModel.of(form.getModel(), Storage.FILTER_NOMENCLATURE_COUNT), form);
             }
         });
 
@@ -124,8 +124,8 @@ public class StorageListPage extends DomainListPage<Storage> {
             }
 
             @Override
-            public Component getFilter(String componentId, FilterDataForm<?> form) {
-                return new TextDataFilter<>(componentId, FilterMapModel.of(form.getModel(), Storage.FILTER_TRANSACTION_COUNT), form);
+            public Component getFilter(String componentId, FilterForm<?> form) {
+                return new TextFilter<>(componentId, FilterMapModel.of(form.getModel(), Storage.FILTER_TRANSACTION_COUNT), form);
             }
         });
     }

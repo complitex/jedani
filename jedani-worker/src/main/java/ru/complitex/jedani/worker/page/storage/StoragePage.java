@@ -34,7 +34,7 @@ import ru.complitex.address.entity.City;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
 import ru.complitex.common.wicket.component.DateTimeLabel;
-import ru.complitex.common.wicket.datatable.*;
+import ru.complitex.common.wicket.table.*;
 import ru.complitex.common.wicket.form.FormGroupPanel;
 import ru.complitex.common.wicket.form.FormGroupSelectPanel;
 import ru.complitex.common.wicket.form.FormGroupTextField;
@@ -262,7 +262,7 @@ public class StoragePage extends BasePage {
 
         //Products
 
-        DataProvider<Product> productDataProvider = new DataProvider<Product>(FilterWrapper.<Product>of(
+        Provider<Product> productProvider = new Provider<Product>(FilterWrapper.<Product>of(
                 new Product(){{setParentId(storageId);}}).sort("id", false)) {
             @Override
             public Iterator<? extends Product> iterator(long first, long count) {
@@ -282,8 +282,8 @@ public class StoragePage extends BasePage {
             }
         };
 
-        FilterDataForm<FilterWrapper<Product>> productForm = new FilterDataForm<FilterWrapper<Product>>("productForm",
-                productDataProvider){
+        FilterForm<FilterWrapper<Product>> productForm = new FilterForm<FilterWrapper<Product>>("productForm",
+                productProvider){
             @Override
             protected boolean wantSubmitOnParentFormSubmit() {
                 return false;
@@ -419,7 +419,7 @@ public class StoragePage extends BasePage {
             });
         }
 
-        FilterDataTable<Product> productTable = new FilterDataTable<Product>("table", productColumns, productDataProvider,
+        Table<Product> productTable = new Table<Product>("table", productColumns, productProvider,
                 productForm, 5, "storagePageProduct"){
             @Override
             public boolean isVisible() {
@@ -435,7 +435,7 @@ public class StoragePage extends BasePage {
         transactionHeader.setVisible(storageId != null && edit);
         tables.add(transactionHeader);
 
-        DataProvider<Transaction> transactionDataProvider = new DataProvider<Transaction>(FilterWrapper.of(
+        Provider<Transaction> transactionProvider = new Provider<Transaction>(FilterWrapper.of(
                 new Transaction()).put("storageId", storageId).sort("id", null, false)) {
             @Override
             public Iterator<? extends Transaction> iterator(long first, long count) {
@@ -455,8 +455,8 @@ public class StoragePage extends BasePage {
             }
         };
 
-        FilterDataForm<FilterWrapper<Transaction>> transactionForm = new FilterDataForm<FilterWrapper<Transaction>>(
-                "transactionForm", transactionDataProvider){
+        FilterForm<FilterWrapper<Transaction>> transactionForm = new FilterForm<FilterWrapper<Transaction>>(
+                "transactionForm", transactionProvider){
             @Override
             protected boolean wantSubmitOnParentFormSubmit() {
                 return false;
@@ -472,7 +472,7 @@ public class StoragePage extends BasePage {
             transactionColumns.add(new AbstractDomainColumn<Transaction>(new ResourceModel("startDate"),
                     new SortProperty("startDate")) {
                 @Override
-                public Component getFilter(String componentId, FilterDataForm<?> form) {
+                public Component getFilter(String componentId, FilterForm<?> form) {
                     return new DateFilter(componentId, new PropertyModel<>(form.getModel(),"object.startDate"), form);
                 }
 
@@ -511,8 +511,8 @@ public class StoragePage extends BasePage {
                 }
 
                 @Override
-                public Component getFilter(String componentId, FilterDataForm<?> form) {
-                    return new TextDataFilter<>(componentId, new PropertyModel<>(form.getModel(), "map.worker"), form);
+                public Component getFilter(String componentId, FilterForm<?> form) {
+                    return new TextFilter<>(componentId, new PropertyModel<>(form.getModel(), "map.worker"), form);
                 }
             });
 
@@ -527,8 +527,8 @@ public class StoragePage extends BasePage {
                 }
 
                 @Override
-                public Component getFilter(String componentId, FilterDataForm<?> form) {
-                    return new TextDataFilter<>(componentId, new PropertyModel<>(form.getModel(), "map.client"), form);
+                public Component getFilter(String componentId, FilterForm<?> form) {
+                    return new TextFilter<>(componentId, new PropertyModel<>(form.getModel(), "map.client"), form);
                 }
             });
 
@@ -538,7 +538,7 @@ public class StoragePage extends BasePage {
             transactionColumns.add(new AbstractDomainColumn<Transaction>(transactionEntity
                     .getEntityAttribute(Transaction.TRANSFER_TYPE)) {
                 @Override
-                public Component getFilter(String componentId, FilterDataForm<?> form) {
+                public Component getFilter(String componentId, FilterForm<?> form) {
                     Transaction transaction = (Transaction)((FilterWrapper)form.getModelObject()).getObject();
 
                     return new SelectPanel(componentId, new BootstrapSelect<>(SelectPanel.SELECT_COMPONENT_ID,
@@ -596,7 +596,7 @@ public class StoragePage extends BasePage {
             transactionColumns.add(new AbstractDomainColumn<Transaction>(transactionEntity
                     .getEntityAttribute(Transaction.TYPE)) {
                 @Override
-                public Component getFilter(String componentId, FilterDataForm<?> form) {
+                public Component getFilter(String componentId, FilterForm<?> form) {
                     Transaction transaction = (Transaction)((FilterWrapper)form.getModelObject()).getObject();
 
                     return new SelectPanel(componentId, new BootstrapSelect<>(SelectPanel.SELECT_COMPONENT_ID,
@@ -687,8 +687,8 @@ public class StoragePage extends BasePage {
             });
         }
 
-        FilterDataTable<Transaction> transactionDataTable = new FilterDataTable<Transaction>("table", transactionColumns,
-                transactionDataProvider, transactionForm, 5, "storagePageTransaction"){
+        Table<Transaction> transactionDataTable = new Table<Transaction>("table", transactionColumns,
+                transactionProvider, transactionForm, 5, "storagePageTransaction"){
             @Override
             public boolean isVisible() {
                 return storageId != null;

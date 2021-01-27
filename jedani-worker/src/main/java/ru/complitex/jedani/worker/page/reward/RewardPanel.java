@@ -10,8 +10,8 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.util.Dates;
-import ru.complitex.common.wicket.datatable.FilterDataForm;
-import ru.complitex.common.wicket.datatable.TextDataFilter;
+import ru.complitex.common.wicket.table.FilterForm;
+import ru.complitex.common.wicket.table.TextFilter;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.component.datatable.DomainColumn;
 import ru.complitex.domain.component.panel.DomainListModalPanel;
@@ -119,8 +119,8 @@ public class RewardPanel extends DomainListModalPanel<Reward> {
                 }
 
                 @Override
-                public Component getFilter(String componentId, FilterDataForm<?> form) {
-                    return new TextDataFilter<>(componentId, Model.of(), form);
+                public Component getFilter(String componentId, FilterForm<?> form) {
+                    return new TextFilter<>(componentId, Model.of(), form);
                 }
             };
         } else if (a.getEntityAttributeId().equals(Reward.SALE)){
