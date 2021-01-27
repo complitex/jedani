@@ -18,9 +18,9 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.cycle.RequestCycle;
 import ru.complitex.common.entity.FilterWrapper;
-import ru.complitex.common.entity.SortProperty;
-import ru.complitex.common.wicket.table.Provider;
+import ru.complitex.common.entity.Sort;
 import ru.complitex.common.wicket.table.FilterForm;
+import ru.complitex.common.wicket.table.Provider;
 import ru.complitex.common.wicket.table.Table;
 import ru.complitex.domain.component.datatable.*;
 import ru.complitex.domain.entity.*;
@@ -33,7 +33,6 @@ import ru.complitex.domain.util.Domains;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -86,24 +85,12 @@ public class DomainListModalPanel<T extends Domain<T>> extends Panel {
 
         Provider<T> provider = new Provider<T>(filterWrapper) {
             @Override
-            public Iterator<? extends T> iterator(long first, long count) {
-                FilterWrapper<T> filterWrapper = getFilterState().limit(first, count);
-
-                if (getSort() != null){
-                    filterWrapper.setSortProperty(getSort().getProperty());
-                    filterWrapper.setAscending(getSort().isAscending());
-                }else{
-                    filterWrapper.setSortProperty(new SortProperty("id"));
-                    filterWrapper.setAscending(false);
-                }
-
-                List<T> list = getDomains(filterWrapper);
-
-                return list.iterator();
+            public List<T> getList() {
+                return getDomains(filterWrapper);
             }
 
             @Override
-            public long size() {
+            public Long getCount() {
                 return getDomainsCount(getFilterState());
             }
 
@@ -113,7 +100,7 @@ public class DomainListModalPanel<T extends Domain<T>> extends Panel {
         form.setOutputMarkupId(true);
         container.add(form);
 
-        List<IColumn<T, SortProperty>> columns = new ArrayList<>();
+        List<IColumn<T, Sort>> columns = new ArrayList<>();
 
         columns.add(new DomainIdColumn<>());
 
@@ -275,7 +262,7 @@ public class DomainListModalPanel<T extends Domain<T>> extends Panel {
         return getEntityAttributes(entity);
     }
 
-    protected void onInitColumns(List<IColumn<T, SortProperty>> columns){
+    protected void onInitColumns(List<IColumn<T, Sort>> columns){
     }
 
     public FilterWrapper<T> getFilterWrapper() {

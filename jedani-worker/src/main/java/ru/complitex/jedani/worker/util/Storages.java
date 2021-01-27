@@ -8,7 +8,7 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import ru.complitex.address.entity.City;
-import ru.complitex.common.entity.SortProperty;
+import ru.complitex.common.entity.Sort;
 import ru.complitex.common.wicket.table.FilterForm;
 import ru.complitex.common.wicket.table.TextFilter;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
@@ -29,10 +29,10 @@ import java.util.stream.Collectors;
  * 30.10.2018 18:45
  */
 public class Storages {
-    public static void addStorageColumn(List<IColumn<Product, SortProperty>> columns, EntityAttribute entityAttribute,
+    public static void addStorageColumn(List<IColumn<Product, Sort>> columns, EntityAttribute entityAttribute,
                                         DomainService domainService, NameService nameService) {
         columns.add(new AbstractDomainColumn<Product>(Model.of(entityAttribute.getValue().getText()),
-                new SortProperty(entityAttribute.getValueType().getKey(), entityAttribute)) {
+                new Sort(entityAttribute.getValueType().getKey(), entityAttribute)) {
             @Override
             public void populateItem(Item<ICellPopulator<Product>> cellItem, String componentId, IModel<Product> rowModel) {
                 String label = "";

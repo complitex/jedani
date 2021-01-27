@@ -12,7 +12,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import ru.complitex.address.entity.City;
 import ru.complitex.common.entity.FilterWrapper;
-import ru.complitex.common.entity.SortProperty;
+import ru.complitex.common.entity.Sort;
 import ru.complitex.common.model.FilterMapModel;
 import ru.complitex.common.wicket.table.FilterForm;
 import ru.complitex.common.wicket.table.TextFilter;
@@ -72,10 +72,10 @@ public class StorageListPage extends DomainListPage<Storage> {
     }
 
     @Override
-    protected void onAddColumns(List<IColumn<Storage, SortProperty>> columns) {
+    protected void onAddColumns(List<IColumn<Storage, Sort>> columns) {
         String label = entityService.getEntityAttribute(Storage.ENTITY_NAME, Storage.WORKERS).getValue().getText();
 
-        columns.add(new AbstractDomainColumn<Storage>(Model.of(label), new SortProperty("workers")) {
+        columns.add(new AbstractDomainColumn<Storage>(Model.of(label), new Sort("workers")) {
             @Override
             public void populateItem(Item<ICellPopulator<Storage>> cellItem, String componentId, IModel<Storage> rowModel) {
                 String workers = rowModel.getObject().getNumberValues(Storage.WORKERS).stream()
@@ -91,7 +91,7 @@ public class StorageListPage extends DomainListPage<Storage> {
             }
         });
 
-        columns.add(new AbstractDomainColumn<Storage>(new ResourceModel("worker"), new SortProperty("worker")) {
+        columns.add(new AbstractDomainColumn<Storage>(new ResourceModel("worker"), new Sort("worker")) {
             @Override
             public void populateItem(Item<ICellPopulator<Storage>> cellItem, String componentId, IModel<Storage> rowModel) {
                 cellItem.add(new Label(componentId, workerService.getWorkerLabel(rowModel.getObject().getParentId())));
@@ -104,7 +104,7 @@ public class StorageListPage extends DomainListPage<Storage> {
         });
 
         columns.add(new AbstractDomainColumn<Storage>(new ResourceModel("nomenclatureCount"),
-                new SortProperty("nomenclatureCount")) {
+                new Sort("nomenclatureCount")) {
             @Override
             public void populateItem(Item<ICellPopulator<Storage>> cellItem, String componentId, IModel<Storage> rowModel) {
                 cellItem.add(new Label(componentId, rowModel.getObject().getNomenclatureCount()));
@@ -117,7 +117,7 @@ public class StorageListPage extends DomainListPage<Storage> {
         });
 
         columns.add(new AbstractDomainColumn<Storage>(new ResourceModel("transactionCount"),
-                new SortProperty("transactionCount")) {
+                new Sort("transactionCount")) {
             @Override
             public void populateItem(Item<ICellPopulator<Storage>> cellItem, String componentId, IModel<Storage> rowModel) {
                 cellItem.add(new Label(componentId, rowModel.getObject().getTransactionCount()));

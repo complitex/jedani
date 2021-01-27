@@ -40,8 +40,8 @@ public class FilterToolbar extends AbstractToolbar {
 
                 Component filter = null;
 
-                if (col instanceof IFilterColumn) {
-                    IFilterColumn<T, S> filteredCol = (IFilterColumn<T, S>) col;
+                if (col instanceof Column) {
+                    Column<T> filteredCol = (Column<T>) col;
                     filter = filteredCol.getFilter(FILTER_ID, form);
                 }
 

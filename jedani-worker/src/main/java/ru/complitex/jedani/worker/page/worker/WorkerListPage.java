@@ -23,7 +23,7 @@ import ru.complitex.address.entity.City;
 import ru.complitex.address.entity.CityType;
 import ru.complitex.address.entity.Region;
 import ru.complitex.common.entity.FilterWrapper;
-import ru.complitex.common.entity.SortProperty;
+import ru.complitex.common.entity.Sort;
 import ru.complitex.common.wicket.table.FilterForm;
 import ru.complitex.common.wicket.table.TextFilter;
 import ru.complitex.common.wicket.panel.LinkPanel;
@@ -128,9 +128,9 @@ public class WorkerListPage extends DomainListPage<Worker>{
     }
 
     @Override
-    protected void onAddColumns(List<IColumn<Worker, SortProperty>> columns) {
+    protected void onAddColumns(List<IColumn<Worker, Sort>> columns) {
         columns.add(4, new AbstractDomainColumn<Worker>(new ResourceModel("login"),
-                new SortProperty("login")) {
+                new Sort("login")) {
             @Override
             public void populateItem(Item<ICellPopulator<Worker>> cellItem, String componentId, IModel<Worker> rowModel) {
                 Long userId = rowModel.getObject().getParentId();
@@ -148,7 +148,7 @@ public class WorkerListPage extends DomainListPage<Worker>{
 
         //noinspection Duplicates
         columns.add(new AbstractDomainColumn<Worker>(new ResourceModel("subWorkersCount"),
-                new SortProperty("subWorkersCount")) {
+                new Sort("subWorkersCount")) {
             @Override
             public void populateItem(Item<ICellPopulator<Worker>> cellItem, String componentId, IModel<Worker> rowModel) {
                 cellItem.add(new Label(componentId, rowModel.getObject().getSubWorkerCount()));
@@ -161,7 +161,7 @@ public class WorkerListPage extends DomainListPage<Worker>{
         });
 
         //noinspection Duplicates
-        columns.add(new AbstractDomainColumn<Worker>(new ResourceModel("level"), new SortProperty("level")) {
+        columns.add(new AbstractDomainColumn<Worker>(new ResourceModel("level"), new Sort("level")) {
             @Override
             public void populateItem(Item<ICellPopulator<Worker>> cellItem, String componentId, IModel<Worker> rowModel) {
                 cellItem.add(new Label(componentId, rowModel.getObject().getLevel()));
@@ -204,7 +204,7 @@ public class WorkerListPage extends DomainListPage<Worker>{
     }
 
     @Override
-    protected IColumn<Worker, SortProperty> newDomainActionColumn() {
+    protected IColumn<Worker, Sort> newDomainActionColumn() {
         return new DomainActionColumn<Worker>(WorkerPage.class){
             @Override
             public void populateItem(Item<ICellPopulator<Worker>> cellItem, String componentId, IModel<Worker> rowModel) {

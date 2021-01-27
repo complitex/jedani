@@ -51,7 +51,7 @@ import ru.complitex.address.entity.City;
 import ru.complitex.address.entity.CityType;
 import ru.complitex.address.entity.Region;
 import ru.complitex.common.entity.FilterWrapper;
-import ru.complitex.common.entity.SortProperty;
+import ru.complitex.common.entity.Sort;
 import ru.complitex.common.util.Images;
 import ru.complitex.common.wicket.component.DateTimeLabel;
 import ru.complitex.common.wicket.table.*;
@@ -236,20 +236,14 @@ public class WorkerPage extends BasePage {
         FilterWrapper<Worker> filterWrapper = newFilterWrapper();
 
         Provider<Worker> provider = new Provider<Worker>(filterWrapper) {
+
             @Override
-            public Iterator<Worker> iterator(long first, long count) {
-                FilterWrapper<Worker> filterWrapper = getFilterState().limit(first, count);
-
-                if (getSort() != null) {
-                    filterWrapper.setSortProperty(getSort().getProperty());
-                    filterWrapper.setAscending(getSort().isAscending());
-                }
-
-                return workerMapper.getWorkers(filterWrapper).iterator();
+            public List<Worker> getList() {
+                return workerMapper.getWorkers(filterWrapper);
             }
 
             @Override
-            public long size() {
+            public Long getCount() {
                 return workerMapper.getWorkersCount(getFilterState());
             }
         };
@@ -807,13 +801,13 @@ public class WorkerPage extends BasePage {
                 };
                 structure.add(workerRemoveModal);
 
-                List<IColumn<Worker, SortProperty>> columns = new ArrayList<>();
+                List<IColumn<Worker, Sort>> columns = new ArrayList<>();
 
                 columns.add(new DomainIdColumn<>());
                 getEntityAttributes().forEach(a -> columns.add(new DomainColumn<>(a)));
 
                 columns.add(new AbstractDomainColumn<Worker>(new ResourceModel("subWorkersCount"),
-                        new SortProperty("subWorkersCount")) {
+                        new Sort("subWorkersCount")) {
                     @Override
                     public void populateItem(Item<ICellPopulator<Worker>> cellItem, String componentId, IModel<Worker> rowModel) {
                         cellItem.add(new Label(componentId, rowModel.getObject().getSubWorkerCount()));
@@ -825,7 +819,7 @@ public class WorkerPage extends BasePage {
                     }
                 });
 
-                columns.add(new AbstractDomainColumn<Worker>(new ResourceModel("level"), new SortProperty("level")) {
+                columns.add(new AbstractDomainColumn<Worker>(new ResourceModel("level"), new Sort("level")) {
                     @Override
                     public void populateItem(Item<ICellPopulator<Worker>> cellItem, String componentId, IModel<Worker> rowModel) {
                         cellItem.add(new Label(componentId, rowModel.getObject().getLevel() - getCurrentWorker().getLevel()));

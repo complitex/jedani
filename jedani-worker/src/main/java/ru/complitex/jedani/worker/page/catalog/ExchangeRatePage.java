@@ -21,13 +21,13 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.template.PackageTextTemplate;
 import ru.complitex.common.entity.FilterWrapper;
-import ru.complitex.common.entity.SortProperty;
-import ru.complitex.common.wicket.table.Column;
-import ru.complitex.common.wicket.table.Provider;
-import ru.complitex.common.wicket.table.FilterForm;
-import ru.complitex.common.wicket.table.Table;
+import ru.complitex.common.entity.Sort;
 import ru.complitex.common.wicket.form.FormGroupTextField;
 import ru.complitex.common.wicket.panel.LinkPanel;
+import ru.complitex.common.wicket.table.Column;
+import ru.complitex.common.wicket.table.FilterForm;
+import ru.complitex.common.wicket.table.Provider;
+import ru.complitex.common.wicket.table.Table;
 import ru.complitex.domain.component.datatable.DomainColumn;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.service.DomainService;
@@ -41,7 +41,6 @@ import ru.complitex.jedani.worker.security.JedaniRoles;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -84,22 +83,12 @@ public class ExchangeRatePage extends BasePage {
 
         Provider<Rate> provider = new Provider<Rate>(filterWrapper) {
             @Override
-            public Iterator<? extends Rate> iterator(long first, long count) {
-                FilterWrapper<Rate> filterWrapper = getFilterState();
-
-                if (getSort() != null){
-                    filterWrapper.setSortProperty(getSort().getProperty());
-                    filterWrapper.setAscending(getSort().isAscending());
-                }
-
-                filterWrapper.setFirst(first);
-                filterWrapper.setCount(count);
-
-                return domainService.getDomains(Rate.class, filterWrapper).iterator();
+            public List<Rate> getList() {
+                return domainService.getDomains(Rate.class, filterWrapper);
             }
 
             @Override
-            public long size() {
+            public Long getCount() {
                 return domainService.getDomainsCount(getFilterState());
             }
         };
@@ -109,7 +98,7 @@ public class ExchangeRatePage extends BasePage {
 
 
 
-        List<IColumn<Rate, SortProperty>> columns = new ArrayList<>();
+        List<IColumn<Rate, Sort>> columns = new ArrayList<>();
 
         Entity rateEntity = entityService.getEntity(Rate.ENTITY_VALUE);
 

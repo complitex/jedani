@@ -6,15 +6,15 @@ import java.io.Serializable;
  * @author Anatoly A. Ivanov
  * 20.12.2017 6:12
  */
-public class SortProperty implements Serializable{
+public class Sort implements Serializable{
     private String key;
     private Object value;
 
-    public SortProperty(String key) {
+    public Sort(String key) {
         this.key = key;
     }
 
-    public SortProperty(String key, Object value) {
+    public Sort(String key, Object value) {
         this.key = key;
         this.value = value;
     }

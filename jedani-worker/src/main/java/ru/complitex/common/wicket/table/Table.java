@@ -12,7 +12,7 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import ru.complitex.common.entity.FilterWrapper;
-import ru.complitex.common.entity.SortProperty;
+import ru.complitex.common.entity.Sort;
 import ru.complitex.domain.component.datatable.DomainActionColumn;
 import ru.complitex.domain.component.datatable.DomainColumn;
 
@@ -23,12 +23,12 @@ import java.util.List;
  * @author Anatoly A. Ivanov
  * 28.11.2017 17:09
  */
-public class Table<T extends Serializable> extends DataTable<T, SortProperty> implements IAjaxIndicatorAware {
+public class Table<T extends Serializable> extends DataTable<T, Sort> implements IAjaxIndicatorAware {
     private AjaxIndicatorAppender ajaxIndicatorAppender;
 
     private boolean hideOnEmpty = false;
 
-    public Table(String id, List<? extends IColumn<T, SortProperty>> columns, Provider<T> provider,
+    public Table(String id, List<? extends IColumn<T, Sort>> columns, Provider<T> provider,
                  FilterForm<FilterWrapper<T>> filterForm, long rowsPerPage, String tableKey) {
         super(id, columns, provider, rowsPerPage);
 
@@ -37,7 +37,7 @@ public class Table<T extends Serializable> extends DataTable<T, SortProperty> im
                 .map(c -> ((DomainActionColumn<?>) c).getAjaxIndicatorAppender())
                 .orElse(null);
 
-        addTopToolbar(new AjaxFallbackHeadersToolbar<SortProperty>(this, provider){
+        addTopToolbar(new AjaxFallbackHeadersToolbar<Sort>(this, provider){
             @Override
             public boolean isVisible() {
                 return !hideOnEmpty || getRowCount() > 0;

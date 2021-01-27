@@ -32,7 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.complitex.address.entity.City;
 import ru.complitex.common.entity.FilterWrapper;
-import ru.complitex.common.entity.SortProperty;
+import ru.complitex.common.entity.Sort;
 import ru.complitex.common.wicket.component.DateTimeLabel;
 import ru.complitex.common.wicket.table.*;
 import ru.complitex.common.wicket.form.FormGroupPanel;
@@ -265,19 +265,12 @@ public class StoragePage extends BasePage {
         Provider<Product> productProvider = new Provider<Product>(FilterWrapper.<Product>of(
                 new Product(){{setParentId(storageId);}}).sort("id", false)) {
             @Override
-            public Iterator<? extends Product> iterator(long first, long count) {
-                FilterWrapper<Product> filterWrapper = getFilterState().limit(first, count);
-
-                if (getSort() != null){
-                    filterWrapper.setSortProperty(getSort().getProperty());
-                    filterWrapper.setAscending(getSort().isAscending());
-                }
-
-                return domainService.getDomains(Product.class, filterWrapper).iterator();
+            public List<Product> getList() {
+                return  domainService.getDomains(Product.class, getFilterState());
             }
 
             @Override
-            public long size() {
+            public Long getCount() {
                 return domainService.getDomainsCount(getFilterState());
             }
         };
@@ -291,7 +284,7 @@ public class StoragePage extends BasePage {
         };
         tables.add(productForm);
 
-        List<IColumn<Product, SortProperty>> productColumns = new ArrayList<>();
+        List<IColumn<Product, Sort>> productColumns = new ArrayList<>();
 
         if (storageId != null) {
             productColumns.add(new DomainIdColumn<>());
@@ -437,20 +430,14 @@ public class StoragePage extends BasePage {
 
         Provider<Transaction> transactionProvider = new Provider<Transaction>(FilterWrapper.of(
                 new Transaction()).put("storageId", storageId).sort("id", null, false)) {
+
             @Override
-            public Iterator<? extends Transaction> iterator(long first, long count) {
-                FilterWrapper<Transaction> filterWrapper = getFilterState().limit(first, count);
-
-                if (getSort() != null){
-                    filterWrapper.setSortProperty(getSort().getProperty());
-                    filterWrapper.setAscending(getSort().isAscending());
-                }
-
-                return transactionMapper.getTransactions(filterWrapper).iterator();
+            public List<Transaction> getList() {
+                return transactionMapper.getTransactions(getFilterState());
             }
 
             @Override
-            public long size() {
+            public Long getCount() {
                 return transactionMapper.getTransactionsCount(getFilterState());
             }
         };
@@ -464,13 +451,13 @@ public class StoragePage extends BasePage {
         };
         tables.add(transactionForm);
 
-        List<IColumn<Transaction, SortProperty>> transactionColumns = new ArrayList<>();
+        List<IColumn<Transaction, Sort>> transactionColumns = new ArrayList<>();
 
         if (storageId != null && edit) {
             transactionColumns.add(new DomainIdColumn<>());
 
             transactionColumns.add(new AbstractDomainColumn<Transaction>(new ResourceModel("startDate"),
-                    new SortProperty("startDate")) {
+                    new Sort("startDate")) {
                 @Override
                 public Component getFilter(String componentId, FilterForm<?> form) {
                     return new DateFilter(componentId, new PropertyModel<>(form.getModel(),"object.startDate"), form);
@@ -503,7 +490,7 @@ public class StoragePage extends BasePage {
             });
 
             transactionColumns.add(new AbstractDomainColumn<Transaction>(new ResourceModel("worker"),
-                    new SortProperty("worker")) {
+                    new Sort("worker")) {
                 @Override
                 public void populateItem(Item<ICellPopulator<Transaction>> cellItem, String componentId,
                                          IModel<Transaction> rowModel) {
@@ -517,7 +504,7 @@ public class StoragePage extends BasePage {
             });
 
             transactionColumns.add(new AbstractDomainColumn<Transaction>(new ResourceModel("client"),
-                    new SortProperty("client")) {
+                    new Sort("client")) {
                 @Override
                 public void populateItem(Item<ICellPopulator<Transaction>> cellItem, String componentId, IModel<Transaction> rowModel) {
                     Transaction transaction = rowModel.getObject();

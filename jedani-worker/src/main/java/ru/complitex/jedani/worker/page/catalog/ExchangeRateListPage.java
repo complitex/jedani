@@ -12,7 +12,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import ru.complitex.common.entity.FilterWrapper;
-import ru.complitex.common.entity.SortProperty;
+import ru.complitex.common.entity.Sort;
 import ru.complitex.common.wicket.table.FilterForm;
 import ru.complitex.common.wicket.table.TextFilter;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
@@ -107,8 +107,8 @@ public class ExchangeRateListPage extends DomainListModalPage<ExchangeRate> {
     }
 
     @Override
-    protected void onInitColumns(List<IColumn<ExchangeRate, SortProperty>> columns) {
-        columns.add(new AbstractDomainColumn<ExchangeRate>(new ResourceModel("date"), new SortProperty("date")) {
+    protected void onInitColumns(List<IColumn<ExchangeRate, Sort>> columns) {
+        columns.add(new AbstractDomainColumn<ExchangeRate>(new ResourceModel("date"), new Sort("date")) {
             @Override
             public void populateItem(Item<ICellPopulator<ExchangeRate>> cellItem, String componentId, IModel<ExchangeRate> rowModel) {
                 LocalDate date = (LocalDate) rowModel.getObject().getMap().get("date");
@@ -122,7 +122,7 @@ public class ExchangeRateListPage extends DomainListModalPage<ExchangeRate> {
             }
         });
 
-        columns.add(new AbstractDomainColumn<ExchangeRate>(new ResourceModel("value"), new SortProperty("value")) {
+        columns.add(new AbstractDomainColumn<ExchangeRate>(new ResourceModel("value"), new Sort("value")) {
             @Override
             public void populateItem(Item<ICellPopulator<ExchangeRate>> cellItem, String componentId, IModel<ExchangeRate> rowModel) {
                 cellItem.add(new Label(componentId, (Serializable) rowModel.getObject().getMap().get("value")));

@@ -20,16 +20,16 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import ru.complitex.address.entity.Country;
 import ru.complitex.common.entity.FilterWrapper;
-import ru.complitex.common.entity.SortProperty;
+import ru.complitex.common.entity.Sort;
 import ru.complitex.common.model.ArrayListModel;
-import ru.complitex.common.wicket.table.FilterForm;
-import ru.complitex.common.wicket.table.FilterProvider;
-import ru.complitex.common.wicket.table.Table;
 import ru.complitex.common.wicket.form.FormGroupDateTextField;
 import ru.complitex.common.wicket.form.FormGroupPanel;
 import ru.complitex.common.wicket.form.FormGroupSelectPanel;
 import ru.complitex.common.wicket.form.FormGroupTextField;
 import ru.complitex.common.wicket.panel.LinkPanel;
+import ru.complitex.common.wicket.table.FilterForm;
+import ru.complitex.common.wicket.table.Provider;
+import ru.complitex.common.wicket.table.Table;
 import ru.complitex.domain.component.datatable.DomainActionColumn;
 import ru.complitex.domain.component.datatable.DomainColumn;
 import ru.complitex.domain.component.datatable.DomainIdColumn;
@@ -165,7 +165,7 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
 
         FilterWrapper<Nomenclature> filterWrapper = FilterWrapper.of(new Nomenclature());
 
-        FilterProvider<Nomenclature> filterDataProvider = new FilterProvider<Nomenclature>(filterWrapper) {
+        Provider<Nomenclature> filterDataProvider = new Provider<Nomenclature>(filterWrapper) {
             @Override
             public List<Nomenclature> getList() {
                 return domainService.getDomains(Nomenclature.class, getFilterState());
@@ -209,7 +209,7 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
         filterForm.setOutputMarkupId(true);
         nomenclatureContainer.add(filterForm);
 
-        List<IColumn<Nomenclature, SortProperty>> columns = new ArrayList<>();
+        List<IColumn<Nomenclature, Sort>> columns = new ArrayList<>();
 
         Entity entity = entityService.getEntity(Nomenclature.class);
 

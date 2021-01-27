@@ -15,9 +15,9 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import ru.complitex.common.entity.FilterWrapper;
-import ru.complitex.common.entity.SortProperty;
-import ru.complitex.common.wicket.table.Provider;
+import ru.complitex.common.entity.Sort;
 import ru.complitex.common.wicket.table.FilterForm;
+import ru.complitex.common.wicket.table.Provider;
 import ru.complitex.common.wicket.table.Table;
 import ru.complitex.domain.component.datatable.DomainActionColumn;
 import ru.complitex.domain.component.datatable.DomainColumn;
@@ -34,7 +34,6 @@ import ru.complitex.jedani.worker.page.BasePage;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -95,36 +94,21 @@ public class DomainListPage<T extends Domain<T>> extends BasePage{
 
         Provider<T> provider = new Provider<T>(filterWrapper) {
             @Override
-            public Iterator<? extends T> iterator(long first, long count) {
-                FilterWrapper<T> filterWrapper = getFilterState().limit(first, count);
-
-                if (getSort() != null){
-                    filterWrapper.setSortProperty(getSort().getProperty());
-                    filterWrapper.setAscending(getSort().isAscending());
-                }else{
-                    filterWrapper.setSortProperty(new SortProperty("id"));
-                    filterWrapper.setAscending(false);
-                }
-
-                List<T> list = getDomains(filterWrapper);
-
-                onDataLoad(list);
-
-                return list.iterator();
+            public List<T> getList() {
+                return getDomains(filterWrapper);
             }
 
             @Override
-            public long size() {
+            public Long getCount() {
                 return getDomainsCount(getFilterState());
             }
-
         };
 
         FilterForm<FilterWrapper<T>> form = new FilterForm<>("form", provider);
         form.setOutputMarkupId(true);
         container.add(form);
 
-        List<IColumn<T, SortProperty>> columns = new ArrayList<>();
+        List<IColumn<T, Sort>> columns = new ArrayList<>();
 
         columns.add(new DomainIdColumn<>());
 
@@ -258,7 +242,7 @@ public class DomainListPage<T extends Domain<T>> extends BasePage{
     protected void onDataLoad(List<T> list){
     }
 
-    protected void onAddColumns(List<IColumn<T, SortProperty>> columns){
+    protected void onAddColumns(List<IColumn<T, Sort>> columns){
     }
 
     protected List<Long> getEntityAttributeIds(){
@@ -291,7 +275,7 @@ public class DomainListPage<T extends Domain<T>> extends BasePage{
         titleLabel.setDefaultModel(titleModel);
     }
 
-    protected IColumn<T, SortProperty> newDomainActionColumn(){
+    protected IColumn<T, Sort> newDomainActionColumn(){
         return new DomainActionColumn<T>(editPageClass);
     }
 

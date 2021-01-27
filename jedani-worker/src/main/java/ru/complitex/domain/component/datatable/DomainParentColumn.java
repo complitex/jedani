@@ -8,7 +8,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import ru.complitex.common.entity.FilterWrapper;
-import ru.complitex.common.entity.SortProperty;
+import ru.complitex.common.entity.Sort;
 import ru.complitex.common.wicket.table.FilterForm;
 import ru.complitex.common.wicket.table.TextFilter;
 import ru.complitex.domain.entity.Domain;
@@ -25,7 +25,7 @@ public abstract class DomainParentColumn<T extends Domain<T>> extends AbstractDo
     private final EntityAttribute entityAttribute;
 
     public DomainParentColumn(IModel<String> displayModel, EntityAttribute entityAttribute) {
-        super(displayModel, new SortProperty("parent", entityAttribute));
+        super(displayModel, new Sort("parent", entityAttribute));
 
         this.entityAttribute = entityAttribute;
     }

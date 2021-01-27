@@ -19,15 +19,15 @@ import org.apache.wicket.model.ResourceModel;
 import org.danekja.java.util.function.serializable.SerializableConsumer;
 import ru.complitex.address.entity.Country;
 import ru.complitex.common.entity.FilterWrapper;
-import ru.complitex.common.entity.SortProperty;
+import ru.complitex.common.entity.Sort;
 import ru.complitex.common.util.Dates;
 import ru.complitex.common.wicket.component.DateTimeLabel;
-import ru.complitex.common.wicket.table.Provider;
-import ru.complitex.common.wicket.table.FilterForm;
-import ru.complitex.common.wicket.table.Table;
 import ru.complitex.common.wicket.form.FormGroupDateTextField;
 import ru.complitex.common.wicket.form.FormGroupPanel;
 import ru.complitex.common.wicket.form.FormGroupTextField;
+import ru.complitex.common.wicket.table.FilterForm;
+import ru.complitex.common.wicket.table.Provider;
+import ru.complitex.common.wicket.table.Table;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.component.form.FormGroupDomainAutoComplete;
 import ru.complitex.domain.entity.Domain;
@@ -48,7 +48,6 @@ import ru.complitex.user.mapper.UserMapper;
 import javax.inject.Inject;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -123,24 +122,17 @@ public class PriceModal extends AbstractDomainEditModal<Price> {
         container.add(new FormGroupTextField<>("price", DecimalAttributeModel.of(priceModel, Price.PRICE),
                 BigDecimal.class).setRequired(true));
 
-        Provider<Price> provider = new Provider<Price>(FilterWrapper.of(new Price()).sort("id", false)) {
+        Provider<Price> provider = new Provider<>(FilterWrapper.of((Price) (new Price()
+                .setObjectId(priceModel.getObject().getObjectId())
+                .setStatus(Status.INACTIVE)))) {
+
             @Override
-            public Iterator<? extends Price> iterator(long first, long count) {
-                FilterWrapper<Price> filterWrapper = getFilterState();
-
-                filterWrapper.setFirst(first);
-                filterWrapper.setCount(count);
-
-                return domainService.getDomains(Price.class, filterWrapper).iterator();
+            public List<Price> getList() {
+                return domainService.getDomains(Price.class, getFilterState());
             }
 
             @Override
-            public long size() {
-                Price price = getFilterState().getObject();
-
-                price.setStatus(Status.INACTIVE);
-                price.setObjectId(priceModel.getObject().getObjectId());
-
+            public Long getCount() {
                 return domainService.getDomainsCount(getFilterState());
             }
         };
@@ -156,7 +148,7 @@ public class PriceModal extends AbstractDomainEditModal<Price> {
         FilterForm<FilterWrapper<Price>> historyForm = new FilterForm<>("historyForm", provider);
         historyContainer.add(historyForm);
 
-        List<IColumn<Price, SortProperty>> columns = new ArrayList<>();
+        List<IColumn<Price, Sort>> columns = new ArrayList<>();
 
         columns.add(new AbstractDomainColumn<Price>("id") {
             @Override

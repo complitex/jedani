@@ -16,7 +16,7 @@ import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.lang.Objects;
 import ru.complitex.common.entity.FilterWrapper;
-import ru.complitex.common.entity.SortProperty;
+import ru.complitex.common.entity.Sort;
 import ru.complitex.common.util.Dates;
 import ru.complitex.common.wicket.panel.LinkPanel;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
@@ -155,7 +155,7 @@ public class SalePanel extends DomainListModalPanel<Sale> {
     }
 
     @Override
-    protected void onInitColumns(List<IColumn<Sale, SortProperty>> columns) {
+    protected void onInitColumns(List<IColumn<Sale, Sort>> columns) {
         if (!isCurrentWorkerFilter()) {
             columns.add(new AbstractDomainColumn<Sale>(SaleItem.FILTER_SELLER_WORKER) {
                 @Override

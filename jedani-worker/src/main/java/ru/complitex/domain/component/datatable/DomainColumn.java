@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
  * @author Anatoly A. Ivanov
  * 19.12.2017 7:55
  */
-public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> implements Serializable {
+public class DomainColumn<T extends Domain<T>> extends AbstractDomainColumn<T> implements Serializable {
     private static Logger log = LoggerFactory.getLogger(DomainColumn.class);
 
     @Inject

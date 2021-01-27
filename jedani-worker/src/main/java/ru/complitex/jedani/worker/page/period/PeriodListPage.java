@@ -15,7 +15,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
-import ru.complitex.common.entity.SortProperty;
+import ru.complitex.common.entity.Sort;
 import ru.complitex.common.wicket.component.DateTimeLabel;
 import ru.complitex.domain.component.datatable.AbstractActionsColumn;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
@@ -23,7 +23,6 @@ import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.page.DomainListModalPage;
 import ru.complitex.jedani.worker.entity.Period;
 import ru.complitex.jedani.worker.service.PeriodService;
-import ru.complitex.jedani.worker.service.RewardService;
 import ru.complitex.jedani.worker.service.WorkerService;
 
 import javax.inject.Inject;
@@ -88,7 +87,7 @@ public class PeriodListPage extends DomainListModalPage<Period> {
     }
 
     @Override
-    protected void onInitColumns(List<IColumn<Period, SortProperty>> iColumns) {
+    protected void onInitColumns(List<IColumn<Period, Sort>> iColumns) {
         super.onInitColumns(iColumns);
 
         iColumns.add(new AbstractActionsColumn<Period>() {
