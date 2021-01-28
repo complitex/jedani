@@ -85,7 +85,7 @@ public class StorageListPage extends DomainListPage<Storage> {
             }
 
             @Override
-            public Component getHeader(String componentId, Table<Storage> table) {
+            public Component newFilter(String componentId, Table<Storage> table) {
                 return new TextFilter<>(componentId, PropertyModel.of(table.getFilterWrapper(), "map.workers"));
             }
         });
@@ -97,7 +97,7 @@ public class StorageListPage extends DomainListPage<Storage> {
             }
 
             @Override
-            public Component getHeader(String componentId, Table<Storage> table) {
+            public Component newFilter(String componentId, Table<Storage> table) {
                 return new TextFilter<>(componentId, PropertyModel.of(table.getFilterWrapper(), "map.worker"));
             }
         });
@@ -110,7 +110,7 @@ public class StorageListPage extends DomainListPage<Storage> {
             }
 
             @Override
-            public Component getHeader(String componentId, Table<Storage> table) {
+            public Component newFilter(String componentId, Table<Storage> table) {
                 return new TextFilter<>(componentId, PropertyModel.of(table.getFilterWrapper(), "map." + Storage.FILTER_NOMENCLATURE_COUNT));
             }
         });
@@ -123,7 +123,7 @@ public class StorageListPage extends DomainListPage<Storage> {
             }
 
             @Override
-            public Component getHeader(String componentId, Table<Storage> table) {
+            public Component newFilter(String componentId, Table<Storage> table) {
                 return new TextFilter<>(componentId, PropertyModel.of(table.getFilterWrapper(), "map." + Storage.FILTER_TRANSACTION_COUNT));
             }
         });

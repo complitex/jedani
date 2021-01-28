@@ -3,6 +3,7 @@ package ru.complitex.common.wicket.table;
 import org.apache.wicket.Component;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import ru.complitex.common.entity.Sort;
 
 import java.io.Serializable;
@@ -21,5 +22,7 @@ public abstract class Column<T extends Serializable> extends AbstractColumn<T, S
         super(displayModel);
     }
 
-    public abstract Component getHeader(String componentId, Table<T> table);
+    public Component newFilter(String componentId, Table<T> table){
+        return new TextFilter<>("filter", Model.of(""));
+    }
 }

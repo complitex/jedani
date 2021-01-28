@@ -141,7 +141,7 @@ public class WorkerListPage extends DomainListPage<Worker>{
             }
 
             @Override
-            public Component getHeader(String componentId, Table<Worker> table) {
+            public Component newFilter(String componentId, Table<Worker> table) {
                 return new TextFilter<>(componentId, PropertyModel.of(table.getFilterWrapper(), "map.login"));
             }
         });
@@ -155,7 +155,7 @@ public class WorkerListPage extends DomainListPage<Worker>{
             }
 
             @Override
-            public Component getHeader(String componentId, Table<Worker> table) {
+            public Component newFilter(String componentId, Table<Worker> table) {
                 return new TextFilter<>(componentId, PropertyModel.of(table.getFilterWrapper(), "map.subWorkersCount"));
             }
         });
@@ -168,7 +168,7 @@ public class WorkerListPage extends DomainListPage<Worker>{
             }
 
             @Override
-            public Component getHeader(String componentId, Table<Worker> table) {
+            public Component newFilter(String componentId, Table<Worker> table) {
                 return new TextFilter<>(componentId, PropertyModel.of(table.getFilterWrapper(), "map.level"));
             }
         });

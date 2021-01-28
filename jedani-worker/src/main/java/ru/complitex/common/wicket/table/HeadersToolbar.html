@@ -2,13 +2,18 @@
 
 <wicket:panel xmlns:wicket="http://wicket.apache.org">
     <tr class="headers">
-        <wicket:container wicket:id="headers">
-            <th>
-                <a wicket:id="link">
-                    <span wicket:id="label"></span>
-                </a>
-                <div wicket:id="input"></div>
-            </th>
-        </wicket:container>
+        <th wicket:id="headers">
+            <div wicket:id="container" class="input-group input-group-sm" >
+                <div wicket:id="filter"></div>
+
+                <div class="input-group-btn">
+                    <button class="btn btn-default"><i class="glyphicon glyphicon-sort-by-attributes-alt"></i></button>
+                    <button class="btn btn-default"><i class="glyphicon glyphicon-remove"></i></button>
+                </div>
+            </div>
+            <a wicket:id="link">
+                <span wicket:id="label"></span>
+            </a>
+        </th>
     </tr>
 </wicket:panel>

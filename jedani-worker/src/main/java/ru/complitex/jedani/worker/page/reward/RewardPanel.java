@@ -119,7 +119,7 @@ public class RewardPanel extends DomainListModalPanel<Reward> {
                 }
 
                 @Override
-                public Component getHeader(String componentId, Table<Reward> table) {
+                public Component newFilter(String componentId, Table<Reward> table) {
                     return new TextFilter<>(componentId, Model.of());
                 }
             };

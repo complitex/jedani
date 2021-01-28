@@ -111,7 +111,7 @@ public class PaymentPanel extends DomainListModalPanel<Payment> {
                 }
 
                 @Override
-                public Component getHeader(String componentId, Table<Payment> table) {
+                public Component newFilter(String componentId, Table<Payment> table) {
                     return new TextFilter<>(componentId, Model.of());
                 }
             };

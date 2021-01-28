@@ -117,7 +117,7 @@ public class ExchangeRateListPage extends DomainListModalPage<ExchangeRate> {
             }
 
             @Override
-            public Component getHeader(String componentId, Table<ExchangeRate> table) {
+            public Component newFilter(String componentId, Table<ExchangeRate> table) {
                 return new TextFilter<>(componentId, new PropertyModel<>(table.getFilterWrapper(), "map.date"));
             }
         });
@@ -129,7 +129,7 @@ public class ExchangeRateListPage extends DomainListModalPage<ExchangeRate> {
             }
 
             @Override
-            public Component getHeader(String componentId, Table<ExchangeRate> table) {
+            public Component newFilter(String componentId, Table<ExchangeRate> table) {
                 return new TextFilter<>(componentId, new PropertyModel<>(table.getFilterWrapper(), "map.value"));
             }
         });

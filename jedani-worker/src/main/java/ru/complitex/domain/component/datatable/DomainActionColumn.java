@@ -51,7 +51,7 @@ public class DomainActionColumn<T extends Domain<T>> extends AbstractDomainColum
     }
 
     @Override
-    public Component getHeader(String componentId, Table<T> table) {
+    public Component newFilter(String componentId, Table<T> table) {
         return new LinkPanel(componentId, new BootstrapAjaxButton(LinkPanel.LINK_COMPONENT_ID, Buttons.Type.Link){
             @Override
             protected void onSubmit(AjaxRequestTarget target) {

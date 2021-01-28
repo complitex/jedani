@@ -65,7 +65,7 @@ public abstract class AbstractDomainColumn<T extends Domain<T>> extends Column<T
     }
 
     @Override
-    public Component getHeader(String componentId, Table<T> table) {
+    public Component newFilter(String componentId, Table<T> table) {
         TextFilter<?> textDataFilter =  new TextFilter<>(componentId, new PropertyModel<>(table.getFilterWrapper(),"map." + columnKey));
 
         if (size != null){

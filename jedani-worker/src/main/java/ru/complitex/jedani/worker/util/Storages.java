@@ -47,7 +47,7 @@ public class Storages {
             }
 
             @Override
-            public Component getHeader(String componentId, Table<Product> table) {
+            public Component newFilter(String componentId, Table<Product> table) {
                 return new TextFilter<>(componentId, Model.of(""));
             }
         });

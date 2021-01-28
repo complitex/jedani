@@ -458,7 +458,7 @@ public class StoragePage extends BasePage {
             transactionColumns.add(new AbstractDomainColumn<>(new ResourceModel("startDate"),
                     new Sort("startDate")) {
                 @Override
-                public Component getHeader(String componentId, Table<Transaction> table) {
+                public Component newFilter(String componentId, Table<Transaction> table) {
                     return new DateFilter(componentId, new PropertyModel<>(form.getModel(),"object.startDate"));
                 }
 
@@ -497,7 +497,7 @@ public class StoragePage extends BasePage {
                 }
 
                 @Override
-                public Component getHeader(String componentId, Table<Transaction> table) {
+                public Component newFilter(String componentId, Table<Transaction> table) {
                     return new TextFilter<>(componentId, new PropertyModel<>(form.getModel(), "map.worker"));
                 }
             });
@@ -513,7 +513,7 @@ public class StoragePage extends BasePage {
                 }
 
                 @Override
-                public Component getHeader(String componentId, Table<Transaction> table) {
+                public Component newFilter(String componentId, Table<Transaction> table) {
                     return new TextFilter<>(componentId, new PropertyModel<>(form.getModel(), "map.client"));
                 }
             });
@@ -524,7 +524,7 @@ public class StoragePage extends BasePage {
             transactionColumns.add(new AbstractDomainColumn<>(transactionEntity
                     .getEntityAttribute(Transaction.TRANSFER_TYPE)) {
                 @Override
-                public Component getHeader(String componentId, Table<Transaction> table) {
+                public Component newFilter(String componentId, Table<Transaction> table) {
                     Transaction transaction = (Transaction)((FilterWrapper<?>)form.getModelObject()).getObject();
 
                     return new SelectPanel(componentId, new BootstrapSelect<>(SelectPanel.SELECT_COMPONENT_ID,
@@ -582,7 +582,7 @@ public class StoragePage extends BasePage {
             transactionColumns.add(new AbstractDomainColumn<>(transactionEntity
                     .getEntityAttribute(Transaction.TYPE)) {
                 @Override
-                public Component getHeader(String componentId, Table<Transaction> table) {
+                public Component newFilter(String componentId, Table<Transaction> table) {
                     Transaction transaction = (Transaction)((FilterWrapper<?>)form.getModelObject()).getObject();
 
                     return new SelectPanel(componentId, new BootstrapSelect<>(SelectPanel.SELECT_COMPONENT_ID,

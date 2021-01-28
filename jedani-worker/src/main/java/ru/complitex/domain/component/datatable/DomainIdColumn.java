@@ -22,7 +22,7 @@ public class DomainIdColumn<T extends Domain<T>> extends AbstractDomainColumn<T>
     }
 
     @Override
-    public Component getHeader(String componentId, Table<T> table) {
+    public Component newFilter(String componentId, Table<T> table) {
         return new TextFilter<>(componentId, new PropertyModel<>(table.getFilterWrapper(), "object.objectId"));
     }
 

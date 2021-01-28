@@ -30,7 +30,7 @@ public abstract class DomainParentColumn<T extends Domain<T>> extends AbstractDo
     }
 
     @Override
-    public Component getHeader(String componentId, Table<T> table) {
+    public Component newFilter(String componentId, Table<T> table) {
         Domain<?> domain = table.getFilterWrapper().getObject();
 
         domain.setParentEntityAttribute(entityAttribute);

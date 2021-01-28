@@ -43,7 +43,7 @@ public class FilterToolbar extends AbstractToolbar {
 
                 if (col instanceof Column) {
                     Column<T> filteredCol = (Column<T>) col;
-                    filter = filteredCol.getHeader(FILTER_ID, table);
+                    filter = filteredCol.newFilter(FILTER_ID, table);
                 }
 
                 if (filter == null) {

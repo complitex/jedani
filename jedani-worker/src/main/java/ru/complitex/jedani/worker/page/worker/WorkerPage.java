@@ -814,7 +814,7 @@ public class WorkerPage extends BasePage {
                     }
 
                     @Override
-                    public Component getHeader(String componentId, Table<Worker> table) {
+                    public Component newFilter(String componentId, Table<Worker> table) {
                         return new TextFilter<>(componentId, Model.of(""));
                     }
                 });
@@ -826,7 +826,7 @@ public class WorkerPage extends BasePage {
                     }
 
                     @Override
-                    public Component getHeader(String componentId, Table<Worker> table) {
+                    public Component newFilter(String componentId, Table<Worker> table) {
                         return new TextFilter<>(componentId, Model.of(""));
                     }
                 });

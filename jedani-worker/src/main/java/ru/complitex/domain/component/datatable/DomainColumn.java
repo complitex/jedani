@@ -77,7 +77,7 @@ public class DomainColumn<T extends Domain<T>> extends AbstractDomainColumn<T> i
     }
 
     @Override
-    public Component getHeader(String componentId, Table<T> table) {
+    public Component newFilter(String componentId, Table<T> table) {
         Long entityAttributeId = entityAttribute.getEntityAttributeId();
 
         T domain = table.getFilterWrapper().getObject();
@@ -87,12 +87,12 @@ public class DomainColumn<T extends Domain<T>> extends AbstractDomainColumn<T> i
         switch (entityAttribute.getValueType()){
             case NUMBER:
                 TextFilter<Long> textFilter = new TextFilter<>(componentId, new NumberAttributeModel(domain, entityAttributeId));
-                textFilter.getFilter().setType(Long.class);
+                textFilter.getTextField().setType(Long.class);
 
                 return textFilter;
             case DECIMAL:
                 TextFilter<BigDecimal> decimalFilter = new TextFilter<>(componentId, new DecimalAttributeModel(domain, entityAttributeId));
-                decimalFilter.getFilter().setType(BigDecimal.class);
+                decimalFilter.getTextField().setType(BigDecimal.class);
 
                 return decimalFilter;
             case DATE:
