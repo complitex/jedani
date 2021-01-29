@@ -42,12 +42,22 @@ public class TextFilter<T> extends AbstractFilter<T> {
         return textField;
     }
 
-    public void setSize(Integer size) {
+    public TextFilter<T> setSize(Integer size) {
         this.size = size;
+
+        return this;
+    }
+
+    public TextFilter<T> setType(Class<?> type) {
+        textField.setType(type);
+
+        return this;
     }
 
     @Override
-    public void onChange(SerializableConsumer<AjaxRequestTarget> onChange) {
+    public AbstractFilter<T> onChange(SerializableConsumer<AjaxRequestTarget> onChange) {
         textField.add(OnChangeAjaxBehavior.onChange(onChange));
+
+        return this;
     }
 }

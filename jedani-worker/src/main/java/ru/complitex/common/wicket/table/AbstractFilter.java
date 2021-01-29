@@ -16,8 +16,8 @@ public class AbstractFilter<T> extends GenericPanel<T> {
         super(id, model);
     }
 
-    public void onChange(SerializableConsumer<AjaxRequestTarget> onChange){
-
+    public AbstractFilter<T> onChange(SerializableConsumer<AjaxRequestTarget> onChange){
+        return this;
     }
 
     public IModel<String> getLabelModel() {

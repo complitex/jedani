@@ -102,7 +102,7 @@ public class PaymentPanel extends DomainListModalPanel<Payment> {
     @Override
     protected AbstractDomainColumn<Payment> newDomainColumn(EntityAttribute a) {
         if (a.getEntityAttributeId() == Payment.PERIOD){
-            return new AbstractDomainColumn<Payment>("period") {
+            return new AbstractDomainColumn<>("period", this) {
                 @Override
                 public void populateItem(Item<ICellPopulator<Payment>> cellItem, String componentId, IModel<Payment> rowModel) {
                     Period period = periodService.getPeriod(rowModel.getObject().getPeriodId());
@@ -116,7 +116,7 @@ public class PaymentPanel extends DomainListModalPanel<Payment> {
                 }
             };
         } else if (a.getEntityAttributeId().equals(Payment.SALE)){
-            return new AbstractDomainColumn<Payment>(a) {
+            return new AbstractDomainColumn<>(a) {
                 @Override
                 public void populateItem(Item<ICellPopulator<Payment>> cellItem, String componentId, IModel<Payment> rowModel) {
                     Sale sale = domainService.getDomain(Sale.class, rowModel.getObject().getSaleId());

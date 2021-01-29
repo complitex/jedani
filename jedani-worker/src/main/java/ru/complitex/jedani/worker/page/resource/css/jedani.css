@@ -372,7 +372,6 @@ form label[required=required]:after {
     width: 101px;
 }
 
-
 .bootstrap-select > .dropdown-toggle {
     color: #222;
 }
@@ -382,6 +381,60 @@ form label[required=required]:after {
     outline: 0;
     -webkit-box-shadow: none;
     box-shadow: none;
+}
+
+.table > thead > tr > th.filter {
+    padding-top: 4px;
+    padding-bottom: 4px;
+    vertical-align: middle;
+}
+
+th.filter .form-control {
+    font-size: 13px;
+    font-weight: normal;
+    min-width: 50px;
+}
+
+.table-hover > tbody > tr:hover {
+    background-color: #f5f5f5;
+}
+
+tr.sale_status_closed > td {
+    background-color: #ede7f6;
+}
+
+tr:hover.sale_status_closed > td {
+    background-color: #d1c4e9;
+}
+
+p {
+    margin: 0;
+}
+
+td div p {
+    max-height: 120px;
+    overflow-y: auto;
+}
+
+td div p::-webkit-scrollbar {
+    width: 5px;
+}
+
+td div p::-webkit-scrollbar-thumb {
+    background: #d9d9d9;
+}
+
+td div p::-webkit-scrollbar-thumb:hover {
+    background: #b3b3b3;
+}
+
+.input-sm > .dropdown-toggle {
+    height: 26px;
+    overflow: hidden;
+}
+
+.caret {
+    display: none;
 }
 
 .btn-link {
@@ -605,48 +658,6 @@ fieldset[disabled] .btn-flat-default.focus {
 .bootstrap-select > select.mobile-device:focus + .dropdown-toggle,
 .bootstrap-select .dropdown-toggle:focus {
     outline: none !important;
-}
-
-.table > thead > tr > th {
-    vertical-align: middle;
-}
-
-.table > thead > tr > th.filter {
-    padding-top: 0;
-    padding-bottom: 0;
-}
-
-.table-hover > tbody > tr:hover {
-    background-color: #f5f5f5;
-}
-
-tr.sale_status_closed > td {
-    background-color: #ede7f6;
-}
-
-tr:hover.sale_status_closed > td {
-    background-color: #d1c4e9;
-}
-
-p {
-    margin: 0;
-}
-
-td div p {
-    max-height: 120px;
-    overflow-y: auto;
-}
-
-td div p::-webkit-scrollbar {
-    width: 5px;
-}
-
-td div p::-webkit-scrollbar-thumb {
-    background: #d9d9d9;
-}
-
-td div p::-webkit-scrollbar-thumb:hover {
-    background: #b3b3b3;
 }
 
 .datepicker table tr td.today,

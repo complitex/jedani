@@ -17,7 +17,7 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import ru.complitex.address.entity.City;
 import ru.complitex.address.entity.CityType;
@@ -65,12 +65,12 @@ public class WorkerListPage extends DomainListPage<Worker>{
     @Inject
     private UserMapper userMapper;
 
-    private WorkerRemoveModal workerRemoveModal;
+    private final WorkerRemoveModal workerRemoveModal;
 
     public WorkerListPage() {
         super(Worker.class, WorkerPage.class);
 
-        Form form = new Form("workerRemoveForm");
+        Form<?> form = new Form<>("workerRemoveForm");
         getContainer().add(form);
 
         form.add(workerRemoveModal = new WorkerRemoveModal("workerRemove"){
@@ -129,8 +129,7 @@ public class WorkerListPage extends DomainListPage<Worker>{
 
     @Override
     protected void onAddColumns(List<IColumn<Worker, Sort>> columns) {
-        columns.add(4, new AbstractDomainColumn<Worker>(new ResourceModel("login"),
-                new Sort("login")) {
+        columns.add(4, new AbstractDomainColumn<>(new StringResourceModel("login", this), new Sort("login")) {
             @Override
             public void populateItem(Item<ICellPopulator<Worker>> cellItem, String componentId, IModel<Worker> rowModel) {
                 Long userId = rowModel.getObject().getParentId();
@@ -147,8 +146,7 @@ public class WorkerListPage extends DomainListPage<Worker>{
         });
 
         //noinspection Duplicates
-        columns.add(new AbstractDomainColumn<Worker>(new ResourceModel("subWorkersCount"),
-                new Sort("subWorkersCount")) {
+        columns.add(new AbstractDomainColumn<>(new StringResourceModel("subWorkersCount", this), new Sort("subWorkersCount")) {
             @Override
             public void populateItem(Item<ICellPopulator<Worker>> cellItem, String componentId, IModel<Worker> rowModel) {
                 cellItem.add(new Label(componentId, rowModel.getObject().getSubWorkerCount()));
@@ -161,7 +159,7 @@ public class WorkerListPage extends DomainListPage<Worker>{
         });
 
         //noinspection Duplicates
-        columns.add(new AbstractDomainColumn<Worker>(new ResourceModel("level"), new Sort("level")) {
+        columns.add(new AbstractDomainColumn<>(new StringResourceModel("level", this), new Sort("level")) {
             @Override
             public void populateItem(Item<ICellPopulator<Worker>> cellItem, String componentId, IModel<Worker> rowModel) {
                 cellItem.add(new Label(componentId, rowModel.getObject().getLevel()));
@@ -193,11 +191,11 @@ public class WorkerListPage extends DomainListPage<Worker>{
     protected IModel<String> displayModel(EntityAttribute entityAttribute) {
         switch (entityAttribute.getEntityAttributeId().intValue()){
             case (int) Worker.J_ID:
-                return new ResourceModel("jId");
+                return new StringResourceModel("jId", this);
             case (int) Worker.REGISTRATION_DATE:
-                return new ResourceModel("involvedAt");
+                return new StringResourceModel("involvedAt", this);
             case (int) Worker.TYPE:
-                return new ResourceModel("type");
+                return new StringResourceModel("type", this);
         }
 
         return super.displayModel(entityAttribute);
@@ -205,7 +203,7 @@ public class WorkerListPage extends DomainListPage<Worker>{
 
     @Override
     protected IColumn<Worker, Sort> newDomainActionColumn() {
-        return new DomainActionColumn<Worker>(WorkerPage.class){
+        return new DomainActionColumn<>(WorkerPage.class){
             @Override
             public void populateItem(Item<ICellPopulator<Worker>> cellItem, String componentId, IModel<Worker> rowModel) {
                 Worker worker = rowModel.getObject();

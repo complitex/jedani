@@ -7,7 +7,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.model.StringResourceModel;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.util.Dates;
 import ru.complitex.common.wicket.table.Table;
@@ -110,7 +110,7 @@ public class RewardPanel extends DomainListModalPanel<Reward> {
     @Override
     protected AbstractDomainColumn<Reward> newDomainColumn(EntityAttribute a) {
         if (a.getEntityAttributeId() == Reward.PERIOD){
-            return new AbstractDomainColumn<Reward>("period") {
+            return new AbstractDomainColumn<>("period", this) {
                 @Override
                 public void populateItem(Item<ICellPopulator<Reward>> cellItem, String componentId, IModel<Reward> rowModel) {
                     Period period = periodService.getPeriod(rowModel.getObject().getPeriodId());
@@ -124,7 +124,7 @@ public class RewardPanel extends DomainListModalPanel<Reward> {
                 }
             };
         } else if (a.getEntityAttributeId().equals(Reward.SALE)){
-            return new AbstractDomainColumn<Reward>("sale") {
+            return new AbstractDomainColumn<>("sale", this) {
                 @Override
                 public void populateItem(Item<ICellPopulator<Reward>> cellItem, String componentId, IModel<Reward> rowModel) {
                     String sale = "";
@@ -137,14 +137,14 @@ public class RewardPanel extends DomainListModalPanel<Reward> {
                 }
             };
         }else if (a.getEntityAttributeId().equals(Reward.WORKER)){
-            return new AbstractDomainColumn<Reward>(a) {
+            return new AbstractDomainColumn<>(a) {
                 @Override
                 public void populateItem(Item<ICellPopulator<Reward>> cellItem, String componentId, IModel<Reward> rowModel) {
                     cellItem.add(new Label(componentId, workerService.getWorkerLabel(rowModel.getObject().getWorkerId())));
                 }
             };
         }else if (a.getEntityAttributeId().equals(Reward.MANAGER)){
-            return new AbstractDomainColumn<Reward>(a) {
+            return new AbstractDomainColumn<>(a) {
                 @Override
                 public void populateItem(Item<ICellPopulator<Reward>> cellItem, String componentId, IModel<Reward> rowModel) {
                     cellItem.add(new Label(componentId, workerService.getWorkerLabel(rowModel.getObject().getManagerId())));
@@ -154,24 +154,24 @@ public class RewardPanel extends DomainListModalPanel<Reward> {
         }else if (a.getEntityAttributeId().equals(Reward.TYPE)){
             return new DomainColumn<>(a);
         }else if (a.getEntityAttributeId().equals(Reward.STATUS)){
-            return new AbstractDomainColumn<Reward>(a) {
+            return new AbstractDomainColumn<>(a) {
                 @Override
                 public void populateItem(Item<ICellPopulator<Reward>> cellItem, String componentId, IModel<Reward> rowModel) {
-                    cellItem.add(new Label(componentId, new ResourceModel("status." + rowModel.getObject().getRewardStatus())));
+                    cellItem.add(new Label(componentId, new StringResourceModel("status." + rowModel.getObject().getRewardStatus(), RewardPanel.this)));
                 }
             };
         }
 
         if (a.getEntityAttributeId().equals(Reward.MONTH)){
-            return new DomainColumn<>(a, new ResourceModel("month"));
+            return new DomainColumn<>(a, new StringResourceModel("month", this));
         }else if (a.getEntityAttributeId().equals(Reward.LOCAL)){
-            return new DomainColumn<>(a, new ResourceModel("local"));
+            return new DomainColumn<>(a, new StringResourceModel("local", this));
         }else if (a.getEntityAttributeId().equals(Reward.PAYMENT_VOLUME)){
-            return new DomainColumn<>(a, new ResourceModel("paymentVolume"));
+            return new DomainColumn<>(a, new StringResourceModel("paymentVolume", this));
         }else if (a.getEntityAttributeId().equals(Reward.GROUP_PAYMENT_VOLUME)){
-            return new DomainColumn<>(a, new ResourceModel("groupPaymentVolume"));
+            return new DomainColumn<>(a, new StringResourceModel("groupPaymentVolume", this));
         }else if (a.getEntityAttributeId().equals(Reward.STRUCTURE_PAYMENT_VOLUME)){
-            return new DomainColumn<>(a, new ResourceModel("structurePaymentVolume"));
+            return new DomainColumn<>(a, new StringResourceModel("structurePaymentVolume", this));
         }
 
         return super.newDomainColumn(a);

@@ -1,10 +1,7 @@
 package ru.complitex.domain.component.datatable;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
-import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.model.*;
 import ru.complitex.common.entity.Sort;
 import ru.complitex.common.wicket.table.Column;
 import ru.complitex.common.wicket.table.Table;
@@ -34,16 +31,10 @@ public abstract class AbstractDomainColumn<T extends Domain<T>> extends Column<T
         super(displayModel(entityAttribute), sortProperty(entityAttribute));
     }
 
-    public AbstractDomainColumn(String columnKey) {
-        super(new ResourceModel(columnKey), new Sort(columnKey));
+    public AbstractDomainColumn(String columnKey, Component component) {
+        super(new StringResourceModel(columnKey, component), new Sort(columnKey));
 
         this.columnKey = columnKey;
-    }
-
-    public AbstractDomainColumn(String columnKey, Integer size) {
-        this(columnKey);
-
-        this.size = size;
     }
 
 

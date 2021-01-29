@@ -7,8 +7,13 @@
                 <div wicket:id="filter"></div>
 
                 <div class="input-group-btn">
-                    <button class="btn btn-default"><i class="glyphicon glyphicon-sort-by-attributes-alt"></i></button>
-                    <button class="btn btn-default"><i class="glyphicon glyphicon-remove"></i></button>
+                    <a wicket:id="sort" class="btn btn-default">
+                        <i wicket:id="ascending" class="glyphicon glyphicon-sort-by-attributes-alt"></i>
+                    </a>
+
+                    <a wicket:id="clear" class="btn btn-default">
+                        <i class="glyphicon glyphicon-remove"></i>
+                    </a>
                 </div>
             </div>
             <a wicket:id="link">

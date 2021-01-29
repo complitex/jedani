@@ -64,13 +64,13 @@ public class PriceModal extends AbstractDomainEditModal<Price> {
     @Inject
     private UserMapper userMapper;
 
-    private IModel<Price> priceModel;
+    private final IModel<Price> priceModel;
 
-    private WebMarkupContainer container;
-    private NotificationPanel feedback;
+    private final WebMarkupContainer container;
+    private final NotificationPanel feedback;
 
-    private Long currentUserId;
-    private SerializableConsumer<AjaxRequestTarget> onChange;
+    private final Long currentUserId;
+    private final SerializableConsumer<AjaxRequestTarget> onChange;
 
     public PriceModal(String markupId, Long currentUserId, SerializableConsumer<AjaxRequestTarget> onChange) {
         super(markupId);
@@ -108,8 +108,8 @@ public class PriceModal extends AbstractDomainEditModal<Price> {
         container.add(new FormGroupPanel("nomenclature", new NomenclatureAutoComplete(FormGroupPanel.COMPONENT_ID,
                 DomainParentModel.of(priceModel)){
             @Override
-            protected Domain getFilterObject(String input) {
-                Domain domain = super.getFilterObject(input);
+            protected Domain<?> getFilterObject(String input) {
+                Domain<?> domain = super.getFilterObject(input);
 
                 domain.setNumber(Nomenclature.COUNTRIES, priceModel.getObject().getCountyId());
 
@@ -150,7 +150,7 @@ public class PriceModal extends AbstractDomainEditModal<Price> {
 
         List<IColumn<Price, Sort>> columns = new ArrayList<>();
 
-        columns.add(new AbstractDomainColumn<Price>("id") {
+        columns.add(new AbstractDomainColumn<>("id", this) {
             @Override
             public void populateItem(Item<ICellPopulator<Price>> cellItem, String componentId, IModel<Price> rowModel) {
                 cellItem.add(new Label(componentId, rowModel.getObject().getId()));
@@ -162,28 +162,28 @@ public class PriceModal extends AbstractDomainEditModal<Price> {
             }
         });
 
-        columns.add(new AbstractDomainColumn<Price>("dateBegin") {
+        columns.add(new AbstractDomainColumn<>("dateBegin", this) {
             @Override
             public void populateItem(Item<ICellPopulator<Price>> cellItem, String componentId, IModel<Price> rowModel) {
                 cellItem.add(new Label(componentId, rowModel.getObject().getDate(Price.DATE_BEGIN)));
             }
         });
 
-        columns.add(new AbstractDomainColumn<Price>("dateEnd") {
+        columns.add(new AbstractDomainColumn<>("dateEnd", this) {
             @Override
             public void populateItem(Item<ICellPopulator<Price>> cellItem, String componentId, IModel<Price> rowModel) {
                 cellItem.add(new Label(componentId, rowModel.getObject().getDate(Price.DATE_END)));
             }
         });
 
-        columns.add(new AbstractDomainColumn<Price>("price") {
+        columns.add(new AbstractDomainColumn<>("price", this) {
             @Override
             public void populateItem(Item<ICellPopulator<Price>> cellItem, String componentId, IModel<Price> rowModel) {
                 cellItem.add(new Label(componentId, rowModel.getObject().getDecimal(Price.PRICE)));
             }
         });
 
-        columns.add(new AbstractDomainColumn<Price>("startDate") {
+        columns.add(new AbstractDomainColumn<>("startDate", this) {
             @Override
             public void populateItem(Item<ICellPopulator<Price>> cellItem, String componentId, IModel<Price> rowModel) {
                 cellItem.add(new DateTimeLabel(componentId, rowModel.getObject().getStartDate())
@@ -191,7 +191,7 @@ public class PriceModal extends AbstractDomainEditModal<Price> {
             }
         });
 
-        columns.add(new AbstractDomainColumn<Price>("user") {
+        columns.add(new AbstractDomainColumn<>("user", this) {
             @Override
             public void populateItem(Item<ICellPopulator<Price>> cellItem, String componentId, IModel<Price> rowModel) {
                 User user = userMapper.getUser(rowModel.getObject().getUserId());
@@ -223,7 +223,7 @@ public class PriceModal extends AbstractDomainEditModal<Price> {
     }
 
     private void cancel(AjaxRequestTarget target) {
-        container.visitChildren(FormComponent.class, (c, v) -> ((FormComponent) c).clearInput());
+        container.visitChildren(FormComponent.class, (c, v) -> ((FormComponent<?>) c).clearInput());
 
         container.setVisible(false);
         target.add(container);

@@ -112,4 +112,8 @@ public class Table<T extends Serializable> extends DataTable<T, Sort> implements
     public FilterWrapper<T> getFilterWrapper(){
         return provider.getFilterState();
     }
+
+    public Provider<T> getProvider() {
+        return provider;
+    }
 }

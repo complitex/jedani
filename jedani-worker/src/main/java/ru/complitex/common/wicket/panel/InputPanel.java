@@ -11,7 +11,7 @@ public class InputPanel extends Panel {
     public static String INPUT_COMPONENT_ID = "input";
 
     public InputPanel(String id, Component input) {
-        super(id);
+        super(id, input.getDefaultModel());
 
         add(input);
     }

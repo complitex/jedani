@@ -3,6 +3,7 @@ package ru.complitex.domain.component.datatable;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.DateTextField;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.DateTextFieldConfig;
 import org.apache.wicket.Component;
+import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.cdi.NonContextual;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
@@ -86,21 +87,26 @@ public class DomainColumn<T extends Domain<T>> extends AbstractDomainColumn<T> i
 
         switch (entityAttribute.getValueType()){
             case NUMBER:
-                TextFilter<Long> textFilter = new TextFilter<>(componentId, new NumberAttributeModel(domain, entityAttributeId));
-                textFilter.getTextField().setType(Long.class);
-
-                return textFilter;
+                return new TextFilter<>(componentId, new NumberAttributeModel(domain, entityAttributeId))
+                        .setType(Long.class)
+                        .onChange(t -> t.add(table.getBody()));
             case DECIMAL:
-                TextFilter<BigDecimal> decimalFilter = new TextFilter<>(componentId, new DecimalAttributeModel(domain, entityAttributeId));
-                decimalFilter.getTextField().setType(BigDecimal.class);
-
-                return decimalFilter;
+                return new TextFilter<>(componentId, new DecimalAttributeModel(domain, entityAttributeId))
+                        .setType(BigDecimal.class)
+                        .onChange(t -> t.add(table.getBody()));
             case DATE:
                 return new InputPanel(componentId, new DateTextField(InputPanel.INPUT_COMPONENT_ID,
                         new DateAttributeModel(domain, entityAttributeId),
-                        new DateTextFieldConfig().withFormat("dd.MM.yyyy").withLanguage("ru").autoClose(true)));
+                        new DateTextFieldConfig()
+                                .withFormat("dd.MM.yyyy")
+                                .withLanguage("ru")
+                                .autoClose(true)
+                                .highlightToday(true))
+                        .add(new AttributeAppender("class", "form-control input-sm"))
+                        .add(OnChangeAjaxBehavior.onChange(t -> t.add(table.getBody()))));
             default:
-                return new TextFilter<>(componentId, new TextAttributeModel(domain, entityAttributeId, StringType.DEFAULT));
+                return new TextFilter<>(componentId, new TextAttributeModel(domain, entityAttributeId, StringType.DEFAULT))
+                        .onChange(t -> t.add(table.getBody()));
         }
     }
 
