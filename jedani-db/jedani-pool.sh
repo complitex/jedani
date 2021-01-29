@@ -20,4 +20,5 @@ $GLASSFISH_ASADMIN create-auth-realm \
     password-column=password:\
     group-table=user_group:\
     group-name-column=name:\
-    charset=UTF-8" jedaniRealm
+    charset=UTF-8:\
+    digest-algorithm=SHA-256" jedaniRealm
