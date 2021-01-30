@@ -459,7 +459,7 @@ public class StoragePage extends BasePage {
                     new Sort("startDate")) {
                 @Override
                 public Component newFilter(String componentId, Table<Transaction> table) {
-                    return new DateFilter(componentId, new PropertyModel<>(form.getModel(),"object.startDate"));
+                    return new DateFilter(componentId, new PropertyModel<>(transactionForm.getModel(),"object.startDate"));
                 }
 
                 @Override
@@ -498,7 +498,7 @@ public class StoragePage extends BasePage {
 
                 @Override
                 public Component newFilter(String componentId, Table<Transaction> table) {
-                    return new TextFilter<>(componentId, new PropertyModel<>(form.getModel(), "map.worker"));
+                    return new TextFilter<>(componentId, new PropertyModel<>(transactionForm.getModel(), "map.worker"));
                 }
             });
 
@@ -514,7 +514,7 @@ public class StoragePage extends BasePage {
 
                 @Override
                 public Component newFilter(String componentId, Table<Transaction> table) {
-                    return new TextFilter<>(componentId, new PropertyModel<>(form.getModel(), "map.client"));
+                    return new TextFilter<>(componentId, new PropertyModel<>(transactionForm.getModel(), "map.client"));
                 }
             });
 
@@ -525,7 +525,7 @@ public class StoragePage extends BasePage {
                     .getEntityAttribute(Transaction.TRANSFER_TYPE)) {
                 @Override
                 public Component newFilter(String componentId, Table<Transaction> table) {
-                    Transaction transaction = (Transaction)((FilterWrapper<?>)form.getModelObject()).getObject();
+                    Transaction transaction = (Transaction)((FilterWrapper<?>)transactionForm.getModelObject()).getObject();
 
                     return new SelectPanel(componentId, new BootstrapSelect<>(SelectPanel.SELECT_COMPONENT_ID,
                             new NumberAttributeModel(transaction,
@@ -583,7 +583,7 @@ public class StoragePage extends BasePage {
                     .getEntityAttribute(Transaction.TYPE)) {
                 @Override
                 public Component newFilter(String componentId, Table<Transaction> table) {
-                    Transaction transaction = (Transaction)((FilterWrapper<?>)form.getModelObject()).getObject();
+                    Transaction transaction = (Transaction)((FilterWrapper<?>)transactionForm.getModelObject()).getObject();
 
                     return new SelectPanel(componentId, new BootstrapSelect<>(SelectPanel.SELECT_COMPONENT_ID,
                             new NumberAttributeModel(transaction,
