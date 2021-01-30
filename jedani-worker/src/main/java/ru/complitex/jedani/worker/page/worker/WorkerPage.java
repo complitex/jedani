@@ -788,7 +788,7 @@ public class WorkerPage extends BasePage {
 
         List<ITab> tabs = new ArrayList<>();
 
-        tabs.add(new AbstractTab(new ResourceModel("structure")) {
+        tabs.add(new AbstractTab(new StringResourceModel("structure", WorkerPage.this)) {
             @Override
             public WebMarkupContainer getPanel(String panelId) {
                 Fragment structure = new Fragment(panelId, "structure", WorkerPage.this);
@@ -806,7 +806,7 @@ public class WorkerPage extends BasePage {
                 columns.add(new DomainIdColumn<>());
                 getEntityAttributes().forEach(a -> columns.add(new DomainColumn<>(a)));
 
-                columns.add(new AbstractDomainColumn<Worker>(new ResourceModel("subWorkersCount"),
+                columns.add(new AbstractDomainColumn<Worker>(new StringResourceModel("subWorkersCount", WorkerPage.this),
                         new Sort("subWorkersCount")) {
                     @Override
                     public void populateItem(Item<ICellPopulator<Worker>> cellItem, String componentId, IModel<Worker> rowModel) {
@@ -819,7 +819,7 @@ public class WorkerPage extends BasePage {
                     }
                 });
 
-                columns.add(new AbstractDomainColumn<Worker>(new ResourceModel("level"), new Sort("level")) {
+                columns.add(new AbstractDomainColumn<Worker>(new StringResourceModel("level", WorkerPage.this), new Sort("level")) {
                     @Override
                     public void populateItem(Item<ICellPopulator<Worker>> cellItem, String componentId, IModel<Worker> rowModel) {
                         cellItem.add(new Label(componentId, rowModel.getObject().getLevel() - getCurrentWorker().getLevel()));
@@ -960,7 +960,7 @@ public class WorkerPage extends BasePage {
             }
         });
 
-        tabs.add(new AbstractTab(new ResourceModel("sale")) {
+        tabs.add(new AbstractTab(new StringResourceModel("sale", WorkerPage.this)) {
             @Override
             public WebMarkupContainer getPanel(String panelId) {
                 Fragment sale = new Fragment(panelId, "sale", WorkerPage.this);
@@ -971,7 +971,7 @@ public class WorkerPage extends BasePage {
             }
         });
 
-        tabs.add(new AbstractTab(new ResourceModel("payment")) {
+        tabs.add(new AbstractTab(new StringResourceModel("payment", WorkerPage.this)) {
             @Override
             public WebMarkupContainer getPanel(String panelId) {
                 Fragment payment = new Fragment(panelId, "payment", WorkerPage.this);
@@ -982,7 +982,7 @@ public class WorkerPage extends BasePage {
             }
         });
 
-        tabs.add(new AbstractTab(new ResourceModel("finance")) {
+        tabs.add(new AbstractTab(new StringResourceModel("finance", WorkerPage.this)) {
             @Override
             public WebMarkupContainer getPanel(String panelId) {
                 Fragment finance = new Fragment(panelId, "finance", WorkerPage.this){
@@ -1062,7 +1062,7 @@ public class WorkerPage extends BasePage {
             }
         });
 
-        tabs.add(new AbstractTab(new ResourceModel("reward")) {
+        tabs.add(new AbstractTab(new StringResourceModel("reward", WorkerPage.this)) {
             @Override
             public WebMarkupContainer getPanel(String panelId) {
                 Fragment reward = new Fragment(panelId, "reward", WorkerPage.this);
@@ -1074,7 +1074,7 @@ public class WorkerPage extends BasePage {
         });
 
         if (isAdmin()) {
-            tabs.add(new AbstractTab(new ResourceModel("history")) {
+            tabs.add(new AbstractTab(new StringResourceModel("history", WorkerPage.this)) {
                 @Override
                 public WebMarkupContainer getPanel(String panelId) {
                     Fragment history = new Fragment(panelId, "history", WorkerPage.this);
@@ -1083,14 +1083,14 @@ public class WorkerPage extends BasePage {
 
                     List<IColumn<Attribute, String>> historyColumns = new ArrayList<>();
 
-                    historyColumns.add(new AbstractColumn<Attribute, String>(new ResourceModel("date"), "date") {
+                    historyColumns.add(new AbstractColumn<Attribute, String>(new StringResourceModel("date", WorkerPage.this), "date") {
                         @Override
                         public void populateItem(Item<ICellPopulator<Attribute>> cellItem, String componentId, IModel<Attribute> rowModel) {
                             cellItem.add(new DateTimeLabel(componentId, rowModel.getObject().getStartDate()));
                         }
                     });
 
-                    historyColumns.add(new AbstractColumn<Attribute, String>(new ResourceModel("name"), "name") {
+                    historyColumns.add(new AbstractColumn<Attribute, String>(new StringResourceModel("name", WorkerPage.this), "name") {
                         @Override
                         public void populateItem(Item<ICellPopulator<Attribute>> cellItem, String componentId, IModel<Attribute> rowModel) {
                             if (rowModel.getObject().getEntityAttributeId() == 1000){
@@ -1105,7 +1105,7 @@ public class WorkerPage extends BasePage {
                         }
                     });
 
-                    historyColumns.add(new AbstractColumn<Attribute, String>(new ResourceModel("value"), "value") {
+                    historyColumns.add(new AbstractColumn<Attribute, String>(new StringResourceModel("value", WorkerPage.this), "value") {
                         @Override
                         public void populateItem(Item<ICellPopulator<Attribute>> cellItem, String componentId, IModel<Attribute> rowModel) {
                             Attribute attribute = rowModel.getObject();
@@ -1155,7 +1155,7 @@ public class WorkerPage extends BasePage {
                         }
                     });
 
-                    historyColumns.add(new AbstractColumn<Attribute, String>(new ResourceModel("user"), "user") {
+                    historyColumns.add(new AbstractColumn<Attribute, String>(new StringResourceModel("user", WorkerPage.this), "user") {
                         @Override
                         public void populateItem(Item<ICellPopulator<Attribute>> cellItem, String componentId, IModel<Attribute> rowModel) {
                             Long userId = rowModel.getObject().getUserId();
