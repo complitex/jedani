@@ -67,7 +67,7 @@ public class NavigationToolbar extends AbstractToolbar {
 
                         getSession().getMetaData(ITEMS_PER_PAGE).put(tableKey, itemsPerPageModel.getObject());
 
-                        target.add(table);
+                        target.add(table.getBody());
                     }
                 }));
     }

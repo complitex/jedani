@@ -31,6 +31,8 @@ public class Table<T extends Serializable> extends DataTable<T, Sort> implements
     public Table(String id, List<? extends IColumn<T, Sort>> columns, Provider<T> provider, long rowsPerPage, String tableKey) {
         super(id, columns, provider, rowsPerPage);
 
+        setOutputMarkupId(true);
+
         this.provider = provider;
 
         ajaxIndicatorAppender = getColumns().stream().filter(c -> c instanceof DomainActionColumn)
