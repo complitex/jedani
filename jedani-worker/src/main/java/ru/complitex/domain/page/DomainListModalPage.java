@@ -281,8 +281,8 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage{
         return feedback;
     }
 
-    public Table<T> getTable() {
-        return table;
+    public WebMarkupContainer getTableBody() {
+        return table.getBody();
     }
 
     protected void title(IModel<String> titleModel){

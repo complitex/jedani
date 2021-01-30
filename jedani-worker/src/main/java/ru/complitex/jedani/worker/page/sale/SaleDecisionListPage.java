@@ -106,7 +106,7 @@ public class SaleDecisionListPage extends DomainListModalPage<SaleDecision> {
 
                 getSession().success(getString("info_copied"));
 
-                target.add(getFeedback(), getTable());
+                target.add(getFeedback(), getTableBody());
             }
 
             @Override

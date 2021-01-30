@@ -62,14 +62,14 @@ public class PeriodListPage extends DomainListModalPage<Period> {
         periodCalculateForm.setVisible(!init);
         getContainer().add(periodCalculateForm);
         periodCalculateForm.add(periodCalculateModal = new PeriodCalculateModal("periodCalculateModal")
-                .onUpdate(t -> t.add(getFeedback(), getTable())));
+                .onUpdate(t -> t.add(getFeedback(), getTableBody())));
 
 
         Form periodCloseForm = new Form("periodCloseForm");
         periodCloseForm.setVisible(!init);
         getContainer().add(periodCloseForm);
         periodCloseForm.add(periodCloseModal = new PeriodCloseModal("periodCloseModal")
-                .onUpdate(t -> t.add(getFeedback(), getTable())));
+                .onUpdate(t -> t.add(getFeedback(), getTableBody())));
 
 
         getContainer().add(new AjaxLink<Void>("calculateRewards") {
