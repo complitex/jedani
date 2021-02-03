@@ -9,7 +9,7 @@
         select r.id from reward r
             left join reward_attribute ra_m on r.id = ra_m.domain_id and ra_m.status = 1 and ra_m.entity_attribute_id = 8
             left join reward_attribute ra_s on r.id = ra_s.domain_id and ra_s.status = 1 and ra_s.entity_attribute_id = 21
-        where year(ra_m.date) = year(#{month}) and month(ra_m.date) = month(#{month}) and ra_s.number = 1
+        where year(ra_m.date) = year(#{month}) and month(ra_m.date) = month(#{month}) and ra_s.number in (1, 2)
     </select>
 
     <delete id="deleteRewardsByIds" parameterType="list">

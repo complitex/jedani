@@ -4,6 +4,8 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import org.mybatis.cdi.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.complitex.address.entity.Region;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.util.Dates;
@@ -28,6 +30,8 @@ import static java.math.RoundingMode.HALF_EVEN;
  * 20.10.2019 11:02 AM
  */
 public class RewardService implements Serializable {
+    private final static Logger log = LoggerFactory.getLogger(RewardService.class);
+
     @Inject
     private DomainService domainService;
 
@@ -509,6 +513,40 @@ public class RewardService implements Serializable {
         return managers;
     }
 
+    public void calculateSaleReward(Sale sale, List<SaleItem> saleItems){
+        Reward reward = new Reward();
+
+        Period period = periodService.getActualPeriod();
+
+        Date month = period.getOperatingMonth();
+
+        Long rewardType = saleService.isMkSaleItems(saleItems) ? RewardType.MYCOOK_SALE : RewardType.BASE_ASSORTMENT_SALE;
+
+        BigDecimal total = sale.getPersonalRewardPoint();
+
+        if (total == null){
+            log.warn("null sale reward total {}", sale);
+
+            return;
+        }
+
+        reward.setSaleId(sale.getObjectId());
+        reward.setWorkerId(sale.getSellerWorkerId());
+        reward.setType(rewardType);
+        reward.setTotal(total);
+        reward.setPoint(total.subtract(getRewardsTotalBySaleId(sale.getObjectId(), rewardType)));
+        reward.setDate(Dates.currentDate());
+        reward.setMonth(month);
+        reward.setRewardStatus(RewardStatus.ACCRUED);
+        reward.setPeriodId(period.getObjectId());
+
+        updateLocal(sale, reward);
+
+        if (reward.getPoint().compareTo(ZERO) != 0) {
+            domainService.save(reward);
+        }
+    }
+
     @Transactional(rollbackFor = RewardException.class)
     public void calculateRewards(boolean accrue) throws RewardException {
         try {
@@ -521,6 +559,8 @@ public class RewardService implements Serializable {
             WorkerRewardTree tree = getWorkerRewardTree(month);
 
             saleService.getActiveSales().forEach(s -> {
+                calculateSaleReward(s, saleService.getSaleItems(s.getObjectId()));
+
                 if (s.getMkManagerBonusRewardPoint() != null && s.getMkManagerBonusWorkerId() != null){
                     BigDecimal total = s.getMkManagerBonusRewardPoint();
 
@@ -711,6 +751,8 @@ public class RewardService implements Serializable {
                 });
             });
         } catch (Exception e) {
+            log.error("error calculate rewards", e);
+
             throw new RewardException(e.getMessage());
         }
     }
