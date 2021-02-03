@@ -277,12 +277,17 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage{
         return container;
     }
 
-    public FeedbackPanel getFeedback() {
-        return feedback;
+    public void updateFeedback(AjaxRequestTarget target){
+        target.add(feedback);
     }
 
-    public WebMarkupContainer getTableBody() {
-        return table.getBody();
+    public void updateTable(AjaxRequestTarget target){
+        target.add(table);
+    }
+
+    public void update(AjaxRequestTarget target){
+        updateFeedback(target);
+        updateTable(target);
     }
 
     protected void title(IModel<String> titleModel){

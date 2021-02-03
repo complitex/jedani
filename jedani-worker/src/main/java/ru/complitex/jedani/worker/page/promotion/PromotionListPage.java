@@ -36,7 +36,7 @@ public class PromotionListPage extends DomainListModalPage<Promotion> {
         promotionModal = new PromotionModal("promotion"){
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
-                target.add(getFeedback(), getTableBody());
+                PromotionListPage.this.update(target);
             }
         };
         promotionForm.add(promotionModal);

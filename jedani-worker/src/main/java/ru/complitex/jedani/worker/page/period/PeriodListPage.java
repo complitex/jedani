@@ -62,14 +62,14 @@ public class PeriodListPage extends DomainListModalPage<Period> {
         periodCalculateForm.setVisible(!init);
         getContainer().add(periodCalculateForm);
         periodCalculateForm.add(periodCalculateModal = new PeriodCalculateModal("periodCalculateModal")
-                .onUpdate(t -> t.add(getFeedback(), getTableBody())));
+                .onUpdate(this::update));
 
 
         Form periodCloseForm = new Form("periodCloseForm");
         periodCloseForm.setVisible(!init);
         getContainer().add(periodCloseForm);
         periodCloseForm.add(periodCloseModal = new PeriodCloseModal("periodCloseModal")
-                .onUpdate(t -> t.add(getFeedback(), getTableBody())));
+                .onUpdate(this::update));
 
 
         getContainer().add(new AjaxLink<Void>("calculateRewards") {
@@ -98,7 +98,7 @@ public class PeriodListPage extends DomainListModalPage<Period> {
                     protected void onSubmit(AjaxRequestTarget target) {
                         periodCloseModal.create(target);
 
-                        target.add(getFeedback());
+                        updateFeedback(target);
                     }
 
                     @Override

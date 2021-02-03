@@ -25,10 +25,13 @@ import java.util.HashMap;
 public class NavigationToolbar extends AbstractToolbar {
     public static final MetaDataKey<HashMap<String, Long>> ITEMS_PER_PAGE = new MetaDataKey<HashMap<String, Long>>() {};
 
+    private final WebMarkupContainer navigation;
+
     public NavigationToolbar(DataTable<?, ?> table, String tableKey) {
         super(table);
 
-        WebMarkupContainer navigation = new WebMarkupContainer("navigation");
+        navigation = new WebMarkupContainer("navigation");
+        navigation.setOutputMarkupId(true);
         add(navigation);
 
         Component component = getPagingLeft("component");
@@ -74,5 +77,9 @@ public class NavigationToolbar extends AbstractToolbar {
 
     protected Component getPagingLeft(String id){
         return null;
+    }
+
+    public WebMarkupContainer getNavigation() {
+        return navigation;
     }
 }

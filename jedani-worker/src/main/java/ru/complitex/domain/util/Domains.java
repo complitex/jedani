@@ -10,7 +10,7 @@ import java.util.Map;
  * 30.10.2018 15:03
  */
 public class Domains {
-    private static Map<Class, Domain> domainMap = new HashMap<>();
+    private static Map<Class<?>, Domain<?>> domainMap = new HashMap<>();
 
     public static <T extends Domain> T newObject(Class<T> domainClass){
         try {
@@ -27,7 +27,7 @@ public class Domains {
         }
 
         try {
-            T domainInstance = domainClass.newInstance();
+            T domainInstance = domainClass.getConstructor().newInstance();
 
             domainInstance.copy(domain, initAttributes);
 
@@ -38,7 +38,7 @@ public class Domains {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T extends Domain> T copy(T domain){
+    public static <T extends Domain<T>> T copy(T domain){
         if (domain == null){
             return null;
         }
@@ -54,8 +54,9 @@ public class Domains {
         }
     }
 
-    private static <T extends Domain> Domain getDomain(Class<T> domainClass){
-        Domain domain = domainMap.get(domainClass);
+    @SuppressWarnings("unchecked")
+    private static <T extends Domain<T>> Domain<T> getDomain(Class<T> domainClass){
+        T domain = (T) domainMap.get(domainClass);
 
         if (domain == null){
             domain = newObject(domainClass);
@@ -66,7 +67,7 @@ public class Domains {
         return domain;
     }
 
-    public static <T extends Domain> String getEntityName(Class<T> domainClass){
+    public static <T extends Domain<T>> String getEntityName(Class<T> domainClass){
         return getDomain(domainClass).getEntityName();
     }
 

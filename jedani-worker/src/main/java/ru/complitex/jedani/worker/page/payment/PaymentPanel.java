@@ -62,7 +62,7 @@ public class PaymentPanel extends DomainListModalPanel<Payment> {
         Form<?> paymentForm = new Form<>("paymentForm");
         getContainer().add(paymentForm);
 
-        paymentForm.add(paymentModal = new PaymentModal("paymentModal").onUpdate(t -> t.add(getFeedback(), getTableBody())));
+        paymentForm.add(paymentModal = new PaymentModal("paymentModal").onUpdate(this::update));
 
         Form<?> form = new Form<>("paymentRemoveForm");
         getContainer().add(form);
@@ -70,7 +70,7 @@ public class PaymentPanel extends DomainListModalPanel<Payment> {
         form.add(paymentRemoveModal = new PaymentRemoveModal("paymentRemoveModal"){
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
-                target.add(getFeedback(), getTableBody());
+                PaymentPanel.this.update(target);
             }
         });
     }
@@ -186,7 +186,7 @@ public class PaymentPanel extends DomainListModalPanel<Payment> {
             protected void onChange(AjaxRequestTarget target, Period period) {
                 getFilterWrapper().put(Payment.FILTER_PERIOD, period != null ? period.getObjectId() : null);
 
-                target.add(getTableBody());
+                updateTable(target);
             }
         };
     }

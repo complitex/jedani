@@ -13,7 +13,7 @@ import org.apache.wicket.model.ResourceModel;
 public class FormGroupPanel extends Panel {
     public static final String COMPONENT_ID = "component";
 
-    private Component component;
+    private final Component component;
 
     public FormGroupPanel(String id, Component component) {
         super(id);
@@ -27,7 +27,7 @@ public class FormGroupPanel extends Panel {
             @Override
             protected boolean isRequired() {
                 if (component instanceof FormComponent){
-                    return ((FormComponent) component).isRequired();
+                    return ((FormComponent<?>) component).isRequired();
                 }
 
                 return false;
@@ -38,7 +38,7 @@ public class FormGroupPanel extends Panel {
         group.add(component);
 
         if (component instanceof FormComponent){
-            ((FormComponent) component).setLabel(getLabelModel(id));
+            ((FormComponent<?>) component).setLabel(getLabelModel(id));
         }
     }
 
@@ -48,7 +48,7 @@ public class FormGroupPanel extends Panel {
 
     public FormGroupPanel setRequired(boolean required){
         if (component instanceof FormComponent){
-            ((FormComponent) component).setRequired(required);
+            ((FormComponent<?>) component).setRequired(required);
         }
 
         return this;

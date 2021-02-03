@@ -60,7 +60,7 @@ public class SaleDecisionListPage extends DomainListModalPage<SaleDecision> {
         form.add(saleDecisionRemoveModal = new SaleDecisionRemoveModal("saleDecisionRemove"){
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
-                target.add(getFeedback(), getTableBody());
+                SaleDecisionListPage.this.update(target);
             }
         });
     }
@@ -118,7 +118,7 @@ public class SaleDecisionListPage extends DomainListModalPage<SaleDecision> {
 
                 getSession().success(getString("info_copied"));
 
-                target.add(getFeedback(), getTableBody());
+                SaleDecisionListPage.this.update(target);
             }
 
             @Override

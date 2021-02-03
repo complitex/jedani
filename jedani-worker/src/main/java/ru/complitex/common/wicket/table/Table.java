@@ -1,6 +1,7 @@
 package ru.complitex.common.wicket.table;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.IAjaxIndicatorAware;
 import org.apache.wicket.cdi.NonContextual;
 import org.apache.wicket.extensions.ajax.markup.html.AjaxIndicatorAppender;
@@ -26,7 +27,9 @@ public class Table<T extends Serializable> extends DataTable<T, Sort> implements
 
     private boolean hideOnEmpty = false;
 
-    private Provider<T> provider;
+    private final Provider<T> provider;
+
+    private final NavigationToolbar navigationToolbar;
 
     public Table(String id, List<? extends IColumn<T, Sort>> columns, Provider<T> provider, long rowsPerPage, String tableKey) {
         super(id, columns, provider, rowsPerPage);
@@ -49,7 +52,7 @@ public class Table<T extends Serializable> extends DataTable<T, Sort> implements
 
         IModel<Boolean> visibleModel = Model.of(false);
 
-        addBottomToolbar(new NavigationToolbar(this, tableKey){
+        addBottomToolbar(navigationToolbar = new NavigationToolbar(this, tableKey){
             @Override
             public boolean isVisible() {
                 return visibleModel.getObject() || getRowCount() > 5;
@@ -117,5 +120,9 @@ public class Table<T extends Serializable> extends DataTable<T, Sort> implements
 
     public Provider<T> getProvider() {
         return provider;
+    }
+
+    public void update(AjaxRequestTarget target){
+        target.add(getBody(), navigationToolbar.getNavigation());
     }
 }

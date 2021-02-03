@@ -18,10 +18,10 @@ import ru.complitex.jedani.worker.mapper.RewardMapper;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-import static java.math.BigDecimal.ROUND_HALF_EVEN;
 import static java.math.BigDecimal.ZERO;
 import static java.math.RoundingMode.HALF_EVEN;
 
@@ -453,7 +453,7 @@ public class RewardService implements Serializable {
 
         if (rewardPoint.compareTo(ZERO) > 0 && sale.getTotal() != null) {
             BigDecimal paidInterest = paymentService.getPaymentsVolumeBySaleId(sale.getObjectId(), month)
-                    .divide(sale.getTotal(), 5, BigDecimal.ROUND_HALF_EVEN);
+                    .divide(sale.getTotal(), 5, RoundingMode.HALF_EVEN);
 
             if (paidInterest.compareTo(new BigDecimal("0.2")) >= 0){
                 point = point.add(rewardPoint).multiply(new BigDecimal("0.25"));
@@ -479,7 +479,7 @@ public class RewardService implements Serializable {
         BigDecimal point = ZERO;
 
         if (rewardPoint.compareTo(ZERO) > 0) {
-            BigDecimal paidInterest = paymentVolume.divide(saleVolume, 5, BigDecimal.ROUND_HALF_EVEN);
+            BigDecimal paidInterest = paymentVolume.divide(saleVolume, 5, HALF_EVEN);
 
             if (paidInterest.compareTo(new BigDecimal("0.2")) >= 0){
                 point = point.add(rewardPoint).multiply(new BigDecimal("0.25"));
@@ -694,7 +694,7 @@ public class RewardService implements Serializable {
 
                     if (r.getRank() > 0){
                         BigDecimal total = getGroupVolumePercent(r.getRank()).multiply(r.getGroupSaleVolume())
-                                .divide(new BigDecimal("100"), 5, ROUND_HALF_EVEN);
+                                .divide(new BigDecimal("100"), 5, HALF_EVEN);
 
                         if (total.compareTo(ZERO) > 0) {
                             Reward reward = new Reward();
@@ -721,7 +721,7 @@ public class RewardService implements Serializable {
                             BigDecimal t = getGroupVolumePercent(r.getRank())
                                     .subtract(getGroupVolumePercent(m.getRank()))
                                     .multiply(m.getStructureSaleVolume())
-                                    .divide(new BigDecimal("100"), 5, ROUND_HALF_EVEN);
+                                    .divide(new BigDecimal("100"), 5, HALF_EVEN);
 
                             if (t.compareTo(ZERO) > 0) {
                                 Reward reward = new Reward();
