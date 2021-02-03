@@ -277,8 +277,8 @@ public class DomainListModalPanel<T extends Domain<T>> extends Panel {
         return feedback;
     }
 
-    public Table<T> getTable() {
-        return table;
+    public WebMarkupContainer getTableBody() {
+        return table.getBody();
     }
 
     public boolean isEditEnabled(){

@@ -89,7 +89,7 @@ public class SalePanel extends DomainListModalPanel<Sale> {
         saleModal = new SaleModal("sale"){
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
-                target.add(getFeedback(), getTable());
+                target.add(getFeedback(), getTableBody());
             }
         };
         saleForm.add(saleModal);
@@ -100,7 +100,7 @@ public class SalePanel extends DomainListModalPanel<Sale> {
         form.add(saleRemoveModal = new SaleRemoveModal("saleRemove"){
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
-                target.add(getFeedback(), getTable());
+                target.add(getFeedback(), getTableBody());
             }
         });
     }

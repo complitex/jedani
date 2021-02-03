@@ -37,18 +37,30 @@ public class SaleDecisionListPage extends DomainListModalPage<SaleDecision> {
     @Inject
     private SaleDecisionService saleDecisionService;
 
-    private SaleDecisionModal saleDecisionModal;
+    private final SaleDecisionModal saleDecisionModal;
+
+    private final SaleDecisionRemoveModal saleDecisionRemoveModal;
 
     public SaleDecisionListPage() {
         super(SaleDecision.class);
 
-        Form saleDecisionForm = new Form("saleDecisionForm");
+        Form<?> saleDecisionForm = new Form<>("saleDecisionForm");
         getContainer().add(saleDecisionForm);
 
         saleDecisionForm.add(saleDecisionModal = new SaleDecisionModal("saleDecision"){
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 target.add(getContainer());
+            }
+        });
+
+        Form<?> form = new Form<>("saleDecisionRemoveForm");
+        getContainer().add(form);
+
+        form.add(saleDecisionRemoveModal = new SaleDecisionRemoveModal("saleDecisionRemove"){
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                target.add(getFeedback(), getTableBody());
             }
         });
     }
@@ -116,5 +128,20 @@ public class SaleDecisionListPage extends DomainListModalPage<SaleDecision> {
                 attributes.setEventPropagation(AjaxRequestAttributes.EventPropagation.STOP);
             }
         }.setIconType(GlyphIconType.export)));
+
+        repeatingView.add(new LinkPanel(repeatingView.newChildId(),
+                new BootstrapAjaxButton(LinkPanel.LINK_COMPONENT_ID, Buttons.Type.Link) {
+                    @Override
+                    protected void onSubmit(AjaxRequestTarget target) {
+                        saleDecisionRemoveModal.open(rowModel.getObject(), target);
+                    }
+
+                    @Override
+                    protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
+                        super.updateAjaxAttributes(attributes);
+
+                        attributes.setEventPropagation(AjaxRequestAttributes.EventPropagation.STOP);
+                    }
+                }.setIconType(GlyphIconType.remove)));
     }
 }

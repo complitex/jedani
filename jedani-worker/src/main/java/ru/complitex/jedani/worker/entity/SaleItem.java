@@ -68,8 +68,10 @@ public class SaleItem extends Domain<SaleItem> {
         setDecimal(RATE, rate);
     }
 
-    public void setSaleDecisionId(Long saleDecisionId){
+    public SaleItem setSaleDecisionId(Long saleDecisionId){
         setNumber(SALE_DECISION, saleDecisionId);
+
+        return this;
     }
 
     public Long getSaleDecisionId(){

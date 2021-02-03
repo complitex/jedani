@@ -194,7 +194,7 @@ public class RewardPanel extends DomainListModalPanel<Reward> {
             protected void onChange(AjaxRequestTarget target, Period period) {
                 getFilterWrapper().put(Reward.FILTER_PERIOD, period != null ? period.getObjectId() : null);
 
-                target.add(getTable());
+                target.add(getTableBody());
             }
         };
     }

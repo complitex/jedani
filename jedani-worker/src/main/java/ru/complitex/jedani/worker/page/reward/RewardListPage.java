@@ -57,7 +57,7 @@ public class RewardListPage extends BasePage {
         add(rewardForm);
 
         rewardModal = new RewardModal("rewardModal")
-                .onUpdate(t -> t.add(rewardPanel.getFeedback(), rewardPanel.getTable()));
+                .onUpdate(t -> t.add(rewardPanel.getFeedback(), rewardPanel.getTableBody()));
 
         rewardForm.add(rewardModal );
 
@@ -65,7 +65,7 @@ public class RewardListPage extends BasePage {
         add(periodCalculateForm);
 
         PeriodCalculateModal periodCalculateModal = new PeriodCalculateModal("periodCalculateModal")
-                .onUpdate(t -> t.add(rewardPanel.getFeedback(), rewardPanel.getTable()));
+                .onUpdate(t -> t.add(rewardPanel.getFeedback(), rewardPanel.getTableBody()));
 
         periodCalculateForm.add(periodCalculateModal);
 

@@ -74,7 +74,7 @@ public class RuleTable extends GenericPanel<List<Rule>> {
 
                             @Override
                             public IConditionType getObject(String id, IModel<? extends List<? extends IConditionType>> choices) {   
-                                return choices.getObject().stream().filter(c -> c.getId()
+                                return choices.getObject().stream().filter(c -> !id.isEmpty() && c.getId()
                                         .equals(Long.valueOf(id))).findFirst().orElse(null);
                             }
                         }){
@@ -147,7 +147,7 @@ public class RuleTable extends GenericPanel<List<Rule>> {
 
                             @Override
                             public IActionType getObject(String id, IModel<? extends List<? extends IActionType>> choices) {
-                                return choices.getObject().stream().filter(c -> c.getId()
+                                return choices.getObject().stream().filter(c -> !id.isEmpty() && c.getId()
                                         .equals(Long.valueOf(id))).findFirst().orElse(null);
                             }
                         }){
