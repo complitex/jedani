@@ -32,7 +32,6 @@ public class TextFilter<T> extends AbstractFilter<T> {
 
                 if (getLabelModel() != null){
                     tag.put("placeholder", getLabelModel().getObject());
-
                 }
             }
         });

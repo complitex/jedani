@@ -126,10 +126,14 @@ public class HeadersToolbar extends AbstractToolbar {
                     container.add(new AjaxLink<>("clear") {
                         @Override
                         public void onClick(AjaxRequestTarget target) {
-                            filter.setDefaultModelObject(null);
                             container.setVisible(false);
 
-                            target.add(item, table.getBody());
+                            if (filter.getDefaultModelObject() != null){
+                                filter.setDefaultModelObject(null);
+                                target.add(table.getBody());
+                            }
+
+                            target.add(item);
                         }
                     });
                 } else {

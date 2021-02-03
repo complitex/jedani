@@ -12,6 +12,7 @@
     </context-param>
 
     <session-config>
+        <session-timeout>1440</session-timeout>
         <cookie-config>
             <name>jsessionid</name>
         </cookie-config>
