@@ -54,12 +54,12 @@ import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.Sort;
 import ru.complitex.common.util.Images;
 import ru.complitex.common.wicket.component.DateTimeLabel;
-import ru.complitex.common.wicket.table.*;
 import ru.complitex.common.wicket.form.FormGroupDateTextField;
 import ru.complitex.common.wicket.form.FormGroupPanel;
 import ru.complitex.common.wicket.form.FormGroupSelectPanel;
 import ru.complitex.common.wicket.form.FormGroupTextField;
 import ru.complitex.common.wicket.panel.LinkPanel;
+import ru.complitex.common.wicket.table.*;
 import ru.complitex.common.wicket.util.Wickets;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.component.datatable.DomainActionColumn;
@@ -815,7 +815,7 @@ public class WorkerPage extends BasePage {
 
                     @Override
                     public Component newFilter(String componentId, Table<Worker> table) {
-                        return new TextFilter<>(componentId, Model.of(""));
+                        return new TextFilter<>(componentId, new Model<>());
                     }
                 });
 
@@ -827,7 +827,7 @@ public class WorkerPage extends BasePage {
 
                     @Override
                     public Component newFilter(String componentId, Table<Worker> table) {
-                        return new TextFilter<>(componentId, Model.of(""));
+                        return new TextFilter<>(componentId, new Model<>());
                     }
                 });
 

@@ -1,7 +1,6 @@
 package ru.complitex.jedani.worker.component;
 
-import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.select.BootstrapSelect;
-import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.select.BootstrapSelectConfig;
+import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.model.IModel;
 
@@ -12,11 +11,11 @@ import java.util.List;
  * @author Anatoly A. Ivanov
  * 19.02.2019 21:52
  */
-public class TypeSelect extends BootstrapSelect<Long> {
+public class TypeSelect extends DropDownChoice<Long> {
     public TypeSelect(String id, IModel<Long> model, Long... types) {
         super(id, model, Arrays.asList(types));
 
-        setChoiceRenderer(new IChoiceRenderer<Long>() {
+        setChoiceRenderer(new IChoiceRenderer<>() {
             @Override
             public Object getDisplayValue(Long object) {
                 return getString(id + "." + object);
@@ -33,6 +32,6 @@ public class TypeSelect extends BootstrapSelect<Long> {
             }
         });
 
-        with(new BootstrapSelectConfig().withNoneSelectedText(""));
+        setNullValid(true);
     }
 }

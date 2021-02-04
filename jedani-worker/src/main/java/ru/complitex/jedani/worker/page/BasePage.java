@@ -62,7 +62,6 @@ import ru.complitex.jedani.worker.page.worker.RegionalLeaderPage;
 import ru.complitex.jedani.worker.page.worker.WorkerListPage;
 import ru.complitex.jedani.worker.page.worker.WorkerPage;
 import ru.complitex.jedani.worker.security.JedaniRoles;
-import ru.complitex.jedani.worker.service.StorageService;
 import ru.complitex.jedani.worker.service.WorkerService;
 import ru.complitex.name.page.FirstNameListPage;
 import ru.complitex.name.page.LastNameListPage;
@@ -79,13 +78,16 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static de.agilecoders.wicket.core.util.Attributes.addClass;
+import static de.agilecoders.wicket.core.util.Attributes.removeClass;
+
 /**
  * @author Anatoly A. Ivanov
  * 22.11.2017 16:58
  */
 @AuthorizeInstantiation(JedaniRoles.AUTHORIZED)
 public class BasePage extends WebPage{
-    private static final MetaDataKey<HashMap<String, String>> MENU_TOGGLE = new MetaDataKey<HashMap<String, String>>() {};
+    private static final MetaDataKey<HashMap<String, String>> MENU_TOGGLE = new MetaDataKey<>() {};
 
     @Inject
     private WorkerService workerService;
@@ -100,18 +102,15 @@ public class BasePage extends WebPage{
     private StorageMapper storageMapper;
 
     @Inject
-    private StorageService storageService;
-
-    @Inject
     private DomainService domainService;
 
-    private PageParameters pageParameters;
+    private final PageParameters pageParameters;
 
-    private User currentUser;
+    private final User currentUser;
 
     private Worker currentWorker;
 
-    private WebMarkupContainer menu;
+    private final WebMarkupContainer menu;
 
     protected BasePage(PageParameters pageParameters) {
         this.pageParameters = pageParameters;
@@ -202,6 +201,7 @@ public class BasePage extends WebPage{
         userStorages.setVisible(isUser() && !isAdmin() && isParticipant());
         userStorages.add(newBehavior());
         userStorages.add(new WebMarkupContainer("link").add(newBehaviorLink()));
+        userStorages.add(new WebMarkupContainer("list").add(newBehaviorList()));
         menu.add(userStorages);
 
         Storage currentStorage = getCurrentStorage();
@@ -227,8 +227,7 @@ public class BasePage extends WebPage{
             protected void populateItem(ListItem<Storage> item) {
                 Storage storage = item.getModelObject();
 
-                String label = Attributes.capitalize(domainService.getDomain(City.class, storage.getNumber(Storage.CITY))
-                        .getTextValue(City.NAME)); //todo get value text sql
+                String label = Attributes.capitalize(domainService.getTextValue(City.ENTITY_NAME, storage.getCityId(), City.NAME));
 
                 item.add(new MenuLink("link", StoragePage.class, new PageParameters()
                         .add("id", storage.getObjectId())
@@ -241,69 +240,75 @@ public class BasePage extends WebPage{
         settings.setVisible(isAdmin());
         settings.add(newBehavior());
         settings.add(new WebMarkupContainer("link").add(newBehaviorLink()));
+        settings.add(new WebMarkupContainer("list")
+                        .add(new MenuLink("setting", SettingPage.class))
+                        .add(new MenuLink("import", ImportPage.class))
+                .add(newBehaviorList()));
         menu.add(settings);
-
-        settings.add(new MenuLink("setting", SettingPage.class).setVisible(isAdmin()));
-        settings.add(new MenuLink("import", ImportPage.class).setVisible(isAdmin()));
 
         WebMarkupContainer address = new WebMarkupContainer("address");
         address.setVisible(isAdmin());
         address.add(newBehavior());
         address.add(new WebMarkupContainer("link").add(newBehaviorLink()));
+        address.add(new WebMarkupContainer("list")
+                .add(new MenuLink("countries", CountryListPage.class).setVisible(isAdmin()))
+                .add(new MenuLink("regions", RegionListPage.class).setVisible(isAdmin()))
+                .add(new MenuLink("cityTypes", CityTypeListPage.class).setVisible(isAdmin()))
+                .add(new MenuLink("cities", CityListPage.class).setVisible(isAdmin()))
+                .add(newBehaviorList()));
         menu.add(address);
-
-        address.add(new MenuLink("countries", CountryListPage.class).setVisible(isAdmin()));
-        address.add(new MenuLink("regions", RegionListPage.class).setVisible(isAdmin()));
-        address.add(new MenuLink("cityTypes", CityTypeListPage.class).setVisible(isAdmin()));
-        address.add(new MenuLink("cities", CityListPage.class).setVisible(isAdmin()));
 
         WebMarkupContainer catalog = new WebMarkupContainer("catalog");
         catalog.add(newBehavior());
         catalog.add(new WebMarkupContainer("link").add(newBehaviorLink()));
+        catalog.add(new WebMarkupContainer("list")
+                .add(new MenuLink("first_name", FirstNameListPage.class).setVisible(isAdmin()))
+                .add(new MenuLink("middle_name", MiddleNameListPage.class).setVisible(isAdmin()))
+                .add(new MenuLink("last_name", LastNameListPage.class).setVisible(isAdmin()))
+                .add(new MenuLink("position", PositionListPage.class).setVisible(isAdmin()))
+                .add(new MenuLink("mk_status", MkStatusListPage.class).setVisible(isAdmin()))
+                .add(new MenuLink("currency", CurrencyListPage.class).setVisible(isAdmin()))
+                .add(new MenuLink("exchangeRate", ExchangeRateListPage.class))
+                .add(new MenuLink("rank", RankListPage.class).setVisible(isAdmin()))
+                .add(new MenuLink("reward_type", RewardTypeListPage.class).setVisible(isAdmin()))
+                .add(newBehaviorList()));
         menu.add(catalog);
-
-        catalog.add(new MenuLink("first_name", FirstNameListPage.class).setVisible(isAdmin()));
-        catalog.add(new MenuLink("middle_name", MiddleNameListPage.class).setVisible(isAdmin()));
-        catalog.add(new MenuLink("last_name", LastNameListPage.class).setVisible(isAdmin()));
-        catalog.add(new MenuLink("position", PositionListPage.class).setVisible(isAdmin()));
-        catalog.add(new MenuLink("mk_status", MkStatusListPage.class).setVisible(isAdmin()));
-        catalog.add(new MenuLink("currency", CurrencyListPage.class).setVisible(isAdmin()));
-        catalog.add(new MenuLink("exchangeRate", ExchangeRateListPage.class));
-        catalog.add(new MenuLink("rank", RankListPage.class).setVisible(isAdmin()));
-        catalog.add(new MenuLink("reward_type", RewardTypeListPage.class).setVisible(isAdmin()));
 
         WebMarkupContainer workers = new WebMarkupContainer("workers");
         workers.add(newBehavior());
         workers.add(new WebMarkupContainer("link").add(newBehaviorLink()));
+        workers.add(new WebMarkupContainer("list")
+                .add(new MenuLink("workers", WorkerListPage.class).addMenuPageClass(WorkerPage.class))
+                .add(new MenuLink("cards", CardListPage.class).setVisible(isAdmin() || isStructureAdmin()))
+                .add(newBehaviorList()));
         menu.add(workers);
-
-        workers.add(new MenuLink("workers", WorkerListPage.class).addMenuPageClass(WorkerPage.class));
-        workers.add(new MenuLink("cards", CardListPage.class).setVisible(isAdmin() || isStructureAdmin()));
 
         WebMarkupContainer storages = new WebMarkupContainer("storages");
         storages.setVisible(isAdmin());
         storages.add(newBehavior());
         storages.add(new WebMarkupContainer("link").add(newBehaviorLink()));
+        storages.add(new WebMarkupContainer("list")
+                .add(new MenuLink("nomenclature", NomenclatureListPage.class))
+                .add(new MenuLink("storage", StorageListPage.class).addMenuPageClass(StoragePage.class))
+                .add(newBehaviorList()));
         menu.add(storages);
-
-        storages.add(new MenuLink("nomenclature", NomenclatureListPage.class));
-        storages.add(new MenuLink("storage", StorageListPage.class).addMenuPageClass(StoragePage.class));
 
         WebMarkupContainer sales = new WebMarkupContainer("sales");
         sales.setVisible(isAdmin() || isStructureAdmin() || isPromotionAdmin() || isSaleAdmin() || isPaymentAdmin() ||
                 isParticipant());
         sales.add(newBehavior());
         sales.add(new WebMarkupContainer("link").add(newBehaviorLink()));
+        sales.add(new WebMarkupContainer("list")
+                .add(new MenuLink("price", PriceListPage.class).setVisible(isAdmin() || isStructureAdmin()))
+                .add(new MenuLink("promotion", PromotionListPage.class).setVisible(isAdmin() || isPromotionAdmin()))
+                .add(new MenuLink("saleDecision", SaleDecisionListPage.class).setVisible(isAdmin() || isStructureAdmin()))
+                .add(new MenuLink("sale", SaleListPage.class).setVisible(isAdmin() || isStructureAdmin() || isSaleAdmin() || isParticipant()))
+                .add(new MenuLink("payment", PaymentListPage.class).setVisible(isAdmin() || isStructureAdmin() || isPaymentAdmin() || isParticipant()))
+                .add(new MenuLink("period", PeriodListPage.class).setVisible(isAdmin() || isPaymentAdmin()))
+                .add(new MenuLink("reward", RewardListPage.class).setVisible(isAdmin() || isStructureAdmin()))
+                .add(new MenuLink("rewardParameter", RewardParameterListPage.class).setVisible(isAdmin()))
+                .add(newBehaviorList()));
         menu.add(sales);
-
-        sales.add(new MenuLink("price", PriceListPage.class).setVisible(isAdmin() || isStructureAdmin()));
-        sales.add(new MenuLink("promotion", PromotionListPage.class).setVisible(isAdmin() || isPromotionAdmin()));
-        sales.add(new MenuLink("saleDecision", SaleDecisionListPage.class).setVisible(isAdmin() || isStructureAdmin()));
-        sales.add(new MenuLink("sale", SaleListPage.class).setVisible(isAdmin() || isStructureAdmin() || isSaleAdmin() || isParticipant()));
-        sales.add(new MenuLink("payment", PaymentListPage.class).setVisible(isAdmin() || isStructureAdmin() || isPaymentAdmin() || isParticipant()));
-        sales.add(new MenuLink("period", PeriodListPage.class).setVisible(isAdmin() || isPaymentAdmin()));
-        sales.add(new MenuLink("reward", RewardListPage.class).setVisible(isAdmin() || isStructureAdmin()));
-        sales.add(new MenuLink("rewardParameter", RewardParameterListPage.class).setVisible(isAdmin()));
     }
 
     @Override
@@ -332,7 +337,7 @@ public class BasePage extends WebPage{
                 String _class = getMenuToggleMap().get(component.getId());
 
                 if (_class != null && _class.isEmpty()){
-                    de.agilecoders.wicket.core.util.Attributes.removeClass(tag, "mm-active");
+                    removeClass(tag, "mm-active");
                 }
             }
         };
@@ -346,6 +351,21 @@ public class BasePage extends WebPage{
 
                 if (_class != null && _class.isEmpty()){
                     tag.put("aria-expanded", "false");
+                }
+            }
+        };
+    }
+
+    private Behavior newBehaviorList() {
+        return new Behavior() {
+            @Override
+            public void onComponentTag(Component component, ComponentTag tag) {
+                String _class = getMenuToggleMap().get(component.getParent().getId());
+
+                if (_class != null && _class.isEmpty()){
+                    addClass(tag, "mm-collapse");
+                } else {
+                    removeClass(tag, "mm-collapse");
                 }
             }
         };
@@ -383,7 +403,10 @@ public class BasePage extends WebPage{
         response.render(CssHeaderItem.forReference(MenuCssResourceReference.INSTANCE));
         response.render(JavaScriptHeaderItem.forReference(MenuJsResourceReference.INSTANCE));
 
-        response.render(OnDomReadyHeaderItem.forScript("$('#menu').metisMenu({toggle: true})"));
+        response.render(OnDomReadyHeaderItem.forScript(
+                "$('#menu').metisMenu({toggle: false})" +
+                ".css('min-height', screen.height + 'px');"
+        ));
     }
 
     private HttpServletRequest getHttpServletRequest(){

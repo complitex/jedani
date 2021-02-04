@@ -107,7 +107,7 @@ a:focus {
     padding-top: 7px;
 }
 
-.sidebar-nav .metismenu ul a {
+.sidebar-nav .nav ul a {
     padding-left: 30px;
 }
 
@@ -244,6 +244,20 @@ form label[required=required]:after {
     color: #a0c969;
     background-color: #fff;
     border: 1px solid #a0c969;
+}
+
+.navigation table td {
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+.table > tfoot > tr.navigation > td {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.pagination {
+    display: block;
 }
 
 .select-list .list-group {
@@ -651,7 +665,6 @@ fieldset[disabled] .btn-flat-default.focus {
     color: #a0c969;
     text-shadow: none;
     background-color: #fff;
-    border-color: #a0c969;
     background-image: none;
 }
 

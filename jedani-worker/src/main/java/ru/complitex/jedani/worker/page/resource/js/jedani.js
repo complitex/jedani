@@ -1,8 +1,4 @@
 $(function() {
-    $("#menu")
-        .metisMenu({toggle: false})
-        .css('min-height', screen.height + 'px');
-
     $.support.transition = false;
 });
 
