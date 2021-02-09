@@ -13,7 +13,6 @@ import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
-import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
@@ -201,40 +200,35 @@ public class BasePage extends WebPage{
         userStorages.setVisible(isUser() && !isAdmin() && isParticipant());
         userStorages.add(newBehavior());
         userStorages.add(new WebMarkupContainer("link").add(newBehaviorLink()));
-        userStorages.add(new WebMarkupContainer("list").add(newBehaviorList()));
-        menu.add(userStorages);
-
-        Storage currentStorage = getCurrentStorage();
-
-        if (currentStorage != null) {
-            userStorages.add(new MenuLink("storage", StoragePage.class, new PageParameters()
-                            .add("id", currentStorage.getObjectId())
-                            .add("nsl", ""), "id"));
-        }else{
-            userStorages.add(new EmptyPanel("storage").setVisible(false));
-        }
-
-        userStorages.add(new BootstrapListView<Storage>("storages", new LoadableDetachableModel<List<Storage>>() {
-            @Override
-            protected List<Storage> load() {
-                return storageMapper.getStorages(new FilterWrapper<>(new Storage())
-                        .put(Storage.FILTER_CURRENT_WORKER, getCurrentWorker().getObjectId())
-                        .put(Storage.FILTER_CITIES, getCurrentWorker().getNumberValuesString(Worker.CITIES)))
-                        .stream().filter(s -> s.getNumber(Storage.CITY) != null).collect(Collectors.toList());
-            }
-        }) {
-            @Override
-            protected void populateItem(ListItem<Storage> item) {
-                Storage storage = item.getModelObject();
-
-                String label = Attributes.capitalize(domainService.getTextValue(City.ENTITY_NAME, storage.getCityId(), City.NAME));
-
-                item.add(new MenuLink("link", StoragePage.class, new PageParameters()
-                        .add("id", storage.getObjectId())
+        userStorages.add(new WebMarkupContainer("list")
+                .add(getCurrentStorage() != null
+                        ? new MenuLink("storage", StoragePage.class, new PageParameters()
+                        .add("id", getCurrentStorage().getObjectId())
                         .add("nsl", ""), "id")
-                        .add(new Label("label", label)));
-            }
-        }.setReuseItems(true).setVisible(isUser() || isStructureAdmin()));
+                        : new EmptyPanel("storage").setVisible(false))
+                .add(new BootstrapListView<Storage>("storages", new LoadableDetachableModel<List<Storage>>() {
+                    @Override
+                    protected List<Storage> load() {
+                        return storageMapper.getStorages(new FilterWrapper<>(new Storage())
+                                .put(Storage.FILTER_CURRENT_WORKER, getCurrentWorker().getObjectId())
+                                .put(Storage.FILTER_CITIES, getCurrentWorker().getNumberValuesString(Worker.CITIES)))
+                                .stream().filter(s -> s.getNumber(Storage.CITY) != null).collect(Collectors.toList());
+                    }
+                }) {
+                    @Override
+                    protected void populateItem(ListItem<Storage> item) {
+                        Storage storage = item.getModelObject();
+
+                        String label = Attributes.capitalize(domainService.getTextValue(City.ENTITY_NAME, storage.getCityId(), City.NAME));
+
+                        item.add(new MenuLink("link", StoragePage.class, new PageParameters()
+                                .add("id", storage.getObjectId())
+                                .add("nsl", ""), "id")
+                                .add(new Label("label", label)));
+                    }
+                }.setReuseItems(true).setVisible(isUser() || isStructureAdmin()))
+                .add(newBehaviorList()));
+        menu.add(userStorages);
 
         WebMarkupContainer settings = new WebMarkupContainer("settings");
         settings.setVisible(isAdmin());
@@ -402,11 +396,6 @@ public class BasePage extends WebPage{
 
         response.render(CssHeaderItem.forReference(MenuCssResourceReference.INSTANCE));
         response.render(JavaScriptHeaderItem.forReference(MenuJsResourceReference.INSTANCE));
-
-        response.render(OnDomReadyHeaderItem.forScript(
-                "$('#menu').metisMenu({toggle: false})" +
-                ".css('min-height', screen.height + 'px');"
-        ));
     }
 
     private HttpServletRequest getHttpServletRequest(){

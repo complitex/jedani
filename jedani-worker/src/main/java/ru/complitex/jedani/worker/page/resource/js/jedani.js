@@ -1,5 +1,7 @@
 $(function() {
     $.support.transition = false;
+
+    $('#menu').metisMenu({toggle: false})
 });
 
 function copyToClipboard(text) {
