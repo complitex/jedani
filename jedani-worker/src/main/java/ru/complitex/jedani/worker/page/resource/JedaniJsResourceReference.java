@@ -1,9 +1,11 @@
 package ru.complitex.jedani.worker.page.resource;
 
-import org.apache.wicket.Application;
+import de.agilecoders.wicket.core.markup.html.references.BootstrapJavaScriptReference;
+import de.agilecoders.wicket.core.markup.html.references.JQueryMigrateJavaScriptReference;
 import org.apache.wicket.markup.head.HeaderItem;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
+import org.apache.wicket.resource.JQueryResourceReference;
 
 import java.util.Arrays;
 import java.util.List;
@@ -21,7 +23,10 @@ public class JedaniJsResourceReference extends JavaScriptResourceReference {
 
     @Override
     public List<HeaderItem> getDependencies() {
-        return Arrays.asList(JavaScriptHeaderItem.forReference(Application.get().getJavaScriptLibrarySettings().getJQueryReference()),
-                JavaScriptHeaderItem.forReference(MenuJsResourceReference.INSTANCE));
+        return Arrays.asList(
+                JavaScriptHeaderItem.forReference(JQueryResourceReference.getV3()),
+                JavaScriptHeaderItem.forReference(MenuJsResourceReference.INSTANCE),
+                JavaScriptHeaderItem.forReference(JQueryMigrateJavaScriptReference.instance()),
+                JavaScriptHeaderItem.forReference(BootstrapJavaScriptReference.instance()));
     }
 }

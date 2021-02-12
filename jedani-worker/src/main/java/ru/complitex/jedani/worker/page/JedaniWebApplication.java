@@ -105,6 +105,8 @@ public class JedaniWebApplication extends WebApplication{
         ((ConverterLocator)getConverterLocator()).set(BigDecimal.class, new BigDecimalConverter());
 
         getCspSettings().blocking().disabled();
+
+        getMarkupSettings().setDefaultMarkupEncoding("UTF-8");
     }
 
     private void configureBootstrap() {
