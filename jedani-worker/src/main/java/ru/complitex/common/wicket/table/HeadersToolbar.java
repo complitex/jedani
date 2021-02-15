@@ -11,6 +11,7 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.EmptyPanel;
@@ -55,6 +56,10 @@ public class HeadersToolbar extends AbstractToolbar {
                         @Override
                         public void onClick(AjaxRequestTarget target) {
                             container.setVisible(true);
+
+                            if (filter instanceof AbstractFilter){
+                                ((AbstractFilter<?>)filter).visitChildren(TextField.class, (c, o) -> target.focusComponent(c));
+                            }
 
                             target.add(item);
                         }
