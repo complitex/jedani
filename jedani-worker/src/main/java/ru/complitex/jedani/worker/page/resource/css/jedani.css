@@ -426,7 +426,7 @@ p {
 }
 
 td div p {
-    max-height: 120px;
+    max-height: 127px;
     overflow-y: auto;
 }
 

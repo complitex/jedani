@@ -158,6 +158,10 @@ public class Reward extends Domain<Reward> {
         setDecimal(LOCAL, local);
     }
 
+    public Long getRankId() {
+        return getNumber(RANK);
+    }
+
     public Long getManagerId(){
         return getNumber(MANAGER);
     }
@@ -166,6 +170,10 @@ public class Reward extends Domain<Reward> {
         setNumber(MANAGER, managerId);
 
         return this;
+    }
+
+    public Long getManagerRankId() {
+        return getNumber(MANAGER_RANK);
     }
 
     public void setManagerRankId(Long managerRankId){
@@ -202,5 +210,29 @@ public class Reward extends Domain<Reward> {
 
     public void setPeriodId(Long periodId){
         setNumber(PERIOD, periodId);
+    }
+
+    public BigDecimal getSaleVolume() {
+        return getDecimal(SALE_VOLUME);
+    }
+
+    public BigDecimal getPaymentVolume() {
+        return getDecimal(PAYMENT_VOLUME);
+    }
+
+    public BigDecimal getGroupSaleVolume() {
+        return getDecimal(GROUP_SALE_VOLUME);
+    }
+
+    public BigDecimal getGroupPaymentVolume() {
+        return getDecimal(GROUP_PAYMENT_VOLUME);
+    }
+
+    public BigDecimal getStructureSaleVolume() {
+        return getDecimal(STRUCTURE_SALE_VOLUME);
+    }
+
+    public BigDecimal getStructurePaymentVolume() {
+        return getDecimal(STRUCTURE_PAYMENT_VOLUME);
     }
 }

@@ -4,6 +4,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -17,6 +18,7 @@ import ru.complitex.domain.component.datatable.DomainColumn;
 import ru.complitex.domain.component.panel.DomainListModalPanel;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
+import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.component.PeriodPanel;
 import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.mapper.RewardMapper;
@@ -27,6 +29,8 @@ import ru.complitex.jedani.worker.service.WorkerService;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
+
+import static ru.complitex.domain.util.Attributes.capitalize;
 
 /**
  * @author Anatoly Ivanov
@@ -44,6 +48,9 @@ public class RewardPanel extends DomainListModalPanel<Reward> {
 
     @Inject
     private PeriodService periodService;
+
+    @Inject
+    private DomainService domainService;
 
     public RewardPanel(String id, Worker worker) {
         super(id, Reward.class);
@@ -89,19 +96,14 @@ public class RewardPanel extends DomainListModalPanel<Reward> {
         }
 
         list.add(entity.getEntityAttribute(Reward.TYPE).withReference(RewardType.ENTITY_NAME, RewardType.NAME));
-        list.add(entity.getEntityAttribute(Reward.POINT));
+
         list.add(entity.getEntityAttribute(Reward.TOTAL));
+        list.add(entity.getEntityAttribute(Reward.POINT));
+        list.add(entity.getEntityAttribute(Reward.RATE));
         list.add(entity.getEntityAttribute(Reward.DISCOUNT));
         list.add(entity.getEntityAttribute(Reward.LOCAL));
-        list.add(entity.getEntityAttribute(Reward.SALE_VOLUME));
-        list.add(entity.getEntityAttribute(Reward.PAYMENT_VOLUME));
-        list.add(entity.getEntityAttribute(Reward.GROUP_SALE_VOLUME));
-        list.add(entity.getEntityAttribute(Reward.GROUP_PAYMENT_VOLUME));
-        list.add(entity.getEntityAttribute(Reward.RANK).withReference(Rank.ENTITY_NAME, Rank.NAME));
-        list.add(entity.getEntityAttribute(Reward.MANAGER));
-        list.add(entity.getEntityAttribute(Reward.MANAGER_RANK).withReference(Rank.ENTITY_NAME, Rank.NAME));
-        list.add(entity.getEntityAttribute(Reward.STRUCTURE_SALE_VOLUME));
-        list.add(entity.getEntityAttribute(Reward.STRUCTURE_PAYMENT_VOLUME));
+        list.add(entity.getEntityAttribute(Reward.DETAIL));
+
         list.add(entity.getEntityAttribute(Reward.STATUS));
 
         return list;
@@ -109,7 +111,9 @@ public class RewardPanel extends DomainListModalPanel<Reward> {
 
     @Override
     protected AbstractDomainColumn<Reward> newDomainColumn(EntityAttribute a) {
-        if (a.getEntityAttributeId() == Reward.PERIOD){
+        if (a.getEntityAttributeId().equals(Reward.MONTH)){
+            return new DomainColumn<>(a, new StringResourceModel("month", this));
+        } else if (a.getEntityAttributeId() == Reward.PERIOD){
             return new AbstractDomainColumn<>("period", this) {
                 @Override
                 public void populateItem(Item<ICellPopulator<Reward>> cellItem, String componentId, IModel<Reward> rowModel) {
@@ -136,24 +140,63 @@ public class RewardPanel extends DomainListModalPanel<Reward> {
                     cellItem.add(new Label(componentId, sale));
                 }
             };
-        }else if (a.getEntityAttributeId().equals(Reward.WORKER)){
-            return new AbstractDomainColumn<>(a) {
+        } else if (a.getEntityAttributeId().equals(Reward.WORKER)){
+            return new AbstractDomainColumn<>("worker", this) {
                 @Override
                 public void populateItem(Item<ICellPopulator<Reward>> cellItem, String componentId, IModel<Reward> rowModel) {
                     cellItem.add(new Label(componentId, workerService.getWorkerLabel(rowModel.getObject().getWorkerId())));
                 }
             };
-        }else if (a.getEntityAttributeId().equals(Reward.MANAGER)){
+        } else if (a.getEntityAttributeId().equals(Reward.TYPE)){
+            return new DomainColumn<>(a);
+        } else if (a.getEntityAttributeId().equals(Reward.DETAIL)) {
             return new AbstractDomainColumn<>(a) {
                 @Override
                 public void populateItem(Item<ICellPopulator<Reward>> cellItem, String componentId, IModel<Reward> rowModel) {
-                    cellItem.add(new Label(componentId, workerService.getWorkerLabel(rowModel.getObject().getManagerId())));
-                }
+                    Reward reward = rowModel.getObject();
 
+                    String detail = "";
+
+                    if (reward.getRankId() != null) {
+                        detail += getString("rank") + ": " + capitalize(domainService.getTextValue(Rank.ENTITY_NAME, reward.getRankId(), Rank.NAME)) + "\n";
+                    }
+
+                    if (reward.getManagerId() != null) {
+                        detail += getString("manager") + ": " + workerService.getSimpleWorkerLabel(reward.getManagerId()) + "\n";
+                    }
+
+                    if (reward.getManagerRankId() != null) {
+                        detail += getString("manager_rank") + ": " + capitalize(domainService.getTextValue(Rank.ENTITY_NAME, reward.getManagerRankId(), Rank.NAME)) + "\n";
+                    }
+
+                    if (reward.getSaleVolume() != null) {
+                        detail += getString("sale_volume") + ": " + reward.getSaleVolume().toPlainString() + "\n";
+                    }
+
+                    if (reward.getPaymentVolume() != null) {
+                        detail += getString("payment_volume") + ": " + reward.getPaymentVolume().toPlainString() + "\n";
+                    }
+
+                    if (reward.getGroupSaleVolume() != null) {
+                        detail += getString("group_sale_volume") + ": " + reward.getGroupSaleVolume().toPlainString() + "\n";
+                    }
+
+                    if (reward.getGroupPaymentVolume() != null) {
+                        detail += getString("group_payment_volume") + ": " + reward.getGroupPaymentVolume().toPlainString() + "\n";
+                    }
+
+                    if (reward.getStructureSaleVolume() != null) {
+                        detail += getString("structure_sale_volume") + ": " + reward.getStructureSaleVolume().toPlainString() + "\n";
+                    }
+
+                    if (reward.getStructurePaymentVolume() != null) {
+                        detail += getString("structure_payment_volume") + ": " + reward.getStructurePaymentVolume().toPlainString();
+                    }
+
+                    cellItem.add(new MultiLineLabel(componentId, detail));
+                }
             };
-        }else if (a.getEntityAttributeId().equals(Reward.TYPE)){
-            return new DomainColumn<>(a);
-        }else if (a.getEntityAttributeId().equals(Reward.STATUS)){
+        } else if (a.getEntityAttributeId().equals(Reward.STATUS)){
             return new AbstractDomainColumn<>(a) {
                 @Override
                 public void populateItem(Item<ICellPopulator<Reward>> cellItem, String componentId, IModel<Reward> rowModel) {
@@ -162,9 +205,8 @@ public class RewardPanel extends DomainListModalPanel<Reward> {
             };
         }
 
-        if (a.getEntityAttributeId().equals(Reward.MONTH)){
-            return new DomainColumn<>(a, new StringResourceModel("month", this));
-        }else if (a.getEntityAttributeId().equals(Reward.LOCAL)){
+
+        if (a.getEntityAttributeId().equals(Reward.LOCAL)){
             return new DomainColumn<>(a, new StringResourceModel("local", this));
         }else if (a.getEntityAttributeId().equals(Reward.PAYMENT_VOLUME)){
             return new DomainColumn<>(a, new StringResourceModel("paymentVolume", this));

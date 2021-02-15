@@ -34,7 +34,7 @@ public class NavigationToolbar extends AbstractToolbar {
         navigation.setOutputMarkupId(true);
         add(navigation);
 
-        Component component = getPagingLeft("component");
+        Component component = newPagingLeft("component");
 
         navigation.add(component != null ? component : new EmptyPanel("component"));
 
@@ -75,7 +75,7 @@ public class NavigationToolbar extends AbstractToolbar {
                 }));
     }
 
-    protected Component getPagingLeft(String id){
+    protected Component newPagingLeft(String id){
         return null;
     }
 

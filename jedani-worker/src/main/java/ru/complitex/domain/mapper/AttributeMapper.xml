@@ -44,7 +44,7 @@
     <!--suppress SqlResolve -->
     <select id="selectHistoryAttributes" parameterType="map" resultMap="attributeResultMap">
         select '${entityName}' entity_name, a.*  from ${entityName}_attribute a
-            left join ${entityName} d on a.domain_id = d.id
+            left join `${entityName}` d on a.domain_id = d.id
         where d.object_id = #{objectId}
         <if test="entityAttributeId != null"> and a.entity_attribute_id = #{entityAttributeId}</if>
     </select>
@@ -78,7 +78,7 @@
 
     <!--suppress SqlResolve -->
     <select id="selectAttributeNumber" parameterType="map" resultType="long">
-        select a.number from ${entityName} d
+        select a.number from `${entityName}` d
           left join ${entityName}_attribute a on a.domain_id = d.id
         where d.status = 1 and d.object_id = #{objectId}
           and a.status = 1 and a.entity_attribute_id = #{entityAttributeId}
@@ -86,7 +86,7 @@
 
     <!--suppress SqlResolve -->
     <select id="selectAttributeNumberValues" parameterType="map" resultType="long">
-       select v.number from ${entityName} d
+       select v.number from `${entityName}` d
           left join ${entityName}_attribute a on a.domain_id = d.id
           left join ${entityName}_value v on v.attribute_id = a.id
         where d.status = 1 and d.object_id = #{objectId}
@@ -95,7 +95,7 @@
 
     <!--suppress SqlResolve -->
     <select id="selectAttributeText" parameterType="map" resultType="string">
-        select a.text from ${entityName} d
+        select a.text from `${entityName}` d
           left join ${entityName}_attribute a on a.domain_id = d.id
         where d.status = 1 and d.object_id = #{objectId}
           and a.status = 1 and a.entity_attribute_id = #{entityAttributeId}
@@ -103,7 +103,7 @@
 
     <!--suppress SqlResolve -->
     <select id="selectAttributeTextValue" parameterType="map" resultType="string">
-        select v.text from ${entityName} d
+        select v.text from `${entityName}` d
           left join ${entityName}_attribute a on a.domain_id = d.id
           left join ${entityName}_value v on v.attribute_id = a.id
         where d.status = 1 and d.object_id = #{objectId}

@@ -26,6 +26,34 @@
         <if test="map.month != null or map.actualMonth != null">
             left join reward_attribute ra_m on ra_m.domain_id = d.id and ra_m.entity_attribute_id = 8 and ra_m.status = 1
         </if>
+
+        <if test="map.sale != null">
+            left join reward_attribute ra_s on ra_s.domain_id = d.id and ra_s.entity_attribute_id = 7 and ra_s.status = 1
+            left join sale s on s.object_id = ra_s.number and s.status = 1
+            left join sale_attribute sa_c on sa_c.domain_id = s.id and sa_c.entity_attribute_id = 10 and sa_c.status = 1
+        </if>
+
+        <if test="map.worker != null">
+            left join reward_attribute ra_w on ra_w.domain_id = d.id and ra_w.entity_attribute_id = 2 and ra_w.status = 1
+
+            left join worker w on w.object_id = ra_w.number and w.status = 1
+            left join worker_attribute wa_j on w.id = wa_j.domain_id and wa_j.entity_attribute_id = 1 and wa_j.status = 1
+
+            left join worker_attribute wa_f on w.id = wa_f.domain_id and wa_f.entity_attribute_id = 2 and wa_f.status = 1
+            left join first_name f on f.object_id = wa_f.number and f.status = 1
+            left join first_name_attribute fa on f.id = fa.domain_id and fa.entity_attribute_id = 1 and fa.status = 1
+            left join first_name_value fv on fa.id = fv.attribute_id and fv.locale_id = 1
+
+            left join worker_attribute wa_m on w.id = wa_m.domain_id and wa_m.entity_attribute_id = 3 and wa_m.status = 1
+            left join middle_name m on m.object_id = wa_m.number and m.status = 1
+            left join middle_name_attribute ma on m.id = ma.domain_id and ma.entity_attribute_id = 1 and ma.status = 1
+            left join middle_name_value mv on ma.id = mv.attribute_id and mv.locale_id = 1
+
+            left join worker_attribute wa_l on w.id = wa_l.domain_id and wa_l.entity_attribute_id = 4 and wa_l.status = 1
+            left join last_name l on l.object_id = wa_l.number and l.status = 1
+            left join last_name_attribute la on l.id = la.domain_id and la.entity_attribute_id = 1 and la.status = 1
+            left join last_name_value lv on la.id = lv.attribute_id and lv.locale_id = 1
+        </if>
     </sql>
 
     <sql id="selectRewardsWhere">
@@ -40,6 +68,17 @@
         <if test="map.period != null">
             and exists(select ra.id from reward_attribute ra where ra.domain_id = d.id and ra.status = 1 and d.status = 1 and
                 ra.entity_attribute_id = 24 and ra.number = #{map.period})
+        </if>
+
+        <if test="map.sale != null">
+            and sa_c.text like concat('%', #{map.sale}, '%')
+        </if>
+
+        <if test="map.worker != null">
+            and (wa_j.text like concat('%', #{map.worker}, '%')
+                or lv.text like concat('%', #{map.worker}, '%')
+                or mv.text like concat('%', #{map.worker}, '%')
+                or fv.text like concat('%', #{map.worker}, '%'))
         </if>
     </sql>    
     

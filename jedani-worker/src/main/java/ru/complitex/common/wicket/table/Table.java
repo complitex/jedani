@@ -59,7 +59,7 @@ public class Table<T extends Serializable> extends DataTable<T, Sort> implements
             }
 
             @Override
-            protected Component getPagingLeft(String id) {
+            protected Component newPagingLeft(String id) {
                 Component component =  Table.this.getPagingLeft(id);
 
                 visibleModel.setObject(component != null);

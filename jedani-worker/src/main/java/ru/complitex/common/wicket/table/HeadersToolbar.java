@@ -40,7 +40,7 @@ public class HeadersToolbar extends AbstractToolbar {
                     if (filter instanceof AbstractFilter) {
                         ((AbstractFilter<?>)filter).setLabelModel(column.getDisplayModel());
 
-                        ((AbstractFilter<?>) filter).onChange(t -> t.add(table.getBody()));
+                        ((AbstractFilter<?>) filter).onChange(table::update);
                     }
 
                     WebMarkupContainer container = new WebMarkupContainer("container");
