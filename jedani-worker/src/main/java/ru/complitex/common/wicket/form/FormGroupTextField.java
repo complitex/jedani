@@ -46,11 +46,6 @@ public class FormGroupTextField<T> extends Panel{
             public boolean isRequired() {
                 return FormGroupTextField.this.isRequired();
             }
-
-            @Override
-            public boolean isEnabled() {
-                return FormGroupTextField.this.isEnabled();
-            }
         });
         textField.setLabel(label);
 
@@ -115,9 +110,5 @@ public class FormGroupTextField<T> extends Panel{
 
     protected void onTextFieldTag(ComponentTag tag){
 
-    }
-
-    public boolean isEnabled() {
-        return true;
     }
 }

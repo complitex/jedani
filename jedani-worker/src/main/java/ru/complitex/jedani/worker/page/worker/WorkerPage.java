@@ -960,7 +960,7 @@ public class WorkerPage extends BasePage {
             }
         });
 
-        tabs.add(new AbstractTab(new StringResourceModel("sale", WorkerPage.this)) {
+        tabs.add(new AbstractTab(new StringResourceModel("sales", WorkerPage.this)) {
             @Override
             public WebMarkupContainer getPanel(String panelId) {
                 Fragment sale = new Fragment(panelId, "sale", WorkerPage.this);
@@ -971,7 +971,7 @@ public class WorkerPage extends BasePage {
             }
         });
 
-        tabs.add(new AbstractTab(new StringResourceModel("payment", WorkerPage.this)) {
+        tabs.add(new AbstractTab(new StringResourceModel("payments", WorkerPage.this)) {
             @Override
             public WebMarkupContainer getPanel(String panelId) {
                 Fragment payment = new Fragment(panelId, "payment", WorkerPage.this);
@@ -1062,7 +1062,7 @@ public class WorkerPage extends BasePage {
             }
         });
 
-        tabs.add(new AbstractTab(new StringResourceModel("reward", WorkerPage.this)) {
+        tabs.add(new AbstractTab(new StringResourceModel("rewards", WorkerPage.this)) {
             @Override
             public WebMarkupContainer getPanel(String panelId) {
                 Fragment reward = new Fragment(panelId, "reward", WorkerPage.this);

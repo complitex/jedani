@@ -537,7 +537,7 @@ public class RewardService implements Serializable {
         reward.setPoint(total.subtract(getRewardsTotalBySaleId(sale.getObjectId(), rewardType)));
         reward.setDate(Dates.currentDate());
         reward.setMonth(month);
-        reward.setRewardStatus(RewardStatus.ACCRUED);
+        reward.setRewardStatus(RewardStatus.WITHDRAWN);
         reward.setPeriodId(period.getObjectId());
 
         updateLocal(sale, reward);
