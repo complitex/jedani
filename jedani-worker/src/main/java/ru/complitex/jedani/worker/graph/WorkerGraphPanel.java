@@ -32,7 +32,7 @@ public class WorkerGraphPanel extends Panel {
     private NameService nameService;
 
     private String elements;
-    private String fileName;
+    private final String fileName;
 
     public WorkerGraphPanel(String id, Worker worker, Long levelDepth) {
         super(id);
@@ -43,24 +43,14 @@ public class WorkerGraphPanel extends Panel {
                 .put("levelDepth", levelDepth)));
 
         elements =  " {data: {id: '" + worker.getObjectId() + "', " +
-                "label: '" + worker.getText(Worker.J_ID) + "\\n" +
-                nameService.getLastName(worker.getLastNameId())
-//                + "\\n" +
-//                nameService.getFirstName(worker.getNumber(Worker.FIRST_NAME)) + "\\n" +
-//                nameService.getMiddleName(worker.getNumber(Worker.MIDDLE_NAME))
-                + "'}, " + getStyle(worker, 0) + "}";
+                "label: '" + worker.getText(Worker.J_ID) + "\\n" + getLabel(worker) + "'}, " +
+                getStyle(worker, 0) + "}";
 
         if (!workers.isEmpty()) {
             elements += "," + workers.stream()
-                    .map(w -> {
-                        return " {data: {id: '" + w.getObjectId() + "', " +
-                                "label: '" + w.getText(Worker.J_ID) + "\\n" +
-                                nameService.getLastName(w.getLastNameId())
-//                                + "\\n" +
-//                                nameService.getFirstName(w.getNumber(Worker.FIRST_NAME)) + "\\n" +
-//                                nameService.getMiddleName(w.getNumber(Worker.MIDDLE_NAME))
-                                + "'}, " + getStyle(w, worker.getLevel().intValue()) + "}";
-                    })
+                    .map(w -> " {data: {id: '" + w.getObjectId() + "', " +
+                            "label: '" + w.getText(Worker.J_ID) + "\\n" + getLabel(w) + "'}, " +
+                            getStyle(w, worker.getLevel().intValue()) + "}")
                     .collect(Collectors.joining(","));
 
             elements += "," + workers.stream()
@@ -74,6 +64,12 @@ public class WorkerGraphPanel extends Panel {
                 nameService.getLastName(worker.getLastNameId()) + " " +
                 nameService.getFirstName(worker.getFistNameId()) + " " +
                 nameService.getMiddleName(worker.getMiddleNameId());
+    }
+
+    private String getLabel(Worker worker){
+        String lastName = nameService.getLastName(worker.getLastNameId());
+
+        return lastName.substring(0, Math.min(6, lastName.length()));
     }
 
     private String getStyle(Worker w, int level) {
