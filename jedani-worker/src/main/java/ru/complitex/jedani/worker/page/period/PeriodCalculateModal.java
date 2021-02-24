@@ -51,7 +51,7 @@ public class PeriodCalculateModal extends AbstractEditModal<Period> {
     @Override
     protected void save(AjaxRequestTarget target) {
         try {
-            rewardService.calculateRewards(false);
+            rewardService.calculateRewards();
 
             getSession().success(getString("info_rewards_calculated"));
         } catch (Exception e) {

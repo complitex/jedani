@@ -59,13 +59,14 @@ public class RewardService implements Serializable {
     @Inject
     private PriceService priceService;
 
-    public List<Reward> getRewardsBySaleId(Long saleId){
+    public List<Reward> getRewardsBySaleId(Long saleId) {
         return domainService.getDomains(Reward.class, FilterWrapper.of(new Reward().setSaleId(saleId)));
     }
 
-    public BigDecimal getRewardsTotalBySaleId(Long saleId, Long rewardTypeId){
+    public BigDecimal getRewardsPointSum(Long saleId, Long rewardTypeId, Long rewardStatusId) {
         return getRewardsBySaleId(saleId).stream()
                 .filter(r -> Objects.equals(r.getType(), rewardTypeId))
+                .filter(r -> Objects.equals(r.getRewardStatus(), rewardStatusId))
                 .reduce(ZERO, ((t, p) -> t.add(p.getPoint())), BigDecimal::add);
     }
 
@@ -77,7 +78,7 @@ public class RewardService implements Serializable {
         ));
     }
 
-    public List<Reward> getRewards(Long workerId, Long managerId, Date month){
+    public List<Reward> getRewards(Long workerId, Long managerId, Date month) {
         return domainService.getDomains(Reward.class, FilterWrapper.of(new Reward()
                 .setWorkerId(workerId)
                 .setManagerId(managerId)
@@ -86,25 +87,25 @@ public class RewardService implements Serializable {
         ));
     }
 
-    public BigDecimal getRewardsTotal(Long workerId, Long rewardTypeId, Date month){
+    public BigDecimal getRewardsTotal(Long workerId, Long rewardTypeId, Date month) {
         return getRewards(workerId, month).stream()
                 .filter(r -> Objects.equals(r.getType(), rewardTypeId))
                 .reduce(ZERO, ((t, p) -> t.add(p.getTotal())), BigDecimal::add);
     }
 
-    public BigDecimal getRewardsTotal(Long workerId, Long managerId, Long rewardTypeId, Date month){
+    public BigDecimal getRewardsTotal(Long workerId, Long managerId, Long rewardTypeId, Date month) {
         return getRewards(workerId, managerId, month).stream()
                 .filter(r -> Objects.equals(r.getType(), rewardTypeId))
                 .reduce(ZERO, ((t, p) -> t.add(p.getTotal())), BigDecimal::add);
     }
 
-    public BigDecimal getRewardsTotal(List<Reward> rewards, Long rewardTypeId, Date month, boolean current){
+    public BigDecimal getRewardsTotal(List<Reward> rewards, Long rewardTypeId, Date month, boolean current) {
         return rewards.stream()
                 .filter(r -> Objects.equals(r.getType(), rewardTypeId) && isCurrentSaleMonth(r, month) == current)
                 .reduce(ZERO, ((t, r) -> t.add(r.getTotal())), BigDecimal::add);
     }
 
-    public BigDecimal getRewardsPoint(List<Reward> rewards, Long rewardTypeId, Date month, boolean current){
+    public BigDecimal getRewardsPoint(List<Reward> rewards, Long rewardTypeId, Date month, boolean current) {
         return rewards.stream()
                 .filter(r -> Objects.equals(r.getType(), rewardTypeId) && isCurrentSaleMonth(r, month) == current)
                 .reduce(ZERO, ((t, r) -> t.add(r.getPoint())), BigDecimal::add);
@@ -117,7 +118,7 @@ public class RewardService implements Serializable {
                 .reduce(ZERO, ((t, r) -> t.add(r.getTotal().multiply(r.getRate()))), BigDecimal::add);
     }
 
-    public boolean isCurrentSaleMonth(Reward reward, Date month){
+    public boolean isCurrentSaleMonth(Reward reward, Date month) {
         Sale sale = saleService.getSale(reward.getSaleId());
 
         return sale != null
@@ -125,7 +126,7 @@ public class RewardService implements Serializable {
                 : Dates.isSameMonth(reward.getMonth(), month);
     }
 
-    public WorkerRewardTree getWorkerRewardTree(Date month){
+    public WorkerRewardTree getWorkerRewardTree(Date month) {
         WorkerRewardTree tree = new WorkerRewardTree(workerNodeService.getWorkerNodeLevelMap());
 
         calcSaleVolumes(tree, month);
@@ -139,7 +140,7 @@ public class RewardService implements Serializable {
         return tree;
     }
 
-    private Long getRank(BigDecimal saleVolume){
+    private Long getRank(BigDecimal saleVolume) {
         if (saleVolume.compareTo(getParameter(20L)) >= 0){
             return RankType.PLATINUM_DIRECTOR;
         }else if (saleVolume.compareTo(getParameter(19L)) >= 0){
@@ -167,7 +168,7 @@ public class RewardService implements Serializable {
         return 0L;
     }
 
-    public List<WorkerReward> getPrivateGroup(WorkerReward r){
+    public List<WorkerReward> getPrivateGroup(WorkerReward r) {
         List<WorkerReward> group = new ArrayList<>();
 
         for (WorkerReward c : r.getChildRewards()){
@@ -184,57 +185,51 @@ public class RewardService implements Serializable {
     private void calcSaleVolumes(WorkerRewardTree tree, Date month){
         Set<Long> activeSaleWorkerIds = saleService.getActiveSaleWorkerIds();
 
-        tree.forEachLevel((l, rl) -> {
-            rl.forEach(r -> {
-                if (activeSaleWorkerIds.contains(r.getWorkerNode().getObjectId())) {
-                    r.setSaleVolume(saleService.getSaleVolume(r.getWorkerNode().getObjectId(), month));
-                }
+        tree.forEachLevel((l, rl) -> rl.forEach(r -> {
+            if (activeSaleWorkerIds.contains(r.getWorkerNode().getObjectId())) {
+                r.setSaleVolume(saleService.getSaleVolume(r.getWorkerNode().getObjectId(), month));
+            }
 
-                r.setGroupSaleVolume(getPrivateGroup(r).stream()
-                        .reduce(ZERO, (v, c) -> v.add(c.getSaleVolume()), BigDecimal::add));
+            r.setGroupSaleVolume(getPrivateGroup(r).stream()
+                    .reduce(ZERO, (v, c) -> v.add(c.getSaleVolume()), BigDecimal::add));
 
-                r.setStructureSaleVolume(r.getChildRewards().stream()
-                        .reduce(r.getSaleVolume(), (v, c) -> v.add(c.getStructureSaleVolume()), BigDecimal::add));
+            r.setStructureSaleVolume(r.getChildRewards().stream()
+                    .reduce(r.getSaleVolume(), (v, c) -> v.add(c.getStructureSaleVolume()), BigDecimal::add));
 
-                r.setRank(getRank(r.getStructureSaleVolume()));
-            });
-        });
+            r.setRank(getRank(r.getStructureSaleVolume()));
+        }));
     }
 
     private void calcPaymentVolume(WorkerRewardTree tree, Date month){
         Set<Long> activeSaleWorkerIds = saleService.getActiveSaleWorkerIds();
 
-        tree.forEachLevel((l, rl) -> {
-            rl.forEach(r -> {
-                if (activeSaleWorkerIds.contains(r.getWorkerNode().getObjectId())) {
-                    r.setPaymentVolume(paymentService.getPaymentsVolumeBySellerWorkerId(r.getWorkerNode().getObjectId(), month));
-                }
+        tree.forEachLevel((l, rl) -> rl.forEach(r -> {
+            if (activeSaleWorkerIds.contains(r.getWorkerNode().getObjectId())) {
+                r.setPaymentVolume(paymentService.getPaymentsVolumeBySellerWorkerId(r.getWorkerNode().getObjectId(), month));
+            }
 
-                r.setGroupPaymentVolume(getPrivateGroup(r).stream()
-                        .reduce(ZERO, (v, c) -> v.add(c.getPaymentVolume()), BigDecimal::add));
+            r.setGroupPaymentVolume(getPrivateGroup(r).stream()
+                    .reduce(ZERO, (v, c) -> v.add(c.getPaymentVolume()), BigDecimal::add));
 
-                r.setStructurePaymentVolume(r.getChildRewards().stream()
-                        .reduce(r.getPaymentVolume(), (v, c) -> v.add(c.getStructurePaymentVolume()), BigDecimal::add));
-            });
-        });
+            r.setStructurePaymentVolume(r.getChildRewards().stream()
+                    .reduce(r.getPaymentVolume(), (v, c) -> v.add(c.getStructurePaymentVolume()), BigDecimal::add));
+        }));
     }
 
     private void calcRegistrationCount(WorkerRewardTree tree, Date month){
-        tree.forEachLevel((l, rl) -> {
-            rl.forEach(r -> {
-                r.setRegistrationCount(r.getChildRewards().stream()
-                        .filter(c -> c.getWorkerNode().getRegistrationDate() != null)
-                        .reduce(0L, (v, c) -> v + (isNewWorker(c, month) ? 1L : 0L), Long::sum));
+        tree.forEachLevel((l, rl) -> rl.forEach(r -> {
+            r.setRegistrationCount(r.getChildRewards().stream()
+                    .filter(c -> c.getWorkerNode().getRegistrationDate() != null)
+                    .reduce(0L, (v, c) -> v + (isNewWorker(c, month) ? 1L : 0L), Long::sum));
 
-                r.setGroupRegistrationCount(getPrivateGroup(r).stream()
-                        .filter(c -> c.getWorkerNode().getRegistrationDate() != null)
-                        .reduce(0L, (v, c) -> v + (isNewWorker(c, month) ? 1 : 0), Long::sum));
+            r.setGroupRegistrationCount(getPrivateGroup(r).stream()
+                    .filter(c -> c.getWorkerNode().getRegistrationDate() != null)
+                    .reduce(0L, (v, c) -> v + (isNewWorker(c, month) ? 1 : 0), Long::sum));
 
-                r.setStructureManagerCount(r.getChildRewards().stream()
-                        .filter(WorkerReward::isManager)
-                        .reduce(0L, (v, c) -> v + c.getStructureManagerCount() + 1, Long::sum));
-            });
-        });
+            r.setStructureManagerCount(r.getChildRewards().stream()
+                    .filter(WorkerReward::isManager)
+                    .reduce(0L, (v, c) -> v + c.getStructureManagerCount() + 1, Long::sum));
+        }));
     }
 
     private boolean isNewWorker(WorkerReward workerReward, Date month){
@@ -467,7 +462,7 @@ public class RewardService implements Serializable {
                 point = point.add(rewardPoint.multiply(new BigDecimal("0.40")));
             }
 
-            point = point.subtract(getRewardsTotalBySaleId(sale.getObjectId(), rewardType));
+            point = point.subtract(getRewardsPointSum(sale.getObjectId(), rewardType, RewardStatus.CHARGED));
 
         }
 
@@ -525,7 +520,7 @@ public class RewardService implements Serializable {
         BigDecimal total = sale.getPersonalRewardPoint();
 
         if (total == null){
-            log.warn("null sale reward total {}", sale);
+            //log.warn("null sale reward total {}", sale); todo
 
             return;
         }
@@ -534,7 +529,7 @@ public class RewardService implements Serializable {
         reward.setWorkerId(sale.getSellerWorkerId());
         reward.setType(rewardType);
         reward.setTotal(total);
-        reward.setPoint(total.subtract(getRewardsTotalBySaleId(sale.getObjectId(), rewardType)));
+        reward.setPoint(total);
         reward.setDate(Dates.currentDate());
         reward.setMonth(month);
         reward.setRewardStatus(RewardStatus.WITHDRAWN);
@@ -547,209 +542,271 @@ public class RewardService implements Serializable {
         }
     }
 
+    private void calculateMkBonusReward(Sale sale, Period period, long rewardStatus){
+        if (sale.getMkManagerBonusRewardPoint() != null && sale.getMkManagerBonusWorkerId() != null) {
+            BigDecimal total = sale.getMkManagerBonusRewardPoint();
+
+            if (total.compareTo(ZERO) > 0) {
+                Reward reward = new Reward();
+
+                reward.setSaleId(sale.getObjectId());
+                reward.setWorkerId(sale.getMkManagerBonusWorkerId());
+                reward.setType(RewardType.MK_MANAGER_BONUS);
+                reward.setDate(Dates.currentDate());
+                reward.setMonth(period.getOperatingMonth());
+                reward.setPeriodId(period.getObjectId());
+                reward.setRewardStatus(rewardStatus);
+
+                reward.setTotal(total);
+
+                if (rewardStatus == RewardStatus.ESTIMATED) {
+                    reward.setPoint(total);
+                } else if (rewardStatus == RewardStatus.CHARGED) {
+                    reward.setPoint(calcRewardPoint(sale, RewardType.MK_MANAGER_BONUS, period.getOperatingMonth(), total));
+                }
+
+                updateLocal(sale, reward);
+
+                if (reward.getPoint().compareTo(ZERO) > 0) {
+                    domainService.save(reward);
+                }
+            }
+        }
+    }
+
+    private void calculateCulinaryReward(Sale sale, Period period, Long rewardStatus){
+        if (sale.getCulinaryRewardPoint() != null) {
+            if (getRewardsPointSum(sale.getObjectId(), RewardType.CULINARY_WORKSHOP, rewardStatus).compareTo(ZERO) != 0) {
+                return;
+            }
+
+            if (rewardStatus == RewardStatus.CHARGED &&
+                    paymentService.getPaymentsVolumeBySaleId(sale.getObjectId(), period.getOperatingMonth()).compareTo(sale.getTotal()) == 0) {
+                return;
+            }
+
+            Reward reward = new Reward();
+
+            reward.setSaleId(sale.getObjectId());
+            reward.setType(RewardType.CULINARY_WORKSHOP);
+            reward.setWorkerId(sale.getCulinaryWorkerId() != null ? sale.getCulinaryWorkerId() : sale.getSellerWorkerId());
+            reward.setDate(Dates.currentDate());
+            reward.setMonth(period.getOperatingMonth());
+            reward.setPeriodId(period.getObjectId());
+            reward.setRewardStatus(rewardStatus);
+
+            reward.setTotal(sale.getCulinaryRewardPoint());
+            reward.setPoint(sale.getCulinaryRewardPoint());
+
+            updateLocal(sale, reward);
+
+            domainService.save(reward);
+        }
+    }
+
+    private void calculateManagerPremiumReward(Sale sale, WorkerReward workerReward, Period period, Long rewardStatus) {
+        BigDecimal total = calcManagerPremiumPoint(sale, workerReward.getRank());
+
+        if (total.compareTo(ZERO) > 0){
+            Reward reward = new Reward();
+
+            reward.setSaleId(sale.getObjectId());
+            reward.setWorkerId(sale.getSellerWorkerId());
+            reward.setType(RewardType.MANAGER_PREMIUM);
+            reward.setDate(Dates.currentDate());
+            reward.setMonth(period.getOperatingMonth());
+            reward.setStructureSaleVolume(workerReward.getStructureSaleVolume());
+            reward.setRankId(workerReward.getRank());
+            reward.setPeriodId(period.getObjectId());
+            reward.setRewardStatus(rewardStatus);
+
+            reward.setTotal(total);
+
+            if (rewardStatus == RewardStatus.ESTIMATED) {
+                reward.setPoint(total);
+            } else if (rewardStatus == RewardStatus.CHARGED) {                            ;
+                reward.setPoint(calcRewardPoint(sale, RewardType.MANAGER_PREMIUM, period.getOperatingMonth(), total));
+            }
+
+            updateLocal(sale, reward);
+
+            domainService.save(reward);
+        }
+    }
+
+    private void calculatePersonalVolumeReward(WorkerReward workerReward, Period period, Long rewardStatus) {
+        if (workerReward.getSaleVolume().compareTo(getParameter(43L)) >= 0) {
+            Reward reward = new Reward();
+
+            reward.setType(RewardType.PERSONAL_VOLUME);
+            reward.setWorkerId(workerReward.getWorkerNode().getObjectId());
+            reward.setSaleVolume(workerReward.getSaleVolume());
+            reward.setPaymentVolume(workerReward.getPaymentVolume());
+            reward.setDate(Dates.currentDate());
+            reward.setMonth(period.getOperatingMonth());
+            reward.setPeriodId(period.getObjectId());
+            reward.setRewardStatus(rewardStatus);
+
+            BigDecimal avgPoint = getParameter(44L);
+            BigDecimal lowerPoint = getParameter(45L);
+            BigDecimal greaterPoint = getParameter(46L);
+
+            if (workerReward.getSaleVolume().compareTo(avgPoint) < 0) {
+                reward.setTotal(lowerPoint);
+            }else {
+                reward.setTotal(greaterPoint);
+            }
+
+            if (rewardStatus == RewardStatus.ESTIMATED || getRewardsTotal(reward.getWorkerId(), RewardType.PERSONAL_VOLUME, period.getOperatingMonth()).compareTo(ZERO) == 0) {
+                if (workerReward.getPaymentVolume().compareTo(avgPoint) < 0) {
+                    reward.setPoint(lowerPoint);
+                } else {
+                    reward.setPoint(greaterPoint);
+                }
+            }
+
+            updateLocal(reward);
+
+            if (reward.getPoint().compareTo(ZERO) > 0) {
+                domainService.save(reward);
+            }
+        }
+    }
+
+    private void calculateGroupVolumeReward(WorkerReward workerReward, Period period, Long rewardStatus){
+        BigDecimal total = getGroupVolumePercent(workerReward.getRank()).multiply(workerReward.getGroupSaleVolume()).divide(new BigDecimal("100"), 5, HALF_EVEN);
+
+        if (total.compareTo(ZERO) > 0) {
+            Reward reward = new Reward();
+
+            reward.setWorkerId(workerReward.getWorkerId());
+            reward.setType(RewardType.GROUP_VOLUME);
+            reward.setGroupSaleVolume(workerReward.getGroupSaleVolume());
+            reward.setGroupPaymentVolume(workerReward.getGroupPaymentVolume());
+            reward.setRankId(workerReward.getRank());
+            reward.setDate(Dates.currentDate());
+            reward.setMonth(period.getOperatingMonth());
+            reward.setRewardStatus(rewardStatus);
+            reward.setPeriodId(period.getObjectId());
+
+            reward.setTotal(total);
+
+            if (rewardStatus == RewardStatus.ESTIMATED) {
+                reward.setPoint(total);
+            } else if (rewardStatus == RewardStatus.CHARGED) {                            ;
+                reward.setPoint(calcRewardPoint(workerReward.getWorkerId(), null, RewardType.GROUP_VOLUME, period.getOperatingMonth(),
+                        workerReward.getGroupSaleVolume(), workerReward.getGroupPaymentVolume(), total));
+            }
+
+            updateLocal(reward);
+
+            domainService.save(reward);
+        }
+    }
+
+    private void calculateStructureVolume(WorkerReward workerReward, Period period, Long rewardStatus) {
+        getStructureManagers(workerReward).forEach(m -> {
+            BigDecimal total = getGroupVolumePercent(workerReward.getRank())
+                    .subtract(getGroupVolumePercent(m.getRank()))
+                    .multiply(m.getStructureSaleVolume())
+                    .divide(new BigDecimal("100"), 5, HALF_EVEN);
+
+            if (total.compareTo(ZERO) > 0) {
+                Reward reward = new Reward();
+
+                reward.setWorkerId(workerReward.getWorkerId());
+                reward.setType(RewardType.STRUCTURE_VOLUME);
+                reward.setRankId(workerReward.getRank());
+                reward.setManagerId(m.getWorkerId());
+                reward.setManagerRankId(m.getRank());
+                reward.setStructureSaleVolume(m.getStructureSaleVolume());
+                reward.setStructurePaymentVolume(m.getStructurePaymentVolume());
+                reward.setDate(Dates.currentDate());
+                reward.setMonth(period.getOperatingMonth());
+                reward.setPeriodId(period.getObjectId());
+                reward.setRewardStatus(rewardStatus);
+
+                reward.setTotal(total);
+
+                if (rewardStatus == RewardStatus.ESTIMATED) {
+                    reward.setPoint(total);
+                } else if (rewardStatus == RewardStatus.CHARGED) {                            ;
+                    reward.setPoint(calcRewardPoint(workerReward.getWorkerId(), m.getWorkerId(), RewardType.STRUCTURE_VOLUME, period.getOperatingMonth(),
+                            m.getStructureSaleVolume(), m.getStructurePaymentVolume(), total));
+                }
+
+                updateLocal(reward);
+
+                domainService.save(reward);
+            }
+        });
+    }
+
+
     @Transactional(rollbackFor = RewardException.class)
-    public void calculateRewards(boolean accrue) throws RewardException {
+    public void calculateRewards() throws RewardException {
         try {
             Period period = periodService.getActualPeriod();
 
-            Date month = period.getOperatingMonth();
+            rewardMapper.deleteRewards(period.getObjectId());
 
-            rewardMapper.deleteRewards(month);
+            Date month = period.getOperatingMonth();
 
             WorkerRewardTree tree = getWorkerRewardTree(month);
 
-            saleService.getActiveSales().forEach(s -> {
-                calculateSaleReward(s, saleService.getSaleItems(s.getObjectId()));
+            saleService.getActiveSales().forEach(sale -> {
+                calculateSaleReward(sale, saleService.getSaleItems(sale.getObjectId()));
 
-                if (s.getMkManagerBonusRewardPoint() != null && s.getMkManagerBonusWorkerId() != null){
-                    BigDecimal total = s.getMkManagerBonusRewardPoint();
+                calculateMkBonusReward(sale, period, RewardStatus.ESTIMATED);
+                calculateMkBonusReward(sale, period, RewardStatus.CHARGED);
 
-                    if (total.compareTo(ZERO) > 0){
-                        Reward reward = new Reward();
+                calculateCulinaryReward(sale, period, RewardStatus.ESTIMATED);
+                calculateCulinaryReward(sale, period, RewardStatus.CHARGED);
+            });
 
-                        reward.setSaleId(s.getObjectId());
-                        reward.setWorkerId(s.getMkManagerBonusWorkerId());
-                        reward.setType(RewardType.MK_MANAGER_BONUS);
-                        reward.setPoint(calcRewardPoint(s, RewardType.MK_MANAGER_BONUS, month, total));
-                        reward.setTotal(total);
-                        reward.setDate(Dates.currentDate());
-                        reward.setMonth(month);
-                        reward.setRewardStatus(accrue ? RewardStatus.ACCRUED : RewardStatus.CALCULATED);
-                        reward.setPeriodId(period.getObjectId());
-
-                        updateLocal(s, reward);
-
-                        domainService.save(reward);
-                    }
-                }
-
-                if (s.getCulinaryRewardPoint() != null && s.getTotal() != null &&
-                        paymentService.getPaymentsVolumeBySaleId(s.getObjectId(), month).compareTo(s.getTotal()) >= 0 &&
-                        getRewardsTotalBySaleId(s.getObjectId(), RewardType.CULINARY_WORKSHOP).compareTo(ZERO) == 0){
+            tree.forEachLevel((l, rl) -> rl.forEach(workerReward -> {
+                if (workerReward.getRank() > 0) {
                     Reward reward = new Reward();
 
-                    reward.setSaleId(s.getObjectId());
-                    reward.setType(RewardType.CULINARY_WORKSHOP);
-                    reward.setWorkerId(s.getCulinaryWorkerId() != null ? s.getCulinaryWorkerId() : s.getSellerWorkerId());
-                    reward.setPoint(s.getCulinaryRewardPoint());
-                    reward.setTotal(s.getCulinaryRewardPoint());
+                    reward.setWorkerId(workerReward.getWorkerId());
+                    reward.setType(RewardType.RANK);
+                    reward.setSaleVolume(workerReward.getSaleVolume());
+                    reward.setPaymentVolume(workerReward.getPaymentVolume());
+                    reward.setGroupSaleVolume(workerReward.getGroupSaleVolume());
+                    reward.setGroupPaymentVolume(workerReward.getGroupPaymentVolume());
+                    reward.setStructureSaleVolume(workerReward.getStructureSaleVolume());
+                    reward.setStructurePaymentVolume(workerReward.getStructurePaymentVolume());
+                    reward.setRankId(workerReward.getRank());
                     reward.setDate(Dates.currentDate());
                     reward.setMonth(month);
-                    reward.setRewardStatus(accrue ? RewardStatus.ACCRUED : RewardStatus.CALCULATED);
                     reward.setPeriodId(period.getObjectId());
-
-                    updateLocal(s, reward);
+                    reward.setRewardStatus(RewardStatus.ESTIMATED);
 
                     domainService.save(reward);
                 }
-            });
+            }));
 
-            tree.forEachLevel((l, rl) -> {
-                rl.forEach(r -> {
-                    if (r.getRank() > 0){
-                        Reward reward = new Reward();
+            saleService.getActiveSales().forEach(sale -> {
+                WorkerReward workerReward = tree.getWorkerReward(sale.getSellerWorkerId());
 
-                        reward.setWorkerId(r.getWorkerId());
-                        reward.setType(RewardType.RANK);
-                        reward.setSaleVolume(r.getSaleVolume());
-                        reward.setPaymentVolume(r.getPaymentVolume());
-                        reward.setGroupSaleVolume(r.getGroupSaleVolume());
-                        reward.setGroupPaymentVolume(r.getGroupPaymentVolume());
-                        reward.setStructureSaleVolume(r.getStructureSaleVolume());
-                        reward.setStructurePaymentVolume(r.getStructurePaymentVolume());
-                        reward.setRankId(r.getRank());
-                        reward.setDate(Dates.currentDate());
-                        reward.setMonth(month);
-                        reward.setRewardStatus(accrue ? RewardStatus.ACCRUED : RewardStatus.CALCULATED);
-                        reward.setPeriodId(period.getObjectId());
-
-                        domainService.save(reward);
-                    }
-                });
-            });
-
-            saleService.getActiveSales().forEach(s -> {
-                WorkerReward workerReward = tree.getWorkerReward(s.getSellerWorkerId());
-
-                if (workerReward.getRank() > 0){
-                    BigDecimal total = calcManagerPremiumPoint(s, workerReward.getRank());
-
-                    if (total.compareTo(ZERO) > 0){
-                        Reward reward = new Reward();
-
-                        reward.setSaleId(s.getObjectId());
-                        reward.setWorkerId(s.getSellerWorkerId());
-                        reward.setType(RewardType.MANAGER_PREMIUM);
-                        reward.setPoint(calcRewardPoint(s, RewardType.MANAGER_PREMIUM, month, total));
-                        reward.setTotal(total);
-                        reward.setDate(Dates.currentDate());
-                        reward.setMonth(month);
-                        reward.setStructureSaleVolume(workerReward.getStructureSaleVolume());
-                        reward.setRankId(workerReward.getRank());
-                        reward.setRewardStatus(accrue ? RewardStatus.ACCRUED : RewardStatus.CALCULATED);
-                        reward.setPeriodId(period.getObjectId());
-
-                        updateLocal(s, reward);
-
-                        domainService.save(reward);
-                    }
+                if (workerReward.getRank() > 0) {
+                    calculateManagerPremiumReward(sale, workerReward, period, RewardStatus.ESTIMATED);
+                    calculateManagerPremiumReward(sale, workerReward, period, RewardStatus.CHARGED);
                 }
             });
 
-            tree.forEachLevel((l, rl) -> {
-                rl.forEach(r -> {
-                    if (r.getSaleVolume().compareTo(getParameter(43L)) >= 0){
-                        Reward reward = new Reward();
+            tree.forEachLevel((l, rl) -> rl.forEach(workerReward -> {
+                calculatePersonalVolumeReward(workerReward, period, RewardStatus.ESTIMATED);
+                calculatePersonalVolumeReward(workerReward, period, RewardStatus.CHARGED);
 
-                        reward.setType(RewardType.PERSONAL_VOLUME);
-                        reward.setWorkerId(r.getWorkerNode().getObjectId());
-                        reward.setSaleVolume(r.getSaleVolume());
-                        reward.setPaymentVolume(r.getPaymentVolume());
-                        reward.setDate(Dates.currentDate());
-                        reward.setMonth(month);
-                        reward.setRewardStatus(accrue ? RewardStatus.ACCRUED : RewardStatus.CALCULATED);
-                        reward.setPeriodId(period.getObjectId());
+                if (workerReward.getRank() > 0) {
+                    calculateGroupVolumeReward(workerReward, period, RewardStatus.ESTIMATED);
+                    calculateGroupVolumeReward(workerReward, period, RewardStatus.CHARGED);
 
-                        if (getRewardsTotal(reward.getWorkerId(), RewardType.PERSONAL_VOLUME,
-                                month).compareTo(ZERO) == 0) {
-                            if (r.getPaymentVolume().compareTo(getParameter(44L)) < 0){
-                                reward.setPoint(getParameter(45L));
-                            }else if (r.getPaymentVolume().compareTo(getParameter(44L)) >= 0){
-                                reward.setPoint(getParameter(46L));
-                            }
-                        }
-
-                        if (r.getSaleVolume().compareTo(getParameter(44L)) < 0){
-                            reward.setTotal(getParameter(45L));
-                        }else if (r.getSaleVolume().compareTo(getParameter(44L)) >= 0){
-                            reward.setTotal(getParameter(46L));
-                        }
-
-                        updateLocal(reward);
-
-                        if (reward.getTotal().compareTo(ZERO) > 0) {
-                            domainService.save(reward);
-                        }
-                    }
-
-                    if (r.getRank() > 0){
-                        BigDecimal total = getGroupVolumePercent(r.getRank()).multiply(r.getGroupSaleVolume())
-                                .divide(new BigDecimal("100"), 5, HALF_EVEN);
-
-                        if (total.compareTo(ZERO) > 0) {
-                            Reward reward = new Reward();
-
-                            reward.setWorkerId(r.getWorkerId());
-                            reward.setType(RewardType.GROUP_VOLUME);
-                            reward.setPoint(calcRewardPoint(r.getWorkerId(), null, RewardType.GROUP_VOLUME, month,
-                                    r.getGroupSaleVolume(), r.getGroupPaymentVolume(), total));
-                            reward.setTotal(total);
-                            reward.setGroupSaleVolume(r.getGroupSaleVolume());
-                            reward.setGroupPaymentVolume(r.getGroupPaymentVolume());
-                            reward.setRankId(r.getRank());
-                            reward.setDate(Dates.currentDate());
-                            reward.setMonth(month);
-                            reward.setRewardStatus(accrue ? RewardStatus.ACCRUED : RewardStatus.CALCULATED);
-                            reward.setPeriodId(period.getObjectId());
-
-                            updateLocal(reward);
-
-                            domainService.save(reward);
-                        }
-
-                        getStructureManagers(r).forEach(m -> {
-                            BigDecimal t = getGroupVolumePercent(r.getRank())
-                                    .subtract(getGroupVolumePercent(m.getRank()))
-                                    .multiply(m.getStructureSaleVolume())
-                                    .divide(new BigDecimal("100"), 5, HALF_EVEN);
-
-                            if (t.compareTo(ZERO) > 0) {
-                                Reward reward = new Reward();
-
-                                reward.setWorkerId(r.getWorkerId());
-                                reward.setType(RewardType.STRUCTURE_VOLUME);
-                                reward.setPoint(calcRewardPoint(r.getWorkerId(), m.getWorkerId(),
-                                        RewardType.STRUCTURE_VOLUME, month,
-                                        m.getStructureSaleVolume(), m.getStructurePaymentVolume(), t));
-                                reward.setTotal(t);
-                                reward.setRankId(r.getRank());
-                                reward.setManagerId(m.getWorkerId());
-                                reward.setManagerRankId(m.getRank());
-                                reward.setStructureSaleVolume(m.getStructureSaleVolume());
-                                reward.setStructurePaymentVolume(m.getStructurePaymentVolume());
-                                reward.setDate(Dates.currentDate());
-                                reward.setMonth(month);
-                                reward.setRewardStatus(accrue ? RewardStatus.ACCRUED : RewardStatus.CALCULATED);
-                                reward.setPeriodId(period.getObjectId());
-
-                                updateLocal(reward);
-
-                                domainService.save(reward);
-                            }
-                        });
-                    }
-                });
-            });
+                    calculateStructureVolume(workerReward, period, RewardStatus.ESTIMATED);
+                    calculateStructureVolume(workerReward, period, RewardStatus.CHARGED);
+                }
+            }));
         } catch (Exception e) {
             log.error("error calculate rewards", e);
 

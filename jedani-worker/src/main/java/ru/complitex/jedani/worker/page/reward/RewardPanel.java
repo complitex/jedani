@@ -97,7 +97,7 @@ public class RewardPanel extends DomainListModalPanel<Reward> {
 
         list.add(entity.getEntityAttribute(Reward.TYPE).withReference(RewardType.ENTITY_NAME, RewardType.NAME));
 
-        list.add(entity.getEntityAttribute(Reward.TOTAL));
+        ///list.add(entity.getEntityAttribute(Reward.TOTAL));
         list.add(entity.getEntityAttribute(Reward.POINT));
         list.add(entity.getEntityAttribute(Reward.RATE));
         list.add(entity.getEntityAttribute(Reward.DISCOUNT));

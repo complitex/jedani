@@ -60,7 +60,7 @@ public class PeriodCloseModal extends AbstractEditModal<Period> {
     protected void save(AjaxRequestTarget target) {
         try {
             if (calculateModel.getObject()) {
-                rewardService.calculateRewards(true);
+                rewardService.calculateRewards();
 
                 getSession().success(getString("info_rewards_accrued"));
             }

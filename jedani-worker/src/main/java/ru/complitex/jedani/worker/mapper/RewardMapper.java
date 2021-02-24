@@ -5,7 +5,6 @@ import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.mybatis.BaseMapper;
 import ru.complitex.jedani.worker.entity.Reward;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -14,8 +13,8 @@ import java.util.List;
  */
 public class RewardMapper extends BaseMapper {
     @Transactional
-    public void deleteRewards(Date month){
-        List<Long> ids = sqlSession().selectList("selectCalculatedRewardIdsMyMonth", month);
+    public void deleteRewards(Long periodId){
+        List<Long> ids = sqlSession().selectList("selectRewardIdsByPeriod", periodId);
 
         if (!ids.isEmpty()) {
             sqlSession().delete("deleteRewardAttributesByDomainIds", ids);

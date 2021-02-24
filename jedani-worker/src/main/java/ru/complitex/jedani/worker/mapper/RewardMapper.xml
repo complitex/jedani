@@ -12,6 +12,12 @@
         where year(ra_m.date) = year(#{month}) and month(ra_m.date) = month(#{month}) and ra_s.number in (1, 2)
     </select>
 
+    <select id="selectRewardIdsByPeriod" parameterType="long" resultType="long">
+        select r.id from reward r
+            left join reward_attribute ra_p on r.id = ra_p.domain_id and ra_p.status = 1 and ra_p.entity_attribute_id = 24
+        where ra_p.number = #{periodId}
+    </select>
+
     <delete id="deleteRewardsByIds" parameterType="list">
         delete from reward
         where id in <foreach collection="list" open="(" separator="," close=")" item="i">#{i}</foreach>
