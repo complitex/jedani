@@ -31,8 +31,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ru.complitex.domain.util.Attributes.capitalize;
-
 /**
  * @author Anatoly Ivanov
  * 15.12.2020 19:00
@@ -159,7 +157,7 @@ public class RewardPanel extends DomainListModalPanel<Reward> {
                     String detail = "";
 
                     if (reward.getRankId() != null) {
-                        detail += getString("rank") + ": " + capitalize(domainService.getTextValue(Rank.ENTITY_NAME, reward.getRankId(), Rank.NAME)) + "\n";
+                        detail += getString("rank") + ": " + (domainService.getTextValue(Rank.ENTITY_NAME, reward.getRankId(), Rank.NAME)).toUpperCase() + "\n";
                     }
 
                     if (reward.getManagerId() != null) {
@@ -167,7 +165,7 @@ public class RewardPanel extends DomainListModalPanel<Reward> {
                     }
 
                     if (reward.getManagerRankId() != null) {
-                        detail += getString("manager_rank") + ": " + capitalize(domainService.getTextValue(Rank.ENTITY_NAME, reward.getManagerRankId(), Rank.NAME)) + "\n";
+                        detail += getString("manager_rank") + ": " + (domainService.getTextValue(Rank.ENTITY_NAME, reward.getManagerRankId(), Rank.NAME)).toUpperCase() + "\n";
                     }
 
                     if (reward.getSaleVolume() != null && reward.getSaleVolume().compareTo(BigDecimal.ZERO) > 0) {
