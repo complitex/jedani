@@ -657,6 +657,7 @@ public class SaleModal extends Modal<Sale> {
         }
 
         Sale sale = new Sale();
+
         sale.setSellerWorkerId(sellerWorkerId);
         sale.setType(SaleType.MYCOOK);
         sale.setDate(new Date());

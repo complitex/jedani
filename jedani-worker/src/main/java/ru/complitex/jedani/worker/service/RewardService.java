@@ -559,6 +559,8 @@ public class RewardService implements Serializable {
 
                 reward.setTotal(total);
 
+                reward.setPoint(ZERO);
+
                 if (rewardStatus == RewardStatus.ESTIMATED) {
                     reward.setPoint(total);
                 } else if (rewardStatus == RewardStatus.CHARGED) {
@@ -567,7 +569,7 @@ public class RewardService implements Serializable {
 
                 updateLocal(sale, reward);
 
-                if (reward.getPoint().compareTo(ZERO) > 0) {
+                if (reward.getPoint().compareTo(ZERO) != 0) {
                     domainService.save(reward);
                 }
             }
@@ -622,6 +624,8 @@ public class RewardService implements Serializable {
 
             reward.setTotal(total);
 
+            reward.setPoint(ZERO);
+
             if (rewardStatus == RewardStatus.ESTIMATED) {
                 reward.setPoint(total);
             } else if (rewardStatus == RewardStatus.CHARGED) {                            ;
@@ -630,7 +634,9 @@ public class RewardService implements Serializable {
 
             updateLocal(sale, reward);
 
-            domainService.save(reward);
+            if (reward.getPoint().compareTo(ZERO) != 0) {
+                domainService.save(reward);
+            }
         }
     }
 
@@ -657,6 +663,8 @@ public class RewardService implements Serializable {
                 reward.setTotal(greaterPoint);
             }
 
+            reward.setPoint(ZERO);
+
             if (rewardStatus == RewardStatus.ESTIMATED || getRewardsTotal(reward.getWorkerId(), RewardType.PERSONAL_VOLUME, period.getOperatingMonth()).compareTo(ZERO) == 0) {
                 if (workerReward.getPaymentVolume().compareTo(avgPoint) < 0) {
                     reward.setPoint(lowerPoint);
@@ -667,7 +675,7 @@ public class RewardService implements Serializable {
 
             updateLocal(reward);
 
-            if (reward.getPoint().compareTo(ZERO) > 0) {
+            if (reward.getPoint().compareTo(ZERO) != 0) {
                 domainService.save(reward);
             }
         }
@@ -691,6 +699,8 @@ public class RewardService implements Serializable {
 
             reward.setTotal(total);
 
+            reward.setPoint(ZERO);
+
             if (rewardStatus == RewardStatus.ESTIMATED) {
                 reward.setPoint(total);
             } else if (rewardStatus == RewardStatus.CHARGED) {                            ;
@@ -700,7 +710,9 @@ public class RewardService implements Serializable {
 
             updateLocal(reward);
 
-            domainService.save(reward);
+            if (reward.getPoint().compareTo(ZERO) != 0) {
+                domainService.save(reward);
+            }
         }
     }
 
@@ -728,6 +740,8 @@ public class RewardService implements Serializable {
 
                 reward.setTotal(total);
 
+                reward.setPoint(ZERO);
+
                 if (rewardStatus == RewardStatus.ESTIMATED) {
                     reward.setPoint(total);
                 } else if (rewardStatus == RewardStatus.CHARGED) {                            ;
@@ -737,7 +751,9 @@ public class RewardService implements Serializable {
 
                 updateLocal(reward);
 
-                domainService.save(reward);
+                if (reward.getPoint().compareTo(ZERO) != 0) {
+                    domainService.save(reward);
+                }
             }
         });
     }

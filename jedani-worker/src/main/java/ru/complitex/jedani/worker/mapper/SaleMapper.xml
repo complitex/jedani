@@ -30,7 +30,7 @@
 
         <if test="map.actual != null">
             and not exists(select sa.id from sale_attribute sa where sa.domain_id = d.id and sa.status = 1
-                and d.status = 1 and sa.entity_attribute_id = 15 and sa.number in (5, 7))
+                and d.status = 1 and sa.entity_attribute_id = 15 and sa.number = 7)
         </if>
 
         <if test="map.period != null">
