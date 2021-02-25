@@ -27,6 +27,7 @@ import ru.complitex.jedani.worker.service.SaleService;
 import ru.complitex.jedani.worker.service.WorkerService;
 
 import javax.inject.Inject;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -169,27 +170,27 @@ public class RewardPanel extends DomainListModalPanel<Reward> {
                         detail += getString("manager_rank") + ": " + capitalize(domainService.getTextValue(Rank.ENTITY_NAME, reward.getManagerRankId(), Rank.NAME)) + "\n";
                     }
 
-                    if (reward.getSaleVolume() != null) {
+                    if (reward.getSaleVolume() != null && reward.getSaleVolume().compareTo(BigDecimal.ZERO) > 0) {
                         detail += getString("sale_volume") + ": " + reward.getSaleVolume().toPlainString() + "\n";
                     }
 
-                    if (reward.getPaymentVolume() != null) {
+                    if (reward.getPaymentVolume() != null && reward.getPaymentVolume().compareTo(BigDecimal.ZERO) > 0) {
                         detail += getString("payment_volume") + ": " + reward.getPaymentVolume().toPlainString() + "\n";
                     }
 
-                    if (reward.getGroupSaleVolume() != null) {
+                    if (reward.getGroupSaleVolume() != null && reward.getGroupSaleVolume().compareTo(BigDecimal.ZERO) > 0) {
                         detail += getString("group_sale_volume") + ": " + reward.getGroupSaleVolume().toPlainString() + "\n";
                     }
 
-                    if (reward.getGroupPaymentVolume() != null) {
+                    if (reward.getGroupPaymentVolume() != null && reward.getGroupPaymentVolume().compareTo(BigDecimal.ZERO) > 0) {
                         detail += getString("group_payment_volume") + ": " + reward.getGroupPaymentVolume().toPlainString() + "\n";
                     }
 
-                    if (reward.getStructureSaleVolume() != null) {
+                    if (reward.getStructureSaleVolume() != null && reward.getStructureSaleVolume().compareTo(BigDecimal.ZERO) > 0) {
                         detail += getString("structure_sale_volume") + ": " + reward.getStructureSaleVolume().toPlainString() + "\n";
                     }
 
-                    if (reward.getStructurePaymentVolume() != null) {
+                    if (reward.getStructurePaymentVolume() != null && reward.getStructurePaymentVolume().compareTo(BigDecimal.ZERO) > 0) {
                         detail += getString("structure_payment_volume") + ": " + reward.getStructurePaymentVolume().toPlainString();
                     }
 

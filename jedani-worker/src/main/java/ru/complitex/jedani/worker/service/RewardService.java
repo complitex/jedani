@@ -742,7 +742,6 @@ public class RewardService implements Serializable {
         });
     }
 
-
     @Transactional(rollbackFor = RewardException.class)
     public void calculateRewards() throws RewardException {
         try {
