@@ -56,6 +56,19 @@ public class Dates {
                 .toInstant());
     }
 
+    public static Date previousYear(Date date){
+        return Date.from(date.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime()
+                .minusYears(1)
+                .atZone(ZoneId.systemDefault())
+                .toInstant());
+    }
+
+    public static Date previousYear(){
+        return previousYear(currentDate());
+    }
+
     public static boolean isSameDay(Date d1, Date d2){
         return d1.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
                 .isEqual(d2.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());

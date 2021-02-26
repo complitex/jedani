@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.math.BigDecimal.*;
+import static java.math.BigDecimal.ZERO;
 
 /**
  * @author Anatoly A. Ivanov
@@ -17,6 +17,8 @@ public class WorkerReward {
 
     private BigDecimal saleVolume = ZERO;
     private BigDecimal paymentVolume = ZERO;
+
+    private BigDecimal yearPaymentVolume = ZERO;
 
     private Long registrationCount = 0L;
 
@@ -74,6 +76,14 @@ public class WorkerReward {
 
     public void setPaymentVolume(BigDecimal paymentVolume) {
         this.paymentVolume = paymentVolume;
+    }
+
+    public BigDecimal getYearPaymentVolume() {
+        return yearPaymentVolume;
+    }
+
+    public void setYearPaymentVolume(BigDecimal yearPaymentVolume) {
+        this.yearPaymentVolume = yearPaymentVolume;
     }
 
     public BigDecimal getGroupSaleVolume() {

@@ -107,6 +107,9 @@ public class WorkerGraphPanel extends Panel {
 
         if (workerReward.getRank() > 0) {
             rewards += getString("rank") + ":" + domainService.getDomain(Rank.class, workerReward.getRank()).getName().toUpperCase() + "\\n";
+            rewards += getString("first_level_count") + ": " + workerReward.getFirstLevelCount() + "\\n";
+            rewards += getString("registration_count") + ": " + workerReward.getRegistrationCount() + "\\n";
+            rewards += getString("year_payment_volume") + ": " + workerReward.getYearPaymentVolume().toPlainString() + "\\n";
         }
 
         if (workerReward.getSaleVolume().compareTo(BigDecimal.ZERO) > 0) {

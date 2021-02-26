@@ -129,13 +129,13 @@ public class RewardService implements Serializable {
     public WorkerRewardTree getWorkerRewardTree(Date month) {
         WorkerRewardTree tree = new WorkerRewardTree(workerNodeService.getWorkerNodeLevelMap());
 
-        calcSaleVolumes(tree, month);
-
-        calcPaymentVolume(tree, month);
+        calcFirstLevelCount(tree);
 
         calcRegistrationCount(tree, month);
 
-        calcFirstLevelCount(tree);
+        calcPaymentVolume(tree, month);
+
+        calcSaleVolumes(tree, month);
 
         return tree;
     }
@@ -196,7 +196,10 @@ public class RewardService implements Serializable {
             r.setStructureSaleVolume(r.getChildRewards().stream()
                     .reduce(r.getSaleVolume(), (v, c) -> v.add(c.getStructureSaleVolume()), BigDecimal::add));
 
-            r.setRank(getRank(r.getStructureSaleVolume()));
+            if (r.getFirstLevelCount() >= 4 && r.getRegistrationCount() >= 2 && //todo %
+                    r.getYearPaymentVolume().compareTo(new BigDecimal("200")) > 0) {
+                r.setRank(getRank(r.getStructureSaleVolume()));
+            }
         }));
     }
 
@@ -207,6 +210,8 @@ public class RewardService implements Serializable {
             if (activeSaleWorkerIds.contains(r.getWorkerNode().getObjectId())) {
                 r.setPaymentVolume(paymentService.getPaymentsVolumeBySellerWorkerId(r.getWorkerNode().getObjectId(), month));
             }
+
+            r.setYearPaymentVolume(paymentService.getYearPaymentsVolumeBySellerWorkerId(r.getWorkerNode().getObjectId()));
 
             r.setGroupPaymentVolume(getPrivateGroup(r).stream()
                     .reduce(ZERO, (v, c) -> v.add(c.getPaymentVolume()), BigDecimal::add));

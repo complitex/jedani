@@ -4,9 +4,7 @@ var cy = window.cy = cytoscape({
     container: document.getElementById('cy'),
 
     layout: {
-        name: 'cose-bilkent',
-        animate: false,
-        randomize: true
+        name: 'cose-bilkent'
     },
 
     style: [
