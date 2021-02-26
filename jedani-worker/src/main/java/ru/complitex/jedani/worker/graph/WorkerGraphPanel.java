@@ -44,7 +44,7 @@ public class WorkerGraphPanel extends Panel {
     private DomainService domainService;
 
     private String elements;
-    private final String fileName;
+    private String fileName;
 
     private Worker worker;
     private Long levelDepth;
@@ -56,42 +56,6 @@ public class WorkerGraphPanel extends Panel {
         this.worker = worker;
         this.levelDepth = levelDepth;
         this.volume = volume;
-
-        List<Worker> workers = new ArrayList<>(workerMapper.getWorkers(FilterWrapper.of(
-                new Worker(worker.getLeft(), worker.getRight(), worker.getLevel()))
-                .setStatus(FilterWrapper.STATUS_ACTIVE_AND_ARCHIVE)
-                .put("levelDepth", levelDepth != 0 ? levelDepth : null)));
-
-        WorkerRewardTree rewards = (levelDepth == 0)
-                ? rewardService.getWorkerRewardTree(periodService.getActualPeriod().getOperatingMonth())
-                : null;
-
-        elements =  " {data: {id: '" + worker.getObjectId() + "', " +
-                "label: '" + worker.getText(Worker.J_ID) + "\\n" + getLabel(worker) +
-                (rewards != null ? "\\n" + getRewardLabel(rewards.getWorkerReward(worker.getObjectId())) : "") + "'}, " +
-                getStyle(worker, 0) + "}";
-
-        if (!workers.isEmpty()) {
-            elements += "," + workers.stream()
-                    .filter(w -> rewards == null || !getRewardLabel(rewards.getWorkerReward(w.getObjectId())).isEmpty())
-                    .map(w -> " {data: {id: '" + w.getObjectId() + "', " +
-                            "label: '" + w.getText(Worker.J_ID) + "\\n" + getLabel(w) +
-                            (rewards != null ? "\\n" + getRewardLabel(rewards.getWorkerReward(w.getObjectId())) : "") + "'}, " +
-                            getStyle(w, worker.getLevel().intValue()) + "}")
-                    .collect(Collectors.joining(","));
-
-            elements += "," + workers.stream()
-                    .filter(w -> rewards == null || !getRewardLabel(rewards.getWorkerReward(w.getObjectId())).isEmpty())
-                    .map(w -> " {data: {id: 'e" + w.getObjectId() + "', " +
-                            "source: '" + w.getManagerId() + "', " +
-                            "target: '" + w.getObjectId() + "'}}")
-                    .collect(Collectors.joining(","));
-        }
-
-        fileName =  worker.getJId() + " " +
-                nameService.getLastName(worker.getLastNameId()) + " " +
-                nameService.getFirstName(worker.getFistNameId()) + " " +
-                nameService.getMiddleName(worker.getMiddleNameId());
     }
 
     private String getLabel(Worker worker){
@@ -155,6 +119,49 @@ public class WorkerGraphPanel extends Panel {
         }
 
         return style;
+    }
+
+
+    @Override
+    protected void onConfigure() {
+        super.onConfigure();
+
+        List<Worker> workers = new ArrayList<>(workerMapper.getWorkers(FilterWrapper.of(
+                new Worker(worker.getLeft(), worker.getRight(), worker.getLevel()))
+                .setStatus(FilterWrapper.STATUS_ACTIVE_AND_ARCHIVE)
+                .put("levelDepth", levelDepth != 0 ? levelDepth : null)));
+
+        WorkerRewardTree rewards = (levelDepth == 0)
+                ? rewardService.getWorkerRewardTree(periodService.getActualPeriod().getOperatingMonth())
+                : null;
+
+        elements =  " {data: {id: '" + worker.getObjectId() + "', " +
+                "label: '" + worker.getText(Worker.J_ID) + "\\n" + getLabel(worker) +
+                (rewards != null ? "\\n" + getRewardLabel(rewards.getWorkerReward(worker.getObjectId())) : "") + "'}, " +
+                getStyle(worker, 0) + "}";
+
+        if (!workers.isEmpty()) {
+            elements += "," + workers.stream()
+                    .filter(w -> rewards == null || !getRewardLabel(rewards.getWorkerReward(w.getObjectId())).isEmpty())
+                    .map(w -> " {data: {id: '" + w.getObjectId() + "', " +
+                            "label: '" + w.getText(Worker.J_ID) + "\\n" + getLabel(w) +
+                            (rewards != null ? "\\n" + getRewardLabel(rewards.getWorkerReward(w.getObjectId())) : "") + "'}, " +
+                            getStyle(w, worker.getLevel().intValue()) + "}")
+                    .collect(Collectors.joining(","));
+
+            elements += "," + workers.stream()
+                    .filter(w -> rewards == null || !getRewardLabel(rewards.getWorkerReward(w.getObjectId())).isEmpty())
+                    .map(w -> " {data: {id: 'e" + w.getObjectId() + "', " +
+                            "source: '" + w.getManagerId() + "', " +
+                            "target: '" + w.getObjectId() + "'}}")
+                    .collect(Collectors.joining(","));
+        }
+
+        fileName =  worker.getJId() + " " +
+                nameService.getLastName(worker.getLastNameId()) + " " +
+                nameService.getFirstName(worker.getFistNameId()) + " " +
+                nameService.getMiddleName(worker.getMiddleNameId());
+
     }
 
     @Override
