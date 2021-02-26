@@ -1021,10 +1021,16 @@ public class WorkerPage extends BasePage {
                     finance.add(new Label("reward_cw", LoadableDetachableModel.of(() ->
                             getRewardString(rewardsModel.getObject(), RewardType.CULINARY_WORKSHOP, monthModel.getObject()))));
 
-                    finance.add(new Label("rank", LoadableDetachableModel.of(() ->
+                    finance.add(new Link<Void>("rankLink") {
+                        @Override
+                        public void onClick() {
+                            setResponsePage(WorkerStructurePage.class, new PageParameters().add("id", worker.getObjectId()).add("level", 0));
+                        }
+                    }
+                    .add(new Label("rank", LoadableDetachableModel.of(() ->
                             rewardModel.getObject().getRank() !=  null && rewardModel.getObject().getRank() > 0
                                     ? domainService.getDomain(Rank.class, rewardModel.getObject().getRank()).getName()
-                                    : "")));
+                                    : ""))));
 
                     finance.add(new Label("group_sale_volume", LoadableDetachableModel.of(() ->
                             (rewardModel.getObject().getGroupSaleVolume()))));

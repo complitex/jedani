@@ -106,10 +106,7 @@ public class WorkerGraphPanel extends Panel {
         }
 
         if (workerReward.getRank() > 0) {
-            rewards += getString("rank") + ":" + domainService.getDomain(Rank.class, workerReward.getRank()).getName().toUpperCase() + "\\n";
-            rewards += getString("first_level_count") + ": " + workerReward.getFirstLevelCount() + "\\n";
-            rewards += getString("registration_count") + ": " + workerReward.getRegistrationCount() + "\\n";
-            rewards += getString("year_payment_volume") + ": " + workerReward.getYearPaymentVolume().toPlainString() + "\\n";
+            rewards += getString("rank") + ": " + domainService.getDomain(Rank.class, workerReward.getRank()).getName().toUpperCase() + "\\n";
         }
 
         if (workerReward.getSaleVolume().compareTo(BigDecimal.ZERO) > 0) {
@@ -134,6 +131,12 @@ public class WorkerGraphPanel extends Panel {
 
         if (workerReward.getStructurePaymentVolume().compareTo(BigDecimal.ZERO) > 0) {
             rewards += getString("structure_payment_volume") + ": " + workerReward.getStructurePaymentVolume().toPlainString() + "\\n";
+        }
+
+        if (!rewards.isEmpty()) {
+            rewards += getString("first_level_count") + ": " + workerReward.getFirstLevelCount() + "\\n";
+            rewards += getString("group_registration_count") + ": " + workerReward.getGroupRegistrationCount() + "\\n";
+            rewards += getString("year_payment_volume") + ": " + workerReward.getYearPaymentVolume().toPlainString() + "\\n";
         }
 
         return rewards;

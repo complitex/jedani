@@ -196,7 +196,7 @@ public class RewardService implements Serializable {
             r.setStructureSaleVolume(r.getChildRewards().stream()
                     .reduce(r.getSaleVolume(), (v, c) -> v.add(c.getStructureSaleVolume()), BigDecimal::add));
 
-            if (r.getFirstLevelCount() >= 4 && r.getRegistrationCount() >= 2 && //todo %
+            if (r.getFirstLevelCount() >= 4 && r.getGroupRegistrationCount() >= 2 && //todo %
                     r.getYearPaymentVolume().compareTo(new BigDecimal("200")) > 0) {
                 r.setRank(getRank(r.getStructureSaleVolume()));
             }
