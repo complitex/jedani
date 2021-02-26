@@ -500,8 +500,22 @@ public class RewardService implements Serializable {
         for (WorkerReward c : r.getChildRewards()){
             if (c.isManager()){
                 managers.add(c);
+            }
 
-                managers.addAll(getStructureManagers(c));
+            managers.addAll(getStructureManagers(c));
+        }
+
+        return managers;
+    }
+
+    public List<WorkerReward> getFirstStructureManagers(WorkerReward r){
+        List<WorkerReward> managers = new ArrayList<>();
+
+        for (WorkerReward c : r.getChildRewards()){
+            if (c.isManager()){
+                managers.add(c);
+            } else {
+                managers.addAll(getFirstStructureManagers(c));
             }
         }
 
@@ -703,7 +717,7 @@ public class RewardService implements Serializable {
 
             if (rewardStatus == RewardStatus.ESTIMATED) {
                 reward.setPoint(total);
-            } else if (rewardStatus == RewardStatus.CHARGED) {                            ;
+            } else if (rewardStatus == RewardStatus.CHARGED) {
                 reward.setPoint(calcRewardPoint(workerReward.getWorkerId(), null, RewardType.GROUP_VOLUME, period.getOperatingMonth(),
                         workerReward.getGroupSaleVolume(), workerReward.getGroupPaymentVolume(), total));
             }
@@ -717,7 +731,7 @@ public class RewardService implements Serializable {
     }
 
     private void calculateStructureVolume(WorkerReward workerReward, Period period, Long rewardStatus) {
-        getStructureManagers(workerReward).forEach(m -> {
+        getFirstStructureManagers(workerReward).forEach(m -> {
             BigDecimal total = getGroupVolumePercent(workerReward.getRank())
                     .subtract(getGroupVolumePercent(m.getRank()))
                     .multiply(m.getStructureSaleVolume())
@@ -804,23 +818,19 @@ public class RewardService implements Serializable {
             saleService.getActiveSales().forEach(sale -> {
                 WorkerReward workerReward = tree.getWorkerReward(sale.getSellerWorkerId());
 
-                if (workerReward.getRank() > 0) {
-                    calculateManagerPremiumReward(sale, workerReward, period, RewardStatus.ESTIMATED);
-                    calculateManagerPremiumReward(sale, workerReward, period, RewardStatus.CHARGED);
-                }
+                calculateManagerPremiumReward(sale, workerReward, period, RewardStatus.ESTIMATED);
+                calculateManagerPremiumReward(sale, workerReward, period, RewardStatus.CHARGED);
             });
 
             tree.forEachLevel((l, rl) -> rl.forEach(workerReward -> {
                 calculatePersonalVolumeReward(workerReward, period, RewardStatus.ESTIMATED);
                 calculatePersonalVolumeReward(workerReward, period, RewardStatus.CHARGED);
 
-                if (workerReward.getRank() > 0) {
-                    calculateGroupVolumeReward(workerReward, period, RewardStatus.ESTIMATED);
-                    calculateGroupVolumeReward(workerReward, period, RewardStatus.CHARGED);
+                calculateGroupVolumeReward(workerReward, period, RewardStatus.ESTIMATED);
+                calculateGroupVolumeReward(workerReward, period, RewardStatus.CHARGED);
 
-                    calculateStructureVolume(workerReward, period, RewardStatus.ESTIMATED);
-                    calculateStructureVolume(workerReward, period, RewardStatus.CHARGED);
-                }
+                calculateStructureVolume(workerReward, period, RewardStatus.ESTIMATED);
+                calculateStructureVolume(workerReward, period, RewardStatus.CHARGED);
             }));
         } catch (Exception e) {
             log.error("error calculate rewards", e);
