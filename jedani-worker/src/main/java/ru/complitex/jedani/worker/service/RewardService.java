@@ -129,7 +129,7 @@ public class RewardService implements Serializable {
     public WorkerRewardTree getWorkerRewardTree(Date month) {
         WorkerRewardTree tree = new WorkerRewardTree(workerNodeService.getWorkerNodeLevelMap());
 
-        calcFirstLevelCount(tree);
+        calcFirstLevelCount(tree, month);
 
         calcRegistrationCount(tree, month);
 
@@ -241,8 +241,13 @@ public class RewardService implements Serializable {
         return Dates.isSameMonth(workerReward.getWorkerNode().getRegistrationDate(), month);
     }
 
-    private void calcFirstLevelCount(WorkerRewardTree tree){
-        tree.forEachLevel((l, rl) -> rl.forEach(r -> r.setFirstLevelCount((long) r.getChildRewards().size())));
+    private void calcFirstLevelCount(WorkerRewardTree tree, Date month){
+        Date nextMonth = Dates.nextMonth(month);
+
+        tree.forEachLevel((l, rl) -> rl.forEach(r -> r.setFirstLevelCount(r.getChildRewards().stream()
+                .filter(c -> c.getWorkerNode().getRegistrationDate() != null)
+                .filter(c -> c.getWorkerNode().getRegistrationDate().before(nextMonth))
+                .count())));
     }
 
     public BigDecimal getPersonalRewardPoint(Sale sale, List<SaleItem> saleItems){

@@ -48,12 +48,14 @@ public class WorkerGraphPanel extends Panel {
 
     private Worker worker;
     private Long levelDepth;
+    private boolean volume;
 
-    public WorkerGraphPanel(String id, Worker worker, Long levelDepth) {
+    public WorkerGraphPanel(String id, Worker worker, Long levelDepth, boolean volume) {
         super(id);
 
         this.worker = worker;
         this.levelDepth = levelDepth;
+        this.volume = volume;
 
         List<Worker> workers = new ArrayList<>(workerMapper.getWorkers(FilterWrapper.of(
                 new Worker(worker.getLeft(), worker.getRight(), worker.getLevel()))
@@ -109,34 +111,36 @@ public class WorkerGraphPanel extends Panel {
             rewards += getString("rank") + ": " + domainService.getDomain(Rank.class, workerReward.getRank()).getName().toUpperCase() + "\\n";
         }
 
-        if (workerReward.getSaleVolume().compareTo(BigDecimal.ZERO) > 0) {
-            rewards += getString("sale_volume") + ": " + workerReward.getSaleVolume().toPlainString() + "\\n";
-        }
+        if (volume) {
+            if (workerReward.getSaleVolume().compareTo(BigDecimal.ZERO) > 0) {
+                rewards += getString("sale_volume") + ": " + workerReward.getSaleVolume().toPlainString() + "\\n";
+            }
 
-        if (workerReward.getPaymentVolume().compareTo(BigDecimal.ZERO) > 0) {
-            rewards += getString("payment_volume") + ": " + workerReward.getPaymentVolume().toPlainString() + "\\n";
-        }
+            if (workerReward.getPaymentVolume().compareTo(BigDecimal.ZERO) > 0) {
+                rewards += getString("payment_volume") + ": " + workerReward.getPaymentVolume().toPlainString() + "\\n";
+            }
 
-        if (workerReward.getGroupSaleVolume().compareTo(BigDecimal.ZERO) > 0) {
-            rewards += getString("group_sale_volume") + ": " + workerReward.getGroupSaleVolume().toPlainString() + "\\n";
-        }
+            if (workerReward.getGroupSaleVolume().compareTo(BigDecimal.ZERO) > 0) {
+                rewards += getString("group_sale_volume") + ": " + workerReward.getGroupSaleVolume().toPlainString() + "\\n";
+            }
 
-        if (workerReward.getGroupPaymentVolume().compareTo(BigDecimal.ZERO) > 0) {
-            rewards += getString("group_payment_volume") + ": " + workerReward.getGroupPaymentVolume().toPlainString() + "\\n";
-        }
+            if (workerReward.getGroupPaymentVolume().compareTo(BigDecimal.ZERO) > 0) {
+                rewards += getString("group_payment_volume") + ": " + workerReward.getGroupPaymentVolume().toPlainString() + "\\n";
+            }
 
-        if (workerReward.getStructureSaleVolume().compareTo(BigDecimal.ZERO) > 0) {
-            rewards += getString("structure_sale_volume") + ": " + workerReward.getStructureSaleVolume().toPlainString() + "\\n";
-        }
+            if (workerReward.getStructureSaleVolume().compareTo(BigDecimal.ZERO) > 0) {
+                rewards += getString("structure_sale_volume") + ": " + workerReward.getStructureSaleVolume().toPlainString() + "\\n";
+            }
 
-        if (workerReward.getStructurePaymentVolume().compareTo(BigDecimal.ZERO) > 0) {
-            rewards += getString("structure_payment_volume") + ": " + workerReward.getStructurePaymentVolume().toPlainString() + "\\n";
-        }
+            if (workerReward.getStructurePaymentVolume().compareTo(BigDecimal.ZERO) > 0) {
+                rewards += getString("structure_payment_volume") + ": " + workerReward.getStructurePaymentVolume().toPlainString() + "\\n";
+            }
 
-        if (!rewards.isEmpty()) {
-            rewards += getString("first_level_count") + ": " + workerReward.getFirstLevelCount() + "\\n";
-            rewards += getString("group_registration_count") + ": " + workerReward.getGroupRegistrationCount() + "\\n";
-            rewards += getString("year_payment_volume") + ": " + workerReward.getYearPaymentVolume().toPlainString() + "\\n";
+            if (!rewards.isEmpty()) {
+                rewards += getString("first_level_count") + ": " + workerReward.getFirstLevelCount() + "\\n";
+                rewards += getString("group_registration_count") + ": " + workerReward.getGroupRegistrationCount() + "\\n";
+                rewards += getString("year_payment_volume") + ": " + workerReward.getYearPaymentVolume().toPlainString() + "\\n";
+            }
         }
 
         return rewards;

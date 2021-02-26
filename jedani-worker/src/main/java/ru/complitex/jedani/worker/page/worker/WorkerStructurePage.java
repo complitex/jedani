@@ -25,8 +25,8 @@ public class WorkerStructurePage extends BasePage {
 
     public WorkerStructurePage(PageParameters pageParameters) {
         add(new WorkerGraphPanel("graph", workerMapper.getWorker(pageParameters.get("id").toLongObject()),
-                pageParameters.get("level").toLongObject()));
-        add(new AjaxLink<Object>("back") {
+                pageParameters.get("level").toLongObject(), pageParameters.get("volume").toBoolean(false)));
+        add(new AjaxLink<>("back") {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 setResponsePage(WorkerPage.class, pageParameters);
