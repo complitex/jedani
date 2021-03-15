@@ -16,7 +16,7 @@ public class Transaction extends Domain<Transaction> {
     public static final long NOMENCLATURE = 1;
     public static final long QUANTITY = 2;
     public static final long TYPE = 3;
-    public static final long TRANSFER_TYPE = 4;
+    public static final long RELOCATION_TYPE = 4;
     public static final long RECIPIENT_TYPE = 5;
     public static final long STORAGE_FROM = 6;
     public static final long STORAGE_TO = 7;
@@ -57,12 +57,12 @@ public class Transaction extends Domain<Transaction> {
         setNumber(TYPE, type);
     }
 
-    public Long getTransferType(){
-        return getNumber(TRANSFER_TYPE);
+    public Long getRelocationType(){
+        return getNumber(RELOCATION_TYPE);
     }
 
-    public void setTransferType(Long transferType){
-        setNumber(TRANSFER_TYPE, transferType);
+    public void setRelocationType(Long relocationType){
+        setNumber(RELOCATION_TYPE, relocationType);
     }
 
     public Long getRecipientType() {

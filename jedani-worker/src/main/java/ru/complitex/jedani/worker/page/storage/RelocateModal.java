@@ -41,7 +41,7 @@ import java.util.*;
  * @author Anatoly A. Ivanov
  * 07.11.2018 17:18
  */
-class TransferModal extends StorageModal {
+class RelocateModal extends StorageModal {
     @Inject
     private DomainService domainService;
 
@@ -52,7 +52,7 @@ class TransferModal extends StorageModal {
 
     private IModel<Integer> tabIndexModel = Model.of(0);
 
-    TransferModal(String markupId, Long storageId, SerializableConsumer<AjaxRequestTarget> onUpdate) {
+    RelocateModal(String markupId, Long storageId, SerializableConsumer<AjaxRequestTarget> onUpdate) {
         super(markupId, storageId, onUpdate);
 
         List<ITab> tabs = new ArrayList<>();
@@ -61,7 +61,7 @@ class TransferModal extends StorageModal {
 
             @Override
             public WebMarkupContainer getPanel(String panelId) {
-                Fragment fragment = new Fragment(panelId, "sellFragment", TransferModal.this);
+                Fragment fragment = new Fragment(panelId, "sellFragment", RelocateModal.this);
 
                 fragment.add(getNomenclature());
 
@@ -70,7 +70,7 @@ class TransferModal extends StorageModal {
                         .setLabel(Model.of(getString("worker")))){
                     @Override
                     public boolean isVisible() {
-                        return Objects.equals(getModelObject().getRecipientType(), RecipientType.WORKER);
+                        return Objects.equals(getModelObject().getRecipientType(), TransactionRecipientType.WORKER);
                     }
                 };
                 fragment.add(worker);
@@ -78,7 +78,7 @@ class TransferModal extends StorageModal {
                 WebMarkupContainer client = new WebMarkupContainer("client"){
                     @Override
                     public boolean isVisible() {
-                        return Objects.equals(getModelObject().getRecipientType(), RecipientType.CLIENT);
+                        return Objects.equals(getModelObject().getRecipientType(), TransactionRecipientType.CLIENT);
                     }
                 };
                 client.setOutputMarkupId(true);
@@ -95,15 +95,15 @@ class TransferModal extends StorageModal {
                 IModel<Long> recipientModel = new NumberAttributeModel(getModel(), Transaction.RECIPIENT_TYPE);
 
                 fragment.add(new FormGroupSelectPanel("recipient", new BootstrapSelect<>(FormGroupPanel.COMPONENT_ID,
-                        recipientModel, Arrays.asList(RecipientType.WORKER, RecipientType.CLIENT),
+                        recipientModel, Arrays.asList(TransactionRecipientType.WORKER, TransactionRecipientType.CLIENT),
                         new IChoiceRenderer<Long>() {
                             @Override
                             public Object getDisplayValue(Long object) {
                                 switch (object.intValue()){
-                                    case (int) RecipientType.WORKER:
+                                    case (int) TransactionRecipientType.WORKER:
                                         return getString("worker");
 
-                                    case (int) RecipientType.CLIENT:
+                                    case (int) TransactionRecipientType.CLIENT:
                                         return getString("client");
                                 }
 
@@ -132,11 +132,11 @@ class TransferModal extends StorageModal {
         });
 
 
-        tabs.add(new AbstractTab(new ResourceModel("transfer")){
+        tabs.add(new AbstractTab(new ResourceModel("relocation")){
 
             @Override
             public WebMarkupContainer getPanel(String panelId) {
-                Fragment fragment = new Fragment(panelId, "transferFragment", TransferModal.this);
+                Fragment fragment = new Fragment(panelId, "relocationFragment", RelocateModal.this);
 
                 fragment.add(getNomenclature());
 
@@ -149,7 +149,7 @@ class TransferModal extends StorageModal {
                         ){
                     @Override
                     public boolean isVisible() {
-                        return Objects.equals(getModelObject().getRecipientType(), RecipientType.STORAGE);
+                        return Objects.equals(getModelObject().getRecipientType(), TransactionRecipientType.STORAGE);
                     }
                 });
 
@@ -159,7 +159,7 @@ class TransferModal extends StorageModal {
                         .setLabel(Model.of(getString("worker")))){
                     @Override
                     public boolean isVisible() {
-                        return Objects.equals(getModelObject().getRecipientType(), RecipientType.WORKER);
+                        return Objects.equals(getModelObject().getRecipientType(), TransactionRecipientType.WORKER);
                     }
                 };
                 fragment.add(worker);
@@ -167,15 +167,15 @@ class TransferModal extends StorageModal {
                 IModel<Long> recipientModel = new NumberAttributeModel(getModel(), Transaction.RECIPIENT_TYPE);
 
                 fragment.add(new FormGroupSelectPanel("recipient", new BootstrapSelect<>(FormGroupPanel.COMPONENT_ID,
-                        recipientModel, Arrays.asList(RecipientType.STORAGE, RecipientType.WORKER),
+                        recipientModel, Arrays.asList(TransactionRecipientType.STORAGE, TransactionRecipientType.WORKER),
                         new IChoiceRenderer<Long>() {
                             @Override
                             public Object getDisplayValue(Long object) {
                                 switch (object.intValue()){
-                                    case (int) RecipientType.STORAGE:
+                                    case (int) TransactionRecipientType.STORAGE:
                                         return getString("storage");
 
-                                    case (int) RecipientType.WORKER:
+                                    case (int) TransactionRecipientType.WORKER:
                                         return getString("worker");
                                 }
 
@@ -197,16 +197,16 @@ class TransferModal extends StorageModal {
                         Transaction.QUANTITY)).setRequired(true).setType(Long.class));
 
                 fragment.add(new FormGroupSelectPanel("type", new BootstrapSelect<>(FormGroupPanel.COMPONENT_ID,
-                        new NumberAttributeModel(getModel(), Transaction.TRANSFER_TYPE),
-                        Arrays.asList(TransferType.TRANSFER, TransferType.GIFT),
+                        new NumberAttributeModel(getModel(), Transaction.RELOCATION_TYPE),
+                        Arrays.asList(TransactionRelocationType.RELOCATION, TransactionRelocationType.GIFT),
                         new IChoiceRenderer<Long>() {
                             @Override
                             public Object getDisplayValue(Long object) {
                                 switch (object.intValue()){
-                                    case (int) TransferType.TRANSFER:
-                                        return getString("transfer");
+                                    case (int) TransactionRelocationType.RELOCATION:
+                                        return getString("relocation");
 
-                                    case (int) TransferType.GIFT:
+                                    case (int) TransactionRelocationType.GIFT:
                                         return getString("gift");
                                 }
 
@@ -234,21 +234,21 @@ class TransferModal extends StorageModal {
 
             @Override
             public WebMarkupContainer getPanel(String panelId) {
-                Fragment fragment = new Fragment(panelId, "withdrawFragment", TransferModal.this);
+                Fragment fragment = new Fragment(panelId, "withdrawFragment", RelocateModal.this);
 
                 fragment.add(getNomenclature());
 
                 fragment.add(new FormGroupSelectPanel("withdrawType", new BootstrapSelect<>(FormGroupPanel.COMPONENT_ID,
-                        new NumberAttributeModel(getModel(), Transaction.TRANSFER_TYPE),
-                        Arrays.asList(TransferType.TRANSFER, TransferType.GIFT),
+                        new NumberAttributeModel(getModel(), Transaction.RELOCATION_TYPE),
+                        Arrays.asList(TransactionRelocationType.RELOCATION, TransactionRelocationType.GIFT),
                         new IChoiceRenderer<Long>() {
                             @Override
                             public Object getDisplayValue(Long object) {
                                 switch (object.intValue()){
-                                    case (int) TransferType.TRANSFER:
+                                    case (int) TransactionRelocationType.RELOCATION:
                                         return getString("good");
 
-                                    case (int) TransferType.GIFT:
+                                    case (int) TransactionRelocationType.GIFT:
                                         return getString("gift");
                                 }
 
@@ -295,14 +295,14 @@ class TransferModal extends StorageModal {
                 }).setEnabled(false);
     }
 
-    void open(Product product, Long transferType, AjaxRequestTarget target){
+    void open(Product product, Long relocationType, AjaxRequestTarget target){
         this.product = product;
 
         tabIndexModel.setObject(0);
 
         open(target);
 
-        getModelObject().setTransferType(transferType);
+        getModelObject().setRelocationType(relocationType);
     }
 
     private void updateTabs(AjaxRequestTarget target){
@@ -310,13 +310,13 @@ class TransferModal extends StorageModal {
 
         switch (tabIndexModel.getObject()){
             case 0:
-                getModelObject().setRecipientType(RecipientType.WORKER);
+                getModelObject().setRecipientType(TransactionRecipientType.WORKER);
                 label = getString("sellAction");
 
                 break;
             case 1:
-                getModelObject().setRecipientType(RecipientType.STORAGE);
-                label = getString("transferAction");
+                getModelObject().setRecipientType(TransactionRecipientType.STORAGE);
+                label = getString("relocationAction");
 
                 break;
             case 2:
@@ -347,7 +347,7 @@ class TransferModal extends StorageModal {
 
         Product product = domainService.getDomain(Product.class, getProduct().getObjectId());
 
-        boolean gift = Objects.equals(transaction.getTransferType(), TransferType.GIFT);
+        boolean gift = Objects.equals(transaction.getRelocationType(), TransactionRelocationType.GIFT);
 
         Long pQty = gift ? product.getGiftQuantity() : product.getQuantity();
 
@@ -367,7 +367,7 @@ class TransferModal extends StorageModal {
             return;
         }
 
-        if (Objects.equals(transaction.getRecipientType(), RecipientType.WORKER)){
+        if (Objects.equals(transaction.getRecipientType(), TransactionRecipientType.WORKER)){
             Worker w = domainService.getDomain(Worker.class, transaction.getWorkerIdTo());
 
             if (Objects.equals(w.getType(), 1L)){
@@ -385,7 +385,7 @@ class TransferModal extends StorageModal {
 
                 break;
             case 1:
-                if (Objects.equals(transaction.getRecipientType(), RecipientType.STORAGE)
+                if (Objects.equals(transaction.getRecipientType(), TransactionRecipientType.STORAGE)
                         && Objects.equals(transaction.getStorageIdTo(), getStorageId())){
                     error(getString("error_same_storage"));
                     target.add(getFeedback());
@@ -393,8 +393,8 @@ class TransferModal extends StorageModal {
                     return;
                 }
 
-                storageService.transfer(product, transaction);
-                success(getString("info_transferred"));
+                storageService.relocate(product, transaction);
+                success(getString("info_relocated"));
 
                 break;
             case 2:

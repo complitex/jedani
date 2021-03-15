@@ -1644,10 +1644,6 @@ CREATE TABLE storage_type (
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Тип склада';
 
 INSERT INTO storage_type (id, type) VALUES (1, 'real'), (2, 'virtual');
-INSERT INTO transaction_type (id, type) VALUES (1, 'accept'), (2, 'sell'), (3, 'transfer'), (4, 'withdraw');
-INSERT INTO transfer_type (id, type) VALUES (1, 'transfer'), (2, 'gift');
-INSERT INTO recipient_type (id, type) VALUES (1, 'storage'), (2, 'worker'), (3, 'client');
-
 
 -- ---------------------------
 -- Transaction Type
@@ -1660,27 +1656,33 @@ CREATE TABLE transaction_type (
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Тип транзакции';
 
+INSERT INTO transaction_type (id, type) VALUES (1, 'accept'), (2, 'sell'), (3, 'relocation'), (4, 'withdraw');
+
 -- ---------------------------
--- Transfer Type
+-- Transaction Relocation Type
 -- ---------------------------
 
-DROP TABLE IF EXISTS transfer_type;
-CREATE TABLE transfer_type (
+DROP TABLE IF EXISTS transaction_relocation_type;
+CREATE TABLE transaction_relocation_type (
   id BIGINT(20) NOT NULL COMMENT 'Идентификатор',
   `type` VARCHAR(100) NOT NULL COMMENT 'Тип',
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Тип перемещения';
 
+INSERT INTO transaction_relocation_type (id, type) VALUES (1, 'relocation'), (2, 'gift');
+
 -- ---------------------------
--- Recipient Type
+-- Transaction Recipient Type
 -- ---------------------------
 
-DROP TABLE IF EXISTS recipient_type;
+DROP TABLE IF EXISTS transaction_recipient_type;
 CREATE TABLE recipient_type (
   id BIGINT(20) NOT NULL COMMENT 'Идентификатор',
   `type` VARCHAR(100) NOT NULL COMMENT 'Тип',
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Тип получателя';
+
+INSERT INTO transaction_recipient_type (id, type) VALUES (1, 'storage'), (2, 'worker'), (3, 'client');
 
 -- ---------------------------
 -- Promotion

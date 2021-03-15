@@ -13,8 +13,8 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.danekja.java.util.function.serializable.SerializableConsumer;
 import ru.complitex.common.wicket.util.Wickets;
-import ru.complitex.jedani.worker.entity.RecipientType;
 import ru.complitex.jedani.worker.entity.Transaction;
+import ru.complitex.jedani.worker.entity.TransactionRecipientType;
 
 /**
  * @author Anatoly A. Ivanov
@@ -89,7 +89,7 @@ abstract class StorageModal extends Modal<Transaction> {
         transaction.getAttributes().clear();
 
         transaction.setQuantity(1L);
-        transaction.setRecipientType(RecipientType.WORKER);
+        transaction.setRecipientType(TransactionRecipientType.WORKER);
 
         container.setVisible(true);
         target.add(container);

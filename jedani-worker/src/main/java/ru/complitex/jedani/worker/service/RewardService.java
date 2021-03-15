@@ -751,7 +751,7 @@ public class RewardService implements Serializable {
 
                 if (rewardStatus == RewardStatus.ESTIMATED) {
                     reward.setPoint(total);
-                } else if (rewardStatus == RewardStatus.CHARGED) {                            ;
+                } else if (rewardStatus == RewardStatus.CHARGED) {
                     reward.setPoint(calcRewardPoint(workerReward.getWorkerId(), m.getWorkerId(), RewardType.STRUCTURE_VOLUME, period.getObjectId(),
                             m.getStructureSaleVolume(), m.getStructurePaymentVolume(), total));
                 }
@@ -831,7 +831,8 @@ public class RewardService implements Serializable {
     }
 
     @Transactional(rollbackFor = RewardException.class)
-    public void updateAccounts(){
+    public void updateAccounts() {
+
 
 
     }

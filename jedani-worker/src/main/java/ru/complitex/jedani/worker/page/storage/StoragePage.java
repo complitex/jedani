@@ -34,12 +34,12 @@ import ru.complitex.address.entity.City;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.Sort;
 import ru.complitex.common.wicket.component.DateTimeLabel;
-import ru.complitex.common.wicket.table.*;
 import ru.complitex.common.wicket.form.FormGroupPanel;
 import ru.complitex.common.wicket.form.FormGroupSelectPanel;
 import ru.complitex.common.wicket.form.FormGroupTextField;
 import ru.complitex.common.wicket.panel.LinkPanel;
 import ru.complitex.common.wicket.panel.SelectPanel;
+import ru.complitex.common.wicket.table.*;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.component.datatable.DomainActionColumn;
 import ru.complitex.domain.component.datatable.DomainColumn;
@@ -62,7 +62,10 @@ import ru.complitex.jedani.worker.util.Storages;
 import ru.complitex.name.service.NameService;
 
 import javax.inject.Inject;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Anatoly A. Ivanov
@@ -210,7 +213,7 @@ public class StoragePage extends BasePage {
 
         //Accept Modal
 
-        Form acceptForm = new Form<Transaction>("acceptForm"){
+        Form<Transaction> acceptForm = new Form<>("acceptForm"){
             @Override
             protected boolean wantSubmitOnParentFormSubmit() {
                 return false;
@@ -221,22 +224,22 @@ public class StoragePage extends BasePage {
         AcceptModal acceptModal = new AcceptModal("acceptModal", storageId, t -> t.add(feedback, tables));
         acceptForm.add(acceptModal);
 
-        //Transfer Modal
+        //Relocate Modal
 
-        Form transferForm = new Form<Transaction>("transferForm"){
+        Form<Transaction> relocateForm = new Form<>("relocateForm"){
             @Override
             protected boolean wantSubmitOnParentFormSubmit() {
                 return false;
             }
         };
-        add(transferForm);
+        add(relocateForm);
 
-        TransferModal transferModal = new TransferModal("transferModal", storageId, t -> t.add(feedback, tables));
-        transferForm.add(transferModal);
+        RelocateModal relocateModal = new RelocateModal("relocateModal", storageId, t -> t.add(feedback, tables));
+        relocateForm.add(relocateModal);
 
         //Receive Modal
 
-        Form receiveForm = new Form<Transaction>("receiveForm"){
+        Form<Transaction> receiveForm = new Form<>("receiveForm"){
             @Override
             protected boolean wantSubmitOnParentFormSubmit() {
                 return false;
@@ -249,7 +252,7 @@ public class StoragePage extends BasePage {
 
         //Reserve Modal
 
-        Form reserveForm = new Form<Transaction>("reserveForm"){
+        Form<Transaction> reserveForm = new Form<>("reserveForm"){
             @Override
             protected boolean wantSubmitOnParentFormSubmit() {
                 return false;
@@ -309,7 +312,7 @@ public class StoragePage extends BasePage {
                         cellItem.add(new AjaxEventBehavior("click") {
                             @Override
                             protected void onEvent(AjaxRequestTarget target) {
-                                transferModal.open(rowModel.getObject(), TransferType.TRANSFER, target);
+                                relocateModal.open(rowModel.getObject(), TransactionRelocationType.RELOCATION, target);
                             }
                         });
                     }
@@ -330,7 +333,7 @@ public class StoragePage extends BasePage {
                         cellItem.add(new AjaxEventBehavior("click") {
                             @Override
                             protected void onEvent(AjaxRequestTarget target) {
-                                receiveModal.open(product, TransferType.TRANSFER, target);
+                                receiveModal.open(product, TransactionRelocationType.RELOCATION, target);
                             }
                         });
                     }
@@ -350,7 +353,7 @@ public class StoragePage extends BasePage {
                         cellItem.add(new AjaxEventBehavior("click") {
                             @Override
                             protected void onEvent(AjaxRequestTarget target) {
-                                transferModal.open(product, TransferType.GIFT, target);
+                                relocateModal.open(product, TransactionRelocationType.GIFT, target);
                             }
                         });
                     }
@@ -371,7 +374,7 @@ public class StoragePage extends BasePage {
                         cellItem.add(new AjaxEventBehavior("click") {
                             @Override
                             protected void onEvent(AjaxRequestTarget target) {
-                                receiveModal.open(product, TransferType.GIFT, target);
+                                receiveModal.open(product, TransactionRelocationType.GIFT, target);
                             }
                         });
                     }
@@ -405,7 +408,7 @@ public class StoragePage extends BasePage {
                             Buttons.Type.Link) {
                         @Override
                         public void onClick(AjaxRequestTarget target) {
-                            transferModal.open(rowModel.getObject(), null, target);
+                            relocateModal.open(rowModel.getObject(), null, target);
                         }
                     }.setIconType(GlyphIconType.share)).setVisible(edit));
                 }
@@ -522,21 +525,21 @@ public class StoragePage extends BasePage {
             transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.COMMENTS)));
 
             transactionColumns.add(new AbstractDomainColumn<>(transactionEntity
-                    .getEntityAttribute(Transaction.TRANSFER_TYPE)) {
+                    .getEntityAttribute(Transaction.RELOCATION_TYPE)) {
                 @Override
                 public Component newFilter(String componentId, Table<Transaction> table) {
                     Transaction transaction = (Transaction)((FilterWrapper<?>)transactionForm.getModelObject()).getObject();
 
                     return new SelectPanel(componentId, new BootstrapSelect<>(SelectPanel.SELECT_COMPONENT_ID,
                             new NumberAttributeModel(transaction,
-                                    Transaction.TRANSFER_TYPE), Arrays.asList(TransferType.TRANSFER, TransferType.GIFT),
+                                    Transaction.RELOCATION_TYPE), Arrays.asList(TransactionRelocationType.RELOCATION, TransactionRelocationType.GIFT),
                             new IChoiceRenderer<Long>() {
                                 @Override
                                 public Object getDisplayValue(Long object) {
                                     if (object != null) {
                                         switch (object.intValue()){
                                             case 1:
-                                                return getString("transfer");
+                                                return getString("relocation");
                                             case 2:
                                                 return getString("gift");
                                         }
@@ -562,10 +565,10 @@ public class StoragePage extends BasePage {
                                          IModel<Transaction> rowModel) {
                     String resourceKey = null;
 
-                    Long transferType = rowModel.getObject().getTransferType();
+                    Long relocationType = rowModel.getObject().getRelocationType();
 
-                    if (transferType != null) {
-                        switch (transferType.intValue()){
+                    if (relocationType != null) {
+                        switch (relocationType.intValue()){
                             case 1:
                                 resourceKey = null;
                                 break;
@@ -588,7 +591,7 @@ public class StoragePage extends BasePage {
                     return new SelectPanel(componentId, new BootstrapSelect<>(SelectPanel.SELECT_COMPONENT_ID,
                             new NumberAttributeModel(transaction,
                                     Transaction.TYPE), Arrays.asList(TransactionType.ACCEPT, TransactionType.SELL,
-                            TransactionType.TRANSFER, TransactionType.WITHDRAW, TransactionType.RESERVE),
+                            TransactionType.RELOCATION, TransactionType.WITHDRAW, TransactionType.RESERVE),
                             new IChoiceRenderer<Long>() {
                                 @Override
                                 public Object getDisplayValue(Long object) {
@@ -599,7 +602,7 @@ public class StoragePage extends BasePage {
                                             case 2:
                                                 return getString("sell");
                                             case 3:
-                                                return getString("transfer");
+                                                return getString("relocation");
                                             case 4:
                                                 return getString("withdraw");
                                             case 5:
@@ -638,7 +641,7 @@ public class StoragePage extends BasePage {
                                 resourceKey = "sell";
                                 break;
                             case 3:
-                                resourceKey = "transfer";
+                                resourceKey = "relocation";
                                 break;
                             case 4:
                                 resourceKey = "withdraw";
@@ -658,7 +661,7 @@ public class StoragePage extends BasePage {
                 public void populateItem(Item<ICellPopulator<Transaction>> cellItem, String componentId, IModel<Transaction> rowModel) {
                     Transaction transaction = rowModel.getObject();
 
-                    boolean receive = Objects.equals(transaction.getType(), TransactionType.TRANSFER) &&
+                    boolean receive = Objects.equals(transaction.getType(), TransactionType.RELOCATION) &&
                             Objects.equals(transaction.getStorageIdTo(), storageId) &&
                             transaction.getEndDate() == null;
 
@@ -686,7 +689,7 @@ public class StoragePage extends BasePage {
 
                 Transaction transaction = model.getObject();
 
-                boolean receive = Objects.equals(transaction.getType(), TransactionType.TRANSFER) &&
+                boolean receive = Objects.equals(transaction.getType(), TransactionType.RELOCATION) &&
                         Objects.equals(transaction.getStorageIdTo(), storageId) &&
                         transaction.getEndDate() == null;
 

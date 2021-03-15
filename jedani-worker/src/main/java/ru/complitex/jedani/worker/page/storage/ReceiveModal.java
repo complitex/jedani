@@ -8,8 +8,8 @@ import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.entity.Product;
 import ru.complitex.jedani.worker.entity.Transaction;
+import ru.complitex.jedani.worker.entity.TransactionRelocationType;
 import ru.complitex.jedani.worker.entity.TransactionType;
-import ru.complitex.jedani.worker.entity.TransferType;
 import ru.complitex.jedani.worker.mapper.TransactionMapper;
 import ru.complitex.jedani.worker.service.StorageService;
 import ru.complitex.jedani.worker.util.Nomenclatures;
@@ -58,17 +58,17 @@ class ReceiveModal extends StorageModal {
         open(target);
     }
 
-    void open(Product product, Long transferType, AjaxRequestTarget target){
+    void open(Product product, Long relocationType, AjaxRequestTarget target){
         List<Transaction> transactions = transactionMapper.getTransactions(FilterWrapper.of(
                 new Transaction()).put(Transaction.FILTER_STORAGE_TO_ID, product.getParentId())
-                .put(transferType == TransferType.GIFT ? Transaction.FILTER_RECEIVING_GIFT : Transaction.FILTER_RECEIVING, true));
+                .put(relocationType == TransactionRelocationType.GIFT ? Transaction.FILTER_RECEIVING_GIFT : Transaction.FILTER_RECEIVING, true));
 
         if (!transactions.isEmpty()){
             Transaction transaction = transactions.get(0);
 
-            if (Objects.equals(transaction.getType(), TransactionType.TRANSFER) &&
+            if (Objects.equals(transaction.getType(), TransactionType.RELOCATION) &&
                     Objects.equals(transaction.getStorageIdTo(), product.getParentId()) &&
-                    Objects.equals(transaction.getTransferType(), transferType) &&
+                    Objects.equals(transaction.getRelocationType(), relocationType) &&
                     transaction.getEndDate() == null
             ) {
                 this.transaction = transaction;
