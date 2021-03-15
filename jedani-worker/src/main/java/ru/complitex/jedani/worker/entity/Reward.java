@@ -208,8 +208,10 @@ public class Reward extends Domain<Reward> {
         return getNumber(PERIOD);
     }
 
-    public void setPeriodId(Long periodId){
+    public Reward setPeriodId(Long periodId){
         setNumber(PERIOD, periodId);
+
+        return this;
     }
 
     public BigDecimal getSaleVolume() {

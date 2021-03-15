@@ -995,10 +995,10 @@ public class WorkerPage extends BasePage {
                 finance.setOutputMarkupPlaceholderTag(true);
 
                 if (worker.getObjectId() != null) {
-                    IModel<Date> monthModel = Model.of(periodService.getActualPeriod().getOperatingMonth());
+                    IModel<Period> periodModel = Model.of(periodService.getActualPeriod());
 
                     IModel<WorkerReward> rewardModel = LoadableDetachableModel.of(() ->
-                            rewardService.getWorkerRewardTree(monthModel.getObject()).getWorkerReward(worker.getObjectId()));
+                            rewardService.getWorkerRewardTree(periodModel.getObject()).getWorkerReward(worker.getObjectId()));
 
                     finance.add(new Label("sale_volume", LoadableDetachableModel.of(() ->
                             rewardModel.getObject().getSaleVolume())));
@@ -1008,18 +1008,18 @@ public class WorkerPage extends BasePage {
                             rewardModel.getObject().getRegistrationCount())));
 
                     IModel<List<Reward>> rewardsModel = LoadableDetachableModel.of(() ->
-                            rewardService.getRewards(worker.getObjectId(), monthModel.getObject()));
+                            rewardService.getRewards(worker.getObjectId(), periodModel.getObject().getObjectId()));
 
                     finance.add(new Label("reward_pv", LoadableDetachableModel.of(() ->
-                            getRewardPointString(rewardsModel.getObject(), RewardType.PERSONAL_VOLUME, monthModel.getObject()))));
+                            getRewardPointString(rewardsModel.getObject(), RewardType.PERSONAL_VOLUME, periodModel.getObject().getObjectId()))));
                     finance.add(new Label("reward_mk", LoadableDetachableModel.of(() ->
-                            getRewardString(rewardsModel.getObject(), RewardType.MYCOOK_SALE, monthModel.getObject()))));
+                            getRewardString(rewardsModel.getObject(), RewardType.MYCOOK_SALE, periodModel.getObject().getObjectId()))));
                     finance.add(new Label("reward_ba", LoadableDetachableModel.of(() ->
-                            getRewardString(rewardsModel.getObject(), RewardType.BASE_ASSORTMENT_SALE, monthModel.getObject()))));
+                            getRewardString(rewardsModel.getObject(), RewardType.BASE_ASSORTMENT_SALE, periodModel.getObject().getObjectId()))));
                     finance.add(new Label("reward_mkb", LoadableDetachableModel.of(() ->
-                            getRewardString(rewardsModel.getObject(), RewardType.MK_MANAGER_BONUS, monthModel.getObject()))));
+                            getRewardString(rewardsModel.getObject(), RewardType.MK_MANAGER_BONUS, periodModel.getObject().getObjectId()))));
                     finance.add(new Label("reward_cw", LoadableDetachableModel.of(() ->
-                            getRewardString(rewardsModel.getObject(), RewardType.CULINARY_WORKSHOP, monthModel.getObject()))));
+                            getRewardString(rewardsModel.getObject(), RewardType.CULINARY_WORKSHOP, periodModel.getObject().getObjectId()))));
 
                     finance.add(new Link<Void>("rankLink") {
                         @Override
@@ -1045,16 +1045,16 @@ public class WorkerPage extends BasePage {
                     finance.add(new Label("structure_manager_count", LoadableDetachableModel.of(() ->
                             rewardModel.getObject().getStructureManagerCount())));
                     finance.add(new Label("reward_mp", LoadableDetachableModel.of(() ->
-                            getRewardString(rewardsModel.getObject(), RewardType.MANAGER_PREMIUM, monthModel.getObject()))));
+                            getRewardString(rewardsModel.getObject(), RewardType.MANAGER_PREMIUM, periodModel.getObject().getObjectId()))));
                     finance.add(new Label("reward_gv", LoadableDetachableModel.of(() ->
-                            getRewardString(rewardsModel.getObject(), RewardType.GROUP_VOLUME, monthModel.getObject()))));
+                            getRewardString(rewardsModel.getObject(), RewardType.GROUP_VOLUME, periodModel.getObject().getObjectId()))));
                     finance.add(new Label("reward_sv", LoadableDetachableModel.of(() ->
-                            getRewardString(rewardsModel.getObject(), RewardType.STRUCTURE_VOLUME, monthModel.getObject()))));
+                            getRewardString(rewardsModel.getObject(), RewardType.STRUCTURE_VOLUME, periodModel.getObject().getObjectId()))));
 
                     finance.add(new PeriodPanel("period"){
                         @Override
                         protected void onChange(AjaxRequestTarget target, Period period) {
-                            monthModel.setObject(period.getOperatingMonth());
+                            periodModel.setObject(period);
 
                             rewardModel.detach();
                             rewardsModel.detach();
@@ -1245,20 +1245,20 @@ public class WorkerPage extends BasePage {
 
     }
 
-    protected String getRewardString(List<Reward> rewards, Long rewardTypeId, Date month) {
+    protected String getRewardString(List<Reward> rewards, Long rewardTypeId, Long periodId) {
 
-        BigDecimal total = rewardService.getRewardsTotal(rewards, rewardTypeId, month, false);
+        BigDecimal total = rewardService.getRewardsTotal(rewards, rewardTypeId, periodId, false);
 
-        return rewardService.getRewardsTotal(rewards,  rewardTypeId, month, true)
+        return rewardService.getRewardsTotal(rewards,  rewardTypeId, periodId, true)
                 //+ " (" + rewardService.getRewardsTotalLocal(rewards,  rewardTypeId, month, true) + ")" +
                 + (total.compareTo(BigDecimal.ZERO) > 0 ?  (" / " + total) : "");
                 //+ " (" + rewardService.getRewardsTotalLocal(rewards, rewardTypeId, month, false)+ ")";
     }
 
-    protected String getRewardPointString(List<Reward> rewards, Long rewardTypeId, Date month) {
-        BigDecimal point = rewardService.getRewardsPoint(rewards, rewardTypeId, month, false);
+    protected String getRewardPointString(List<Reward> rewards, Long rewardTypeId, Long periodId) {
+        BigDecimal point = rewardService.getRewardsPoint(rewards, rewardTypeId, periodId, false);
 
-        return rewardService.getRewardsPoint(rewards,  rewardTypeId, month, true)
+        return rewardService.getRewardsPoint(rewards,  rewardTypeId, periodId, true)
                 + (point.compareTo(BigDecimal.ZERO) > 0 ?  (" / " + point) : "");
     }
 

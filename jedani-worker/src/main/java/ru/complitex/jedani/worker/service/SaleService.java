@@ -14,7 +14,6 @@ import javax.inject.Inject;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -127,11 +126,11 @@ public class SaleService implements Serializable {
         return saleItemMapper.getSaleItems(FilterWrapper.of(new SaleItem().setParentId(saleId)));
     }
 
-    public BigDecimal getSaleVolume(Long sellerWorkerId, Date month){
+    public BigDecimal getSaleVolume(Long sellerWorkerId, Period period){
         return saleMapper.getSales(FilterWrapper.of(new Sale().setSellerWorkerId(sellerWorkerId))
                 .addEntityAttributeId(Sale.TOTAL)
                 .put(Sale.FILTER_ACTUAL, true)
-                .put(Sale.FILTER_MONTH, month)).stream()
+                .put(Sale.FILTER_PERIOD, period.getObjectId())).stream()
                 .map(s -> s.getTotal() != null ? s.getTotal() : BigDecimal.ZERO)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }

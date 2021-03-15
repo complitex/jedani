@@ -132,7 +132,7 @@ public class WorkerGraphPanel extends Panel {
                 .put("levelDepth", levelDepth != 0 ? levelDepth : null)));
 
         WorkerRewardTree rewards = (levelDepth == 0)
-                ? rewardService.getWorkerRewardTree(periodService.getActualPeriod().getOperatingMonth())
+                ? rewardService.getWorkerRewardTree(periodService.getActualPeriod())
                 : null;
 
         elements =  " {data: {id: '" + worker.getObjectId() + "', " +
