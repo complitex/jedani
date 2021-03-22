@@ -7,10 +7,10 @@ import org.danekja.java.util.function.serializable.SerializableConsumer;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.entity.Product;
-import ru.complitex.jedani.worker.entity.Transaction;
-import ru.complitex.jedani.worker.entity.TransactionRelocationType;
-import ru.complitex.jedani.worker.entity.TransactionType;
-import ru.complitex.jedani.worker.mapper.TransactionMapper;
+import ru.complitex.jedani.worker.entity.Transfer;
+import ru.complitex.jedani.worker.entity.TransferRelocationType;
+import ru.complitex.jedani.worker.entity.TransferType;
+import ru.complitex.jedani.worker.mapper.TransferMapper;
 import ru.complitex.jedani.worker.service.StorageService;
 import ru.complitex.jedani.worker.util.Nomenclatures;
 
@@ -27,12 +27,12 @@ class ReceiveModal extends StorageModal {
     private DomainService domainService;
 
     @Inject
-    private TransactionMapper transactionMapper;
+    private TransferMapper transferMapper;
 
     @Inject
     private StorageService storageService;
 
-    private Transaction transaction;
+    private Transfer transfer;
 
     public ReceiveModal(String markupId, Long storageId, SerializableConsumer<AjaxRequestTarget> onUpdate) {
         super(markupId, storageId, onUpdate);
@@ -40,50 +40,50 @@ class ReceiveModal extends StorageModal {
         getContainer().add(new Label("nomenclature", new LoadableDetachableModel<String>() {
             @Override
             protected String load() {
-                return Nomenclatures.getNomenclatureLabel(transaction.getNomenclatureId(), domainService);
+                return Nomenclatures.getNomenclatureLabel(transfer.getNomenclatureId(), domainService);
             }
         }));
 
         getContainer().add(new Label("quantity", new LoadableDetachableModel<String>() {
             @Override
             protected String load() {
-                return transaction.getQuantity() + "";
+                return transfer.getQuantity() + "";
             }
         }));
     }
 
-    void open(Transaction transaction, AjaxRequestTarget target){
-        this.transaction = transaction;
+    void open(Transfer transfer, AjaxRequestTarget target){
+        this.transfer = transfer;
 
         open(target);
     }
 
     void open(Product product, Long relocationType, AjaxRequestTarget target){
-        List<Transaction> transactions = transactionMapper.getTransactions(FilterWrapper.of(
-                new Transaction()).put(Transaction.FILTER_STORAGE_TO_ID, product.getParentId())
-                .put(relocationType == TransactionRelocationType.GIFT ? Transaction.FILTER_RECEIVING_GIFT : Transaction.FILTER_RECEIVING, true));
+        List<Transfer> transfers = transferMapper.getTransfers(FilterWrapper.of(
+                new Transfer()).put(Transfer.FILTER_STORAGE_TO_ID, product.getParentId())
+                .put(relocationType == TransferRelocationType.GIFT ? Transfer.FILTER_RECEIVING_GIFT : Transfer.FILTER_RECEIVING, true));
 
-        if (!transactions.isEmpty()){
-            Transaction transaction = transactions.get(0);
+        if (!transfers.isEmpty()){
+            Transfer transfer = transfers.get(0);
 
-            if (Objects.equals(transaction.getType(), TransactionType.RELOCATION) &&
-                    Objects.equals(transaction.getStorageIdTo(), product.getParentId()) &&
-                    Objects.equals(transaction.getRelocationType(), relocationType) &&
-                    transaction.getEndDate() == null
+            if (Objects.equals(transfer.getType(), TransferType.RELOCATION) &&
+                    Objects.equals(transfer.getStorageIdTo(), product.getParentId()) &&
+                    Objects.equals(transfer.getRelocationType(), relocationType) &&
+                    transfer.getEndDate() == null
             ) {
-                this.transaction = transaction;
+                this.transfer = transfer;
 
                 open(target);
             }
         }
     }
 
-    public Transaction getTransaction() {
-        return transaction;
+    public Transfer getTransfer() {
+        return transfer;
     }
 
     void action(AjaxRequestTarget target) {
-        storageService.receive(getTransaction());
+        storageService.receive(getTransfer());
 
         success(getString("info_received"));
 

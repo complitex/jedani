@@ -6,8 +6,8 @@ import ru.complitex.domain.entity.Domain;
  * @author Anatoly A. Ivanov
  * 05.11.2018 15:41
  */
-public class Transaction extends Domain<Transaction> {
-    public static final String ENTITY_NAME = "transaction";
+public class Transfer extends Domain<Transfer> {
+    public static final String ENTITY_NAME = "transfer";
 
     public static final String FILTER_STORAGE_TO_ID = "storageToId";
     public static final String FILTER_RECEIVING = "receiving";
@@ -27,7 +27,7 @@ public class Transaction extends Domain<Transaction> {
     public static final long SERIAL_NUMBER = 12;
     public static final long COMMENTS = 13;
 
-    public Transaction() {
+    public Transfer() {
         super(ENTITY_NAME);
 
         setUseDateAttribute(true);

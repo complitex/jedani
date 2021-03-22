@@ -66,11 +66,11 @@ class RelocateModal extends StorageModal {
                 fragment.add(getNomenclature());
 
                 FormGroupPanel worker = new FormGroupPanel("worker", new WorkerAutoComplete(FormGroupPanel.COMPONENT_ID,
-                        new NumberAttributeModel(getModel(), Transaction.WORKER_TO)).setRequired(true)
+                        new NumberAttributeModel(getModel(), Transfer.WORKER_TO)).setRequired(true)
                         .setLabel(Model.of(getString("worker")))){
                     @Override
                     public boolean isVisible() {
-                        return Objects.equals(getModelObject().getRecipientType(), TransactionRecipientType.WORKER);
+                        return Objects.equals(getModelObject().getRecipientType(), TransferRecipientType.WORKER);
                     }
                 };
                 fragment.add(worker);
@@ -78,7 +78,7 @@ class RelocateModal extends StorageModal {
                 WebMarkupContainer client = new WebMarkupContainer("client"){
                     @Override
                     public boolean isVisible() {
-                        return Objects.equals(getModelObject().getRecipientType(), TransactionRecipientType.CLIENT);
+                        return Objects.equals(getModelObject().getRecipientType(), TransferRecipientType.CLIENT);
                     }
                 };
                 client.setOutputMarkupId(true);
@@ -86,24 +86,24 @@ class RelocateModal extends StorageModal {
                 fragment.add(client);
 
                 client.add(new FormGroupDomainAutoComplete("lastName", LastName.ENTITY_NAME, LastName.NAME,
-                        new NumberAttributeModel(getModel(), Transaction.LAST_NAME_TO)).setRequired(true));
+                        new NumberAttributeModel(getModel(), Transfer.LAST_NAME_TO)).setRequired(true));
                 client.add(new FormGroupDomainAutoComplete("firstName", FirstName.ENTITY_NAME, FirstName.NAME,
-                        new NumberAttributeModel(getModel(), Transaction.FIRST_NAME_TO)).setRequired(true));
+                        new NumberAttributeModel(getModel(), Transfer.FIRST_NAME_TO)).setRequired(true));
                 client.add(new FormGroupDomainAutoComplete("middleName", MiddleName.ENTITY_NAME, MiddleName.NAME,
-                        new NumberAttributeModel(getModel(), Transaction.MIDDLE_NAME_TO)));
+                        new NumberAttributeModel(getModel(), Transfer.MIDDLE_NAME_TO)));
 
-                IModel<Long> recipientModel = new NumberAttributeModel(getModel(), Transaction.RECIPIENT_TYPE);
+                IModel<Long> recipientModel = new NumberAttributeModel(getModel(), Transfer.RECIPIENT_TYPE);
 
                 fragment.add(new FormGroupSelectPanel("recipient", new BootstrapSelect<>(FormGroupPanel.COMPONENT_ID,
-                        recipientModel, Arrays.asList(TransactionRecipientType.WORKER, TransactionRecipientType.CLIENT),
+                        recipientModel, Arrays.asList(TransferRecipientType.WORKER, TransferRecipientType.CLIENT),
                         new IChoiceRenderer<Long>() {
                             @Override
                             public Object getDisplayValue(Long object) {
                                 switch (object.intValue()){
-                                    case (int) TransactionRecipientType.WORKER:
+                                    case (int) TransferRecipientType.WORKER:
                                         return getString("worker");
 
-                                    case (int) TransactionRecipientType.CLIENT:
+                                    case (int) TransferRecipientType.CLIENT:
                                         return getString("client");
                                 }
 
@@ -122,9 +122,9 @@ class RelocateModal extends StorageModal {
                         }).setNullValid(false).add(OnChangeAjaxBehavior.onChange(target -> target.add(worker, client)))));
 
                 fragment.add(new FormGroupTextField<>("quantity", new NumberAttributeModel(getModel(),
-                        Transaction.QUANTITY)).setRequired(true).setType(Long.class));
+                        Transfer.QUANTITY)).setRequired(true).setType(Long.class));
 
-                fragment.add(new FormGroupTextField<>("serialNumber", new TextAttributeModel(getModel(), Transaction.SERIAL_NUMBER,
+                fragment.add(new FormGroupTextField<>("serialNumber", new TextAttributeModel(getModel(), Transfer.SERIAL_NUMBER,
                         StringType.DEFAULT)));
 
                 return fragment;
@@ -143,39 +143,39 @@ class RelocateModal extends StorageModal {
                 FormGroupPanel storage;
 
                 fragment.add(storage =  new FormGroupPanel("storage", new StorageAutoComplete(FormGroupPanel.COMPONENT_ID,
-                        new NumberAttributeModel(getModel(), Transaction.STORAGE_TO))
+                        new NumberAttributeModel(getModel(), Transfer.STORAGE_TO))
                         .setRequired(true)
                         .setLabel(new ResourceModel("storage"))
                         ){
                     @Override
                     public boolean isVisible() {
-                        return Objects.equals(getModelObject().getRecipientType(), TransactionRecipientType.STORAGE);
+                        return Objects.equals(getModelObject().getRecipientType(), TransferRecipientType.STORAGE);
                     }
                 });
 
                 FormGroupPanel worker = new FormGroupPanel("worker", new WorkerAutoComplete(FormGroupPanel.COMPONENT_ID,
-                        new NumberAttributeModel(getModel(), Transaction.WORKER_TO))
+                        new NumberAttributeModel(getModel(), Transfer.WORKER_TO))
                         .setRequired(true)
                         .setLabel(Model.of(getString("worker")))){
                     @Override
                     public boolean isVisible() {
-                        return Objects.equals(getModelObject().getRecipientType(), TransactionRecipientType.WORKER);
+                        return Objects.equals(getModelObject().getRecipientType(), TransferRecipientType.WORKER);
                     }
                 };
                 fragment.add(worker);
 
-                IModel<Long> recipientModel = new NumberAttributeModel(getModel(), Transaction.RECIPIENT_TYPE);
+                IModel<Long> recipientModel = new NumberAttributeModel(getModel(), Transfer.RECIPIENT_TYPE);
 
                 fragment.add(new FormGroupSelectPanel("recipient", new BootstrapSelect<>(FormGroupPanel.COMPONENT_ID,
-                        recipientModel, Arrays.asList(TransactionRecipientType.STORAGE, TransactionRecipientType.WORKER),
+                        recipientModel, Arrays.asList(TransferRecipientType.STORAGE, TransferRecipientType.WORKER),
                         new IChoiceRenderer<Long>() {
                             @Override
                             public Object getDisplayValue(Long object) {
                                 switch (object.intValue()){
-                                    case (int) TransactionRecipientType.STORAGE:
+                                    case (int) TransferRecipientType.STORAGE:
                                         return getString("storage");
 
-                                    case (int) TransactionRecipientType.WORKER:
+                                    case (int) TransferRecipientType.WORKER:
                                         return getString("worker");
                                 }
 
@@ -194,19 +194,19 @@ class RelocateModal extends StorageModal {
                         }).setNullValid(false).add(OnChangeAjaxBehavior.onChange(target -> target.add(worker, storage)))));
 
                 fragment.add(new FormGroupTextField<>("quantity", new NumberAttributeModel(getModel(),
-                        Transaction.QUANTITY)).setRequired(true).setType(Long.class));
+                        Transfer.QUANTITY)).setRequired(true).setType(Long.class));
 
                 fragment.add(new FormGroupSelectPanel("type", new BootstrapSelect<>(FormGroupPanel.COMPONENT_ID,
-                        new NumberAttributeModel(getModel(), Transaction.RELOCATION_TYPE),
-                        Arrays.asList(TransactionRelocationType.RELOCATION, TransactionRelocationType.GIFT),
+                        new NumberAttributeModel(getModel(), Transfer.RELOCATION_TYPE),
+                        Arrays.asList(TransferRelocationType.RELOCATION, TransferRelocationType.GIFT),
                         new IChoiceRenderer<Long>() {
                             @Override
                             public Object getDisplayValue(Long object) {
                                 switch (object.intValue()){
-                                    case (int) TransactionRelocationType.RELOCATION:
+                                    case (int) TransferRelocationType.RELOCATION:
                                         return getString("relocation");
 
-                                    case (int) TransactionRelocationType.GIFT:
+                                    case (int) TransferRelocationType.GIFT:
                                         return getString("gift");
                                 }
 
@@ -239,16 +239,16 @@ class RelocateModal extends StorageModal {
                 fragment.add(getNomenclature());
 
                 fragment.add(new FormGroupSelectPanel("withdrawType", new BootstrapSelect<>(FormGroupPanel.COMPONENT_ID,
-                        new NumberAttributeModel(getModel(), Transaction.RELOCATION_TYPE),
-                        Arrays.asList(TransactionRelocationType.RELOCATION, TransactionRelocationType.GIFT),
+                        new NumberAttributeModel(getModel(), Transfer.RELOCATION_TYPE),
+                        Arrays.asList(TransferRelocationType.RELOCATION, TransferRelocationType.GIFT),
                         new IChoiceRenderer<Long>() {
                             @Override
                             public Object getDisplayValue(Long object) {
                                 switch (object.intValue()){
-                                    case (int) TransactionRelocationType.RELOCATION:
+                                    case (int) TransferRelocationType.RELOCATION:
                                         return getString("good");
 
-                                    case (int) TransactionRelocationType.GIFT:
+                                    case (int) TransferRelocationType.GIFT:
                                         return getString("gift");
                                 }
 
@@ -267,9 +267,9 @@ class RelocateModal extends StorageModal {
                         }).with(new BootstrapSelectConfig().withNoneSelectedText(""))));
 
                 fragment.add(new FormGroupTextField<>("quantity", new NumberAttributeModel(getModel(),
-                        Transaction.QUANTITY)).setRequired(true).setType(Long.class).setRequired(true));
+                        Transfer.QUANTITY)).setRequired(true).setType(Long.class).setRequired(true));
 
-                fragment.add(new FormGroupTextField<>("comments", new TextAttributeModel(getModel(), Transaction.COMMENTS,
+                fragment.add(new FormGroupTextField<>("comments", new TextAttributeModel(getModel(), Transfer.COMMENTS,
                         StringType.DEFAULT)));
 
                 return fragment;
@@ -310,12 +310,12 @@ class RelocateModal extends StorageModal {
 
         switch (tabIndexModel.getObject()){
             case 0:
-                getModelObject().setRecipientType(TransactionRecipientType.WORKER);
+                getModelObject().setRecipientType(TransferRecipientType.WORKER);
                 label = getString("sellAction");
 
                 break;
             case 1:
-                getModelObject().setRecipientType(TransactionRecipientType.STORAGE);
+                getModelObject().setRecipientType(TransferRecipientType.STORAGE);
                 label = getString("relocationAction");
 
                 break;
@@ -343,15 +343,15 @@ class RelocateModal extends StorageModal {
 
     @Override
     void action(AjaxRequestTarget target) {
-        Transaction transaction = getModelObject();
+        Transfer transfer = getModelObject();
 
         Product product = domainService.getDomain(Product.class, getProduct().getObjectId());
 
-        boolean gift = Objects.equals(transaction.getRelocationType(), TransactionRelocationType.GIFT);
+        boolean gift = Objects.equals(transfer.getRelocationType(), TransferRelocationType.GIFT);
 
         Long pQty = gift ? product.getGiftQuantity() : product.getQuantity();
 
-        Long tQty = transaction.getQuantity();
+        Long tQty = transfer.getQuantity();
 
         if (tQty > pQty){
             error(getString("error_quantity") + ": " + tQty + " > " + pQty);
@@ -367,8 +367,8 @@ class RelocateModal extends StorageModal {
             return;
         }
 
-        if (Objects.equals(transaction.getRecipientType(), TransactionRecipientType.WORKER)){
-            Worker w = domainService.getDomain(Worker.class, transaction.getWorkerIdTo());
+        if (Objects.equals(transfer.getRecipientType(), TransferRecipientType.WORKER)){
+            Worker w = domainService.getDomain(Worker.class, transfer.getWorkerIdTo());
 
             if (Objects.equals(w.getType(), 1L)){
                 error(getString("error_participant"));
@@ -380,25 +380,25 @@ class RelocateModal extends StorageModal {
 
         switch (getTabIndexModel().getObject()){
             case 0:
-                storageService.sell(product, transaction);
+                storageService.sell(product, transfer);
                 success(getString("info_sold"));
 
                 break;
             case 1:
-                if (Objects.equals(transaction.getRecipientType(), TransactionRecipientType.STORAGE)
-                        && Objects.equals(transaction.getStorageIdTo(), getStorageId())){
+                if (Objects.equals(transfer.getRecipientType(), TransferRecipientType.STORAGE)
+                        && Objects.equals(transfer.getStorageIdTo(), getStorageId())){
                     error(getString("error_same_storage"));
                     target.add(getFeedback());
 
                     return;
                 }
 
-                storageService.relocate(product, transaction);
+                storageService.relocate(product, transfer);
                 success(getString("info_relocated"));
 
                 break;
             case 2:
-                storageService.withdraw(product, transaction);
+                storageService.withdraw(product, transfer);
                 success(getString("info_withdrew"));
 
                 break;

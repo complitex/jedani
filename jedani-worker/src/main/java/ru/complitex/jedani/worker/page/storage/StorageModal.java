@@ -13,14 +13,14 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.danekja.java.util.function.serializable.SerializableConsumer;
 import ru.complitex.common.wicket.util.Wickets;
-import ru.complitex.jedani.worker.entity.Transaction;
-import ru.complitex.jedani.worker.entity.TransactionRecipientType;
+import ru.complitex.jedani.worker.entity.Transfer;
+import ru.complitex.jedani.worker.entity.TransferRecipientType;
 
 /**
  * @author Anatoly A. Ivanov
  * 06.11.2018 14:10
  */
-abstract class StorageModal extends Modal<Transaction> {
+abstract class StorageModal extends Modal<Transfer> {
     private FeedbackPanel feedback;
     private WebMarkupContainer container;
 
@@ -31,7 +31,7 @@ abstract class StorageModal extends Modal<Transaction> {
     private SerializableConsumer<AjaxRequestTarget> onUpdate;
 
     StorageModal(String markupId, Long storageId, SerializableConsumer<AjaxRequestTarget> onUpdate) {
-        super(markupId, Model.of(new Transaction()));
+        super(markupId, Model.of(new Transfer()));
 
         this.storageId = storageId;
         this.onUpdate = onUpdate;
@@ -84,12 +84,12 @@ abstract class StorageModal extends Modal<Transaction> {
     }
 
     void open(AjaxRequestTarget target){
-        Transaction transaction = getModelObject();
+        Transfer transfer = getModelObject();
 
-        transaction.getAttributes().clear();
+        transfer.getAttributes().clear();
 
-        transaction.setQuantity(1L);
-        transaction.setRecipientType(TransactionRecipientType.WORKER);
+        transfer.setQuantity(1L);
+        transfer.setRecipientType(TransferRecipientType.WORKER);
 
         container.setVisible(true);
         target.add(container);

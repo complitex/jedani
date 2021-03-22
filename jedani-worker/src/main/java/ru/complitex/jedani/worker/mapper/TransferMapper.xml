@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="ru.complitex.jedani.worker.mapper.TransactionMapper">
-    <resultMap id="transactionResultMap" type="ru.complitex.jedani.worker.entity.Transaction"
+<mapper namespace="ru.complitex.jedani.worker.mapper.TransferMapper">
+    <resultMap id="transferResultMap" type="ru.complitex.jedani.worker.entity.Transfer"
                extends="ru.complitex.domain.mapper.DomainMapper.domainResultMapJoin">
     </resultMap>
 
-    <sql id="selectTransactionsFrom">
-        left join transaction_attribute ta_s_from on ta_s_from.domain_id = d.id
+    <sql id="selectTransfersFrom">
+        left join transfer_attribute ta_s_from on ta_s_from.domain_id = d.id
             and ta_s_from.entity_attribute_id = 6 and ta_s_from.status = 1
-        left join transaction_attribute ta_s_to on ta_s_to.domain_id = d.id
+        left join transfer_attribute ta_s_to on ta_s_to.domain_id = d.id
             and ta_s_to.entity_attribute_id = 7 and ta_s_to.status = 1
     </sql>
 
     <!--suppress SqlResolve -->
-    <sql id="selectTransactionsWorker">
+    <sql id="selectTransfersWorker">
        (select concat(wa_id.text, ln_v.text, fn_v.text, mn_v.text) w_name
-            from transaction_attribute ta
+            from transfer_attribute ta
 
-            left join `transaction` t on ta.domain_id = t.id
+            left join `transfer` t on ta.domain_id = t.id
 
             left join worker w on w.object_id = ta.number and w.status = 1
 
@@ -43,21 +43,21 @@
     </sql>
 
     <!--suppress SqlResolve -->
-    <sql id="selectTransactionsClient">
+    <sql id="selectTransfersClient">
         (select concat(ln_v.text, fn_v.text, mn_v.text) c_name
-            from `transaction` t
+            from `transfer` t
 
-            left join transaction_attribute ta_fn on ta_fn.domain_id = t.id and ta_fn.entity_attribute_id = 9 and ta_fn.status = 1
+            left join transfer_attribute ta_fn on ta_fn.domain_id = t.id and ta_fn.entity_attribute_id = 9 and ta_fn.status = 1
             left join first_name fn on fn.object_id = ta_fn.number and fn.status = 1
             left join first_name_attribute fn_a on fn_a.domain_id = fn.id and fn_a.status = 1
             left join first_name_value fn_v on fn_a.id = fn_v.attribute_id
 
-            left join transaction_attribute ta_mn on ta_mn.domain_id = t.id and ta_mn.entity_attribute_id = 10 and ta_mn.status = 1
+            left join transfer_attribute ta_mn on ta_mn.domain_id = t.id and ta_mn.entity_attribute_id = 10 and ta_mn.status = 1
             left join middle_name mn on mn.object_id = ta_mn.number and mn.status = 1
             left join middle_name_attribute mn_a on mn_a.domain_id = mn.id and mn_a.status = 1
             left join middle_name_value mn_v on mn_a.id = mn_v.attribute_id
 
-            left join transaction_attribute ta_ln on ta_ln.domain_id = t.id and ta_ln.entity_attribute_id = 11 and ta_ln.status = 1
+            left join transfer_attribute ta_ln on ta_ln.domain_id = t.id and ta_ln.entity_attribute_id = 11 and ta_ln.status = 1
             left join last_name ln on ln.object_id = ta_ln.number and ln.status = 1
             left join last_name_attribute ln_a on ln_a.domain_id = ln.id and ln_a.status = 1
             left join last_name_value ln_v on ln_a.id = ln_v.attribute_id
@@ -66,7 +66,7 @@
           )
     </sql>
 
-     <sql id="selectTransactionsWhere">
+     <sql id="selectTransfersWhere">
          <if test="map.storageId != null">
              and (ta_s_from.number = #{map.storageId} or ta_s_to.number = #{map.storageId})
          </if>
@@ -77,39 +77,39 @@
              and date(d.start_date) = date(#{object.startDate})
          </if>
          <if test="map.worker != null">
-             and <include refid="selectTransactionsWorker"/> like concat('%', #{map.worker}, '%')
+             and <include refid="selectTransfersWorker"/> like concat('%', #{map.worker}, '%')
          </if>
          <if test="map.client != null">
-             and <include refid="selectTransactionsClient"/> like concat('%', #{map.client}, '%')
+             and <include refid="selectTransfersClient"/> like concat('%', #{map.client}, '%')
          </if>
          <if test="map.receiving != null">
-             and (exists(select ta.id from transaction_attribute ta
-                 left join transaction_attribute ta_tt on ta.domain_id = ta_tt.domain_id and ta_tt.status = 1
+             and (exists(select ta.id from transfer_attribute ta
+                 left join transfer_attribute ta_tt on ta.domain_id = ta_tt.domain_id and ta_tt.status = 1
                      and ta_tt.entity_attribute_id = 4
                  where ta.domain_id = d.id and ta.status = 1 and ta.entity_attribute_id = 3
                      and ta.number = 3 and ta_tt.number = 1 and d.end_date is null))
          </if>
          <if test="map.receivingGift != null">
-             and (exists(select ta.id from transaction_attribute ta
-                 left join transaction_attribute ta_tt on ta.domain_id = ta_tt.domain_id and ta_tt.status = 1
+             and (exists(select ta.id from transfer_attribute ta
+                 left join transfer_attribute ta_tt on ta.domain_id = ta_tt.domain_id and ta_tt.status = 1
                      and ta_tt.entity_attribute_id = 4
                  where ta.domain_id = d.id and ta.status = 1 and ta.entity_attribute_id = 3
                      and ta.number = 3 and ta_tt.number = 2 and d.end_date is null))
          </if>
     </sql>
 
-    <sql id="selectTransactionsOrderSort">
+    <sql id="selectTransfersOrderSort">
         <if test="sortProperty != null">
             <choose>
                 <when test="sortProperty.key == 'startDate'">order by d.start_date ${asc}</when>
-                <when test="sortProperty.key == 'worker'">order by <include refid="selectTransactionsWorker"/> ${asc}</when>
-                <when test="sortProperty.key == 'client'">order by <include refid="selectTransactionsClient"/> ${asc}</when>
+                <when test="sortProperty.key == 'worker'">order by <include refid="selectTransfersWorker"/> ${asc}</when>
+                <when test="sortProperty.key == 'client'">order by <include refid="selectTransfersClient"/> ${asc}</when>
             </choose>
         </if>
     </sql>
 
     <!--suppress SqlResolve -->
-    <select id="selectTransactions" parameterType="ru.complitex.common.entity.FilterWrapper" resultMap="transactionResultMap">
+    <select id="selectTransfers" parameterType="ru.complitex.common.entity.FilterWrapper" resultMap="transferResultMap">
         select d.*, '${object.entityName}' entity_name,
           <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsSelect"/>
         from (
@@ -119,32 +119,32 @@
                 <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFrom"/>
                 <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromFilter"/>
                 <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromSort"/>
-                <include refid="selectTransactionsFrom"/>
+                <include refid="selectTransfersFrom"/>
                 <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsWhere"/>
-                <include refid="selectTransactionsWhere"/>
+                <include refid="selectTransfersWhere"/>
                 group by d.id
                 <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsOrderSort"/>
-                <include refid="selectTransactionsOrderSort"/>
+                <include refid="selectTransfersOrderSort"/>
             ) dd
             ${limit}
         ) o
-        left join `transaction` d on d.id = o.dd_id
-        left join transaction_attribute a on a.domain_id = d.id and a.status = 1
-        left join transaction_value v on v.attribute_id = a.id
+        left join `transfer` d on d.id = o.dd_id
+        left join transfer_attribute a on a.domain_id = d.id and a.status = 1
+        left join transfer_value v on v.attribute_id = a.id
         <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromSort"/>
         group by d.id, a.id, v.id
         <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsOrderSort"/>
-        <include refid="selectTransactionsOrderSort"/>
+        <include refid="selectTransfersOrderSort"/>
     </select>
 
     <!--suppress SqlResolve -->
-    <select id="selectTransactionsCount" parameterType="ru.complitex.common.entity.FilterWrapper" resultType="long">
+    <select id="selectTransfersCount" parameterType="ru.complitex.common.entity.FilterWrapper" resultType="long">
         select count(distinct t.object_id) from (select d.object_id
             <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFrom"/>
             <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromFilter"/>
-            <include refid="selectTransactionsFrom"/>
+            <include refid="selectTransfersFrom"/>
             <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsWhere"/>
-            <include refid="selectTransactionsWhere"/>
+            <include refid="selectTransfersWhere"/>
         ) t
     </select>
 </mapper>

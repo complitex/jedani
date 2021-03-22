@@ -22,7 +22,7 @@
         <appender-ref ref="STDOUT" />
     </logger>-->
 
-    <!--<logger name="ru.complitex.jedani.worker.mapper.TransactionMapper" level="DEBUG" additivity="false">
+    <!--<logger name="ru.complitex.jedani.worker.mapper.TransferMapper" level="DEBUG" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>-->
 

@@ -4,7 +4,7 @@ package ru.complitex.jedani.worker.entity;
  * @author Anatoly A. Ivanov
  * 16.11.2018 13:39
  */
-public class TransactionType {
+public class TransferType {
     public static final long ACCEPT = 1;
     public static final long SELL = 2;
     public static final long RELOCATION = 3;

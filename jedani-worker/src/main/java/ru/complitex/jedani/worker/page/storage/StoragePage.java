@@ -54,7 +54,7 @@ import ru.complitex.jedani.worker.component.WorkerAutoComplete;
 import ru.complitex.jedani.worker.component.WorkerAutoCompleteList;
 import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.mapper.StorageMapper;
-import ru.complitex.jedani.worker.mapper.TransactionMapper;
+import ru.complitex.jedani.worker.mapper.TransferMapper;
 import ru.complitex.jedani.worker.page.BasePage;
 import ru.complitex.jedani.worker.security.JedaniRoles;
 import ru.complitex.jedani.worker.service.WorkerService;
@@ -85,7 +85,7 @@ public class StoragePage extends BasePage {
     private StorageMapper storageMapper;
 
     @Inject
-    private TransactionMapper transactionMapper;
+    private TransferMapper transferMapper;
 
     @Inject
     private NameService nameService;
@@ -213,7 +213,7 @@ public class StoragePage extends BasePage {
 
         //Accept Modal
 
-        Form<Transaction> acceptForm = new Form<>("acceptForm"){
+        Form<Transfer> acceptForm = new Form<>("acceptForm"){
             @Override
             protected boolean wantSubmitOnParentFormSubmit() {
                 return false;
@@ -226,7 +226,7 @@ public class StoragePage extends BasePage {
 
         //Relocate Modal
 
-        Form<Transaction> relocateForm = new Form<>("relocateForm"){
+        Form<Transfer> relocateForm = new Form<>("relocateForm"){
             @Override
             protected boolean wantSubmitOnParentFormSubmit() {
                 return false;
@@ -239,7 +239,7 @@ public class StoragePage extends BasePage {
 
         //Receive Modal
 
-        Form<Transaction> receiveForm = new Form<>("receiveForm"){
+        Form<Transfer> receiveForm = new Form<>("receiveForm"){
             @Override
             protected boolean wantSubmitOnParentFormSubmit() {
                 return false;
@@ -252,7 +252,7 @@ public class StoragePage extends BasePage {
 
         //Reserve Modal
 
-        Form<Transaction> reserveForm = new Form<>("reserveForm"){
+        Form<Transfer> reserveForm = new Form<>("reserveForm"){
             @Override
             protected boolean wantSubmitOnParentFormSubmit() {
                 return false;
@@ -312,7 +312,7 @@ public class StoragePage extends BasePage {
                         cellItem.add(new AjaxEventBehavior("click") {
                             @Override
                             protected void onEvent(AjaxRequestTarget target) {
-                                relocateModal.open(rowModel.getObject(), TransactionRelocationType.RELOCATION, target);
+                                relocateModal.open(rowModel.getObject(), TransferRelocationType.RELOCATION, target);
                             }
                         });
                     }
@@ -333,7 +333,7 @@ public class StoragePage extends BasePage {
                         cellItem.add(new AjaxEventBehavior("click") {
                             @Override
                             protected void onEvent(AjaxRequestTarget target) {
-                                receiveModal.open(product, TransactionRelocationType.RELOCATION, target);
+                                receiveModal.open(product, TransferRelocationType.RELOCATION, target);
                             }
                         });
                     }
@@ -353,7 +353,7 @@ public class StoragePage extends BasePage {
                         cellItem.add(new AjaxEventBehavior("click") {
                             @Override
                             protected void onEvent(AjaxRequestTarget target) {
-                                relocateModal.open(product, TransactionRelocationType.GIFT, target);
+                                relocateModal.open(product, TransferRelocationType.GIFT, target);
                             }
                         });
                     }
@@ -374,7 +374,7 @@ public class StoragePage extends BasePage {
                         cellItem.add(new AjaxEventBehavior("click") {
                             @Override
                             protected void onEvent(AjaxRequestTarget target) {
-                                receiveModal.open(product, TransactionRelocationType.GIFT, target);
+                                receiveModal.open(product, TransferRelocationType.GIFT, target);
                             }
                         });
                     }
@@ -424,115 +424,115 @@ public class StoragePage extends BasePage {
         productTable.setVisible(storageId != null);
         productForm.add(productTable);
 
-        //Transactions
+        //Transfers
 
-        WebMarkupContainer transactionHeader = new WebMarkupContainer("transactionHeader");
-        transactionHeader.setVisible(storageId != null && edit);
-        tables.add(transactionHeader);
+        WebMarkupContainer transferHeader = new WebMarkupContainer("transferHeader");
+        transferHeader.setVisible(storageId != null && edit);
+        tables.add(transferHeader);
 
-        Provider<Transaction> transactionProvider = new Provider<Transaction>(FilterWrapper.of(
-                new Transaction()).put("storageId", storageId).sort("id", null, false)) {
+        Provider<Transfer> transferProvider = new Provider<Transfer>(FilterWrapper.of(
+                new Transfer()).put("storageId", storageId).sort("id", null, false)) {
 
             @Override
-            public List<Transaction> getList() {
-                return transactionMapper.getTransactions(getFilterState());
+            public List<Transfer> getList() {
+                return transferMapper.getTransfers(getFilterState());
             }
 
             @Override
             public Long getCount() {
-                return transactionMapper.getTransactionsCount(getFilterState());
+                return transferMapper.getTransfersCount(getFilterState());
             }
         };
 
-        FilterForm<FilterWrapper<Transaction>> transactionForm = new FilterForm<FilterWrapper<Transaction>>(
-                "transactionForm", transactionProvider){
+        FilterForm<FilterWrapper<Transfer>> transferForm = new FilterForm<FilterWrapper<Transfer>>(
+                "transferForm", transferProvider){
             @Override
             protected boolean wantSubmitOnParentFormSubmit() {
                 return false;
             }
         };
-        tables.add(transactionForm);
+        tables.add(transferForm);
 
-        List<IColumn<Transaction, Sort>> transactionColumns = new ArrayList<>();
+        List<IColumn<Transfer, Sort>> transferColumns = new ArrayList<>();
 
         if (storageId != null && edit) {
-            transactionColumns.add(new DomainIdColumn<>());
+            transferColumns.add(new DomainIdColumn<>());
 
-            transactionColumns.add(new AbstractDomainColumn<>(new ResourceModel("startDate"),
+            transferColumns.add(new AbstractDomainColumn<>(new ResourceModel("startDate"),
                     new Sort("startDate")) {
                 @Override
-                public Component newFilter(String componentId, Table<Transaction> table) {
-                    return new DateFilter(componentId, new PropertyModel<>(transactionForm.getModel(),"object.startDate"));
+                public Component newFilter(String componentId, Table<Transfer> table) {
+                    return new DateFilter(componentId, new PropertyModel<>(transferForm.getModel(),"object.startDate"));
                 }
 
                 @Override
-                public void populateItem(Item<ICellPopulator<Transaction>> cellItem, String componentId,
-                                         IModel<Transaction> rowModel) {
+                public void populateItem(Item<ICellPopulator<Transfer>> cellItem, String componentId,
+                                         IModel<Transfer> rowModel) {
                     cellItem.add(new DateTimeLabel(componentId,rowModel.getObject().getStartDate()));
                 }
             });
 
-            Entity transactionEntity = entityService.getEntity(Transaction.ENTITY_NAME);
+            Entity transferEntity = entityService.getEntity(Transfer.ENTITY_NAME);
 
-            transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.NOMENCLATURE)
+            transferColumns.add(new DomainColumn<>(transferEntity.getEntityAttribute(Transfer.NOMENCLATURE)
                     .withReferences(Nomenclature.ENTITY_NAME, Nomenclature.CODE, Nomenclature.NAME)));
 
-            transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.QUANTITY)));
-            transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.STORAGE_FROM)){
+            transferColumns.add(new DomainColumn<>(transferEntity.getEntityAttribute(Transfer.QUANTITY)));
+            transferColumns.add(new DomainColumn<>(transferEntity.getEntityAttribute(Transfer.STORAGE_FROM)){
                 @Override
                 protected String displayEntity(EntityAttribute entityAttribute, Long objectId) {
                     return Storages.getStorageLabel(objectId, domainService, nameService);
                 }
             });
-            transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.STORAGE_TO)){
+            transferColumns.add(new DomainColumn<>(transferEntity.getEntityAttribute(Transfer.STORAGE_TO)){
                 @Override
                 protected String displayEntity(EntityAttribute entityAttribute, Long objectId) {
                     return Storages.getStorageLabel(objectId, domainService, nameService);
                 }
             });
 
-            transactionColumns.add(new AbstractDomainColumn<>(new ResourceModel("worker"),
+            transferColumns.add(new AbstractDomainColumn<>(new ResourceModel("worker"),
                     new Sort("worker")) {
                 @Override
-                public void populateItem(Item<ICellPopulator<Transaction>> cellItem, String componentId,
-                                         IModel<Transaction> rowModel) {
+                public void populateItem(Item<ICellPopulator<Transfer>> cellItem, String componentId,
+                                         IModel<Transfer> rowModel) {
                     cellItem.add(new Label(componentId, workerService.getSimpleWorkerLabel(rowModel.getObject().getWorkerIdTo())));
                 }
 
                 @Override
-                public Component newFilter(String componentId, Table<Transaction> table) {
-                    return new TextFilter<>(componentId, new PropertyModel<>(transactionForm.getModel(), "map.worker"));
+                public Component newFilter(String componentId, Table<Transfer> table) {
+                    return new TextFilter<>(componentId, new PropertyModel<>(transferForm.getModel(), "map.worker"));
                 }
             });
 
-            transactionColumns.add(new AbstractDomainColumn<>(new ResourceModel("client"),
+            transferColumns.add(new AbstractDomainColumn<>(new ResourceModel("client"),
                     new Sort("client")) {
                 @Override
-                public void populateItem(Item<ICellPopulator<Transaction>> cellItem, String componentId, IModel<Transaction> rowModel) {
-                    Transaction transaction = rowModel.getObject();
+                public void populateItem(Item<ICellPopulator<Transfer>> cellItem, String componentId, IModel<Transfer> rowModel) {
+                    Transfer transfer = rowModel.getObject();
 
-                    cellItem.add(new Label(componentId, nameService.getFio(transaction.getLastNameIdTo(),
-                            transaction.getFirstNameIdTo(), transaction.getMiddleNameIdTo())));
+                    cellItem.add(new Label(componentId, nameService.getFio(transfer.getLastNameIdTo(),
+                            transfer.getFirstNameIdTo(), transfer.getMiddleNameIdTo())));
                 }
 
                 @Override
-                public Component newFilter(String componentId, Table<Transaction> table) {
-                    return new TextFilter<>(componentId, new PropertyModel<>(transactionForm.getModel(), "map.client"));
+                public Component newFilter(String componentId, Table<Transfer> table) {
+                    return new TextFilter<>(componentId, new PropertyModel<>(transferForm.getModel(), "map.client"));
                 }
             });
 
-            transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.SERIAL_NUMBER)));
-            transactionColumns.add(new DomainColumn<>(transactionEntity.getEntityAttribute(Transaction.COMMENTS)));
+            transferColumns.add(new DomainColumn<>(transferEntity.getEntityAttribute(Transfer.SERIAL_NUMBER)));
+            transferColumns.add(new DomainColumn<>(transferEntity.getEntityAttribute(Transfer.COMMENTS)));
 
-            transactionColumns.add(new AbstractDomainColumn<>(transactionEntity
-                    .getEntityAttribute(Transaction.RELOCATION_TYPE)) {
+            transferColumns.add(new AbstractDomainColumn<>(transferEntity
+                    .getEntityAttribute(Transfer.RELOCATION_TYPE)) {
                 @Override
-                public Component newFilter(String componentId, Table<Transaction> table) {
-                    Transaction transaction = (Transaction)((FilterWrapper<?>)transactionForm.getModelObject()).getObject();
+                public Component newFilter(String componentId, Table<Transfer> table) {
+                    Transfer transfer = (Transfer)((FilterWrapper<?>)transferForm.getModelObject()).getObject();
 
                     return new SelectPanel(componentId, new BootstrapSelect<>(SelectPanel.SELECT_COMPONENT_ID,
-                            new NumberAttributeModel(transaction,
-                                    Transaction.RELOCATION_TYPE), Arrays.asList(TransactionRelocationType.RELOCATION, TransactionRelocationType.GIFT),
+                            new NumberAttributeModel(transfer,
+                                    Transfer.RELOCATION_TYPE), Arrays.asList(TransferRelocationType.RELOCATION, TransferRelocationType.GIFT),
                             new IChoiceRenderer<Long>() {
                                 @Override
                                 public Object getDisplayValue(Long object) {
@@ -561,8 +561,8 @@ public class StoragePage extends BasePage {
                 }
 
                 @Override
-                public void populateItem(Item<ICellPopulator<Transaction>> cellItem, String componentId,
-                                         IModel<Transaction> rowModel) {
+                public void populateItem(Item<ICellPopulator<Transfer>> cellItem, String componentId,
+                                         IModel<Transfer> rowModel) {
                     String resourceKey = null;
 
                     Long relocationType = rowModel.getObject().getRelocationType();
@@ -582,16 +582,16 @@ public class StoragePage extends BasePage {
                 }
             });
 
-            transactionColumns.add(new AbstractDomainColumn<>(transactionEntity
-                    .getEntityAttribute(Transaction.TYPE)) {
+            transferColumns.add(new AbstractDomainColumn<>(transferEntity
+                    .getEntityAttribute(Transfer.TYPE)) {
                 @Override
-                public Component newFilter(String componentId, Table<Transaction> table) {
-                    Transaction transaction = (Transaction)((FilterWrapper<?>)transactionForm.getModelObject()).getObject();
+                public Component newFilter(String componentId, Table<Transfer> table) {
+                    Transfer transfer = (Transfer)((FilterWrapper<?>)transferForm.getModelObject()).getObject();
 
                     return new SelectPanel(componentId, new BootstrapSelect<>(SelectPanel.SELECT_COMPONENT_ID,
-                            new NumberAttributeModel(transaction,
-                                    Transaction.TYPE), Arrays.asList(TransactionType.ACCEPT, TransactionType.SELL,
-                            TransactionType.RELOCATION, TransactionType.WITHDRAW, TransactionType.RESERVE),
+                            new NumberAttributeModel(transfer,
+                                    Transfer.TYPE), Arrays.asList(TransferType.ACCEPT, TransferType.SELL,
+                            TransferType.RELOCATION, TransferType.WITHDRAW, TransferType.RESERVE),
                             new IChoiceRenderer<Long>() {
                                 @Override
                                 public Object getDisplayValue(Long object) {
@@ -626,14 +626,14 @@ public class StoragePage extends BasePage {
                 }
 
                 @Override
-                public void populateItem(Item<ICellPopulator<Transaction>> cellItem, String componentId,
-                                         IModel<Transaction> rowModel) {
+                public void populateItem(Item<ICellPopulator<Transfer>> cellItem, String componentId,
+                                         IModel<Transfer> rowModel) {
                     String resourceKey = null;
 
-                    Long transactionType = rowModel.getObject().getType();
+                    Long transferType = rowModel.getObject().getType();
 
-                    if (transactionType != null) {
-                        switch (transactionType.intValue()){
+                    if (transferType != null) {
+                        switch (transferType.intValue()){
                             case 1:
                                 resourceKey = "accept";
                                 break;
@@ -656,14 +656,14 @@ public class StoragePage extends BasePage {
                 }
             });
 
-            transactionColumns.add(new DomainActionColumn<Transaction>(){
+            transferColumns.add(new DomainActionColumn<Transfer>(){
                 @Override
-                public void populateItem(Item<ICellPopulator<Transaction>> cellItem, String componentId, IModel<Transaction> rowModel) {
-                    Transaction transaction = rowModel.getObject();
+                public void populateItem(Item<ICellPopulator<Transfer>> cellItem, String componentId, IModel<Transfer> rowModel) {
+                    Transfer transfer = rowModel.getObject();
 
-                    boolean receive = Objects.equals(transaction.getType(), TransactionType.RELOCATION) &&
-                            Objects.equals(transaction.getStorageIdTo(), storageId) &&
-                            transaction.getEndDate() == null;
+                    boolean receive = Objects.equals(transfer.getType(), TransferType.RELOCATION) &&
+                            Objects.equals(transfer.getStorageIdTo(), storageId) &&
+                            transfer.getEndDate() == null;
 
                     cellItem.add(new LinkPanel(componentId, new BootstrapAjaxLink<Void>(LinkPanel.LINK_COMPONENT_ID,
                             Buttons.Type.Link) {
@@ -676,22 +676,22 @@ public class StoragePage extends BasePage {
             });
         }
 
-        Table<Transaction> transactionDataTable = new Table<Transaction>("table", transactionColumns, transactionProvider, 15,
-                "storagePageTransaction"){
+        Table<Transfer> transferDataTable = new Table<Transfer>("table", transferColumns, transferProvider, 15,
+                "storagePageTransfer"){
             @Override
             public boolean isVisible() {
                 return storageId != null;
             }
 
             @Override
-            protected Item<Transaction> newRowItem(String id, int index, final IModel<Transaction> model) {
-                Item<Transaction> rowItem = super.newRowItem(id, index, model);
+            protected Item<Transfer> newRowItem(String id, int index, final IModel<Transfer> model) {
+                Item<Transfer> rowItem = super.newRowItem(id, index, model);
 
-                Transaction transaction = model.getObject();
+                Transfer transfer = model.getObject();
 
-                boolean receive = Objects.equals(transaction.getType(), TransactionType.RELOCATION) &&
-                        Objects.equals(transaction.getStorageIdTo(), storageId) &&
-                        transaction.getEndDate() == null;
+                boolean receive = Objects.equals(transfer.getType(), TransferType.RELOCATION) &&
+                        Objects.equals(transfer.getStorageIdTo(), storageId) &&
+                        transfer.getEndDate() == null;
 
                 if (receive) {
                     rowItem.add(new AjaxEventBehavior("click") {
@@ -708,8 +708,8 @@ public class StoragePage extends BasePage {
 
             }
         };
-        transactionDataTable.setVisible(storageId != null && edit);
-        transactionForm.add(transactionDataTable);
+        transferDataTable.setVisible(storageId != null && edit);
+        transferForm.add(transferDataTable);
 
         //Action
 

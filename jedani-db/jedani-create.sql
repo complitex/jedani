@@ -1428,6 +1428,20 @@ INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_i
 INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (24, 3, 1, 'Тип'), (24, 3, 2, 'Тип');
 
 -- ---------------------------
+-- Storage Type
+-- ---------------------------
+
+DROP TABLE IF EXISTS storage_type;
+CREATE TABLE storage_type (
+                              id BIGINT(20) NOT NULL COMMENT 'Идентификатор',
+                              `type` VARCHAR(100) NOT NULL COMMENT 'Тип',
+                              PRIMARY KEY  (`id`)
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Тип склада';
+
+INSERT INTO storage_type (id, type) VALUES (1, 'real'), (2, 'virtual');
+
+
+-- ---------------------------
 -- Product
 -- ---------------------------
 
@@ -1522,11 +1536,11 @@ INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_i
 INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (25, 8, 1, 'Резерв'), (25, 8, 2, 'Резерв');
 
 -- ---------------------------
--- Transaction
+-- Transfer
 -- ---------------------------
 
-DROP TABLE IF EXISTS `transaction`;
-CREATE TABLE `transaction` (
+DROP TABLE IF EXISTS `transfer`;
+CREATE TABLE `transfer` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
   `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
   `parent_id` BIGINT(20) COMMENT 'Идентификатор родительского объекта',
@@ -1545,13 +1559,13 @@ CREATE TABLE `transaction` (
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
   KEY `key_permission_id` (`permission_id`),
-  CONSTRAINT `fk_transaction__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
-  CONSTRAINT `fk_transaction__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`),
-  CONSTRAINT `fk_transaction__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
+  CONSTRAINT `fk_transfer__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
+  CONSTRAINT `fk_transfer__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`),
+  CONSTRAINT `fk_transfer__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Транзакция';
 
-DROP TABLE IF EXISTS `transaction_attribute`;
-CREATE TABLE `transaction_attribute` (
+DROP TABLE IF EXISTS `transfer_attribute`;
+CREATE TABLE `transfer_attribute` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
   `domain_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор домена',
   `entity_attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор типа атрибута',
@@ -1571,12 +1585,12 @@ CREATE TABLE `transaction_attribute` (
   KEY `key_start_date` (`start_date`),
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
-  CONSTRAINT `fk_transaction_attribute__transaction` FOREIGN KEY (`domain_id`) REFERENCES `transaction`(`id`),
-  CONSTRAINT `fk_transaction_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
+  CONSTRAINT `fk_transfer_attribute__transfer` FOREIGN KEY (`domain_id`) REFERENCES `transfer`(`id`),
+  CONSTRAINT `fk_transfer_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты транзакции';
 
-DROP TABLE IF EXISTS `transaction_value`;
-CREATE TABLE `transaction_value` (
+DROP TABLE IF EXISTS `transfer_value`;
+CREATE TABLE `transfer_value` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
   `attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор атрибута',
   `locale_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор локали',
@@ -1586,11 +1600,11 @@ CREATE TABLE `transaction_value` (
   KEY `key_attribute_id` (`attribute_id`),
   KEY `key_locale` (`locale_id`),
   KEY `key_value` (`text`(128)),
-  CONSTRAINT `fk_transaction_value__transaction_attribute` FOREIGN KEY (`attribute_id`) REFERENCES `transaction_attribute` (`id`),
-  CONSTRAINT `fk_transaction_value__locale` FOREIGN KEY (`locale_id`) REFERENCES `locale` (`id`)
+  CONSTRAINT `fk_transfer_value__transfer_attribute` FOREIGN KEY (`attribute_id`) REFERENCES `transfer_attribute` (`id`),
+  CONSTRAINT `fk_transfer_value__locale` FOREIGN KEY (`locale_id`) REFERENCES `locale` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Значения атрибутов транзакции';
 
-INSERT INTO `entity` (`id`, `name`) VALUE (26, 'transaction');
+INSERT INTO `entity` (`id`, `name`) VALUE (26, 'transfer');
 INSERT INTO `entity_value`(`entity_id`, `locale_id`, `text`) VALUES (26, 1, 'Транзакция'), (26, 2, 'Транзакція');
 
 INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`, `reference_id`) VALUES (26, 1, 11, 23);
@@ -1633,56 +1647,43 @@ INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_i
 INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (26, 13, 1, 'Комментарии'), (26, 13, 2, 'Комментарии');
 
 -- ---------------------------
--- Storage Type
+-- Transfer Type
 -- ---------------------------
 
-DROP TABLE IF EXISTS storage_type;
-CREATE TABLE storage_type (
-  id BIGINT(20) NOT NULL COMMENT 'Идентификатор',
-  `type` VARCHAR(100) NOT NULL COMMENT 'Тип',
-  PRIMARY KEY  (`id`)
-) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Тип склада';
-
-INSERT INTO storage_type (id, type) VALUES (1, 'real'), (2, 'virtual');
-
--- ---------------------------
--- Transaction Type
--- ---------------------------
-
-DROP TABLE IF EXISTS transaction_type;
-CREATE TABLE transaction_type (
+DROP TABLE IF EXISTS transfer_type;
+CREATE TABLE transfer_type (
   id BIGINT(20) NOT NULL COMMENT 'Идентификатор',
   `type` VARCHAR(100) NOT NULL COMMENT 'Тип',
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Тип транзакции';
 
-INSERT INTO transaction_type (id, type) VALUES (1, 'accept'), (2, 'sell'), (3, 'relocation'), (4, 'withdraw');
+INSERT INTO transfer_type (id, type) VALUES (1, 'accept'), (2, 'sell'), (3, 'relocation'), (4, 'withdraw');
 
 -- ---------------------------
--- Transaction Relocation Type
+-- Transfer Relocation Type
 -- ---------------------------
 
-DROP TABLE IF EXISTS transaction_relocation_type;
-CREATE TABLE transaction_relocation_type (
+DROP TABLE IF EXISTS transfer_relocation_type;
+CREATE TABLE transfer_relocation_type (
   id BIGINT(20) NOT NULL COMMENT 'Идентификатор',
   `type` VARCHAR(100) NOT NULL COMMENT 'Тип',
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Тип перемещения';
 
-INSERT INTO transaction_relocation_type (id, type) VALUES (1, 'relocation'), (2, 'gift');
+INSERT INTO transfer_relocation_type (id, type) VALUES (1, 'relocation'), (2, 'gift');
 
 -- ---------------------------
--- Transaction Recipient Type
+-- Transfer Recipient Type
 -- ---------------------------
 
-DROP TABLE IF EXISTS transaction_recipient_type;
-CREATE TABLE recipient_type (
+DROP TABLE IF EXISTS transfer_recipient_type;
+CREATE TABLE transfer_recipient_type (
   id BIGINT(20) NOT NULL COMMENT 'Идентификатор',
   `type` VARCHAR(100) NOT NULL COMMENT 'Тип',
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Тип получателя';
 
-INSERT INTO transaction_recipient_type (id, type) VALUES (1, 'storage'), (2, 'worker'), (3, 'client');
+INSERT INTO transfer_recipient_type (id, type) VALUES (1, 'storage'), (2, 'worker'), (3, 'client');
 
 -- ---------------------------
 -- Promotion

@@ -4,7 +4,7 @@
     <resultMap id="storageResultMap" type="ru.complitex.jedani.worker.entity.Storage"
                extends="ru.complitex.domain.mapper.DomainMapper.domainResultMapJoin">
         <result column="nomenclature_count" property="nomenclatureCount"/>
-        <result column="transaction_count" property="transactionCount"/>
+        <result column="transfer_count" property="transferCount"/>
     </resultMap>
 
     <!--suppress SqlResolve -->
@@ -72,15 +72,15 @@
     </sql>
 
     <!--suppress SqlResolve -->
-    <sql id="selectStoragesTransactionCount">
-        (select count(ta.id) from transaction_attribute ta
+    <sql id="selectStoragesTransferCount">
+        (select count(ta.id) from transfer_attribute ta
             where ta.number = d.object_id and ta.entity_attribute_id in (6, 7) and ta.status = 1)
     </sql>
 
     <!--suppress SqlResolve -->
     <sql id="selectStoragesSelect">
          <include refid="selectStoragesNomenclatureCount"/> nomenclature_count,
-         <include refid="selectStoragesTransactionCount"/>transaction_count
+         <include refid="selectStoragesTransferCount"/>transfer_count
     </sql>
 
     <sql id="selectStoragesFrom">
@@ -130,8 +130,8 @@
       <if test="map.nomenclatureCount != null">
           and <include refid="selectStoragesNomenclatureCount"/> = #{map.nomenclatureCount}
       </if>
-      <if test="map.transactionCount != null">
-        and <include refid="selectStoragesTransactionCount"/> = #{map.transactionCount}
+      <if test="map.transferCount != null">
+        and <include refid="selectStoragesTransferCount"/> = #{map.transferCount}
       </if>
     </sql>
 
@@ -141,7 +141,7 @@
                 <when test="sortProperty.key == 'workers'">order by <include refid="selectStoragesWorkers"/> ${asc}</when>
                 <when test="sortProperty.key == 'worker'">order by <include refid="selectStoragesWorker"/> ${asc}</when>
                 <when test="sortProperty.key == 'nomenclatureCount'">order by <include refid="selectStoragesNomenclatureCount"/> ${asc}</when>
-                <when test="sortProperty.key == 'transactionCount'">order by <include refid="selectStoragesTransactionCount"/> ${asc}</when>
+                <when test="sortProperty.key == 'transferCount'">order by <include refid="selectStoragesTransferCount"/> ${asc}</when>
             </choose>
         </if>
     </sql>

@@ -18,11 +18,11 @@ public class Storage extends Domain<Storage> {
     public static final String FILTER_WORKERS = "workers";
     public static final String FILTER_WORKER = "worker";
     public static final String FILTER_NOMENCLATURE_COUNT = "nomenclatureCount";
-    public static final String FILTER_TRANSACTION_COUNT = "transactionCount";
+    public static final String FILTER_TRANSFER_COUNT = "transferCount";
     public static final String FILTER_OBJECT_ID = "id";
 
     private Long nomenclatureCount;
-    private Long transactionCount;
+    private Long transferCount;
 
     public Storage() {
         super(ENTITY_NAME);
@@ -54,11 +54,11 @@ public class Storage extends Domain<Storage> {
         this.nomenclatureCount = nomenclatureCount;
     }
 
-    public Long getTransactionCount() {
-        return transactionCount;
+    public Long getTransferCount() {
+        return transferCount;
     }
 
-    public void setTransactionCount(Long transactionCount) {
-        this.transactionCount = transactionCount;
+    public void setTransferCount(Long transferCount) {
+        this.transferCount = transferCount;
     }
 }

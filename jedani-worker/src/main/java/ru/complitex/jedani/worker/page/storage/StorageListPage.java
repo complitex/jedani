@@ -114,19 +114,6 @@ public class StorageListPage extends DomainListPage<Storage> {
                 return new TextFilter<>(componentId, PropertyModel.of(table.getFilterWrapper(), "map." + Storage.FILTER_NOMENCLATURE_COUNT));
             }
         });
-
-        columns.add(new AbstractDomainColumn<>(new ResourceModel("transactionCount"),
-                new Sort("transactionCount")) {
-            @Override
-            public void populateItem(Item<ICellPopulator<Storage>> cellItem, String componentId, IModel<Storage> rowModel) {
-                cellItem.add(new Label(componentId, rowModel.getObject().getTransactionCount()));
-            }
-
-            @Override
-            public Component newFilter(String componentId, Table<Storage> table) {
-                return new TextFilter<>(componentId, PropertyModel.of(table.getFilterWrapper(), "map." + Storage.FILTER_TRANSACTION_COUNT));
-            }
-        });
     }
 
     @Override

@@ -79,11 +79,11 @@ public class SaleService implements Serializable {
             domainService.save(product);
 
 
-            Transaction t = new Transaction();
+            Transfer t = new Transfer();
 
             t.setNomenclatureId(s.getNomenclatureId());
             t.setQuantity(s.getQuantity());
-            t.setType(TransactionType.RESERVE);
+            t.setType(TransferType.RESERVE);
             t.setStorageIdFrom(sale.getStorageId());
             t.setFirstNameIdTo(sale.getBuyerFirstName());
             t.setMiddleNameIdTo(sale.getBuyerMiddleName());
@@ -102,12 +102,12 @@ public class SaleService implements Serializable {
     }
 
     private void accept(Long storageId, Long nomenclatureId){
-        Transaction transaction = new Transaction();
+        Transfer transfer = new Transfer();
 
-        transaction.setNomenclatureId(nomenclatureId);
-        transaction.setQuantity(0L);
+        transfer.setNomenclatureId(nomenclatureId);
+        transfer.setQuantity(0L);
 
-        storageService.accept(storageId, transaction);
+        storageService.accept(storageId, transfer);
     }
 
     public boolean validateQuantity(Sale sale, SaleItem saleItem){

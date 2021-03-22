@@ -8,7 +8,7 @@ import ru.complitex.common.wicket.form.FormGroupTextField;
 import ru.complitex.domain.component.form.AbstractDomainAutoComplete;
 import ru.complitex.domain.model.NumberAttributeModel;
 import ru.complitex.jedani.worker.component.NomenclatureAutoComplete;
-import ru.complitex.jedani.worker.entity.Transaction;
+import ru.complitex.jedani.worker.entity.Transfer;
 import ru.complitex.jedani.worker.service.StorageService;
 
 import javax.inject.Inject;
@@ -28,11 +28,11 @@ class AcceptModal extends StorageModal {
 
         getContainer().add(new FormGroupPanel("nomenclature",
                 nomenclature = new NomenclatureAutoComplete(FormGroupPanel.COMPONENT_ID,
-                new NumberAttributeModel(getModel(), Transaction.NOMENCLATURE))));
+                new NumberAttributeModel(getModel(), Transfer.NOMENCLATURE))));
         nomenclature.setRequired(true);
         nomenclature.setLabel(new ResourceModel("nomenclature"));
 
-        getContainer().add(new FormGroupTextField<>("quantity", new NumberAttributeModel(getModel(), Transaction.QUANTITY))
+        getContainer().add(new FormGroupTextField<>("quantity", new NumberAttributeModel(getModel(), Transfer.QUANTITY))
                 .setRequired(true).setType(Long.class));
     }
 

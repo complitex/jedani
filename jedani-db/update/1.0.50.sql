@@ -21,8 +21,14 @@ CALL createEntityAttribute(45, 13, 4, 'Изъято (в локальной ва�
 
 DROP TABLE recipient_type;
 DROP TABLE transfer_type;
-RENAME TABLE transaction_transfer_type TO transaction_relocation_type;
 
+UPDATE entity SET name = 'transfer' WHERE id = 26;
+
+RENAME TABLE transaction TO transfer;
+RENAME TABLE transaction_attribute TO transfer_attribute;
+RENAME TABLE transaction_value TO transfer_value;
+RENAME TABLE transaction_recipient_type TO transfer_recipient_type;
+RENAME TABLE transaction_transfer_type TO transfer_relocation_type;
 
 
 INSERT INTO `update` (`version`) VALUE ('1.0.50');
