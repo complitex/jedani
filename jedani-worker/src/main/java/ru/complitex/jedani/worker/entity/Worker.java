@@ -41,6 +41,7 @@ public class Worker extends DomainNode<Worker> {
     public static final long RANK = 22;
     public static final long POINT = 23;
     public static final long INVITE = 24;
+    public static final long ACCOUNT = 25;
 
     public static final long IMPORT_ID = 100;
     public static final long IMPORT_ANCESTRY = 101;
@@ -240,4 +241,13 @@ public class Worker extends DomainNode<Worker> {
 
         return this;
     }
+
+    public Long getAccount() {
+        return getNumber(ACCOUNT);
+    }
+
+    public void setAccount(Long account) {
+        setNumber(ACCOUNT, account);
+    }
+
 }

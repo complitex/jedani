@@ -11,7 +11,7 @@ import java.util.Date;
 public class Account extends Domain<Account> {
     public static final String ENTITY_NAME = "account";
 
-    public static final long WORKER = 1;
+    public static final long NUMBER = 1;
     public static final long DATE = 2;
     public static final long PERIOD = 3;
     public static final long BALANCE = 4;
@@ -25,12 +25,12 @@ public class Account extends Domain<Account> {
     public static final long WITHDRAWN = 12;
     public static final long WITHDRAWN_LOCAL = 13;
 
-    public Long getWorkerId(){
-        return getNumber(WORKER);
+    public Long getNumber(){
+        return getNumber(NUMBER);
     }
 
-    public void setWorkerId(Long workerId){
-        setNumber(WORKER, workerId);
+    public void setNumber(Long number){
+        setNumber(NUMBER, number);
     }
 
     public Date getDate(){
