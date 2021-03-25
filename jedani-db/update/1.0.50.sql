@@ -27,7 +27,6 @@ RENAME TABLE transaction_type TO transfer_type;
 RENAME TABLE transaction_recipient_type TO transfer_recipient_type;
 RENAME TABLE transaction_transfer_type TO transfer_relocation_type;
 
-CALL createEntityAttribute(20, 25, 5, 'Счёт', 'Рахунок');
 
 -- ---------------------------
 -- Account
@@ -36,34 +35,17 @@ CALL createEntityAttribute(20, 25, 5, 'Счёт', 'Рахунок');
 CALL createDomainTables('account', 'Счёт');
 
 CALL createEntity(45, 'account', 'Счёт', 'Рахунок');
-CALL createEntityAttribute(45, 1, 5, 'Номер', 'Номер');
+CALL createEntityAttributeWithReference(45, 1, 11, 20, 'Сотрудник', 'Співробітник ');
 CALL createEntityAttribute(45, 2, 6, 'Дата', 'Дата');
 CALL createEntityAttributeWithReference(45, 3, 11, 42, 'Операционный месяц', 'Операційний місяць');
-CALL createEntityAttribute(45, 4, 4, 'Баланс', 'Баланс');
-CALL createEntityAttribute(45, 5, 4, 'Баланс (в локальной валюте)', 'Баланс (в локальній валюті)');
-CALL createEntityAttribute(45, 6, 4, 'Рассчитано', 'Розраховане');
-CALL createEntityAttribute(45, 7, 4, 'Рассчитано (в локальной валюте)', 'Розраховано (в локальній валюті)');
-CALL createEntityAttribute(45, 8, 4, 'Начислено', 'Нараховано');
-CALL createEntityAttribute(45, 9, 4, 'Начислено (в локальной валюте)', 'Нараховано (в локальній валюті)');
-CALL createEntityAttribute(45, 10, 4, 'Выплачено', 'Виплачено');
-CALL createEntityAttribute(45, 11, 4, 'Выплачено (в локальной валюте)', 'Виплачено (в локальній валюті)');
-CALL createEntityAttribute(45, 12, 4, 'Изъято', 'Вилучено');
-CALL createEntityAttribute(45, 13, 4, 'Изъято (в локальной валюте)', 'Вилучено (в локальній валюті)');
+CALL createEntityAttributeWithReference(45, 4, 11, 30, 'Локальная валюта', 'Локальна валюта');
+CALL createEntityAttribute(45, 5, 4, 'Баланс', 'Баланс');
+CALL createEntityAttribute(45, 6, 4, 'Начислено', 'Нараховано');
+CALL createEntityAttribute(45, 7, 4, 'Выплачено', 'Виплачено');
+CALL createEntityAttribute(45, 8, 4, 'Изъято', 'Вилучено');
+CALL createEntityAttribute(45, 9, 4, 'Потрачено', 'Витрачений');
 
--- ---------------------------
--- Transaction
--- ---------------------------
 
-CALL createDomainTables('transaction', 'Транзакция');
-
-CALL createEntity(46, 'transaction', 'Транзакция', 'Транзакція ');
-CALL createEntityAttribute(46, 1, 6, 'Дата', 'Дата');
-CALL createEntityAttributeWithReference(46, 2, 11, 42, 'Операционный месяц', 'Операційний місяць');
-CALL createEntityAttribute(46, 3, 5, 'Со счёта', 'З рахунку');
-CALL createEntityAttribute(46, 4, 5, 'На счёт', 'На рахунок');
-CALL createEntityAttribute(46, 5, 5, 'Тип', 'Тип');
-CALL createEntityAttribute(46, 6, 4, 'Сумма', 'Сума');
-CALL createEntityAttribute(46, 7, 4, 'Сумма (в локальной валюте)', 'Сума (в локальній валюті)');
 
 
 INSERT INTO `update` (`version`) VALUE ('1.0.50');
