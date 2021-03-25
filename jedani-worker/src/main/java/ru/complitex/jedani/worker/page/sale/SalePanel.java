@@ -25,8 +25,8 @@ import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.entity.*;
+import ru.complitex.jedani.worker.mapper.PeriodMapper;
 import ru.complitex.jedani.worker.mapper.SaleMapper;
-import ru.complitex.jedani.worker.service.PeriodService;
 import ru.complitex.jedani.worker.service.SaleService;
 import ru.complitex.jedani.worker.service.WorkerService;
 import ru.complitex.jedani.worker.util.Nomenclatures;
@@ -60,7 +60,7 @@ public class SalePanel extends DomainListModalPanel<Sale> {
     private NameService nameService;
 
     @Inject
-    private PeriodService periodService;
+    private PeriodMapper periodMapper;
 
     private final SaleModal saleModal;
 
@@ -145,7 +145,7 @@ public class SalePanel extends DomainListModalPanel<Sale> {
             return new AbstractDomainColumn<Sale>("period", this) {
                 @Override
                 public void populateItem(Item<ICellPopulator<Sale>> cellItem, String componentId, IModel<Sale> rowModel) {
-                    Period period = periodService.getPeriod(rowModel.getObject().getPeriodId());
+                    Period period = periodMapper.getPeriod(rowModel.getObject().getPeriodId());
 
                     cellItem.add(new Label(componentId, period != null ? Dates.getMonthText(period.getOperatingMonth()) : ""));
                 }

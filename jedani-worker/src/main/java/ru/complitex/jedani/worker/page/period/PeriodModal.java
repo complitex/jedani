@@ -7,8 +7,9 @@ import org.apache.wicket.model.Model;
 import ru.complitex.common.util.Dates;
 import ru.complitex.common.wicket.form.FormGroupDateTextField;
 import ru.complitex.domain.component.form.AbstractEditModal;
+import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.entity.Period;
-import ru.complitex.jedani.worker.service.PeriodService;
+import ru.complitex.jedani.worker.mapper.PeriodMapper;
 
 import javax.inject.Inject;
 
@@ -18,7 +19,10 @@ import javax.inject.Inject;
  */
 public class PeriodModal extends AbstractEditModal<Period> {
     @Inject
-    private PeriodService periodService;
+    private PeriodMapper periodMapper;
+
+    @Inject
+    private DomainService domainService;
 
     public PeriodModal(String markupId) {
         super(markupId);
@@ -51,7 +55,7 @@ public class PeriodModal extends AbstractEditModal<Period> {
     protected void save(AjaxRequestTarget target) {
         Period period = getModelObject();
 
-        if (periodService.hasPeriod(period)){
+        if (periodMapper.hasPeriod(period)){
             error(getString("error_has_period"));
 
             target.add(getFeedback());
@@ -60,7 +64,7 @@ public class PeriodModal extends AbstractEditModal<Period> {
         }
 
         try {
-            periodService.save(period);
+            domainService.save(period);
 
             super.save(target);
 

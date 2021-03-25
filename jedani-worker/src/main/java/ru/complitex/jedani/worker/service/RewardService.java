@@ -12,6 +12,7 @@ import ru.complitex.common.util.Dates;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.exception.RewardException;
+import ru.complitex.jedani.worker.mapper.PeriodMapper;
 import ru.complitex.jedani.worker.mapper.RewardMapper;
 
 import javax.inject.Inject;
@@ -47,7 +48,7 @@ public class RewardService implements Serializable {
     private PaymentService paymentService;
 
     @Inject
-    private PeriodService periodService;
+    private PeriodMapper periodMapper;
 
     @Inject
     private RewardMapper rewardMapper;
@@ -518,7 +519,7 @@ public class RewardService implements Serializable {
     public void calculateSaleReward(Sale sale, List<SaleItem> saleItems){
         Reward reward = new Reward();
 
-        Period period = periodService.getActualPeriod();
+        Period period = periodMapper.getActualPeriod();
 
         Date month = period.getOperatingMonth();
 
@@ -768,7 +769,7 @@ public class RewardService implements Serializable {
     @Transactional(rollbackFor = RewardException.class)
     public void calculateRewards() throws RewardException {
         try {
-            Period period = periodService.getActualPeriod();
+            Period period = periodMapper.getActualPeriod();
 
             rewardMapper.deleteRewards(period.getObjectId());
 
@@ -830,13 +831,6 @@ public class RewardService implements Serializable {
         }
     }
 
-    @Transactional(rollbackFor = RewardException.class)
-    public void updateAccounts() {
-
-
-
-    }
-
     private transient LoadingCache<Long, BigDecimal> parameterCache;
 
     public LoadingCache<Long, BigDecimal> getParameterCache(){
@@ -860,6 +854,6 @@ public class RewardService implements Serializable {
     }
 
     public WorkerReward getWorkerReward(Worker worker){
-        return getWorkerRewardTree(periodService.getActualPeriod()).getWorkerReward(worker.getObjectId());
+        return getWorkerRewardTree(periodMapper.getActualPeriod()).getWorkerReward(worker.getObjectId());
     }
 }

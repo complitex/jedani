@@ -56,6 +56,15 @@ public class Dates {
                 .toInstant());
     }
 
+    public static Date previusMonth(Date date){
+        return Date.from(date.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime()
+                .minusMonths(1)
+                .atZone(ZoneId.systemDefault())
+                .toInstant());
+    }
+
     public static Date previousYear(Date date){
         return Date.from(date.toInstant()
                 .atZone(ZoneId.systemDefault())

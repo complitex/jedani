@@ -29,7 +29,7 @@ import ru.complitex.jedani.worker.entity.Period;
 import ru.complitex.jedani.worker.entity.Sale;
 import ru.complitex.jedani.worker.entity.Worker;
 import ru.complitex.jedani.worker.mapper.PaymentMapper;
-import ru.complitex.jedani.worker.service.PeriodService;
+import ru.complitex.jedani.worker.mapper.PeriodMapper;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -46,7 +46,7 @@ public class PaymentPanel extends DomainListModalPanel<Payment> {
     private PaymentMapper paymentMapper;
 
     @Inject
-    private PeriodService periodService;
+    private PeriodMapper periodMapper;
 
     private final PaymentModal paymentModal;
 
@@ -57,7 +57,7 @@ public class PaymentPanel extends DomainListModalPanel<Payment> {
 
         setSellerWorkerIdFilter(worker.getObjectId());
 
-        getFilterWrapper().put(Payment.FILTER_PERIOD, periodService.getActualPeriod().getObjectId());
+        getFilterWrapper().put(Payment.FILTER_PERIOD, periodMapper.getActualPeriod().getObjectId());
 
         Form<?> paymentForm = new Form<>("paymentForm");
         getContainer().add(paymentForm);
@@ -105,7 +105,7 @@ public class PaymentPanel extends DomainListModalPanel<Payment> {
             return new AbstractDomainColumn<>("period", this) {
                 @Override
                 public void populateItem(Item<ICellPopulator<Payment>> cellItem, String componentId, IModel<Payment> rowModel) {
-                    Period period = periodService.getPeriod(rowModel.getObject().getPeriodId());
+                    Period period = periodMapper.getPeriod(rowModel.getObject().getPeriodId());
 
                     cellItem.add(new Label(componentId, period != null ? Dates.getMonthText(period.getOperatingMonth()) : ""));
                 }
@@ -160,7 +160,7 @@ public class PaymentPanel extends DomainListModalPanel<Payment> {
 
     @Override
     protected void populateAction(RepeatingView repeatingView, IModel<Payment> rowModel) {
-        if (isRemoveEnabled() && rowModel.getObject().getStartDate().after(periodService.getActualPeriod()
+        if (isRemoveEnabled() && rowModel.getObject().getStartDate().after(periodMapper.getActualPeriod()
                 .getOperatingMonth())) {
             repeatingView.add(new LinkPanel(repeatingView.newChildId(), new BootstrapAjaxButton(LinkPanel.LINK_COMPONENT_ID,
                     Buttons.Type.Link) {

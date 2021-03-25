@@ -3,6 +3,7 @@ package ru.complitex.jedani.worker.mapper;
 import ru.complitex.common.mybatis.BaseMapper;
 import ru.complitex.jedani.worker.entity.Period;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -24,5 +25,9 @@ public class PeriodMapper extends BaseMapper {
 
     public Period getPeriod(Long periodId){
         return sqlSession().selectOne("selectPeriod", periodId);
+    }
+
+    public Period getPeriod(Date month){
+        return sqlSession().selectOne("selectPeriodByMonth", month);
     }
 }

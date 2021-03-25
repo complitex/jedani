@@ -82,6 +82,7 @@ import ru.complitex.jedani.worker.component.PeriodPanel;
 import ru.complitex.jedani.worker.component.TypeSelect;
 import ru.complitex.jedani.worker.component.WorkerAutoComplete;
 import ru.complitex.jedani.worker.entity.*;
+import ru.complitex.jedani.worker.mapper.PeriodMapper;
 import ru.complitex.jedani.worker.mapper.WorkerMapper;
 import ru.complitex.jedani.worker.page.BasePage;
 import ru.complitex.jedani.worker.page.payment.PaymentPanel;
@@ -89,7 +90,6 @@ import ru.complitex.jedani.worker.page.reward.RewardPanel;
 import ru.complitex.jedani.worker.page.sale.SalePanel;
 import ru.complitex.jedani.worker.security.JedaniRoles;
 import ru.complitex.jedani.worker.service.CardService;
-import ru.complitex.jedani.worker.service.PeriodService;
 import ru.complitex.jedani.worker.service.RewardService;
 import ru.complitex.jedani.worker.service.WorkerService;
 import ru.complitex.name.entity.FirstName;
@@ -151,7 +151,7 @@ public class WorkerPage extends BasePage {
     private CardService cardService;
 
     @Inject
-    private PeriodService periodService;
+    private PeriodMapper periodMapper;
 
     @Inject
     private RewardService rewardService;
@@ -995,7 +995,7 @@ public class WorkerPage extends BasePage {
                 finance.setOutputMarkupPlaceholderTag(true);
 
                 if (worker.getObjectId() != null) {
-                    IModel<Period> periodModel = Model.of(periodService.getActualPeriod());
+                    IModel<Period> periodModel = Model.of(periodMapper.getActualPeriod());
 
                     IModel<WorkerReward> rewardModel = LoadableDetachableModel.of(() ->
                             rewardService.getWorkerRewardTree(periodModel.getObject()).getWorkerReward(worker.getObjectId()));

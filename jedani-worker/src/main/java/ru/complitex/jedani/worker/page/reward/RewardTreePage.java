@@ -5,8 +5,8 @@ import org.apache.wicket.markup.html.basic.Label;
 import ru.complitex.jedani.worker.entity.WorkerNode;
 import ru.complitex.jedani.worker.entity.WorkerReward;
 import ru.complitex.jedani.worker.entity.WorkerRewardTree;
+import ru.complitex.jedani.worker.mapper.PeriodMapper;
 import ru.complitex.jedani.worker.page.BasePage;
-import ru.complitex.jedani.worker.service.PeriodService;
 import ru.complitex.jedani.worker.service.RewardService;
 
 import javax.inject.Inject;
@@ -25,10 +25,10 @@ public class RewardTreePage extends BasePage {
     private RewardService rewardService;
 
     @Inject
-    public PeriodService periodService;
+    public PeriodMapper periodMapper;
 
     public RewardTreePage() {
-        WorkerRewardTree tree = rewardService.getWorkerRewardTree(periodService.getActualPeriod());
+        WorkerRewardTree tree = rewardService.getWorkerRewardTree(periodMapper.getActualPeriod());
 
         StringBuilder rewards = new StringBuilder();
 

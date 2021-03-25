@@ -7,6 +7,7 @@ import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
 import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.exception.SaleException;
+import ru.complitex.jedani.worker.mapper.PeriodMapper;
 import ru.complitex.jedani.worker.mapper.SaleItemMapper;
 import ru.complitex.jedani.worker.mapper.SaleMapper;
 
@@ -41,12 +42,12 @@ public class SaleService implements Serializable {
     private SaleItemMapper saleItemMapper;
 
     @Inject
-    private PeriodService periodService;
+    private PeriodMapper periodMapper;
 
     @Transactional(rollbackFor = SaleException.class)
     public void save(Sale sale, List<SaleItem> saleItems) throws SaleException {
         if (sale.getObjectId() == null) {
-            sale.setPeriodId(periodService.getActualPeriod().getObjectId());
+            sale.setPeriodId(periodMapper.getActualPeriod().getObjectId());
         } else {
             domainService.getDomains(SaleItem.class, FilterWrapper.of(new SaleItem().setParentId(sale.getObjectId())))
                     .forEach(si -> {

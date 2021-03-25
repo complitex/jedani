@@ -41,4 +41,15 @@
 
         where d.object_id = #{objectId}
     </select>
+
+    <select id="selectPeriodByMonth" resultMap="periodResultMap" parameterType="date">
+        <bind name="entityName" value="'period'"/>
+        <bind name="useDateAttribute" value="true"/>
+
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainSelectFrom"/>
+
+        left join period_attribute pa_m on d.id = pa_m.domain_id and pa_m.entity_attribute_id = 1 and pa_m.status = 1
+
+        where d.status = 1 and pa_m.date = #{date}
+    </select>
 </mapper>

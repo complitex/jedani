@@ -3,6 +3,7 @@ package ru.complitex.jedani.worker.service;
 import org.apache.wicket.util.lang.Objects;
 import org.mybatis.cdi.Transactional;
 import ru.complitex.address.entity.City;
+import ru.complitex.address.entity.Country;
 import ru.complitex.address.entity.Region;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.domain.entity.Domain;
@@ -220,5 +221,17 @@ public class WorkerService implements Serializable {
 
     public User getUser(Worker worker){
         return userMapper.getUser(worker.getParentId());
+    }
+
+    public Long getCurrencyId(Long workerId) {
+        List<Long> regionIds = domainService.getNumberValues(Worker.ENTITY_NAME, workerId, Worker.REGIONS);
+
+        if (!regionIds.isEmpty()){
+            Region region = domainService.getDomain(Region.class, regionIds.get(0));
+
+            return domainService.getDomain(Country.class, region.getParentId()).getNumber(Country.CURRENCY);
+        }
+
+        return null;
     }
 }

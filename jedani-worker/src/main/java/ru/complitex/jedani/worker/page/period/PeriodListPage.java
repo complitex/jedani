@@ -22,7 +22,6 @@ import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.page.DomainListModalPage;
 import ru.complitex.jedani.worker.entity.Period;
-import ru.complitex.jedani.worker.service.PeriodService;
 import ru.complitex.jedani.worker.service.WorkerService;
 
 import javax.inject.Inject;
@@ -39,9 +38,6 @@ import static ru.complitex.jedani.worker.security.JedaniRoles.ADMINISTRATORS;
 public class PeriodListPage extends DomainListModalPage<Period> {
     @Inject
     private WorkerService workerService;
-
-    @Inject
-    private PeriodService periodService;
 
     private PeriodModal periodModal;
     private PeriodCalculateModal periodCalculateModal;
@@ -83,7 +79,6 @@ public class PeriodListPage extends DomainListModalPage<Period> {
                 return !isCreateEnabled();
             }
         });
-
     }
 
     @Override
@@ -137,11 +132,6 @@ public class PeriodListPage extends DomainListModalPage<Period> {
         }
 
         return super.newDomainColumn(a);
-    }
-
-    @Override
-    protected boolean isCreateEnabled() {
-        return !periodService.hasPeriods();
     }
 
     @Override

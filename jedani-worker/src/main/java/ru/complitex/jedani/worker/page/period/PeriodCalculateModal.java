@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import ru.complitex.common.util.Dates;
 import ru.complitex.domain.component.form.AbstractEditModal;
 import ru.complitex.jedani.worker.entity.Period;
-import ru.complitex.jedani.worker.service.PeriodService;
+import ru.complitex.jedani.worker.mapper.PeriodMapper;
 import ru.complitex.jedani.worker.service.RewardService;
 
 import javax.inject.Inject;
@@ -23,7 +23,7 @@ public class PeriodCalculateModal extends AbstractEditModal<Period> {
     private Logger log = LoggerFactory.getLogger(PeriodCalculateModal.class);
 
     @Inject
-    private PeriodService periodService;
+    private PeriodMapper periodMapper;
 
     @Inject
     private RewardService rewardService;
@@ -45,7 +45,7 @@ public class PeriodCalculateModal extends AbstractEditModal<Period> {
     public void create(AjaxRequestTarget target) {
         super.create(target);
 
-        setModelObject(periodService.getActualPeriod());
+        setModelObject(periodMapper.getActualPeriod());
     }
 
     @Override

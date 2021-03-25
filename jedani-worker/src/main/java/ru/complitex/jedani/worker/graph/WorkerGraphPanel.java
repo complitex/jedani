@@ -10,8 +10,8 @@ import ru.complitex.domain.entity.Status;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.graph.resource.CytoscapeCoseJsResourceReference;
+import ru.complitex.jedani.worker.mapper.PeriodMapper;
 import ru.complitex.jedani.worker.mapper.WorkerMapper;
-import ru.complitex.jedani.worker.service.PeriodService;
 import ru.complitex.jedani.worker.service.RewardService;
 import ru.complitex.name.service.NameService;
 
@@ -35,7 +35,7 @@ public class WorkerGraphPanel extends Panel {
     private NameService nameService;
 
     @Inject
-    private PeriodService periodService;
+    private PeriodMapper periodMapper;
 
     @Inject
     private RewardService rewardService;
@@ -132,7 +132,7 @@ public class WorkerGraphPanel extends Panel {
                 .put("levelDepth", levelDepth != 0 ? levelDepth : null)));
 
         WorkerRewardTree rewards = (levelDepth == 0)
-                ? rewardService.getWorkerRewardTree(periodService.getActualPeriod())
+                ? rewardService.getWorkerRewardTree(periodMapper.getActualPeriod())
                 : null;
 
         elements =  " {data: {id: '" + worker.getObjectId() + "', " +

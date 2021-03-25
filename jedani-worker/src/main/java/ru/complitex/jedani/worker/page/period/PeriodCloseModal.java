@@ -12,8 +12,8 @@ import org.slf4j.LoggerFactory;
 import ru.complitex.common.util.Dates;
 import ru.complitex.domain.component.form.AbstractEditModal;
 import ru.complitex.jedani.worker.entity.Period;
+import ru.complitex.jedani.worker.mapper.PeriodMapper;
 import ru.complitex.jedani.worker.service.PeriodService;
-import ru.complitex.jedani.worker.service.RewardService;
 
 import javax.inject.Inject;
 
@@ -28,7 +28,7 @@ public class PeriodCloseModal extends AbstractEditModal<Period> {
     private PeriodService periodService;
 
     @Inject
-    private RewardService rewardService;
+    private PeriodMapper periodMapper;
 
     private IModel<Boolean> calculateModel;
 
@@ -40,38 +40,30 @@ public class PeriodCloseModal extends AbstractEditModal<Period> {
         add(new Label("month", new LoadableDetachableModel<String>() {
             @Override
             protected String load() {
-                return Dates.getMonthText(getModelObject().getOperatingMonth());
+                return Dates.getMonthText(periodMapper.getActualPeriod().getOperatingMonth());
             }
         }));
 
         calculateModel = Model.of(false);
 
-        add(new BootstrapCheckbox("calculateRewards", calculateModel, new ResourceModel("accrueRewards")));
-    }
-
-    @Override
-    public void create(AjaxRequestTarget target) {
-        super.create(target);
-
-        setModelObject(periodService.getActualPeriod());
+        add(new BootstrapCheckbox("calculateRewards", calculateModel, new ResourceModel("calculateRewards")));
     }
 
     @Override
     protected void save(AjaxRequestTarget target) {
         try {
             if (calculateModel.getObject()) {
-                rewardService.calculateRewards();
-
-                getSession().success(getString("info_rewards_accrued"));
+                getSession().success(getString("info_rewards_calculated"));
             }
 
-            periodService.closeOperatingMonth(getCurrentWorkerId());
+            periodService.closeOperatingMonth(getCurrentWorkerId(), calculateModel.getObject(), true);
 
             getSession().success(getString("info_period_closed"));
+            getSession().success(getString("info_accounts_updated"));
         } catch (Exception e) {
-            log.error("error accrue rewards ", e);
+            log.error("error calculate rewards ", e);
 
-            getSession().error(getString("error_accrue_rewards"));
+            getSession().error(getString("error_calculate_rewards"));
         }
 
         super.save(target);

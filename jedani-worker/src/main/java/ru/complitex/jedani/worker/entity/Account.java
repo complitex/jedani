@@ -21,12 +21,20 @@ public class Account extends Domain<Account> {
     public static final long WITHDRAWN = 8;
     public static final long SPENT = 9;
 
+    public Account() {
+        super(ENTITY_NAME);
+
+        setUseDateAttribute(true);
+    }
+
     public Long getWorkerId(){
         return getNumber(WORKER);
     }
 
-    public void setWorkerId(Long number){
+    public Account setWorkerId(Long number){
         setNumber(WORKER, number);
+
+        return this;
     }
 
     public Date getDate(){
@@ -41,8 +49,10 @@ public class Account extends Domain<Account> {
         return getNumber(PERIOD);
     }
 
-    public void setPeriodId(Long periodId){
+    public Account setPeriodId(Long periodId){
         setNumber(PERIOD, periodId);
+
+        return this;
     }
 
     public Long getCurrencyId() {

@@ -21,8 +21,8 @@ import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.component.PeriodPanel;
 import ru.complitex.jedani.worker.entity.*;
+import ru.complitex.jedani.worker.mapper.PeriodMapper;
 import ru.complitex.jedani.worker.mapper.RewardMapper;
-import ru.complitex.jedani.worker.service.PeriodService;
 import ru.complitex.jedani.worker.service.SaleService;
 import ru.complitex.jedani.worker.service.WorkerService;
 
@@ -46,7 +46,7 @@ public class RewardPanel extends DomainListModalPanel<Reward> {
     private SaleService saleService;
 
     @Inject
-    private PeriodService periodService;
+    private PeriodMapper periodMapper;
 
     @Inject
     private DomainService domainService;
@@ -59,8 +59,8 @@ public class RewardPanel extends DomainListModalPanel<Reward> {
         }
 
         if (isActualMonthFilter()){
-            getFilterWrapper().put(Reward.FILTER_ACTUAL_MONTH, periodService.getActualPeriod().getOperatingMonth());
-            getFilterWrapper().put(Reward.FILTER_PERIOD, periodService.getActualPeriod().getObjectId());
+            getFilterWrapper().put(Reward.FILTER_ACTUAL_MONTH, periodMapper.getActualPeriod().getOperatingMonth());
+            getFilterWrapper().put(Reward.FILTER_PERIOD, periodMapper.getActualPeriod().getObjectId());
         }
     }
 
@@ -116,7 +116,7 @@ public class RewardPanel extends DomainListModalPanel<Reward> {
             return new AbstractDomainColumn<>("period", this) {
                 @Override
                 public void populateItem(Item<ICellPopulator<Reward>> cellItem, String componentId, IModel<Reward> rowModel) {
-                    Period period = periodService.getPeriod(rowModel.getObject().getPeriodId());
+                    Period period = periodMapper.getPeriod(rowModel.getObject().getPeriodId());
 
                     cellItem.add(new Label(componentId, period != null ? Dates.getMonthText(period.getOperatingMonth()) : ""));
                 }

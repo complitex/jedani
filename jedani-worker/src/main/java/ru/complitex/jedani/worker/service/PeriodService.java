@@ -2,10 +2,11 @@ package ru.complitex.jedani.worker.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.util.Dates;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.entity.Period;
+import ru.complitex.jedani.worker.exception.AccountException;
+import ru.complitex.jedani.worker.exception.RewardException;
 import ru.complitex.jedani.worker.mapper.PeriodMapper;
 
 import javax.inject.Inject;
@@ -25,42 +26,37 @@ public class PeriodService implements Serializable {
     @Inject
     private PeriodMapper periodMapper;
 
-    public boolean hasPeriods(){
-        return domainService.getDomainsCount(FilterWrapper.of(new Period())) > 0;
-    }
+    @Inject
+    private RewardService rewardService;
 
-    public boolean hasPeriod(Period period){
-        return periodMapper.hasPeriod(period);
-    }
+    @Inject
+    private AccountService accountService;
 
-    public void save(Period period){
-        domainService.save(period);
-    }
-
-    public Period getActualPeriod(){
-        return periodMapper.getActualPeriod();
-    }
-
-    public void closeOperatingMonth(Long workerId){
-        Period period = getActualPeriod();
+    public void closeOperatingMonth(Long workerId, boolean calculateRewards, boolean updateAccounts) throws RewardException, AccountException {
+        Period period = periodMapper.getActualPeriod();
 
         period.setWorkerId(workerId);
         period.setCloseTimestamp(Dates.currentDate());
 
-        save(period);
+        domainService.save(period);
 
         Period actualPeriod = new Period();
 
         actualPeriod.setOperatingMonth(Dates.nextMonth(period.getOperatingMonth()));
 
-        save(actualPeriod);
+        domainService.save(actualPeriod);
+
+        if (calculateRewards){
+            rewardService.calculateRewards();
+        }
+
+        if (updateAccounts){
+            accountService.updateAccounts();
+        }
     }
 
     public List<Period> getPeriods(){
         return periodMapper.getPeriods();
     }
 
-    public Period getPeriod(Long periodId){
-        return periodMapper.getPeriod(periodId);
-    }
 }
