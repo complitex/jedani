@@ -355,13 +355,13 @@ public class RewardService implements Serializable {
         }
     }
 
-    private void updateLocal(Reward reward){
+    private void updateLocal(Reward reward, Period period){
         Worker worker = workerService.getWorker(reward.getWorkerId());
 
         if (!worker.getRegionIds().isEmpty()) {;
             Region region = domainService.getDomain(Region.class, worker.getRegionIds().get(0));
 
-            reward.setRate(exchangeRateService.getExchangeRateValue(region.getParentId(), Dates.currentDate()));
+            reward.setRate(exchangeRateService.getMonthAverageExchangeRate(region.getParentId(), period.getOperatingMonth()));
 
             if (reward.getPoint().compareTo(ZERO) > 0) {
                 reward.setLocal(reward.getPoint().multiply(reward.getRate()).setScale(5, HALF_EVEN));
@@ -681,7 +681,7 @@ public class RewardService implements Serializable {
                 }
             }
 
-            updateLocal(reward);
+            updateLocal(reward, period);
 
             if (reward.getPoint().compareTo(ZERO) != 0) {
                 domainService.save(reward);
@@ -716,7 +716,7 @@ public class RewardService implements Serializable {
                         workerReward.getGroupSaleVolume(), workerReward.getGroupPaymentVolume(), total));
             }
 
-            updateLocal(reward);
+            updateLocal(reward, period);
 
             if (reward.getPoint().compareTo(ZERO) != 0) {
                 domainService.save(reward);
@@ -757,7 +757,7 @@ public class RewardService implements Serializable {
                             m.getStructureSaleVolume(), m.getStructurePaymentVolume(), total));
                 }
 
-                updateLocal(reward);
+                updateLocal(reward, period);
 
                 if (reward.getPoint().compareTo(ZERO) != 0) {
                     domainService.save(reward);

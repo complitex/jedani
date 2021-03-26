@@ -1261,7 +1261,7 @@ INSERT INTO position_value (`id`, `attribute_id`, `locale_id`, text) VALUE (4, 4
 INSERT INTO position (`id`, `object_id`, `start_date`, `status`, `user_id`) VALUE (5, 5, now(), 1, 1);
 INSERT INTO position_attribute (`id`, `domain_id`, `entity_attribute_id`, `start_date`, `status`, `user_id`) VALUE (5, 5, 1, now(), 1, 1);
 INSERT INTO position_value (`id`, `attribute_id`, `locale_id`, text) VALUE (5, 5, 1, 'АДМИНИСТРАТИВНЫЙ ДИРЕКТОР');
-    
+
 -- ---------------------------
 -- Nomenclature
 -- ---------------------------
@@ -1345,7 +1345,7 @@ INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `tex
 
 INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (23, 4, 5);
 INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (23, 4, 1, 'Тип номенклатуры'), (23, 4, 2, 'Тип номенклатури');
-    
+
 -- ---------------------------
 -- Storage
 -- ---------------------------
@@ -2655,4 +2655,4 @@ CALL createEntityAttribute(45, 9, 4, 'Потрачено', 'Витрачений
 
 -- Version
 
-INSERT INTO `update` (`version`) VALUE ('1.0.50');
+INSERT INTO `update` (`version`) VALUE ('2.0.0');

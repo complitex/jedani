@@ -22,6 +22,7 @@ import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.page.DomainListModalPage;
 import ru.complitex.jedani.worker.entity.Period;
+import ru.complitex.jedani.worker.mapper.PeriodMapper;
 import ru.complitex.jedani.worker.service.WorkerService;
 
 import javax.inject.Inject;
@@ -38,6 +39,9 @@ import static ru.complitex.jedani.worker.security.JedaniRoles.ADMINISTRATORS;
 public class PeriodListPage extends DomainListModalPage<Period> {
     @Inject
     private WorkerService workerService;
+
+    @Inject
+    private PeriodMapper periodMapper;
 
     private PeriodModal periodModal;
     private PeriodCalculateModal periodCalculateModal;
@@ -115,7 +119,7 @@ public class PeriodListPage extends DomainListModalPage<Period> {
     @Override
     protected AbstractDomainColumn<Period> newDomainColumn(EntityAttribute a) {
         if (a.getEntityAttributeId().equals(Period.CLOSE_TIMESTAMP)){
-            return new AbstractDomainColumn<Period>(a) {
+            return new AbstractDomainColumn<>(a) {
                 @Override
                 public void populateItem(Item<ICellPopulator<Period>> cellItem, String componentId, IModel<Period> rowModel) {
                     cellItem.add(new DateTimeLabel(componentId, rowModel.getObject().getCloseTimestamp())
@@ -123,7 +127,7 @@ public class PeriodListPage extends DomainListModalPage<Period> {
                 }
             };
         }else if (a.getEntityAttributeId().equals(Period.WORKER)){
-            return new AbstractDomainColumn<Period>(a) {
+            return new AbstractDomainColumn<>(a) {
                 @Override
                 public void populateItem(Item<ICellPopulator<Period>> cellItem, String componentId, IModel<Period> rowModel) {
                     cellItem.add(new Label(componentId, workerService.getWorkerLabel(rowModel.getObject().getWorkerId())));
@@ -142,5 +146,10 @@ public class PeriodListPage extends DomainListModalPage<Period> {
     @Override
     protected boolean isEditEnabled() {
         return false;
+    }
+
+    @Override
+    protected boolean isCreateEnabled() {
+        return periodMapper.getActualPeriod() == null;
     }
 }

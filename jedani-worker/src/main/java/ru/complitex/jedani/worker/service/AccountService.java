@@ -111,7 +111,7 @@ public class AccountService implements Serializable {
 
                 Account account = updateAccount(workerId, date, previousPeriod.getObjectId(), currencyId, charged, paid, withdrawn);
 
-                BigDecimal balance = account.getBalance().add(charged).subtract(paid).subtract(withdrawn);
+                BigDecimal balance = account.getBalance().add(charged).subtract(paid);
 
                 openAccount(workerId, date, periodMapper.getActualPeriod().getObjectId(), currencyId, balance);
             });

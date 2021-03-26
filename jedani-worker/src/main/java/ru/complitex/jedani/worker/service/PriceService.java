@@ -111,7 +111,7 @@ public class PriceService implements Serializable {
             return null;
         }
 
-        return exchangeRateService.getExchangeRateValue(storageService.getCountryId(storageId), date);
+        return exchangeRateService.getExchangeRate(storageService.getCountryId(storageId), date);
     }
 
     public BigDecimal getRate(SaleDecision saleDecision, Date paymentDate, BigDecimal rate, BigDecimal total,

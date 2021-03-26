@@ -1,6 +1,8 @@
 package ru.complitex.jedani.worker.service;
 
-import okhttp3.*;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -20,6 +22,7 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -115,7 +118,7 @@ public class ExchangeRateService implements Serializable {
         return updated;
     }
 
-    public BigDecimal getExchangeRateValue(Long countryId, Date date){
+    public BigDecimal getExchangeRate(Long countryId, Date date){
         Rate rate = new Rate()
                 .setParentId(domainService.getNumber(Country.ENTITY_NAME, countryId, Country.EXCHANGE_RATE_EUR))
                 .setDate(date)
@@ -127,6 +130,19 @@ public class ExchangeRateService implements Serializable {
 
         if (!rates.isEmpty()){
             return rates.get(0).getRate();
+        }
+
+        return null;
+    }
+
+    public BigDecimal getMonthAverageExchangeRate(Long countryId, Date month){
+        List<Rate> rates = domainService.getDomains(Rate.class, FilterWrapper.of(new Rate()
+                .setParentId(domainService.getNumber(Country.ENTITY_NAME, countryId, Country.EXCHANGE_RATE_EUR))
+                .setDate(month)
+                .setFilter(Rate.DATE, Attribute.FILTER_SAME_MONTH)));
+
+        if (!rates.isEmpty()){
+            return rates.stream().map(Rate::getRate).reduce(BigDecimal.ZERO, BigDecimal::add).divide(BigDecimal.valueOf(rates.size()), 5, RoundingMode.HALF_EVEN);
         }
 
         return null;

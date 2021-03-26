@@ -52,6 +52,7 @@ import ru.complitex.address.entity.CityType;
 import ru.complitex.address.entity.Region;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.Sort;
+import ru.complitex.common.util.Dates;
 import ru.complitex.common.util.Images;
 import ru.complitex.common.wicket.component.DateTimeLabel;
 import ru.complitex.common.wicket.form.FormGroupDateTextField;
@@ -996,6 +997,18 @@ public class WorkerPage extends BasePage {
 
                 if (worker.getObjectId() != null) {
                     IModel<Period> periodModel = Model.of(periodMapper.getActualPeriod());
+
+                    finance.add(new Label("month", LoadableDetachableModel.of(() -> Dates.getDateText(periodModel.getObject().getOperatingMonth()))));
+
+                    finance.add(new Label("balance", LoadableDetachableModel.of(() -> {
+                        List<Account> accounts = domainService.getDomains(Account.class,
+                                FilterWrapper.of(new Account()
+                                        .setWorkerId(worker.getObjectId())
+                                        .setPeriodId(periodModel.getObject().getObjectId())));
+
+                        return !accounts.isEmpty() ? accounts.get(0).getBalance().toPlainString() : "0";
+                    })));
+
 
                     IModel<WorkerReward> rewardModel = LoadableDetachableModel.of(() ->
                             rewardService.getWorkerRewardTree(periodModel.getObject()).getWorkerReward(worker.getObjectId()));

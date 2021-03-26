@@ -41,6 +41,7 @@ import ru.complitex.jedani.worker.entity.Storage;
 import ru.complitex.jedani.worker.entity.Worker;
 import ru.complitex.jedani.worker.entity.WorkerType;
 import ru.complitex.jedani.worker.mapper.StorageMapper;
+import ru.complitex.jedani.worker.page.account.AccountListPage;
 import ru.complitex.jedani.worker.page.admin.ImportPage;
 import ru.complitex.jedani.worker.page.admin.SettingPage;
 import ru.complitex.jedani.worker.page.card.CardListPage;
@@ -293,14 +294,15 @@ public class BasePage extends WebPage{
         sales.add(newBehavior());
         sales.add(new WebMarkupContainer("link").add(newBehaviorLink()));
         sales.add(new WebMarkupContainer("list")
-                .add(new MenuLink("price", PriceListPage.class).setVisible(isAdmin() || isStructureAdmin()))
-                .add(new MenuLink("promotion", PromotionListPage.class).setVisible(isAdmin() || isPromotionAdmin()))
-                .add(new MenuLink("saleDecision", SaleDecisionListPage.class).setVisible(isAdmin() || isStructureAdmin()))
-                .add(new MenuLink("sale", SaleListPage.class).setVisible(isAdmin() || isStructureAdmin() || isSaleAdmin() || isParticipant()))
-                .add(new MenuLink("payment", PaymentListPage.class).setVisible(isAdmin() || isStructureAdmin() || isPaymentAdmin() || isParticipant()))
-                .add(new MenuLink("period", PeriodListPage.class).setVisible(isAdmin() || isPaymentAdmin()))
-                .add(new MenuLink("reward", RewardListPage.class).setVisible(isAdmin() || isStructureAdmin()))
-                .add(new MenuLink("rewardParameter", RewardParameterListPage.class).setVisible(isAdmin()))
+                .add(new MenuLink("prices", PriceListPage.class).setVisible(isAdmin() || isStructureAdmin()))
+                .add(new MenuLink("promotions", PromotionListPage.class).setVisible(isAdmin() || isPromotionAdmin()))
+                .add(new MenuLink("saleDecisions", SaleDecisionListPage.class).setVisible(isAdmin() || isStructureAdmin()))
+                .add(new MenuLink("sales", SaleListPage.class).setVisible(isAdmin() || isStructureAdmin() || isSaleAdmin() || isParticipant()))
+                .add(new MenuLink("payments", PaymentListPage.class).setVisible(isAdmin() || isStructureAdmin() || isPaymentAdmin() || isParticipant()))
+                .add(new MenuLink("periods", PeriodListPage.class).setVisible(isAdmin() || isPaymentAdmin()))
+                .add(new MenuLink("rewards", RewardListPage.class).setVisible(isAdmin() || isStructureAdmin()))
+                .add(new MenuLink("rewardParameters", RewardParameterListPage.class).setVisible(isAdmin()))
+                .add(new MenuLink("accounts", AccountListPage.class).setVisible(isAdmin() || isStructureAdmin()))
                 .add(newBehaviorList()));
         menu.add(sales);
     }

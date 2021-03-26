@@ -46,6 +46,7 @@ import ru.complitex.common.wicket.converter.BigDecimalConverter;
 import ru.complitex.jedani.worker.api.VerifyResourceReference;
 import ru.complitex.jedani.worker.api.WorkerListJsonPage;
 import ru.complitex.jedani.worker.api.WorkerResourceReference;
+import ru.complitex.jedani.worker.page.account.AccountListPage;
 import ru.complitex.jedani.worker.page.admin.ImportPage;
 import ru.complitex.jedani.worker.page.admin.SettingPage;
 import ru.complitex.jedani.worker.page.card.CardListPage;
@@ -154,6 +155,7 @@ public class JedaniWebApplication extends WebApplication{
         mountPage("payments", PaymentListPage.class);
         mountPage("periods", PeriodListPage.class);
         mountPage("invite/${key}", InvitePage.class);
+        mountPage("accounts", AccountListPage.class);
 
         mountPage("error", InternalErrorPage.class);
         mountPage("access-denied", AccessDeniedPage.class);

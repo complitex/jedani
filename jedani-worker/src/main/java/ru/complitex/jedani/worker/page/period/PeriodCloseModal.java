@@ -52,11 +52,11 @@ public class PeriodCloseModal extends AbstractEditModal<Period> {
     @Override
     protected void save(AjaxRequestTarget target) {
         try {
+            periodService.closeOperatingMonth(getCurrentWorkerId(), calculateModel.getObject(), true);
+
             if (calculateModel.getObject()) {
                 getSession().success(getString("info_rewards_calculated"));
             }
-
-            periodService.closeOperatingMonth(getCurrentWorkerId(), calculateModel.getObject(), true);
 
             getSession().success(getString("info_period_closed"));
             getSession().success(getString("info_accounts_updated"));
