@@ -554,12 +554,14 @@ public class WorkerPage extends BasePage {
         managerContainer.add(managerEmail);
 
         managerContainer.add(new WorkerAutoComplete("managerFio",
-                new PropertyModel<>(worker.getOrCreateAttribute(Worker.MANAGER_ID), "number"),
-                target -> {
-                    manager = workerMapper.getWorker(worker.getNumber(Worker.MANAGER_ID));
+                new PropertyModel<>(worker.getOrCreateAttribute(Worker.MANAGER_ID), "number"){
+                    @Override
+                    public void setObject(Long object) {
+                        super.setObject(object);
 
-                    target.add(managerPhone, managerEmail);
-                }));
+                        manager = workerMapper.getWorker(worker.getNumber(Worker.MANAGER_ID));
+                    }
+                }, target -> target.add(managerPhone, managerEmail)){});
 
         form.add(new IndicatingAjaxButton("save") {
             @Override
@@ -687,6 +689,8 @@ public class WorkerPage extends BasePage {
 
                             throw e;
                         }
+
+                        manager = workerMapper.getWorker(worker.getManagerId());
 
                         if (manager != null) {
                             domainNodeService.updateIndex(manager, worker);

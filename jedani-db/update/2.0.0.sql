@@ -46,4 +46,4 @@ CALL createEntityAttribute(45, 8, 4, 'Изъято', 'Вилучено');
 CALL createEntityAttribute(45, 9, 4, 'Потрачено', 'Витрачений');
 
 
-INSERT INTO `update` (`version`) VALUE ('1.0.50');
+INSERT INTO `update` (`version`) VALUE ('2.0.0');

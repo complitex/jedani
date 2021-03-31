@@ -6,6 +6,7 @@ import ru.complitex.address.entity.City;
 import ru.complitex.address.entity.Country;
 import ru.complitex.address.entity.Region;
 import ru.complitex.common.entity.FilterWrapper;
+import ru.complitex.common.util.Dates;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.Status;
 import ru.complitex.domain.service.DomainNodeService;
@@ -177,7 +178,9 @@ public class WorkerService implements Serializable {
             domainService.save(w);
         });
 
+        worker.setEndDate(Dates.currentDate());
         worker.setStatus(Status.ARCHIVE);
+
         domainService.save(worker);
 
         rebuildIndex();

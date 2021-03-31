@@ -25,7 +25,7 @@ public class DomainNodeService implements Serializable {
 
             domainNodeMapper.clearIndex(entityName, rootObjectId);
 
-            DomainNode root = domainNodeMapper.getDomainNode(entityName, rootObjectId);
+            DomainNode<?> root = domainNodeMapper.getDomainNode(entityName, rootObjectId);
 
             root.setLeft(1L);
             root.setRight(2L);
@@ -44,7 +44,7 @@ public class DomainNodeService implements Serializable {
     }
 
     @Transactional
-    public void move(DomainNode parentDomainNode, DomainNode domainNode){
+    public void move(DomainNode<?> parentDomainNode, DomainNode<?> domainNode){
         if (domainNode.getId().equals(parentDomainNode.getId()) || (domainNode.getLeft() < parentDomainNode.getLeft() &&
                 domainNode.getRight() > parentDomainNode.getRight())) {
             throw new RuntimeException("Node cannot move to it's child");
@@ -55,7 +55,7 @@ public class DomainNodeService implements Serializable {
         int sign = (domainNode.getLeft() - parentDomainNode.getRight()) > 0 ? 1 : -1;
         long start = sign > 0 ? parentDomainNode.getRight() - 1 : domainNode.getRight();
         long stop = sign > 0 ? domainNode.getLeft() : parentDomainNode.getRight();
-        long delta = (long) (nodeIds.size() * 2);
+        long delta = nodeIds.size() * 2L;
 
         try {
             domainNodeMapper.lockTablesWrite(domainNode.getEntityName());
@@ -85,7 +85,17 @@ public class DomainNodeService implements Serializable {
     }
 
     @Transactional
-    public void updateIndex(DomainNode parent, DomainNode domainNode){
-        domainNodeMapper.updateIndex(parent, domainNode);
+    public void updateIndex(DomainNode<?> parent, DomainNode<?> domainNode){
+        try {
+            domainNodeMapper.lockTablesWrite(domainNode.getEntityName());
+
+            domainNodeMapper.updateIndex(parent, domainNode);
+
+            if (!validate(domainNode.getEntityName())){
+                throw new RuntimeException("Index is not validated");
+            }
+        } finally {
+            domainNodeMapper.unlockTables();
+        }
     }
 }
