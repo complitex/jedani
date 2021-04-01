@@ -13,7 +13,7 @@ public class Storage extends Domain<Storage> {
     public static final long WORKERS = 2;
     public static final long TYPE = 3;
 
-    public static final String FILTER_CITIES = "cities";
+    public static final String FILTER_CITY = "city";
     public static final String FILTER_CURRENT_WORKER = "currentWorker";
     public static final String FILTER_WORKERS = "workers";
     public static final String FILTER_WORKER = "worker";

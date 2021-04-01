@@ -22,8 +22,7 @@ public class Worker extends DomainNode<Worker> {
     public static final long MIDDLE_NAME = 3;
     public static final long LAST_NAME = 4;
     public static final long BIRTHDAY = 5;
-    public static final long REGIONS = 6;
-    public static final long CITIES = 7;
+    public static final long CITY = 7;
     public static final long PHONE = 8;
     public static final long EMAIL = 9;
     public static final long CONTACT_INFO = 10;
@@ -41,7 +40,6 @@ public class Worker extends DomainNode<Worker> {
     public static final long RANK = 22;
     public static final long POINT = 23;
     public static final long INVITE = 24;
-    public static final long ACCOUNT = 25;
 
     public static final long IMPORT_ID = 100;
     public static final long IMPORT_ANCESTRY = 101;
@@ -51,7 +49,7 @@ public class Worker extends DomainNode<Worker> {
 
     private Long subWorkerCount;
 
-    public static final String FILTER_REGION_IDS = "regionIds";
+    public static final String FILTER_REGION_ID = "regionId";
 
     public Worker() {
         super(ENTITY_NAME);
@@ -98,37 +96,6 @@ public class Worker extends DomainNode<Worker> {
         setLevel(level);
     }
 
-    public void init() {
-        setDate(REGISTRATION_DATE, new Date());
-        setNumber(LAST_NAME, null);
-        setNumber(FIRST_NAME, null);
-        setNumber(MIDDLE_NAME, null);
-        setDate(BIRTHDAY, null);
-        getOrCreateAttribute(PHONE);
-        setText(EMAIL, null);
-        getOrCreateAttribute(REGIONS);
-        getOrCreateAttribute(CITIES);
-        setNumber(POSITION, null);
-        setNumber(MK_STATUS, null);
-        setLeft(0L);
-        setRight(0L);
-        setLevel(0L);
-    }
-
-    public Worker setStatus(Status status) {
-        super.setStatus(status);
-
-        return this;
-    }
-
-    public Long getSubWorkerCount() {
-        return subWorkerCount;
-    }
-
-    public void setSubWorkerCount(Long subWorkerCount) {
-        this.subWorkerCount = subWorkerCount;
-    }
-
     public String getJId(){
         return getText(J_ID);
     }
@@ -165,6 +132,18 @@ public class Worker extends DomainNode<Worker> {
 
     public Date getBirthday(){
         return getDate(BIRTHDAY);
+    }
+
+    public void setBirthday(Date birthday) {
+        setDate(BIRTHDAY, birthday);
+    }
+
+    public Long getCityId() {
+        return getNumber(CITY);
+    }
+
+    public void setCityId(Long cityId) {
+        setNumber(CITY, cityId);
     }
 
     public List<String> getPhones(){
@@ -211,18 +190,6 @@ public class Worker extends DomainNode<Worker> {
         return Objects.equals(getNumber(POSITION), Position.POSITION_REGIONAL_LEADER);
     }
 
-    public String getRegionIdsString(){
-        return getNumberValuesString(REGIONS);
-    }
-
-    public List<Long> getRegionIds(){
-        return getNumberValues(REGIONS);
-    }
-
-    public List<Long> getCityIds(){
-        return getNumberValues(CITIES);
-    }
-
     public Long getMkStatus(){
         return getNumber(MK_STATUS);
     }
@@ -231,23 +198,25 @@ public class Worker extends DomainNode<Worker> {
         setNumber(MK_STATUS, mkStatus);
     }
 
-
     public Long getWorkerStatus(){
         return getNumber(STATUS);
     }
 
-    public Worker setWorkerStatus(Long workerStatus){
+    public void setWorkerStatus(Long workerStatus){
         setNumber(STATUS, workerStatus);
+    }
+
+    public Worker setStatus(Status status) {
+        super.setStatus(status);
 
         return this;
     }
 
-    public Long getAccount() {
-        return getNumber(ACCOUNT);
+    public Long getSubWorkerCount() {
+        return subWorkerCount;
     }
 
-    public void setAccount(Long account) {
-        setNumber(ACCOUNT, account);
+    public void setSubWorkerCount(Long subWorkerCount) {
+        this.subWorkerCount = subWorkerCount;
     }
-
 }

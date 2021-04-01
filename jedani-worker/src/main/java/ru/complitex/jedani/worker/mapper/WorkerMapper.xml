@@ -46,15 +46,15 @@
     </sql>
 
     <sql id="selectWorkersFromRegion">
-        <if test="map.regionIds != null">
+        <if test="map.regionId != null">
             left join worker_attribute wa_r on wa_r.domain_id = d.id and wa_r.entity_attribute_id = 6 and wa_r.status = 1
             left join worker_value wv_r on wv_r.attribute_id = wa_r.id
         </if>
     </sql>
 
     <sql id="selectWorkersWhereRegion">
-        <if test="map.regionIds != null">
-            and wv_r.number in (#{map.regionIds})
+        <if test="map.regionId != null">
+            and wv_r.number = #{map.regionId}
         </if>
     </sql>
 

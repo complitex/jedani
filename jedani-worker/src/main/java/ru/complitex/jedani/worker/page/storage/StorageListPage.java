@@ -21,7 +21,6 @@ import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.page.DomainListPage;
 import ru.complitex.domain.service.EntityService;
 import ru.complitex.jedani.worker.entity.Storage;
-import ru.complitex.jedani.worker.entity.Worker;
 import ru.complitex.jedani.worker.mapper.StorageMapper;
 import ru.complitex.jedani.worker.security.JedaniRoles;
 import ru.complitex.jedani.worker.service.WorkerService;
@@ -52,9 +51,9 @@ public class StorageListPage extends DomainListPage<Storage> {
         if (!isAdmin()) {
             getFilterWrapper()
                     .put(Storage.FILTER_CURRENT_WORKER, getCurrentWorker().getObjectId())
-                    .put(Storage.FILTER_CITIES, getCurrentWorker().getNumberValuesString(Worker.CITIES));
+                    .put(Storage.FILTER_CITY, getCurrentWorker().getCityId());
 
-            boolean hasStorage = storageMapper.getStoragesCount(FilterWrapper.of((Storage) new Storage()
+            boolean hasStorage = storageMapper.getStoragesCount(FilterWrapper.of(new Storage()
                     .setParentId(getCurrentWorker().getObjectId()))) == 0;
 
             setAddVisible(hasStorage);
@@ -74,7 +73,7 @@ public class StorageListPage extends DomainListPage<Storage> {
     protected void onAddColumns(List<IColumn<Storage, Sort>> columns) {
         String label = entityService.getEntityAttribute(Storage.ENTITY_NAME, Storage.WORKERS).getValue().getText();
 
-        columns.add(new AbstractDomainColumn<Storage>(Model.of(label), new Sort("workers")) {
+        columns.add(new AbstractDomainColumn<>(Model.of(label), new Sort("workers")) {
             @Override
             public void populateItem(Item<ICellPopulator<Storage>> cellItem, String componentId, IModel<Storage> rowModel) {
                 String workers = rowModel.getObject().getNumberValues(Storage.WORKERS).stream()

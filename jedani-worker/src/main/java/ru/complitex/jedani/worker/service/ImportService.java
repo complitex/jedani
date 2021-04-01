@@ -36,7 +36,7 @@ import static ru.complitex.domain.entity.Status.SYNC;
  * 22.11.2017 16:49
  */
 public class ImportService implements Serializable {
-    private Logger log = LoggerFactory.getLogger(ImportService.class);
+    private final Logger log = LoggerFactory.getLogger(ImportService.class);
 
     @Inject
     private DomainMapper domainMapper;
@@ -120,7 +120,7 @@ public class ImportService implements Serializable {
                     break;
                 }
 
-                Domain region = domainMapper.getDomain("region", Region.IMPORT_ID, columns[2]);
+                Domain<?> region = domainMapper.getDomain("region", Region.IMPORT_ID, columns[2]);
 
                 if (region == null){
                     status.errorMessage = "Ненайден район " + columns[2] + " для " + columns[1];
@@ -224,9 +224,9 @@ public class ImportService implements Serializable {
                 worker.addUpperTextValue(Worker.PHONE, columns[14]);
 
                 if (!columns[15].trim().isEmpty()) {
-                    Domain city = domainMapper.getDomain("city", City.IMPORT_ID, columns[15]);
-                    worker.addNumberValue(Worker.CITIES, city.getObjectId());
-                    worker.addNumberValue(Worker.REGIONS, city.getParentId());
+                    Domain<?> city = domainMapper.getDomain("city", City.IMPORT_ID, columns[15]);
+
+                    worker.setCityId(city.getObjectId());
                 }
 
                 worker.setText(Worker.IMPORT_MANAGER_RANK_ID, columns[16]);
@@ -271,13 +271,13 @@ public class ImportService implements Serializable {
     }
 
     private void updateWorkerManagerId(Consumer<String> listener){
-        domainMapper.getDomains(FilterWrapper.of(new Domain(Worker.ENTITY_NAME).setStatus(SYNC))).forEach(w -> {
+        domainMapper.getDomains(FilterWrapper.of(new Domain<>(Worker.ENTITY_NAME).setStatus(SYNC))).forEach(w -> {
             String importAncestry = w.getText(Worker.IMPORT_ANCESTRY);
 
             if (importAncestry != null) {
                 String importManagerId = importAncestry.substring(importAncestry.lastIndexOf('/') + 1);
 
-                Domain manager = domainMapper.getDomain(Worker.ENTITY_NAME, Worker.IMPORT_ID, importManagerId);
+                Domain<?> manager = domainMapper.getDomain(Worker.ENTITY_NAME, Worker.IMPORT_ID, importManagerId);
 
                 w.setNumber(Worker.MANAGER_ID, manager.getObjectId());
 

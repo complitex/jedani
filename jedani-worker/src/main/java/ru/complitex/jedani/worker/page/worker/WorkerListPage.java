@@ -21,7 +21,6 @@ import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import ru.complitex.address.entity.City;
 import ru.complitex.address.entity.CityType;
-import ru.complitex.address.entity.Region;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.Sort;
 import ru.complitex.common.wicket.panel.LinkPanel;
@@ -34,6 +33,7 @@ import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.entity.Status;
 import ru.complitex.domain.entity.StringType;
 import ru.complitex.domain.page.DomainListPage;
+import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
 import ru.complitex.jedani.worker.entity.Worker;
 import ru.complitex.jedani.worker.entity.WorkerStatus;
@@ -65,6 +65,9 @@ public class WorkerListPage extends DomainListPage<Worker>{
     @Inject
     private UserMapper userMapper;
 
+    @Inject
+    private DomainService domainService;
+
     private final WorkerRemoveModal workerRemoveModal;
 
     public WorkerListPage() {
@@ -90,7 +93,9 @@ public class WorkerListPage extends DomainListPage<Worker>{
         Worker currentWorker = getCurrentWorker();
 
         if (currentWorker.isRegionalLeader()) {
-            filterWrapper.put(Worker.FILTER_REGION_IDS, getCurrentWorker().getRegionIdsString());
+            City city = domainService.getDomain(City.class, getCurrentWorker().getCityId());
+
+            filterWrapper.put(Worker.FILTER_REGION_ID, city.getParentId());
         } else if (currentWorker.isParticipant() && isUser() && !isAdmin() && !isStructureAdmin()){
             worker.setLeft(currentWorker.getLeft());
             worker.setRight(currentWorker.getRight());
@@ -111,9 +116,7 @@ public class WorkerListPage extends DomainListPage<Worker>{
 
         list.add(entity.getEntityAttribute(Worker.J_ID));
 
-        list.add(entity.getEntityAttribute(Worker.REGIONS).withReference(Region.ENTITY_NAME, Region.NAME));
-
-        list.add(entity.getEntityAttribute(Worker.CITIES).withReference(City.ENTITY_NAME, City.NAME)
+        list.add(entity.getEntityAttribute(Worker.CITY).withReference(City.ENTITY_NAME, City.NAME)
                 .setPrefixEntityAttribute(entityService.getEntityAttribute(City.ENTITY_NAME, City.CITY_TYPE)
                         .withReference(CityType.ENTITY_NAME, CityType.SHORT_NAME)));
 

@@ -119,7 +119,7 @@ public class StoragePage extends BasePage {
             if (!isAdmin()){
                 boolean storages = storageMapper.getStorages(new FilterWrapper<>(new Storage())
                         .put(Storage.FILTER_CURRENT_WORKER, getCurrentWorker().getObjectId())
-                        .put(Storage.FILTER_CITIES, getCurrentWorker().getNumberValuesString(Worker.CITIES)))
+                        .put(Storage.FILTER_CITY, getCurrentWorker().getCityId()))
                         .stream().filter(s -> s.getCityId() != null)
                         .anyMatch(s -> Objects.equals(s.getObjectId(), storageId));
 
@@ -139,10 +139,10 @@ public class StoragePage extends BasePage {
         feedback.setOutputMarkupId(true);
         add(feedback);
 
-        Form form = new Form<>("form");
+        Form<?> form = new Form<>("form");
         add(form);
 
-        FormGroupTextField storageIdFormGroup = new FormGroupTextField<>("storageId", Model.of(storageId));
+        FormGroupTextField<?> storageIdFormGroup = new FormGroupTextField<>("storageId", Model.of(storageId));
         storageIdFormGroup.setEnabled(false);
         storageIdFormGroup.setVisible(storageId != null);
         form.add(storageIdFormGroup);
@@ -181,7 +181,7 @@ public class StoragePage extends BasePage {
 
         form.add(new FormGroupSelectPanel("storageType", new BootstrapSelect<>(FormGroupPanel.COMPONENT_ID,
                 new NumberAttributeModel(storage, Storage.TYPE), Arrays.asList(StorageType.REAL, StorageType.PERSONAL),
-                new IChoiceRenderer<Long>() {
+                new IChoiceRenderer<>() {
                     @Override
                     public Object getDisplayValue(Long object) {
                         switch (object.intValue()){
@@ -265,7 +265,7 @@ public class StoragePage extends BasePage {
 
         //Products
 
-        Provider<Product> productProvider = new Provider<Product>(FilterWrapper.<Product>of(
+        Provider<Product> productProvider = new Provider<>(FilterWrapper.<Product>of(
                 new Product(){{setParentId(storageId);}}).sort("id", false)) {
             @Override
             public List<Product> getList() {
@@ -278,8 +278,7 @@ public class StoragePage extends BasePage {
             }
         };
 
-        FilterForm<FilterWrapper<Product>> productForm = new FilterForm<FilterWrapper<Product>>("productForm",
-                productProvider){
+        FilterForm<FilterWrapper<Product>> productForm = new FilterForm<>("productForm", productProvider){
             @Override
             protected boolean wantSubmitOnParentFormSubmit() {
                 return false;
@@ -299,7 +298,7 @@ public class StoragePage extends BasePage {
             productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.NOMENCLATURE)
                     .withReferences(Nomenclature.ENTITY_NAME, Nomenclature.CODE, Nomenclature.NAME)));
 
-            productColumns.add(new DomainColumn<Product>(productEntity.getEntityAttribute(Product.QUANTITY)){
+            productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.QUANTITY)){
                 @Override
                 public void populateItem(Item<ICellPopulator<Product>> cellItem, String componentId, IModel<Product> rowModel) {
                     super.populateItem(cellItem, componentId, rowModel);
@@ -320,7 +319,7 @@ public class StoragePage extends BasePage {
             });
             productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.SENDING_QUANTITY)));
 
-            productColumns.add(new DomainColumn<Product>(productEntity.getEntityAttribute(Product.RECEIVING_QUANTITY)){
+            productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.RECEIVING_QUANTITY)){
                 @Override
                 public void populateItem(Item<ICellPopulator<Product>> cellItem, String componentId, IModel<Product> rowModel) {
                     super.populateItem(cellItem, componentId, rowModel);
@@ -340,7 +339,7 @@ public class StoragePage extends BasePage {
                 }
             });
 
-            productColumns.add(new DomainColumn<Product>(productEntity.getEntityAttribute(Product.GIFT_QUANTITY)){
+            productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.GIFT_QUANTITY)){
                 @Override
                 public void populateItem(Item<ICellPopulator<Product>> cellItem, String componentId, IModel<Product> rowModel) {
                     super.populateItem(cellItem, componentId, rowModel);
@@ -361,7 +360,7 @@ public class StoragePage extends BasePage {
             });
             productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.GIFT_SENDING_QUANTITY)));
 
-            productColumns.add(new DomainColumn<Product>(productEntity.getEntityAttribute(Product.GIFT_RECEIVING_QUANTITY)){
+            productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.GIFT_RECEIVING_QUANTITY)){
                 @Override
                 public void populateItem(Item<ICellPopulator<Product>> cellItem, String componentId, IModel<Product> rowModel) {
                     super.populateItem(cellItem, componentId, rowModel);
@@ -381,7 +380,7 @@ public class StoragePage extends BasePage {
                 }
             });
 
-            productColumns.add(new DomainColumn<Product>(productEntity.getEntityAttribute(Product.RESERVE_QUANTITY)){
+            productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.RESERVE_QUANTITY)){
                 @Override
                 public void populateItem(Item<ICellPopulator<Product>> cellItem, String componentId, IModel<Product> rowModel) {
                     super.populateItem(cellItem, componentId, rowModel);
@@ -401,7 +400,7 @@ public class StoragePage extends BasePage {
                 }
             });
 
-            productColumns.add(new DomainActionColumn<Product>(){
+            productColumns.add(new DomainActionColumn<>(){
                 @Override
                 public void populateItem(Item<ICellPopulator<Product>> cellItem, String componentId, IModel<Product> rowModel) {
                     cellItem.add(new LinkPanel(componentId, new BootstrapAjaxLink<Void>(LinkPanel.LINK_COMPONENT_ID,
@@ -415,7 +414,7 @@ public class StoragePage extends BasePage {
             });
         }
 
-        Table<Product> productTable = new Table<Product>("table", productColumns, productProvider, 15, "storagePageProduct"){
+        Table<Product> productTable = new Table<>("table", productColumns, productProvider, 15, "storagePageProduct"){
             @Override
             public boolean isVisible() {
                 return storageId != null;
@@ -430,7 +429,7 @@ public class StoragePage extends BasePage {
         transferHeader.setVisible(storageId != null && edit);
         tables.add(transferHeader);
 
-        Provider<Transfer> transferProvider = new Provider<Transfer>(FilterWrapper.of(
+        Provider<Transfer> transferProvider = new Provider<>(FilterWrapper.of(
                 new Transfer()).put("storageId", storageId).sort("id", null, false)) {
 
             @Override
@@ -444,8 +443,7 @@ public class StoragePage extends BasePage {
             }
         };
 
-        FilterForm<FilterWrapper<Transfer>> transferForm = new FilterForm<FilterWrapper<Transfer>>(
-                "transferForm", transferProvider){
+        FilterForm<FilterWrapper<Transfer>> transferForm = new FilterForm<>("transferForm", transferProvider){
             @Override
             protected boolean wantSubmitOnParentFormSubmit() {
                 return false;
@@ -533,7 +531,7 @@ public class StoragePage extends BasePage {
                     return new SelectPanel(componentId, new BootstrapSelect<>(SelectPanel.SELECT_COMPONENT_ID,
                             new NumberAttributeModel(transfer,
                                     Transfer.RELOCATION_TYPE), Arrays.asList(TransferRelocationType.RELOCATION, TransferRelocationType.GIFT),
-                            new IChoiceRenderer<Long>() {
+                            new IChoiceRenderer<>() {
                                 @Override
                                 public Object getDisplayValue(Long object) {
                                     if (object != null) {
@@ -592,7 +590,7 @@ public class StoragePage extends BasePage {
                             new NumberAttributeModel(transfer,
                                     Transfer.TYPE), Arrays.asList(TransferType.ACCEPT, TransferType.SELL,
                             TransferType.RELOCATION, TransferType.WITHDRAW, TransferType.RESERVE),
-                            new IChoiceRenderer<Long>() {
+                            new IChoiceRenderer<>() {
                                 @Override
                                 public Object getDisplayValue(Long object) {
                                     if (object != null) {
@@ -656,7 +654,7 @@ public class StoragePage extends BasePage {
                 }
             });
 
-            transferColumns.add(new DomainActionColumn<Transfer>(){
+            transferColumns.add(new DomainActionColumn<>(){
                 @Override
                 public void populateItem(Item<ICellPopulator<Transfer>> cellItem, String componentId, IModel<Transfer> rowModel) {
                     Transfer transfer = rowModel.getObject();
@@ -676,7 +674,7 @@ public class StoragePage extends BasePage {
             });
         }
 
-        Table<Transfer> transferDataTable = new Table<Transfer>("table", transferColumns, transferProvider, 15,
+        Table<Transfer> transferDataTable = new Table<>("table", transferColumns, transferProvider, 15,
                 "storagePageTransfer"){
             @Override
             public boolean isVisible() {

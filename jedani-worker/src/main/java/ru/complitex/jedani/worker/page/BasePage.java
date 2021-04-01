@@ -207,12 +207,12 @@ public class BasePage extends WebPage{
                         .add("id", getCurrentStorage().getObjectId())
                         .add("nsl", ""), "id")
                         : new EmptyPanel("storage").setVisible(false))
-                .add(new BootstrapListView<Storage>("storages", new LoadableDetachableModel<List<Storage>>() {
+                .add(new BootstrapListView<Storage>("storages", new LoadableDetachableModel<>() {
                     @Override
                     protected List<Storage> load() {
                         return storageMapper.getStorages(new FilterWrapper<>(new Storage())
                                 .put(Storage.FILTER_CURRENT_WORKER, getCurrentWorker().getObjectId())
-                                .put(Storage.FILTER_CITIES, getCurrentWorker().getNumberValuesString(Worker.CITIES)))
+                                .put(Storage.FILTER_CITY, getCurrentWorker().getCityId()))
                                 .stream().filter(s -> s.getNumber(Storage.CITY) != null).collect(Collectors.toList());
                     }
                 }) {
@@ -311,7 +311,7 @@ public class BasePage extends WebPage{
     protected void onBeforeRender() {
         super.onBeforeRender();
 
-        menu.visitChildren(MenuLink.class, (IVisitor<MenuLink, IVisit>) (m, v) -> {
+        menu.visitChildren(MenuLink.class, (IVisitor<MenuLink, IVisit<?>>) (m, v) -> {
             if ((getClass().equals(m.getPageClass()) && (m.getMenuKey() == null ||
                     m.getPageParameters().get(m.getMenuKey()).equals(pageParameters.get(m.getMenuKey())))) ||
                     m.hasMenuPageClass(getClass())){
@@ -444,7 +444,6 @@ public class BasePage extends WebPage{
     public Worker getCurrentWorker() {
         if (currentWorker == null && isAdmin()){
             currentWorker = new Worker();
-            currentWorker.init();
 
             currentWorker.setParentId(getCurrentUser().getId());
         }

@@ -75,7 +75,6 @@ import ru.complitex.domain.mapper.EntityMapper;
 import ru.complitex.domain.model.DateAttributeModel;
 import ru.complitex.domain.model.NumberAttributeModel;
 import ru.complitex.domain.model.TextAttributeModel;
-import ru.complitex.domain.service.DomainNodeService;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
 import ru.complitex.jedani.worker.component.JedaniRoleSelectList;
@@ -92,6 +91,7 @@ import ru.complitex.jedani.worker.page.sale.SalePanel;
 import ru.complitex.jedani.worker.security.JedaniRoles;
 import ru.complitex.jedani.worker.service.CardService;
 import ru.complitex.jedani.worker.service.RewardService;
+import ru.complitex.jedani.worker.service.WorkerNodeService;
 import ru.complitex.jedani.worker.service.WorkerService;
 import ru.complitex.name.entity.FirstName;
 import ru.complitex.name.entity.LastName;
@@ -120,7 +120,7 @@ import static com.google.common.io.Files.getFileExtension;
 
 @AuthorizeInstantiation(JedaniRoles.AUTHORIZED)
 public class WorkerPage extends BasePage {
-    private Logger log = LoggerFactory.getLogger(Worker.class);
+    private final Logger log = LoggerFactory.getLogger(Worker.class);
 
     public final static String PHOTO_FILE_PREFIX = "photo_";
 
@@ -146,7 +146,7 @@ public class WorkerPage extends BasePage {
     private EntityService entityService;
 
     @Inject
-    private DomainNodeService domainNodeService;
+    private WorkerNodeService workerNodeService;
 
     @Inject
     private CardService cardService;
@@ -168,7 +168,6 @@ public class WorkerPage extends BasePage {
 
         if (!parameters.get("new").isNull()){
             worker = new Worker();
-            worker.init();
 
             worker.setType(WorkerType.PK);
             worker.setText(Worker.J_ID, workerMapper.getNewJId());
@@ -180,10 +179,8 @@ public class WorkerPage extends BasePage {
             }
 
             if (manager != null){
-                manager.getNumberValues(Worker.REGIONS).forEach(n -> worker.addNumberValue(Worker.REGIONS, n));
-                manager.getNumberValues(Worker.CITIES).forEach(n -> worker.addNumberValue(Worker.CITIES, n));
-
                 worker.setManagerId(manager.getObjectId());
+                worker.setCityId(manager.getCityId());
             }
         }else{
             if (id != null) {
@@ -207,8 +204,10 @@ public class WorkerPage extends BasePage {
 
         if (worker.getObjectId() != null && !isAdmin()){
             if (getCurrentWorker().isRegionalLeader()){
-                if (worker.getNumberValues(Worker.REGIONS).stream().noneMatch(r -> getCurrentWorker()
-                        .getNumberValues(Worker.REGIONS).contains(r))){
+                City currentCity = domainService.getDomain(City.class, getCurrentWorker().getCityId());
+                City city = domainService.getDomain(City.class, worker.getCityId());
+
+                if (!Objects.equals(currentCity.getParentId(), city.getParentId())){
                     throw new UnauthorizedInstantiationException(WorkerPage.class);
                 }
             }else if (worker.isParticipant() && !isStructureAdmin()){
@@ -236,7 +235,7 @@ public class WorkerPage extends BasePage {
         //Data provider
         FilterWrapper<Worker> filterWrapper = newFilterWrapper();
 
-        Provider<Worker> provider = new Provider<Worker>(filterWrapper) {
+        Provider<Worker> provider = new Provider<>(filterWrapper) {
 
             @Override
             public List<Worker> getList() {
@@ -310,7 +309,7 @@ public class WorkerPage extends BasePage {
             }
         }.setNullValid(true));
 
-        FormGroupTextField<String> jId = new FormGroupTextField<String>("jId", new TextAttributeModel(worker, Worker.J_ID)){
+        FormGroupTextField<String> jId = new FormGroupTextField<>("jId", new TextAttributeModel(worker, Worker.J_ID)){
             @Override
             public boolean isRequired() {
                 return worker.isParticipant();
@@ -382,7 +381,7 @@ public class WorkerPage extends BasePage {
             }
         });
 
-        form.add(city = new FormGroupAttributeSelectList("city", Model.of(worker.getOrCreateAttribute(Worker.CITIES)),
+        form.add(city = new FormGroupAttributeSelect("city", Model.of(worker.getOrCreateAttribute(Worker.CITY)),
                 City.ENTITY_NAME, City.NAME, region.getListModel(), true){
             @Override
             protected String getPrefix(Domain<?> domain) {
@@ -460,7 +459,7 @@ public class WorkerPage extends BasePage {
         form.add(confirmPassword);
 
 
-        FormGroupTextField<String> card = new FormGroupTextField<String>("card", new Model<>()){
+        FormGroupTextField<String> card = new FormGroupTextField<>("card", new Model<>()){
             @Override
             public boolean isVisible() {
                 return worker.isParticipant();
@@ -690,14 +689,7 @@ public class WorkerPage extends BasePage {
                             throw e;
                         }
 
-                        manager = workerMapper.getWorker(worker.getManagerId());
-
-                        if (manager != null) {
-                            domainNodeService.updateIndex(manager, worker);
-                        }else{
-
-                            domainNodeService.updateIndex(new Worker(1L, 1L, 2L, 0L), worker);
-                        }
+                        workerNodeService.updateIndex(worker);
 
                         success(getString(worker.isParticipant() ? "info_worker_created" : "info_user_created"));
                     }else{
@@ -711,9 +703,10 @@ public class WorkerPage extends BasePage {
                         domainService.update(worker);
 
                         if (moveIndex){
-                            workerService.moveIndex(manager, worker);
+                            workerNodeService.moveIndex(worker);
 
                             worker = workerMapper.getWorker(worker.getObjectId());
+
                             filterWrapper.getObject().setLeft(worker.getLeft());
                             filterWrapper.getObject().setRight(worker.getRight());
                             filterWrapper.getObject().setLevel(worker.getLevel());
@@ -811,7 +804,7 @@ public class WorkerPage extends BasePage {
                 columns.add(new DomainIdColumn<>());
                 getEntityAttributes().forEach(a -> columns.add(new DomainColumn<>(a)));
 
-                columns.add(new AbstractDomainColumn<Worker>(new StringResourceModel("subWorkersCount", WorkerPage.this),
+                columns.add(new AbstractDomainColumn<>(new StringResourceModel("subWorkersCount", WorkerPage.this),
                         new Sort("subWorkersCount")) {
                     @Override
                     public void populateItem(Item<ICellPopulator<Worker>> cellItem, String componentId, IModel<Worker> rowModel) {
@@ -824,7 +817,7 @@ public class WorkerPage extends BasePage {
                     }
                 });
 
-                columns.add(new AbstractDomainColumn<Worker>(new StringResourceModel("level", WorkerPage.this), new Sort("level")) {
+                columns.add(new AbstractDomainColumn<>(new StringResourceModel("level", WorkerPage.this), new Sort("level")) {
                     @Override
                     public void populateItem(Item<ICellPopulator<Worker>> cellItem, String componentId, IModel<Worker> rowModel) {
                         cellItem.add(new Label(componentId, rowModel.getObject().getLevel() - getCurrentWorker().getLevel()));
@@ -836,7 +829,7 @@ public class WorkerPage extends BasePage {
                     }
                 });
 
-                columns.add(new DomainActionColumn<Worker>(WorkerPage.class){
+                columns.add(new DomainActionColumn<>(WorkerPage.class){
                     @Override
                     protected void onAction(AjaxRequestTarget target, Table<Worker> table) {
                         target.add(structure);
@@ -884,7 +877,7 @@ public class WorkerPage extends BasePage {
                     }
                 });
 
-                Table<Worker> table = new Table<Worker>("table", columns, provider, 15, "workerPage"){
+                Table<Worker> table = new Table<>("table", columns, provider, 15, "workerPage"){
                     @Override
                     protected Item<Worker> newRowItem(String id, int index, final IModel<Worker> model) {
                         Item<Worker> rowItem = super.newRowItem(id, index, model);
@@ -1106,14 +1099,14 @@ public class WorkerPage extends BasePage {
 
                     List<IColumn<Attribute, String>> historyColumns = new ArrayList<>();
 
-                    historyColumns.add(new AbstractColumn<Attribute, String>(new StringResourceModel("date", WorkerPage.this), "date") {
+                    historyColumns.add(new AbstractColumn<>(new StringResourceModel("date", WorkerPage.this), "date") {
                         @Override
                         public void populateItem(Item<ICellPopulator<Attribute>> cellItem, String componentId, IModel<Attribute> rowModel) {
                             cellItem.add(new DateTimeLabel(componentId, rowModel.getObject().getStartDate()));
                         }
                     });
 
-                    historyColumns.add(new AbstractColumn<Attribute, String>(new StringResourceModel("name", WorkerPage.this), "name") {
+                    historyColumns.add(new AbstractColumn<>(new StringResourceModel("name", WorkerPage.this), "name") {
                         @Override
                         public void populateItem(Item<ICellPopulator<Attribute>> cellItem, String componentId, IModel<Attribute> rowModel) {
                             if (rowModel.getObject().getEntityAttributeId() == 1000){
@@ -1128,7 +1121,7 @@ public class WorkerPage extends BasePage {
                         }
                     });
 
-                    historyColumns.add(new AbstractColumn<Attribute, String>(new StringResourceModel("value", WorkerPage.this), "value") {
+                    historyColumns.add(new AbstractColumn<>(new StringResourceModel("value", WorkerPage.this), "value") {
                         @Override
                         public void populateItem(Item<ICellPopulator<Attribute>> cellItem, String componentId, IModel<Attribute> rowModel) {
                             Attribute attribute = rowModel.getObject();
@@ -1178,7 +1171,7 @@ public class WorkerPage extends BasePage {
                         }
                     });
 
-                    historyColumns.add(new AbstractColumn<Attribute, String>(new StringResourceModel("user", WorkerPage.this), "user") {
+                    historyColumns.add(new AbstractColumn<>(new StringResourceModel("user", WorkerPage.this), "user") {
                         @Override
                         public void populateItem(Item<ICellPopulator<Attribute>> cellItem, String componentId, IModel<Attribute> rowModel) {
                             Long userId = rowModel.getObject().getUserId();
@@ -1198,7 +1191,7 @@ public class WorkerPage extends BasePage {
                         }
                     });
 
-                    SortableDataProvider<Attribute, String> historyDataProvider = new SortableDataProvider<Attribute, String>() {
+                    SortableDataProvider<Attribute, String> historyDataProvider = new SortableDataProvider<>() {
                         @Override
                         public Iterator<? extends Attribute> iterator(long first, long count) {
                             return workerMapper.getWorkerUserHistories(new FilterWrapper<>(first, count)
@@ -1219,7 +1212,7 @@ public class WorkerPage extends BasePage {
                         }
                     };
 
-                    DataTable<Attribute, String> historyDataTable = new DataTable<Attribute, String>("history", historyColumns,
+                    DataTable<Attribute, String> historyDataTable = new DataTable<>("history", historyColumns,
                             historyDataProvider, 10){
                         @Override
                         public boolean isVisible() {
@@ -1297,9 +1290,7 @@ public class WorkerPage extends BasePage {
 
         list.add(entity.getEntityAttribute(Worker.J_ID));
 
-        list.add(entity.getEntityAttribute(Worker.REGIONS).withReference(Region.ENTITY_NAME, Region.NAME));
-
-        list.add(entity.getEntityAttribute(Worker.CITIES).withReference(City.ENTITY_NAME, City.NAME)
+        list.add(entity.getEntityAttribute(Worker.CITY).withReference(City.ENTITY_NAME, City.NAME)
                 .setPrefixEntityAttribute(entityService.getEntityAttribute(City.ENTITY_NAME, City.CITY_TYPE)
                         .withReference(CityType.ENTITY_NAME, CityType.SHORT_NAME)));
 

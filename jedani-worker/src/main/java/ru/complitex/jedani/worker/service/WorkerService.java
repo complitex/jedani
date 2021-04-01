@@ -9,7 +9,6 @@ import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.util.Dates;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.Status;
-import ru.complitex.domain.service.DomainNodeService;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.util.Attributes;
 import ru.complitex.jedani.worker.entity.UserHistory;
@@ -22,9 +21,9 @@ import ru.complitex.user.mapper.UserMapper;
 
 import javax.inject.Inject;
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * @author Anatoly A. Ivanov
@@ -42,7 +41,7 @@ public class WorkerService implements Serializable {
     private WorkerMapper workerMapper;
 
     @Inject
-    private DomainNodeService domainNodeService;
+    private WorkerNodeService workerNodeService;
 
     @Inject
     private NameService nameService;
@@ -70,20 +69,6 @@ public class WorkerService implements Serializable {
         }
 
         return null;
-    }
-
-    @Transactional
-    public void rebuildIndex(){
-        domainNodeService.rebuildRootIndex(Worker.ENTITY_NAME, 1L, Worker.MANAGER_ID);
-    }
-
-    public void moveIndex(Worker manager, Worker worker){
-        if (!worker.getId().equals(manager.getId()) && (worker.getLeft() >= manager.getLeft() ||
-                worker.getRight() <= manager.getRight())) {
-            domainNodeService.move(manager, worker);
-        } else {
-            rebuildIndex();
-        }
     }
 
     public String getWorkerLabel(Long workerId){
@@ -126,15 +111,19 @@ public class WorkerService implements Serializable {
     }
 
     public List<String> getRegions(Worker worker){
-        return worker.getRegionIds().stream()
-                .map(objectId -> domainService.getTextValue(Region.ENTITY_NAME, objectId, Region.NAME))
-                .collect(Collectors.toList());
+        City city = domainService.getDomain(City.class, worker.getCityId());
+
+        String regionName = domainService.getTextValue(Region.ENTITY_NAME, city.getParentId(), Region.NAME);
+
+        return Collections.singletonList(regionName);
     }
 
     public List<String> getCities(Worker worker){
-        return worker.getCityIds().stream()
-                .map(objectId -> domainService.getTextValue(City.ENTITY_NAME, objectId, City.NAME))
-                .collect(Collectors.toList());
+        City city = domainService.getDomain(City.class, worker.getCityId());
+
+        String cityName = domainService.getTextValue(City.ENTITY_NAME, city.getObjectId(), City.NAME);
+
+        return Collections.singletonList(cityName);
     }
 
     public String getSimpleWorkerLabel(Long workerId){
@@ -145,7 +134,7 @@ public class WorkerService implements Serializable {
         return getSimpleWorkerLabel(workerMapper.getWorker(workerId));
     }
 
-    public String getSimpleWorkerLabel(Domain worker){
+    public String getSimpleWorkerLabel(Domain<?> worker){
         return Objects.defaultIfNull(worker.getText(Worker.J_ID), "") + ", " +
                 Attributes.capitalize(nameService.getLastName(worker.getNumber(Worker.LAST_NAME)));
     }
@@ -183,7 +172,7 @@ public class WorkerService implements Serializable {
 
         domainService.save(worker);
 
-        rebuildIndex();
+        workerNodeService.rebuildIndex();
     }
 
     @Transactional
@@ -227,14 +216,12 @@ public class WorkerService implements Serializable {
     }
 
     public Long getCurrencyId(Long workerId) {
-        List<Long> regionIds = domainService.getNumberValues(Worker.ENTITY_NAME, workerId, Worker.REGIONS);
+        Long cityId = domainService.getNumber(Worker.ENTITY_NAME, workerId, Worker.CITY);
 
-        if (!regionIds.isEmpty()){
-            Region region = domainService.getDomain(Region.class, regionIds.get(0));
+        City city = domainService.getDomain(City.class, cityId);
 
-            return domainService.getDomain(Country.class, region.getParentId()).getNumber(Country.CURRENCY);
-        }
+        Region region = domainService.getDomain(Region.class, city.getParentId());
 
-        return null;
+        return domainService.getDomain(Country.class, region.getParentId()).getNumber(Country.CURRENCY);
     }
 }

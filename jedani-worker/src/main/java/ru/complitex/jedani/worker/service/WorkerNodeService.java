@@ -1,9 +1,13 @@
 package ru.complitex.jedani.worker.service;
 
 import org.apache.wicket.util.lang.Objects;
+import org.mybatis.cdi.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.complitex.domain.service.DomainNodeService;
+import ru.complitex.jedani.worker.entity.Worker;
 import ru.complitex.jedani.worker.entity.WorkerNode;
+import ru.complitex.jedani.worker.mapper.WorkerMapper;
 import ru.complitex.jedani.worker.mapper.WorkerNodeMapper;
 
 import javax.inject.Inject;
@@ -22,7 +26,13 @@ public class WorkerNodeService implements Serializable {
     private final Logger log = LoggerFactory.getLogger(WorkerNodeService.class);
 
     @Inject
+    private WorkerMapper workerMapper;
+
+    @Inject
     private WorkerNodeMapper workerNodeMapper;
+
+    @Inject
+    private DomainNodeService domainNodeService;
 
     public WorkerNode getWorkerTree(List<WorkerNode> workerNodes, Long rootWorkerId){
         Map<Long, WorkerNode> map = workerNodes.stream()
@@ -79,5 +89,29 @@ public class WorkerNodeService implements Serializable {
         workerNodes.forEach(w -> map.computeIfAbsent(w.getLevel(), k -> new ArrayList<>()).add(w));
 
         return map;
+    }
+
+    @Transactional
+    public void updateIndex(Worker worker) {
+        Worker manager = workerMapper.getWorker(worker.getManagerId());
+
+        domainNodeService.updateIndex(java.util.Objects.requireNonNullElseGet(manager, () -> new Worker(1L, 1L, 2L, 0L)), worker);
+    }
+
+    @Transactional
+    public void rebuildIndex(){
+        domainNodeService.rebuildRootIndex(Worker.ENTITY_NAME, 1L, Worker.MANAGER_ID);
+    }
+
+    @Transactional
+    public void moveIndex(Worker worker){
+        Worker manager = workerMapper.getWorker(worker.getManagerId());
+
+        if (!worker.getId().equals(manager.getId()) && (worker.getLeft() >= manager.getLeft() ||
+                worker.getRight() <= manager.getRight())) {
+            domainNodeService.move(manager, worker);
+        } else {
+            rebuildIndex();
+        }
     }
 }

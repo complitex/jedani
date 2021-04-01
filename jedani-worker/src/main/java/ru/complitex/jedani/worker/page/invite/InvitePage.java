@@ -34,7 +34,6 @@ import ru.complitex.domain.entity.StringType;
 import ru.complitex.domain.model.DateAttributeModel;
 import ru.complitex.domain.model.NumberAttributeModel;
 import ru.complitex.domain.model.TextAttributeModel;
-import ru.complitex.domain.service.DomainNodeService;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.page.login.LoginPage;
@@ -45,6 +44,7 @@ import ru.complitex.jedani.worker.page.worker.WorkerPage;
 import ru.complitex.jedani.worker.security.JedaniRoles;
 import ru.complitex.jedani.worker.service.CardService;
 import ru.complitex.jedani.worker.service.InviteService;
+import ru.complitex.jedani.worker.service.WorkerNodeService;
 import ru.complitex.jedani.worker.service.WorkerService;
 import ru.complitex.name.entity.FirstName;
 import ru.complitex.name.entity.LastName;
@@ -84,7 +84,7 @@ public class InvitePage extends WebPage {
     private NameService nameService;
 
     @Inject
-    private DomainNodeService domainNodeService;
+    private WorkerNodeService workerNodeService;
 
     @Inject
     private InviteService inviteService;
@@ -105,20 +105,17 @@ public class InvitePage extends WebPage {
             throw new UnauthorizedInstantiationException(getClass());
         }
 
-        Worker manager = workerService.getWorkerByJId(JId);
-
         worker = new Worker();
-
-        worker.init();
 
         worker.setType(WorkerType.PK);
         worker.setText(Worker.J_ID, workerService.getNewJId());
         worker.setMkStatus(MkStatus.STATUS_JUST);
         worker.setText(Worker.INVITE, key);
 
-        manager.getNumberValues(Worker.REGIONS).forEach(n -> worker.addNumberValue(Worker.REGIONS, n));
-        manager.getNumberValues(Worker.CITIES).forEach(n -> worker.addNumberValue(Worker.CITIES, n));
 
+        Worker manager = workerService.getWorkerByJId(JId);
+
+        worker.setCityId(manager.getCityId());
         worker.setManagerId(manager.getObjectId());
 
 
@@ -187,7 +184,7 @@ public class InvitePage extends WebPage {
         confirmPassword.setRequired(true);
         form.add(confirmPassword);
 
-        FormGroupTextField<String> card = new FormGroupTextField<String>("card", new Model<>()){
+        FormGroupTextField<String> card = new FormGroupTextField<>("card", new Model<>()){
             @Override
             public boolean isVisible() {
                 return worker.isParticipant();
@@ -288,7 +285,7 @@ public class InvitePage extends WebPage {
                         throw e;
                     }
 
-                    domainNodeService.updateIndex(manager, worker);
+                    workerNodeService.updateIndex(worker);
 
                     getSession().success(getString("info_worker_created"));
 

@@ -90,7 +90,7 @@
         <if test="map.objectId != null">
             d.object_id concat('%', #{map.objectId}, '%')
         </if>
-        <if test="map.cities != null">
+        <if test="map.city != null">
         and (
           <if test="map.currentWorker != null">
               d.parent_id = #{map.currentWorker}
@@ -103,7 +103,7 @@
           exists(select sa.id from storage_attribute sa
             left join city c on sa.entity_attribute_id = 1 and sa.status = 1 and c.object_id = sa.number
             left join city rc on c.parent_id = rc.parent_id
-            where sa.domain_id = d.id and (c.object_id in (${map.cities}) or rc.object_id in (${map.cities})))
+            where sa.domain_id = d.id and (c.object_id = ${map.city} or rc.object_id = ${map.city}))
         )
         </if>
         <if test="map.regions != null">
