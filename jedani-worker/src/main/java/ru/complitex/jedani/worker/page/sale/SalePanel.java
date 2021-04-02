@@ -76,7 +76,7 @@ public class SalePanel extends DomainListModalPanel<Sale> {
         }
 
         if (worker.isRegionalLeader()){
-            filterWrapper.put(Sale.FILTER_REGION_IDS, worker.getRegionIdsString());
+            filterWrapper.put(Sale.FILTER_REGION, workerService.getRegionId(worker));
         }
 
         if (isActualFilter()) {

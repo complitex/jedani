@@ -280,10 +280,10 @@ public class StorageService implements Serializable {
                 return null;
             }
 
-            List<Long> regionIds = worker.getNumberValues(Worker.REGIONS);
+            Long regionId = domainService.getParentId(City.ENTITY_NAME, worker.getCityId());
 
-            if (!regionIds.isEmpty()){
-                return domainService.getDomain(Region.class, regionIds.get(0)).getParentId();
+            if (regionId != null) {
+                return domainService.getParentId(Region.ENTITY_NAME, regionId);
             }
         }
 

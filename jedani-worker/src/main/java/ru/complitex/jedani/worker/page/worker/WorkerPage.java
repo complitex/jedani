@@ -68,7 +68,6 @@ import ru.complitex.domain.component.datatable.DomainColumn;
 import ru.complitex.domain.component.datatable.DomainIdColumn;
 import ru.complitex.domain.component.form.FormGroupAttributeInputList;
 import ru.complitex.domain.component.form.FormGroupAttributeSelect;
-import ru.complitex.domain.component.form.FormGroupAttributeSelectList;
 import ru.complitex.domain.component.form.FormGroupDomainAutoComplete;
 import ru.complitex.domain.entity.*;
 import ru.complitex.domain.mapper.EntityMapper;
@@ -77,6 +76,7 @@ import ru.complitex.domain.model.NumberAttributeModel;
 import ru.complitex.domain.model.TextAttributeModel;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
+import ru.complitex.domain.util.Attributes;
 import ru.complitex.jedani.worker.component.JedaniRoleSelectList;
 import ru.complitex.jedani.worker.component.PeriodPanel;
 import ru.complitex.jedani.worker.component.TypeSelect;
@@ -366,10 +366,15 @@ public class WorkerPage extends BasePage {
                 .setEnabled(!isViewOnly()));
 
 
-        FormGroupAttributeSelectList city, region;
+        FormGroupAttributeSelect city, region;
 
-        form.add(region = new FormGroupAttributeSelectList("region", Model.of(worker.getOrCreateAttribute(Worker.REGIONS)),
-                Region.ENTITY_NAME, Region.NAME, true){
+        IModel<Long> regionModel = new Model<>();
+
+        if (worker.getCityId() != null) {
+            regionModel.setObject(domainService.getParentId(City.ENTITY_NAME, worker.getCityId()));
+        }
+
+        form.add(region = new FormGroupAttributeSelect("region", regionModel, Region.ENTITY_NAME, Region.NAME){
             @Override
             public boolean isRequired() {
                 return worker.isParticipant();
@@ -381,11 +386,26 @@ public class WorkerPage extends BasePage {
             }
         });
 
-        form.add(city = new FormGroupAttributeSelect("city", Model.of(worker.getOrCreateAttribute(Worker.CITY)),
-                City.ENTITY_NAME, City.NAME, region.getListModel(), true){
+        form.add(city = new FormGroupAttributeSelect("city",
+                new NumberAttributeModel(worker.getOrCreateAttribute(Worker.CITY)) {
+                    @Override
+                    public void setObject(Long object) {
+                        super.setObject(object);
+
+                        if (object != null) {
+                            regionModel.setObject(domainService.getParentId(City.ENTITY_NAME, object));
+                        }
+                    }
+                },
+                City.ENTITY_NAME, City.NAME){
             @Override
-            protected String getPrefix(Domain<?> domain) {
-                Long cityTypeId = domain.getNumber(City.CITY_TYPE);
+            protected FilterWrapper<? extends Domain<?>> getFilterWrapper() {
+                return FilterWrapper.of(new City().setParentId(regionModel.getObject()));
+            }
+
+            @Override
+            protected String getPrefix(Long id) {
+                Long cityTypeId = domainService.getNumber(City.ENTITY_NAME, id, City.CITY_TYPE);
 
                 if (cityTypeId != null){
                     CityType cityType = domainService.getDomain(CityType.class, cityTypeId);
@@ -395,7 +415,7 @@ public class WorkerPage extends BasePage {
                     }
                 }
 
-                return super.getPrefix(domain);
+                return super.getPrefix(id);
             }
 
             @Override
@@ -408,7 +428,9 @@ public class WorkerPage extends BasePage {
                 return isEditEnabled();
             }
         });
+
         region.onChange(t -> t.add(city));
+        city.onChange(t -> t.add(region));
 
         List<String> roles = new ArrayList<>();
 
@@ -802,7 +824,32 @@ public class WorkerPage extends BasePage {
                 List<IColumn<Worker, Sort>> columns = new ArrayList<>();
 
                 columns.add(new DomainIdColumn<>());
-                getEntityAttributes().forEach(a -> columns.add(new DomainColumn<>(a)));
+
+                Entity entity = entityMapper.getEntity(Worker.ENTITY_NAME);
+
+                columns.add(new DomainColumn<>(entity.getEntityAttribute(Worker.J_ID)));
+                columns.add(new DomainColumn<>(entity.getEntityAttribute(Worker.LAST_NAME).withReference(LastName.ENTITY_NAME, LastName.NAME)));
+                columns.add(new DomainColumn<>(entity.getEntityAttribute(Worker.FIRST_NAME).withReference(FirstName.ENTITY_NAME, FirstName.NAME)));
+                columns.add(new DomainColumn<>(entity.getEntityAttribute(Worker.MIDDLE_NAME).withReference(MiddleName.ENTITY_NAME, MiddleName.NAME)));
+                columns.add(new DomainColumn<>(entity.getEntityAttribute(Worker.CITY).withReference(City.ENTITY_NAME, City.NAME)
+                        .setPrefixEntityAttribute(entityService.getEntityAttribute(City.ENTITY_NAME, City.CITY_TYPE)
+                                .withReference(CityType.ENTITY_NAME, CityType.SHORT_NAME))));
+
+                columns.add(new AbstractDomainColumn<>(new StringResourceModel("region", WorkerPage.this), new Sort("region")) {
+                    @Override
+                    public void populateItem(Item<ICellPopulator<Worker>> cellItem, String componentId, IModel<Worker> rowModel) {
+                        Long regionId = domainService.getParentId(City.ENTITY_NAME, rowModel.getObject().getCityId());
+
+                        Region region = domainService.getDomain(Region.class, regionId);
+
+                        cellItem.add(new Label(componentId, Attributes.capitalizeWords(region.getTextValue(Region.NAME))));
+                    }
+
+                    @Override
+                    public Component newFilter(String componentId, Table<Worker> table) {
+                        return new TextFilter<>(componentId, PropertyModel.of(table.getFilterWrapper(), "map.region"));
+                    }
+                });
 
                 columns.add(new AbstractDomainColumn<>(new StringResourceModel("subWorkersCount", WorkerPage.this),
                         new Sort("subWorkersCount")) {
@@ -1276,25 +1323,6 @@ public class WorkerPage extends BasePage {
         return FilterWrapper.of(new Worker(worker.getLeft(), worker.getRight(), worker.getLevel()))
                 .setStatus(FilterWrapper.STATUS_ACTIVE_AND_ARCHIVE)
                 .sort("level", true);
-    }
-
-    @SuppressWarnings("Duplicates")
-    private List<EntityAttribute> getEntityAttributes() {
-        Entity entity = entityMapper.getEntity(Worker.ENTITY_NAME);
-
-        List<EntityAttribute> list = new ArrayList<>();
-
-        list.add(entity.getEntityAttribute(Worker.LAST_NAME).withReference(LastName.ENTITY_NAME, LastName.NAME));
-        list.add(entity.getEntityAttribute(Worker.FIRST_NAME).withReference(FirstName.ENTITY_NAME, FirstName.NAME));
-        list.add(entity.getEntityAttribute(Worker.MIDDLE_NAME).withReference(MiddleName.ENTITY_NAME, MiddleName.NAME));
-
-        list.add(entity.getEntityAttribute(Worker.J_ID));
-
-        list.add(entity.getEntityAttribute(Worker.CITY).withReference(City.ENTITY_NAME, City.NAME)
-                .setPrefixEntityAttribute(entityService.getEntityAttribute(City.ENTITY_NAME, City.CITY_TYPE)
-                        .withReference(CityType.ENTITY_NAME, CityType.SHORT_NAME)));
-
-        return list;
     }
 
     protected boolean isCurrentWorkerPage(){

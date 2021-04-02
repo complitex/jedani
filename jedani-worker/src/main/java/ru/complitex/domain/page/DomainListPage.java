@@ -129,10 +129,10 @@ public class DomainListPage<T extends Domain<T>> extends BasePage{
         List<Long> entityAttributeIds = getEntityAttributeIds();
 
         if (entityAttributeIds != null){
-            entityAttributeIds.forEach(id -> columns.add(newDomainColumn(entity.getEntityAttribute(id))));
+            entityAttributeIds.forEach(id -> columns.add(newColumn(entity.getEntityAttribute(id))));
 
         }else {
-            entityAttributes.forEach(a -> columns.add(newDomainColumn(a)));
+            entityAttributes.forEach(a -> columns.add(newColumn(a)));
         }
 
         onAddColumns(columns);
@@ -172,7 +172,7 @@ public class DomainListPage<T extends Domain<T>> extends BasePage{
         return FilterWrapper.of(domainObject);
     }
 
-    protected DomainColumn<T> newDomainColumn(EntityAttribute entityAttribute) {
+    protected IColumn<T, Sort> newColumn(EntityAttribute entityAttribute) {
         return new DomainColumn<>(entityAttribute, displayModel(entityAttribute));
     }
 

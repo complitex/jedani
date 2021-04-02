@@ -52,7 +52,7 @@ public class AttributeSelectList extends FormComponentPanel<Attribute> {
         container.setOutputMarkupId(true);
         add(container);
 
-        List<Domain> domains = domainMapper.getDomains(FilterWrapper.of(new Domain(refEntityName)));
+        List<Domain<?>> domains = domainMapper.getDomains(FilterWrapper.of(new Domain<>(refEntityName)));
         domains.removeIf(d -> d.getAttribute(refEntityAttributeId) == null);
         domains.sort(Comparator.comparing(d -> d.getAttribute(refEntityAttributeId).getValue(getLocale()).getText()));
 

@@ -330,7 +330,7 @@ public class Domain<T extends Domain<T>> implements Serializable{
         return status;
     }
 
-    public Domain setStatus(Status status) {
+    public Domain<?> setStatus(Status status) {
         this.status = status;
 
         return this;
@@ -368,7 +368,7 @@ public class Domain<T extends Domain<T>> implements Serializable{
         this.map = map;
     }
 
-    public Domain put(String key, Object object){
+    public Domain<?> put(String key, Object object){
         map.put(key, object);
 
         return this;

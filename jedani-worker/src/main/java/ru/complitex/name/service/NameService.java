@@ -27,21 +27,21 @@ public class NameService implements Serializable {
         }
 
         if (objectId != null) {
-            Domain domain = domainMapper.getDomain(entityName, objectId);
+            Domain<?> domain = domainMapper.getDomain(entityName, objectId);
 
             if (domain.hasValueText(entityAttributeId, name)){
                 return objectId;
             }
         }
 
-        List<Domain> domains = domainMapper.getDomains(FilterWrapper.of(new Domain(entityName)
+        List<Domain<?>> domains = domainMapper.getDomains(FilterWrapper.of(new Domain<>(entityName)
                 .setText(entityAttributeId, name)).setFilter("equal"));
 
         if (!domains.isEmpty()){
             return domains.get(0).getObjectId();
         }
 
-        Domain domain = new Domain(entityName);
+        Domain<?> domain = new Domain<>(entityName);
         domain.setTextValue(entityAttributeId, name);
 
         domainMapper.insertDomain(domain);
@@ -63,7 +63,7 @@ public class NameService implements Serializable {
 
     public String getName(Long objectId, String entityName, Long nameId){
         if (objectId != null){
-            Domain domain = domainMapper.getDomain(entityName, objectId);
+            Domain<?> domain = domainMapper.getDomain(entityName, objectId);
 
             if (domain != null){
                 return Attributes.capitalize(domain.getTextValue(nameId));

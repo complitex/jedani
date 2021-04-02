@@ -3,6 +3,7 @@ package ru.complitex.domain.mapper;
 import org.mybatis.cdi.Transactional;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.mybatis.BaseMapper;
+import ru.complitex.common.util.Maps;
 import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.Status;
@@ -124,19 +125,19 @@ public class DomainMapper extends BaseMapper {
     }
 
     public Boolean hasDomain(String entityName, Long entityAttributeId, String text){
-        Domain domain = new Domain();
+        Domain<?> domain = new Domain<>();
         domain.setEntityName(entityName);
         domain.setText(entityAttributeId, text);
 
         return sqlSession().selectOne("hasDomain", domain);
     }
 
-    public Domain getDomain(String entityName, Long objectId, boolean useDateAttribute, boolean useNumberValue){
+    public Domain<?> getDomain(String entityName, Long objectId, boolean useDateAttribute, boolean useNumberValue){
         if (objectId == null){
             return null;
         }
 
-        Domain domain = new Domain();
+        Domain<?> domain = new Domain<>();
         domain.setEntityName(entityName);
         domain.setObjectId(objectId);
         domain.setUseDateAttribute(useDateAttribute);
@@ -145,53 +146,61 @@ public class DomainMapper extends BaseMapper {
         return getDomain(domain);
     }
 
-    public Domain getDomain(String entityName, Long objectId){
+    public Domain<?> getDomain(String entityName, Long objectId){
         return getDomain(entityName, objectId, false, false);
     }
 
-    public Domain getDomainByParentId(String entityName, Long parentId){
-        Domain domain = new Domain();
+    public Domain<?> getDomainByParentId(String entityName, Long parentId){
+        Domain<?> domain = new Domain<>();
         domain.setEntityName(entityName);
         domain.setParentId(parentId);
 
         return getDomain(domain);
     }
 
-    public Domain getDomain(String entityName, Long entityAttributeId, String text){
-        Domain domain = new Domain();
+    public Domain<?> getDomain(String entityName, Long entityAttributeId, String text){
+        Domain<?> domain = new Domain<>();
         domain.setEntityName(entityName);
         domain.setText(entityAttributeId, text);
 
         return getDomain(domain);
     }
 
-    public Domain getDomain(String entityName, Long entityAttributeId, Long number){
-        Domain domain = new Domain();
+    public Domain<?> getDomain(String entityName, Long entityAttributeId, Long number){
+        Domain<?> domain = new Domain<>();
         domain.setEntityName(entityName);
         domain.setNumber(entityAttributeId, number);
 
         return getDomain(domain);
     }
 
-    private Domain getDomain(Domain domain){
+    private Domain<?> getDomain(Domain<?> domain){
         return sqlSession().selectOne("selectDomain", domain);
     }
 
-    public List<Domain> getDomains(FilterWrapper<? extends Domain> filterWrapper){
+    public List<Domain<?>> getDomains(FilterWrapper<? extends Domain<?>> filterWrapper){
         return sqlSession().selectList("selectDomains", filterWrapper);
     }
 
-    public Long getDomainsCount(FilterWrapper<? extends Domain> filterWrapper){
+    public Long getDomainsCount(FilterWrapper<? extends Domain<?>> filterWrapper){
         return sqlSession().selectOne("selectDomainsCount", filterWrapper);
     }
 
-    public Long getDomainObjectId(Domain domain){
+    public Long getDomainObjectId(Domain<?> domain){
         return sqlSession().selectOne("selectDomainObjectId", domain);
     }
 
-    public void delete(Domain domain){
+    public void delete(Domain<?> domain){
         domain.setStatus(Status.ARCHIVE);
 
         sqlSession().update("updateDomain", domain);
+    }
+
+    public Long getParentId(String entityName, Long objectId) {
+        return sqlSession().selectOne("selectDomainParentId", Maps.of("entityName", entityName, "objectId", objectId));
+    }
+
+    public List<Long> getDomainIds(FilterWrapper<? extends Domain<?>> filterWrapper) {
+        return sqlSession().selectList("selectDomainIds", filterWrapper);
     }
 }

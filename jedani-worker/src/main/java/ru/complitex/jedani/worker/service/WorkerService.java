@@ -224,4 +224,8 @@ public class WorkerService implements Serializable {
 
         return domainService.getDomain(Country.class, region.getParentId()).getNumber(Country.CURRENCY);
     }
+
+    public Long getRegionId(Worker worker) {
+        return domainService.getParentId(City.ENTITY_NAME, worker.getCityId());
+    }
 }

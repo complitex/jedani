@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 import ru.complitex.jedani.worker.page.BasePage;
 import ru.complitex.jedani.worker.security.JedaniRoles;
 import ru.complitex.jedani.worker.service.ImportService;
-import ru.complitex.jedani.worker.service.WorkerService;
+import ru.complitex.jedani.worker.service.WorkerNodeService;
 
 import javax.inject.Inject;
 import java.util.Objects;
@@ -38,7 +38,7 @@ public class ImportPage extends BasePage{
     private ImportService importService;
 
     @Inject
-    private WorkerService workerService;
+    private WorkerNodeService workerNodeService;
 
     private class PushMessage implements IWebSocketPushMessage{
         private String text;
@@ -176,7 +176,7 @@ public class ImportPage extends BasePage{
             @Override
             public void onClick(AjaxRequestTarget target) {
                 try {
-                    workerService.rebuildIndex();
+                    workerNodeService.rebuildIndex();
 
                     info("Индекс обновлен успешно");
                 } catch (Exception e) {

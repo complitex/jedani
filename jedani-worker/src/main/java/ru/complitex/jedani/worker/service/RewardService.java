@@ -358,8 +358,8 @@ public class RewardService implements Serializable {
     private void updateLocal(Reward reward, Period period){
         Worker worker = workerService.getWorker(reward.getWorkerId());
 
-        if (!worker.getRegionIds().isEmpty()) {;
-            Region region = domainService.getDomain(Region.class, worker.getRegionIds().get(0));
+        if (worker.getCityId() != null) {
+            Region region = domainService.getDomain(Region.class, workerService.getRegionId(worker));
 
             reward.setRate(exchangeRateService.getMonthAverageExchangeRate(region.getParentId(), period.getOperatingMonth()));
 

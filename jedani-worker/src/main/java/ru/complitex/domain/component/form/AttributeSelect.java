@@ -3,16 +3,14 @@ package ru.complitex.domain.component.form;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.LoadableDetachableModel;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.domain.entity.Domain;
-import ru.complitex.domain.mapper.DomainMapper;
+import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.util.Attributes;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * @author Anatoly A. Ivanov
@@ -20,22 +18,30 @@ import java.util.stream.Collectors;
  */
 public class AttributeSelect extends DropDownChoice<Long> {
     @Inject
-    private DomainMapper domainMapper;
+    private DomainService domainService;
 
-    public AttributeSelect(String id, IModel<Long> model, String refEntityName, Long refEntityAttributeId) {
+    private final String entityName;
+    private final Long entityAttributeId;
+
+    public AttributeSelect(String id, IModel<Long> model, String entityName, Long entityAttributeId) {
         super(id);
+
+        this.entityName = entityName;
+        this.entityAttributeId = entityAttributeId;
 
         setModel(model);
 
-        Map<Long, Domain> map = domainMapper.getDomains(FilterWrapper.of(new Domain(refEntityName))).stream()
-                .collect(Collectors.toMap(Domain::getObjectId, d -> d));
-
-        setChoices(new ArrayList<>(map.keySet()));
-
-        setChoiceRenderer(new IChoiceRenderer<Long>() {
+        setChoices(new LoadableDetachableModel<>() {
             @Override
-            public Object getDisplayValue(Long object) {
-                return Attributes.capitalize(map.get(object).getTextValue(refEntityAttributeId, getLocale()));
+            protected List<Long> load() {
+                return domainService.getDomainIds(getFilterWrapper());
+            }
+        });
+
+        setChoiceRenderer(new IChoiceRenderer<>() {
+            @Override
+            public Object getDisplayValue(Long id) {
+                return AttributeSelect.this.getDisplayValue(id);
             }
 
             @Override
@@ -50,6 +56,14 @@ public class AttributeSelect extends DropDownChoice<Long> {
         });
 
         setNullValid(true);
+    }
+
+    protected String getDisplayValue(Long id) {
+        return Attributes.capitalize(domainService.getTextValue(entityName, id, entityAttributeId));
+    }
+
+    protected FilterWrapper<? extends Domain<?>> getFilterWrapper(){
+        return FilterWrapper.of(new Domain<>(entityName));
     }
 
     @Override

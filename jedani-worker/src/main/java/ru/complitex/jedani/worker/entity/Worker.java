@@ -22,6 +22,7 @@ public class Worker extends DomainNode<Worker> {
     public static final long MIDDLE_NAME = 3;
     public static final long LAST_NAME = 4;
     public static final long BIRTHDAY = 5;
+    public static final long REGION = 6;
     public static final long CITY = 7;
     public static final long PHONE = 8;
     public static final long EMAIL = 9;
@@ -49,13 +50,15 @@ public class Worker extends DomainNode<Worker> {
 
     private Long subWorkerCount;
 
-    public static final String FILTER_REGION_ID = "regionId";
+    public static final String FILTER_REGION = "region";
 
     public Worker() {
         super(ENTITY_NAME);
 
         setUseDateAttribute(true);
         setUseNumberValue(true);
+
+        setLevel(0L);
     }
 
     public Worker(Long objectId) {

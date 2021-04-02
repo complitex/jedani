@@ -21,6 +21,7 @@ import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import ru.complitex.address.entity.City;
 import ru.complitex.address.entity.CityType;
+import ru.complitex.address.entity.Region;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.Sort;
 import ru.complitex.common.wicket.panel.LinkPanel;
@@ -35,6 +36,7 @@ import ru.complitex.domain.entity.StringType;
 import ru.complitex.domain.page.DomainListPage;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
+import ru.complitex.domain.util.Attributes;
 import ru.complitex.jedani.worker.entity.Worker;
 import ru.complitex.jedani.worker.entity.WorkerStatus;
 import ru.complitex.jedani.worker.mapper.WorkerMapper;
@@ -95,7 +97,7 @@ public class WorkerListPage extends DomainListPage<Worker>{
         if (currentWorker.isRegionalLeader()) {
             City city = domainService.getDomain(City.class, getCurrentWorker().getCityId());
 
-            filterWrapper.put(Worker.FILTER_REGION_ID, city.getParentId());
+            filterWrapper.put(Worker.FILTER_REGION, city.getParentId());
         } else if (currentWorker.isParticipant() && isUser() && !isAdmin() && !isStructureAdmin()){
             worker.setLeft(currentWorker.getLeft());
             worker.setRight(currentWorker.getRight());
@@ -113,13 +115,11 @@ public class WorkerListPage extends DomainListPage<Worker>{
         list.add(entity.getEntityAttribute(Worker.LAST_NAME).withReference(LastName.ENTITY_NAME, LastName.NAME));
         list.add(entity.getEntityAttribute(Worker.FIRST_NAME).withReference(FirstName.ENTITY_NAME, FirstName.NAME));
         list.add(entity.getEntityAttribute(Worker.MIDDLE_NAME).withReference(MiddleName.ENTITY_NAME, MiddleName.NAME));
-
-        list.add(entity.getEntityAttribute(Worker.J_ID));
-
+        list.add(new EntityAttribute(Worker.ENTITY_NAME, Worker.REGION));
         list.add(entity.getEntityAttribute(Worker.CITY).withReference(City.ENTITY_NAME, City.NAME)
                 .setPrefixEntityAttribute(entityService.getEntityAttribute(City.ENTITY_NAME, City.CITY_TYPE)
                         .withReference(CityType.ENTITY_NAME, CityType.SHORT_NAME)));
-
+        list.add(entity.getEntityAttribute(Worker.J_ID));
         list.add(entity.getEntityAttribute(Worker.PHONE));
         list.add(entity.getEntityAttribute(Worker.EMAIL).setStringType(StringType.LOWER_CASE));
         list.add(entity.getEntityAttribute(Worker.REGISTRATION_DATE));
@@ -131,8 +131,31 @@ public class WorkerListPage extends DomainListPage<Worker>{
     }
 
     @Override
+    protected IColumn<Worker, Sort> newColumn(EntityAttribute entityAttribute) {
+        if (entityAttribute.getEntityAttributeId() == Worker.REGION) {
+            return new AbstractDomainColumn<>(new StringResourceModel("region", this), new Sort("region")) {
+                @Override
+                public void populateItem(Item<ICellPopulator<Worker>> cellItem, String componentId, IModel<Worker> rowModel) {
+                    Long regionId = domainService.getParentId(City.ENTITY_NAME, rowModel.getObject().getCityId());
+
+                    Region region = domainService.getDomain(Region.class, regionId);
+
+                    cellItem.add(new Label(componentId, region != null ? Attributes.capitalizeWords(region.getTextValue(Region.NAME)) : ""));
+                }
+
+                @Override
+                public Component newFilter(String componentId, Table<Worker> table) {
+                    return new TextFilter<>(componentId, PropertyModel.of(table.getFilterWrapper(), "map.region"));
+                }
+            };
+        }
+
+        return super.newColumn(entityAttribute);
+    }
+
+    @Override
     protected void onAddColumns(List<IColumn<Worker, Sort>> columns) {
-        columns.add(4, new AbstractDomainColumn<>(new StringResourceModel("login", this), new Sort("login")) {
+        columns.add(6, new AbstractDomainColumn<>(new StringResourceModel("login", this), new Sort("login")) {
             @Override
             public void populateItem(Item<ICellPopulator<Worker>> cellItem, String componentId, IModel<Worker> rowModel) {
                 Long userId = rowModel.getObject().getParentId();

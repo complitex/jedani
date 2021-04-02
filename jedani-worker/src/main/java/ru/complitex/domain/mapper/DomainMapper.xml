@@ -472,5 +472,22 @@
           where id = #{id}
     </update>
 
+    <!--suppress SqlResolve -->
+    <select id="selectDomainParentId" parameterType="map" resultType="long">
+        select parent_id from `${entityName}` where `status` = 1 and object_id = #{objectId}
+    </select>
 
+    <select id="selectDomainIds" parameterType="ru.complitex.common.entity.FilterWrapper" resultType="long">
+        select (dd.d_id) dd_id
+          from (
+            select d.id d_id
+            <include refid="selectDomainsFrom"/>
+            <include refid="selectDomainsFromFilter"/>
+            <include refid="selectDomainsFromSort"/>
+            <include refid="selectDomainsWhere"/>
+            group by d.id
+            <include refid="selectDomainsOrderSort"/>
+          ) dd
+          ${limit}
+    </select>
 </mapper>

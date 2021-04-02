@@ -41,8 +41,8 @@ import java.util.stream.Collectors;
  * @author Anatoly A. Ivanov
  * 17.12.2017 21:51
  */
-public abstract class DomainEditPage<T extends Domain> extends BasePage{
-    private Logger log = LoggerFactory.getLogger(getClass());
+public abstract class DomainEditPage<T extends Domain<T>> extends BasePage{
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     @Inject
     private EntityService entityService;
@@ -53,7 +53,7 @@ public abstract class DomainEditPage<T extends Domain> extends BasePage{
     private Class<? extends WebPage> backPage;
     private PageParameters backPageParameters;
 
-    private Form form;
+    private final Form<?> form;
 
     public DomainEditPage(Class<T> domainClass, PageParameters parameters, Class<? extends WebPage> backPage) {
         this.backPage = backPage;

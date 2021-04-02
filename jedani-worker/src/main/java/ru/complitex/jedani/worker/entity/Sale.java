@@ -38,7 +38,7 @@ public class Sale extends Domain<Sale> {
 
 
     public static final String FILTER_SELLER_WORKER = "sellerWorker";
-    public static final String FILTER_REGION_IDS = "regionIds";
+    public static final String FILTER_REGION = "region";
     public static final String FILTER_MONTH = "month";
     public static final String FILTER_ACTUAL = "actual";
     public static final String FILTER_PERIOD = "period";

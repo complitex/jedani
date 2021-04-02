@@ -35,6 +35,7 @@ import org.apache.wicket.validation.ValidationError;
 import org.apache.wicket.validation.validator.PatternValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.complitex.address.entity.City;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.wicket.form.*;
 import ru.complitex.domain.component.form.FormGroupDomainAutoComplete;
@@ -62,7 +63,6 @@ import ru.complitex.name.service.NameService;
 import javax.inject.Inject;
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static java.math.BigDecimal.ZERO;
 import static java.math.RoundingMode.HALF_EVEN;
@@ -634,7 +634,7 @@ public class SaleModal extends Modal<Sale> {
     private void close(AjaxRequestTarget target, boolean update){
         super.close(target);
 
-        container.visitChildren(FormComponent.class, (c, v) -> ((FormComponent) c).clearInput());
+        container.visitChildren(FormComponent.class, (c, v) -> ((FormComponent<?>) c).clearInput());
 
         if (update) {
             onUpdate(target);
@@ -644,12 +644,13 @@ public class SaleModal extends Modal<Sale> {
     void create(AjaxRequestTarget target){
         Long sellerWorkerId = getBasePage().getCurrentWorker().getObjectId();
 
-        List<Long> regions = domainService.getNumberValues(Worker.ENTITY_NAME, sellerWorkerId, Worker.REGIONS);
+        Long cityId = domainService.getNumber(City.ENTITY_NAME, sellerWorkerId, Worker.CITY);
 
-        if (!regions.isEmpty()){
+        City city = domainService.getDomain(City.class, cityId);
+
+        if (city != null){
             List<Storage> storages = storageMapper.getStorages(FilterWrapper.of(new Storage())
-                    .put("regions", regions.stream().filter(Objects::nonNull).map(Object::toString)
-                            .collect(Collectors.joining(","))));
+                    .put(Storage.FILTER_REGION, city.getParentId()));
 
             if (!storages.isEmpty()){
                 defaultStorageId = storages.get(0).getObjectId();

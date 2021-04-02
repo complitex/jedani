@@ -106,11 +106,11 @@
             where sa.domain_id = d.id and (c.object_id = ${map.city} or rc.object_id = ${map.city}))
         )
         </if>
-        <if test="map.regions != null">
+        <if test="map.region != null">
             and (
                 exists(select sa.id from storage_attribute sa
                     left join city c on sa.entity_attribute_id = 1 and sa.status = 1 and c.object_id = sa.number
-                where sa.domain_id = d.id and c.parent_id in (${map.regions}))
+                         where sa.domain_id = d.id and c.parent_id = ${map.region})
             )
         </if>
       <if test="map.workers != null">
