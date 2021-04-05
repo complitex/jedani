@@ -26,8 +26,8 @@ public class WorkerGraphExport {
 
         List<String> graph = workers.stream()
                 .map(d -> {
-                    if (d.getNumber(Worker.MANAGER_ID) != null){
-                        return d.getNumber(Worker.MANAGER_ID) + "," +
+                    if (d.getNumber(Worker.MANAGER) != null){
+                        return d.getNumber(Worker.MANAGER) + "," +
                                 d.getObjectId() + "," +
                                 d.getText(Worker.J_ID) + "," +
                                 d.getText(Worker.LAST_NAME) + "," +

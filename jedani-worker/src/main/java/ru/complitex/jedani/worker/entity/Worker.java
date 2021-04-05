@@ -33,7 +33,7 @@ public class Worker extends DomainNode<Worker> {
     public static final long REGISTRATION_DATE = 14;
     public static final long MK_STATUS = 15;
     public static final long STATUS = 16;
-    public static final long MANAGER_ID = 17;
+    public static final long MANAGER = 17;
     public static final long RESET_PASSWORD_TOKEN = 18;
     public static final long RESET_PASSWORD_SEND_AT = 19;
     public static final long REMEMBER_CREATED_AT = 20;
@@ -166,11 +166,11 @@ public class Worker extends DomainNode<Worker> {
     }
 
     public Long getManagerId(){
-        return getNumber(MANAGER_ID);
+        return getNumber(MANAGER);
     }
 
     public Worker setManagerId(Long managerId){
-        setNumber(MANAGER_ID, managerId);
+        setNumber(MANAGER, managerId);
 
         return this;
     }

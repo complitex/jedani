@@ -116,7 +116,9 @@ public class FormGroupAttributeSelect extends Panel {
     }
 
     public void onChange(SerializableConsumer<AjaxRequestTarget> onChange) {
-        attributeSelect.add(OnChangeAjaxBehavior.onChange(onChange));
+        if (attributeSelect != null) {
+            attributeSelect.add(OnChangeAjaxBehavior.onChange(onChange));
+        }
     }
 
     protected FilterWrapper<? extends Domain<?>> getFilterWrapper() {

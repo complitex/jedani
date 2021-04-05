@@ -279,11 +279,11 @@ public class ImportService implements Serializable {
 
                 Domain<?> manager = domainMapper.getDomain(Worker.ENTITY_NAME, Worker.IMPORT_ID, importManagerId);
 
-                w.setNumber(Worker.MANAGER_ID, manager.getObjectId());
+                w.setNumber(Worker.MANAGER, manager.getObjectId());
 
                 listener.accept(importAncestry);
             }else{
-                w.setNumber(Worker.MANAGER_ID, 1L);
+                w.setNumber(Worker.MANAGER, 1L);
             }
 
             w.setStatus(ACTIVE);

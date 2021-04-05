@@ -100,7 +100,7 @@ public class WorkerNodeService implements Serializable {
 
     @Transactional
     public void rebuildIndex(){
-        domainNodeService.rebuildRootIndex(Worker.ENTITY_NAME, 1L, Worker.MANAGER_ID);
+        domainNodeService.rebuildRootIndex(Worker.ENTITY_NAME, 1L, Worker.MANAGER);
     }
 
     @Transactional

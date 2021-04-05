@@ -1,7 +1,6 @@
 package ru.complitex.jedani.worker.page.worker;
 
 import com.google.common.base.Strings;
-import com.google.common.hash.Hashing;
 import de.agilecoders.wicket.core.markup.html.bootstrap.behavior.CssClassNameAppender;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxLink;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapBookmarkablePageLink;
@@ -9,6 +8,7 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
 import de.agilecoders.wicket.core.markup.html.bootstrap.image.GlyphIconType;
 import de.agilecoders.wicket.core.markup.html.bootstrap.tabs.AjaxBootstrapTabbedPanel;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxEventBehavior;
@@ -103,15 +103,12 @@ import ru.complitex.user.mapper.UserMapper;
 import javax.inject.Inject;
 import java.io.File;
 import java.math.BigDecimal;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
-
-import static com.google.common.io.Files.getFileExtension;
 
 /**
  * @author Anatoly A. Ivanov
@@ -344,7 +341,7 @@ public class WorkerPage extends BasePage {
             public boolean isEnabled() {
                 return isEditEnabled();
             }
-        }.setRequired(true));
+        }.setRequired(true).setNullValid(false));
 
         form.add(new FormGroupDateTextField("birthday", new DateAttributeModel(worker, Worker.BIRTHDAY))
                 .setEnabled(!isViewOnly()));
@@ -575,12 +572,12 @@ public class WorkerPage extends BasePage {
         managerContainer.add(managerEmail);
 
         managerContainer.add(new WorkerAutoComplete("managerFio",
-                new PropertyModel<>(worker.getOrCreateAttribute(Worker.MANAGER_ID), "number"){
+                new PropertyModel<>(worker.getOrCreateAttribute(Worker.MANAGER), "number"){
                     @Override
                     public void setObject(Long object) {
                         super.setObject(object);
 
-                        manager = workerMapper.getWorker(worker.getNumber(Worker.MANAGER_ID));
+                        manager = workerMapper.getWorker(worker.getNumber(Worker.MANAGER));
                     }
                 }, target -> target.add(managerPhone, managerEmail)){});
 
@@ -633,7 +630,7 @@ public class WorkerPage extends BasePage {
                             return;
                         }
 
-                        user.setPassword(Hashing.sha256().hashString(user.getPassword(), StandardCharsets.UTF_8).toString());
+                        user.setPassword(ru.complitex.common.util.Strings.sha256(user.getPassword()));
                     }
 
                     user.setRoles(userRolesModel.getObject());
@@ -648,7 +645,7 @@ public class WorkerPage extends BasePage {
                         }
 
                         if (Strings.isNullOrEmpty(user.getPassword())){
-                            user.setPassword(Hashing.sha256().hashString(UUID.randomUUID().toString(), StandardCharsets.UTF_8).toString());
+                            user.setPassword(ru.complitex.common.util.Strings.sha256(UUID.randomUUID().toString()));
                         }
 
                         workerService.save(user, currentWorkerId);
@@ -691,11 +688,6 @@ public class WorkerPage extends BasePage {
                         return;
                     }
 
-                    if (worker.getManagerId() == null){
-                        worker.setNumber(Worker.MANAGER_ID, 1L);
-                        manager = workerMapper.getWorker(1L);
-                    }
-
                     if (worker.getObjectId() == null){
                         try {
                             domainService.insert(worker);
@@ -716,7 +708,7 @@ public class WorkerPage extends BasePage {
                         success(getString(worker.isParticipant() ? "info_worker_created" : "info_user_created"));
                     }else{
                         boolean moveIndex = !Objects.equals(worker.getManagerId(),
-                                workerMapper.getWorker(worker.getObjectId()).getManagerId()); //todo opt
+                                domainService.getNumber(Worker.ENTITY_NAME, worker.getObjectId(), Worker.MANAGER));
 
                         if (moveIndex){
                             worker.setWorkerStatus(WorkerStatus.MANAGER_CHANGED);
@@ -761,7 +753,7 @@ public class WorkerPage extends BasePage {
                                 }
 
                                 Images.write(photoUploadFiled.getFileUpload().getInputStream(), 1920, 1080,
-                                        getFileExtension(photoUploadFiled.getFileUpload().getClientFileName()), photoFile);
+                                        FilenameUtils.getExtension(photoUploadFiled.getFileUpload().getClientFileName()), photoFile);
                             } catch (Exception e) {
                                 error(getString("error_photo_load"));
                             }
@@ -1204,12 +1196,35 @@ public class WorkerPage extends BasePage {
                                     break;
                                 case BOOLEAN:
                                 case NUMBER:
-                                case ENTITY:
                                     value = String.valueOf(attribute.getNumber());
 
                                     break;
                                 case DATE:
                                     value = String.valueOf(attribute.getDate());
+
+                                    break;
+                                case ENTITY:
+                                    Long objectId = attribute.getNumber();
+
+                                    if (objectId != null) {
+                                        if (entityAttribute.getEntityAttributeId().equals(Worker.LAST_NAME)) {
+                                            value = nameService.getLastName(objectId);
+                                        } else if (entityAttribute.getEntityAttributeId().equals(Worker.FIRST_NAME)) {
+                                            value = nameService.getFirstName(objectId);
+                                        } else if (entityAttribute.getEntityAttributeId().equals(Worker.MIDDLE_NAME)) {
+                                            value = nameService.getMiddleName(objectId);
+                                        } else if (entityAttribute.getEntityAttributeId().equals(Worker.CITY)) {
+                                            value = domainService.getTextValue(City.ENTITY_NAME, objectId, City.NAME);
+                                        } else if (entityAttribute.getEntityAttributeId().equals(Worker.MK_STATUS)) {
+                                            value = domainService.getTextValue(MkStatus.ENTITY_NAME, objectId, MkStatus.NAME);
+                                        } else if (entityAttribute.getEntityAttributeId().equals(Worker.MANAGER)) {
+                                            value = workerService.getWorkerLabel(objectId);
+                                        } else if (entityAttribute.getEntityAttributeId().equals(Worker.TYPE)) {
+                                            value = objectId.equals(WorkerType.PK) ? getString("component." + WorkerType.PK)
+                                                    : objectId.equals(WorkerType.USER) ? getString("component." + WorkerType.USER)
+                                                    : objectId + "";
+                                        }
+                                    }
 
                                     break;
                             }
@@ -1232,8 +1247,7 @@ public class WorkerPage extends BasePage {
                                     w = workerMapper.getWorkerByUserId(userId);
                                 }
 
-                                cellItem.add(new Label(componentId, w.getObjectId() != null
-                                        ? workerService.getSimpleWorkerLabel(w.getObjectId()) : ""));
+                                cellItem.add(new Label(componentId, w != null ? workerService.getSimpleWorkerLabel(w.getObjectId()) : userId + ""));
                             }
                         }
                     });
@@ -1299,24 +1313,21 @@ public class WorkerPage extends BasePage {
         back.add(new Label("label", getString("cancel")));
 
         form.add(back);
-
     }
 
     protected String getRewardString(List<Reward> rewards, Long rewardTypeId, Long periodId) {
 
         BigDecimal total = rewardService.getRewardsTotal(rewards, rewardTypeId, periodId, false);
 
-        return rewardService.getRewardsTotal(rewards,  rewardTypeId, periodId, true)
-                //+ " (" + rewardService.getRewardsTotalLocal(rewards,  rewardTypeId, month, true) + ")" +
-                + (total.compareTo(BigDecimal.ZERO) > 0 ?  (" / " + total) : "");
-                //+ " (" + rewardService.getRewardsTotalLocal(rewards, rewardTypeId, month, false)+ ")";
+        return rewardService.getRewardsTotal(rewards,  rewardTypeId, periodId, true) +
+                (total.compareTo(BigDecimal.ZERO) > 0 ?  (" / " + total) : "");
     }
 
     protected String getRewardPointString(List<Reward> rewards, Long rewardTypeId, Long periodId) {
         BigDecimal point = rewardService.getRewardsPoint(rewards, rewardTypeId, periodId, false);
 
-        return rewardService.getRewardsPoint(rewards,  rewardTypeId, periodId, true)
-                + (point.compareTo(BigDecimal.ZERO) > 0 ?  (" / " + point) : "");
+        return rewardService.getRewardsPoint(rewards,  rewardTypeId, periodId, true) +
+                (point.compareTo(BigDecimal.ZERO) > 0 ?  (" / " + point) : "");
     }
 
     protected FilterWrapper<Worker> newFilterWrapper() {

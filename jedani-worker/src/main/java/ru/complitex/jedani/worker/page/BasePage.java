@@ -140,6 +140,7 @@ public class BasePage extends WebPage{
 
         String fio = "";
         String jid = "";
+
         if (currentWorker != null){
             fio = nameService.getLastName(currentWorker.getNumber(Worker.LAST_NAME)) + " " +
                     nameService.getFirstName(currentWorker.getNumber(Worker.FIRST_NAME)) + " " +
@@ -152,7 +153,7 @@ public class BasePage extends WebPage{
 
         add(new Label("jid", Model.of(jid)));
 
-        add(new Label("login", Model.of(login)));
+        add(new Label("login", Model.of(!login.equals(jid) ? login : "")));
 
         add(new Link<Void>("logout") {
             @Override
