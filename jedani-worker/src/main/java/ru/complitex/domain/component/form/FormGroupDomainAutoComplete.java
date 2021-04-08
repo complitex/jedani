@@ -5,7 +5,9 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import ru.complitex.common.wicket.form.FormGroupBorder;
+import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.service.EntityService;
+import ru.complitex.domain.util.Domains;
 
 import javax.inject.Inject;
 
@@ -13,17 +15,17 @@ import javax.inject.Inject;
  * @author Anatoly A. Ivanov
  * 22.12.2017 8:03
  */
-public class FormGroupDomainAutoComplete extends Panel{
+public class FormGroupDomainAutoComplete<T extends Domain<T>> extends Panel{
     @Inject
     private EntityService entityService;
 
-    private DomainAutoComplete domainAutoComplete;
+    private final DomainAutoComplete<T> domainAutoComplete;
 
-    public FormGroupDomainAutoComplete(String id, String entityName, Long entityAttributeId, IModel<Long> model) {
-        this(id, new ResourceModel(id), entityName, entityAttributeId, model);
+    public FormGroupDomainAutoComplete(String id, Class<T> domainClass, Long entityAttributeId, IModel<Long> model) {
+        this(id, new ResourceModel(id), domainClass, entityAttributeId, model);
     }
 
-    public FormGroupDomainAutoComplete(String id, IModel<String> label, String entityName, Long entityAttributeId,
+    public FormGroupDomainAutoComplete(String id, IModel<String> label, Class<T> domainClass, Long entityAttributeId,
                                        IModel<Long> model) {
         super(id);
 
@@ -38,26 +40,27 @@ public class FormGroupDomainAutoComplete extends Panel{
             }
         };
 
-        group.add(domainAutoComplete = new DomainAutoComplete("input", entityName,
-                entityService.getEntityAttribute(entityName, entityAttributeId), model, t -> {
-            if (!domainAutoComplete.isError() && domainAutoComplete.isErrorRendered()) {
-                t.appendJavaScript(group.getRemoveErrorJs());
-            }
+        String entityName = Domains.getEntityName(domainClass);
 
-            FormGroupDomainAutoComplete.this.onUpdate(t);
-        }){
+        group.add(domainAutoComplete = new DomainAutoComplete<T>("input", domainClass,
+                entityService.getEntityAttribute(entityName, entityAttributeId), model){
             @Override
             public boolean isEnabled() {
                 return FormGroupDomainAutoComplete.this.isEnabled();
             }
         });
+
+        domainAutoComplete.onChange(t -> {
+            if (!domainAutoComplete.isError() && domainAutoComplete.isErrorRendered()) {
+                t.appendJavaScript(group.getRemoveErrorJs());
+            }
+
+            FormGroupDomainAutoComplete.this.onUpdate(t);
+        });
+
         domainAutoComplete.setLabel(label);
 
         add(group);
-    }
-
-    public DomainAutoComplete getDomainAutoComplete(){
-        return domainAutoComplete;
     }
 
     public String getInput(){
@@ -72,13 +75,13 @@ public class FormGroupDomainAutoComplete extends Panel{
         domainAutoComplete.setModelObject(objectId);
     }
 
-    public FormGroupDomainAutoComplete setRequired(boolean required){
+    public FormGroupDomainAutoComplete<T> setRequired(boolean required){
         domainAutoComplete.setRequired(required);
 
         return this;
     }
 
-    public FormGroupDomainAutoComplete setInputRequired(boolean required){
+    public FormGroupDomainAutoComplete<T> setInputRequired(boolean required){
         domainAutoComplete.getAutoCompleteTextField().setRequired(required);
 
         return this;

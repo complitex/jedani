@@ -37,7 +37,7 @@ public class NomenclatureListPage extends DomainListModalPage<Nomenclature> {
 
         list.add(entity.getEntityAttribute(Nomenclature.NAME)); //todo required
         list.add(entity.getEntityAttribute(Nomenclature.CODE).setStringType(StringType.UPPER_CASE));
-        list.add(entity.getEntityAttribute(Nomenclature.COUNTRIES).withReference(Country.ENTITY_NAME, Country.NAME));
+        list.add(entity.getEntityAttribute(Nomenclature.COUNTRIES).withReference(Country.class, Country.NAME));
 
         return list;
     }
@@ -49,7 +49,7 @@ public class NomenclatureListPage extends DomainListModalPage<Nomenclature> {
         list.add(entity.getEntityAttribute(Nomenclature.TYPE).setRequired(true));
         list.add(entity.getEntityAttribute(Nomenclature.NAME).setRequired(true));
         list.add(entity.getEntityAttribute(Nomenclature.CODE).setStringType(StringType.UPPER_CASE));
-        list.add(entity.getEntityAttribute(Nomenclature.COUNTRIES).withReference(Country.ENTITY_NAME, Country.NAME));
+        list.add(entity.getEntityAttribute(Nomenclature.COUNTRIES).withReference(Country.class, Country.NAME));
 
         return list;
     }

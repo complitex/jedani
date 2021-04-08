@@ -30,7 +30,6 @@ import ru.complitex.common.wicket.table.Provider;
 import ru.complitex.common.wicket.table.Table;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.component.form.FormGroupDomainAutoComplete;
-import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.Status;
 import ru.complitex.domain.model.DateAttributeModel;
 import ru.complitex.domain.model.DecimalAttributeModel;
@@ -97,7 +96,7 @@ public class PriceModal extends AbstractDomainEditModal<Price> {
         feedback.showRenderedMessages(false);
         container.add(feedback);
 
-        container.add(new FormGroupDomainAutoComplete("country", Country.ENTITY_NAME, Country.NAME,
+        container.add(new FormGroupDomainAutoComplete<>("country", Country.class, Country.NAME,
                 NumberAttributeModel.of(priceModel, Price.COUNTRY)){
             @Override
             public boolean isEnabled() {
@@ -108,12 +107,12 @@ public class PriceModal extends AbstractDomainEditModal<Price> {
         container.add(new FormGroupPanel("nomenclature", new NomenclatureAutoComplete(FormGroupPanel.COMPONENT_ID,
                 DomainParentModel.of(priceModel)){
             @Override
-            protected Domain<?> getFilterObject(String input) {
-                Domain<?> domain = super.getFilterObject(input);
+            protected Nomenclature getFilterObject(String input) {
+                Nomenclature nomenclature = super.getFilterObject(input);
 
-                domain.setNumber(Nomenclature.COUNTRIES, priceModel.getObject().getCountyId());
+                nomenclature.setNumber(Nomenclature.COUNTRIES, priceModel.getObject().getCountyId());
 
-                return domain;
+                return nomenclature;
             }
         }.setRequired(true)));
 

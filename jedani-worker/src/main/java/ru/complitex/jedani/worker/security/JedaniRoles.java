@@ -12,4 +12,5 @@ public class JedaniRoles {
     public static final String PROMOTION_ADMINISTRATORS = "PROMOTION_ADMINISTRATORS";
     public static final String SALE_ADMINISTRATORS = "SALE_ADMINISTRATORS";
     public static final String PAYMENT_ADMINISTRATORS = "PAYMENT_ADMINISTRATORS";
+    public static final String PAYOUT_ADMINISTRATORS = "PAYOUT_ADMINISTRATORS";
 }

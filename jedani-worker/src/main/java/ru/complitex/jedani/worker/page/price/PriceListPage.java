@@ -17,14 +17,14 @@ import java.util.List;
  */
 public class PriceListPage extends DomainListModalPage<Price> {
     public PriceListPage() {
-        super(Price.class, Nomenclature.ENTITY_NAME, Nomenclature.NAME);
+        super(Price.class, Nomenclature.class, Nomenclature.NAME);
     }
 
     @Override
     protected List<EntityAttribute> getEntityAttributes(Entity entity) {
         List<EntityAttribute> list = new ArrayList<>();
 
-        list.add(entity.getEntityAttribute(Price.COUNTRY).withReference(Country.ENTITY_NAME, Country.NAME));
+        list.add(entity.getEntityAttribute(Price.COUNTRY).withReference(Country.class, Country.NAME));
         list.add(entity.getEntityAttribute(Price.DATE_BEGIN));
         list.add(entity.getEntityAttribute(Price.PRICE));
 

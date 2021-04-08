@@ -47,7 +47,7 @@ import java.util.List;
  * 26.02.2019 18:17
  */
 public class DomainEditModal<T extends Domain<T>> extends AbstractDomainEditModal<T> {
-    private Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     @Inject
     private EntityService entityService;
@@ -55,24 +55,22 @@ public class DomainEditModal<T extends Domain<T>> extends AbstractDomainEditModa
     @Inject
     private DomainService domainService;
 
-    private WebMarkupContainer container;
-    private NotificationPanel feedback;
+    private final WebMarkupContainer container;
+    private final NotificationPanel feedback;
 
-    private ListView listView;
+    private final ListView<EntityAttribute> listView;
 
-    private Entity parentEntity;
-    private Entity entity;
+    private final Entity parentEntity;
+    private final Entity entity;
 
-    private SerializableConsumer<AjaxRequestTarget> onChange;
+    private final SerializableConsumer<AjaxRequestTarget> onChange;
 
-    private String parentEntityName;
-    private Long parentEntityAttributeId;
+    private final Long parentEntityAttributeId;
 
-    public DomainEditModal(String markupId, Class<T> domainClass, String parentEntityName, Long parentEntityAttributeId,
+    public DomainEditModal(String markupId, Class<T> domainClass, Class<? extends Domain<?>> parentClass, Long parentEntityAttributeId,
                            List<EntityAttribute> entityAttributes, SerializableConsumer<AjaxRequestTarget> onChange) {
         super(markupId, Model.of(Domains.newObject(domainClass)));
 
-        this.parentEntityName = parentEntityName;
         this.parentEntityAttributeId = parentEntityAttributeId;
 
         this.onChange = onChange;
@@ -95,13 +93,13 @@ public class DomainEditModal<T extends Domain<T>> extends AbstractDomainEditModa
                 .setOutputMarkupId(true);
         container.add(feedback);
 
-        parentEntity = parentEntityName != null ? entityService.getEntity(parentEntityName) : null;
+        parentEntity = parentClass != null ? entityService.getEntity(parentClass) : null;
 
-        if (parentEntityName != null) {
+        if (parentClass != null) {
             FormGroupBorder parentGroup = new FormGroupBorder("parentGroup", Model.of(parentEntity.getValue().getText()));
             container.add(parentGroup);
 
-            parentGroup.add(newParentComponent("parent"));
+            parentGroup.add(newParentComponent("parent", parentClass));
         }else{
             container.add(new EmptyPanel("parentGroup").setVisible(false));
         }
@@ -111,7 +109,7 @@ public class DomainEditModal<T extends Domain<T>> extends AbstractDomainEditModa
             @Override
             protected void populateItem(ListItem<EntityAttribute> item) {
                 EntityAttribute entityAttribute = item.getModelObject();
-                Domain domain = DomainEditModal.this.getModelObject();
+                T domain = DomainEditModal.this.getModelObject();
 
                 Attribute attribute = domain.getOrCreateAttribute(entityAttribute.getEntityAttributeId());
                 attribute.setEntityAttribute(entityAttribute);
@@ -124,8 +122,8 @@ public class DomainEditModal<T extends Domain<T>> extends AbstractDomainEditModa
                         return entityAttribute.isRequired();
                     }
                 };
-                FormComponent input1 = null;
-                FormComponent input2 = null;
+                FormComponent<?> input1 = null;
+                FormComponent<?> input2 = null;
                 Component component = getComponent("component", attribute);
 
                 if (component == null) {
@@ -147,7 +145,7 @@ public class DomainEditModal<T extends Domain<T>> extends AbstractDomainEditModa
                             EntityAttribute referenceEntityAttribute = attribute.getEntityAttribute()
                                     .getReferenceEntityAttributes().get(0);
 
-                            component = new DomainAutoComplete("component", referenceEntityAttribute.getEntityName(),
+                            component = new DomainAutoComplete("component", referenceEntityAttribute.getReferenceClass(),
                                     referenceEntityAttribute, new PropertyModel<>(attribute, "number"));
                             break;
                         case BOOLEAN:
@@ -177,8 +175,8 @@ public class DomainEditModal<T extends Domain<T>> extends AbstractDomainEditModa
                     input2.setLabel(labelModel);
                 }
                 if (component instanceof FormComponent){
-                    ((FormComponent)component).setLabel(labelModel);
-                    ((FormComponent) component).setRequired(entityAttribute.isRequired());
+                    ((FormComponent<?>)component).setLabel(labelModel);
+                    ((FormComponent<?>) component).setRequired(entityAttribute.isRequired());
                 }
 
                 group.add(input1 != null ? input1 : new EmptyPanel("input1").setVisible(false));
@@ -211,8 +209,8 @@ public class DomainEditModal<T extends Domain<T>> extends AbstractDomainEditModa
         }.setLabel(new ResourceModel("cancel")));
     }
 
-    protected Component newParentComponent(String componentId) {
-        return new DomainAutoComplete(componentId, parentEntityName, parentEntityAttributeId,
+    protected Component newParentComponent(String componentId, Class<? extends Domain<?>> parentClass) {
+        return new DomainAutoComplete(componentId, parentClass, parentEntityAttributeId,
                 new PropertyModel<>(getModel(), "parentId"));
     }
 
@@ -282,7 +280,7 @@ public class DomainEditModal<T extends Domain<T>> extends AbstractDomainEditModa
     public void cancel(AjaxRequestTarget target){
         container.setVisible(false);
 
-        container.visitChildren(FormComponent.class, (c, v) -> ((FormComponent) c).clearInput());
+        container.visitChildren(FormComponent.class, (c, v) -> ((FormComponent<?>) c).clearInput());
 
         close(target);
     }

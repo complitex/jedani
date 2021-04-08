@@ -1,13 +1,10 @@
 package ru.complitex.jedani.worker.component;
 
-import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
-import org.danekja.java.util.function.serializable.SerializableConsumer;
 import ru.complitex.address.entity.City;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.domain.component.form.AbstractDomainAutoComplete;
 import ru.complitex.domain.entity.Attribute;
-import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
 import ru.complitex.jedani.worker.entity.Storage;
@@ -23,7 +20,7 @@ import java.util.List;
  * @author Anatoly A. Ivanov
  * 08.11.2018 18:41
  */
-public class StorageAutoComplete extends AbstractDomainAutoComplete {
+public class StorageAutoComplete extends AbstractDomainAutoComplete<Storage> {
     @Inject
     private EntityService entityService;
 
@@ -36,16 +33,12 @@ public class StorageAutoComplete extends AbstractDomainAutoComplete {
     @Inject
     private NameService nameService;
 
-    public StorageAutoComplete(String id, IModel<Long> model, SerializableConsumer<AjaxRequestTarget> onChange) {
-        super(id, Storage.ENTITY_NAME, model, onChange);
-    }
-
     public StorageAutoComplete(String id, IModel<Long> model) {
-        super(id, Storage.ENTITY_NAME, model, null);
+        super(id, Storage.class, model);
     }
 
     @Override
-    protected Domain getFilterObject(String input) {
+    protected Storage getFilterObject(String input) {
         Storage storage = new Storage();
 
         Attribute cityId = storage.getOrCreateAttribute(Storage.CITY);
@@ -64,7 +57,7 @@ public class StorageAutoComplete extends AbstractDomainAutoComplete {
     }
 
     @Override
-    protected List<? extends Domain> getDomains(String input) {
+    protected List<Storage> getDomains(String input) {
         Storage storage = new Storage();
 
         Attribute cityId = storage.getOrCreateAttribute(Storage.CITY);
@@ -81,12 +74,12 @@ public class StorageAutoComplete extends AbstractDomainAutoComplete {
     }
 
     @Override
-    protected Domain getDomain(Long objectId) {
+    protected Storage getDomain(Long objectId) {
         return domainService.getDomain(Storage.class, objectId);
     }
 
     @Override
-    protected String getTextValue(Domain domain) {
-        return Storages.getStorageLabel(domain, domainService, nameService);
+    protected String getTextValue(Storage storage) {
+        return Storages.getStorageLabel(storage, domainService, nameService);
     }
 }

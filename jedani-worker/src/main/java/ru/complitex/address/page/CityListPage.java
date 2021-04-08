@@ -19,13 +19,13 @@ import java.util.List;
 @AuthorizeInstantiation(JedaniRoles.ADMINISTRATORS)
 public class CityListPage extends DomainListModalPage<City> {
     public CityListPage() {
-        super(City.class, Region.ENTITY_NAME, Region.NAME);
+        super(City.class, Region.class, Region.NAME);
     }
 
     protected List<EntityAttribute> getEntityAttributes(Entity entity){
         List<EntityAttribute> list = new ArrayList<>();
 
-        list.add(entity.getEntityAttribute(City.CITY_TYPE).withReference(CityType.ENTITY_NAME, CityType.NAME));
+        list.add(entity.getEntityAttribute(City.CITY_TYPE).withReference(CityType.class, CityType.NAME));
         list.add(entity.getEntityAttribute(City.NAME).setRequired(true));
         list.add(entity.getEntityAttribute(City.SHORT_NAME));
 

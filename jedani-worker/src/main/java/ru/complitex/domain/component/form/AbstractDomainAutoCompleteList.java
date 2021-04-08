@@ -17,8 +17,8 @@ import ru.complitex.domain.entity.Value;
  * @author Anatoly A. Ivanov
  * 09.01.2019 21:30
  */
-public abstract class AbstractDomainAutoCompleteList extends Panel {
-    public AbstractDomainAutoCompleteList(String id, String entityName, IModel<Attribute> model) {
+public abstract class AbstractDomainAutoCompleteList<T extends Domain<T>> extends Panel {
+    public AbstractDomainAutoCompleteList(String id, Class<T> domainClass, IModel<Attribute> model) {
         super(id, model);
 
         setOutputMarkupId(true);
@@ -27,23 +27,22 @@ public abstract class AbstractDomainAutoCompleteList extends Panel {
         container.setOutputMarkupId(true);
         add(container);
 
-        ListView<Value> listView = new ListView<Value>("items", new PropertyModel<>(model, "values")){
+        ListView<Value> listView = new ListView<>("items", new PropertyModel<>(model, "values")){
 
             @Override
             protected void populateItem(ListItem<Value> item) {
-                item.add(new AbstractDomainAutoComplete("item", entityName,
-                        new PropertyModel<>(item.getModel(), "number"),
-                        AbstractDomainAutoCompleteList.this::onUpdate){
+                item.add(new AbstractDomainAutoComplete<>("item", domainClass,
+                        new PropertyModel<>(item.getModel(), "number")){
                     @Override
-                    protected Domain getFilterObject(String input) {
+                    protected T getFilterObject(String input) {
                         return AbstractDomainAutoCompleteList.this.getFilterObject(input);
                     }
 
                     @Override
-                    protected String getTextValue(Domain domain) {
+                    protected String getTextValue(T domain) {
                         return  AbstractDomainAutoCompleteList.this.getTextValue(domain);
                     }
-                });
+                }.onChange(AbstractDomainAutoCompleteList.this::onUpdate));
 
                 item.add(new AjaxLink<Void>("remove") {
                     @Override
@@ -79,9 +78,9 @@ public abstract class AbstractDomainAutoCompleteList extends Panel {
         });
     }
 
-    protected abstract String getTextValue(Domain domain);
+    protected abstract String getTextValue(T domain);
 
-    protected abstract Domain getFilterObject(String input);
+    protected abstract T getFilterObject(String input);
 
     protected void onUpdate(AjaxRequestTarget target){
 

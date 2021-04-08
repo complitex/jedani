@@ -70,10 +70,10 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
     @Inject
     private EntityService entityService;
 
-    private WebMarkupContainer container;
+    private final WebMarkupContainer container;
 
-    private FormGroupPanel nomenclatures;
-    private WebMarkupContainer nomenclatureContainer;
+    private final FormGroupPanel nomenclatures;
+    private final WebMarkupContainer nomenclatureContainer;
 
     public SaleDecisionModal(String markupId) {
         super(markupId);
@@ -99,7 +99,7 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
                 .setRequired(true)
                 .onUpdate(t -> {}));
 
-        container.add(new FormGroupDomainAutoComplete("country", Country.ENTITY_NAME, Country.NAME,
+        container.add(new FormGroupDomainAutoComplete<>("country", Country.class, Country.NAME,
                 NumberAttributeModel.of(getModel(), SaleDecision.COUNTRY)){
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
@@ -115,14 +115,15 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
                 .setRequired(true)
                 .onUpdate(t -> {}));
 
-        container.add(new FormGroupSelectPanel("nomenclatureType", new TypeSelect(FormGroupSelectPanel.COMPONENT_ID,
-                NumberAttributeModel.of(getModel(), SaleDecision.NOMENCLATURE_TYPE),
-                NomenclatureType.MYCOOK, NomenclatureType.BASE_ASSORTMENT)
-                .add(new CssClassNameAppender("form-control"))
-                .add(OnChangeAjaxBehavior.onChange(t -> {
-                    t.add(nomenclatures, nomenclatureContainer);
-                })))) ;
-
+        nomenclatureContainer = new WebMarkupContainer("nomenclatureContainer"){
+            @Override
+            public boolean isVisible() {
+                return getModelObject().getCountryId() != null;
+            }
+        };
+        nomenclatureContainer.setOutputMarkupId(true);
+        nomenclatureContainer.setOutputMarkupPlaceholderTag(true);
+        container.add(nomenclatureContainer);
 
         container.add(nomenclatures = new FormGroupPanel("nomenclatures",
                 new NomenclatureAutoCompleteList(FormGroupPanel.COMPONENT_ID,
@@ -161,11 +162,17 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
             }
         });
 
+        container.add(new FormGroupSelectPanel("nomenclatureType", new TypeSelect(FormGroupSelectPanel.COMPONENT_ID,
+                NumberAttributeModel.of(getModel(), SaleDecision.NOMENCLATURE_TYPE),
+                NomenclatureType.MYCOOK, NomenclatureType.BASE_ASSORTMENT)
+                .add(new CssClassNameAppender("form-control"))
+                .add(OnChangeAjaxBehavior.onChange(t -> t.add(nomenclatures, nomenclatureContainer))))) ;
+
         //Nomenclature filter table
 
         FilterWrapper<Nomenclature> filterWrapper = FilterWrapper.of(new Nomenclature());
 
-        Provider<Nomenclature> filterDataProvider = new Provider<Nomenclature>(filterWrapper) {
+        Provider<Nomenclature> filterDataProvider = new Provider<>(filterWrapper) {
             @Override
             public List<Nomenclature> getList() {
                 return domainService.getDomains(Nomenclature.class, getFilterState());
@@ -195,19 +202,10 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
             }
         };
 
-        nomenclatureContainer = new WebMarkupContainer("nomenclatureContainer"){
-            @Override
-            public boolean isVisible() {
-                return getModelObject().getCountryId() != null;
-            }
-        };
-        nomenclatureContainer.setOutputMarkupId(true);
-        nomenclatureContainer.setOutputMarkupPlaceholderTag(true);
-        container.add(nomenclatureContainer);
-
         FilterForm<FilterWrapper<Nomenclature>> filterForm = new FilterForm<>("nomenclatureForm", filterDataProvider);
         filterForm.setOutputMarkupId(true);
         nomenclatureContainer.add(filterForm);
+
 
         List<IColumn<Nomenclature, Sort>> columns = new ArrayList<>();
 
@@ -216,7 +214,7 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
         columns.add(new DomainIdColumn<>());
         columns.add(new DomainColumn<>(entity.getEntityAttribute(Nomenclature.CODE)));
         columns.add(new DomainColumn<>(entity.getEntityAttribute(Nomenclature.NAME)));
-        columns.add(new DomainActionColumn<Nomenclature>(){
+        columns.add(new DomainActionColumn<>() {
             @Override
             public void populateItem(Item<ICellPopulator<Nomenclature>> cellItem, String componentId, IModel<Nomenclature> rowModel) {
                 cellItem.add(new LinkPanel(componentId, new BootstrapAjaxLink<Nomenclature>(LinkPanel.LINK_COMPONENT_ID, Buttons.Type.Link) {
@@ -290,7 +288,7 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
     private void cancel(AjaxRequestTarget target) {
         appendCloseDialogJavaScript(target);
 
-        container.visitChildren(FormComponent.class, (c, v) -> ((FormComponent) c).clearInput());
+        container.visitChildren(FormComponent.class, (c, v) -> ((FormComponent<?>) c).clearInput());
     }
 
     private void save(AjaxRequestTarget target) {
@@ -298,7 +296,7 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
 
         saleDecisionService.save(getModelObject());
 
-        container.visitChildren(FormComponent.class, (c, v) -> ((FormComponent) c).clearInput());
+        container.visitChildren(FormComponent.class, (c, v) -> ((FormComponent<?>) c).clearInput());
 
         getSession().success(getString("info_sale_decision_saved"));
 

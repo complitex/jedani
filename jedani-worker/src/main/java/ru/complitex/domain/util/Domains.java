@@ -10,9 +10,9 @@ import java.util.Map;
  * 30.10.2018 15:03
  */
 public class Domains {
-    private static Map<Class<?>, Domain<?>> domainMap = new HashMap<>();
+    private static final Map<Class<?>, Domain<?>> domainMap = new HashMap<>();
 
-    public static <T extends Domain> T newObject(Class<T> domainClass){
+    public static <T extends Domain<T>> T newObject(Class<T> domainClass){
         try {
             return domainClass.newInstance();
         } catch (Exception e) {
@@ -20,8 +20,7 @@ public class Domains {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public static <T extends Domain> T newObject(Class<T> domainClass, Domain domain, boolean initAttributes){
+    public static <T extends Domain<T>> T newObject(Class<T> domainClass, Domain<?> domain, boolean initAttributes){
         if (domain == null){
             return null;
         }
@@ -71,11 +70,11 @@ public class Domains {
         return getDomain(domainClass).getEntityName();
     }
 
-    public static <T extends Domain> boolean isUseNumberValue(Class<T> domainClass){
+    public static <T extends Domain<T>> boolean isUseNumberValue(Class<T> domainClass){
         return getDomain(domainClass).isUseNumberValue();
     }
 
-    public static <T extends Domain> boolean isUseDateAttribute(Class<T> domainClass){
+    public static <T extends Domain<T>> boolean isUseDateAttribute(Class<T> domainClass){
         return getDomain(domainClass).isUseDateAttribute();
     }
 }

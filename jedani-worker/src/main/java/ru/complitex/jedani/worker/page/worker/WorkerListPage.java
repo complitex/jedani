@@ -112,13 +112,13 @@ public class WorkerListPage extends DomainListPage<Worker>{
     protected List<EntityAttribute> getEntityAttributes(Entity entity) {
         List<EntityAttribute> list = new ArrayList<>();
 
-        list.add(entity.getEntityAttribute(Worker.LAST_NAME).withReference(LastName.ENTITY_NAME, LastName.NAME));
-        list.add(entity.getEntityAttribute(Worker.FIRST_NAME).withReference(FirstName.ENTITY_NAME, FirstName.NAME));
-        list.add(entity.getEntityAttribute(Worker.MIDDLE_NAME).withReference(MiddleName.ENTITY_NAME, MiddleName.NAME));
+        list.add(entity.getEntityAttribute(Worker.LAST_NAME).withReference(LastName.class, LastName.NAME));
+        list.add(entity.getEntityAttribute(Worker.FIRST_NAME).withReference(FirstName.class, FirstName.NAME));
+        list.add(entity.getEntityAttribute(Worker.MIDDLE_NAME).withReference(MiddleName.class, MiddleName.NAME));
         list.add(new EntityAttribute(Worker.ENTITY_NAME, Worker.REGION));
-        list.add(entity.getEntityAttribute(Worker.CITY).withReference(City.ENTITY_NAME, City.NAME)
+        list.add(entity.getEntityAttribute(Worker.CITY).withReference(City.class, City.NAME)
                 .setPrefixEntityAttribute(entityService.getEntityAttribute(City.ENTITY_NAME, City.CITY_TYPE)
-                        .withReference(CityType.ENTITY_NAME, CityType.SHORT_NAME)));
+                        .withReference(CityType.class, CityType.SHORT_NAME)));
         list.add(entity.getEntityAttribute(Worker.J_ID));
         list.add(entity.getEntityAttribute(Worker.PHONE));
         list.add(entity.getEntityAttribute(Worker.EMAIL).setStringType(StringType.LOWER_CASE));

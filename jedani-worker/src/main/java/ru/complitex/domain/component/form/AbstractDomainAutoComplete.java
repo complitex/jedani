@@ -18,7 +18,7 @@ import org.apache.wicket.util.convert.IConverter;
 import org.danekja.java.util.function.serializable.SerializableConsumer;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.domain.entity.Domain;
-import ru.complitex.domain.mapper.DomainMapper;
+import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
 
 import javax.inject.Inject;
@@ -30,34 +30,31 @@ import java.util.Locale;
  * @author Anatoly A. Ivanov
  * 09.01.2019 20:50
  */
-public abstract class AbstractDomainAutoComplete extends FormComponentPanel<Long> {
+public abstract class AbstractDomainAutoComplete<T extends Domain<T>> extends FormComponentPanel<Long> {
     @Inject
-    private DomainMapper domainMapper;
+    private DomainService domainService;
 
     @Inject
     private EntityService entityService;
 
-    private String entityName;
+    private final Class<T> domainClass;
 
-    private HiddenField<Long> inputId;
-    private AutoCompleteTextField<Domain> autoCompleteTextField;
+    private final HiddenField<Long> inputId;
+    private final AutoCompleteTextField<T> autoCompleteTextField;
 
     private boolean error;
     private boolean errorRendered;
 
     private SerializableConsumer<AjaxRequestTarget> onChange;
 
-    public AbstractDomainAutoComplete(String id, String entityName, IModel<Long> model,
-                              SerializableConsumer<AjaxRequestTarget> onChange) {
+    public AbstractDomainAutoComplete(String id, Class<T> domainClass, IModel<Long> model) {
         super(id, model);
-
-        this.onChange = onChange;
 
         setOutputMarkupId(true);
 
-        this.entityName = entityName;
+        this.domainClass = domainClass;
 
-        inputId = new HiddenField<>("inputId", new LoadableDetachableModel<Long>() {
+        inputId = new HiddenField<>("inputId", new LoadableDetachableModel<>() {
             @Override
             protected Long load() {
                 return AbstractDomainAutoComplete.this.getModel().getObject();
@@ -91,22 +88,22 @@ public abstract class AbstractDomainAutoComplete extends FormComponentPanel<Long
 
         add(inputId);
 
-        autoCompleteTextField = new AutoCompleteTextField<Domain>("input", new LoadableDetachableModel<Domain>() {
+        autoCompleteTextField = new AutoCompleteTextField<>("input", new LoadableDetachableModel<T>() {
             @Override
-            protected Domain load() {
+            protected T load() {
                 Long objectId = AbstractDomainAutoComplete.this.getModel().getObject();
 
                 return objectId != null ? AbstractDomainAutoComplete.this.getDomain(objectId) : null;
             }
-        }, Domain.class,
-                new AbstractAutoCompleteTextRenderer<Domain>() {
+        }, domainClass,
+                new AbstractAutoCompleteTextRenderer<T>() {
                     @Override
-                    protected String getTextValue(Domain domain) {
+                    protected String getTextValue(T domain) {
                         return AbstractDomainAutoComplete.this.getTextValue(domain);
                     }
 
                     @Override
-                    protected CharSequence getOnSelectJavaScriptExpression(Domain item) {
+                    protected CharSequence getOnSelectJavaScriptExpression(T item) {
                         String js = "$('#" + inputId.getMarkupId() + "').val('" + item.getObjectId() + "');";
 
                         js +=  " $('#" + inputId.getMarkupId() + "').change();";
@@ -129,20 +126,20 @@ public abstract class AbstractDomainAutoComplete extends FormComponentPanel<Long
             }
 
             @Override
-            protected Iterator<Domain> getChoices(String input) {
-                return getDomains(input).stream().map(d -> (Domain) d).iterator();
+            protected Iterator<T> getChoices(String input) {
+                return getDomains(input).iterator();
             }
 
             @Override
             protected IConverter<?> createConverter(Class<?> type) {
-                return new IConverter<Domain>() {
+                return new IConverter<T>() {
                     @Override
-                    public Domain convertToObject(String s, Locale locale) throws ConversionException {
+                    public T convertToObject(String s, Locale locale) throws ConversionException {
                         if (s != null && !s.isEmpty()){
                             Long objectId = inputId.getConvertedInput();
 
                             if (objectId != null){
-                                Domain domain =  getDomain(objectId);
+                                T domain =  getDomain(objectId);
 
                                 if (s.equalsIgnoreCase(getTextValue(domain))){
                                     return domain;
@@ -154,7 +151,7 @@ public abstract class AbstractDomainAutoComplete extends FormComponentPanel<Long
                     }
 
                     @Override
-                    public String convertToString(Domain domain, Locale locale) {
+                    public String convertToString(T domain, Locale locale) {
                         if (domain == null){
                             return null;
                         }
@@ -172,38 +169,34 @@ public abstract class AbstractDomainAutoComplete extends FormComponentPanel<Long
         add(autoCompleteTextField);
     }
 
-    public AbstractDomainAutoComplete(String id, String entityName, IModel<Long> model){
-        this(id, entityName, model, null);
+    public Class<T> getDomainClass() {
+        return domainClass;
     }
 
     @Override
     public void convertInput() {
-        Domain domain = autoCompleteTextField.getConvertedInput();
+        Domain<?> domain = autoCompleteTextField.getConvertedInput();
 
         setConvertedInput(domain != null ? domain.getObjectId() : null);
     }
 
-    public String getEntityName(){
-        return entityName;
+    protected T getDomain(Long objectId) {
+        return domainService.getDomain(domainClass, objectId);
     }
 
-    protected Domain getDomain(Long objectId) {
-        return domainMapper.getDomain(getEntityName(), objectId);
-    }
+    protected abstract T getFilterObject(String input);
 
-    protected abstract Domain getFilterObject(String input);
-
-    protected List<? extends Domain> getDomains(String input) {
-        Domain<?> domain = getFilterObject(input);
+    protected List<T> getDomains(String input) {
+        T domain = getFilterObject(input);
 
         domain.getAttributes().forEach(a -> entityService.loadReference(a.getEntityAttribute()));
 
-        return domainMapper.getDomains(FilterWrapper.of(domain).setFilter("search").limit(0L, 10L));
+        return domainService.getDomains(domainClass, FilterWrapper.of(domain).setFilter("search").limit(0L, 10L));
     }
 
-    protected abstract String getTextValue(Domain domain) ;
+    protected abstract String getTextValue(T domain) ;
 
-    public AutoCompleteTextField<Domain> getAutoCompleteTextField() {
+    public AutoCompleteTextField<T> getAutoCompleteTextField() {
         return autoCompleteTextField;
     }
 
@@ -239,6 +232,12 @@ public abstract class AbstractDomainAutoComplete extends FormComponentPanel<Long
 
     public boolean isErrorRendered() {
         return errorRendered;
+    }
+
+    public AbstractDomainAutoComplete<T> onChange(SerializableConsumer<AjaxRequestTarget> onChange) {
+        this.onChange = onChange;
+
+        return this;
     }
 
     public SerializableConsumer<AjaxRequestTarget> getOnChange() {

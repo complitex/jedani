@@ -19,8 +19,6 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ru.complitex.address.entity.Country;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.Sort;
@@ -59,8 +57,6 @@ import java.util.stream.Collectors;
  * 24.12.2018 20:01
  */
 public class PromotionModal extends Modal<Promotion> {
-    private Logger log = LoggerFactory.getLogger(PromotionModal.class);
-
     @Inject
     private EntityService entityService;
 
@@ -70,14 +66,12 @@ public class PromotionModal extends Modal<Promotion> {
     @Inject
     private PromotionService promotionService;
 
-    private WebMarkupContainer container;
+    private final WebMarkupContainer container;
 
-    private NotificationPanel feedback;
+    private final FormGroupPanel nomenclatures;
+    private final WebMarkupContainer nomenclatureContainer;
 
-    private FormGroupPanel nomenclatures;
-    private WebMarkupContainer nomenclatureContainer;
-
-    private Component remove;
+    private final Component remove;
 
     public PromotionModal(String markupId) {
         super(markupId, new Model<>(new Promotion()));
@@ -94,11 +88,11 @@ public class PromotionModal extends Modal<Promotion> {
         container.setVisible(false);
         add(container);
 
-        feedback = new NotificationPanel("feedback");
+        NotificationPanel feedback = new NotificationPanel("feedback");
         feedback.setOutputMarkupId(true);
         container.add(feedback);
 
-        container.add(new FormGroupDomainAutoComplete("country", Country.ENTITY_NAME, Country.NAME,
+        container.add(new FormGroupDomainAutoComplete<>("country", Country.class, Country.NAME,
                 new NumberAttributeModel(getModel(), Promotion.COUNTRY)){
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
@@ -148,7 +142,7 @@ public class PromotionModal extends Modal<Promotion> {
 
         FilterWrapper<Nomenclature> filterWrapper = FilterWrapper.of(new Nomenclature());
 
-        Provider<Nomenclature> filterDataProvider = new Provider<Nomenclature>(filterWrapper) {
+        Provider<Nomenclature> filterDataProvider = new Provider<>(filterWrapper) {
             @Override
             public List<Nomenclature> getList() {
                 return domainService.getDomains(Nomenclature.class, getFilterState());
@@ -197,7 +191,7 @@ public class PromotionModal extends Modal<Promotion> {
         columns.add(new DomainIdColumn<>());
         columns.add(new DomainColumn<>(entity.getEntityAttribute(Nomenclature.CODE)));
         columns.add(new DomainColumn<>(entity.getEntityAttribute(Nomenclature.NAME)));
-        columns.add(new DomainActionColumn<Nomenclature>(){
+        columns.add(new DomainActionColumn<>() {
             @Override
             public void populateItem(Item<ICellPopulator<Nomenclature>> cellItem, String componentId, IModel<Nomenclature> rowModel) {
                 cellItem.add(new LinkPanel(componentId, new BootstrapAjaxLink<Nomenclature>(LinkPanel.LINK_COMPONENT_ID, Buttons.Type.Link) {
@@ -288,7 +282,7 @@ public class PromotionModal extends Modal<Promotion> {
     private void close(AjaxRequestTarget target){
         appendCloseDialogJavaScript(target);
 
-        container.visitChildren(FormComponent.class, (c, v) -> ((FormComponent)c).clearInput());
+        container.visitChildren(FormComponent.class, (c, v) -> ((FormComponent<?>)c).clearInput());
     }
 
     private void save(AjaxRequestTarget target){
@@ -296,7 +290,7 @@ public class PromotionModal extends Modal<Promotion> {
 
         promotionService.save(promotion);
 
-        container.visitChildren(FormComponent.class, (c, v) -> ((FormComponent) c).clearInput());
+        container.visitChildren(FormComponent.class, (c, v) -> ((FormComponent<?>) c).clearInput());
 
         success(getString("info_promotion_saved"));
 

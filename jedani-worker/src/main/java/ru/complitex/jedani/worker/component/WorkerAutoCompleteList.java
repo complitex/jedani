@@ -39,7 +39,7 @@ public class WorkerAutoCompleteList extends FormComponentPanel<Attribute> {
                 inputGroup.setRenderBodyOnly(!WorkerAutoCompleteList.this.isEnabled());
                 item.add(inputGroup);
 
-                inputGroup.add(new WorkerAutoComplete("item", item.getModel(), target -> {}));
+                inputGroup.add(new WorkerAutoComplete("item", item.getModel()).onChange(t -> {}));
 
                 inputGroup.add(new AjaxLink<Void>("remove") {
                     @Override

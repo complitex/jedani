@@ -8,6 +8,7 @@ import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.service.EntityService;
 import ru.complitex.domain.util.Attributes;
+import ru.complitex.domain.util.Domains;
 import ru.complitex.domain.util.Locales;
 
 import javax.inject.Inject;
@@ -16,37 +17,35 @@ import javax.inject.Inject;
  * @author Anatoly A. Ivanov
  * 22.12.2017 12:45
  */
-public class DomainAutoComplete extends AbstractDomainAutoComplete{
+public class DomainAutoComplete<T extends Domain<T>> extends AbstractDomainAutoComplete<T> {
     @Inject
     private EntityService entityService;
 
-    private EntityAttribute entityAttribute;
+    private final EntityAttribute entityAttribute;
 
-    public DomainAutoComplete(String id, String entityName, EntityAttribute entityAttribute,
-                              IModel<Long> model, SerializableConsumer<AjaxRequestTarget> onChange) {
-        super(id, entityName, model, onChange);
+    public DomainAutoComplete(String id, Class<T> domainClass, EntityAttribute entityAttribute,IModel<Long> model) {
+        super(id, domainClass, model);
 
         this.entityAttribute = entityAttribute;
     }
 
-    public DomainAutoComplete(String id, String entityName, EntityAttribute entityAttribute, IModel<Long> model) {
-        this(id, entityName, entityAttribute,  model, null);
-    }
+    public DomainAutoComplete(String id, Class<T> domainClass, Long entityAttributeId, IModel<Long> model) {
+        super(id, domainClass, model);
 
-    public DomainAutoComplete(String id, String entityName, Long entityAttributeId, IModel<Long> model) {
-        super(id, entityName, model, null);
+        String entityName = Domains.getEntityName(domainClass);
 
         this.entityAttribute = entityService.getEntityAttribute(entityName, entityAttributeId);
     }
 
-    protected Domain getFilterObject(String input){
-        Domain domain = new Domain(entityAttribute.getEntityName());
+    protected T getFilterObject(String input){
+        T domain = Domains.newObject(getDomainClass());
+
         domain.getOrCreateAttribute(entityAttribute.getEntityAttributeId()).setText(input);
 
         return domain;
     }
 
-    protected String getTextValue(Domain domain) {
+    protected String getTextValue(T domain) {
         Attribute attribute = domain.getOrCreateAttribute(entityAttribute.getEntityAttributeId());
 
         switch (entityAttribute.getValueType()){
@@ -61,5 +60,11 @@ public class DomainAutoComplete extends AbstractDomainAutoComplete{
         }
 
         return null;
+    }
+
+    public DomainAutoComplete<T> onChange(SerializableConsumer<AjaxRequestTarget> onChange) {
+        super.onChange(onChange);
+
+        return this;
     }
 }

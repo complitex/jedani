@@ -85,11 +85,11 @@ class RelocateModal extends StorageModal {
                 client.setOutputMarkupPlaceholderTag(true);
                 fragment.add(client);
 
-                client.add(new FormGroupDomainAutoComplete("lastName", LastName.ENTITY_NAME, LastName.NAME,
+                client.add(new FormGroupDomainAutoComplete<>("lastName", LastName.class, LastName.NAME,
                         new NumberAttributeModel(getModel(), Transfer.LAST_NAME_TO)).setRequired(true));
-                client.add(new FormGroupDomainAutoComplete("firstName", FirstName.ENTITY_NAME, FirstName.NAME,
+                client.add(new FormGroupDomainAutoComplete<>("firstName", FirstName.class, FirstName.NAME,
                         new NumberAttributeModel(getModel(), Transfer.FIRST_NAME_TO)).setRequired(true));
-                client.add(new FormGroupDomainAutoComplete("middleName", MiddleName.ENTITY_NAME, MiddleName.NAME,
+                client.add(new FormGroupDomainAutoComplete<>("middleName", MiddleName.class, MiddleName.NAME,
                         new NumberAttributeModel(getModel(), Transfer.MIDDLE_NAME_TO)));
 
                 IModel<Long> recipientModel = new NumberAttributeModel(getModel(), Transfer.RECIPIENT_TYPE);

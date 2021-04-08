@@ -30,9 +30,9 @@ public class CountryListPage extends DomainListModalPage<Country> {
         list.add(entity.getEntityAttribute(Country.NAME).setRequired(true));
         list.add(entity.getEntityAttribute(Country.SHORT_NAME));
         list.add(entity.getEntityAttribute(Country.CURRENCY)
-                .withReference(Currency.ENTITY_NAME, Currency.NAME));
+                .withReference(Currency.class, Currency.NAME));
         list.add(entity.getEntityAttribute(Country.EXCHANGE_RATE_EUR)
-                .withReference(ExchangeRate.ENTITY_NAME, ExchangeRate.NAME, StringType.DEFAULT));
+                .withReference(ExchangeRate.class, ExchangeRate.NAME, StringType.DEFAULT));
 
         return list;
     }

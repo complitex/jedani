@@ -90,11 +90,11 @@ public class DomainService implements Serializable {
         }
     }
 
-    public void insert(Domain domain){
+    public void insert(Domain<?> domain){
         domainMapper.insertDomain(domain);
     }
 
-    public void update(Domain domain){
+    public void update(Domain<?> domain){
         domainMapper.updateDomain(domain);
     }
 
@@ -124,7 +124,7 @@ public class DomainService implements Serializable {
         return attributeMapper.getTextValue(entityName, objectId, entityAttributeId);
     }
 
-    public void delete(Domain domain){
+    public void delete(Domain<?> domain){
         domainMapper.delete(domain);
     }
 

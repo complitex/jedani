@@ -1,6 +1,5 @@
 package ru.complitex.jedani.worker.page.invite;
 
-import com.google.common.hash.Hashing;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.authorization.UnauthorizedInstantiationException;
@@ -25,6 +24,7 @@ import org.apache.wicket.resource.FileSystemResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.complitex.common.util.Images;
+import ru.complitex.common.util.Strings;
 import ru.complitex.common.wicket.form.FormGroupDateTextField;
 import ru.complitex.common.wicket.form.FormGroupTextField;
 import ru.complitex.common.wicket.util.Wickets;
@@ -55,7 +55,6 @@ import ru.complitex.user.mapper.UserMapper;
 
 import javax.inject.Inject;
 import java.io.File;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -66,7 +65,7 @@ import java.util.Objects;
  * 01.11.2020 15:19
  */
 public class InvitePage extends WebPage {
-    private Logger log = LoggerFactory.getLogger(InvitePage.class);
+    private final Logger log = LoggerFactory.getLogger(InvitePage.class);
 
     @Inject
     private UserMapper userMapper;
@@ -140,13 +139,15 @@ public class InvitePage extends WebPage {
         add(form);
 
 
-        FormGroupDomainAutoComplete lastName, firstName, middleName;
+        FormGroupDomainAutoComplete<LastName> lastName;
+        FormGroupDomainAutoComplete<FirstName> firstName;
+        FormGroupDomainAutoComplete<MiddleName> middleName;
 
-        form.add(lastName = new FormGroupDomainAutoComplete("lastName", LastName.ENTITY_NAME, LastName.NAME,
+        form.add(lastName = new FormGroupDomainAutoComplete<>("lastName", LastName.class, LastName.NAME,
                 new NumberAttributeModel(worker, Worker.LAST_NAME)).setInputRequired(true));
-        form.add(firstName = new FormGroupDomainAutoComplete("firstName", FirstName.ENTITY_NAME, FirstName.NAME,
+        form.add(firstName = new FormGroupDomainAutoComplete<>("firstName", FirstName.class, FirstName.NAME,
                 new NumberAttributeModel(worker, Worker.FIRST_NAME)).setInputRequired(true));
-        form.add(middleName = new FormGroupDomainAutoComplete("middleName", MiddleName.ENTITY_NAME, MiddleName.NAME,
+        form.add(middleName = new FormGroupDomainAutoComplete<>("middleName", MiddleName.class, MiddleName.NAME,
                 new NumberAttributeModel(worker, Worker.MIDDLE_NAME)));
 
         form.add(new FormGroupDateTextField("birthday", new DateAttributeModel(worker, Worker.BIRTHDAY)));
@@ -248,8 +249,7 @@ public class InvitePage extends WebPage {
                         return;
                     }
 
-                    user.setPassword(Hashing.sha256().hashString(user.getPassword(), StandardCharsets.UTF_8).toString());
-
+                    user.setPassword(Strings.sha256(user.getPassword()));
 
                     if (userMapper.getUser(user.getLogin()) != null){
                         login.error(getString("error_login_exist"));

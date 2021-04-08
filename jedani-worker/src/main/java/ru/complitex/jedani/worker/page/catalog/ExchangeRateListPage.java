@@ -52,8 +52,8 @@ public class ExchangeRateListPage extends DomainListModalPage<ExchangeRate> {
 
         list.add(entity.getEntityAttribute(ExchangeRate.NAME).setStringType(StringType.DEFAULT));
         list.add(entity.getEntityAttribute(ExchangeRate.CODE).setStringType(StringType.DEFAULT));
-        list.add(entity.getEntityAttribute(ExchangeRate.BASE_CURRENCY).withReference(Currency.ENTITY_NAME, Currency.NAME));
-        list.add(entity.getEntityAttribute(ExchangeRate.COUNTER_CURRENCY).withReference(Currency.ENTITY_NAME, Currency.NAME));
+        list.add(entity.getEntityAttribute(ExchangeRate.BASE_CURRENCY).withReference(Currency.class, Currency.NAME));
+        list.add(entity.getEntityAttribute(ExchangeRate.COUNTER_CURRENCY).withReference(Currency.class, Currency.NAME));
 
         return list;
     }
@@ -62,21 +62,21 @@ public class ExchangeRateListPage extends DomainListModalPage<ExchangeRate> {
     @Override
     protected List<EntityAttribute> getEditEntityAttributes(Entity entity) {
         List<EntityAttribute> list = new ArrayList<>();
-        
+
         list.add(entity.getEntityAttribute(ExchangeRate.NAME).setStringType(StringType.DEFAULT));
         list.add(entity.getEntityAttribute(ExchangeRate.CODE).setStringType(StringType.DEFAULT));
-        list.add(entity.getEntityAttribute(ExchangeRate.BASE_CURRENCY).withReference(Currency.ENTITY_NAME, Currency.NAME));
-        list.add(entity.getEntityAttribute(ExchangeRate.COUNTER_CURRENCY).withReference(Currency.ENTITY_NAME, Currency.NAME));
-        
+        list.add(entity.getEntityAttribute(ExchangeRate.BASE_CURRENCY).withReference(Currency.class, Currency.NAME));
+        list.add(entity.getEntityAttribute(ExchangeRate.COUNTER_CURRENCY).withReference(Currency.class, Currency.NAME));
+
         list.add(entity.getEntityAttribute(ExchangeRate.URI_XML).setStringType(StringType.DEFAULT));
-        
+
         list.add(entity.getEntityAttribute(ExchangeRate.URI_DATE_PARAM).setStringType(StringType.DEFAULT));
         list.add(entity.getEntityAttribute(ExchangeRate.URI_DATE_FORMAT).setStringType(StringType.DEFAULT));
-        
+
         list.add(entity.getEntityAttribute(ExchangeRate.XPATH_NAME).setStringType(StringType.DEFAULT));
         list.add(entity.getEntityAttribute(ExchangeRate.XPATH_CODE).setStringType(StringType.DEFAULT));
         list.add(entity.getEntityAttribute(ExchangeRate.XPATH_DATE).setStringType(StringType.DEFAULT));
-        list.add(entity.getEntityAttribute(ExchangeRate.XPATH_VALUE).setStringType(StringType.DEFAULT));        
+        list.add(entity.getEntityAttribute(ExchangeRate.XPATH_VALUE).setStringType(StringType.DEFAULT));
 
         return list;
     }

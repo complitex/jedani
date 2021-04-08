@@ -60,14 +60,14 @@ public class DomainListModalPanel<T extends Domain<T>> extends Panel {
 
     private AbstractDomainEditModal<T> domainEditModal;
 
-    private final String parentEntityName;
+    private final Class<? extends Domain<?>> parentClass;
     private final Long parentEntityAttributeId;
 
-    public DomainListModalPanel(String id, Class<T> domainClass, String parentEntityName, Long parentEntityAttributeId) {
+    public <P extends Domain<P>> DomainListModalPanel(String id, Class<T> domainClass, Class<P> parentClass, Long parentEntityAttributeId) {
         super(id);
 
         this.domainClass = domainClass;
-        this.parentEntityName = parentEntityName;
+        this.parentClass = parentClass;
         this.parentEntityAttributeId = parentEntityAttributeId;
 
         T domainObject = Domains.newObject(domainClass);
@@ -83,7 +83,7 @@ public class DomainListModalPanel<T extends Domain<T>> extends Panel {
 
         filterWrapper = newFilterWrapper(domainObject);
 
-        Provider<T> provider = new Provider<T>(filterWrapper) {
+        Provider<T> provider = new Provider<>(filterWrapper) {
             @Override
             public List<T> getList() {
                 return getDomains(filterWrapper);
@@ -104,14 +104,14 @@ public class DomainListModalPanel<T extends Domain<T>> extends Panel {
 
         columns.add(new DomainIdColumn<>());
 
-        if (parentEntityName != null){
-            Entity parentEntity = entityService.getEntity(parentEntityName);
+        if (parentClass != null){
+            Entity parentEntity = entityService.getEntity(parentClass);
 
-            columns.add(new DomainParentColumn<T>(Model.of(parentEntity.getValue().getText()),
+            columns.add(new DomainParentColumn<>(Model.of(parentEntity.getValue().getText()),
                     parentEntity.getEntityAttribute(parentEntityAttributeId)) {
                 @Override
                 protected Domain<?> getDomain(Long objectId) {
-                    return domainService.getDomain(parentEntityName, objectId);
+                    return domainService.getDomain(parentClass, objectId);
                 }
             });
         }
@@ -122,7 +122,7 @@ public class DomainListModalPanel<T extends Domain<T>> extends Panel {
         onInitColumns(columns);
 
         if (isEditEnabled()) {
-            columns.add(new DomainEditActionsColumn<T>() {
+            columns.add(new DomainEditActionsColumn<>() {
                 @Override
                 protected void onEdit(IModel<T> rowModel, AjaxRequestTarget target) {
                     DomainListModalPanel.this.onEdit(rowModel.getObject(), target);
@@ -135,7 +135,7 @@ public class DomainListModalPanel<T extends Domain<T>> extends Panel {
             });
         }
 
-        table = new Table<T>("table", columns, provider, 15,
+        table = new Table<>("table", columns, provider, 15,
                 "domainListModalPage" + domainClass.getName()){
             @Override
             protected Item<T> newRowItem(String id, int index, IModel<T> model) {
@@ -186,7 +186,7 @@ public class DomainListModalPanel<T extends Domain<T>> extends Panel {
     }
 
     public AbstractDomainEditModal<T> newDomainEditModal(String componentId) {
-        return new DomainEditModal<T>(componentId, domainClass, parentEntityName,
+        return new DomainEditModal<>(componentId, domainClass, parentClass,
                 parentEntityAttributeId, getEditEntityAttributes(entityService.getEntity(Domains.getEntityName(domainClass))),
                 t -> t.add(feedback, table)){
             @Override

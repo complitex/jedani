@@ -26,6 +26,8 @@ public class NameService implements Serializable {
             return null;
         }
 
+        name = name.toUpperCase();
+
         if (objectId != null) {
             Domain<?> domain = domainMapper.getDomain(entityName, objectId);
 

@@ -1,11 +1,9 @@
 package ru.complitex.jedani.worker.component;
 
-import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
-import org.danekja.java.util.function.serializable.SerializableConsumer;
 import ru.complitex.domain.component.form.AbstractDomainAutoComplete;
-import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.model.NumberAttributeModel;
+import ru.complitex.jedani.worker.entity.Worker;
 import ru.complitex.jedani.worker.mapper.WorkerMapper;
 import ru.complitex.jedani.worker.service.WorkerService;
 
@@ -16,42 +14,38 @@ import java.util.List;
  * @author Anatoly A. Ivanov
  * 27.06.2018 14:58
  */
-public class WorkerAutoComplete extends AbstractDomainAutoComplete {
+public class WorkerAutoComplete extends AbstractDomainAutoComplete<Worker> {
     @Inject
     private WorkerMapper workerMapper;
 
     @Inject
     private WorkerService workerService;
 
-    public WorkerAutoComplete(String id, IModel<Long> model, SerializableConsumer<AjaxRequestTarget> onChange) {
-        super(id, null,  model, onChange);
-    }
-
     public WorkerAutoComplete(String id, IModel<Long> model) {
-        this(id,  model, null);
+        super(id, Worker.class,  model);
     }
 
-    public WorkerAutoComplete(String id, IModel<? extends Domain> domainModel, Long entityAttributeId){
+    public WorkerAutoComplete(String id, IModel<Worker> domainModel, Long entityAttributeId){
         this(id, NumberAttributeModel.of(domainModel, entityAttributeId));
     }
 
     @Override
-    protected Domain getDomain(Long objectId) {
+    protected Worker getDomain(Long objectId) {
         return workerMapper.getWorker(objectId);
     }
 
     @Override
-    protected Domain getFilterObject(String input) {
+    protected Worker getFilterObject(String input) {
         return null;
     }
 
     @Override
-    protected List<? extends Domain> getDomains(String input) {
+    protected List<Worker> getDomains(String input) {
         return workerMapper.getWorkers(input);
     }
 
     @Override
-    protected String getTextValue(Domain domain) {
-        return workerService.getWorkerLabel(domain);
+    protected String getTextValue(Worker worker) {
+        return workerService.getWorkerLabel(worker);
     }
 }

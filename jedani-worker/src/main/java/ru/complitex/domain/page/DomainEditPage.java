@@ -89,7 +89,7 @@ public abstract class DomainEditPage<T extends Domain<T>> extends BasePage{
             FormGroupBorder parentGroup = new FormGroupBorder("parentGroup", Model.of(parentEntity.getValue().getText()));
             form.add(parentGroup);
 
-            parentGroup.add(getParentComponent("parent", parentEntity, domain));
+            parentGroup.add(newParentComponent("parent", null, null, domain)); //todo
         }else{
             form.add(new EmptyPanel("parentGroup").setVisible(false));
         }
@@ -136,7 +136,7 @@ public abstract class DomainEditPage<T extends Domain<T>> extends BasePage{
                             EntityAttribute referenceEntityAttribute = attribute.getEntityAttribute()
                                     .getReferenceEntityAttributes().get(0);
 
-                            component = new DomainAutoComplete("component", referenceEntityAttribute.getEntityName(),
+                            component = new DomainAutoComplete("component", referenceEntityAttribute.getReferenceClass(),
                                     referenceEntityAttribute, new PropertyModel<>(attribute, "number"));
                             break;
                         case BOOLEAN:
@@ -216,11 +216,9 @@ public abstract class DomainEditPage<T extends Domain<T>> extends BasePage{
         //todo validate -> entity select
     }
 
-    protected DomainAutoComplete getParentComponent(String componentId, Entity parentEntity, T domain) {
-        return new DomainAutoComplete(componentId,
-                parentEntity.getName(),
-                parentEntity.getEntityAttribute(getParentEntityAttributeId()),
-                new PropertyModel<>(domain, "parentId"));
+    protected DomainAutoComplete newParentComponent(String componentId, Class<? extends Domain<?>> parentClass,
+                                                    EntityAttribute parentEntityAttribute, T domain) {
+        return new DomainAutoComplete(componentId, parentClass, parentEntityAttribute, new PropertyModel<>(domain, "parentId"));
     }
 
     protected String getParentEntityName(){

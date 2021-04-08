@@ -49,7 +49,6 @@ import ru.complitex.jedani.worker.component.StorageAutoComplete;
 import ru.complitex.jedani.worker.component.WorkerAutoComplete;
 import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.exception.SaleException;
-import ru.complitex.jedani.worker.mapper.PeriodMapper;
 import ru.complitex.jedani.worker.mapper.StorageMapper;
 import ru.complitex.jedani.worker.page.BasePage;
 import ru.complitex.jedani.worker.service.PriceService;
@@ -92,26 +91,26 @@ public class SaleModal extends Modal<Sale> {
     @Inject
     private RewardService rewardService;
 
-    @Inject
-    private PeriodMapper periodMapper;
+    private final IModel<Sale> saleModel;
+    private final IModel<List<SaleItem>> saleItemsModel;
 
-    private IModel<Sale> saleModel;
-    private IModel<List<SaleItem>> saleItemsModel;
+    private final WebMarkupContainer container;
+    private final NotificationPanel feedback;
 
-    private WebMarkupContainer container;
-    private NotificationPanel feedback;
+    private final WebMarkupContainer fioContainer;
 
-    private WebMarkupContainer fioContainer;
-    private FormGroupDomainAutoComplete lastName, firstName, middleName;
+    private final FormGroupDomainAutoComplete<LastName> lastName;
+    private final FormGroupDomainAutoComplete<FirstName> firstName;
+    private final FormGroupDomainAutoComplete<MiddleName> middleName;
 
-    private Component feeWithdraw;
+    private final Component feeWithdraw;
 
-    private ListView<SaleItem> saleItems;
+    private final ListView<SaleItem> saleItems;
 
     private Long defaultStorageId;
 
 
-    private Component saveButton;
+    private final Component saveButton;
 
     public SaleModal(String markupId) {
         super(markupId);
@@ -214,7 +213,7 @@ public class SaleModal extends Modal<Sale> {
         container.add(new FormGroupSelectPanel("saleType", new BootstrapSelect<>(FormGroupPanel.COMPONENT_ID,
                 NumberAttributeModel.of(saleModel, Sale.TYPE),
                 Arrays.asList(SaleType.MYCOOK, SaleType.BASE_ASSORTMENT),
-                new IChoiceRenderer<Long>() {
+                new IChoiceRenderer<>() {
                     @Override
                     public Object getDisplayValue(Long object) {
                         switch (object.intValue()){
@@ -273,15 +272,15 @@ public class SaleModal extends Modal<Sale> {
         fioContainer.setOutputMarkupId(true);
         container.add(fioContainer);
 
-        fioContainer.add(lastName = new FormGroupDomainAutoComplete("lastName", LastName.ENTITY_NAME, LastName.NAME,
+        fioContainer.add(lastName = new FormGroupDomainAutoComplete<>("lastName", LastName.class, LastName.NAME,
                 new Model<>()).setInputRequired(true));
-        fioContainer.add(firstName = new FormGroupDomainAutoComplete("firstName", FirstName.ENTITY_NAME, FirstName.NAME,
+        fioContainer.add(firstName = new FormGroupDomainAutoComplete<>("firstName", FirstName.class, FirstName.NAME,
                 new Model<>()).setInputRequired(true));
-        fioContainer.add(middleName = new FormGroupDomainAutoComplete("middleName", MiddleName.ENTITY_NAME, MiddleName.NAME,
+        fioContainer.add(middleName = new FormGroupDomainAutoComplete<>("middleName", MiddleName.class, MiddleName.NAME,
                 new Model<>()));
 
         container.add(new FormGroupPanel("storage", new StorageAutoComplete(FormGroupPanel.COMPONENT_ID,
-                NumberAttributeModel.of(saleModel, Sale.STORAGE), t -> {
+                NumberAttributeModel.of(saleModel, Sale.STORAGE)).onChange(t -> {
             updatePrices(t);
 
             container.visitChildren(NomenclatureAutoComplete.class, (c, v) -> {
@@ -291,8 +290,8 @@ public class SaleModal extends Modal<Sale> {
             });
         }).setRequired(true)));
 
-        container.add(new FormGroupDomainAutoComplete("promotion", Promotion.ENTITY_NAME, Promotion.NAME,
-                NumberAttributeModel.of(saleModel, Sale.PROMOTION))); //todo promotion storage filter
+        container.add(new FormGroupDomainAutoComplete<>("promotion", Promotion.class, Promotion.NAME,
+                NumberAttributeModel.of(saleModel, Sale.PROMOTION)));
 
         FormGroupBorder months = new FormGroupBorder("months");
         container.add(months);
@@ -321,7 +320,7 @@ public class SaleModal extends Modal<Sale> {
             }
         });
 
-        saleItems = new ListView<SaleItem>("saleItems", saleItemsModel) {
+        saleItems = new ListView<>("saleItems", saleItemsModel) {
             @Override
             protected void populateItem(ListItem<SaleItem> item) {
                 item.setOutputMarkupId(true);
@@ -330,12 +329,12 @@ public class SaleModal extends Modal<Sale> {
 
                 item.add(new Label("index", item.getIndex() + 1));
 
-                TextField basePrice = new TextField<>("basePrice", DecimalAttributeModel.of(model, SaleItem.BASE_PRICE), BigDecimal.class);
+                TextField<BigDecimal> basePrice = new TextField<>("basePrice", DecimalAttributeModel.of(model, SaleItem.BASE_PRICE), BigDecimal.class);
                 basePrice.setOutputMarkupId(true);
                 basePrice.setEnabled(false);
                 item.add(basePrice);
 
-                TextField price = new TextField<BigDecimal>("price", DecimalAttributeModel.of(model, SaleItem.PRICE), BigDecimal.class){
+                TextField<BigDecimal> price = new TextField<>("price", DecimalAttributeModel.of(model, SaleItem.PRICE), BigDecimal.class){
                     @Override
                     protected void onComponentTag(ComponentTag tag) {
                         super.onComponentTag(tag);
@@ -358,7 +357,7 @@ public class SaleModal extends Modal<Sale> {
                 price.setEnabled(false);
                 item.add(price);
 
-                TextField quantity = new TextField<>("quantity", NumberAttributeModel.of(model, SaleItem.QUANTITY), Long.class);
+                TextField<Long> quantity = new TextField<>("quantity", NumberAttributeModel.of(model, SaleItem.QUANTITY), Long.class);
                 quantity.setRequired(true)
                         .setOutputMarkupId(true)
                         .add(new AjaxFormInfoBehavior(){
@@ -372,13 +371,10 @@ public class SaleModal extends Modal<Sale> {
                 item.add(quantity);
 
                 item.add(new NomenclatureAutoComplete("nomenclature", NumberAttributeModel.of(model,
-                        SaleItem.NOMENCLATURE), target -> {
-                    updateQuantity(model, target, quantity);
-                    updatePrices(target);
-                }){
+                        SaleItem.NOMENCLATURE)){
                     @Override
-                    protected Domain getFilterObject(String input) {
-                        Domain domain = super.getFilterObject(input);
+                    protected Nomenclature getFilterObject(String input) {
+                        Nomenclature nomenclature = super.getFilterObject(input);
 
                         Attribute attribute = new Attribute(Nomenclature.TYPE);
                         if (saleModel.getObject().getType().equals(SaleType.MYCOOK)) {
@@ -386,11 +382,14 @@ public class SaleModal extends Modal<Sale> {
                         }else{
                             attribute.setNumber(NomenclatureType.BASE_ASSORTMENT);
                         }
-                        domain.put(Domain.FILTER_ATTRIBUTES, Collections.singleton(attribute));
+                        nomenclature.put(Domain.FILTER_ATTRIBUTES, Collections.singleton(attribute));
 
-                        return domain;
+                        return nomenclature;
                     }
-                }.setRequired(true));
+                }.onChange(target -> {
+                    updateQuantity(model, target, quantity);
+                    updatePrices(target);
+                }).setRequired(true));
 
                 item.add(new BootstrapAjaxLink<SaleItem>("update", Buttons.Type.Link) {
                     @Override
@@ -440,7 +439,7 @@ public class SaleModal extends Modal<Sale> {
                 .setEnabled(false));
         container.add(new FormGroupTextField<>("totalLocal", DecimalAttributeModel.of(saleModel, Sale.TOTAL_LOCAL), BigDecimal.class)
                 .setEnabled(false));
-        container.add(new FormGroupTextField<BigDecimal>("payment", DecimalAttributeModel.of(saleModel, Sale.INITIAL_PAYMENT), BigDecimal.class){
+        container.add(new FormGroupTextField<>("payment", DecimalAttributeModel.of(saleModel, Sale.INITIAL_PAYMENT), BigDecimal.class){
             @Override
             public boolean isEnabled() {
                 return !saleModel.getObject().isFeeWithdraw();
@@ -473,7 +472,7 @@ public class SaleModal extends Modal<Sale> {
         }.setLabel(new ResourceModel("cancel")));
     }
 
-    private void updateQuantity(IModel<SaleItem> model, AjaxRequestTarget target, TextField quantity){
+    private void updateQuantity(IModel<SaleItem> model, AjaxRequestTarget target, Component quantity){
         Long storageId = saleModel.getObject().getStorageId();
         Long nomenclatureId = model.getObject().getNomenclatureId();
 
@@ -491,9 +490,8 @@ public class SaleModal extends Modal<Sale> {
     private void updateBasePrices(){
         Sale sale = saleModel.getObject();
 
-        saleItemsModel.getObject().forEach(si -> {
-            si.setBasePrice(priceService.getBasePrice(sale.getStorageId(), si.getNomenclatureId(), sale.getDate()));
-        });
+        saleItemsModel.getObject().forEach(si -> si.setBasePrice(priceService.getBasePrice(sale.getStorageId(),
+                si.getNomenclatureId(), sale.getDate())));
     }
 
     private void updatePrices(boolean updateInitialPayment){
@@ -606,9 +604,7 @@ public class SaleModal extends Modal<Sale> {
             updateBasePrices();
             updatePrices(updateInitialPayment);
 
-            saleItems.stream().forEach(c -> {
-                target.add(c.get("price"), c.get("basePrice"));
-            });
+            saleItems.stream().forEach(c -> target.add(c.get("price"), c.get("basePrice")));
 
             container.get("total").modelChanged();
             container.get("totalLocal").modelChanged();

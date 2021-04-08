@@ -45,11 +45,11 @@ public class Domain<T extends Domain<T>> implements Serializable{
         this.entityName = entityName;
     }
 
-    public Domain(Domain<T> domain){
+    public Domain(Domain<?> domain){
         copy(domain, false);
     }
 
-    public void copy(Domain<T> domain, boolean initAttributes){
+    public void copy(Domain<?> domain, boolean initAttributes){
        id = domain.id;
        objectId = domain.objectId;
        parentId = domain.parentId;

@@ -64,7 +64,7 @@ public class StorageListPage extends DomainListPage<Storage> {
     protected List<EntityAttribute> getEntityAttributes(Entity entity) {
         List<EntityAttribute> list = new ArrayList<>();
 
-        list.add(entity.getEntityAttribute(Storage.CITY).withReference(City.ENTITY_NAME, City.NAME));
+        list.add(entity.getEntityAttribute(Storage.CITY).withReference(City.class, City.NAME));
 
         return list;
     }

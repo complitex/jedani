@@ -73,7 +73,7 @@ import java.util.Objects;
  */
 @AuthorizeInstantiation(JedaniRoles.AUTHORIZED)
 public class StoragePage extends BasePage {
-    private Logger log = LoggerFactory.getLogger(StoragePage.class);
+    private final Logger log = LoggerFactory.getLogger(StoragePage.class);
 
     @Inject
     private EntityService entityService;
@@ -149,7 +149,7 @@ public class StoragePage extends BasePage {
 
         Component city, workers, worker;
 
-        form.add(city = new FormGroupDomainAutoComplete("city", City.ENTITY_NAME, City.NAME,
+        form.add(city = new FormGroupDomainAutoComplete<>("city", City.class, City.NAME,
                 new NumberAttributeModel(storage, Storage.CITY)){
             @Override
             public boolean isVisible() {
@@ -296,7 +296,7 @@ public class StoragePage extends BasePage {
             //todo multi ref filter
 
             productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.NOMENCLATURE)
-                    .withReferences(Nomenclature.ENTITY_NAME, Nomenclature.CODE, Nomenclature.NAME)));
+                    .withReferences(Nomenclature.class, Nomenclature.CODE, Nomenclature.NAME)));
 
             productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.QUANTITY)){
                 @Override
@@ -473,7 +473,7 @@ public class StoragePage extends BasePage {
             Entity transferEntity = entityService.getEntity(Transfer.ENTITY_NAME);
 
             transferColumns.add(new DomainColumn<>(transferEntity.getEntityAttribute(Transfer.NOMENCLATURE)
-                    .withReferences(Nomenclature.ENTITY_NAME, Nomenclature.CODE, Nomenclature.NAME)));
+                    .withReferences(Nomenclature.class, Nomenclature.CODE, Nomenclature.NAME)));
 
             transferColumns.add(new DomainColumn<>(transferEntity.getEntityAttribute(Transfer.QUANTITY)));
             transferColumns.add(new DomainColumn<>(transferEntity.getEntityAttribute(Transfer.STORAGE_FROM)){

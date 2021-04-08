@@ -3,6 +3,7 @@ package ru.complitex.jedani.worker.page.reward;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.PropertyModel;
 import ru.complitex.common.util.Dates;
 import ru.complitex.common.wicket.form.FormGroupDateTextField;
 import ru.complitex.common.wicket.form.FormGroupDecimalField;
@@ -21,7 +22,7 @@ public class RewardModal extends AbstractEditModal<Reward> {
     @Inject
     private DomainService domainService;
 
-    private IModel<Reward> model;
+    private final IModel<Reward> model;
 
     public RewardModal(String markupId) {
         super(markupId);
@@ -32,7 +33,7 @@ public class RewardModal extends AbstractEditModal<Reward> {
 
         add(new FormGroupDateTextField("date", model, Reward.DATE).setRequired(true));
 
-        add(new FormGroupWorker("worker", model, Reward.WORKER).setRequired(true));
+        add(new FormGroupWorker("worker", new PropertyModel<>(model, "workerId"), Reward.WORKER).setRequired(true));
 
         add(new FormGroupAttributeSelect("type", model, Reward.TYPE, RewardType.ENTITY_NAME, RewardType.NAME));
 

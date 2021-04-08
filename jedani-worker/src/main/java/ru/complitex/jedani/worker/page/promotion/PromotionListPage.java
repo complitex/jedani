@@ -48,10 +48,10 @@ public class PromotionListPage extends DomainListModalPage<Promotion> {
 
         list.add(entity.getEntityAttribute(Promotion.DATE_BEGIN));
         list.add(entity.getEntityAttribute(Promotion.DATE_END));
-        list.add(entity.getEntityAttribute(Promotion.COUNTRY).withReference(City.ENTITY_NAME, City.NAME));
+        list.add(entity.getEntityAttribute(Promotion.COUNTRY).withReference(City.class, City.NAME));
         list.add(entity.getEntityAttribute(Promotion.NAME));
         list.add(entity.getEntityAttribute(Promotion.NOMENCLATURES).setValueType(ValueType.ENTITY_LIST)
-                .withReference(Nomenclature.ENTITY_NAME, Nomenclature.NAME));
+                .withReference(Nomenclature.class, Nomenclature.NAME));
 
         return list;
     }

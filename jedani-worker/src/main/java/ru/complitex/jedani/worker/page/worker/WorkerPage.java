@@ -66,6 +66,7 @@ import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.component.datatable.DomainActionColumn;
 import ru.complitex.domain.component.datatable.DomainColumn;
 import ru.complitex.domain.component.datatable.DomainIdColumn;
+import ru.complitex.domain.component.form.DomainAutoComplete;
 import ru.complitex.domain.component.form.FormGroupAttributeInputList;
 import ru.complitex.domain.component.form.FormGroupAttributeSelect;
 import ru.complitex.domain.component.form.FormGroupDomainAutoComplete;
@@ -282,13 +283,15 @@ public class WorkerPage extends BasePage {
         form.add(photoUploadFiled);
 
 
-        FormGroupDomainAutoComplete lastName, firstName, middleName;
+        FormGroupDomainAutoComplete<LastName> lastName;
+        FormGroupDomainAutoComplete<FirstName> firstName;
+        FormGroupDomainAutoComplete<MiddleName> middleName;
 
-        form.add(lastName = new FormGroupDomainAutoComplete("lastName", LastName.ENTITY_NAME, LastName.NAME,
+        form.add(lastName = new FormGroupDomainAutoComplete<>("lastName", LastName.class, LastName.NAME,
                 new NumberAttributeModel(worker, Worker.LAST_NAME)).setInputRequired(true));
-        form.add(firstName = new FormGroupDomainAutoComplete("firstName", FirstName.ENTITY_NAME, FirstName.NAME,
+        form.add(firstName = new FormGroupDomainAutoComplete<>("firstName", FirstName.class, FirstName.NAME,
                 new NumberAttributeModel(worker, Worker.FIRST_NAME)).setInputRequired(true));
-        form.add(middleName = new FormGroupDomainAutoComplete("middleName", MiddleName.ENTITY_NAME, MiddleName.NAME,
+        form.add(middleName = new FormGroupDomainAutoComplete<>("middleName", MiddleName.class, MiddleName.NAME,
                 new NumberAttributeModel(worker, Worker.MIDDLE_NAME)));
 
         lastName.setEnabled(!isViewOnly());
@@ -363,7 +366,7 @@ public class WorkerPage extends BasePage {
                 .setEnabled(!isViewOnly()));
 
 
-        FormGroupAttributeSelect city, region;
+        FormGroupAttributeSelect region;
 
         IModel<Long> regionModel = new Model<>();
 
@@ -371,63 +374,81 @@ public class WorkerPage extends BasePage {
             regionModel.setObject(domainService.getParentId(City.ENTITY_NAME, worker.getCityId()));
         }
 
-        form.add(region = new FormGroupAttributeSelect("region", regionModel, Region.ENTITY_NAME, Region.NAME){
-            @Override
-            public boolean isRequired() {
-                return worker.isParticipant();
-            }
+        form.add(region = new FormGroupAttributeSelect("region", regionModel, Region.ENTITY_NAME, Region.NAME) {
 
             @Override
             public boolean isEnabled() {
-                return isEditEnabled();
+                return false;
             }
         });
 
-        form.add(city = new FormGroupAttributeSelect("city",
+        form.add(new DomainAutoComplete<City>("city", City.class, City.NAME,
                 new NumberAttributeModel(worker.getOrCreateAttribute(Worker.CITY)) {
-                    @Override
-                    public void setObject(Long object) {
-                        super.setObject(object);
-
-                        if (object != null) {
-                            regionModel.setObject(domainService.getParentId(City.ENTITY_NAME, object));
-                        }
-                    }
-                },
-                City.ENTITY_NAME, City.NAME){
             @Override
-            protected FilterWrapper<? extends Domain<?>> getFilterWrapper() {
-                return FilterWrapper.of(new City().setParentId(regionModel.getObject()));
-            }
+            public void setObject(Long object) {
+                super.setObject(object);
 
-            @Override
-            protected String getPrefix(Long id) {
-                Long cityTypeId = domainService.getNumber(City.ENTITY_NAME, id, City.CITY_TYPE);
-
-                if (cityTypeId != null){
-                    CityType cityType = domainService.getDomain(CityType.class, cityTypeId);
-
-                    if (cityType != null){
-                        return cityType.getTextValue(CityType.SHORT_NAME).toLowerCase() + " ";
-                    }
+                if (object != null) {
+                    regionModel.setObject(domainService.getParentId(City.ENTITY_NAME, object));
                 }
-
-                return super.getPrefix(id);
+            }
+        }) {
+            @Override
+            protected City getFilterObject(String input) {
+                return super.getFilterObject(input).setParentId(regionModel.getObject());
             }
 
             @Override
-            public boolean isRequired() {
-                return worker.isParticipant();
+            protected String getTextValue(City domain) {
+                return super.getTextValue(domain);
             }
+        }.onChange(t -> t.add(region)));
 
-            @Override
-            public boolean isEnabled() {
-                return isEditEnabled();
-            }
-        });
+//        form.add(city = new FormGroupAttributeSelect("city",
+//                new NumberAttributeModel(worker.getOrCreateAttribute(Worker.CITY)) {
+//                    @Override
+//                    public void setObject(Long object) {
+//                        super.setObject(object);
+//
+//                        if (object != null) {
+//                            regionModel.setObject(domainService.getParentId(City.ENTITY_NAME, object));
+//                        }
+//                    }
+//                },
+//                City.ENTITY_NAME, City.NAME){
+//            @Override
+//            protected FilterWrapper<? extends Domain<?>> getFilterWrapper() {
+//                return FilterWrapper.of(new City().setParentId(regionModel.getObject()));
+//            }
+//
+//            @Override
+//            protected String getPrefix(Long id) {
+//                Long cityTypeId = domainService.getNumber(City.ENTITY_NAME, id, City.CITY_TYPE);
+//
+//                if (cityTypeId != null){
+//                    CityType cityType = domainService.getDomain(CityType.class, cityTypeId);
+//
+//                    if (cityType != null){
+//                        return cityType.getTextValue(CityType.SHORT_NAME).toLowerCase() + " ";
+//                    }
+//                }
+//
+//                return super.getPrefix(id);
+//            }
+//
+//            @Override
+//            public boolean isRequired() {
+//                return worker.isParticipant();
+//            }
+//
+//            @Override
+//            public boolean isEnabled() {
+//                return isEditEnabled();
+//            }
+//        });
+//
 
-        region.onChange(t -> t.add(city));
-        city.onChange(t -> t.add(region));
+//        city.onChange(t -> t.add(region));
 
         List<String> roles = new ArrayList<>();
 
@@ -579,7 +600,7 @@ public class WorkerPage extends BasePage {
 
                         manager = workerMapper.getWorker(worker.getNumber(Worker.MANAGER));
                     }
-                }, target -> target.add(managerPhone, managerEmail)){});
+                }).onChange(t -> t.add(managerPhone, managerEmail)));
 
         form.add(new IndicatingAjaxButton("save") {
             @Override
@@ -820,12 +841,12 @@ public class WorkerPage extends BasePage {
                 Entity entity = entityMapper.getEntity(Worker.ENTITY_NAME);
 
                 columns.add(new DomainColumn<>(entity.getEntityAttribute(Worker.J_ID)));
-                columns.add(new DomainColumn<>(entity.getEntityAttribute(Worker.LAST_NAME).withReference(LastName.ENTITY_NAME, LastName.NAME)));
-                columns.add(new DomainColumn<>(entity.getEntityAttribute(Worker.FIRST_NAME).withReference(FirstName.ENTITY_NAME, FirstName.NAME)));
-                columns.add(new DomainColumn<>(entity.getEntityAttribute(Worker.MIDDLE_NAME).withReference(MiddleName.ENTITY_NAME, MiddleName.NAME)));
-                columns.add(new DomainColumn<>(entity.getEntityAttribute(Worker.CITY).withReference(City.ENTITY_NAME, City.NAME)
+                columns.add(new DomainColumn<>(entity.getEntityAttribute(Worker.LAST_NAME).withReference(LastName.class, LastName.NAME)));
+                columns.add(new DomainColumn<>(entity.getEntityAttribute(Worker.FIRST_NAME).withReference(FirstName.class, FirstName.NAME)));
+                columns.add(new DomainColumn<>(entity.getEntityAttribute(Worker.MIDDLE_NAME).withReference(MiddleName.class, MiddleName.NAME)));
+                columns.add(new DomainColumn<>(entity.getEntityAttribute(Worker.CITY).withReference(City.class, City.NAME)
                         .setPrefixEntityAttribute(entityService.getEntityAttribute(City.ENTITY_NAME, City.CITY_TYPE)
-                                .withReference(CityType.ENTITY_NAME, CityType.SHORT_NAME))));
+                                .withReference(CityType.class, CityType.SHORT_NAME))));
 
                 columns.add(new AbstractDomainColumn<>(new StringResourceModel("region", WorkerPage.this), new Sort("region")) {
                     @Override
