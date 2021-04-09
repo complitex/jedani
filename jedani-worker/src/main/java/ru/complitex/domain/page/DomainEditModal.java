@@ -67,7 +67,7 @@ public class DomainEditModal<T extends Domain<T>> extends AbstractDomainEditModa
 
     private final Long parentEntityAttributeId;
 
-    public DomainEditModal(String markupId, Class<T> domainClass, Class<? extends Domain<?>> parentClass, Long parentEntityAttributeId,
+    public <P extends Domain<P>> DomainEditModal(String markupId, Class<T> domainClass, Class<P> parentClass, Long parentEntityAttributeId,
                            List<EntityAttribute> entityAttributes, SerializableConsumer<AjaxRequestTarget> onChange) {
         super(markupId, Model.of(Domains.newObject(domainClass)));
 
@@ -145,7 +145,7 @@ public class DomainEditModal<T extends Domain<T>> extends AbstractDomainEditModa
                             EntityAttribute referenceEntityAttribute = attribute.getEntityAttribute()
                                     .getReferenceEntityAttributes().get(0);
 
-                            component = new DomainAutoComplete("component", referenceEntityAttribute.getReferenceClass(),
+                            component = new DomainAutoComplete("component", referenceEntityAttribute.getDomainClass(),
                                     referenceEntityAttribute, new PropertyModel<>(attribute, "number"));
                             break;
                         case BOOLEAN:

@@ -67,7 +67,7 @@ public class RoleSelectList extends Panel {
         listView.setReuseItems(false);
         container.add(listView);
 
-        add(new AjaxLink<Void>("add") {
+        container.add(new AjaxLink<Void>("add") {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 model.getObject().add(null);

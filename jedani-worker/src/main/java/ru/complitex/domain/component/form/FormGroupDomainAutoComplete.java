@@ -48,6 +48,20 @@ public class FormGroupDomainAutoComplete<T extends Domain<T>> extends Panel{
             public boolean isEnabled() {
                 return FormGroupDomainAutoComplete.this.isEnabled();
             }
+
+            @Override
+            protected T getFilterObject(String input) {
+                T object = FormGroupDomainAutoComplete.this.getFilterObject(input);
+
+                return object != null ? object : super.getFilterObject(input);
+            }
+
+            @Override
+            protected String getTextValue(T domain) {
+                String value = FormGroupDomainAutoComplete.this.getTextValue(domain);
+
+                return value != null ? value : super.getTextValue(domain);
+            }
         });
 
         domainAutoComplete.onChange(t -> {
@@ -96,6 +110,14 @@ public class FormGroupDomainAutoComplete<T extends Domain<T>> extends Panel{
 
     protected void onUpdate(AjaxRequestTarget target){
 
+    }
+
+    protected T getFilterObject(String input) {
+        return null;
+    }
+
+    protected String getTextValue(T domain) {
+        return null;
     }
 
 }

@@ -20,7 +20,7 @@
                             <span id="photoName"></span>
                             <span class="input-group-btn text-center">
                                 <label class="btn btn-link btn-file" style="font-weight: normal">
-                                    Выбрать
+                                    <i class="glyphicon glyphicon-folder-open"></i>
                                     <input wicket:id="photoUploadFiled" id="file" type="file" class="hidden" accept="image/*"
                                            onchange="$('#photoName').html(this.files[0].name)"/>
                                 </label>
@@ -88,8 +88,8 @@
                             <div class="form-group" wicket:id="manager">
                                 <div>
                                     <label for="managerFio">Вышестоящий ПК*</label>
-                                    <a wicket:id="managerLink" class="pull-right" style="padding-right: 12px">
-                                        <i class="glyphicon glyphicon-share-alt"></i>
+                                    <a wicket:id="managerLink" class="pull-right" style="padding-right: 6px">
+                                        <i class="glyphicon glyphicon-user"></i>
                                     </a>
                                 </div>
                                 <div wicket:id="managerFio" id="managerFio"></div>

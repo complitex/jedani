@@ -25,7 +25,7 @@ public class EntityService implements Serializable {
         return entityMapper.getEntity(entityName);
     }
 
-    public Entity getEntity(Class<? extends Domain> domainClass){
+    public <T extends Domain<T>> Entity getEntity(Class<T> domainClass){
         return entityMapper.getEntity(Domains.getEntityName(domainClass));
     }
 
@@ -42,7 +42,7 @@ public class EntityService implements Serializable {
     public void loadReference(EntityAttribute entityAttribute){
         if (entityAttribute != null && entityAttribute.getReferenceEntityAttributes() != null) {
             entityAttribute.getReferenceEntityAttributes().forEach(ea -> {
-                if (ea.getId() == null){
+                if (ea.getId() == null) {
                     ea.copy(getEntityAttribute(ea.getEntityName(), ea.getEntityAttributeId()));
                 }
             });

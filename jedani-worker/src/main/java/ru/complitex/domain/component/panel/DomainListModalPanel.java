@@ -60,14 +60,13 @@ public class DomainListModalPanel<T extends Domain<T>> extends Panel {
 
     private AbstractDomainEditModal<T> domainEditModal;
 
-    private final Class<? extends Domain<?>> parentClass;
     private final Long parentEntityAttributeId;
 
     public <P extends Domain<P>> DomainListModalPanel(String id, Class<T> domainClass, Class<P> parentClass, Long parentEntityAttributeId) {
         super(id);
 
         this.domainClass = domainClass;
-        this.parentClass = parentClass;
+
         this.parentEntityAttributeId = parentEntityAttributeId;
 
         T domainObject = Domains.newObject(domainClass);
@@ -173,7 +172,7 @@ public class DomainListModalPanel<T extends Domain<T>> extends Panel {
         container.add(editForm);
 
         if (isEditEnabled() && isDomainModalEditEnabled()) {
-            domainEditModal = newDomainEditModal(DOMAIN_EDIT_MODAL_ID);
+            domainEditModal = newDomainEditModal(DOMAIN_EDIT_MODAL_ID, parentClass);
 
             editForm.add(domainEditModal);
         }else{
@@ -185,7 +184,7 @@ public class DomainListModalPanel<T extends Domain<T>> extends Panel {
         this(id, domainClass, null, null);
     }
 
-    public AbstractDomainEditModal<T> newDomainEditModal(String componentId) {
+    public <P extends Domain<P>> AbstractDomainEditModal<T> newDomainEditModal(String componentId, Class<P> parentClass) {
         return new DomainEditModal<>(componentId, domainClass, parentClass,
                 parentEntityAttributeId, getEditEntityAttributes(entityService.getEntity(Domains.getEntityName(domainClass))),
                 t -> t.add(feedback, table)){

@@ -23,4 +23,18 @@ public class City extends Domain<City>{
     public City() {
         super(ENTITY_NAME);
     }
+
+    public String getName() {
+        return getTextValue(NAME);
+    }
+
+    public City setName(String name) {
+        setText(City.NAME, name);
+
+        return this;
+    }
+
+    public Long getCityTypeId() {
+        return getNumber(CITY_TYPE);
+    }
 }

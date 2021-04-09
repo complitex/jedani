@@ -66,7 +66,6 @@ import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.component.datatable.DomainActionColumn;
 import ru.complitex.domain.component.datatable.DomainColumn;
 import ru.complitex.domain.component.datatable.DomainIdColumn;
-import ru.complitex.domain.component.form.DomainAutoComplete;
 import ru.complitex.domain.component.form.FormGroupAttributeInputList;
 import ru.complitex.domain.component.form.FormGroupAttributeSelect;
 import ru.complitex.domain.component.form.FormGroupDomainAutoComplete;
@@ -366,89 +365,42 @@ public class WorkerPage extends BasePage {
                 .setEnabled(!isViewOnly()));
 
 
-        FormGroupAttributeSelect region;
+        Component region;
 
-        IModel<Long> regionModel = new Model<>();
-
-        if (worker.getCityId() != null) {
-            regionModel.setObject(domainService.getParentId(City.ENTITY_NAME, worker.getCityId()));
-        }
-
-        form.add(region = new FormGroupAttributeSelect("region", regionModel, Region.ENTITY_NAME, Region.NAME) {
-
+        form.add(region = new FormGroupTextField<>("region", new LoadableDetachableModel<>() {
             @Override
-            public boolean isEnabled() {
-                return false;
-            }
-        });
+            protected String load() {
+               Long regionId = domainService.getParentId(City.ENTITY_NAME, worker.getCityId());
 
-        form.add(new DomainAutoComplete<City>("city", City.class, City.NAME,
-                new NumberAttributeModel(worker.getOrCreateAttribute(Worker.CITY)) {
-            @Override
-            public void setObject(Long object) {
-                super.setObject(object);
-
-                if (object != null) {
-                    regionModel.setObject(domainService.getParentId(City.ENTITY_NAME, object));
+                if (regionId != null) {
+                    return Attributes.capitalize(domainService.getTextValue(Region.ENTITY_NAME, regionId, Region.NAME));
                 }
+
+                return "";
             }
-        }) {
+        }).setEnabled(false));
+
+
+        form.add(new FormGroupDomainAutoComplete<>("city", City.class, City.NAME,
+                new NumberAttributeModel(worker.getOrCreateAttribute(Worker.CITY))) {
             @Override
-            protected City getFilterObject(String input) {
-                return super.getFilterObject(input).setParentId(regionModel.getObject());
+            public String getTextValue(City domain) {
+                String cityType = "";
+
+                if (domain.getCityTypeId() != null){
+                    cityType = domainService.getTextValue(CityType.ENTITY_NAME, domain.getCityTypeId(), CityType.SHORT_NAME).toLowerCase();
+                }
+
+                String city = Attributes.capitalize(domain.getName());
+
+                return cityType + " " + city;
             }
 
             @Override
-            protected String getTextValue(City domain) {
-                return super.getTextValue(domain);
+            protected void onUpdate(AjaxRequestTarget target) {
+                target.add(region);
             }
-        }.onChange(t -> t.add(region)));
-
-//        form.add(city = new FormGroupAttributeSelect("city",
-//                new NumberAttributeModel(worker.getOrCreateAttribute(Worker.CITY)) {
-//                    @Override
-//                    public void setObject(Long object) {
-//                        super.setObject(object);
-//
-//                        if (object != null) {
-//                            regionModel.setObject(domainService.getParentId(City.ENTITY_NAME, object));
-//                        }
-//                    }
-//                },
-//                City.ENTITY_NAME, City.NAME){
-//            @Override
-//            protected FilterWrapper<? extends Domain<?>> getFilterWrapper() {
-//                return FilterWrapper.of(new City().setParentId(regionModel.getObject()));
-//            }
-//
-//            @Override
-//            protected String getPrefix(Long id) {
-//                Long cityTypeId = domainService.getNumber(City.ENTITY_NAME, id, City.CITY_TYPE);
-//
-//                if (cityTypeId != null){
-//                    CityType cityType = domainService.getDomain(CityType.class, cityTypeId);
-//
-//                    if (cityType != null){
-//                        return cityType.getTextValue(CityType.SHORT_NAME).toLowerCase() + " ";
-//                    }
-//                }
-//
-//                return super.getPrefix(id);
-//            }
-//
-//            @Override
-//            public boolean isRequired() {
-//                return worker.isParticipant();
-//            }
-//
-//            @Override
-//            public boolean isEnabled() {
-//                return isEditEnabled();
-//            }
-//        });
-//
-
-//        city.onChange(t -> t.add(region));
+        }.setRequired(true));
 
         List<String> roles = new ArrayList<>();
 

@@ -57,7 +57,7 @@ public class AttributeInputList extends FormComponentPanel<Attribute> {
         listView.setReuseItems(false);
         container.add(listView);
 
-        add(new AjaxLink<Void>("add") {
+        container.add(new AjaxLink<Void>("add") {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 listModel.getObject().add("");
@@ -91,5 +91,3 @@ public class AttributeInputList extends FormComponentPanel<Attribute> {
         return !isRequired() || !listModel.getObject().isEmpty();
     }
 }
-
-

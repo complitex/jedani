@@ -136,7 +136,7 @@ public abstract class DomainEditPage<T extends Domain<T>> extends BasePage{
                             EntityAttribute referenceEntityAttribute = attribute.getEntityAttribute()
                                     .getReferenceEntityAttributes().get(0);
 
-                            component = new DomainAutoComplete("component", referenceEntityAttribute.getReferenceClass(),
+                            component = new DomainAutoComplete("component", referenceEntityAttribute.getDomainClass(),
                                     referenceEntityAttribute, new PropertyModel<>(attribute, "number"));
                             break;
                         case BOOLEAN:

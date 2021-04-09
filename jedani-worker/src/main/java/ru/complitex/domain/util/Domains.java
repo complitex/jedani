@@ -54,7 +54,7 @@ public class Domains {
     }
 
     @SuppressWarnings("unchecked")
-    private static <T extends Domain<T>> Domain<T> getDomain(Class<T> domainClass){
+    private static <T extends Domain<T>> T getDomain(Class<T> domainClass){
         T domain = (T) domainMap.get(domainClass);
 
         if (domain == null){
