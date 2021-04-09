@@ -39,7 +39,7 @@ a:focus {
 }
 
 .menu-header a {
-    padding-left: 15px;
+    padding-left: 22px;
     color: #f28100;
 }
 
@@ -58,13 +58,13 @@ a:focus {
 }
 
 #sidebar {
-    width: 210px;
+    width: 240px;
     border-right: 1px solid #e7e7e7;
     background: #1b1818;
 }
 
 .main {
-    padding-top: 7px;
+    padding-top: 12px;
     vertical-align: top;
     width: 100%;
 }
@@ -80,7 +80,7 @@ a:focus {
 }
 
 .nav > li > a {
-    padding: 8px 15px;
+    padding: 8px 22px;
 
 }
 
@@ -104,7 +104,7 @@ a:focus {
 }
 
 .sidebar-nav {
-    padding-top: 7px;
+    padding-top: 6px;
 }
 
 .sidebar-nav .nav ul a {
