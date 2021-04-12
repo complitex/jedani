@@ -83,36 +83,18 @@ public class RewardService implements Serializable {
                 .setPeriodId(periodId)));
     }
 
-    public BigDecimal getRewardsTotal(Long workerId, Long rewardTypeId, Long periodId) {
+    public BigDecimal getRewardsTotal(Long workerId, Long rewardTypeId, Long rewardStatusId, Long periodId) {
         return getRewards(workerId, periodId).stream()
                 .filter(r -> Objects.equals(r.getType(), rewardTypeId))
+                .filter(r -> Objects.equals(r.getRewardStatus(), rewardStatusId))
                 .reduce(ZERO, ((t, p) -> t.add(p.getTotal())), BigDecimal::add);
     }
 
-    public BigDecimal getRewardsTotal(Long workerId, Long managerId, Long rewardTypeId, Long periodId) {
+    public BigDecimal getRewardsTotal(Long workerId, Long managerId, Long rewardTypeId, Long rewardStatusId, Long periodId) {
         return getRewards(workerId, managerId, periodId).stream()
                 .filter(r -> Objects.equals(r.getType(), rewardTypeId))
+                .filter(r -> Objects.equals(r.getRewardStatus(), rewardStatusId))
                 .reduce(ZERO, ((t, p) -> t.add(p.getTotal())), BigDecimal::add);
-    }
-
-    public BigDecimal getRewardsTotal(List<Reward> rewards, Long rewardTypeId, Long periodId, boolean current) {
-        return rewards.stream()
-                .filter(r -> Objects.equals(r.getType(), rewardTypeId) && isCurrentSalePeriod(r, periodId) == current)
-                .reduce(ZERO, ((t, r) -> t.add(r.getTotal())), BigDecimal::add);
-    }
-
-    public BigDecimal getRewardsPoint(List<Reward> rewards, Long rewardTypeId, Long periodId, boolean current) {
-        return rewards.stream()
-                .filter(r -> Objects.equals(r.getType(), rewardTypeId) && isCurrentSalePeriod(r, periodId) == current)
-                .reduce(ZERO, ((t, r) -> t.add(r.getPoint())), BigDecimal::add);
-    }
-
-    public boolean isCurrentSalePeriod(Reward reward, Long periodId) {
-        Sale sale = saleService.getSale(reward.getSaleId());
-
-        return sale != null
-                ? Objects.equals(saleService.getSale(reward.getSaleId()).getPeriodId(), periodId)
-                : Objects.equals(reward.getPeriodId(), periodId);
     }
 
     public WorkerRewardTree getWorkerRewardTree(Period period) {
@@ -636,7 +618,7 @@ public class RewardService implements Serializable {
 
             if (rewardStatus == RewardStatus.ESTIMATED) {
                 reward.setPoint(total.subtract(getRewardsPointSum(sale.getObjectId(), RewardType.MANAGER_PREMIUM, RewardStatus.ESTIMATED)));
-            } else if (rewardStatus == RewardStatus.CHARGED) {                            ;
+            } else if (rewardStatus == RewardStatus.CHARGED) {
                 reward.setPoint(calcRewardPoint(sale, RewardType.MANAGER_PREMIUM, period.getOperatingMonth(), total));
             }
 
@@ -673,9 +655,10 @@ public class RewardService implements Serializable {
 
             reward.setPoint(ZERO);
 
-            if (rewardStatus == RewardStatus.ESTIMATED || getRewardsTotal(reward.getWorkerId(), RewardType.PERSONAL_VOLUME, period.getObjectId()).compareTo(ZERO) == 0) {
+            if (rewardStatus == RewardStatus.ESTIMATED || getRewardsTotal(reward.getWorkerId(), RewardType.PERSONAL_VOLUME, RewardStatus.CHARGED,
+                    period.getObjectId()).compareTo(ZERO) == 0) {
                 if (workerReward.getPaymentVolume().compareTo(avgPoint) < 0) {
-                    reward.setPoint(lowerPoint); //todo test
+                    reward.setPoint(lowerPoint);
                 } else {
                     reward.setPoint(greaterPoint);
                 }
