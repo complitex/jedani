@@ -1039,7 +1039,7 @@ public class WorkerPage extends BasePage {
                     finance.add(new Label("reward_ba", LoadableDetachableModel.of(() ->
                             getRewardString(rewardsModel.getObject(), RewardType.BASE_ASSORTMENT_SALE, periodModel.getObject().getObjectId()))));
                     finance.add(new Label("reward_mkb", LoadableDetachableModel.of(() ->
-                            getRewardString(rewardsModel.getObject(), RewardType.MK_MANAGER_BONUS, periodModel.getObject().getObjectId()))));
+                            getRewardString(rewardsModel.getObject(), RewardType.MANAGER_MK_BONUS, periodModel.getObject().getObjectId()))));
                     finance.add(new Label("reward_cw", LoadableDetachableModel.of(() ->
                             getRewardString(rewardsModel.getObject(), RewardType.CULINARY_WORKSHOP, periodModel.getObject().getObjectId()))));
 

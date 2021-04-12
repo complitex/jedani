@@ -559,7 +559,7 @@ public class RewardService implements Serializable {
 
                 reward.setSaleId(sale.getObjectId());
                 reward.setWorkerId(sale.getMkManagerBonusWorkerId());
-                reward.setType(RewardType.MK_MANAGER_BONUS);
+                reward.setType(RewardType.MANAGER_MK_BONUS);
                 reward.setDate(Dates.currentDate());
                 reward.setMonth(period.getOperatingMonth());
                 reward.setPeriodId(period.getObjectId());
@@ -570,9 +570,9 @@ public class RewardService implements Serializable {
                 reward.setPoint(ZERO);
 
                 if (rewardStatus == RewardStatus.ESTIMATED) {
-                    reward.setPoint(total);
+                    reward.setPoint(total.subtract(getRewardsPointSum(sale.getObjectId(), RewardType.MANAGER_MK_BONUS, RewardStatus.ESTIMATED)));
                 } else if (rewardStatus == RewardStatus.CHARGED) {
-                    reward.setPoint(calcRewardPoint(sale, RewardType.MK_MANAGER_BONUS, period.getOperatingMonth(), total));
+                    reward.setPoint(calcRewardPoint(sale, RewardType.MANAGER_MK_BONUS, period.getOperatingMonth(), total));
                 }
 
                 updateLocal(sale, reward);
@@ -635,7 +635,7 @@ public class RewardService implements Serializable {
             reward.setPoint(ZERO);
 
             if (rewardStatus == RewardStatus.ESTIMATED) {
-                reward.setPoint(total);
+                reward.setPoint(total.subtract(getRewardsPointSum(sale.getObjectId(), RewardType.MANAGER_PREMIUM, RewardStatus.ESTIMATED)));
             } else if (rewardStatus == RewardStatus.CHARGED) {                            ;
                 reward.setPoint(calcRewardPoint(sale, RewardType.MANAGER_PREMIUM, period.getOperatingMonth(), total));
             }
@@ -675,7 +675,7 @@ public class RewardService implements Serializable {
 
             if (rewardStatus == RewardStatus.ESTIMATED || getRewardsTotal(reward.getWorkerId(), RewardType.PERSONAL_VOLUME, period.getObjectId()).compareTo(ZERO) == 0) {
                 if (workerReward.getPaymentVolume().compareTo(avgPoint) < 0) {
-                    reward.setPoint(lowerPoint);
+                    reward.setPoint(lowerPoint); //todo test
                 } else {
                     reward.setPoint(greaterPoint);
                 }

@@ -33,7 +33,7 @@ public class RewardModal extends AbstractEditModal<Reward> {
 
         add(new FormGroupDateTextField("date", model, Reward.DATE).setRequired(true));
 
-        add(new FormGroupWorker("worker", new PropertyModel<>(model, "workerId"), Reward.WORKER).setRequired(true));
+        add(new FormGroupWorker("worker", new PropertyModel<>(model, "workerId")).setRequired(true));
 
         add(new FormGroupAttributeSelect("type", model, Reward.TYPE, RewardType.ENTITY_NAME, RewardType.NAME));
 
