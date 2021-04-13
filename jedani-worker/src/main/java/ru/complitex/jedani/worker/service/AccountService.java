@@ -96,6 +96,7 @@ public class AccountService implements Serializable {
                 BigDecimal charged = ZERO;
                 BigDecimal paid = ZERO;
                 BigDecimal withdrawn = ZERO;
+                BigDecimal spent = ZERO;
 
                 Long currencyId = workerService.getCurrencyId(workerId);
 
@@ -111,7 +112,7 @@ public class AccountService implements Serializable {
 
                 Account account = updateAccount(workerId, date, previousPeriod.getObjectId(), currencyId, charged, paid, withdrawn);
 
-                BigDecimal balance = account.getBalance().add(charged).subtract(paid);
+                BigDecimal balance = account.getBalance().add(charged).subtract(paid).subtract(spent);
 
                 openAccount(workerId, date, periodMapper.getActualPeriod().getObjectId(), currencyId, balance);
             });
@@ -120,5 +121,14 @@ public class AccountService implements Serializable {
 
             throw new AccountException(e.getMessage());
         }
+    }
+
+    public BigDecimal getBalance(Long workerId, Long periodId){
+        List<Account> accounts = domainService.getDomains(Account.class,
+                FilterWrapper.of(new Account()
+                        .setWorkerId(workerId)
+                        .setPeriodId(periodId)));
+
+        return !accounts.isEmpty() ? accounts.get(0).getBalance() : BigDecimal.ZERO;
     }
 }

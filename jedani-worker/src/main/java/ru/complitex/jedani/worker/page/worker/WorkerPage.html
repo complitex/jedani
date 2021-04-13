@@ -146,13 +146,23 @@
             <caption>Личный счёт</caption>
             <thead>
             <tr>
-                <th style="width: 100px">Месяц</th>
+                <th>Месяц</th>
+                <th>Входящее сальдо</th>
+                <th>Начисленное вознаграждение</th>
+                <th>Изъятое вознаграждение</th>
+                <th>Выплаченное вознаграждение</th>
+                <th>Вознаграждение использованное в качестве оплаты за товар</th>
                 <th>Баланс</th>
             </tr>
             </thead>
             <tbody>
             <tr>
                 <td wicket:id="month"></td>
+                <td wicket:id="input"></td>
+                <td wicket:id="charged"></td>
+                <td wicket:id="withdraw"></td>
+                <td wicket:id="paid"></td>
+                <td wicket:id="spent"></td>
                 <td wicket:id="balance"></td>
             </tr>
             </tbody>

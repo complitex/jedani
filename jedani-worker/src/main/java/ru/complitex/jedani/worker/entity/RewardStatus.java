@@ -9,4 +9,5 @@ public class RewardStatus {
     public static final long CHARGED = 2;
     public static final long PAID = 3;
     public static final long WITHDRAWN = 4;
+    public static final long SPENT = 5;
 }

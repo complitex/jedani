@@ -76,13 +76,6 @@ public class RewardService implements Serializable {
                 .setPeriodId(periodId)));
     }
 
-    public List<Reward> getRewards(Long workerId, Long managerId, Long periodId) {
-        return domainService.getDomains(Reward.class, FilterWrapper.of(new Reward()
-                .setWorkerId(workerId)
-                .setManagerId(managerId)
-                .setPeriodId(periodId)));
-    }
-
     public BigDecimal getRewardsTotal(Long workerId, Long rewardTypeId, Long rewardStatusId, Long periodId) {
         return getRewards(workerId, periodId).stream()
                 .filter(r -> Objects.equals(r.getType(), rewardTypeId))
@@ -90,11 +83,10 @@ public class RewardService implements Serializable {
                 .reduce(ZERO, ((t, p) -> t.add(p.getTotal())), BigDecimal::add);
     }
 
-    public BigDecimal getRewardsTotal(Long workerId, Long managerId, Long rewardTypeId, Long rewardStatusId, Long periodId) {
-        return getRewards(workerId, managerId, periodId).stream()
-                .filter(r -> Objects.equals(r.getType(), rewardTypeId))
+    public BigDecimal getRewardsLocal(Long workerId, Long rewardStatusId, Long periodId) {
+        return getRewards(workerId, periodId).stream()
                 .filter(r -> Objects.equals(r.getRewardStatus(), rewardStatusId))
-                .reduce(ZERO, ((t, p) -> t.add(p.getTotal())), BigDecimal::add);
+                .reduce(ZERO, ((t, p) -> t.add(p.getLocal())), BigDecimal::add);
     }
 
     public WorkerRewardTree getWorkerRewardTree(Period period) {
@@ -510,8 +502,6 @@ public class RewardService implements Serializable {
         BigDecimal total = sale.getPersonalRewardPoint();
 
         if (total == null){
-            //log.warn("null sale reward total {}", sale); todo
-
             return;
         }
 

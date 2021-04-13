@@ -81,6 +81,7 @@ import ru.complitex.jedani.worker.component.JedaniRoleSelectList;
 import ru.complitex.jedani.worker.component.PeriodPanel;
 import ru.complitex.jedani.worker.component.TypeSelect;
 import ru.complitex.jedani.worker.component.WorkerAutoComplete;
+import ru.complitex.jedani.worker.entity.Currency;
 import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.mapper.PeriodMapper;
 import ru.complitex.jedani.worker.mapper.WorkerMapper;
@@ -89,10 +90,7 @@ import ru.complitex.jedani.worker.page.payment.PaymentPanel;
 import ru.complitex.jedani.worker.page.reward.RewardPanel;
 import ru.complitex.jedani.worker.page.sale.SalePanel;
 import ru.complitex.jedani.worker.security.JedaniRoles;
-import ru.complitex.jedani.worker.service.CardService;
-import ru.complitex.jedani.worker.service.RewardService;
-import ru.complitex.jedani.worker.service.WorkerNodeService;
-import ru.complitex.jedani.worker.service.WorkerService;
+import ru.complitex.jedani.worker.service.*;
 import ru.complitex.name.entity.FirstName;
 import ru.complitex.name.entity.LastName;
 import ru.complitex.name.entity.MiddleName;
@@ -153,6 +151,9 @@ public class WorkerPage extends BasePage {
 
     @Inject
     private RewardService rewardService;
+
+    @Inject
+    private AccountService accountService;
 
     private Worker worker;
     private Worker manager;
@@ -1009,13 +1010,36 @@ public class WorkerPage extends BasePage {
 
                     finance.add(new Label("month", LoadableDetachableModel.of(() -> Dates.getDateText(periodModel.getObject().getOperatingMonth()))));
 
-                    finance.add(new Label("balance", LoadableDetachableModel.of(() -> {
-                        List<Account> accounts = domainService.getDomains(Account.class,
-                                FilterWrapper.of(new Account()
-                                        .setWorkerId(worker.getObjectId())
-                                        .setPeriodId(periodModel.getObject().getObjectId())));
+                    IModel<BigDecimal> inputModel = LoadableDetachableModel.of(() ->
+                            accountService.getBalance(worker.getObjectId(), periodModel.getObject().getObjectId()));
 
-                        return !accounts.isEmpty() ? accounts.get(0).getBalance().toPlainString() : "0";
+                    IModel<BigDecimal> chargedModel = LoadableDetachableModel.of(() ->
+                            rewardService.getRewardsLocal(worker.getObjectId(), RewardStatus.CHARGED, periodModel.getObject().getObjectId()));
+                    IModel<BigDecimal> withdrawModel = LoadableDetachableModel.of(() ->
+                            rewardService.getRewardsLocal(worker.getObjectId(), RewardStatus.WITHDRAWN, periodModel.getObject().getObjectId()));
+                    IModel<BigDecimal> paidModel = LoadableDetachableModel.of(() ->
+                            rewardService.getRewardsLocal(worker.getObjectId(), RewardStatus.PAID, periodModel.getObject().getObjectId()));
+                    IModel<BigDecimal> spentModel = LoadableDetachableModel.of(() ->
+                            rewardService.getRewardsLocal(worker.getObjectId(), RewardStatus.SPENT, periodModel.getObject().getObjectId()));
+
+                    finance.add(new Label("input", inputModel));
+                    finance.add(new Label("charged", chargedModel));
+                    finance.add(new Label("withdraw", withdrawModel));
+                    finance.add(new Label("paid", paidModel));
+                    finance.add(new Label("spent", spentModel));
+
+                    finance.add(new Label("balance", LoadableDetachableModel.of(() -> {
+                        BigDecimal input = accountService.getBalance(worker.getObjectId(), periodModel.getObject().getObjectId());
+
+                        BigDecimal charged = chargedModel.getObject();
+                        BigDecimal paid = paidModel.getObject();
+                        BigDecimal spent = spentModel.getObject();
+
+                        Long currencyId = workerService.getCurrencyId(worker.getObjectId());
+
+                        String symbol = domainService.getText(Currency.ENTITY_NAME, currencyId, Currency.SYMBOL);
+
+                        return input.add(charged).subtract(paid).subtract(spent) + symbol;
                     })));
 
 
