@@ -86,7 +86,8 @@ public class RewardService implements Serializable {
     public BigDecimal getRewardsLocal(Long workerId, Long rewardStatusId, Long periodId) {
         return getRewards(workerId, periodId).stream()
                 .filter(r -> Objects.equals(r.getRewardStatus(), rewardStatusId))
-                .reduce(ZERO, ((t, p) -> t.add(p.getLocal())), BigDecimal::add);
+                .map(r -> r.getLocal() != null ? r.getLocal() : ZERO)
+                .reduce(ZERO, BigDecimal::add);
     }
 
     public WorkerRewardTree getWorkerRewardTree(Period period) {
