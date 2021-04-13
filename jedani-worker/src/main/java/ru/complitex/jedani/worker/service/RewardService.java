@@ -15,11 +15,13 @@ import ru.complitex.jedani.worker.exception.RewardException;
 import ru.complitex.jedani.worker.mapper.PeriodMapper;
 import ru.complitex.jedani.worker.mapper.RewardMapper;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import static java.math.BigDecimal.ZERO;
@@ -29,6 +31,7 @@ import static java.math.RoundingMode.HALF_EVEN;
  * @author Anatoly A. Ivanov
  * 20.10.2019 11:02 AM
  */
+@ApplicationScoped
 public class RewardService implements Serializable {
     private final static Logger log = LoggerFactory.getLogger(RewardService.class);
 
@@ -99,6 +102,25 @@ public class RewardService implements Serializable {
         calcSaleVolumes(tree, period);
 
         return tree;
+    }
+
+    private transient LoadingCache<Long, WorkerRewardTree> workerRewardTreeCache;
+
+    private LoadingCache<Long, WorkerRewardTree> getWorkerRewardTreeCache(){
+        if (workerRewardTreeCache == null){
+            workerRewardTreeCache = CacheBuilder.newBuilder()
+                    .build(CacheLoader.from(periodId -> getWorkerRewardTree(periodMapper.getPeriod(periodId))));
+        }
+
+        return workerRewardTreeCache;
+    }
+
+    public WorkerRewardTree getWorkerRewardTreeCache(Long periodId) {
+        try {
+            return getWorkerRewardTreeCache().get(periodId);
+        } catch (ExecutionException e) {
+            return null;
+        }
     }
 
     private Long getRank(BigDecimal saleVolume) {
@@ -798,6 +820,10 @@ public class RewardService implements Serializable {
                 calculateStructureVolume(workerReward, period, RewardStatus.ESTIMATED);
                 calculateStructureVolume(workerReward, period, RewardStatus.CHARGED);
             }));
+
+            if (workerRewardTreeCache != null) {
+                workerRewardTreeCache.invalidateAll();
+            }
         } catch (Exception e) {
             log.error("error calculate rewards", e);
 
@@ -807,7 +833,7 @@ public class RewardService implements Serializable {
 
     private transient LoadingCache<Long, BigDecimal> parameterCache;
 
-    public LoadingCache<Long, BigDecimal> getParameterCache(){
+    private LoadingCache<Long, BigDecimal> getParameterCache(){
         if (parameterCache == null){
             parameterCache = CacheBuilder.newBuilder()
                     .expireAfterAccess(1, TimeUnit.MINUTES)

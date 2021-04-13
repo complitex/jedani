@@ -1042,9 +1042,9 @@ public class WorkerPage extends BasePage {
                         return input.add(charged).subtract(paid).subtract(spent) + symbol;
                     })));
 
-
                     IModel<WorkerReward> rewardModel = LoadableDetachableModel.of(() ->
-                            rewardService.getWorkerRewardTree(periodModel.getObject()).getWorkerReward(worker.getObjectId()));
+                            rewardService.getWorkerRewardTreeCache(periodModel.getObject().getObjectId())
+                                    .getWorkerReward(worker.getObjectId()));
 
                     finance.add(new Label("sale_volume", LoadableDetachableModel.of(() ->
                             rewardModel.getObject().getSaleVolume())));
