@@ -194,7 +194,7 @@ public class DomainListModalPanel<T extends Domain<T>> extends Panel {
             }
 
             @Override
-            protected Component getComponent(String componentId, Attribute attribute) {
+            protected Component newComponent(String componentId, Attribute attribute) {
                 return DomainListModalPanel.this.getEditComponent(componentId, attribute);
             }
         };

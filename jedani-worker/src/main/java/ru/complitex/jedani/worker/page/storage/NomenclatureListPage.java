@@ -55,7 +55,7 @@ public class NomenclatureListPage extends DomainListModalPage<Nomenclature> {
     }
 
     @Override
-    protected Component getEditComponent(String componentId, Attribute attribute) {
+    protected Component newEditComponent(String componentId, Attribute attribute) {
         if (attribute.getEntityAttributeId().equals(Nomenclature.COUNTRIES)) {
             return new AttributeSelectList(componentId, Model.of(attribute), Country.ENTITY_NAME, Country.NAME,  true);
         }

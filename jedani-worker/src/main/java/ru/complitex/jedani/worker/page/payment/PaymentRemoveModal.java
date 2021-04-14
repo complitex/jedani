@@ -68,7 +68,7 @@ public class PaymentRemoveModal extends Modal<Sale> {
 
                 BigDecimal paymentTotalLocal = domainService.getDomains(Payment.class, FilterWrapper.of(new Payment()
                         .setContract(payment.getContract()))).stream()
-                        .map(Payment::getLocal).reduce(BigDecimal.ZERO, BigDecimal::add);
+                        .map(Payment::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
 
                 Sale sale = saleService.getSale(payment.getSaleId());
 

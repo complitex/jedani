@@ -89,7 +89,7 @@ public class RewardService implements Serializable {
     public BigDecimal getRewardsLocal(Long workerId, Long rewardStatusId, Long periodId) {
         return getRewards(workerId, periodId).stream()
                 .filter(r -> Objects.equals(r.getRewardStatus(), rewardStatusId))
-                .map(r -> r.getLocal() != null ? r.getLocal() : ZERO)
+                .map(r -> r.getAmount() != null ? r.getAmount() : ZERO)
                 .reduce(ZERO, BigDecimal::add);
     }
 
@@ -342,13 +342,13 @@ public class RewardService implements Serializable {
         }
 
         if (reward.getPoint().compareTo(ZERO) != 0) {
-            reward.setLocal(reward.getPoint().multiply(reward.getRate()).setScale(5, HALF_EVEN));
+            reward.setAmount(reward.getPoint().multiply(reward.getRate()).setScale(5, HALF_EVEN));
 
             if (reward.getDiscount() != null){
-                reward.setLocal(reward.getLocal().multiply(reward.getDiscount()).setScale(5, HALF_EVEN));
+                reward.setAmount(reward.getAmount().multiply(reward.getDiscount()).setScale(5, HALF_EVEN));
             }
         }else {
-            reward.setLocal(ZERO);
+            reward.setAmount(ZERO);
         }
     }
 
@@ -361,7 +361,7 @@ public class RewardService implements Serializable {
             reward.setRate(exchangeRateService.getMonthAverageExchangeRate(region.getParentId(), period.getOperatingMonth()));
 
             if (reward.getPoint().compareTo(ZERO) > 0) {
-                reward.setLocal(reward.getPoint().multiply(reward.getRate()).setScale(5, HALF_EVEN));
+                reward.setAmount(reward.getPoint().multiply(reward.getRate()).setScale(5, HALF_EVEN));
             }
         }
     }

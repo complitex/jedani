@@ -2649,7 +2649,20 @@ CALL createEntityAttribute(45, 7, 4, 'Выплачено', 'Виплачено')
 CALL createEntityAttribute(45, 8, 4, 'Изъято', 'Вилучено');
 CALL createEntityAttribute(45, 9, 4, 'Потрачено', 'Витрачений');
 
+-- ---------------------------
+-- Payout
+-- ---------------------------
+
+CALL createDomainTables('payout', 'Выплата');
+
+CALL createEntity(46, 'account', 'Выплата', 'Виплат');
+CALL createEntityAttributeWithReference(46, 1, 11, 20, 'Сотрудник', 'Співробітник');
+CALL createEntityAttribute(46, 2, 6, 'Дата', 'Дата');
+CALL createEntityAttributeWithReference(46, 3, 11, 42, 'Операционный месяц', 'Операційний місяць');
+CALL createEntityAttributeWithReference(46, 4, 11, 30, 'Локальная валюта', 'Локальна валюта');
+CALL createEntityAttribute(46,5, 4, 'Сумма', 'Сумма');
+
 
 -- Version
 
-INSERT INTO `update` (`version`) VALUE ('2.0.0');
+INSERT INTO `update` (`version`) VALUE ('2.0.3');

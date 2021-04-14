@@ -124,7 +124,7 @@ public class DomainEditModal<T extends Domain<T>> extends AbstractDomainEditModa
                 };
                 FormComponent<?> input1 = null;
                 FormComponent<?> input2 = null;
-                Component component = getComponent("component", attribute);
+                Component component = newComponent("component", attribute);
 
                 if (component == null) {
                     switch (entityAttribute.getValueType()){
@@ -218,7 +218,7 @@ public class DomainEditModal<T extends Domain<T>> extends AbstractDomainEditModa
 
     }
 
-    protected Component getComponent(String componentId, Attribute attribute){
+    protected Component newComponent(String componentId, Attribute attribute){
         return null;
     }
 

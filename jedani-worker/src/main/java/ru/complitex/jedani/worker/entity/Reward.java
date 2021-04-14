@@ -20,7 +20,7 @@ public class Reward extends Domain<Reward> {
     public static final long GROUP_SALE_VOLUME = 10;
     public static final long RATE = 11;
     public static final long DISCOUNT = 12;
-    public static final long LOCAL = 13;
+    public static final long AMOUNT = 13;
     public static final long PAYMENT_VOLUME = 14;
     public static final long GROUP_PAYMENT_VOLUME = 15;
     public static final long STRUCTURE_SALE_VOLUME = 16;
@@ -42,7 +42,6 @@ public class Reward extends Domain<Reward> {
 
         setUseDateAttribute(true);
     }
-
 
     public Date getDate(){
         return getDate(DATE);
@@ -150,12 +149,12 @@ public class Reward extends Domain<Reward> {
         setDecimal(DISCOUNT, discount);
     }
 
-    public BigDecimal getLocal(){
-        return getDecimal(LOCAL);
+    public BigDecimal getAmount(){
+        return getDecimal(AMOUNT);
     }
 
-    public void setLocal(BigDecimal local){
-        setDecimal(LOCAL, local);
+    public void setAmount(BigDecimal amount){
+        setDecimal(AMOUNT, amount);
     }
 
     public Long getRankId() {

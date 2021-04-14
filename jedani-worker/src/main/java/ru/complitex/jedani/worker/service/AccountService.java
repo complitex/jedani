@@ -102,11 +102,11 @@ public class AccountService implements Serializable {
 
                 for (Reward reward : rewards) {
                     if (reward.getRewardStatus() == RewardStatus.CHARGED){
-                        charged = charged.add(reward.getLocal());
+                        charged = charged.add(reward.getAmount());
                     } else if (reward.getRewardStatus() == RewardStatus.PAID){
-                        paid = paid.add(reward.getLocal());
+                        paid = paid.add(reward.getAmount());
                     } else if (reward.getRewardStatus() == RewardStatus.WITHDRAWN){
-                        withdrawn = withdrawn.add(reward.getLocal());
+                        withdrawn = withdrawn.add(reward.getAmount());
                     }
                 }
 

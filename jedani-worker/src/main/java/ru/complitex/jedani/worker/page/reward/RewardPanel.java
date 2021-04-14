@@ -99,7 +99,7 @@ public class RewardPanel extends DomainListModalPanel<Reward> {
         list.add(entity.getEntityAttribute(Reward.POINT));
         list.add(entity.getEntityAttribute(Reward.RATE));
         list.add(entity.getEntityAttribute(Reward.DISCOUNT));
-        list.add(entity.getEntityAttribute(Reward.LOCAL));
+        list.add(entity.getEntityAttribute(Reward.AMOUNT));
         list.add(entity.getEntityAttribute(Reward.DETAIL));
 
         list.add(entity.getEntityAttribute(Reward.STATUS));
@@ -204,8 +204,8 @@ public class RewardPanel extends DomainListModalPanel<Reward> {
         }
 
 
-        if (a.getEntityAttributeId().equals(Reward.LOCAL)){
-            return new DomainColumn<>(a, new StringResourceModel("local", this));
+        if (a.getEntityAttributeId().equals(Reward.AMOUNT)){
+            return new DomainColumn<>(a, new StringResourceModel("amount", this));
         }else if (a.getEntityAttributeId().equals(Reward.PAYMENT_VOLUME)){
             return new DomainColumn<>(a, new StringResourceModel("paymentVolume", this));
         }else if (a.getEntityAttributeId().equals(Reward.GROUP_PAYMENT_VOLUME)){

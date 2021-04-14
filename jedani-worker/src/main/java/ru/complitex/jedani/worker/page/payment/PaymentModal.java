@@ -117,15 +117,15 @@ public class PaymentModal extends AbstractEditModal<Payment> {
 
         add(new FormGroupSelectPanel("type", new BootstrapSelect<>(FormGroupPanel.COMPONENT_ID,
                 NumberAttributeModel.of(getModel(), Payment.TYPE),
-                Arrays.asList(PaymentType.POINT, PaymentType.LOCAL),
+                Arrays.asList(PaymentType.POINT, PaymentType.AMOUNT),
                 new LongChoiceRenderer() {
                     @Override
                     public Object getDisplayValue(Long object) {
                         switch (object.intValue()){
                             case (int) PaymentType.POINT:
                                 return getString("point");
-                            case (int) PaymentType.LOCAL:
-                                return getString("local");
+                            case (int) PaymentType.AMOUNT:
+                                return getString("amount");
                             default:
                                 return null;
                         }
@@ -137,10 +137,10 @@ public class PaymentModal extends AbstractEditModal<Payment> {
                     t.add(getContainer().get("paymentPoint"), getContainer().get("paymentLocal"));
                 }))));
 
-        add(new FormGroupDecimalField("paymentLocal", getModel(), Payment.LOCAL){
+        add(new FormGroupDecimalField("paymentAmount", getModel(), Payment.AMOUNT){
             @Override
             public boolean isVisible() {
-                return Objects.equals(PaymentType.LOCAL, getModel().getObject().getType());
+                return Objects.equals(PaymentType.AMOUNT, getModel().getObject().getType());
             }
         }.onBlur(t -> {
             Payment payment = getModelObject();
@@ -156,7 +156,7 @@ public class PaymentModal extends AbstractEditModal<Payment> {
                     error(getString("error_fee_withdraw_same_day"));
                 }
 
-                if (payment.getLocal().compareTo(sale.getTotalLocal()) != 0) {
+                if (payment.getAmount().compareTo(sale.getTotalLocal()) != 0) {
                     error(getString("error_fee_withdraw_local"));
                 }
             }
@@ -188,7 +188,7 @@ public class PaymentModal extends AbstractEditModal<Payment> {
         payment.setDate(date);
         payment.setPeriodStart(date);
         payment.setPeriodEnd(date);
-        payment.setType(PaymentType.LOCAL);
+        payment.setType(PaymentType.AMOUNT);
 
         payment.setWorkerId(getBasePage().getCurrentWorker().getObjectId());
 
@@ -257,19 +257,19 @@ public class PaymentModal extends AbstractEditModal<Payment> {
 
         payment.setRate(rate);
 
-        if (payment.getType().equals(PaymentType.LOCAL)){
-            payment.setPoint(payment.getLocal().divide(rate, 2, RoundingMode.HALF_EVEN));
+        if (payment.getType().equals(PaymentType.AMOUNT)){
+            payment.setPoint(payment.getAmount().divide(rate, 2, RoundingMode.HALF_EVEN));
         }else if (payment.getType().equals(PaymentType.POINT)){
-            payment.setLocal(payment.getPoint().multiply(rate).setScale(2, RoundingMode.HALF_EVEN));
+            payment.setAmount(payment.getPoint().multiply(rate).setScale(2, RoundingMode.HALF_EVEN));
         }
 
         payment.setSaleId(sale.getObjectId());
 
         BigDecimal paymentTotalLocal = domainService.getDomains(Payment.class, FilterWrapper.of(new Payment()
                 .setContract(payment.getContract()))).stream()
-                .filter(p -> !p.getObjectId().equals(payment.getObjectId()) && p.getLocal() != null)
-                .map(Payment::getLocal).reduce(BigDecimal.ZERO, BigDecimal::add)
-                .add(payment.getLocal());
+                .filter(p -> !p.getObjectId().equals(payment.getObjectId()) && p.getAmount() != null)
+                .map(Payment::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add)
+                .add(payment.getAmount());
 
         if (sale.getTotalLocal() != null && paymentTotalLocal.compareTo(sale.getTotalLocal()) > 0 && !warnTotal){
             warn(getString("error_payment_more_than_sale_total"));
@@ -295,7 +295,7 @@ public class PaymentModal extends AbstractEditModal<Payment> {
                 return;
             }
 
-            if (payment.getLocal().compareTo(sale.getTotalLocal()) != 0) {
+            if (payment.getAmount().compareTo(sale.getTotalLocal()) != 0) {
                 error(getString("error_fee_withdraw_local"));
 
                 target.add(getFeedback());

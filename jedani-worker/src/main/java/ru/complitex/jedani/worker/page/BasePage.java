@@ -47,6 +47,7 @@ import ru.complitex.jedani.worker.page.admin.SettingPage;
 import ru.complitex.jedani.worker.page.card.CardListPage;
 import ru.complitex.jedani.worker.page.catalog.*;
 import ru.complitex.jedani.worker.page.payment.PaymentListPage;
+import ru.complitex.jedani.worker.page.payout.PayoutListPage;
 import ru.complitex.jedani.worker.page.period.PeriodListPage;
 import ru.complitex.jedani.worker.page.price.PriceListPage;
 import ru.complitex.jedani.worker.page.promotion.PromotionListPage;
@@ -304,6 +305,7 @@ public class BasePage extends WebPage{
                 .add(new MenuLink("rewards", RewardListPage.class).setVisible(isAdmin() || isStructureAdmin()))
                 .add(new MenuLink("rewardParameters", RewardParameterListPage.class).setVisible(isAdmin()))
                 .add(new MenuLink("accounts", AccountListPage.class).setVisible(isAdmin() || isStructureAdmin()))
+                .add(new MenuLink("payouts", PayoutListPage.class).setVisible(isAdmin() || isPayoutAdmin()))
                 .add(newBehaviorList()));
         menu.add(sales);
     }
@@ -427,6 +429,10 @@ public class BasePage extends WebPage{
 
     public boolean isPaymentAdmin(){
         return getHttpServletRequest().isUserInRole(JedaniRoles.PAYMENT_ADMINISTRATORS);
+    }
+
+    public boolean isPayoutAdmin(){
+        return getHttpServletRequest().isUserInRole(JedaniRoles.PAYOUT_ADMINISTRATORS);
     }
 
     public boolean isUser(){
