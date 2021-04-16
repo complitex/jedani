@@ -1,4 +1,4 @@
-package ru.complitex.jedani.worker.page.reward;
+package ru.complitex.jedani.worker.page.payout;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
@@ -7,56 +7,56 @@ import org.apache.wicket.model.PropertyModel;
 import ru.complitex.common.util.Dates;
 import ru.complitex.common.wicket.form.FormGroupDateTextField;
 import ru.complitex.common.wicket.form.FormGroupDecimalField;
-import ru.complitex.common.wicket.form.FormGroupStringField;
 import ru.complitex.domain.component.form.AbstractEditModal;
 import ru.complitex.domain.component.form.FormGroupAttributeSelect;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.component.FormGroupWorker;
-import ru.complitex.jedani.worker.entity.Rank;
-import ru.complitex.jedani.worker.entity.Reward;
-import ru.complitex.jedani.worker.entity.RewardType;
+import ru.complitex.jedani.worker.entity.Currency;
+import ru.complitex.jedani.worker.entity.Payout;
+import ru.complitex.jedani.worker.mapper.PeriodMapper;
 
 import javax.inject.Inject;
 
 /**
  * @author Ivanov Anatoliy
  */
-public class RewardModal extends AbstractEditModal<Reward> {
+public class PayoutModal extends AbstractEditModal<Payout> {
     @Inject
     private DomainService domainService;
 
-    private final IModel<Reward> model;
+    @Inject
+    private PeriodMapper periodMapper;
 
-    public RewardModal(String markupId) {
+    private final IModel<Payout> model;
+
+    public PayoutModal(String markupId) {
         super(markupId);
 
-        model = Model.of(new Reward());
+        model = Model.of(new Payout());
 
-        add(new FormGroupDateTextField("date", model, Reward.DATE).setRequired(true));
+        add(new FormGroupDateTextField("date", model, Payout.DATE).setRequired(true));
 
         add(new FormGroupWorker("worker", new PropertyModel<>(model, "workerId")).setRequired(true));
 
-        add(new FormGroupAttributeSelect("type", model, Reward.TYPE, RewardType.ENTITY_NAME, RewardType.NAME));
+        add(new FormGroupAttributeSelect("currency", model, Payout.CURRENCY, Currency.ENTITY_NAME, Currency.NAME).setRequired(true));
 
-        add(new FormGroupAttributeSelect("rank", model, Reward.RANK, Rank.ENTITY_NAME, Rank.NAME));
-
-        add(new FormGroupDecimalField("point", model, Reward.POINT).setRequired(true));
-
-        add(new FormGroupStringField("detail", model, Reward.DETAIL));
+        add(new FormGroupDecimalField("amount", model, Payout.AMOUNT).setRequired(true));
     }
 
     @Override
     public void create(AjaxRequestTarget target) {
         super.create(target);
 
-        Reward reward = new Reward();
-        reward.setDate(Dates.currentDate());
+        Payout payout = new Payout();
 
-        model.setObject(reward);
+        payout.setDate(Dates.currentDate());
+        payout.setPeriodId(periodMapper.getActualPeriod().getObjectId());
+
+        model.setObject(payout);
     }
 
     @Override
-    public void edit(Reward object, AjaxRequestTarget target) {
+    public void edit(Payout object, AjaxRequestTarget target) {
         super.edit(object, target);
 
         model.setObject(object);
@@ -68,6 +68,6 @@ public class RewardModal extends AbstractEditModal<Reward> {
 
         domainService.save(model.getObject());
 
-        success(getString("info_reward_saved"));
+        success(getString("info_payout_saved"));
     }
 }

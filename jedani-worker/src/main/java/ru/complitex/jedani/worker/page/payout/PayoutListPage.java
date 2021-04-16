@@ -2,9 +2,11 @@ package ru.complitex.jedani.worker.page.payout;
 
 import de.agilecoders.wicket.core.markup.html.bootstrap.behavior.CssClassNameAppender;
 import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.markup.html.form.DateTextField;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
@@ -14,6 +16,7 @@ import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.component.form.DomainAutoComplete;
 import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Domain;
+import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.page.DomainListModalPage;
 import ru.complitex.domain.service.DomainService;
@@ -25,6 +28,7 @@ import ru.complitex.jedani.worker.mapper.PeriodMapper;
 import ru.complitex.jedani.worker.service.WorkerService;
 
 import javax.inject.Inject;
+import java.util.List;
 
 /**
  * @author Ivanov Anatoliy
@@ -39,8 +43,22 @@ public class PayoutListPage extends DomainListModalPage<Payout> {
     @Inject
     private DomainService domainService;
 
+    private final PayoutModal payoutModal;
+
     public <P extends Domain<P>> PayoutListPage() {
         super(Payout.class);
+
+        Form<?> payoutForm = new Form<>("payoutForm");
+        getContainer().add(payoutForm);
+
+        payoutModal = new PayoutModal("payoutModal").onUpdate(this::update);
+
+        payoutForm.add(payoutModal);
+    }
+
+    @Override
+    protected List<EntityAttribute> getEntityAttributes(Entity entity) {
+        return entity.getEntityAttributes(Payout.DATE, Payout.PERIOD, Payout.WORKER, Payout.AMOUNT, Payout.CURRENCY);
     }
 
     @Override
@@ -86,5 +104,15 @@ public class PayoutListPage extends DomainListModalPage<Payout> {
         }
 
         return super.newEditComponent(componentId, attribute);
+    }
+
+    @Override
+    protected void onCreate(AjaxRequestTarget target) {
+        payoutModal.create(target);
+    }
+
+    @Override
+    protected void onEdit(Payout payout, AjaxRequestTarget target) {
+        payoutModal.edit(payout, target);
     }
 }

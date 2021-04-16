@@ -11,6 +11,9 @@ import ru.complitex.jedani.worker.page.period.PeriodCalculateModal;
 
 import static ru.complitex.jedani.worker.security.JedaniRoles.ADMINISTRATORS;
 
+/**
+ * @author Ivanov Anatoliy
+ */
 @AuthorizeInstantiation({ADMINISTRATORS})
 public class RewardListPage extends BasePage {
     private final RewardModal rewardModal;

@@ -19,6 +19,8 @@ public class Payout extends Domain<Payout> {
 
     public Payout() {
         super(ENTITY_NAME);
+
+        setUseDateAttribute(true);
     }
 
     public Long getWorkerId() {
@@ -33,8 +35,10 @@ public class Payout extends Domain<Payout> {
         return getDate(DATE);
     }
 
-    public void setDate(Date date) {
+    public Payout setDate(Date date) {
         setDate(DATE, date);
+
+        return this;
     }
 
     public Long getPeriodId() {
