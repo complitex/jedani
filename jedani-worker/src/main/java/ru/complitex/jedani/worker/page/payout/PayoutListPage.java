@@ -10,6 +10,7 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
+import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.util.Dates;
 import ru.complitex.common.wicket.panel.InputPanel;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
@@ -24,6 +25,7 @@ import ru.complitex.jedani.worker.component.WorkerAutoComplete;
 import ru.complitex.jedani.worker.entity.Currency;
 import ru.complitex.jedani.worker.entity.Payout;
 import ru.complitex.jedani.worker.entity.Period;
+import ru.complitex.jedani.worker.mapper.PayoutMapper;
 import ru.complitex.jedani.worker.mapper.PeriodMapper;
 import ru.complitex.jedani.worker.service.WorkerService;
 
@@ -42,6 +44,9 @@ public class PayoutListPage extends DomainListModalPage<Payout> {
 
     @Inject
     private DomainService domainService;
+
+    @Inject
+    private PayoutMapper payoutMapper;
 
     private final PayoutModal payoutModal;
 
@@ -64,7 +69,7 @@ public class PayoutListPage extends DomainListModalPage<Payout> {
     @Override
     protected AbstractDomainColumn<Payout> newDomainColumn(EntityAttribute a) {
         if (a.getEntityAttributeId().equals(Payout.WORKER)){
-            return new AbstractDomainColumn<>(a) {
+            return new AbstractDomainColumn<>("worker", this) {
                 @Override
                 public void populateItem(Item<ICellPopulator<Payout>> cellItem, String componentId, IModel<Payout> rowModel) {
                     cellItem.add(new Label(componentId, workerService.getWorkerLabel(rowModel.getObject().getWorkerId())));
@@ -84,7 +89,7 @@ public class PayoutListPage extends DomainListModalPage<Payout> {
             return new AbstractDomainColumn<>(a) {
                 @Override
                 public void populateItem(Item<ICellPopulator<Payout>> cellItem, String componentId, IModel<Payout> rowModel) {
-                    cellItem.add(new Label(componentId, domainService.getTextValue(Currency.ENTITY_NAME, rowModel.getObject().getCurrencyId(), Currency.SYMBOL)));
+                    cellItem.add(new Label(componentId, domainService.getText(Currency.ENTITY_NAME, rowModel.getObject().getCurrencyId(), Currency.SYMBOL)));
                 }
             };
         }
@@ -114,5 +119,15 @@ public class PayoutListPage extends DomainListModalPage<Payout> {
     @Override
     protected void onEdit(Payout payout, AjaxRequestTarget target) {
         payoutModal.edit(payout, target);
+    }
+
+    @Override
+    protected List<Payout> getDomains(FilterWrapper<Payout> filterWrapper) {
+        return payoutMapper.getPayouts(filterWrapper);
+    }
+
+    @Override
+    protected Long getDomainsCount(FilterWrapper<Payout> filterWrapper) {
+        return payoutMapper.getPayoutsCount(filterWrapper);
     }
 }

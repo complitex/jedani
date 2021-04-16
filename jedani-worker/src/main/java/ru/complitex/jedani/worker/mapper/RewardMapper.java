@@ -12,6 +12,14 @@ import java.util.List;
  * 20.11.2019 5:25 PM
  */
 public class RewardMapper extends BaseMapper {
+    public List<Reward> getRewards(FilterWrapper<Reward> filterWrapper){
+        return sqlSession().selectList("selectRewards", filterWrapper);
+    }
+
+    public Long getRewardsCount(FilterWrapper<Reward> filterWrapper){
+        return sqlSession().selectOne("selectRewardsCount", filterWrapper);
+    }
+
     @Transactional
     public void deleteRewards(Long periodId){
         List<Long> ids = sqlSession().selectList("selectRewardIdsByPeriod", periodId);
@@ -20,13 +28,5 @@ public class RewardMapper extends BaseMapper {
             sqlSession().delete("deleteRewardAttributesByDomainIds", ids);
             sqlSession().delete("deleteRewardsByIds", ids);
         }
-    }
-
-    public List<Reward> getRewards(FilterWrapper<Reward> filterWrapper){
-        return sqlSession().selectList("selectRewards", filterWrapper);
-    }
-
-    public Long getRewardsCount(FilterWrapper<Reward> filterWrapper){
-        return sqlSession().selectOne("selectRewardsCount", filterWrapper);
     }
 }

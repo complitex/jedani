@@ -24,13 +24,13 @@
 
     <mappers>
         <mapper resource="ru/complitex/domain/mapper/EntityMapper.xml"/>
-        <mapper resource="ru/complitex/domain/mapper/EntityAttributeMapper.xml"/>        
+        <mapper resource="ru/complitex/domain/mapper/EntityAttributeMapper.xml"/>
         <mapper resource="ru/complitex/domain/mapper/EntityValueMapper.xml"/>
         <mapper resource="ru/complitex/domain/mapper/DomainMapper.xml"/>
         <mapper resource="ru/complitex/domain/mapper/DomainNodeMapper.xml"/>
         <mapper resource="ru/complitex/domain/mapper/AttributeMapper.xml"/>
-        <mapper resource="ru/complitex/domain/mapper/ValueMapper.xml"/>       
-        
+        <mapper resource="ru/complitex/domain/mapper/ValueMapper.xml"/>
+
         <mapper resource="ru/complitex/user/mapper/UserMapper.xml"/>
         <mapper resource="ru/complitex/user/mapper/UserGroupMapper.xml"/>
 
@@ -45,5 +45,6 @@
         <mapper resource="ru/complitex/jedani/worker/mapper/PaymentMapper.xml"/>
         <mapper resource="ru/complitex/jedani/worker/mapper/PeriodMapper.xml"/>
         <mapper resource="ru/complitex/jedani/worker/mapper/RewardMapper.xml"/>
+        <mapper resource="ru/complitex/jedani/worker/mapper/PayoutMapper.xml"/>
     </mappers>
 </configuration>
