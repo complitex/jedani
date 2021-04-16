@@ -107,8 +107,10 @@ public class PayoutPanel extends DomainListModalPanel<Payout> {
     }
 
     @Override
-    protected FilterWrapper<Payout> newFilterWrapper(Payout domainObject) {
-        FilterWrapper<Payout> filterWrapper = super.newFilterWrapper(domainObject);
+    protected FilterWrapper<Payout> newFilterWrapper(Payout payout) {
+        payout.setPeriodId(periodMapper.getActualPeriod().getObjectId());
+
+        FilterWrapper<Payout> filterWrapper = FilterWrapper.of(payout);
 
         Currency currency = getCurrency();
 
@@ -134,7 +136,7 @@ public class PayoutPanel extends DomainListModalPanel<Payout> {
         return new PeriodPanel(id){
             @Override
             protected void onChange(AjaxRequestTarget target, Period period) {
-                getFilterWrapper().put(Payout.FILTER_PERIOD, period != null ? period.getObjectId() : null);
+                getFilterWrapper().getObject().setPeriodId(period != null ? period.getObjectId() : null);
 
                 updateTable(target);
             }

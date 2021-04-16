@@ -47,6 +47,13 @@ public class PeriodPanel extends Panel {
                     }
                 }, (IPagingLabelProvider) page -> Dates.getMonthText(periodModel.getObject().get((int) page).getOperatingMonth())){
             @Override
+            protected void onInitialize() {
+                super.onInitialize();
+
+                getPagingNavigation().setViewSize(4);
+            }
+
+            @Override
             protected void onAjaxEvent(AjaxRequestTarget target) {
                 onChange(target, periodModel.getObject().get(pageModel.getObject().intValue()));
             }

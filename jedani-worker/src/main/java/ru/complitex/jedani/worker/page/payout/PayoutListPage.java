@@ -5,7 +5,6 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractTool
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.wicket.table.Table;
@@ -51,9 +50,7 @@ public class PayoutListPage extends BasePage {
 
                 @Override
                 protected AbstractToolbar newFooter(Table<Payout> table) {
-                    return new PayoutSummary(table,
-                            LoadableDetachableModel.of(() -> getFilterWrapper().getObject().getPeriodId()),
-                            LoadableDetachableModel.of(() -> getFilterWrapper().getObject().getCurrencyId()));
+                    return new PayoutSummary(table);
                 }
             });
         });

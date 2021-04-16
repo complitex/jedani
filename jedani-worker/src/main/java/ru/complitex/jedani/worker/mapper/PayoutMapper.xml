@@ -30,9 +30,9 @@
     </sql>
 
     <sql id="selectPayoutsWhere">
-        <if test="map.period != null">
+        <if test="object.periodId != null">
             and exists(select pa.id from payout_attribute pa where pa.domain_id = d.id and pa.status = 1
-                and pa.entity_attribute_id = 3 and pa.number = #{map.period})
+                and pa.entity_attribute_id = 3 and pa.number = #{object.periodId})
         </if>
 
         <if test="map.worker != null">

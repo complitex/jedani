@@ -6,11 +6,9 @@ import org.slf4j.LoggerFactory;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.util.Dates;
 import ru.complitex.domain.service.DomainService;
-import ru.complitex.jedani.worker.entity.Account;
-import ru.complitex.jedani.worker.entity.Period;
-import ru.complitex.jedani.worker.entity.Reward;
-import ru.complitex.jedani.worker.entity.RewardStatus;
+import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.exception.AccountException;
+import ru.complitex.jedani.worker.mapper.PayoutMapper;
 import ru.complitex.jedani.worker.mapper.PeriodMapper;
 import ru.complitex.jedani.worker.mapper.RewardMapper;
 
@@ -42,6 +40,9 @@ public class AccountService implements Serializable {
 
     @Inject
     private WorkerService workerService;
+
+    @Inject
+    private PayoutMapper payoutMapper;
 
     public Account updateAccount(Long workerId, Date date, Long periodId, Long currencyId, BigDecimal charged, BigDecimal paid, BigDecimal withdrawn) {
         List<Account> accounts = domainService.getDomains(Account.class, FilterWrapper.of(new Account().setWorkerId(workerId).setPeriodId(periodId)));
@@ -95,7 +96,6 @@ public class AccountService implements Serializable {
 
             rewardMap.forEach((workerId, rewards) -> {
                 BigDecimal charged = ZERO;
-                BigDecimal paid = ZERO;
                 BigDecimal withdrawn = ZERO;
                 BigDecimal spent = ZERO;
 
@@ -104,12 +104,17 @@ public class AccountService implements Serializable {
                 for (Reward reward : rewards) {
                     if (reward.getRewardStatus() == RewardStatus.CHARGED){
                         charged = charged.add(reward.getAmount());
-                    } else if (reward.getRewardStatus() == RewardStatus.PAID){
-                        paid = paid.add(reward.getAmount());
                     } else if (reward.getRewardStatus() == RewardStatus.WITHDRAWN){
                         withdrawn = withdrawn.add(reward.getAmount());
                     }
                 }
+
+                BigDecimal paid = payoutMapper.getPayouts(FilterWrapper.of(new Payout()
+                        .setPeriodId(previousPeriod.getObjectId())
+                        .setCurrencyId(currencyId)))
+                        .stream()
+                        .map(Payout::getAmount)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
 
                 Account account = updateAccount(workerId, date, previousPeriod.getObjectId(), currencyId, charged, paid, withdrawn);
 
