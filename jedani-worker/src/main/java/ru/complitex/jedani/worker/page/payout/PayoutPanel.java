@@ -3,17 +3,21 @@ package ru.complitex.jedani.worker.page.payout;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
+import ru.complitex.address.entity.Region;
 import ru.complitex.common.entity.FilterWrapper;
+import ru.complitex.common.entity.Sort;
 import ru.complitex.common.util.Dates;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.component.panel.DomainListModalPanel;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.service.DomainService;
+import ru.complitex.domain.util.Attributes;
 import ru.complitex.jedani.worker.component.PeriodPanel;
 import ru.complitex.jedani.worker.entity.Currency;
 import ru.complitex.jedani.worker.entity.Payout;
@@ -78,16 +82,30 @@ public class PayoutPanel extends DomainListModalPanel<Payout> {
                     cellItem.add(new Label(componentId, period != null ? Dates.getMonthText(period.getOperatingMonth()) : ""));
                 }
             };
-        } else if (a.getEntityAttributeId().equals(Payout.CURRENCY)){
+        } else if (a.getEntityAttributeId().equals(Payout.AMOUNT)){
             return new AbstractDomainColumn<>(a) {
                 @Override
                 public void populateItem(Item<ICellPopulator<Payout>> cellItem, String componentId, IModel<Payout> rowModel) {
-                    cellItem.add(new Label(componentId, domainService.getText(Currency.ENTITY_NAME, rowModel.getObject().getCurrencyId(), Currency.SYMBOL)));
+                    String symbol = domainService.getText(Currency.ENTITY_NAME, rowModel.getObject().getCurrencyId(), Currency.SYMBOL);
+
+                    cellItem.add(new Label(componentId, rowModel.getObject().getAmount().toPlainString() + (symbol != null ? symbol : "")));
                 }
             };
         }
 
         return super.newDomainColumn(a);
+    }
+
+    @Override
+    protected void onInitColumns(List<IColumn<Payout, Sort>> columns) {
+        columns.add(3, new AbstractDomainColumn<>("region", this) {
+            @Override
+            public void populateItem(Item<ICellPopulator<Payout>> cellItem, String componentId, IModel<Payout> rowModel) {
+                Long regionId = workerService.getRegionId(rowModel.getObject().getWorkerId());
+
+                cellItem.add(new Label(componentId, Attributes.capitalize(domainService.getTextValue(Region.ENTITY_NAME, regionId, Region.NAME))));
+            }
+        });
     }
 
     @Override
