@@ -1014,13 +1014,13 @@ public class WorkerPage extends BasePage {
                             accountService.getBalance(worker.getObjectId(), periodModel.getObject().getObjectId()));
 
                     IModel<BigDecimal> chargedModel = LoadableDetachableModel.of(() ->
-                            rewardService.getRewardsLocal(worker.getObjectId(), RewardStatus.CHARGED, periodModel.getObject().getObjectId()));
+                            rewardService.getRewardsLocal(periodModel.getObject().getObjectId(), worker.getObjectId(), RewardStatus.CHARGED));
                     IModel<BigDecimal> withdrawModel = LoadableDetachableModel.of(() ->
-                            rewardService.getRewardsLocal(worker.getObjectId(), RewardStatus.WITHDRAWN, periodModel.getObject().getObjectId()));
+                            rewardService.getRewardsLocal(periodModel.getObject().getObjectId(), worker.getObjectId(), RewardStatus.WITHDRAWN));
                     IModel<BigDecimal> paidModel = LoadableDetachableModel.of(() ->
-                            rewardService.getRewardsLocal(worker.getObjectId(), RewardStatus.PAID, periodModel.getObject().getObjectId()));
+                            rewardService.getRewardsLocal(periodModel.getObject().getObjectId(), worker.getObjectId(), RewardStatus.PAID));
                     IModel<BigDecimal> spentModel = LoadableDetachableModel.of(() ->
-                            rewardService.getRewardsLocal(worker.getObjectId(), RewardStatus.SPENT, periodModel.getObject().getObjectId()));
+                            rewardService.getRewardsLocal(periodModel.getObject().getObjectId(), worker.getObjectId(), RewardStatus.SPENT));
 
                     finance.add(new Label("input", inputModel));
                     finance.add(new Label("charged", chargedModel));
@@ -1309,8 +1309,8 @@ public class WorkerPage extends BasePage {
     }
 
     protected String getRewardsTotalString(Long rewardTypeId, Long periodId) {
-        BigDecimal estimated = rewardService.getRewardsTotal(worker.getObjectId(), rewardTypeId, RewardStatus.ESTIMATED, periodId);
-        BigDecimal charged = rewardService.getRewardsTotal(worker.getObjectId(), rewardTypeId, RewardStatus.CHARGED, periodId);
+        BigDecimal estimated = rewardService.getRewardsTotal(periodId, worker.getObjectId(), rewardTypeId, RewardStatus.ESTIMATED);
+        BigDecimal charged = rewardService.getRewardsTotal(periodId, worker.getObjectId(), rewardTypeId, RewardStatus.CHARGED);
 
         return charged.toPlainString() + (estimated.compareTo(BigDecimal.ZERO) > 0 ?  " (" + estimated.toPlainString() + ")" : "");
     }

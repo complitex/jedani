@@ -654,6 +654,7 @@ fieldset[disabled] .btn-flat-default.focus {
     color: #a0c969;
     background-color: #fff;
     border-color: #a0c969;
+    font-weight: bold;
 }
 
 .pagination > .disabled > span,

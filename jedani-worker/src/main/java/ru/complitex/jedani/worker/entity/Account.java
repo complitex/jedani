@@ -59,8 +59,10 @@ public class Account extends Domain<Account> {
         return getNumber(CURRENCY);
     }
 
-    public void setCurrencyId(Long currencyId) {
+    public Account setCurrencyId(Long currencyId) {
         setNumber(CURRENCY, currencyId);
+
+        return this;
     }
 
     public BigDecimal getBalance(){

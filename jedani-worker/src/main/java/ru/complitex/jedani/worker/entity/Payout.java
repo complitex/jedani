@@ -17,6 +17,8 @@ public class Payout extends Domain<Payout> {
     public static final long CURRENCY = 4;
     public static final long AMOUNT = 5;
 
+    public final static String FILTER_PERIOD = "period";
+
     public Payout() {
         super(ENTITY_NAME);
 
@@ -53,8 +55,10 @@ public class Payout extends Domain<Payout> {
         return getNumber(CURRENCY);
     }
 
-    public void setCurrencyId(Long currencyId) {
+    public Payout setCurrencyId(Long currencyId) {
         setNumber(CURRENCY, currencyId);
+
+        return this;
     }
 
     public BigDecimal getAmount() {

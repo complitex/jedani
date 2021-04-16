@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static java.math.BigDecimal.ZERO;
@@ -130,5 +131,25 @@ public class AccountService implements Serializable {
                         .setPeriodId(periodId)));
 
         return !accounts.isEmpty() ? accounts.get(0).getBalance() : BigDecimal.ZERO;
+    }
+
+    public BigDecimal getCharged(Long periodId, Long currencyId) {
+        return domainService.getDomains(Account.class, FilterWrapper.of(new Account()
+                .setPeriodId(periodId)
+                .setCurrencyId(currencyId)))
+                .stream()
+                .map(Account::getCharged)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public BigDecimal getPaid(Long periodId, Long currencyId) {
+        return domainService.getDomains(Account.class, FilterWrapper.of(new Account()
+                .setPeriodId(periodId)
+                .setCurrencyId(currencyId)))
+                .stream()
+                .map(Account::getPaid)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }

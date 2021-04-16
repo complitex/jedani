@@ -17,5 +17,8 @@ public class Currency extends Domain<Currency> {
     public Currency() {
         super(ENTITY_NAME);
     }
-}
 
+    public String getName() {
+        return getTextValue(NAME);
+    }
+}

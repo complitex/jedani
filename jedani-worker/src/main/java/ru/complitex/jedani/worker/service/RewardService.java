@@ -73,22 +73,30 @@ public class RewardService implements Serializable {
                 .reduce(ZERO, ((t, p) -> t.add(p.getPoint())), BigDecimal::add);
     }
 
-    public List<Reward> getRewards(Long workerId, Long periodId){
+    public List<Reward> getRewards(Long periodId, Long workerId){
         return domainService.getDomains(Reward.class, FilterWrapper.of(new Reward()
                 .setWorkerId(workerId)
                 .setPeriodId(periodId)));
     }
 
-    public BigDecimal getRewardsTotal(Long workerId, Long rewardTypeId, Long rewardStatusId, Long periodId) {
-        return getRewards(workerId, periodId).stream()
+    public BigDecimal getRewardsTotal(Long periodId, Long workerId, Long rewardTypeId, Long rewardStatusId) {
+        return getRewards(periodId, workerId).stream()
                 .filter(r -> Objects.equals(r.getType(), rewardTypeId))
                 .filter(r -> Objects.equals(r.getRewardStatus(), rewardStatusId))
                 .reduce(ZERO, ((t, p) -> t.add(p.getTotal())), BigDecimal::add);
     }
 
-    public BigDecimal getRewardsLocal(Long workerId, Long rewardStatusId, Long periodId) {
-        return getRewards(workerId, periodId).stream()
+    public BigDecimal getRewardsLocal(Long periodId, Long workerId, Long rewardStatusId) {
+        return getRewards(periodId, workerId).stream()
                 .filter(r -> Objects.equals(r.getRewardStatus(), rewardStatusId))
+                .map(r -> r.getAmount() != null ? r.getAmount() : ZERO)
+                .reduce(ZERO, BigDecimal::add);
+    }
+
+    public BigDecimal getRewardsLocalByCurrency(Long periodId, Long rewardStatusId, Long currencyId) {
+        return getRewards(periodId, null).stream()
+                .filter(r -> Objects.equals(r.getRewardStatus(), rewardStatusId))
+                .filter(r -> Objects.equals(workerService.getCurrencyId(r.getWorkerId()), currencyId))
                 .map(r -> r.getAmount() != null ? r.getAmount() : ZERO)
                 .reduce(ZERO, BigDecimal::add);
     }
@@ -479,7 +487,7 @@ public class RewardService implements Serializable {
                 point = point.add(rewardPoint.multiply(new BigDecimal("0.40")));
             }
 
-            point = point.subtract(getRewardsTotal(workerId, managerId, rewardType, periodId));
+            point = point.subtract(getRewardsTotal(periodId, workerId, managerId, rewardType));
         }
 
         return point;
@@ -668,8 +676,8 @@ public class RewardService implements Serializable {
 
             reward.setPoint(ZERO);
 
-            if (rewardStatus == RewardStatus.ESTIMATED || getRewardsTotal(reward.getWorkerId(), RewardType.PERSONAL_VOLUME, RewardStatus.CHARGED,
-                    period.getObjectId()).compareTo(ZERO) == 0) {
+            if (rewardStatus == RewardStatus.ESTIMATED || getRewardsTotal(period.getObjectId(), reward.getWorkerId(), RewardType.PERSONAL_VOLUME, RewardStatus.CHARGED
+            ).compareTo(ZERO) == 0) {
                 if (workerReward.getPaymentVolume().compareTo(avgPoint) < 0) {
                     reward.setPoint(lowerPoint);
                 } else {

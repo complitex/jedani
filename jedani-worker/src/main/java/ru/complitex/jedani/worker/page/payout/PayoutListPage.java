@@ -1,133 +1,63 @@
 package ru.complitex.jedani.worker.page.payout;
 
-import de.agilecoders.wicket.core.markup.html.bootstrap.behavior.CssClassNameAppender;
-import org.apache.wicket.Component;
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.extensions.markup.html.form.DateTextField;
-import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
-import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.repeater.Item;
+import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractToolbar;
+import org.apache.wicket.markup.html.panel.Fragment;
+import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.model.LoadableDetachableModel;
+import org.apache.wicket.model.Model;
 import ru.complitex.common.entity.FilterWrapper;
-import ru.complitex.common.util.Dates;
-import ru.complitex.common.wicket.panel.InputPanel;
-import ru.complitex.domain.component.datatable.AbstractDomainColumn;
-import ru.complitex.domain.component.form.DomainAutoComplete;
-import ru.complitex.domain.entity.Attribute;
-import ru.complitex.domain.entity.Domain;
-import ru.complitex.domain.entity.Entity;
-import ru.complitex.domain.entity.EntityAttribute;
-import ru.complitex.domain.page.DomainListModalPage;
+import ru.complitex.common.wicket.table.Table;
 import ru.complitex.domain.service.DomainService;
-import ru.complitex.jedani.worker.component.WorkerAutoComplete;
+import ru.complitex.domain.util.Attributes;
 import ru.complitex.jedani.worker.entity.Currency;
 import ru.complitex.jedani.worker.entity.Payout;
-import ru.complitex.jedani.worker.entity.Period;
-import ru.complitex.jedani.worker.mapper.PayoutMapper;
-import ru.complitex.jedani.worker.mapper.PeriodMapper;
-import ru.complitex.jedani.worker.service.WorkerService;
+import ru.complitex.jedani.worker.page.BasePage;
 
 import javax.inject.Inject;
 import java.util.List;
 
+import static ru.complitex.jedani.worker.security.JedaniRoles.ADMINISTRATORS;
+
 /**
  * @author Ivanov Anatoliy
  */
-public class PayoutListPage extends DomainListModalPage<Payout> {
-    @Inject
-    private WorkerService workerService;
-
-    @Inject
-    private PeriodMapper periodMapper;
-
+@AuthorizeInstantiation({ADMINISTRATORS})
+public class PayoutListPage extends BasePage {
     @Inject
     private DomainService domainService;
 
-    @Inject
-    private PayoutMapper payoutMapper;
+    public PayoutListPage() {
+        RepeatingView payouts = new RepeatingView("payouts");
 
-    private final PayoutModal payoutModal;
+        List<Currency> currencies = domainService.getDomains(Currency.class, FilterWrapper.of(new Currency()));
 
-    public <P extends Domain<P>> PayoutListPage() {
-        super(Payout.class);
+        currencies.forEach(currency -> {
+            Fragment fragment = new Fragment(payouts.newChildId(), "payout", PayoutListPage.this);
 
-        Form<?> payoutForm = new Form<>("payoutForm");
-        getContainer().add(payoutForm);
+            payouts.add(fragment);
 
-        payoutModal = new PayoutModal("payoutModal").onUpdate(this::update);
-
-        payoutForm.add(payoutModal);
-    }
-
-    @Override
-    protected List<EntityAttribute> getEntityAttributes(Entity entity) {
-        return entity.getEntityAttributes(Payout.DATE, Payout.PERIOD, Payout.WORKER, Payout.AMOUNT, Payout.CURRENCY);
-    }
-
-    @Override
-    protected AbstractDomainColumn<Payout> newDomainColumn(EntityAttribute a) {
-        if (a.getEntityAttributeId().equals(Payout.WORKER)){
-            return new AbstractDomainColumn<>("worker", this) {
+            fragment.add(new PayoutPanel("payout") {
                 @Override
-                public void populateItem(Item<ICellPopulator<Payout>> cellItem, String componentId, IModel<Payout> rowModel) {
-                    cellItem.add(new Label(componentId, workerService.getWorkerLabel(rowModel.getObject().getWorkerId())));
-
+                protected Currency getCurrency() {
+                    return currency;
                 }
-            };
-        } else if (a.getEntityAttributeId().equals(Payout.PERIOD)){
-            return new AbstractDomainColumn<>(a) {
+
                 @Override
-                public void populateItem(Item<ICellPopulator<Payout>> cellItem, String componentId, IModel<Payout> rowModel) {
-                    Period period = periodMapper.getPeriod(rowModel.getObject().getPeriodId());
-
-                    cellItem.add(new Label(componentId, period != null ? Dates.getMonthText(period.getOperatingMonth()) : ""));
+                protected IModel<String> getCaptionModel() {
+                    return Model.of(Attributes.capitalize(currency.getName()));
                 }
-            };
-        } else if (a.getEntityAttributeId().equals(Payout.CURRENCY)){
-            return new AbstractDomainColumn<>(a) {
+
                 @Override
-                public void populateItem(Item<ICellPopulator<Payout>> cellItem, String componentId, IModel<Payout> rowModel) {
-                    cellItem.add(new Label(componentId, domainService.getText(Currency.ENTITY_NAME, rowModel.getObject().getCurrencyId(), Currency.SYMBOL)));
+                protected AbstractToolbar newFooter(Table<Payout> table) {
+                    return new PayoutSummary(table,
+                            LoadableDetachableModel.of(() -> getFilterWrapper().getObject().getPeriodId()),
+                            LoadableDetachableModel.of(() -> getFilterWrapper().getObject().getCurrencyId()));
                 }
-            };
-        }
+            });
+        });
 
-        return super.newDomainColumn(a);
-    }
-
-    @Override
-    protected Component newEditComponent(String componentId, Attribute attribute) {
-        if (attribute.getEntityAttributeId().equals(Payout.PERIOD)) {
-            return new InputPanel(componentId, new DateTextField(InputPanel.INPUT_COMPONENT_ID, new PropertyModel<>(attribute, "date"))
-                    .add(new CssClassNameAppender("form-control")));
-        } else if (attribute.getEntityAttributeId().equals(Payout.WORKER)) {
-            return new WorkerAutoComplete(componentId, new PropertyModel<>(attribute, "number"));
-        } else if (attribute.getEntityAttributeId().equals(Payout.CURRENCY)) {
-            return  new DomainAutoComplete<>(componentId, Currency.class, Currency.NAME, new PropertyModel<>(attribute, "number"));
-        }
-
-        return super.newEditComponent(componentId, attribute);
-    }
-
-    @Override
-    protected void onCreate(AjaxRequestTarget target) {
-        payoutModal.create(target);
-    }
-
-    @Override
-    protected void onEdit(Payout payout, AjaxRequestTarget target) {
-        payoutModal.edit(payout, target);
-    }
-
-    @Override
-    protected List<Payout> getDomains(FilterWrapper<Payout> filterWrapper) {
-        return payoutMapper.getPayouts(filterWrapper);
-    }
-
-    @Override
-    protected Long getDomainsCount(FilterWrapper<Payout> filterWrapper) {
-        return payoutMapper.getPayoutsCount(filterWrapper);
+        add(payouts);
     }
 }

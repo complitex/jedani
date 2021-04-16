@@ -6,6 +6,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractToolbar;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.Form;
@@ -152,6 +153,16 @@ public class DomainListModalPanel<T extends Domain<T>> extends Panel {
             @Override
             protected Component getPagingLeft(String id) {
                 return DomainListModalPanel.this.getPagingLeft(id);
+            }
+
+            @Override
+            protected IModel<String> getCaptionModel() {
+                return DomainListModalPanel.this.getCaptionModel();
+            }
+
+            @Override
+            protected AbstractToolbar newFooter(Table<T> table) {
+                return DomainListModalPanel.this.newFooter(table);
             }
         };
         form.add(table);
@@ -314,6 +325,14 @@ public class DomainListModalPanel<T extends Domain<T>> extends Panel {
     }
 
     protected Component getPagingLeft(String id) {
+        return null;
+    }
+
+    protected IModel<String> getCaptionModel() {
+        return null;
+    }
+
+    protected AbstractToolbar newFooter(Table<T> table) {
         return null;
     }
 }

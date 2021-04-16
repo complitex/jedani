@@ -30,6 +30,11 @@
     </sql>
 
     <sql id="selectPayoutsWhere">
+        <if test="map.period != null">
+            and exists(select pa.id from payout_attribute pa where pa.domain_id = d.id and pa.status = 1
+                and pa.entity_attribute_id = 3 and pa.number = #{map.period})
+        </if>
+
         <if test="map.worker != null">
             and (wa_j.text like concat('%', #{map.worker}, '%')
                 or lv.text like concat('%', #{map.worker}, '%')

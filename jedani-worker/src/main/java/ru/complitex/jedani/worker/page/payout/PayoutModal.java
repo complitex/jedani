@@ -70,4 +70,9 @@ public class PayoutModal extends AbstractEditModal<Payout> {
 
         success(getString("info_payout_saved"));
     }
+
+    @Override
+    public IModel<Payout> getModel() {
+        return model;
+    }
 }

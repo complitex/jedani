@@ -5,6 +5,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.IAjaxIndicatorAware;
 import org.apache.wicket.cdi.NonContextual;
 import org.apache.wicket.extensions.ajax.markup.html.AjaxIndicatorAppender;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractToolbar;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -51,6 +52,12 @@ public class Table<T extends Serializable> extends DataTable<T, Sort> implements
         });
 
         IModel<Boolean> visibleModel = Model.of(false);
+
+        AbstractToolbar footer = newFooter(this);
+
+        if (footer != null) {
+            addBottomToolbar(footer);
+        }
 
         addBottomToolbar(navigationToolbar = new NavigationToolbar(this, tableKey){
             @Override
@@ -125,4 +132,9 @@ public class Table<T extends Serializable> extends DataTable<T, Sort> implements
     public void update(AjaxRequestTarget target){
         target.add(getBody(), navigationToolbar.getNavigation());
     }
+
+    protected AbstractToolbar newFooter(Table<T> table) {
+        return null;
+    }
+
 }
