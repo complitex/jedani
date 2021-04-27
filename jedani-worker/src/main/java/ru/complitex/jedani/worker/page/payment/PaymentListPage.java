@@ -8,6 +8,10 @@ import ru.complitex.jedani.worker.security.JedaniRoles;
 
 import static ru.complitex.jedani.worker.security.JedaniRoles.AUTHORIZED;
 
+/**
+ * @author Anatoly Ivanov
+ * 14.09.2019 0:14
+ */
 @AuthorizeInstantiation({AUTHORIZED})
 public class PaymentListPage extends BasePage {
     public PaymentListPage() {

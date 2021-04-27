@@ -662,6 +662,11 @@ public class WorkerPage extends BasePage {
                         return;
                     }
 
+                    if (worker.getManagerId() == null) {
+                        worker.setNumber(Worker.MANAGER, 1L);
+                        manager = workerMapper.getWorker(1L);
+                    }
+
                     if (worker.getObjectId() == null){
                         try {
                             domainService.insert(worker);

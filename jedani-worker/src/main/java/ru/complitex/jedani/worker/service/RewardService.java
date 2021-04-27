@@ -6,7 +6,6 @@ import com.google.common.cache.LoadingCache;
 import org.mybatis.cdi.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.complitex.address.entity.Region;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.util.Dates;
 import ru.complitex.domain.service.DomainService;
@@ -361,16 +360,12 @@ public class RewardService implements Serializable {
     }
 
     private void updateLocal(Reward reward, Period period){
-        Worker worker = workerService.getWorker(reward.getWorkerId());
+        Long currencyId = workerService.getCurrencyId(reward.getWorkerId());
 
-        if (worker.getCityId() != null) {
-            Region region = domainService.getDomain(Region.class, workerService.getRegionId(worker));
+        reward.setRate(paymentService.getPaymentsRate(currencyId, period.getObjectId()));
 
-            reward.setRate(exchangeRateService.getMonthAverageExchangeRate(region.getParentId(), period.getOperatingMonth()));
-
-            if (reward.getPoint().compareTo(ZERO) > 0) {
-                reward.setAmount(reward.getPoint().multiply(reward.getRate()).setScale(5, HALF_EVEN));
-            }
+        if (reward.getPoint().compareTo(ZERO) > 0) {
+            reward.setAmount(reward.getPoint().multiply(reward.getRate()).setScale(5, HALF_EVEN));
         }
     }
 

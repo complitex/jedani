@@ -2610,6 +2610,7 @@ CALL createEntityAttribute(41, 8, 2, 'Номер ДКП', 'Номер ДКП');
 CALL createEntityAttributeWithReference(41, 9, 11, 28, 'Продажа', 'Продаж');
 CALL createEntityAttribute(41, 10, 5, 'Тип', 'Тип');
 CALL createEntityAttributeWithReference(41, 11, 11, 42, 'Операционный месяц', 'Операційний місяць');
+CALL createEntityAttributeWithReference(41, 12, 11, 30, 'Локальная валюта', 'Локальна валюта');
 
 -- ---------------------------
 -- Period

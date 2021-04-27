@@ -22,6 +22,10 @@ import javax.inject.Inject;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 
+/**
+ * @author Anatoly Ivanov
+ * 23.11.2019 22:21
+ */
 public class PaymentRemoveModal extends Modal<Sale> {
     @Inject
     private DomainService domainService;

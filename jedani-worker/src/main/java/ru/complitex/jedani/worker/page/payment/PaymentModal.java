@@ -21,6 +21,7 @@ import ru.complitex.jedani.worker.mapper.PeriodMapper;
 import ru.complitex.jedani.worker.service.PriceService;
 import ru.complitex.jedani.worker.service.SaleDecisionService;
 import ru.complitex.jedani.worker.service.SaleService;
+import ru.complitex.jedani.worker.service.WorkerService;
 
 import javax.inject.Inject;
 import java.math.BigDecimal;
@@ -30,6 +31,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * @author Anatoly Ivanov
+ * 14.09.2019 0:14
+ */
 public class PaymentModal extends AbstractEditModal<Payment> {
     @Inject
     private DomainService domainService;
@@ -45,6 +50,9 @@ public class PaymentModal extends AbstractEditModal<Payment> {
 
     @Inject
     private PeriodMapper periodMapper;
+
+    @Inject
+    private WorkerService workerService;
 
     private boolean warnTotal = false;
 
@@ -303,6 +311,8 @@ public class PaymentModal extends AbstractEditModal<Payment> {
                 return;
             }
         }
+
+        payment.setCurrencyId(workerService.getCurrencyId(sale.getSellerWorkerId()));
 
         domainService.save(payment);
 

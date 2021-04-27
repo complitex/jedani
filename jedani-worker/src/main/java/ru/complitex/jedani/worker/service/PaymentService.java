@@ -9,6 +9,7 @@ import ru.complitex.jedani.worker.mapper.PaymentMapper;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -57,5 +58,14 @@ public class PaymentService implements Serializable {
         return getPaymentsBySellerWorkerId(sellerWorkerId).stream()
                 .filter(p -> p.getDate().after(date))
                 .reduce(BigDecimal.ZERO, ((t, p) -> t.add(p.getPoint())), BigDecimal::add);
+    }
+
+    public BigDecimal getPaymentsRate(Long currencyId, Long periodId) {
+        List<Payment> payments = paymentMapper.getPayments(FilterWrapper.of(new Payment().setCurrencyId(currencyId).setPeriodId(periodId)));
+
+        BigDecimal pointSum = payments.stream().map(Payment::getPoint).reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal amountSum = payments.stream().map(Payment::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        return amountSum.divide(pointSum, 5, RoundingMode.HALF_EVEN);
     }
 }
