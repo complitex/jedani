@@ -411,12 +411,14 @@ public class WorkerPage extends BasePage {
             roles.add(JedaniRoles.PROMOTION_ADMINISTRATORS);
             roles.add(JedaniRoles.SALE_ADMINISTRATORS);
             roles.add(JedaniRoles.PAYMENT_ADMINISTRATORS);
+            roles.add(JedaniRoles.PAYOUT_ADMINISTRATORS);
             roles.add(JedaniRoles.USERS);
         }else if (isStructureAdmin()){
             roles.add(JedaniRoles.STRUCTURE_ADMINISTRATORS);
             roles.add(JedaniRoles.PROMOTION_ADMINISTRATORS);
             roles.add(JedaniRoles.SALE_ADMINISTRATORS);
             roles.add(JedaniRoles.PAYMENT_ADMINISTRATORS);
+            roles.add(JedaniRoles.PAYOUT_ADMINISTRATORS);
             roles.add(JedaniRoles.USERS);
         }
 

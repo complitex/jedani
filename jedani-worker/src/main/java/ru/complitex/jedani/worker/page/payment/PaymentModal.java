@@ -142,7 +142,7 @@ public class PaymentModal extends AbstractEditModal<Payment> {
                 .setNullValid(false)
                 .setRequired(true)
                 .add(OnChangeAjaxBehavior.onChange(t -> {
-                    t.add(getContainer().get("paymentPoint"), getContainer().get("paymentLocal"));
+                    t.add(getContainer().get("paymentPoint"), getContainer().get("paymentAmount"));
                 }))));
 
         add(new FormGroupDecimalField("paymentAmount", getModel(), Payment.AMOUNT){
@@ -165,7 +165,7 @@ public class PaymentModal extends AbstractEditModal<Payment> {
                 }
 
                 if (payment.getAmount().compareTo(sale.getTotalLocal()) != 0) {
-                    error(getString("error_fee_withdraw_local"));
+                    error(getString("error_fee_withdraw_amount"));
                 }
             }
 
