@@ -2,18 +2,15 @@ package ru.complitex.jedani.worker.page.payout;
 
 import de.agilecoders.wicket.core.markup.html.bootstrap.tabs.AjaxBootstrapTabbedPanel;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractToolbar;
 import org.apache.wicket.extensions.markup.html.tabs.AbstractTab;
 import org.apache.wicket.extensions.markup.html.tabs.ITab;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.Model;
 import ru.complitex.common.entity.FilterWrapper;
-import ru.complitex.common.wicket.table.Table;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.util.Attributes;
 import ru.complitex.jedani.worker.entity.Currency;
-import ru.complitex.jedani.worker.entity.Payout;
 import ru.complitex.jedani.worker.page.BasePage;
 
 import javax.inject.Inject;
@@ -38,17 +35,7 @@ public class PayoutListPage extends BasePage {
                         Fragment fragment = new Fragment(panelId, "payout", PayoutListPage.this);
                         add(fragment);
 
-                        fragment.add(new PayoutPanel("payout") {
-                            @Override
-                            protected Currency getCurrency() {
-                                return currency;
-                            }
-
-                            @Override
-                            protected AbstractToolbar newFooter(Table<Payout> table) {
-                                return new PayoutSummary(table);
-                            }
-                        });
+                        fragment.add(new PayoutPanel("payout", currency.getObjectId()));
 
                         return fragment;
                     }

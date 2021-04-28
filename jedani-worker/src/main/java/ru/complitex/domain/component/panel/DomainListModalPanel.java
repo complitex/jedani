@@ -151,7 +151,7 @@ public class DomainListModalPanel<T extends Domain<T>> extends Panel {
             }
 
             @Override
-            protected Component getPagingLeft(String id) {
+            protected Component newPagingLeft(String id) {
                 return DomainListModalPanel.this.getPagingLeft(id);
             }
 

@@ -30,4 +30,8 @@ public class PeriodMapper extends BaseMapper {
     public Period getPeriod(Date month){
         return sqlSession().selectOne("selectPeriodByMonth", month);
     }
+
+    public Long getActualPeriodId(){
+        return getActualPeriod().getObjectId();
+    }
 }

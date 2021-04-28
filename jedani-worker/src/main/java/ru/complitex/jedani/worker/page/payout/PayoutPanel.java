@@ -1,38 +1,48 @@
 package ru.complitex.jedani.worker.page.payout;
 
+import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
+import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractToolbar;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.panel.FeedbackPanel;
+import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import ru.complitex.address.entity.Region;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.Sort;
 import ru.complitex.common.util.Dates;
+import ru.complitex.common.wicket.table.FilterForm;
+import ru.complitex.common.wicket.table.Provider;
+import ru.complitex.common.wicket.table.Table;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
-import ru.complitex.domain.component.panel.DomainListModalPanel;
-import ru.complitex.domain.entity.Entity;
+import ru.complitex.domain.component.datatable.DomainColumn;
+import ru.complitex.domain.component.datatable.DomainIdColumn;
 import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.service.DomainService;
+import ru.complitex.domain.service.EntityService;
 import ru.complitex.domain.util.Attributes;
 import ru.complitex.jedani.worker.component.PeriodPanel;
-import ru.complitex.jedani.worker.entity.Currency;
-import ru.complitex.jedani.worker.entity.Payout;
+import ru.complitex.jedani.worker.entity.Account;
 import ru.complitex.jedani.worker.entity.Period;
-import ru.complitex.jedani.worker.mapper.PayoutMapper;
+import ru.complitex.jedani.worker.entity.Worker;
 import ru.complitex.jedani.worker.mapper.PeriodMapper;
 import ru.complitex.jedani.worker.service.WorkerService;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author Ivanov Anatoliy
  */
-public class PayoutPanel extends DomainListModalPanel<Payout> {
+public class PayoutPanel extends Panel {
     @Inject
     private WorkerService workerService;
 
@@ -43,125 +53,115 @@ public class PayoutPanel extends DomainListModalPanel<Payout> {
     private DomainService domainService;
 
     @Inject
-    private PayoutMapper payoutMapper;
+    private EntityService entityService;
 
-    private final PayoutModal payoutModal;
+    public PayoutPanel(String id, Long currencyId) {
+        super(id);
 
-    public PayoutPanel(String id) {
-        super(id, Payout.class);
+        FeedbackPanel feedback = new NotificationPanel("feedback");
+        feedback.setOutputMarkupId(true);
+        add(feedback);
 
-        Form<?> payoutForm = new Form<>("payoutForm");
-        getContainer().add(payoutForm);
+        List<IColumn<Account, Sort>> columns = new ArrayList<>();
 
-        payoutModal = new PayoutModal("payoutModal").onUpdate(this::update);
+        columns.add(new DomainIdColumn<>());
 
-        payoutForm.add(payoutModal);
-    }
+        columns.add(new DomainColumn<>(entityService.getEntityAttribute(Account.ENTITY_NAME, Account.DATE)));
 
-    @Override
-    protected List<EntityAttribute> getEntityAttributes(Entity entity) {
-        return entity.getEntityAttributes(Payout.DATE, Payout.PERIOD, Payout.WORKER, Payout.AMOUNT);
-    }
-
-    @Override
-    protected AbstractDomainColumn<Payout> newDomainColumn(EntityAttribute a) {
-        if (a.getEntityAttributeId().equals(Payout.WORKER)){
-            return new AbstractDomainColumn<>("worker", this) {
-                @Override
-                public void populateItem(Item<ICellPopulator<Payout>> cellItem, String componentId, IModel<Payout> rowModel) {
-                    cellItem.add(new Label(componentId, workerService.getWorkerLabel(rowModel.getObject().getWorkerId())));
-
-                }
-            };
-        } else if (a.getEntityAttributeId().equals(Payout.PERIOD)){
-            return new AbstractDomainColumn<>(a) {
-                @Override
-                public void populateItem(Item<ICellPopulator<Payout>> cellItem, String componentId, IModel<Payout> rowModel) {
-                    Period period = periodMapper.getPeriod(rowModel.getObject().getPeriodId());
-
-                    cellItem.add(new Label(componentId, period != null ? Dates.getMonthText(period.getOperatingMonth()) : ""));
-                }
-            };
-        } else if (a.getEntityAttributeId().equals(Payout.AMOUNT)){
-            return new AbstractDomainColumn<>(a) {
-                @Override
-                public void populateItem(Item<ICellPopulator<Payout>> cellItem, String componentId, IModel<Payout> rowModel) {
-                    String symbol = domainService.getText(Currency.ENTITY_NAME, rowModel.getObject().getCurrencyId(), Currency.SYMBOL);
-
-                    cellItem.add(new Label(componentId, rowModel.getObject().getAmount().toPlainString() + (symbol != null ? symbol : "")));
-                }
-            };
-        }
-
-        return super.newDomainColumn(a);
-    }
-
-    @Override
-    protected void onInitColumns(List<IColumn<Payout, Sort>> columns) {
-        columns.add(3, new AbstractDomainColumn<>("region", this) {
+        columns.add(new AbstractDomainColumn<>(entityService.getEntityAttribute(Account.ENTITY_NAME, Account.PERIOD)) {
             @Override
-            public void populateItem(Item<ICellPopulator<Payout>> cellItem, String componentId, IModel<Payout> rowModel) {
+            public void populateItem(Item<ICellPopulator<Account>> cellItem, String componentId, IModel<Account> rowModel) {
+                Period period = periodMapper.getPeriod(rowModel.getObject().getPeriodId());
+
+                cellItem.add(new Label(componentId, period != null ? Dates.getMonthText(period.getOperatingMonth()) : ""));
+            }
+        });
+
+        columns.add(new AbstractDomainColumn<>("region", this) {
+            @Override
+            public void populateItem(Item<ICellPopulator<Account>> cellItem, String componentId, IModel<Account> rowModel) {
                 Long regionId = workerService.getRegionId(rowModel.getObject().getWorkerId());
 
                 cellItem.add(new Label(componentId, Attributes.capitalize(domainService.getTextValue(Region.ENTITY_NAME, regionId, Region.NAME))));
             }
         });
-    }
 
-    @Override
-    protected void onCreate(AjaxRequestTarget target) {
-        payoutModal.create(target);
-
-        Currency currency = getCurrency();
-
-        if (currency != null) {
-            payoutModal.getModel().getObject().setCurrencyId(currency.getObjectId());
-        }
-    }
-
-    @Override
-    protected void onEdit(Payout payout, AjaxRequestTarget target) {
-        payoutModal.edit(payout, target);
-    }
-
-    @Override
-    protected FilterWrapper<Payout> newFilterWrapper(Payout payout) {
-        payout.setPeriodId(periodMapper.getActualPeriod().getObjectId());
-
-        FilterWrapper<Payout> filterWrapper = FilterWrapper.of(payout);
-
-        Currency currency = getCurrency();
-
-        if (currency != null) {
-            filterWrapper.getObject().setCurrencyId(currency.getObjectId());
-        }
-
-        return filterWrapper;
-    }
-
-    @Override
-    protected List<Payout> getDomains(FilterWrapper<Payout> filterWrapper) {
-        return payoutMapper.getPayouts(filterWrapper);
-    }
-
-    @Override
-    protected Long getDomainsCount(FilterWrapper<Payout> filterWrapper) {
-        return payoutMapper.getPayoutsCount(filterWrapper);
-    }
-
-    @Override
-    protected Component getPagingLeft(String id) {
-        return new PeriodPanel(id){
+        columns.add(new AbstractDomainColumn<>("jId", this) {
             @Override
-            protected void onChange(AjaxRequestTarget target, Period period) {
-                getFilterWrapper().getObject().setPeriodId(period != null ? period.getObjectId() : null);
+            public void populateItem(Item<ICellPopulator<Account>> cellItem, String componentId, IModel<Account> rowModel) {
+                String jid = domainService.getText(Worker.ENTITY_NAME, rowModel.getObject().getWorkerId(), Worker.J_ID);
 
-                updateTable(target);
+                cellItem.add(new Label(componentId, jid));
+            }
+        });
+
+        columns.add(new AbstractDomainColumn<>("worker", this) {
+            @Override
+            public void populateItem(Item<ICellPopulator<Account>> cellItem, String componentId, IModel<Account> rowModel) {
+                cellItem.add(new Label(componentId, workerService.getWorkerLabel(rowModel.getObject().getWorkerId())));
+            }
+        });
+
+        columns.add(new DomainColumn<>(entityService.getEntityAttribute(Account.ENTITY_NAME, Account.BALANCE)));
+
+        columns.add(new DomainColumn<>(entityService.getEntityAttribute(Account.ENTITY_NAME, Account.PAID)));
+
+        Provider<Account> provider = new Provider<>(FilterWrapper.of(new Account()
+                .setCurrencyId(currencyId)
+                .setPeriodId(periodMapper.getActualPeriodId()))){
+
+            @Override
+            public List<Account> getList() {
+                return domainService.getDomains(Account.class, getFilterState());
+            }
+
+            @Override
+            public Long getCount() {
+                return domainService.getDomainsCount(getFilterState());
             }
         };
-    }
 
-    protected Currency getCurrency() {
-        return null;
+        EntityAttribute balanceEntityAttribute = entityService.getEntityAttribute(Account.ENTITY_NAME, Account.BALANCE);
+
+        provider.setSort(new Sort(balanceEntityAttribute.getValueType().getKey(), balanceEntityAttribute), SortOrder.DESCENDING);
+
+        FilterForm<FilterWrapper<Account>> form = new FilterForm<>("form", provider);
+        form.setOutputMarkupId(true);
+        add(form);
+
+        Table<Account> table = new Table<>("table", columns, provider,15, PayoutPanel.class.getName()) {
+            @Override
+            protected Component newPagingLeft(String id) {
+                return new PeriodPanel(id) {
+                    @Override
+                    protected void onChange(AjaxRequestTarget target, Period period) {
+                        provider.getFilterState().getObject().setPeriodId(period.getObjectId());
+
+                        update(target);
+                    }
+                };
+            }
+
+            @Override
+            protected AbstractToolbar newFooter(Table<Account> table) {
+                return new PayoutSummary(table);
+            }
+        };
+        form.add(table);
+
+        Form<?> payoutForm = new Form<>("payoutForm");
+        add(payoutForm);
+
+        PayoutModal payoutModal = new PayoutModal("payoutModal")
+                .onUpdate(t -> t.add(feedback, table));
+
+        payoutForm.add(payoutModal);
+
+        add(new AjaxLink<Void>("add") {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                payoutModal.create(currencyId, target);
+            }
+        });
     }
 }

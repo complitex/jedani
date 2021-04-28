@@ -1,5 +1,13 @@
-<wicket:extend xmlns:wicket="http://wicket.apache.org">
+<wicket:panel xmlns:wicket="http://wicket.apache.org">
+    <div wicket:id="feedback"></div>
+
+    <form wicket:id="form">
+        <table wicket:id="table" class="table table-hover"></table>
+    </form>
+
     <form wicket:id="payoutForm">
         <div wicket:id="payoutModal"></div>
     </form>
-</wicket:extend>
+
+    <button wicket:id="add" class="btn btn-primary"><wicket:message key="add"/></button>
+</wicket:panel>

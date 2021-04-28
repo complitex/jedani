@@ -14,6 +14,7 @@ import ru.complitex.jedani.worker.component.FormGroupWorker;
 import ru.complitex.jedani.worker.entity.Currency;
 import ru.complitex.jedani.worker.entity.Payout;
 import ru.complitex.jedani.worker.mapper.PeriodMapper;
+import ru.complitex.jedani.worker.service.AccountService;
 
 import javax.inject.Inject;
 
@@ -26,6 +27,9 @@ public class PayoutModal extends AbstractEditModal<Payout> {
 
     @Inject
     private PeriodMapper periodMapper;
+
+    @Inject
+    private AccountService accountService;
 
     private final IModel<Payout> model;
 
@@ -43,14 +47,14 @@ public class PayoutModal extends AbstractEditModal<Payout> {
         add(new FormGroupDecimalField("amount", model, Payout.AMOUNT).setRequired(true));
     }
 
-    @Override
-    public void create(AjaxRequestTarget target) {
+    public void create(Long currencyId, AjaxRequestTarget target) {
         super.create(target);
 
         Payout payout = new Payout();
 
         payout.setDate(Dates.currentDate());
         payout.setPeriodId(periodMapper.getActualPeriod().getObjectId());
+        payout.setCurrencyId(currencyId);
 
         model.setObject(payout);
     }
@@ -67,6 +71,8 @@ public class PayoutModal extends AbstractEditModal<Payout> {
         super.save(target);
 
         domainService.save(model.getObject());
+
+        //todo update account
 
         success(getString("info_payout_saved"));
     }

@@ -8,6 +8,7 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.wicket.table.Table;
 import ru.complitex.domain.service.DomainService;
+import ru.complitex.jedani.worker.entity.Account;
 import ru.complitex.jedani.worker.entity.Currency;
 import ru.complitex.jedani.worker.entity.Payout;
 import ru.complitex.jedani.worker.entity.RewardStatus;
@@ -34,38 +35,41 @@ public class PayoutSummary extends AbstractToolbar {
     @Inject
     private PayoutMapper payoutMapper;
 
-    public PayoutSummary(Table<Payout> table) {
+    public PayoutSummary(Table<Account> table) {
         super(table);
 
         add(new Label("charged", LoadableDetachableModel.of(() -> {
-            Payout payout = table.getFilterWrapper().getObject();
+            Account account = table.getFilterWrapper().getObject();
 
-            String symbol = domainService.getText(Currency.ENTITY_NAME, payout.getCurrencyId(), Currency.SYMBOL);
+            String symbol = domainService.getText(Currency.ENTITY_NAME, account.getCurrencyId(), Currency.SYMBOL);
 
             if (symbol == null) {
                 symbol = "";
             }
 
-            BigDecimal charged = rewardService.getRewardsLocalByCurrency(payout.getPeriodId(), RewardStatus.CHARGED, payout.getCurrencyId());
+            BigDecimal charged = rewardService.getRewardsLocalByCurrency(account.getPeriodId(), RewardStatus.CHARGED, account.getCurrencyId());
 
-            return accountService.getCharged(payout.getPeriodId(), payout.getCurrencyId()).add(charged).toPlainString() + symbol;
+            return accountService.getCharged(account.getPeriodId(), account.getCurrencyId()).add(charged).toPlainString() + symbol;
         })));
 
         add(new WebMarkupContainer("paid")
                 .add(new Label("paid", LoadableDetachableModel.of(() -> {
-                    Payout payout = table.getFilterWrapper().getObject();
+                    Account account = table.getFilterWrapper().getObject();
 
-                    String symbol = domainService.getText(Currency.ENTITY_NAME, payout.getCurrencyId(), Currency.SYMBOL);
+                    BigDecimal paid = payoutMapper.getPayouts(FilterWrapper.of(new Payout()
+                            .setPeriodId(account.getPeriodId())
+                            .setCurrencyId(account.getCurrencyId())))
+                            .stream()
+                            .map(Payout::getAmount)
+                            .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+                    String symbol = domainService.getText(Currency.ENTITY_NAME, account.getCurrencyId(), Currency.SYMBOL);
 
                     if (symbol == null) {
                         symbol = "";
                     }
 
-                    BigDecimal paid = payoutMapper.getPayouts(FilterWrapper.of(payout)).stream()
-                            .map(Payout::getAmount)
-                            .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-                    return accountService.getPaid(payout.getPeriodId(), payout.getCurrencyId()).add(paid).toPlainString() + symbol;
+                    return accountService.getPaid(account.getPeriodId(), account.getCurrencyId()).add(paid).toPlainString() + symbol;
                 })))
                 .add(AttributeModifier.replace("colspan",
                         () -> String.valueOf(table.getColumns().size() - 1))));

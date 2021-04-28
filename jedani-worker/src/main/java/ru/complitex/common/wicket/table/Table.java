@@ -67,7 +67,7 @@ public class Table<T extends Serializable> extends DataTable<T, Sort> implements
 
             @Override
             protected Component newPagingLeft(String id) {
-                Component component =  Table.this.getPagingLeft(id);
+                Component component =  Table.this.newPagingLeft(id);
 
                 visibleModel.setObject(component != null);
 
@@ -112,7 +112,7 @@ public class Table<T extends Serializable> extends DataTable<T, Sort> implements
         });
     }
 
-    protected Component getPagingLeft(String id){
+    protected Component newPagingLeft(String id){
         return null;
     }
 
