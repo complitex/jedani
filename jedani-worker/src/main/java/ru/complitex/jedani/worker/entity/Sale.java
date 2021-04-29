@@ -87,8 +87,10 @@ public class Sale extends Domain<Sale> {
         return getDate(DATE);
     }
 
-    public void setDate(Date date){
+    public Sale setDate(Date date){
         setDate(DATE, date);
+
+        return this;
     }
 
     public Long getType(){

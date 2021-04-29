@@ -239,10 +239,10 @@ public class WorkerListPage extends DomainListPage<Worker>{
                 RepeatingView repeatingView = new RepeatingView(componentId);
                 cellItem.add(repeatingView);
 
-                repeatingView.add(new LinkPanel(repeatingView.newChildId(), new BootstrapBookmarkablePageLink<>(LinkPanel.LINK_COMPONENT_ID,
+                repeatingView.add(new LinkPanel(repeatingView.newChildId(), new BootstrapBookmarkablePageLink<>(LinkPanel.COMPONENT_ID,
                         WorkerPage.class, pageParameters, Buttons.Type.Link).setIconType(GlyphIconType.edit)));
 
-                repeatingView.add(new LinkPanel(repeatingView.newChildId(), new BootstrapAjaxLink<Worker>(LinkPanel.LINK_COMPONENT_ID,
+                repeatingView.add(new LinkPanel(repeatingView.newChildId(), new BootstrapAjaxLink<Worker>(LinkPanel.COMPONENT_ID,
                         Buttons.Type.Link) {
                     @Override
                     public void onClick(AjaxRequestTarget target) {

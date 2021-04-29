@@ -287,7 +287,7 @@ public class SalePanel extends DomainListModalPanel<Sale> {
     protected void populateAction(RepeatingView repeatingView, IModel<Sale> rowModel) {
         if (isRemoveEnabled()) {
             repeatingView.add(new LinkPanel(repeatingView.newChildId(),
-                    new BootstrapAjaxButton(LinkPanel.LINK_COMPONENT_ID, Buttons.Type.Link) {
+                    new BootstrapAjaxButton(LinkPanel.COMPONENT_ID, Buttons.Type.Link) {
                 @Override
                 protected void onSubmit(AjaxRequestTarget target) {
                     saleRemoveModal.delete(target, rowModel.getObject());

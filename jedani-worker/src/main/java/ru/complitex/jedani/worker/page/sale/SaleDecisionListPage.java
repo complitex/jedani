@@ -104,7 +104,7 @@ public class SaleDecisionListPage extends DomainListModalPage<SaleDecision> {
 
     @Override
     protected void populateAction(RepeatingView repeatingView, IModel<SaleDecision> rowModel) {
-        repeatingView.add(new LinkPanel(repeatingView.newChildId(), new BootstrapAjaxButton(LinkPanel.LINK_COMPONENT_ID,
+        repeatingView.add(new LinkPanel(repeatingView.newChildId(), new BootstrapAjaxButton(LinkPanel.COMPONENT_ID,
                 Buttons.Type.Link) {
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
@@ -130,7 +130,7 @@ public class SaleDecisionListPage extends DomainListModalPage<SaleDecision> {
         }.setIconType(GlyphIconType.export)));
 
         repeatingView.add(new LinkPanel(repeatingView.newChildId(),
-                new BootstrapAjaxButton(LinkPanel.LINK_COMPONENT_ID, Buttons.Type.Link) {
+                new BootstrapAjaxButton(LinkPanel.COMPONENT_ID, Buttons.Type.Link) {
                     @Override
                     protected void onSubmit(AjaxRequestTarget target) {
                         saleDecisionRemoveModal.open(rowModel.getObject(), target);

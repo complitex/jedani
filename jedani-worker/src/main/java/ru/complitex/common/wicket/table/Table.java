@@ -32,6 +32,8 @@ public class Table<T extends Serializable> extends DataTable<T, Sort> implements
 
     private final NavigationToolbar navigationToolbar;
 
+    private final AbstractToolbar footer;
+
     public Table(String id, List<? extends IColumn<T, Sort>> columns, Provider<T> provider, long rowsPerPage, String tableKey) {
         super(id, columns, provider, rowsPerPage);
 
@@ -53,7 +55,7 @@ public class Table<T extends Serializable> extends DataTable<T, Sort> implements
 
         IModel<Boolean> visibleModel = Model.of(false);
 
-        AbstractToolbar footer = newFooter(this);
+        footer = newFooter(this);
 
         if (footer != null) {
             addBottomToolbar(footer);
@@ -130,7 +132,7 @@ public class Table<T extends Serializable> extends DataTable<T, Sort> implements
     }
 
     public void update(AjaxRequestTarget target){
-        target.add(getBody(), navigationToolbar.getNavigation());
+        target.add(this);
     }
 
     protected AbstractToolbar newFooter(Table<T> table) {

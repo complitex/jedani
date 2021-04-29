@@ -11,6 +11,7 @@ import ru.complitex.domain.page.DomainListModalPage;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.entity.Account;
 import ru.complitex.jedani.worker.entity.Currency;
+import ru.complitex.jedani.worker.entity.Period;
 import ru.complitex.jedani.worker.mapper.PeriodMapper;
 import ru.complitex.jedani.worker.service.WorkerService;
 
@@ -46,7 +47,9 @@ public class AccountListPage extends DomainListModalPage<Account> {
             return new AbstractDomainColumn<>(a) {
                 @Override
                 public void populateItem(Item<ICellPopulator<Account>> cellItem, String componentId, IModel<Account> rowModel) {
-                    cellItem.add(new Label(componentId, Dates.getMonthText(periodMapper.getPeriod(rowModel.getObject().getPeriodId()).getOperatingMonth())));
+                    Period period = periodMapper.getPeriod(rowModel.getObject().getPeriodId());
+
+                    cellItem.add(new Label(componentId, period != null ? Dates.getMonthText(period.getOperatingMonth()) : ""));
                 }
             };
         } else if (a.getEntityAttributeId().equals(Account.CURRENCY)) {

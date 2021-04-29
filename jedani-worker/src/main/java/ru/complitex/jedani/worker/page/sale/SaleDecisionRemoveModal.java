@@ -36,7 +36,6 @@ public class SaleDecisionRemoveModal extends Modal<SaleDecision> {
         saleDecisionModel = Model.of(new SaleDecision());
 
         setBackdrop(Backdrop.FALSE);
-        setCloseOnEscapeKey(false);
 
         header(new ResourceModel("header"));
 

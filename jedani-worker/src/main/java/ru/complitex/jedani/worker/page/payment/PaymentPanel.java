@@ -162,7 +162,7 @@ public class PaymentPanel extends DomainListModalPanel<Payment> {
     protected void populateAction(RepeatingView repeatingView, IModel<Payment> rowModel) {
         if (isRemoveEnabled() && rowModel.getObject().getStartDate().after(periodMapper.getActualPeriod()
                 .getOperatingMonth())) {
-            repeatingView.add(new LinkPanel(repeatingView.newChildId(), new BootstrapAjaxButton(LinkPanel.LINK_COMPONENT_ID,
+            repeatingView.add(new LinkPanel(repeatingView.newChildId(), new BootstrapAjaxButton(LinkPanel.COMPONENT_ID,
                     Buttons.Type.Link) {
                 @Override
                 protected void onSubmit(AjaxRequestTarget target) {

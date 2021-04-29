@@ -108,7 +108,7 @@ public class ExchangeRatePage extends BasePage {
         columns.add(new Column<Rate>(null) {
             @Override
             public Component newFilter(String componentId, Table<Rate> table) {
-                return new LinkPanel(componentId, new BootstrapAjaxButton(LinkPanel.LINK_COMPONENT_ID, Buttons.Type.Link){
+                return new LinkPanel(componentId, new BootstrapAjaxButton(LinkPanel.COMPONENT_ID, Buttons.Type.Link){
                     @Override
                     protected void onSubmit(AjaxRequestTarget target) {
                         target.add(table.getBody());

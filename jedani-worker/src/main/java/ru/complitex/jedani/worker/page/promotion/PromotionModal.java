@@ -77,7 +77,6 @@ public class PromotionModal extends Modal<Promotion> {
         super(markupId, new Model<>(new Promotion()));
 
         setBackdrop(Backdrop.FALSE);
-        setCloseOnEscapeKey(false);
         size(Size.Large);
 
         header(new ResourceModel("header"));
@@ -194,7 +193,7 @@ public class PromotionModal extends Modal<Promotion> {
         columns.add(new DomainActionColumn<>() {
             @Override
             public void populateItem(Item<ICellPopulator<Nomenclature>> cellItem, String componentId, IModel<Nomenclature> rowModel) {
-                cellItem.add(new LinkPanel(componentId, new BootstrapAjaxLink<Nomenclature>(LinkPanel.LINK_COMPONENT_ID, Buttons.Type.Link) {
+                cellItem.add(new LinkPanel(componentId, new BootstrapAjaxLink<Nomenclature>(LinkPanel.COMPONENT_ID, Buttons.Type.Link) {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         PromotionModal.this.getModelObject().addNomenclatureId(rowModel.getObject().getObjectId());

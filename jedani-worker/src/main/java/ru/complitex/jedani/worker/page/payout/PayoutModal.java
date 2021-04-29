@@ -72,8 +72,6 @@ public class PayoutModal extends AbstractEditModal<Payout> {
 
         domainService.save(model.getObject());
 
-        //todo update account
-
         success(getString("info_payout_saved"));
     }
 

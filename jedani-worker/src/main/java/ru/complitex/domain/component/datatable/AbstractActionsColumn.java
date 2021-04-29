@@ -36,7 +36,7 @@ public abstract class AbstractActionsColumn<T extends Domain<T>> extends Abstrac
 
     @Override
     public Component newFilter(String componentId, Table<T> table) {
-        return new LinkPanel(componentId, new BootstrapAjaxButton(LinkPanel.LINK_COMPONENT_ID, Buttons.Type.Link){
+        return new LinkPanel(componentId, new BootstrapAjaxButton(LinkPanel.COMPONENT_ID, Buttons.Type.Link){
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
                 target.add(table.getBody());
@@ -51,7 +51,7 @@ public abstract class AbstractActionsColumn<T extends Domain<T>> extends Abstrac
         RepeatingView repeatingView = new RepeatingView(componentId);
         cellItem.add(repeatingView);
 
-        getActions(LinkPanel.LINK_COMPONENT_ID, rowModel)
+        getActions(LinkPanel.COMPONENT_ID, rowModel)
                 .forEach(a -> repeatingView.add(new LinkPanel(repeatingView.newChildId(), a)));
     }
 

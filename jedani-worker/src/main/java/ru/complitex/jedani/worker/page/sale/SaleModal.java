@@ -49,6 +49,7 @@ import ru.complitex.jedani.worker.component.StorageAutoComplete;
 import ru.complitex.jedani.worker.component.WorkerAutoComplete;
 import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.exception.SaleException;
+import ru.complitex.jedani.worker.mapper.PeriodMapper;
 import ru.complitex.jedani.worker.mapper.StorageMapper;
 import ru.complitex.jedani.worker.page.BasePage;
 import ru.complitex.jedani.worker.service.PriceService;
@@ -91,6 +92,9 @@ public class SaleModal extends Modal<Sale> {
     @Inject
     private RewardService rewardService;
 
+    @Inject
+    private PeriodMapper periodMapper;
+
     private final IModel<Sale> saleModel;
     private final IModel<List<SaleItem>> saleItemsModel;
 
@@ -116,10 +120,9 @@ public class SaleModal extends Modal<Sale> {
         super(markupId);
 
         setBackdrop(Backdrop.FALSE);
-        setCloseOnEscapeKey(false);
         size(Size.Large);
 
-        saleModel = Model.of(new Sale());
+        saleModel = Model.of(new Sale().setDate(periodMapper.getActualPeriod().getOperatingMonth()));
         saleItemsModel = Model.ofList(new ArrayList<>());
 
         header(new ResourceModel("header"));

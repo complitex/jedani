@@ -37,7 +37,6 @@ public class WorkerRemoveModal extends Modal<Worker> {
         workerModel = Model.of(new Worker());
 
         setBackdrop(Backdrop.FALSE);
-        setCloseOnEscapeKey(false);
 
         header(new LoadableDetachableModel<String>() {
             @Override

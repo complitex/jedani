@@ -76,7 +76,6 @@ public class DomainEditModal<T extends Domain<T>> extends AbstractDomainEditModa
         this.onChange = onChange;
 
         setBackdrop(Backdrop.FALSE);
-        setCloseOnEscapeKey(false);
 
         entity = entityService.getEntity(domainClass);
 

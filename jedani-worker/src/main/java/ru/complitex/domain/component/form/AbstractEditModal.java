@@ -33,7 +33,6 @@ public abstract class AbstractEditModal<T> extends Modal<T> {
         super(markupId);
 
         setBackdrop(Backdrop.FALSE);
-        setCloseOnEscapeKey(false);
         header(new ResourceModel("header"));
 
         container = new WebMarkupContainer("container"){

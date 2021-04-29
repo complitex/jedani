@@ -34,7 +34,6 @@ public class WorkerInviteModal extends Modal<Worker> {
         super(markupId);
 
         setBackdrop(Backdrop.FALSE);
-        setCloseOnEscapeKey(false);
 
         header(new LoadableDetachableModel<String>() {
             @Override

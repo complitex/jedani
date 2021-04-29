@@ -79,7 +79,6 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
         super(markupId);
 
         setBackdrop(Backdrop.FALSE);
-        setCloseOnEscapeKey(false);
         size(Size.Large);
 
         header(new ResourceModel("header"));
@@ -217,7 +216,7 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
         columns.add(new DomainActionColumn<>() {
             @Override
             public void populateItem(Item<ICellPopulator<Nomenclature>> cellItem, String componentId, IModel<Nomenclature> rowModel) {
-                cellItem.add(new LinkPanel(componentId, new BootstrapAjaxLink<Nomenclature>(LinkPanel.LINK_COMPONENT_ID, Buttons.Type.Link) {
+                cellItem.add(new LinkPanel(componentId, new BootstrapAjaxLink<Nomenclature>(LinkPanel.COMPONENT_ID, Buttons.Type.Link) {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         SaleDecisionModal.this.getModelObject().addNomenclatureId(rowModel.getObject().getObjectId());

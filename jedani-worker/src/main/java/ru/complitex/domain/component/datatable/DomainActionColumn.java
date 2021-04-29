@@ -52,7 +52,7 @@ public class DomainActionColumn<T extends Domain<T>> extends AbstractDomainColum
 
     @Override
     public Component newFilter(String componentId, Table<T> table) {
-        return new LinkPanel(componentId, new BootstrapAjaxButton(LinkPanel.LINK_COMPONENT_ID, Buttons.Type.Link){
+        return new LinkPanel(componentId, new BootstrapAjaxButton(LinkPanel.COMPONENT_ID, Buttons.Type.Link){
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
                 onAction(target, table);
@@ -69,7 +69,7 @@ public class DomainActionColumn<T extends Domain<T>> extends AbstractDomainColum
         PageParameters pageParameters = new PageParameters().add("id", rowModel.getObject().getId());
         pageParameters.mergeWith(editPageParameters);
 
-        cellItem.add(new LinkPanel(componentId, new BootstrapBookmarkablePageLink<>(LinkPanel.LINK_COMPONENT_ID,
+        cellItem.add(new LinkPanel(componentId, new BootstrapBookmarkablePageLink<>(LinkPanel.COMPONENT_ID,
                 editPageClass, pageParameters, Buttons.Type.Link).setIconType(GlyphIconType.edit)));
     }
 

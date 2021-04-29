@@ -403,7 +403,7 @@ public class StoragePage extends BasePage {
             productColumns.add(new DomainActionColumn<>(){
                 @Override
                 public void populateItem(Item<ICellPopulator<Product>> cellItem, String componentId, IModel<Product> rowModel) {
-                    cellItem.add(new LinkPanel(componentId, new BootstrapAjaxLink<Void>(LinkPanel.LINK_COMPONENT_ID,
+                    cellItem.add(new LinkPanel(componentId, new BootstrapAjaxLink<Void>(LinkPanel.COMPONENT_ID,
                             Buttons.Type.Link) {
                         @Override
                         public void onClick(AjaxRequestTarget target) {
@@ -663,7 +663,7 @@ public class StoragePage extends BasePage {
                             Objects.equals(transfer.getStorageIdTo(), storageId) &&
                             transfer.getEndDate() == null;
 
-                    cellItem.add(new LinkPanel(componentId, new BootstrapAjaxLink<Void>(LinkPanel.LINK_COMPONENT_ID,
+                    cellItem.add(new LinkPanel(componentId, new BootstrapAjaxLink<Void>(LinkPanel.COMPONENT_ID,
                             Buttons.Type.Link) {
                         @Override
                         public void onClick(AjaxRequestTarget target) {

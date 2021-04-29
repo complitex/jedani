@@ -34,7 +34,6 @@ public class SaleRemoveModal extends Modal<Sale> {
         saleModel = Model.of(new Sale());
 
         setBackdrop(Backdrop.FALSE);
-        setCloseOnEscapeKey(false);
 
         header(new ResourceModel("header"));
 

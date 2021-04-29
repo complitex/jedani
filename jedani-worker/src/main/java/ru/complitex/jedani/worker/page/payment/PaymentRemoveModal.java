@@ -43,7 +43,6 @@ public class PaymentRemoveModal extends Modal<Sale> {
         paymentModel = Model.of(new Payment());
 
         setBackdrop(Backdrop.FALSE);
-        setCloseOnEscapeKey(false);
 
         header(new ResourceModel("header"));
 

@@ -35,7 +35,7 @@ public abstract class DomainEditActionsColumn<T extends Domain<T>> extends Abstr
 
     @Override
     public Component newFilter(String componentId, Table<T> table) {
-        return new LinkPanel(componentId, new BootstrapAjaxButton(LinkPanel.LINK_COMPONENT_ID, Buttons.Type.Link){
+        return new LinkPanel(componentId, new BootstrapAjaxButton(LinkPanel.COMPONENT_ID, Buttons.Type.Link){
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
                 target.add(table.getBody());
@@ -48,7 +48,7 @@ public abstract class DomainEditActionsColumn<T extends Domain<T>> extends Abstr
         RepeatingView repeatingView = new RepeatingView(componentId);
         cellItem.add(repeatingView);
 
-        repeatingView.add(new LinkPanel(repeatingView.newChildId(), new BootstrapAjaxButton(LinkPanel.LINK_COMPONENT_ID, Buttons.Type.Link) {
+        repeatingView.add(new LinkPanel(repeatingView.newChildId(), new BootstrapAjaxButton(LinkPanel.COMPONENT_ID, Buttons.Type.Link) {
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
                 DomainEditActionsColumn.this.onEdit(rowModel, target);

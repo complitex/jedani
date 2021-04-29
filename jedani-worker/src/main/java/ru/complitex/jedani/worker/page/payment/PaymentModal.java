@@ -189,13 +189,13 @@ public class PaymentModal extends AbstractEditModal<Payment> {
     public void create(AjaxRequestTarget target) {
         super.create(target);
 
-        Date date = Dates.currentDate();
+        Date date = periodMapper.getActualPeriod().getOperatingMonth();
 
         Payment payment = new Payment();
 
         payment.setDate(date);
         payment.setPeriodStart(date);
-        payment.setPeriodEnd(date);
+        payment.setPeriodEnd(Dates.lastDayOfMonth(date));
         payment.setType(PaymentType.AMOUNT);
 
         payment.setWorkerId(getBasePage().getCurrentWorker().getObjectId());

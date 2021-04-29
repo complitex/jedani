@@ -27,8 +27,10 @@ public class Payout extends Domain<Payout> {
         return getNumber(WORKER);
     }
 
-    public void setWorkerId(Long workerId) {
+    public Payout setWorkerId(Long workerId) {
         setNumber(WORKER, workerId);
+
+        return this;
     }
 
     public Date getDate() {

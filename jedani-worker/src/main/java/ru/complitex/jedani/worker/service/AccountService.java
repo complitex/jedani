@@ -157,4 +157,14 @@ public class AccountService implements Serializable {
                 .filter(Objects::nonNull)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
+
+    public BigDecimal getPaid(Long periodId, Long currencyId, Long workerId) {
+        return payoutMapper.getPayouts(FilterWrapper.of(new Payout()
+                .setWorkerId(workerId)
+                .setPeriodId(periodId)
+                .setCurrencyId(currencyId)))
+                .stream()
+                .map(Payout::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
 }
