@@ -8,6 +8,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractToolbar;
@@ -15,10 +16,12 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import ru.complitex.address.entity.Region;
 import ru.complitex.common.entity.FilterWrapper;
@@ -26,6 +29,7 @@ import ru.complitex.common.entity.Sort;
 import ru.complitex.common.util.Dates;
 import ru.complitex.common.wicket.panel.InputPanel;
 import ru.complitex.common.wicket.panel.LinkPanel;
+import ru.complitex.common.wicket.table.Column;
 import ru.complitex.common.wicket.table.FilterForm;
 import ru.complitex.common.wicket.table.Provider;
 import ru.complitex.common.wicket.table.Table;
@@ -146,7 +150,12 @@ public class PayoutPanel extends Panel {
             }
         });
 
-        columns.add(new AbstractDomainColumn<>("payout", this) {
+        columns.add(new Column<>(Model.of("")) {
+            @Override
+            public Component newFilter(String componentId, Table<Account> table) {
+                return new EmptyPanel(componentId);
+            }
+
             @Override
             public void populateItem(Item<ICellPopulator<Account>> cellItem, String componentId, IModel<Account> rowModel) {
                 cellItem.add(new LinkPanel(componentId, new BootstrapAjaxLink<Account>(LinkPanel.COMPONENT_ID, Buttons.Type.Link) {
@@ -172,7 +181,9 @@ public class PayoutPanel extends Panel {
                             target.add(feedback, table);
                         }
                     }
-                }.setIconType(GlyphIconType.ok)));
+                }
+                        .setIconType(GlyphIconType.ok)
+                        .add(AttributeAppender.append("title", getString("payout")))));
             }
         });
 

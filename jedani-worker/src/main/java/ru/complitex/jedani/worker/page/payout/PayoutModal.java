@@ -14,7 +14,6 @@ import ru.complitex.jedani.worker.component.FormGroupWorker;
 import ru.complitex.jedani.worker.entity.Currency;
 import ru.complitex.jedani.worker.entity.Payout;
 import ru.complitex.jedani.worker.mapper.PeriodMapper;
-import ru.complitex.jedani.worker.service.AccountService;
 
 import javax.inject.Inject;
 
@@ -27,9 +26,6 @@ public class PayoutModal extends AbstractEditModal<Payout> {
 
     @Inject
     private PeriodMapper periodMapper;
-
-    @Inject
-    private AccountService accountService;
 
     private final IModel<Payout> model;
 
