@@ -138,6 +138,7 @@ public class SaleService implements Serializable {
 
     public List<Nomenclature> getNomenclatures(List<SaleItem> saleItems){
         return saleItems.stream()
+                .filter(si -> si.getNomenclatureId() != null)
                 .map(si -> domainService.getDomain(Nomenclature.class, si.getNomenclatureId()))
                 .collect(Collectors.toList());
     }
