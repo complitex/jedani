@@ -2,6 +2,8 @@ package ru.complitex.jedani.worker.service;
 
 import org.apache.wicket.util.lang.Objects;
 import org.mybatis.cdi.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.complitex.address.entity.City;
 import ru.complitex.address.entity.Country;
 import ru.complitex.address.entity.Region;
@@ -30,6 +32,7 @@ import java.util.UUID;
  * 26.03.2018 15:19
  */
 public class WorkerService implements Serializable {
+    private final Logger log = LoggerFactory.getLogger(WorkerService.class);
 
     @Inject
     private UserMapper userMapper;
@@ -102,7 +105,7 @@ public class WorkerService implements Serializable {
         return Attributes.capitalize(nameService.getMiddleName(worker.getNumber(Worker.MIDDLE_NAME)));
     }
 
-    public String getWorkerFio(Worker worker){
+    public String getFio(Worker worker){
         if (worker == null){
             return "";
         }
@@ -110,8 +113,16 @@ public class WorkerService implements Serializable {
         return getLastName(worker) + " " + getFirstName(worker) + " " + getMiddleName(worker);
     }
 
+    public String getFio(Long workerId){
+        return getFio(workerMapper.getWorker(workerId));
+    }
+
     public List<String> getRegions(Worker worker){
         City city = domainService.getDomain(City.class, worker.getCityId());
+
+        if (city == null) {
+            throw new RuntimeException("null city " + worker);
+        }
 
         String regionName = domainService.getTextValue(Region.ENTITY_NAME, city.getParentId(), Region.NAME);
 

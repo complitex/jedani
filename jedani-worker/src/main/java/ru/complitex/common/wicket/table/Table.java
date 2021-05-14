@@ -39,6 +39,9 @@ public class Table<T extends Serializable> extends DataTable<T, Sort> implements
 
         setOutputMarkupId(true);
 
+        getBottomToolbars().setOutputMarkupPlaceholderTag(true);
+        getBottomToolbars().setOutputMarkupId(true);
+
         this.provider = provider;
 
         ajaxIndicatorAppender = getColumns().stream().filter(c -> c instanceof DomainActionColumn)
@@ -132,7 +135,7 @@ public class Table<T extends Serializable> extends DataTable<T, Sort> implements
     }
 
     public void update(AjaxRequestTarget target){
-        target.add(this);
+        target.add(getBody(), getBottomToolbars());
     }
 
     protected AbstractToolbar newFooter(Table<T> table) {

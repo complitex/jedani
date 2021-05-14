@@ -133,7 +133,7 @@ public class InvitePage extends WebPage {
         feedback.setOutputMarkupId(true);
         add(feedback);
 
-        add(new Label("manager", workerService.getWorkerFio(manager)));
+        add(new Label("manager", workerService.getFio(manager)));
 
         Form<?> form = new Form<>("form");
         add(form);
