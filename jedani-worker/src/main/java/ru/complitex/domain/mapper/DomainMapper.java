@@ -3,6 +3,7 @@ package ru.complitex.domain.mapper;
 import org.mybatis.cdi.Transactional;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.mybatis.BaseMapper;
+import ru.complitex.common.util.Dates;
 import ru.complitex.common.util.Maps;
 import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Domain;
@@ -192,6 +193,10 @@ public class DomainMapper extends BaseMapper {
 
     public void delete(Domain<?> domain){
         domain.setStatus(Status.ARCHIVE);
+
+        if (domain.getEndDate() != null) {
+            domain.setEndDate(Dates.currentDate());
+        }
 
         sqlSession().update("updateDomain", domain);
     }

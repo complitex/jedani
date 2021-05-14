@@ -9,5 +9,21 @@
         <div wicket:id="payoutModal"></div>
     </form>
 
+    <form wicket:id="payoutEditForm">
+        <div wicket:id="payoutEditModal"></div>
+    </form>
+
+    <wicket:fragment wicket:id="payout">
+        <div class="input-group input-group-sm" >
+            <input wicket:id="amount" class="form-control"/>
+
+            <div class="input-group-btn">
+                <a wicket:id="payout" class="btn btn-default">
+                    <i class="glyphicon glyphicon-ok"></i>
+                </a>
+            </div>
+        </div>
+    </wicket:fragment>
+
     <button wicket:id="add" class="btn btn-primary"><wicket:message key="add"/></button>
 </wicket:panel>

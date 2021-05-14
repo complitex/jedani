@@ -1,0 +1,32 @@
+<wicket:panel xmlns:wicket="http://wicket.apache.org">
+    <wicket:extend>
+        <div class="form-group">
+            <label for="jid"><wicket:message key="jid"/></label>
+            <input wicket:id="jid" class="form-control" id="jid" />
+        </div>
+
+        <div class="form-group">
+            <label for="jid"><wicket:message key="fio"/></label>
+            <input wicket:id="fio" class="form-control" id="fio" />
+        </div>
+
+        <table class="table">
+            <tr>
+                <th><wicket:message key="date"/></th>
+                <th><wicket:message key="period"/></th>
+                <th><wicket:message key="amount"/></th>
+                <th></th>
+            </tr>
+            <tr wicket:id="payouts">
+                <td wicket:id="date"></td>
+                <td wicket:id="period"></td>
+                <td wicket:id="amount"></td>
+                <td>
+                    <a wicket:id="remove" class="btn btn-default btn-sm">
+                        <i class="glyphicon glyphicon-remove"></i>
+                    </a>
+                </td>
+            </tr>
+        </table>
+    </wicket:extend>
+</wicket:panel>

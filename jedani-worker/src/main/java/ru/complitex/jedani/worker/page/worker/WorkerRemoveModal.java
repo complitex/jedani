@@ -1,12 +1,12 @@
 package ru.complitex.jedani.worker.page.worker;
 
-import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxButton;
+import de.agilecoders.wicket.core.markup.html.bootstrap.behavior.CssClassNameAppender;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxLink;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.dialog.Modal;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.extensions.ajax.markup.html.AjaxIndicatorAppender;
+import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
@@ -55,7 +55,7 @@ public class WorkerRemoveModal extends Modal<Worker> {
             }
         }).setOutputMarkupId(true));
 
-        addButton(new BootstrapAjaxButton(Modal.BUTTON_MARKUP_ID, Buttons.Type.Primary) {
+        addButton(new IndicatingAjaxButton(Modal.BUTTON_MARKUP_ID, new ResourceModel("delete")) {
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
                 workerService.delete(workerModel.getObject());
@@ -75,7 +75,7 @@ public class WorkerRemoveModal extends Modal<Worker> {
 
                 appendCloseDialogJavaScript(target);
             }
-        }.setLabel(new ResourceModel("delete")).add(new AjaxIndicatorAppender()));
+        }.add(new CssClassNameAppender("btn", "btn-primary")));
 
         addButton(new BootstrapAjaxLink<Void>(Modal.BUTTON_MARKUP_ID, Buttons.Type.Default) {
             @Override

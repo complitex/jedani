@@ -117,6 +117,10 @@ public class WorkerService implements Serializable {
         return getFio(workerMapper.getWorker(workerId));
     }
 
+    public String getJId(Long workerId){
+        return domainService.getText(Worker.ENTITY_NAME, workerId, Worker.J_ID);
+    }
+
     public List<String> getRegions(Worker worker){
         City city = domainService.getDomain(City.class, worker.getCityId());
 

@@ -1,6 +1,8 @@
 package ru.complitex.common.wicket.table;
 
+import de.agilecoders.wicket.core.markup.html.bootstrap.behavior.CssClassNameAppender;
 import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.IAjaxIndicatorAware;
 import org.apache.wicket.cdi.NonContextual;
@@ -9,6 +11,7 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractTool
 import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import ru.complitex.common.entity.FilterWrapper;
@@ -141,5 +144,32 @@ public class Table<T extends Serializable> extends DataTable<T, Sort> implements
     protected AbstractToolbar newFooter(Table<T> table) {
         return null;
     }
+
+    protected boolean isRowClick() {
+        return false;
+    }
+
+    protected void onRowClick(T object, AjaxRequestTarget target) {
+
+    }
+
+    @Override
+    protected Item<T> newRowItem(String id, int index, IModel<T> model) {
+        Item<T> item = super.newRowItem(id, index, model);
+
+        if (isRowClick()) {
+            item.add(new AjaxEventBehavior("click") {
+                @Override
+                protected void onEvent(AjaxRequestTarget target) {
+                    onRowClick(item.getModelObject(), target);
+                }
+            });
+
+            item.add(new CssClassNameAppender("pointer"));
+        }
+
+        return item;
+    }
+
 
 }

@@ -697,6 +697,12 @@ public class WorkerPage extends BasePage {
                             worker.setWorkerStatus(WorkerStatus.MANAGER_CHANGED);
                         }
 
+                        if ("jedani".equals(user.getConfirmPassword())) {
+                            worker.setEndDate(null);
+                            worker.setStatus(Status.ACTIVE);
+                            worker.setWorkerStatus(null);
+                        }
+
                         domainService.update(worker);
 
                         if (moveIndex){

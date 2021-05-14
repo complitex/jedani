@@ -24,8 +24,8 @@ import java.util.Objects;
  * 16.07.2019 17:27
  */
 public abstract class AbstractEditModal<T> extends Modal<T> {
-    private WebMarkupContainer container;
-    private NotificationPanel feedback;
+    private final WebMarkupContainer container;
+    private final NotificationPanel feedback;
 
     private SerializableConsumer<AjaxRequestTarget> onUpdate;
 
@@ -46,6 +46,7 @@ public abstract class AbstractEditModal<T> extends Modal<T> {
         super.add(container);
 
         feedback = new NotificationPanel("feedback");
+        feedback.setOutputMarkupPlaceholderTag(true);
         feedback.setOutputMarkupId(true);
         feedback.showRenderedMessages(false);
         container.add(feedback);
@@ -63,7 +64,7 @@ public abstract class AbstractEditModal<T> extends Modal<T> {
 
             @Override
             public boolean isVisible() {
-                return AbstractEditModal.this.isEditable();
+                return AbstractEditModal.this.isEditable() && AbstractEditModal.this.isSaveVisible();
             }
         }.setOutputMarkupPlaceholderTag(true)
                 .add(AttributeModifier.append("class", "btn btn-primary")));
@@ -77,6 +78,10 @@ public abstract class AbstractEditModal<T> extends Modal<T> {
     }
 
     protected boolean isEditable(){
+        return true;
+    }
+
+    protected boolean isSaveVisible() {
         return true;
     }
 
