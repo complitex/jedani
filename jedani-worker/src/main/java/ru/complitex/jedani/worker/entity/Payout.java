@@ -8,7 +8,7 @@ import java.util.Date;
 /**
  * @author Ivanov Anatoliy
  */
-public class Payout extends Domain<Payout> {
+public class Payout extends Domain {
     public static final String ENTITY_NAME = "payout";
 
     public static final long WORKER = 1;

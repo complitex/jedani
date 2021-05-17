@@ -74,7 +74,7 @@ public class ExchangeRateService implements Serializable {
 
     public boolean loadValues(ExchangeRate exchangeRate){
         List<Rate> rates = domainService.getDomains(Rate.class, FilterWrapper.of(
-                new Rate().setParentId(exchangeRate.getObjectId())));
+                (Rate) new Rate().setParentId(exchangeRate.getObjectId())));
 
         Map<Date, Rate> map = new HashMap<>();
 
@@ -119,10 +119,11 @@ public class ExchangeRateService implements Serializable {
     }
 
     public BigDecimal getExchangeRate(Long countryId, Date date){
-        Rate rate = new Rate()
-                .setParentId(domainService.getNumber(Country.ENTITY_NAME, countryId, Country.EXCHANGE_RATE_EUR))
-                .setDate(date)
-                .setFilter(Rate.DATE, Attribute.FILTER_BEFORE_OR_EQUAL_DATE);
+        Rate rate = new Rate();
+
+        rate.setParentId(domainService.getNumber(Country.ENTITY_NAME, countryId, Country.EXCHANGE_RATE_EUR));
+        rate.setDate(date);
+        rate.setFilter(Rate.DATE, Attribute.FILTER_BEFORE_OR_EQUAL_DATE);
 
         List<Rate> rates = domainService.getDomains(Rate.class, FilterWrapper.of(rate)
                         .sort("date", rate.getAttribute(Rate.DATE), false)
@@ -136,9 +137,9 @@ public class ExchangeRateService implements Serializable {
     }
 
     public BigDecimal getMonthAverageExchangeRate(Long countryId, Date month){
-        List<Rate> rates = domainService.getDomains(Rate.class, FilterWrapper.of(new Rate()
-                .setParentId(domainService.getNumber(Country.ENTITY_NAME, countryId, Country.EXCHANGE_RATE_EUR))
+        List<Rate> rates = domainService.getDomains(Rate.class, FilterWrapper.of((Rate) new Rate()
                 .setDate(month)
+                .setParentId(domainService.getNumber(Country.ENTITY_NAME, countryId, Country.EXCHANGE_RATE_EUR))
                 .setFilter(Rate.DATE, Attribute.FILTER_SAME_MONTH)));
 
         if (!rates.isEmpty()){

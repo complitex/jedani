@@ -46,7 +46,7 @@ import java.util.List;
  * @author Anatoly A. Ivanov
  * 26.02.2019 18:17
  */
-public class DomainEditModal<T extends Domain<T>> extends AbstractDomainEditModal<T> {
+public class DomainEditModal<T extends Domain> extends AbstractDomainEditModal<T> {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     @Inject
@@ -67,7 +67,7 @@ public class DomainEditModal<T extends Domain<T>> extends AbstractDomainEditModa
 
     private final Long parentEntityAttributeId;
 
-    public <P extends Domain<P>> DomainEditModal(String markupId, Class<T> domainClass, Class<P> parentClass, Long parentEntityAttributeId,
+    public <P extends Domain> DomainEditModal(String markupId, Class<T> domainClass, Class<P> parentClass, Long parentEntityAttributeId,
                            List<EntityAttribute> entityAttributes, SerializableConsumer<AjaxRequestTarget> onChange) {
         super(markupId, Model.of(Domains.newObject(domainClass)));
 
@@ -141,11 +141,12 @@ public class DomainEditModal<T extends Domain<T>> extends AbstractDomainEditModa
                                     new DateTextFieldConfig().withFormat("dd.MM.yyyy").withLanguage("ru").autoClose(true));
                             break;
                         case ENTITY:
-                            EntityAttribute referenceEntityAttribute = attribute.getEntityAttribute()
-                                    .getReferenceEntityAttributes().get(0);
+                            if (!attribute.getEntityAttribute().getReferenceEntityAttributes().isEmpty()) {
+                                EntityAttribute referenceEntityAttribute = attribute.getEntityAttribute().getReferenceEntityAttributes().get(0);
 
-                            component = new DomainAutoComplete("component", referenceEntityAttribute.getDomainClass(),
-                                    referenceEntityAttribute, new PropertyModel<>(attribute, "number"));
+                                component = new DomainAutoComplete("component", referenceEntityAttribute.getDomainClass(),
+                                        referenceEntityAttribute, new PropertyModel<>(attribute, "number"));
+                            }
                             break;
                         case BOOLEAN:
                         case NUMBER:
@@ -208,7 +209,7 @@ public class DomainEditModal<T extends Domain<T>> extends AbstractDomainEditModa
         }.setLabel(new ResourceModel("cancel")));
     }
 
-    protected Component newParentComponent(String componentId, Class<? extends Domain<?>> parentClass) {
+    protected Component newParentComponent(String componentId, Class<? extends Domain> parentClass) {
         return new DomainAutoComplete(componentId, parentClass, parentEntityAttributeId,
                 new PropertyModel<>(getModel(), "parentId"));
     }
@@ -284,7 +285,7 @@ public class DomainEditModal<T extends Domain<T>> extends AbstractDomainEditModa
         close(target);
     }
 
-    protected boolean validate(Domain<T> domain){
+    protected boolean validate(Domain domain){
         return true;
     }
 }

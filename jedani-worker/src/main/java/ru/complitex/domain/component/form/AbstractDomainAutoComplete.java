@@ -30,7 +30,7 @@ import java.util.Locale;
  * @author Anatoly A. Ivanov
  * 09.01.2019 20:50
  */
-public abstract class AbstractDomainAutoComplete<T extends Domain<T>> extends FormComponentPanel<Long> {
+public abstract class AbstractDomainAutoComplete<T extends Domain> extends FormComponentPanel<Long> {
     @Inject
     private DomainService domainService;
 
@@ -175,7 +175,7 @@ public abstract class AbstractDomainAutoComplete<T extends Domain<T>> extends Fo
 
     @Override
     public void convertInput() {
-        Domain<?> domain = autoCompleteTextField.getConvertedInput();
+        Domain domain = autoCompleteTextField.getConvertedInput();
 
         setConvertedInput(domain != null ? domain.getObjectId() : null);
     }

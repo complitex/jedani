@@ -9,7 +9,7 @@ import java.util.Date;
  * @author Anatoly A. Ivanov
  * 12.12.2019 11:46 PM
  */
-public class Rate extends Domain<Rate> {
+public class Rate extends Domain {
     public static final String ENTITY_VALUE = "rate";
 
     public static final long DATE = 1;

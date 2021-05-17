@@ -6,7 +6,7 @@ import ru.complitex.domain.entity.Domain;
  * @author Anatoly A. Ivanov
  * 17.10.2018 16:01
  */
-public class Storage extends Domain<Storage> {
+public class Storage extends Domain {
     public static final String ENTITY_NAME = "storage";
 
     public static final long CITY = 1;

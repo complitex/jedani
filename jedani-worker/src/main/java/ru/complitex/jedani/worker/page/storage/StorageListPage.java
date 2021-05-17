@@ -53,7 +53,7 @@ public class StorageListPage extends DomainListPage<Storage> {
                     .put(Storage.FILTER_CURRENT_WORKER, getCurrentWorker().getObjectId())
                     .put(Storage.FILTER_CITY, getCurrentWorker().getCityId());
 
-            boolean hasStorage = storageMapper.getStoragesCount(FilterWrapper.of(new Storage()
+            boolean hasStorage = storageMapper.getStoragesCount(FilterWrapper.of((Storage) new Storage()
                     .setParentId(getCurrentWorker().getObjectId()))) == 0;
 
             setAddVisible(hasStorage);

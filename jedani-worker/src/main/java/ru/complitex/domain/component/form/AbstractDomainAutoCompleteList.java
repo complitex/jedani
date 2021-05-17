@@ -17,7 +17,7 @@ import ru.complitex.domain.entity.Value;
  * @author Anatoly A. Ivanov
  * 09.01.2019 21:30
  */
-public abstract class AbstractDomainAutoCompleteList<T extends Domain<T>> extends Panel {
+public abstract class AbstractDomainAutoCompleteList<T extends Domain> extends Panel {
     public AbstractDomainAutoCompleteList(String id, Class<T> domainClass, IModel<Attribute> model) {
         super(id, model);
 

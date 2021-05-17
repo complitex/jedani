@@ -17,7 +17,7 @@ import javax.inject.Inject;
  * @author Anatoly A. Ivanov
  * 22.12.2017 12:45
  */
-public class DomainAutoComplete<T extends Domain<T>> extends AbstractDomainAutoComplete<T> {
+public class DomainAutoComplete<T extends Domain> extends AbstractDomainAutoComplete<T> {
     @Inject
     private EntityService entityService;
 

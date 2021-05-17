@@ -4,7 +4,7 @@ import ru.complitex.domain.entity.Domain;
 
 import java.util.Date;
 
-public class Card extends Domain<Card> {
+public class Card extends Domain {
     public static final String ENTITY_NAME = "card";
 
     public static final long NUMBER = 1;

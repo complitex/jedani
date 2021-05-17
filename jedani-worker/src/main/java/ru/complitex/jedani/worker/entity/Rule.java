@@ -7,7 +7,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
-public class Rule extends Domain<Rule> {
+public class Rule extends Domain {
     public final static String ENTITY_NAME = "rule";
 
     public final static long INDEX = 1;

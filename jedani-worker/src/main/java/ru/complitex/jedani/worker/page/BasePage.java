@@ -463,7 +463,7 @@ public class BasePage extends WebPage{
             return null;
         }
 
-        List<Storage> storages = storageMapper.getStorages(FilterWrapper.of(new Storage()
+        List<Storage> storages = storageMapper.getStorages(FilterWrapper.of((Storage) new Storage()
                 .setParentId(getCurrentWorker().getObjectId())));
 
         return !storages.isEmpty() ? storages.get(0) : null;

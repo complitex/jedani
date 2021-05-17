@@ -20,7 +20,7 @@ import java.util.List;
  * @author Anatoly A. Ivanov
  * 17.11.2019 17:37
  */
-public abstract class AbstractActionsColumn<T extends Domain<T>> extends AbstractDomainColumn<T> {
+public abstract class AbstractActionsColumn<T extends Domain> extends AbstractDomainColumn<T> {
 
     private AjaxIndicatorAppender ajaxIndicatorAppender = new AjaxIndicatorAppender(){
         @Override

@@ -10,17 +10,17 @@ import java.util.Map;
  * 30.10.2018 15:03
  */
 public class Domains {
-    private static final Map<Class<?>, Domain<?>> domainMap = new HashMap<>();
+    private static final Map<Class<?>, Domain> domainMap = new HashMap<>();
 
-    public static <T extends Domain<T>> T newObject(Class<T> domainClass){
+    public static <T extends Domain> T newObject(Class<T> domainClass){
         try {
-            return domainClass.newInstance();
+            return domainClass.getConstructor().newInstance();
         } catch (Exception e) {
             throw new RuntimeException("error create new object " + e);
         }
     }
 
-    public static <T extends Domain<T>> T newObject(Class<T> domainClass, Domain<?> domain, boolean initAttributes){
+    public static <T extends Domain> T newObject(Class<T> domainClass, Domain domain, boolean initAttributes){
         if (domain == null){
             return null;
         }
@@ -37,13 +37,13 @@ public class Domains {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T extends Domain<T>> T copy(T domain){
+    public static <T extends Domain> T copy(T domain){
         if (domain == null){
             return null;
         }
 
         try {
-            T domainInstance = (T) domain.getClass().newInstance();
+            T domainInstance = (T) domain.getClass().getConstructor().newInstance();
 
             domainInstance.copy(domain, true);
 
@@ -54,7 +54,7 @@ public class Domains {
     }
 
     @SuppressWarnings("unchecked")
-    private static <T extends Domain<T>> T getDomain(Class<T> domainClass){
+    private static <T extends Domain> T getDomain(Class<T> domainClass){
         T domain = (T) domainMap.get(domainClass);
 
         if (domain == null){
@@ -66,15 +66,15 @@ public class Domains {
         return domain;
     }
 
-    public static <T extends Domain<T>> String getEntityName(Class<T> domainClass){
+    public static <T extends Domain> String getEntityName(Class<T> domainClass){
         return getDomain(domainClass).getEntityName();
     }
 
-    public static <T extends Domain<T>> boolean isUseNumberValue(Class<T> domainClass){
+    public static <T extends Domain> boolean isUseNumberValue(Class<T> domainClass){
         return getDomain(domainClass).isUseNumberValue();
     }
 
-    public static <T extends Domain<T>> boolean isUseDateAttribute(Class<T> domainClass){
+    public static <T extends Domain> boolean isUseDateAttribute(Class<T> domainClass){
         return getDomain(domainClass).isUseDateAttribute();
     }
 }

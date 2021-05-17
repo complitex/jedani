@@ -33,7 +33,7 @@ public class EntityAttribute implements Serializable{
 
     private boolean required;
 
-    private Class<? extends Domain<?>> domainClass;
+    private Class<? extends Domain> domainClass;
 
     public EntityAttribute() {
     }
@@ -43,7 +43,7 @@ public class EntityAttribute implements Serializable{
         this.entityAttributeId = entityAttributeId;
     }
 
-    public <T extends Domain<T>> EntityAttribute(Class<T> domainClass, Long entityAttributeId) {
+    public <T extends Domain> EntityAttribute(Class<T> domainClass, Long entityAttributeId) {
         this.domainClass = domainClass;
 
         this.entityName = Domains.getEntityName(domainClass);
@@ -171,15 +171,15 @@ public class EntityAttribute implements Serializable{
         return this;
     }
 
-    public <R extends  Domain<R>> EntityAttribute withReference(Class<R> referenceClass, Long referenceEntityAttributeId, StringType stringType){
+    public <R extends  Domain> EntityAttribute withReference(Class<R> referenceClass, Long referenceEntityAttributeId, StringType stringType){
         return addReferenceEntityAttribute(new EntityAttribute(referenceClass, referenceEntityAttributeId).setStringType(stringType));
     }
 
-    public <R extends  Domain<R>> EntityAttribute withReference(Class<R> referenceClass, Long referenceEntityAttributeId){
+    public <R extends  Domain> EntityAttribute withReference(Class<R> referenceClass, Long referenceEntityAttributeId){
         return addReferenceEntityAttribute(new EntityAttribute(referenceClass, referenceEntityAttributeId));
     }
 
-    public <R extends  Domain<R>> EntityAttribute withReferences(Class<R> referenceClass, Long referenceEntityAttributeId1, Long referenceEntityAttributeId2){
+    public <R extends  Domain> EntityAttribute withReferences(Class<R> referenceClass, Long referenceEntityAttributeId1, Long referenceEntityAttributeId2){
         return addReferenceEntityAttribute(new EntityAttribute(referenceClass, referenceEntityAttributeId1))
                 .addReferenceEntityAttribute(new EntityAttribute(referenceClass, referenceEntityAttributeId2));
     }
@@ -212,11 +212,11 @@ public class EntityAttribute implements Serializable{
         return this;
     }
 
-    public Class<? extends Domain<?>> getDomainClass() {
+    public Class<? extends Domain> getDomainClass() {
         return domainClass;
     }
 
-    public void setDomainClass(Class<? extends Domain<?>> domainClass) {
+    public void setDomainClass(Class<? extends Domain> domainClass) {
         this.domainClass = domainClass;
     }
 }

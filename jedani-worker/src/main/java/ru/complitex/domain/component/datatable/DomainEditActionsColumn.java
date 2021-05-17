@@ -19,7 +19,7 @@ import ru.complitex.domain.entity.Domain;
  * @author Anatoly A. Ivanov
  * 26.02.2019 20:22
  */
-public abstract class DomainEditActionsColumn<T extends Domain<T>> extends AbstractDomainColumn<T> {
+public abstract class DomainEditActionsColumn<T extends Domain> extends AbstractDomainColumn<T> {
 
     private AjaxIndicatorAppender ajaxIndicatorAppender = new AjaxIndicatorAppender(){
         @Override

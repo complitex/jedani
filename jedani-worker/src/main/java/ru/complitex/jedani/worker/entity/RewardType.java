@@ -2,7 +2,7 @@ package ru.complitex.jedani.worker.entity;
 
 import ru.complitex.domain.entity.Domain;
 
-public class RewardType extends Domain<RewardType> {
+public class RewardType extends Domain {
     public static final String ENTITY_NAME = "reward_type";
 
     public static final long MYCOOK_SALE = 4;

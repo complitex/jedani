@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
  * @author Anatoly A. Ivanov
  * 30.11.2017 15:29
  */
-public class Domain<T extends Domain<T>> implements Serializable{
+public class Domain implements Serializable{
     public final static String FILTER_ATTRIBUTES = "attributes";
     public final static String FILTER_EXCLUDE_OBJECT_IDS = "excludeObjectIds";
 
@@ -45,11 +45,11 @@ public class Domain<T extends Domain<T>> implements Serializable{
         this.entityName = entityName;
     }
 
-    public Domain(Domain<?> domain){
+    public Domain(Domain domain){
         copy(domain, false);
     }
 
-    public void copy(Domain<?> domain, boolean initAttributes){
+    public void copy(Domain domain, boolean initAttributes){
        id = domain.id;
        objectId = domain.objectId;
        parentId = domain.parentId;
@@ -70,7 +70,7 @@ public class Domain<T extends Domain<T>> implements Serializable{
         map.putAll(domain.map);
     }
 
-    public Domain(Domain<T> domain, String entityName){
+    public Domain(Domain domain, String entityName){
         this(domain);
 
         this.entityName = entityName;
@@ -130,7 +130,7 @@ public class Domain<T extends Domain<T>> implements Serializable{
         return attribute != null ? attribute.getText() : null;
     }
 
-    public Domain<T> setText(Long entityAttributeId, String text){
+    public Domain setText(Long entityAttributeId, String text){
         getOrCreateAttribute(entityAttributeId).setText(text);
 
         return this;
@@ -284,22 +284,20 @@ public class Domain<T extends Domain<T>> implements Serializable{
         return objectId;
     }
 
-    @SuppressWarnings("unchecked")
-    public T setObjectId(Long objectId) {
+    public Domain setObjectId(Long objectId) {
         this.objectId = objectId;
 
-        return (T) this;
+        return this;
     }
 
     public Long getParentId() {
         return parentId;
     }
 
-    @SuppressWarnings("unchecked")
-    public T setParentId(Long parentId) {
+    public Domain setParentId(Long parentId) {
         this.parentId = parentId;
 
-        return (T) this;
+        return this;
     }
 
     public Long getParentEntityId() {
@@ -330,7 +328,7 @@ public class Domain<T extends Domain<T>> implements Serializable{
         return status;
     }
 
-    public Domain<?> setStatus(Status status) {
+    public Domain setStatus(Status status) {
         this.status = status;
 
         return this;
@@ -368,7 +366,7 @@ public class Domain<T extends Domain<T>> implements Serializable{
         this.map = map;
     }
 
-    public Domain<?> put(String key, Object object){
+    public Domain put(String key, Object object){
         map.put(key, object);
 
         return this;
@@ -406,11 +404,10 @@ public class Domain<T extends Domain<T>> implements Serializable{
         this.useNumberValue = useNumberValue;
     }
 
-    @SuppressWarnings("unchecked")
-    public T setFilter(Long entityAttributeId, String filter){
+    public Domain setFilter(Long entityAttributeId, String filter){
         getOrCreateAttribute(entityAttributeId).setFilter(filter);
 
-        return (T) this;
+        return this;
     }
 
     @Override

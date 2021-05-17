@@ -8,7 +8,7 @@ import java.util.Date;
 /**
  * @author Ivanov Anatoliy
  */
-public class Account extends Domain<Account> {
+public class Account extends Domain {
     public static final String ENTITY_NAME = "account";
 
     public static final long WORKER = 1;

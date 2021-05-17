@@ -49,7 +49,7 @@ public class SaleService implements Serializable {
         if (sale.getObjectId() == null) {
             sale.setPeriodId(periodMapper.getActualPeriod().getObjectId());
         } else {
-            domainService.getDomains(SaleItem.class, FilterWrapper.of(new SaleItem().setParentId(sale.getObjectId())))
+            domainService.getDomains(SaleItem.class, FilterWrapper.of((SaleItem) new SaleItem().setParentId(sale.getObjectId())))
                     .forEach(si -> {
                         if (saleItems.stream().noneMatch(si0 -> Objects.equals(si.getObjectId(), si0.getObjectId()))){
                             domainService.delete(si);
@@ -124,7 +124,7 @@ public class SaleService implements Serializable {
     }
 
     public List<SaleItem> getSaleItems(Long saleId){
-        return saleItemMapper.getSaleItems(FilterWrapper.of(new SaleItem().setParentId(saleId)));
+        return saleItemMapper.getSaleItems(FilterWrapper.of((SaleItem) new SaleItem().setParentId(saleId)));
     }
 
     public BigDecimal getSaleVolume(Long sellerWorkerId, Period period){

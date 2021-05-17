@@ -5,7 +5,7 @@ import ru.complitex.domain.entity.Domain;
 import java.math.BigDecimal;
 import java.util.Date;
 
-public class Reward extends Domain<Reward> {
+public class Reward extends Domain {
     public static final String ENTITY_NAME = "reward";
 
     public static final long DATE = 1;

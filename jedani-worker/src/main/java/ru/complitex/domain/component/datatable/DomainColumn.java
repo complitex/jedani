@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
  * @author Anatoly A. Ivanov
  * 19.12.2017 7:55
  */
-public class DomainColumn<T extends Domain<T>> extends AbstractDomainColumn<T> implements Serializable {
+public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> implements Serializable {
     private static final Logger log = LoggerFactory.getLogger(DomainColumn.class);
 
     @Inject
@@ -164,7 +164,7 @@ public class DomainColumn<T extends Domain<T>> extends AbstractDomainColumn<T> i
 
                         text = list.stream()
                                 .map(id -> {
-                                    Domain<?> domain = getDomainService().getDomain(referenceEntityAttribute.getEntityName(), id);
+                                    Domain domain = getDomainService().getDomain(referenceEntityAttribute.getEntityName(), id);
 
                                     String prefix = "";
 
@@ -174,7 +174,7 @@ public class DomainColumn<T extends Domain<T>> extends AbstractDomainColumn<T> i
                                         if (prefixDomainId != null && prefixEntityAttribute.hasReferenceEntityAttributes()) {
                                             EntityAttribute ea = prefixEntityAttribute.getReferenceEntityAttributes().get(0);
 
-                                            Domain<?> prefixDomain = getDomainService().getDomain(ea.getEntityName(), prefixDomainId);
+                                            Domain prefixDomain = getDomainService().getDomain(ea.getEntityName(), prefixDomainId);
 
                                             prefix = prefixDomain.getTextValue(ea.getEntityAttributeId());
 

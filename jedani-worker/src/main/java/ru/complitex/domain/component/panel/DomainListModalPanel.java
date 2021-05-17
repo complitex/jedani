@@ -40,7 +40,7 @@ import java.util.List;
  * @author Anatoly Ivanov
  * 11.12.2020 21:10
  */
-public class DomainListModalPanel<T extends Domain<T>> extends Panel {
+public class DomainListModalPanel<T extends Domain> extends Panel {
     public static final String DOMAIN_EDIT_MODAL_ID = "edit";
 
     @Inject
@@ -63,7 +63,7 @@ public class DomainListModalPanel<T extends Domain<T>> extends Panel {
 
     private final Long parentEntityAttributeId;
 
-    public <P extends Domain<P>> DomainListModalPanel(String id, Class<T> domainClass, Class<P> parentClass, Long parentEntityAttributeId) {
+    public <P extends Domain> DomainListModalPanel(String id, Class<T> domainClass, Class<P> parentClass, Long parentEntityAttributeId) {
         super(id);
 
         this.domainClass = domainClass;
@@ -110,7 +110,7 @@ public class DomainListModalPanel<T extends Domain<T>> extends Panel {
             columns.add(new DomainParentColumn<>(Model.of(parentEntity.getValue().getText()),
                     parentEntity.getEntityAttribute(parentEntityAttributeId)) {
                 @Override
-                protected Domain<?> getDomain(Long objectId) {
+                protected Domain getDomain(Long objectId) {
                     return domainService.getDomain(parentClass, objectId);
                 }
             });
@@ -195,12 +195,12 @@ public class DomainListModalPanel<T extends Domain<T>> extends Panel {
         this(id, domainClass, null, null);
     }
 
-    public <P extends Domain<P>> AbstractDomainEditModal<T> newDomainEditModal(String componentId, Class<P> parentClass) {
+    public <P extends Domain> AbstractDomainEditModal<T> newDomainEditModal(String componentId, Class<P> parentClass) {
         return new DomainEditModal<>(componentId, domainClass, parentClass,
                 parentEntityAttributeId, getEditEntityAttributes(entityService.getEntity(Domains.getEntityName(domainClass))),
                 t -> t.add(feedback, table)){
             @Override
-            protected boolean validate(Domain<T> domain) {
+            protected boolean validate(Domain domain) {
                 return DomainListModalPanel.this.validate(domain);
             }
 
@@ -219,7 +219,7 @@ public class DomainListModalPanel<T extends Domain<T>> extends Panel {
         return null;
     }
 
-    public boolean validate(Domain<T> domain) {
+    public boolean validate(Domain domain) {
         return true;
     }
 

@@ -61,7 +61,9 @@ public class ExchangeRatePage extends BasePage {
     public ExchangeRatePage(PageParameters pageParameters) {
         ExchangeRate exchangeRate = domainService.getDomain(ExchangeRate.class, pageParameters.get("id").toLongObject());
 
-        Rate rate = new Rate().setParentId(exchangeRate.getObjectId());
+        Rate rate = new Rate();
+
+        rate.setParentId(exchangeRate.getObjectId());
 
         List<Rate> rates = domainService.getDomains(Rate.class, FilterWrapper.of(rate)
                 .sort("date", rate.getOrCreateAttribute(Rate.DATE), true));
@@ -76,7 +78,9 @@ public class ExchangeRatePage extends BasePage {
         add(new FormGroupTextField<>("name", Model.of(exchangeRate.getName())));
         add(new FormGroupTextField<>("code", Model.of(exchangeRate.getCode())));
 
-        Rate filterRate = new Rate().setParentId(exchangeRate.getObjectId());
+        Rate filterRate = new Rate();
+
+        rate.setParentId(exchangeRate.getObjectId());
 
         FilterWrapper<Rate> filterWrapper = FilterWrapper.of(filterRate)
                 .sort("date", filterRate.getOrCreateAttribute(Rate.DATE));

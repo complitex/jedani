@@ -36,7 +36,7 @@ public class FormGroupAttributeSelectList extends Panel {
         group.add(attributeSelectList = new AttributeSelectList("select", model, refEntityName,
                 refEntityAttributeId, parentListModel, upperCase){
             @Override
-            protected String getPrefix(Domain<?> domain) {
+            protected String getPrefix(Domain domain) {
                 return FormGroupAttributeSelectList.this.getPrefix(domain);
             }
 
@@ -77,7 +77,7 @@ public class FormGroupAttributeSelectList extends Panel {
 
         return this;
     }
-    protected String getPrefix(Domain<?> domain){
+    protected String getPrefix(Domain domain){
         return "";
     }
 }

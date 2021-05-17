@@ -8,7 +8,7 @@ import java.math.BigDecimal;
  * @author Anatoly A. Ivanov
  * 18.02.2019 14:35
  */
-public class SaleItem extends Domain<SaleItem> {
+public class SaleItem extends Domain {
     public static final String ENTITY_NAME = "sale_item";
 
     public static final long NOMENCLATURE = 1;
@@ -80,4 +80,3 @@ public class SaleItem extends Domain<SaleItem> {
 
 
 }
-

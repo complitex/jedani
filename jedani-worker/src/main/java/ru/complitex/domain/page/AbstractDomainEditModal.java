@@ -9,7 +9,7 @@ import ru.complitex.domain.entity.Domain;
  * @author Anatoly A. Ivanov
  * 21.04.2019 21:56
  */
-public abstract class AbstractDomainEditModal<T extends Domain<T>> extends Modal<T> {
+public abstract class AbstractDomainEditModal<T extends Domain> extends Modal<T> {
     public AbstractDomainEditModal(String markupId) {
         super(markupId);
     }

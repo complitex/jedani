@@ -62,8 +62,8 @@ public class AttributeSelect extends DropDownChoice<Long> {
         return Attributes.capitalize(domainService.getTextValue(entityName, id, entityAttributeId));
     }
 
-    protected FilterWrapper<? extends Domain<?>> getFilterWrapper(){
-        return FilterWrapper.of(new Domain<>(entityName));
+    protected FilterWrapper<? extends Domain> getFilterWrapper(){
+        return FilterWrapper.of(new Domain(entityName));
     }
 
     @Override

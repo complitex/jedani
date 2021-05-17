@@ -120,7 +120,7 @@ public class ImportService implements Serializable {
                     break;
                 }
 
-                Domain<?> region = domainMapper.getDomain("region", Region.IMPORT_ID, columns[2]);
+                Domain region = domainMapper.getDomain("region", Region.IMPORT_ID, columns[2]);
 
                 if (region == null){
                     status.errorMessage = "Ненайден район " + columns[2] + " для " + columns[1];
@@ -224,7 +224,7 @@ public class ImportService implements Serializable {
                 worker.addUpperTextValue(Worker.PHONE, columns[14]);
 
                 if (!columns[15].trim().isEmpty()) {
-                    Domain<?> city = domainMapper.getDomain("city", City.IMPORT_ID, columns[15]);
+                    Domain city = domainMapper.getDomain("city", City.IMPORT_ID, columns[15]);
 
                     worker.setCityId(city.getObjectId());
                 }
@@ -271,13 +271,13 @@ public class ImportService implements Serializable {
     }
 
     private void updateWorkerManagerId(Consumer<String> listener){
-        domainMapper.getDomains(FilterWrapper.of(new Domain<>(Worker.ENTITY_NAME).setStatus(SYNC))).forEach(w -> {
+        domainMapper.getDomains(FilterWrapper.of(new Domain(Worker.ENTITY_NAME).setStatus(SYNC))).forEach(w -> {
             String importAncestry = w.getText(Worker.IMPORT_ANCESTRY);
 
             if (importAncestry != null) {
                 String importManagerId = importAncestry.substring(importAncestry.lastIndexOf('/') + 1);
 
-                Domain<?> manager = domainMapper.getDomain(Worker.ENTITY_NAME, Worker.IMPORT_ID, importManagerId);
+                Domain manager = domainMapper.getDomain(Worker.ENTITY_NAME, Worker.IMPORT_ID, importManagerId);
 
                 w.setNumber(Worker.MANAGER, manager.getObjectId());
 

@@ -20,7 +20,7 @@ import ru.complitex.domain.entity.Domain;
  * @author Anatoly A. Ivanov
  * 20.12.2017 3:19
  */
-public class DomainActionColumn<T extends Domain<T>> extends AbstractDomainColumn<T> {
+public class DomainActionColumn<T extends Domain> extends AbstractDomainColumn<T> {
     private Class<? extends WebPage> editPageClass;
 
     private PageParameters editPageParameters;

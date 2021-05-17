@@ -8,7 +8,7 @@ import java.util.Date;
  * @author Anatoly A. Ivanov
  * 05.11.2019 8:26 PM
  */
-public class Period extends Domain<Period> {
+public class Period extends Domain {
     public static final String ENTITY_NAME = "period";
 
     public static final long OPERATING_MONTH = 1;

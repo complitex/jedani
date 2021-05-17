@@ -12,7 +12,7 @@ import java.util.Objects;
  * @author Anatoly A. Ivanov
  * 17.12.2017 3:29
  */
-public class Worker extends DomainNode<Worker> {
+public class Worker extends DomainNode {
     public static final String ENTITY_NAME = "worker";
 
     public static final long ENTITY_ID = 20;
@@ -68,7 +68,7 @@ public class Worker extends DomainNode<Worker> {
         setUseNumberValue(true);
     }
 
-    public Worker(Domain<Worker> domain) {
+    public Worker(Domain domain) {
         super(domain, ENTITY_NAME);
 
         setUseDateAttribute(true);

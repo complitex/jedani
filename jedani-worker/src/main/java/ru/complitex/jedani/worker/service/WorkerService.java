@@ -149,7 +149,7 @@ public class WorkerService implements Serializable {
         return getSimpleWorkerLabel(workerMapper.getWorker(workerId));
     }
 
-    public String getSimpleWorkerLabel(Domain<?> worker){
+    public String getSimpleWorkerLabel(Domain worker){
         return Objects.defaultIfNull(worker.getText(Worker.J_ID), "") + ", " +
                 Attributes.capitalize(nameService.getLastName(worker.getNumber(Worker.LAST_NAME)));
     }

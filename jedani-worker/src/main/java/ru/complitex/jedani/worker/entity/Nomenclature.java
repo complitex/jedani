@@ -8,7 +8,7 @@ import java.util.List;
  * @author Anatoly A. Ivanov
  * 16.10.2018 15:27
  */
-public class Nomenclature extends Domain<Nomenclature> {
+public class Nomenclature extends Domain {
     public static final String ENTITY_NAME = "nomenclature";
 
     public static final long NAME = 1;

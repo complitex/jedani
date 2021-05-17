@@ -25,7 +25,7 @@ public class DomainNodeService implements Serializable {
 
             domainNodeMapper.clearIndex(entityName, rootObjectId);
 
-            DomainNode<?> root = domainNodeMapper.getDomainNode(entityName, rootObjectId);
+            DomainNode root = domainNodeMapper.getDomainNode(entityName, rootObjectId);
 
             root.setLeft(1L);
             root.setRight(2L);
@@ -44,7 +44,7 @@ public class DomainNodeService implements Serializable {
     }
 
     @Transactional
-    public void move(DomainNode<?> parentDomainNode, DomainNode<?> domainNode){
+    public void move(DomainNode parentDomainNode, DomainNode domainNode){
         if (domainNode.getId().equals(parentDomainNode.getId()) || (domainNode.getLeft() < parentDomainNode.getLeft() &&
                 domainNode.getRight() > parentDomainNode.getRight())) {
             throw new RuntimeException("Node cannot move to it's child");
@@ -85,7 +85,7 @@ public class DomainNodeService implements Serializable {
     }
 
     @Transactional
-    public void updateIndex(DomainNode<?> parent, DomainNode<?> domainNode){
+    public void updateIndex(DomainNode parent, DomainNode domainNode){
         try {
             domainNodeMapper.lockTablesWrite(domainNode.getEntityName());
 

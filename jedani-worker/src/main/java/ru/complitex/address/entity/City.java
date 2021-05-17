@@ -6,7 +6,7 @@ import ru.complitex.domain.entity.Domain;
  * @author Anatoly A. Ivanov
  * 16.12.2017 22:51
  */
-public class City extends Domain<City>{
+public class City extends Domain{
     public static final String ENTITY_NAME = "city";
 
     public static final long ENTITY_ID = 4;

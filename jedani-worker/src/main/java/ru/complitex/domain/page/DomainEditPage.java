@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
  * @author Anatoly A. Ivanov
  * 17.12.2017 21:51
  */
-public abstract class DomainEditPage<T extends Domain<T>> extends BasePage{
+public abstract class DomainEditPage<T extends Domain> extends BasePage{
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     @Inject
@@ -216,7 +216,7 @@ public abstract class DomainEditPage<T extends Domain<T>> extends BasePage{
         //todo validate -> entity select
     }
 
-    protected DomainAutoComplete newParentComponent(String componentId, Class<? extends Domain<?>> parentClass,
+    protected DomainAutoComplete newParentComponent(String componentId, Class<? extends Domain> parentClass,
                                                     EntityAttribute parentEntityAttribute, T domain) {
         return new DomainAutoComplete(componentId, parentClass, parentEntityAttribute, new PropertyModel<>(domain, "parentId"));
     }

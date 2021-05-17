@@ -60,8 +60,8 @@ public class FormGroupAttributeSelect extends Panel {
                 }
 
                 @Override
-                protected FilterWrapper<? extends Domain<?>> getFilterWrapper() {
-                    FilterWrapper<? extends Domain<?>> filterWrapper = FormGroupAttributeSelect.this.getFilterWrapper();
+                protected FilterWrapper<? extends Domain> getFilterWrapper() {
+                    FilterWrapper<? extends Domain> filterWrapper = FormGroupAttributeSelect.this.getFilterWrapper();
 
                     return filterWrapper != null ? filterWrapper : super.getFilterWrapper();
                 }
@@ -88,7 +88,7 @@ public class FormGroupAttributeSelect extends Panel {
         add(group);
     }
 
-    public FormGroupAttributeSelect(String id, IModel<? extends Domain<?>> domainModel, Long entityAttributeId,
+    public FormGroupAttributeSelect(String id, IModel<? extends Domain> domainModel, Long entityAttributeId,
                                     String refEntityName, Long refEntityAttributeId){
         this(id, NumberAttributeModel.of(domainModel, entityAttributeId), refEntityName, refEntityAttributeId);
     }
@@ -121,7 +121,7 @@ public class FormGroupAttributeSelect extends Panel {
         }
     }
 
-    protected FilterWrapper<? extends Domain<?>> getFilterWrapper() {
+    protected FilterWrapper<? extends Domain> getFilterWrapper() {
         return null;
     }
 

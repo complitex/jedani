@@ -5,7 +5,7 @@ import ru.complitex.domain.entity.Domain;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SaleDecision extends Domain<SaleDecision> {
+public class SaleDecision extends Domain {
     public static final String ENTITY_NAME = "sale_decision";
 
     public final static long NAME = 1;

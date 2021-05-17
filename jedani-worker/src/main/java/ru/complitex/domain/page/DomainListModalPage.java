@@ -37,7 +37,7 @@ import java.util.Optional;
  * @author Anatoly A. Ivanov
  * 19.12.2017 3:40
  */
-public class DomainListModalPage<T extends Domain<T>> extends BasePage{
+public class DomainListModalPage<T extends Domain> extends BasePage{
     public static final String CURRENT_PAGE_ATTRIBUTE = "_PAGE";
 
     public static final String DOMAIN_EDIT_MODAL_ID = "edit";
@@ -64,7 +64,7 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage{
 
     private Long parentEntityAttributeId;
 
-    public <P extends Domain<P>> DomainListModalPage(Class<T> domainClass, Class<P> parentClass, Long parentEntityAttributeId) {
+    public <P extends Domain> DomainListModalPage(Class<T> domainClass, Class<P> parentClass, Long parentEntityAttributeId) {
         this.domainClass = domainClass;
         this.parentEntityAttributeId = parentEntityAttributeId;
 
@@ -182,7 +182,7 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage{
                         parentEntityAttributeId, getEditEntityAttributes(entityService.getEntity(Domains.getEntityName(domainClass))),
                         t -> t.add(feedback, table)){
                     @Override
-                    protected boolean validate(Domain<T> domain) {
+                    protected boolean validate(Domain domain) {
                         return DomainListModalPage.this.validate(domain);
                     }
 
@@ -215,7 +215,7 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage{
         return null;
     }
 
-    protected boolean validate(Domain<T> domain) {
+    protected boolean validate(Domain domain) {
         return true;
     }
 

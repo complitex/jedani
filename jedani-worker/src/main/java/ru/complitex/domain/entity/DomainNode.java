@@ -4,7 +4,7 @@ package ru.complitex.domain.entity;
  * @author Anatoly A. Ivanov
  * 04.06.2018 13:44
  */
-public class DomainNode<T extends Domain<T>> extends Domain<T>{
+public class DomainNode extends Domain{
     private Long left;
     private Long right;
     private Long level;
@@ -22,7 +22,7 @@ public class DomainNode<T extends Domain<T>> extends Domain<T>{
         setObjectId(objectId);
     }
 
-    public DomainNode(Domain<T> domain, String entityName) {
+    public DomainNode(Domain domain, String entityName) {
         super(domain, entityName);
     }
 

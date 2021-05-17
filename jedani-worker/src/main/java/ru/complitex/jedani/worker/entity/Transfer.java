@@ -6,7 +6,7 @@ import ru.complitex.domain.entity.Domain;
  * @author Anatoly A. Ivanov
  * 05.11.2018 15:41
  */
-public class Transfer extends Domain<Transfer> {
+public class Transfer extends Domain {
     public static final String ENTITY_NAME = "transfer";
 
     public static final String FILTER_STORAGE_TO_ID = "storageToId";

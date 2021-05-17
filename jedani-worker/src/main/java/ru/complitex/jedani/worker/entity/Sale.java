@@ -9,7 +9,7 @@ import java.util.Date;
  * @author Anatoly A. Ivanov
  * 18.02.2019 14:19
  */
-public class Sale extends Domain<Sale> {
+public class Sale extends Domain {
     public static final String ENTITY_NAME = "sale";
 
     public static final long SELLER_WORKER = 1;

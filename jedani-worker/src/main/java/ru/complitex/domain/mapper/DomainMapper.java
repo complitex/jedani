@@ -27,7 +27,7 @@ public class DomainMapper extends BaseMapper {
     private static AtomicLong tmpId = new AtomicLong(-1);
 
     @Transactional
-    public void insertDomain(Domain<?> domain){
+    public void insertDomain(Domain domain){
         domain.setId(null);
 
         if (domain.getObjectId() == null){
@@ -62,10 +62,10 @@ public class DomainMapper extends BaseMapper {
     }
 
     @Transactional
-    public void updateDomain(Domain<?> domain){
+    public void updateDomain(Domain domain){
         Date date = new Date();
 
-        Domain<?> dbDomain = getDomain(domain.getEntityName(), domain.getObjectId(),
+        Domain dbDomain = getDomain(domain.getEntityName(), domain.getObjectId(),
                 domain.isUseDateAttribute(), domain.isUseNumberValue());
 
         domain.getAttributes().forEach(a -> {
@@ -126,19 +126,19 @@ public class DomainMapper extends BaseMapper {
     }
 
     public Boolean hasDomain(String entityName, Long entityAttributeId, String text){
-        Domain<?> domain = new Domain<>();
+        Domain domain = new Domain();
         domain.setEntityName(entityName);
         domain.setText(entityAttributeId, text);
 
         return sqlSession().selectOne("hasDomain", domain);
     }
 
-    public Domain<?> getDomain(String entityName, Long objectId, boolean useDateAttribute, boolean useNumberValue){
+    public Domain getDomain(String entityName, Long objectId, boolean useDateAttribute, boolean useNumberValue){
         if (objectId == null){
             return null;
         }
 
-        Domain<?> domain = new Domain<>();
+        Domain domain = new Domain();
         domain.setEntityName(entityName);
         domain.setObjectId(objectId);
         domain.setUseDateAttribute(useDateAttribute);
@@ -147,51 +147,51 @@ public class DomainMapper extends BaseMapper {
         return getDomain(domain);
     }
 
-    public Domain<?> getDomain(String entityName, Long objectId){
+    public Domain getDomain(String entityName, Long objectId){
         return getDomain(entityName, objectId, false, false);
     }
 
-    public Domain<?> getDomainByParentId(String entityName, Long parentId){
-        Domain<?> domain = new Domain<>();
+    public Domain getDomainByParentId(String entityName, Long parentId){
+        Domain domain = new Domain();
         domain.setEntityName(entityName);
         domain.setParentId(parentId);
 
         return getDomain(domain);
     }
 
-    public Domain<?> getDomain(String entityName, Long entityAttributeId, String text){
-        Domain<?> domain = new Domain<>();
+    public Domain getDomain(String entityName, Long entityAttributeId, String text){
+        Domain domain = new Domain();
         domain.setEntityName(entityName);
         domain.setText(entityAttributeId, text);
 
         return getDomain(domain);
     }
 
-    public Domain<?> getDomain(String entityName, Long entityAttributeId, Long number){
-        Domain<?> domain = new Domain<>();
+    public Domain getDomain(String entityName, Long entityAttributeId, Long number){
+        Domain domain = new Domain();
         domain.setEntityName(entityName);
         domain.setNumber(entityAttributeId, number);
 
         return getDomain(domain);
     }
 
-    private Domain<?> getDomain(Domain<?> domain){
+    private Domain getDomain(Domain domain){
         return sqlSession().selectOne("selectDomain", domain);
     }
 
-    public List<Domain<?>> getDomains(FilterWrapper<? extends Domain<?>> filterWrapper){
+    public List<Domain> getDomains(FilterWrapper<? extends Domain> filterWrapper){
         return sqlSession().selectList("selectDomains", filterWrapper);
     }
 
-    public Long getDomainsCount(FilterWrapper<? extends Domain<?>> filterWrapper){
+    public Long getDomainsCount(FilterWrapper<? extends Domain> filterWrapper){
         return sqlSession().selectOne("selectDomainsCount", filterWrapper);
     }
 
-    public Long getDomainObjectId(Domain<?> domain){
+    public Long getDomainObjectId(Domain domain){
         return sqlSession().selectOne("selectDomainObjectId", domain);
     }
 
-    public void delete(Domain<?> domain){
+    public void delete(Domain domain){
         domain.setStatus(Status.ARCHIVE);
 
         if (domain.getEndDate() != null) {
@@ -205,7 +205,7 @@ public class DomainMapper extends BaseMapper {
         return sqlSession().selectOne("selectDomainParentId", Maps.of("entityName", entityName, "objectId", objectId));
     }
 
-    public List<Long> getDomainIds(FilterWrapper<? extends Domain<?>> filterWrapper) {
+    public List<Long> getDomainIds(FilterWrapper<? extends Domain> filterWrapper) {
         return sqlSession().selectList("selectDomainIds", filterWrapper);
     }
 }

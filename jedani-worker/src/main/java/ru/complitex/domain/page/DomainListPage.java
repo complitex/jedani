@@ -41,7 +41,7 @@ import java.util.Optional;
  * @author Anatoly A. Ivanov
  * 19.12.2017 3:40
  */
-public class DomainListPage<T extends Domain<T>> extends BasePage{
+public class DomainListPage<T extends Domain> extends BasePage{
     public static final String CURRENT_PAGE_ATTRIBUTE = "_PAGE";
 
     @Inject
@@ -118,7 +118,7 @@ public class DomainListPage<T extends Domain<T>> extends BasePage{
             columns.add(new DomainParentColumn<T>(Model.of(parentEntity.getValue().getText()),
                     parentEntity.getEntityAttribute(parentEntityAttributeId)) {
                 @Override
-                protected Domain<?> getDomain(Long objectId) {
+                protected Domain getDomain(Long objectId) {
                     return domainService.getDomain(parentEntityName, objectId);
                 }
             });

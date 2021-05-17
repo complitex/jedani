@@ -15,7 +15,7 @@ import javax.inject.Inject;
  * @author Anatoly A. Ivanov
  * 22.12.2017 8:03
  */
-public class FormGroupDomainAutoComplete<T extends Domain<T>> extends Panel{
+public class FormGroupDomainAutoComplete<T extends Domain> extends Panel{
     @Inject
     private EntityService entityService;
 

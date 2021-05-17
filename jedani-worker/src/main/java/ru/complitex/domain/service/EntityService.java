@@ -25,7 +25,7 @@ public class EntityService implements Serializable {
         return entityMapper.getEntity(entityName);
     }
 
-    public <T extends Domain<T>> Entity getEntity(Class<T> domainClass){
+    public <T extends Domain> Entity getEntity(Class<T> domainClass){
         return entityMapper.getEntity(Domains.getEntityName(domainClass));
     }
 

@@ -1,7 +1,10 @@
 package ru.complitex.domain.component.datatable;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.model.*;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
+import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.model.StringResourceModel;
 import ru.complitex.common.entity.Sort;
 import ru.complitex.common.wicket.table.Column;
 import ru.complitex.common.wicket.table.Table;
@@ -13,7 +16,7 @@ import ru.complitex.domain.entity.EntityAttribute;
  * @author Anatoly A. Ivanov
  * 20.12.2017 3:20
  */
-public abstract class AbstractDomainColumn<T extends Domain<T>> extends Column<T> {
+public abstract class AbstractDomainColumn<T extends Domain> extends Column<T> {
 
     private String columnKey;
 

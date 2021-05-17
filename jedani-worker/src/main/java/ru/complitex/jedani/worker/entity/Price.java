@@ -8,7 +8,7 @@ import java.math.BigDecimal;
  * @author Anatoly A. Ivanov
  * 16.04.2019 20:24
  */
-public class Price extends Domain<Price> {
+public class Price extends Domain {
     public static final String ENTITY_NAME = "price";
 
     public static final long DATE_BEGIN = 1;

@@ -6,7 +6,7 @@ import ru.complitex.domain.entity.Domain;
  * @author Anatoly A. Ivanov
  * 20.11.2019 1:31 PM
  */
-public class RewardParameter extends Domain<RewardParameter> {
+public class RewardParameter extends Domain {
     public static final String ENTITY_NAME = "reward_parameter";
 
     public static final long DATE_BEGIN = 1;

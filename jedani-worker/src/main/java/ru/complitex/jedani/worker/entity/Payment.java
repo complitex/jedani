@@ -5,7 +5,7 @@ import ru.complitex.domain.entity.Domain;
 import java.math.BigDecimal;
 import java.util.Date;
 
-public class Payment extends Domain<Payment> {
+public class Payment extends Domain {
     public final static String ENTITY_NAME = "payment";
 
     public final static long WORKER = 1;
