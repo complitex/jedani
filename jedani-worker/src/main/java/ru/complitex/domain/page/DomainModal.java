@@ -46,7 +46,7 @@ import java.util.List;
  * @author Anatoly A. Ivanov
  * 26.02.2019 18:17
  */
-public class DomainEditModal<T extends Domain> extends AbstractDomainEditModal<T> {
+public class DomainModal<T extends Domain> extends AbstractModal<T> {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     @Inject
@@ -67,8 +67,8 @@ public class DomainEditModal<T extends Domain> extends AbstractDomainEditModal<T
 
     private final Long parentEntityAttributeId;
 
-    public <P extends Domain> DomainEditModal(String markupId, Class<T> domainClass, Class<P> parentClass, Long parentEntityAttributeId,
-                           List<EntityAttribute> entityAttributes, SerializableConsumer<AjaxRequestTarget> onChange) {
+    public <P extends Domain> DomainModal(String markupId, Class<T> domainClass, Class<P> parentClass, Long parentEntityAttributeId,
+                                          List<EntityAttribute> entityAttributes, SerializableConsumer<AjaxRequestTarget> onChange) {
         super(markupId, Model.of(Domains.newObject(domainClass)));
 
         this.parentEntityAttributeId = parentEntityAttributeId;
@@ -108,7 +108,7 @@ public class DomainEditModal<T extends Domain> extends AbstractDomainEditModal<T
             @Override
             protected void populateItem(ListItem<EntityAttribute> item) {
                 EntityAttribute entityAttribute = item.getModelObject();
-                T domain = DomainEditModal.this.getModelObject();
+                T domain = DomainModal.this.getModelObject();
 
                 Attribute attribute = domain.getOrCreateAttribute(entityAttribute.getEntityAttributeId());
                 attribute.setEntityAttribute(entityAttribute);
@@ -192,7 +192,7 @@ public class DomainEditModal<T extends Domain> extends AbstractDomainEditModal<T
         addButton(new BootstrapAjaxButton(Modal.BUTTON_MARKUP_ID, Buttons.Type.Primary) {
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
-                DomainEditModal.this.save(target);
+                DomainModal.this.save(target);
             }
 
             @Override
@@ -204,7 +204,7 @@ public class DomainEditModal<T extends Domain> extends AbstractDomainEditModal<T
         addButton(new BootstrapAjaxLink<Void>(Modal.BUTTON_MARKUP_ID, Buttons.Type.Default) {
             @Override
             public void onClick(AjaxRequestTarget target) {
-                DomainEditModal.this.cancel(target);
+                DomainModal.this.cancel(target);
             }
         }.setLabel(new ResourceModel("cancel")));
     }
@@ -220,6 +220,11 @@ public class DomainEditModal<T extends Domain> extends AbstractDomainEditModal<T
 
     protected Component newComponent(String componentId, Attribute attribute){
         return null;
+    }
+
+    @Override
+    public void create(T domain, AjaxRequestTarget target){
+       edit(domain, target);
     }
 
     @Override
@@ -247,7 +252,7 @@ public class DomainEditModal<T extends Domain> extends AbstractDomainEditModal<T
         try {
             T domain = getModelObject();
 
-            if (!DomainEditModal.this.validate(domain)){
+            if (!DomainModal.this.validate(domain)){
                 target.add(feedback);
 
                 return;

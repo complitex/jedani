@@ -35,7 +35,7 @@ import ru.complitex.domain.model.DateAttributeModel;
 import ru.complitex.domain.model.DecimalAttributeModel;
 import ru.complitex.domain.model.DomainParentModel;
 import ru.complitex.domain.model.NumberAttributeModel;
-import ru.complitex.domain.page.AbstractDomainEditModal;
+import ru.complitex.domain.page.AbstractModal;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
 import ru.complitex.jedani.worker.component.NomenclatureAutoComplete;
@@ -53,7 +53,7 @@ import java.util.List;
  * @author Anatoly A. Ivanov
  * 21.04.2019 22:02
  */
-public class PriceModal extends AbstractDomainEditModal<Price> {
+public class PriceModal extends AbstractModal<Price> {
     @Inject
     private DomainService domainService;
 
@@ -287,6 +287,11 @@ public class PriceModal extends AbstractDomainEditModal<Price> {
         if (onChange != null){
             onChange.accept(target);
         }
+    }
+
+    @Override
+    public void create(Price price, AjaxRequestTarget target) {
+        edit(price, target);
     }
 
     @Override

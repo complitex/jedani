@@ -3,7 +3,7 @@ package ru.complitex.jedani.worker.page.price;
 import ru.complitex.address.entity.Country;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
-import ru.complitex.domain.page.AbstractDomainEditModal;
+import ru.complitex.domain.page.AbstractModal;
 import ru.complitex.domain.page.DomainListModalPage;
 import ru.complitex.jedani.worker.entity.Nomenclature;
 import ru.complitex.jedani.worker.entity.Price;
@@ -32,7 +32,7 @@ public class PriceListPage extends DomainListModalPage<Price> {
     }
 
     @Override
-    protected AbstractDomainEditModal<Price> newDomainEditModal(String componentId) {
+    protected AbstractModal<Price> newDomainModal(String componentId) {
         return new PriceModal(componentId, getCurrentUser().getId(), t -> t.add(getContainer()));
     }
 }

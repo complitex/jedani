@@ -25,8 +25,8 @@ import ru.complitex.common.wicket.table.Provider;
 import ru.complitex.common.wicket.table.Table;
 import ru.complitex.domain.component.datatable.*;
 import ru.complitex.domain.entity.*;
-import ru.complitex.domain.page.AbstractDomainEditModal;
-import ru.complitex.domain.page.DomainEditModal;
+import ru.complitex.domain.page.AbstractModal;
+import ru.complitex.domain.page.DomainModal;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
 import ru.complitex.domain.util.Domains;
@@ -59,7 +59,7 @@ public class DomainListModalPanel<T extends Domain> extends Panel {
 
     private final Table<T> table;
 
-    private AbstractDomainEditModal<T> domainEditModal;
+    private AbstractModal<T> domainEditModal;
 
     private final Long parentEntityAttributeId;
 
@@ -195,8 +195,8 @@ public class DomainListModalPanel<T extends Domain> extends Panel {
         this(id, domainClass, null, null);
     }
 
-    public <P extends Domain> AbstractDomainEditModal<T> newDomainEditModal(String componentId, Class<P> parentClass) {
-        return new DomainEditModal<>(componentId, domainClass, parentClass,
+    public <P extends Domain> AbstractModal<T> newDomainEditModal(String componentId, Class<P> parentClass) {
+        return new DomainModal<>(componentId, domainClass, parentClass,
                 parentEntityAttributeId, getEditEntityAttributes(entityService.getEntity(Domains.getEntityName(domainClass))),
                 t -> t.add(feedback, table)){
             @Override

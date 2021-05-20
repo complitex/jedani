@@ -48,25 +48,22 @@ public class DomainListModalPage<T extends Domain> extends BasePage{
     @Inject
     private DomainService domainService;
 
-    private Class<T> domainClass;
+    private final Class<T> domainClass;
 
-    private FilterWrapper<T> filterWrapper;
+    private final FilterWrapper<T> filterWrapper;
 
-    private WebMarkupContainer container;
+    private final WebMarkupContainer container;
 
-    private FeedbackPanel feedback;
+    private final FeedbackPanel feedback;
 
-    private Table<T> table;
+    private final Table<T> table;
 
-    private Label titleLabel;
+    private final Label titleLabel;
 
-    private AbstractDomainEditModal<T> domainEditModal;
-
-    private Long parentEntityAttributeId;
+    private AbstractModal<T> domainModal;
 
     public <P extends Domain> DomainListModalPage(Class<T> domainClass, Class<P> parentClass, Long parentEntityAttributeId) {
         this.domainClass = domainClass;
-        this.parentEntityAttributeId = parentEntityAttributeId;
 
         T domainObject = Domains.newObject(domainClass);
 
@@ -175,10 +172,10 @@ public class DomainListModalPage<T extends Domain> extends BasePage{
         container.add(editForm);
 
         if (isEditEnabled() && isDomainModalEditEnabled()) {
-            domainEditModal = newDomainEditModal(DOMAIN_EDIT_MODAL_ID);
+            domainModal = newDomainModal(DOMAIN_EDIT_MODAL_ID);
 
-            if (domainEditModal == null) {
-                domainEditModal = new DomainEditModal<T>(DOMAIN_EDIT_MODAL_ID, domainClass, parentClass,
+            if (domainModal == null) {
+                domainModal = new DomainModal<T>(DOMAIN_EDIT_MODAL_ID, domainClass, parentClass,
                         parentEntityAttributeId, getEditEntityAttributes(entityService.getEntity(Domains.getEntityName(domainClass))),
                         t -> t.add(feedback, table)){
                     @Override
@@ -193,7 +190,7 @@ public class DomainListModalPage<T extends Domain> extends BasePage{
                 };
             }
 
-            editForm.add(domainEditModal);
+            editForm.add(domainModal);
         }else{
             editForm.add(new EmptyPanel("edit"));
         }
@@ -207,7 +204,7 @@ public class DomainListModalPage<T extends Domain> extends BasePage{
         this(domainInstance, null, null);
     }
 
-    protected AbstractDomainEditModal<T> newDomainEditModal(String componentId) {
+    protected AbstractModal<T> newDomainModal(String componentId) {
         return null;
     }
 
@@ -220,7 +217,7 @@ public class DomainListModalPage<T extends Domain> extends BasePage{
     }
 
     protected void onCreate(AjaxRequestTarget target) {
-        domainEditModal.edit(newDomain(), target);
+        domainModal.create(newDomain(), target);
     }
 
     protected T newDomain(){
@@ -232,7 +229,7 @@ public class DomainListModalPage<T extends Domain> extends BasePage{
     }
 
     protected void onEdit(T object, AjaxRequestTarget target) {
-        domainEditModal.edit(object, target);
+        domainModal.edit(object, target);
     }
 
     protected void onRowItem(Item<T> item){
