@@ -249,4 +249,12 @@ public class WorkerService implements Serializable {
 
         return domainService.getParentId(City.ENTITY_NAME, cityId);
     }
+
+    public Long getCountryId(Long workerId) {
+        Long cityId = domainService.getNumber(Worker.ENTITY_NAME, workerId, Worker.CITY);
+
+        Long regionId = domainService.getParentId(City.ENTITY_NAME, cityId);
+
+        return domainService.getParentId(Region.ENTITY_NAME, regionId);
+    }
 }

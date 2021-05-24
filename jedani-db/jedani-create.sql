@@ -2663,7 +2663,19 @@ CALL createEntityAttributeWithReference(46, 3, 11, 42, 'Операционный
 CALL createEntityAttributeWithReference(46, 4, 11, 30, 'Локальная валюта', 'Локальна валюта');
 CALL createEntityAttribute(46,5, 4, 'Сумма', 'Сумма');
 
+-- ---------------------------
+-- Ratio
+-- ---------------------------
+
+CALL createDomainTables('ratio', 'Коэффициенты');
+
+CALL createEntity(47, 'ratio', 'Коэффициент', 'Коефіцієнт');
+CALL createEntityAttribute(47, 1, 6, 'Дата начала', 'Дата початку');
+CALL createEntityAttribute(47, 2, 6, 'Дата окончания', 'Дата закінчення');
+CALL createEntityAttributeWithReference(47, 3, 11, 1, 'Страна', 'Країна');
+CALL createEntityAttribute(47, 4, 4, 'Значение', 'Значення');
+
 
 -- Version
 
-INSERT INTO `update` (`version`) VALUE ('2.0.3');
+INSERT INTO `update` (`version`) VALUE ('2.0.5');

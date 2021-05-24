@@ -217,7 +217,7 @@ public class DomainListModalPage<T extends Domain> extends BasePage{
     }
 
     protected void onCreate(AjaxRequestTarget target) {
-        domainModal.create(newDomain(), target);
+        domainModal.create(target);
     }
 
     protected T newDomain(){

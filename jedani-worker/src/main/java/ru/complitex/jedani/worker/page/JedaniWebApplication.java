@@ -58,6 +58,7 @@ import ru.complitex.jedani.worker.page.payout.PayoutListPage;
 import ru.complitex.jedani.worker.page.period.PeriodListPage;
 import ru.complitex.jedani.worker.page.price.PriceListPage;
 import ru.complitex.jedani.worker.page.promotion.PromotionListPage;
+import ru.complitex.jedani.worker.page.ratio.RatioListPage;
 import ru.complitex.jedani.worker.page.resource.*;
 import ru.complitex.jedani.worker.page.reward.RewardListPage;
 import ru.complitex.jedani.worker.page.reward.RewardParameterListPage;
@@ -158,6 +159,7 @@ public class JedaniWebApplication extends WebApplication{
         mountPage("invite/${key}", InvitePage.class);
         mountPage("accounts", AccountListPage.class);
         mountPage("payouts", PayoutListPage.class);
+        mountPage("ratios", RatioListPage.class);
 
         mountPage("error", InternalErrorPage.class);
         mountPage("access-denied", AccessDeniedPage.class);

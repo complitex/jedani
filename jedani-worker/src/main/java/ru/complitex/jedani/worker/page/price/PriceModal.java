@@ -290,8 +290,8 @@ public class PriceModal extends AbstractModal<Price> {
     }
 
     @Override
-    public void create(Price price, AjaxRequestTarget target) {
-        edit(price, target);
+    public void create(AjaxRequestTarget target) {
+        edit(new Price(),  target);
     }
 
     @Override

@@ -285,11 +285,14 @@
                                     and (#{a.date} >= a${i}.date)
                                 </when>
 
+                                <when test="a.filter == 'after_or_equal_or_null_date'">
+                                    and (a${i}.date  >= #{a.date} or a${i}.date is null)
+                                </when>
+
                                 <otherwise>
                                     and (a${i}.date = #{a.date})
                                 </otherwise>
                             </choose>
-
                         </if>
                     </otherwise>
                 </choose>

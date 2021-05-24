@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.util.Dates;
+import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.exception.RewardException;
@@ -340,7 +341,21 @@ public class RewardService implements Serializable {
                     reward.setPrice(saleItem.getPrice());
                 }
 
-                reward.setDiscount(reward.getPrice().divide(reward.getBasePrice(), 7, HALF_EVEN));
+                BigDecimal ratio = ZERO;
+
+                List<Ratio> ratios = domainService.getDomains(Ratio.class, FilterWrapper.of((Ratio) new Ratio()
+                        .setCountryId(workerService.getCountryId(reward.getWorkerId()))
+                        .setBegin(reward.getMonth())
+                        .setEnd(reward.getMonth())
+                        .setFilter(Ratio.BEGIN, Attribute.FILTER_BEFORE_OR_EQUAL_DATE)
+                        .setFilter(Ratio.END, Attribute.FILTER_AFTER_OR_EQUAL_OR_NULL_DATE)));
+
+                if (!ratios.isEmpty()) {
+                    ratio = ratios.get(0).getValue();
+                }
+
+                reward.setDiscount(reward.getPrice().multiply(BigDecimal.valueOf(100).subtract(ratio))
+                        .divide(reward.getBasePrice().multiply(BigDecimal.valueOf(100)), 7, HALF_EVEN));
             }
         }
 

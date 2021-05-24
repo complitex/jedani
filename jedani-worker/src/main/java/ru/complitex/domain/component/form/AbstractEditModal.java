@@ -15,6 +15,7 @@ import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.danekja.java.util.function.serializable.SerializableConsumer;
+import ru.complitex.domain.page.AbstractModal;
 import ru.complitex.jedani.worker.page.BasePage;
 
 import java.util.Objects;
@@ -23,7 +24,7 @@ import java.util.Objects;
  * @author Anatoly A. Ivanov
  * 16.07.2019 17:27
  */
-public abstract class AbstractEditModal<T> extends Modal<T> {
+public abstract class AbstractEditModal<T> extends AbstractModal<T> {
     private final WebMarkupContainer container;
     private final NotificationPanel feedback;
 
@@ -126,7 +127,7 @@ public abstract class AbstractEditModal<T> extends Modal<T> {
     }
 
     @SuppressWarnings("unchecked")
-    public <M extends AbstractEditModal> M onUpdate(SerializableConsumer<AjaxRequestTarget> onUpdate) {
+    public <M extends AbstractEditModal<T>> M onUpdate(SerializableConsumer<AjaxRequestTarget> onUpdate) {
         this.onUpdate = onUpdate;
 
         return (M) this;

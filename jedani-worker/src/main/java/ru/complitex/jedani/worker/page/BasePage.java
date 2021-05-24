@@ -51,6 +51,7 @@ import ru.complitex.jedani.worker.page.payout.PayoutListPage;
 import ru.complitex.jedani.worker.page.period.PeriodListPage;
 import ru.complitex.jedani.worker.page.price.PriceListPage;
 import ru.complitex.jedani.worker.page.promotion.PromotionListPage;
+import ru.complitex.jedani.worker.page.ratio.RatioListPage;
 import ru.complitex.jedani.worker.page.resource.*;
 import ru.complitex.jedani.worker.page.reward.RewardListPage;
 import ru.complitex.jedani.worker.page.reward.RewardParameterListPage;
@@ -298,12 +299,13 @@ public class BasePage extends WebPage{
         sales.add(new WebMarkupContainer("list")
                 .add(new MenuLink("prices", PriceListPage.class).setVisible(isAdmin() || isStructureAdmin()))
                 .add(new MenuLink("promotions", PromotionListPage.class).setVisible(isAdmin() || isPromotionAdmin()))
-                .add(new MenuLink("saleDecisions", SaleDecisionListPage.class).setVisible(isAdmin() || isStructureAdmin()))
+                .add(new MenuLink("decisions", SaleDecisionListPage.class).setVisible(isAdmin() || isStructureAdmin()))
                 .add(new MenuLink("sales", SaleListPage.class).setVisible(isAdmin() || isStructureAdmin() || isSaleAdmin() || isParticipant()))
                 .add(new MenuLink("payments", PaymentListPage.class).setVisible(isAdmin() || isStructureAdmin() || isPaymentAdmin() || isParticipant()))
                 .add(new MenuLink("periods", PeriodListPage.class).setVisible(isAdmin() || isPaymentAdmin()))
                 .add(new MenuLink("rewards", RewardListPage.class).setVisible(isAdmin() || isStructureAdmin()))
-                .add(new MenuLink("rewardParameters", RewardParameterListPage.class).setVisible(isAdmin()))
+                .add(new MenuLink("parameters", RewardParameterListPage.class).setVisible(isAdmin()))
+                .add(new MenuLink("ratios", RatioListPage.class).setVisible(isAdmin()))
                 .add(new MenuLink("accounts", AccountListPage.class).setVisible(isAdmin() || isStructureAdmin()))
                 .add(new MenuLink("payouts", PayoutListPage.class).setVisible(isAdmin() || isPayoutAdmin()))
                 .add(newBehaviorList()));

@@ -68,4 +68,9 @@ public class AccountListPage extends DomainListModalPage<Account> {
     protected boolean isCreateEnabled() {
         return false;
     }
+
+    @Override
+    protected boolean isEditEnabled() {
+        return false;
+    }
 }

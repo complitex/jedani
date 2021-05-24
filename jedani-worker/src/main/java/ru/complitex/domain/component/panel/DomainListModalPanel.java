@@ -224,11 +224,7 @@ public class DomainListModalPanel<T extends Domain> extends Panel {
     }
 
     protected void onCreate(AjaxRequestTarget target) {
-        domainEditModal.edit(newDomain(), target);
-    }
-
-    public T newDomain(){
-        return Domains.newObject(domainClass);
+        domainEditModal.create(target);
     }
 
     protected AbstractDomainColumn<T> newDomainColumn(EntityAttribute a) {

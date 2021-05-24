@@ -67,9 +67,13 @@ public class DomainModal<T extends Domain> extends AbstractModal<T> {
 
     private final Long parentEntityAttributeId;
 
+    private Class<T> domainClass;
+
     public <P extends Domain> DomainModal(String markupId, Class<T> domainClass, Class<P> parentClass, Long parentEntityAttributeId,
                                           List<EntityAttribute> entityAttributes, SerializableConsumer<AjaxRequestTarget> onChange) {
         super(markupId, Model.of(Domains.newObject(domainClass)));
+
+        this.domainClass = domainClass;
 
         this.parentEntityAttributeId = parentEntityAttributeId;
 
@@ -141,7 +145,7 @@ public class DomainModal<T extends Domain> extends AbstractModal<T> {
                                     new DateTextFieldConfig().withFormat("dd.MM.yyyy").withLanguage("ru").autoClose(true));
                             break;
                         case ENTITY:
-                            if (!attribute.getEntityAttribute().getReferenceEntityAttributes().isEmpty()) {
+                            if (attribute.getEntityAttribute().getReferenceEntityAttributes() != null) {
                                 EntityAttribute referenceEntityAttribute = attribute.getEntityAttribute().getReferenceEntityAttributes().get(0);
 
                                 component = new DomainAutoComplete("component", referenceEntityAttribute.getDomainClass(),
@@ -222,9 +226,13 @@ public class DomainModal<T extends Domain> extends AbstractModal<T> {
         return null;
     }
 
+    protected T newDomain(){
+        return Domains.newObject(domainClass);
+    }
+
     @Override
-    public void create(T domain, AjaxRequestTarget target){
-       edit(domain, target);
+    public void create(AjaxRequestTarget target){
+       edit(newDomain(), target);
     }
 
     @Override

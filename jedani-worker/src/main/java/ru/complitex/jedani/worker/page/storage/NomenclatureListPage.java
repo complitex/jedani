@@ -68,13 +68,4 @@ public class NomenclatureListPage extends DomainListModalPage<Nomenclature> {
 
         return null;
     }
-
-    @Override
-    protected Nomenclature newDomain() {
-        Nomenclature nomenclature = new Nomenclature();
-
-        nomenclature.setType(NomenclatureType.BASE_ASSORTMENT);
-
-        return nomenclature;
-    }
 }
