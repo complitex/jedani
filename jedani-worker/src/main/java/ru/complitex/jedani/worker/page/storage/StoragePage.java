@@ -367,7 +367,7 @@ public class StoragePage extends BasePage {
 
                     Product product = rowModel.getObject();
 
-                    if (edit && product.getNumber(Product.RECEIVING_QUANTITY, 0L) > 0){
+                    if (edit && product.getNumber(Product.GIFT_RECEIVING_QUANTITY, 0L) > 0){
                         cellItem.add(new CssClassNameAppender("pointer"));
 
                         cellItem.add(new AjaxEventBehavior("click") {

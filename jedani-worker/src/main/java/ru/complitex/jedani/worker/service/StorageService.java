@@ -131,6 +131,7 @@ public class StorageService implements Serializable {
     @Transactional
     public void relocate(Product product, Transfer transfer) {
         Transfer t = newTransfer(product, transfer, TransferType.RELOCATION);
+
         t.setWorkerIdTo(transfer.getWorkerIdTo());
 
         switch (t.getRecipientType().intValue()){
@@ -166,44 +167,52 @@ public class StorageService implements Serializable {
         domainService.save(t);
 
 
-        Product pFrom = domainService.getDomain(Product.class, product.getObjectId(), true);
-        Product pTo;
+        Product from = domainService.getDomain(Product.class, product.getObjectId(), true);
+        Product to;
 
         Long storageId = t.getStorageIdTo();
 
         if (!isProductExist(storageId, t.getNomenclatureId())){
-            pTo = new Product();
+            to = new Product();
 
-            pTo.setParentEntityId(entityService.getEntity(Storage.ENTITY_NAME).getId());
-            pTo.setParentId(storageId);
-            pTo.setNomenclatureId(t.getNomenclatureId());
-            pTo.setQuantity(0L);
+            to.setParentEntityId(entityService.getEntity(Storage.ENTITY_NAME).getId());
+            to.setParentId(storageId);
+            to.setNomenclatureId(t.getNomenclatureId());
+            to.setQuantity(0L);
 
             domainService.save(product);
         }else{
-            pTo = getProduct(storageId, t.getNomenclatureId());
+            to = getProduct(storageId, t.getNomenclatureId());
         }
 
 
         Long qty = t.getQuantity();
 
-        pFrom.setQuantity( pFrom.getQuantity() - qty);
-
         switch (t.getRelocationType().intValue()){
             case (int) TransferRelocationType.RELOCATION:
-                pFrom.setSendingQuantity(pFrom.getSendingQuantity() + qty);
-                pTo.setNumber(Product.RECEIVING_QUANTITY, pTo.getReceivingQuantity() + qty);
+                from.setQuantity(from.getQuantity() - qty);
+                from.setSendingQuantity(from.getSendingQuantity() + qty);
+                to.setNumber(Product.RECEIVING_QUANTITY, to.getReceivingQuantity() + qty);
 
                 break;
             case (int) TransferRelocationType.GIFT:
-                pFrom.setGiftSendingQuantity(pFrom.getGiftSendingQuantity() + qty);
-                pTo.setGiftReceivingQuantity(pTo.getReceivingQuantity() + qty);
+                Long diff = from.getGiftQuantity() - qty;
+
+                if (diff >= 0) {
+                    from.setGiftQuantity(diff);
+                } else {
+                    from.setGiftQuantity(0L);
+                    from.setQuantity(from.getQuantity() + diff);
+                }
+
+                from.setGiftSendingQuantity(from.getGiftSendingQuantity() + qty);
+                to.setGiftReceivingQuantity(to.getReceivingQuantity() + qty);
 
                 break;
         }
 
-        domainService.save(pFrom);
-        domainService.save(pTo);
+        domainService.save(from);
+        domainService.save(to);
     }
 
     @Transactional
@@ -234,28 +243,28 @@ public class StorageService implements Serializable {
 
     @Transactional
     public void receive(Transfer transfer) {
-        Product pFrom = getProduct(transfer.getStorageIdFrom(), transfer.getNomenclatureId());
-        Product pTo = getProduct(transfer.getStorageIdTo(), transfer.getNomenclatureId());
+        Product from = getProduct(transfer.getStorageIdFrom(), transfer.getNomenclatureId());
+        Product to = getProduct(transfer.getStorageIdTo(), transfer.getNomenclatureId());
 
         Long qty = transfer.getQuantity();
 
         switch (transfer.getRelocationType().intValue()){
             case (int) TransferRelocationType.RELOCATION:
-                pFrom.setSendingQuantity(pFrom.getSendingQuantity() - qty);
-                pTo.setReceivingQuantity(pTo.getReceivingQuantity() - qty);
-                pTo.setQuantity(pTo.getQuantity() + qty);
+                from.setSendingQuantity(from.getSendingQuantity() - qty);
+                to.setReceivingQuantity(to.getReceivingQuantity() - qty);
+                to.setQuantity(to.getQuantity() + qty);
 
                 break;
             case (int) TransferRelocationType.GIFT:
-                pFrom.setGiftSendingQuantity(pFrom.getGiftSendingQuantity() - qty);
-                pTo.setGiftReceivingQuantity(pTo.getGiftReceivingQuantity() - qty);
-                pTo.setGiftQuantity(pTo.getGiftQuantity() + qty);
+                from.setGiftSendingQuantity(from.getGiftSendingQuantity() - qty);
+                to.setGiftReceivingQuantity(to.getGiftReceivingQuantity() - qty);
+                to.setGiftQuantity(to.getGiftQuantity() + qty);
 
                 break;
         }
 
-        domainService.save(pFrom);
-        domainService.save(pTo);
+        domainService.save(from);
+        domainService.save(to);
 
         transfer.setEndDate(new Date());
         domainService.save(transfer);

@@ -96,7 +96,7 @@ class RelocateModal extends StorageModal {
 
                 fragment.add(new FormGroupSelectPanel("recipient", new BootstrapSelect<>(FormGroupPanel.COMPONENT_ID,
                         recipientModel, Arrays.asList(TransferRecipientType.WORKER, TransferRecipientType.CLIENT),
-                        new IChoiceRenderer<Long>() {
+                        new IChoiceRenderer<>() {
                             @Override
                             public Object getDisplayValue(Long object) {
                                 switch (object.intValue()){
@@ -168,7 +168,7 @@ class RelocateModal extends StorageModal {
 
                 fragment.add(new FormGroupSelectPanel("recipient", new BootstrapSelect<>(FormGroupPanel.COMPONENT_ID,
                         recipientModel, Arrays.asList(TransferRecipientType.STORAGE, TransferRecipientType.WORKER),
-                        new IChoiceRenderer<Long>() {
+                        new IChoiceRenderer<>() {
                             @Override
                             public Object getDisplayValue(Long object) {
                                 switch (object.intValue()){
@@ -199,7 +199,7 @@ class RelocateModal extends StorageModal {
                 fragment.add(new FormGroupSelectPanel("type", new BootstrapSelect<>(FormGroupPanel.COMPONENT_ID,
                         new NumberAttributeModel(getModel(), Transfer.RELOCATION_TYPE),
                         Arrays.asList(TransferRelocationType.RELOCATION, TransferRelocationType.GIFT),
-                        new IChoiceRenderer<Long>() {
+                        new IChoiceRenderer<>() {
                             @Override
                             public Object getDisplayValue(Long object) {
                                 switch (object.intValue()){
@@ -241,7 +241,7 @@ class RelocateModal extends StorageModal {
                 fragment.add(new FormGroupSelectPanel("withdrawType", new BootstrapSelect<>(FormGroupPanel.COMPONENT_ID,
                         new NumberAttributeModel(getModel(), Transfer.RELOCATION_TYPE),
                         Arrays.asList(TransferRelocationType.RELOCATION, TransferRelocationType.GIFT),
-                        new IChoiceRenderer<Long>() {
+                        new IChoiceRenderer<>() {
                             @Override
                             public Object getDisplayValue(Long object) {
                                 switch (object.intValue()){
@@ -276,7 +276,7 @@ class RelocateModal extends StorageModal {
             }
         });
 
-        getContainer().add(new AjaxBootstrapTabbedPanel<ITab>("tabs", tabs, tabIndexModel){
+        getContainer().add(new AjaxBootstrapTabbedPanel<>("tabs", tabs, tabIndexModel){
             @Override
             protected void onAjaxUpdate(Optional<AjaxRequestTarget> targetOptional) {
                 targetOptional.ifPresent(t -> t.add(getFeedback()));
@@ -349,7 +349,7 @@ class RelocateModal extends StorageModal {
 
         boolean gift = Objects.equals(transfer.getRelocationType(), TransferRelocationType.GIFT);
 
-        Long pQty = gift ? product.getGiftQuantity() : product.getQuantity();
+        Long pQty = gift ? product.getGiftQuantity() + product.getQuantity() : product.getQuantity();
 
         Long tQty = transfer.getQuantity();
 

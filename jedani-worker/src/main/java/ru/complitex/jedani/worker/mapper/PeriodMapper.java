@@ -34,4 +34,8 @@ public class PeriodMapper extends BaseMapper {
     public Long getActualPeriodId(){
         return getActualPeriod().getObjectId();
     }
+
+    public Date getActualOperatingMonth(){
+        return getActualPeriod().getOperatingMonth();
+    }
 }
