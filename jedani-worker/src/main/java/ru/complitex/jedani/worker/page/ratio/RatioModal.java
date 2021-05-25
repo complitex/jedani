@@ -32,8 +32,6 @@ public class RatioModal extends AbstractEditModal<Ratio> {
 
         add(new FormGroupDateTextField("dateBegin", model, Ratio.BEGIN).setRequired(true));
 
-        add(new FormGroupDateTextField("dateEnd", model, Ratio.END));
-
         add(new FormGroupDomainAutoComplete<>("country", Country.class, Country.NAME, NumberAttributeModel.of(model, Ratio.COUNTRY)).setRequired(true));
 
         add(new FormGroupDecimalField("value", model, Ratio.VALUE).setRequired(true));
@@ -62,14 +60,16 @@ public class RatioModal extends AbstractEditModal<Ratio> {
 
         Ratio ratio = model.getObject();
 
-        domainService.getDomains(Ratio.class, FilterWrapper.of(new Ratio().setCountryId(ratio.getCountryId())))
-                .forEach(r  -> {
-                    if (r.getEnd() == null) {
-                        r.setEnd(ratio.getBegin());
+        if (ratio.getObjectId() == null) {
+            domainService.getDomains(Ratio.class, FilterWrapper.of(new Ratio().setCountryId(ratio.getCountryId())))
+                    .forEach(r  -> {
+                        if (r.getEnd() == null) {
+                            r.setEnd(ratio.getBegin());
 
-                        domainService.save(r);
-                    }
-                });
+                            domainService.save(r);
+                        }
+                    });
+        }
 
         domainService.save(model.getObject());
 
