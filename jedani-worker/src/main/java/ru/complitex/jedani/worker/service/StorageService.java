@@ -41,6 +41,7 @@ public class StorageService implements Serializable {
     public void accept(Long storageId, Transfer transfer){
         Transfer t = new Transfer();
 
+        t.setDate(transfer.getDate());
         t.setNomenclatureId(transfer.getNomenclatureId());
         t.setQuantity(transfer.getQuantity());
         t.setType(TransferType.ACCEPT);
@@ -89,6 +90,7 @@ public class StorageService implements Serializable {
     private Transfer newTransfer(Product product, Transfer transfer, Long transactionType){
         Transfer t = new Transfer();
 
+        t.setDate(transfer.getDate());
         t.setNomenclatureId(product.getNomenclatureId());
         t.setQuantity(transfer.getQuantity());
         t.setType(transactionType);

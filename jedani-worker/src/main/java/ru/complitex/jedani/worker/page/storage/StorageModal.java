@@ -21,14 +21,14 @@ import ru.complitex.jedani.worker.entity.TransferRecipientType;
  * 06.11.2018 14:10
  */
 abstract class StorageModal extends Modal<Transfer> {
-    private FeedbackPanel feedback;
-    private WebMarkupContainer container;
+    private final FeedbackPanel feedback;
+    private final WebMarkupContainer container;
 
-    private BootstrapAjaxButton actionButton;
+    private final BootstrapAjaxButton actionButton;
 
     private Long storageId;
 
-    private SerializableConsumer<AjaxRequestTarget> onUpdate;
+    private final SerializableConsumer<AjaxRequestTarget> onUpdate;
 
     StorageModal(String markupId, Long storageId, SerializableConsumer<AjaxRequestTarget> onUpdate) {
         super(markupId, Model.of(new Transfer()));

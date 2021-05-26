@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import ru.complitex.address.entity.City;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.Sort;
+import ru.complitex.common.util.Dates;
 import ru.complitex.common.wicket.component.DateTimeLabel;
 import ru.complitex.common.wicket.form.FormGroupPanel;
 import ru.complitex.common.wicket.form.FormGroupSelectPanel;
@@ -224,18 +225,18 @@ public class StoragePage extends BasePage {
         AcceptModal acceptModal = new AcceptModal("acceptModal", storageId, t -> t.add(feedback, tables));
         acceptForm.add(acceptModal);
 
-        //Relocate Modal
+        //Transfer Modal
 
-        Form<Transfer> relocateForm = new Form<>("relocateForm"){
+        Form<Transfer> transferModalForm = new Form<>("transferModalForm"){
             @Override
             protected boolean wantSubmitOnParentFormSubmit() {
                 return false;
             }
         };
-        add(relocateForm);
+        add(transferModalForm);
 
-        RelocateModal relocateModal = new RelocateModal("relocateModal", storageId, t -> t.add(feedback, tables));
-        relocateForm.add(relocateModal);
+        TransferModal transferModal = new TransferModal("transferModal", storageId, t -> t.add(feedback, tables));
+        transferModalForm.add(transferModal);
 
         //Receive Modal
 
@@ -293,8 +294,6 @@ public class StoragePage extends BasePage {
 
             Entity productEntity = entityService.getEntity(Product.ENTITY_NAME);
 
-            //todo multi ref filter
-
             productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.NOMENCLATURE)
                     .withReferences(Nomenclature.class, Nomenclature.CODE, Nomenclature.NAME)));
 
@@ -311,7 +310,7 @@ public class StoragePage extends BasePage {
                         cellItem.add(new AjaxEventBehavior("click") {
                             @Override
                             protected void onEvent(AjaxRequestTarget target) {
-                                relocateModal.open(rowModel.getObject(), TransferRelocationType.RELOCATION, target);
+                                transferModal.open(rowModel.getObject(), TransferRelocationType.RELOCATION, target);
                             }
                         });
                     }
@@ -352,7 +351,7 @@ public class StoragePage extends BasePage {
                         cellItem.add(new AjaxEventBehavior("click") {
                             @Override
                             protected void onEvent(AjaxRequestTarget target) {
-                                relocateModal.open(product, TransferRelocationType.GIFT, target);
+                                transferModal.open(product, TransferRelocationType.GIFT, target);
                             }
                         });
                     }
@@ -407,7 +406,7 @@ public class StoragePage extends BasePage {
                             Buttons.Type.Link) {
                         @Override
                         public void onClick(AjaxRequestTarget target) {
-                            relocateModal.open(rowModel.getObject(), null, target);
+                            transferModal.open(rowModel.getObject(), null, target);
                         }
                     }.setIconType(GlyphIconType.share)).setVisible(edit));
                 }
@@ -470,6 +469,18 @@ public class StoragePage extends BasePage {
                 }
             });
 
+            transferColumns.add(new AbstractDomainColumn<>("date", this) {
+                @Override
+                public Component newFilter(String componentId, Table<Transfer> table) {
+                    return new DateFilter(componentId, new PropertyModel<>(transferForm.getModel(), "map.date"));
+                }
+
+                @Override
+                public void populateItem(Item<ICellPopulator<Transfer>> cellItem, String componentId, IModel<Transfer> rowModel) {
+                    cellItem.add(new Label(componentId, Dates.getDateText(rowModel.getObject().getDate())));
+                }
+            });
+
             Entity transferEntity = entityService.getEntity(Transfer.ENTITY_NAME);
 
             transferColumns.add(new DomainColumn<>(transferEntity.getEntityAttribute(Transfer.NOMENCLATURE)
@@ -518,9 +529,6 @@ public class StoragePage extends BasePage {
                     return new TextFilter<>(componentId, new PropertyModel<>(transferForm.getModel(), "map.client"));
                 }
             });
-
-            transferColumns.add(new DomainColumn<>(transferEntity.getEntityAttribute(Transfer.SERIAL_NUMBER)));
-            transferColumns.add(new DomainColumn<>(transferEntity.getEntityAttribute(Transfer.COMMENTS)));
 
             transferColumns.add(new AbstractDomainColumn<>(transferEntity
                     .getEntityAttribute(Transfer.RELOCATION_TYPE)) {
@@ -580,8 +588,7 @@ public class StoragePage extends BasePage {
                 }
             });
 
-            transferColumns.add(new AbstractDomainColumn<>(transferEntity
-                    .getEntityAttribute(Transfer.TYPE)) {
+            transferColumns.add(new AbstractDomainColumn<>("type", this) {
                 @Override
                 public Component newFilter(String componentId, Table<Transfer> table) {
                     Transfer transfer = (Transfer)((FilterWrapper<?>)transferForm.getModelObject()).getObject();

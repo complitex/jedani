@@ -2,6 +2,8 @@ package ru.complitex.jedani.worker.entity;
 
 import ru.complitex.domain.entity.Domain;
 
+import java.util.Date;
+
 /**
  * @author Anatoly A. Ivanov
  * 05.11.2018 15:41
@@ -26,6 +28,7 @@ public class Transfer extends Domain {
     public static final long LAST_NAME_TO = 11;
     public static final long SERIAL_NUMBER = 12;
     public static final long COMMENTS = 13;
+    public static final long DATE = 14;
 
     public Transfer() {
         super(ENTITY_NAME);
@@ -137,5 +140,11 @@ public class Transfer extends Domain {
         setText(COMMENTS, comments);
     }
 
+    public Date getDate() {
+        return getDate(DATE);
+    }
 
+    public void setDate(Date date) {
+        setDate(DATE, date);
+    }
 }

@@ -17,6 +17,7 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.danekja.java.util.function.serializable.SerializableConsumer;
+import ru.complitex.common.wicket.form.FormGroupDateTextField;
 import ru.complitex.common.wicket.form.FormGroupPanel;
 import ru.complitex.common.wicket.form.FormGroupSelectPanel;
 import ru.complitex.common.wicket.form.FormGroupTextField;
@@ -41,7 +42,7 @@ import java.util.*;
  * @author Anatoly A. Ivanov
  * 07.11.2018 17:18
  */
-class RelocateModal extends StorageModal {
+class TransferModal extends StorageModal {
     @Inject
     private DomainService domainService;
 
@@ -50,9 +51,9 @@ class RelocateModal extends StorageModal {
 
     private Product product;
 
-    private IModel<Integer> tabIndexModel = Model.of(0);
+    private final IModel<Integer> tabIndexModel = Model.of(0);
 
-    RelocateModal(String markupId, Long storageId, SerializableConsumer<AjaxRequestTarget> onUpdate) {
+    TransferModal(String markupId, Long storageId, SerializableConsumer<AjaxRequestTarget> onUpdate) {
         super(markupId, storageId, onUpdate);
 
         List<ITab> tabs = new ArrayList<>();
@@ -61,7 +62,9 @@ class RelocateModal extends StorageModal {
 
             @Override
             public WebMarkupContainer getPanel(String panelId) {
-                Fragment fragment = new Fragment(panelId, "sellFragment", RelocateModal.this);
+                Fragment fragment = new Fragment(panelId, "sellFragment", TransferModal.this);
+
+                fragment.add(new FormGroupDateTextField("date", getModel(), Transfer.DATE));
 
                 fragment.add(getNomenclature());
 
@@ -136,7 +139,9 @@ class RelocateModal extends StorageModal {
 
             @Override
             public WebMarkupContainer getPanel(String panelId) {
-                Fragment fragment = new Fragment(panelId, "relocationFragment", RelocateModal.this);
+                Fragment fragment = new Fragment(panelId, "relocationFragment", TransferModal.this);
+
+                fragment.add(new FormGroupDateTextField("date", getModel(), Transfer.DATE));
 
                 fragment.add(getNomenclature());
 
@@ -234,7 +239,9 @@ class RelocateModal extends StorageModal {
 
             @Override
             public WebMarkupContainer getPanel(String panelId) {
-                Fragment fragment = new Fragment(panelId, "withdrawFragment", RelocateModal.this);
+                Fragment fragment = new Fragment(panelId, "withdrawFragment", TransferModal.this);
+
+                fragment.add(new FormGroupDateTextField("date", getModel(), Transfer.DATE));
 
                 fragment.add(getNomenclature());
 
