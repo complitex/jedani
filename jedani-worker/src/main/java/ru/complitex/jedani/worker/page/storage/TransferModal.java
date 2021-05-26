@@ -374,7 +374,7 @@ class TransferModal extends StorageModal {
             return;
         }
 
-        if (Objects.equals(transfer.getRecipientType(), TransferRecipientType.WORKER)){
+        if (transfer.getWorkerIdTo() !=  null && Objects.equals(transfer.getRecipientType(), TransferRecipientType.WORKER)){
             Worker w = domainService.getDomain(Worker.class, transfer.getWorkerIdTo());
 
             if (Objects.equals(w.getType(), 1L)){
