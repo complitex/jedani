@@ -55,6 +55,7 @@ import ru.complitex.jedani.worker.page.BasePage;
 import ru.complitex.jedani.worker.service.PriceService;
 import ru.complitex.jedani.worker.service.RewardService;
 import ru.complitex.jedani.worker.service.SaleService;
+import ru.complitex.jedani.worker.service.WorkerService;
 import ru.complitex.name.entity.FirstName;
 import ru.complitex.name.entity.LastName;
 import ru.complitex.name.entity.MiddleName;
@@ -95,6 +96,9 @@ public class SaleModal extends Modal<Sale> {
     @Inject
     private PeriodMapper periodMapper;
 
+    @Inject
+    private WorkerService workerService;
+
     private final IModel<Sale> saleModel;
     private final IModel<List<SaleItem>> saleItemsModel;
 
@@ -112,7 +116,6 @@ public class SaleModal extends Modal<Sale> {
     private final ListView<SaleItem> saleItems;
 
     private Long defaultStorageId;
-
 
     private final Component saveButton;
 
@@ -571,10 +574,26 @@ public class SaleModal extends Modal<Sale> {
 
         if (saleItems.stream().noneMatch(si -> si.getPrice() == null || si.getQuantity() == null || si.getRate() == null)){
             sale.setTotalLocal(saleItems.stream().map(si -> {
-                if (sale.isFeeWithdraw()) {
+                if (sale.isFeeWithdraw() && sale.getSellerWorkerId() != null && sale.getDate() != null) {
                     BigDecimal reward = rewardService.getPersonalRewardPoint(sale, saleItemsModel.getObject());
+
                     BigDecimal price = si.getPrice().add(reward);
-                    BigDecimal discount = price.divide(si.getBasePrice(), 7, HALF_EVEN);
+
+                    BigDecimal ratio = ZERO;
+
+                    List<Ratio> ratios = domainService.getDomains(Ratio.class, FilterWrapper.of((Ratio) new Ratio()
+                            .setCountryId(workerService.getCountryId(sale.getSellerWorkerId()))
+                            .setBegin(sale.getDate())
+                            .setEnd(sale.getDate())
+                            .setFilter(Ratio.BEGIN, Attribute.FILTER_BEFORE_OR_EQUAL_DATE)
+                            .setFilter(Ratio.END, Attribute.FILTER_AFTER_OR_EQUAL_OR_NULL_DATE)));
+
+                    if (!ratios.isEmpty()) {
+                        ratio = ratios.get(0).getValue();
+                    }
+
+                    BigDecimal discount = price.multiply(BigDecimal.valueOf(100).subtract(ratio))
+                            .divide(si.getBasePrice().multiply(BigDecimal.valueOf(100)), 7, HALF_EVEN);
 
                     return price.subtract(reward.multiply(discount))
                             .multiply(new BigDecimal(si.getQuantity()))
