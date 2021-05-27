@@ -97,6 +97,7 @@ public class StorageService implements Serializable {
         t.setRelocationType(transfer.getRelocationType());
         t.setRecipientType(transfer.getRecipientType());
         t.setStorageIdFrom(product.getParentId());
+        t.setUserId(transfer.getUserId());
 
         return t;
     }

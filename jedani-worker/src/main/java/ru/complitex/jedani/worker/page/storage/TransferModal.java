@@ -29,6 +29,7 @@ import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.component.StorageAutoComplete;
 import ru.complitex.jedani.worker.component.WorkerAutoComplete;
 import ru.complitex.jedani.worker.entity.*;
+import ru.complitex.jedani.worker.page.BasePage;
 import ru.complitex.jedani.worker.service.StorageService;
 import ru.complitex.jedani.worker.util.Nomenclatures;
 import ru.complitex.name.entity.FirstName;
@@ -351,6 +352,8 @@ class TransferModal extends StorageModal {
     @Override
     void action(AjaxRequestTarget target) {
         Transfer transfer = getModelObject();
+
+        transfer.setUserId(((BasePage)getPage()).getCurrentUser().getId());
 
         Product product = domainService.getDomain(Product.class, getProduct().getObjectId());
 
