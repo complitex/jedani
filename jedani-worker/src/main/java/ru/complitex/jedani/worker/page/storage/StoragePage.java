@@ -674,25 +674,6 @@ public class StoragePage extends BasePage {
                     cellItem.add(new Label(componentId, resourceKey != null ? new ResourceModel(resourceKey) : Model.of("")));
                 }
             });
-
-            transferColumns.add(new DomainActionColumn<>(){
-                @Override
-                public void populateItem(Item<ICellPopulator<Transfer>> cellItem, String componentId, IModel<Transfer> rowModel) {
-                    Transfer transfer = rowModel.getObject();
-
-                    boolean receive = Objects.equals(transfer.getType(), TransferType.RELOCATION) &&
-                            Objects.equals(transfer.getStorageIdTo(), storageId) &&
-                            transfer.getEndDate() == null;
-
-                    cellItem.add(new LinkPanel(componentId, new BootstrapAjaxLink<Void>(LinkPanel.COMPONENT_ID,
-                            Buttons.Type.Link) {
-                        @Override
-                        public void onClick(AjaxRequestTarget target) {
-                            receiveModal.open(rowModel.getObject(), target);
-                        }
-                    }.setIconType(GlyphIconType.check)).setVisible(receive));
-                }
-            });
         }
 
         Table<Transfer> transferDataTable = new Table<>("table", transferColumns, transferProvider, 15,
@@ -700,31 +681,6 @@ public class StoragePage extends BasePage {
             @Override
             public boolean isVisible() {
                 return storageId != null;
-            }
-
-            @Override
-            protected Item<Transfer> newRowItem(String id, int index, final IModel<Transfer> model) {
-                Item<Transfer> rowItem = super.newRowItem(id, index, model);
-
-                Transfer transfer = model.getObject();
-
-                boolean receive = Objects.equals(transfer.getType(), TransferType.RELOCATION) &&
-                        Objects.equals(transfer.getStorageIdTo(), storageId) &&
-                        transfer.getEndDate() == null;
-
-                if (receive) {
-                    rowItem.add(new AjaxEventBehavior("click") {
-                        @Override
-                        protected void onEvent(AjaxRequestTarget target) {
-                            receiveModal.open(model.getObject(), target);
-                        }
-                    });
-
-                    rowItem.add(new CssClassNameAppender("pointer"));
-                }
-
-                return rowItem;
-
             }
         };
         transferDataTable.setVisible(storageId != null && edit);

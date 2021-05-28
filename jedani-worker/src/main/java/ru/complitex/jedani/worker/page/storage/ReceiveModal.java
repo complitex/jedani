@@ -1,23 +1,30 @@
 package ru.complitex.jedani.worker.page.storage;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.model.LoadableDetachableModel;
+import org.apache.wicket.markup.html.form.CheckBox;
+import org.apache.wicket.markup.html.list.ListItem;
+import org.apache.wicket.markup.html.list.ListView;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
+import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.model.util.ListModel;
 import org.danekja.java.util.function.serializable.SerializableConsumer;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.wicket.form.FormGroupDateTextField;
 import ru.complitex.domain.service.DomainService;
+import ru.complitex.jedani.worker.entity.Nomenclature;
 import ru.complitex.jedani.worker.entity.Product;
 import ru.complitex.jedani.worker.entity.Transfer;
 import ru.complitex.jedani.worker.entity.TransferRelocationType;
-import ru.complitex.jedani.worker.entity.TransferType;
 import ru.complitex.jedani.worker.mapper.TransferMapper;
 import ru.complitex.jedani.worker.service.StorageService;
 import ru.complitex.jedani.worker.util.Nomenclatures;
 
 import javax.inject.Inject;
+import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author Anatoly A. Ivanov
@@ -33,32 +40,32 @@ class ReceiveModal extends StorageModal {
     @Inject
     private StorageService storageService;
 
-    private Transfer transfer;
+    private final IModel<Date> receiveDateModel = Model.of(new Date());
+
+    private final IModel<List<Transfer>> transfersModel = new ListModel<>();
 
     public ReceiveModal(String markupId, Long storageId, SerializableConsumer<AjaxRequestTarget> onUpdate) {
         super(markupId, storageId, onUpdate);
 
-        getContainer().add(new FormGroupDateTextField("receiveDate", LoadableDetachableModel.of(this::getTransfer), Transfer.RECEIVE_DATE).setRequired(true));
+        getContainer().add(new FormGroupDateTextField("receiveDate", receiveDateModel)
+                .setRequired(true)
+                .onUpdate(t -> {}));
 
-        getContainer().add(new Label("nomenclature", new LoadableDetachableModel<String>() {
+        ListView<Transfer> transfers = new ListView<>("transfers",  transfersModel) {
             @Override
-            protected String load() {
-                return Nomenclatures.getNomenclatureLabel(transfer.getNomenclatureId(), domainService);
+            protected void populateItem(ListItem<Transfer> item) {
+                Transfer transfer = item.getModelObject();
+
+                item.add(new CheckBox("check", new PropertyModel<>(transfer, "map.check")).add(OnChangeAjaxBehavior.onChange(t -> {})));
+                item.add(new Label("date", transfer.getDate()));
+                item.add(new Label("name", Nomenclatures.getNomenclatureLabel(domainService.getDomain(Nomenclature.class, transfer.getNomenclatureId()))));
+                item.add(new Label("qty", transfer.getQuantity()));
             }
-        }));
+        };
 
-        getContainer().add(new Label("quantity", new LoadableDetachableModel<String>() {
-            @Override
-            protected String load() {
-                return transfer.getQuantity() + "";
-            }
-        }));
-    }
+        transfers.setReuseItems(true);
 
-    void open(Transfer transfer, AjaxRequestTarget target){
-        this.transfer = transfer;
-
-        open(target);
+        getContainer().add(transfers);
     }
 
     void open(Product product, Long relocationType, AjaxRequestTarget target){
@@ -67,28 +74,26 @@ class ReceiveModal extends StorageModal {
                 .put(relocationType == TransferRelocationType.GIFT ? Transfer.FILTER_RECEIVING_GIFT : Transfer.FILTER_RECEIVING, true));
 
         if (!transfers.isEmpty()){
-            Transfer transfer = transfers.get(0);
+            transfersModel.setObject(transfers);
 
-            if (Objects.equals(transfer.getType(), TransferType.RELOCATION) &&
-                    Objects.equals(transfer.getStorageIdTo(), product.getParentId()) &&
-                    Objects.equals(transfer.getRelocationType(), relocationType) &&
-                    transfer.getEndDate() == null
-            ) {
-                this.transfer = transfer;
+            target.add(getContainer());
 
-                open(target);
-            }
+            open(target);
         }
     }
 
-    public Transfer getTransfer() {
-        return transfer;
-    }
-
     void action(AjaxRequestTarget target) {
-        storageService.receive(getTransfer());
+        transfersModel.getObject().forEach(transfer -> {
+            Boolean checked = (Boolean) transfer.getMap().get("check");
 
-        success(getString("info_received"));
+            if (checked != null && checked) {
+                transfer.setReceiveDate(receiveDateModel.getObject());
+
+                storageService.receive(transfer);
+
+                success(getString("info_received"));
+            }
+        });
 
         close(target);
 

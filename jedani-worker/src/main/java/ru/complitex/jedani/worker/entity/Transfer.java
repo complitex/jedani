@@ -153,7 +153,7 @@ public class Transfer extends Domain {
         return getDate(RECEIVE_DATE);
     }
 
-    public void setReceiveDateDate(Date date) {
+    public void setReceiveDate(Date date) {
         setDate(RECEIVE_DATE, date);
     }
 }

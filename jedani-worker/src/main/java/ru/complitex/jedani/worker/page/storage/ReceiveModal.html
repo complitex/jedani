@@ -2,13 +2,24 @@
     <wicket:extend>
         <div wicket:id="receiveDate"></div>
 
-        <div class="form-group">
-            <label for="nomenclature">Номенклатура</label>
-            <span id="nomenclature" wicket:id="nomenclature" class="form-control"></span>
-        </div>
-        <div class="form-group">
-            <label for="quantity">Количество</label>
-            <span id="quantity" wicket:id="quantity" class="form-control"></span>
-        </div>
+        <table class="table">
+            <thead>
+            <tr>
+                <th></th>
+                <th><wicket:message key="date"/></th>
+                <th><wicket:message key="name"/></th>
+                <th><wicket:message key="qty"/></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr wicket:id="transfers">
+                <td><input wicket:id="check" type="checkbox"/></td>
+                <td wicket:id="date"></td>
+                <td wicket:id="name"></td>
+                <td wicket:id="qty"></td>
+            </tr>
+            </tbody>
+        </table>
+
     </wicket:extend>
 </wicket:panel>

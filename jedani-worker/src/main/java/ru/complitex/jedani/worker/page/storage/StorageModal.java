@@ -36,6 +36,7 @@ abstract class StorageModal extends Modal<Transfer> {
         this.storageId = storageId;
         this.onUpdate = onUpdate;
 
+        size(Size.Large);
         setBackdrop(Backdrop.FALSE);
 
         header(new ResourceModel("header"));
