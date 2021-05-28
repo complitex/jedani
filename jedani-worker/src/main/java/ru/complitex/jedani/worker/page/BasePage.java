@@ -293,8 +293,7 @@ public class BasePage extends WebPage{
         menu.add(storages);
 
         WebMarkupContainer sales = new WebMarkupContainer("sales");
-        sales.setVisible(isAdmin() || isPromotionAdmin() || isSaleAdmin() || isPaymentAdmin() ||
-                isParticipant());
+        sales.setVisible(isAdmin() || isPromotionAdmin() || isSaleAdmin() || isPaymentAdmin() || isRegionalLeader());
         sales.add(newBehavior());
         sales.add(new WebMarkupContainer("link").add(newBehaviorLink()));
         sales.add(new WebMarkupContainer("list")
@@ -445,6 +444,10 @@ public class BasePage extends WebPage{
     public boolean isParticipant(){
         return getCurrentWorker().getNumber(Worker.TYPE) == null ||
                 Objects.equals(getCurrentWorker().getNumber(Worker.TYPE), WorkerType.PK);
+    }
+
+    public boolean isRegionalLeader() {
+        return getCurrentWorker().isRegionalLeader();
     }
 
     public User getCurrentUser() {
