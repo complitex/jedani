@@ -29,6 +29,7 @@ public class Transfer extends Domain {
     public static final long SERIAL_NUMBER = 12;
     public static final long COMMENT = 13;
     public static final long DATE = 14;
+    public static final long RECEIVE_DATE = 15;
 
     public Transfer() {
         super(ENTITY_NAME);
@@ -146,5 +147,13 @@ public class Transfer extends Domain {
 
     public void setDate(Date date) {
         setDate(DATE, date);
+    }
+
+    public Date getReceiveDate() {
+        return getDate(RECEIVE_DATE);
+    }
+
+    public void setReceiveDateDate(Date date) {
+        setDate(RECEIVE_DATE, date);
     }
 }

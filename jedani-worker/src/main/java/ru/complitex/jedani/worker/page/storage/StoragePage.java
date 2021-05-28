@@ -481,6 +481,18 @@ public class StoragePage extends BasePage {
                 }
             });
 
+            transferColumns.add(new AbstractDomainColumn<>("receiveDate", this) {
+                @Override
+                public Component newFilter(String componentId, Table<Transfer> table) {
+                    return new DateFilter(componentId, new PropertyModel<>(transferForm.getModel(), "map.receiveDate"));
+                }
+
+                @Override
+                public void populateItem(Item<ICellPopulator<Transfer>> cellItem, String componentId, IModel<Transfer> rowModel) {
+                    cellItem.add(new Label(componentId, Dates.getDateText(rowModel.getObject().getReceiveDate())));
+                }
+            });
+
             Entity transferEntity = entityService.getEntity(Transfer.ENTITY_NAME);
 
             transferColumns.add(new DomainColumn<>(transferEntity.getEntityAttribute(Transfer.NOMENCLATURE)

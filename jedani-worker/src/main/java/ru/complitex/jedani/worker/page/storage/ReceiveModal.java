@@ -5,6 +5,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.danekja.java.util.function.serializable.SerializableConsumer;
 import ru.complitex.common.entity.FilterWrapper;
+import ru.complitex.common.wicket.form.FormGroupDateTextField;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.entity.Product;
 import ru.complitex.jedani.worker.entity.Transfer;
@@ -36,6 +37,8 @@ class ReceiveModal extends StorageModal {
 
     public ReceiveModal(String markupId, Long storageId, SerializableConsumer<AjaxRequestTarget> onUpdate) {
         super(markupId, storageId, onUpdate);
+
+        getContainer().add(new FormGroupDateTextField("receiveDate", LoadableDetachableModel.of(this::getTransfer), Transfer.RECEIVE_DATE).setRequired(true));
 
         getContainer().add(new Label("nomenclature", new LoadableDetachableModel<String>() {
             @Override
