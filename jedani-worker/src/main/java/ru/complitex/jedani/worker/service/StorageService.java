@@ -222,7 +222,7 @@ public class StorageService implements Serializable {
     public void withdraw(Product product, Transfer transfer) {
         Transfer t = newTransfer(product, transfer, TransferType.WITHDRAW);
 
-        t.setComments(transfer.getComments());
+        t.setComment(transfer.getComment());
 
         domainService.save(t);
 

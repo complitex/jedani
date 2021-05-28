@@ -131,6 +131,9 @@ class TransferModal extends StorageModal {
                 fragment.add(new FormGroupTextField<>("serialNumber", new TextAttributeModel(getModel(), Transfer.SERIAL_NUMBER,
                         StringType.DEFAULT)));
 
+                fragment.add(new FormGroupTextField<>("comment", new TextAttributeModel(getModel(), Transfer.COMMENT,
+                        StringType.DEFAULT)));
+
                 return fragment;
             }
         });
@@ -230,6 +233,9 @@ class TransferModal extends StorageModal {
                             }
                         }).with(new BootstrapSelectConfig().withNoneSelectedText(""))));
 
+                fragment.add(new FormGroupTextField<>("comment", new TextAttributeModel(getModel(), Transfer.COMMENT,
+                        StringType.DEFAULT)));
+
 
                 return fragment;
             }
@@ -277,7 +283,7 @@ class TransferModal extends StorageModal {
                 fragment.add(new FormGroupTextField<>("quantity", new NumberAttributeModel(getModel(),
                         Transfer.QUANTITY)).setRequired(true).setType(Long.class).setRequired(true));
 
-                fragment.add(new FormGroupTextField<>("comments", new TextAttributeModel(getModel(), Transfer.COMMENTS,
+                fragment.add(new FormGroupTextField<>("comment", new TextAttributeModel(getModel(), Transfer.COMMENT,
                         StringType.DEFAULT)));
 
                 return fragment;

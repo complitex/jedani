@@ -27,7 +27,7 @@ public class Transfer extends Domain {
     public static final long MIDDLE_NAME_TO = 10;
     public static final long LAST_NAME_TO = 11;
     public static final long SERIAL_NUMBER = 12;
-    public static final long COMMENTS = 13;
+    public static final long COMMENT = 13;
     public static final long DATE = 14;
 
     public Transfer() {
@@ -132,12 +132,12 @@ public class Transfer extends Domain {
         setText(SERIAL_NUMBER, serialNumber);
     }
 
-    public String getComments(){
-        return getText(COMMENTS);
+    public String getComment(){
+        return getText(COMMENT);
     }
 
-    public void setComments(String comments){
-        setText(COMMENTS, comments);
+    public void setComment(String comment){
+        setText(COMMENT, comment);
     }
 
     public Date getDate() {

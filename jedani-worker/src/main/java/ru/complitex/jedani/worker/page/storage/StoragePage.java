@@ -530,6 +530,8 @@ public class StoragePage extends BasePage {
                 }
             });
 
+            transferColumns.add(new DomainColumn<>(transferEntity.getEntityAttribute(Transfer.COMMENT)));
+
             transferColumns.add(new AbstractDomainColumn<>(transferEntity
                     .getEntityAttribute(Transfer.RELOCATION_TYPE)) {
                 @Override
