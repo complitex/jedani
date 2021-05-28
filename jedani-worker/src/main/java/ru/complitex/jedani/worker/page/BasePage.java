@@ -273,6 +273,7 @@ public class BasePage extends WebPage{
         menu.add(catalog);
 
         WebMarkupContainer workers = new WebMarkupContainer("workers");
+        workers.setVisible(isAdmin() || isStructureAdmin());
         workers.add(newBehavior());
         workers.add(new WebMarkupContainer("link").add(newBehaviorLink()));
         workers.add(new WebMarkupContainer("list")
@@ -292,21 +293,21 @@ public class BasePage extends WebPage{
         menu.add(storages);
 
         WebMarkupContainer sales = new WebMarkupContainer("sales");
-        sales.setVisible(isAdmin() || isStructureAdmin() || isPromotionAdmin() || isSaleAdmin() || isPaymentAdmin() ||
+        sales.setVisible(isAdmin() || isPromotionAdmin() || isSaleAdmin() || isPaymentAdmin() ||
                 isParticipant());
         sales.add(newBehavior());
         sales.add(new WebMarkupContainer("link").add(newBehaviorLink()));
         sales.add(new WebMarkupContainer("list")
-                .add(new MenuLink("prices", PriceListPage.class).setVisible(isAdmin() || isStructureAdmin()))
+                .add(new MenuLink("prices", PriceListPage.class).setVisible(isAdmin()))
                 .add(new MenuLink("promotions", PromotionListPage.class).setVisible(isAdmin() || isPromotionAdmin()))
-                .add(new MenuLink("decisions", SaleDecisionListPage.class).setVisible(isAdmin() || isStructureAdmin()))
-                .add(new MenuLink("sales", SaleListPage.class).setVisible(isAdmin() || isStructureAdmin() || isSaleAdmin() || isParticipant()))
-                .add(new MenuLink("payments", PaymentListPage.class).setVisible(isAdmin() || isStructureAdmin() || isPaymentAdmin() || isParticipant()))
+                .add(new MenuLink("decisions", SaleDecisionListPage.class).setVisible(isAdmin()))
+                .add(new MenuLink("sales", SaleListPage.class).setVisible(isAdmin() || isSaleAdmin() || isParticipant()))
+                .add(new MenuLink("payments", PaymentListPage.class).setVisible(isAdmin() || isPaymentAdmin() || isParticipant()))
                 .add(new MenuLink("periods", PeriodListPage.class).setVisible(isAdmin() || isPaymentAdmin()))
-                .add(new MenuLink("rewards", RewardListPage.class).setVisible(isAdmin() || isStructureAdmin()))
+                .add(new MenuLink("rewards", RewardListPage.class).setVisible(isAdmin()))
                 .add(new MenuLink("parameters", RewardParameterListPage.class).setVisible(isAdmin()))
                 .add(new MenuLink("ratios", RatioListPage.class).setVisible(isAdmin()))
-                .add(new MenuLink("accounts", AccountListPage.class).setVisible(isAdmin() || isStructureAdmin()))
+                .add(new MenuLink("accounts", AccountListPage.class).setVisible(isAdmin()))
                 .add(new MenuLink("payouts", PayoutListPage.class).setVisible(isAdmin() || isPayoutAdmin()))
                 .add(newBehaviorList()));
         menu.add(sales);

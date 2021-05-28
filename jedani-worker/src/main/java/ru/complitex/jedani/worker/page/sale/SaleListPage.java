@@ -22,7 +22,7 @@ public class SaleListPage extends BasePage {
 
             @Override
             protected boolean isCurrentWorkerFilter() {
-                return false;
+                return  isUserInRole(JedaniRoles.ADMINISTRATORS) || isUserInRole(JedaniRoles.SALE_ADMINISTRATORS);
             }
 
             @Override
