@@ -592,13 +592,12 @@ public class SaleModal extends Modal<Sale> {
                         ratio = ratios.get(0).getValue();
                     }
 
-                    BigDecimal discount = price.multiply(BigDecimal.valueOf(100).subtract(ratio))
-                            .divide(si.getBasePrice().multiply(BigDecimal.valueOf(100)), 7, HALF_EVEN);
+                    BigDecimal feeWithdraw = reward.multiply(si.getRate()).multiply(BigDecimal.valueOf(100).subtract(ratio)).multiply(price)
+                            .divide(si.getBasePrice().multiply(BigDecimal.valueOf(100)), 2, HALF_EVEN);
 
-                    return price.subtract(reward.multiply(discount))
-                            .multiply(new BigDecimal(si.getQuantity()))
-                            .multiply(si.getRate())
-                            .setScale(2, HALF_EVEN);
+                    BigDecimal totalLocal =  price.multiply(new BigDecimal(si.getQuantity())).multiply(si.getRate()).setScale(2, HALF_EVEN);
+
+                    return totalLocal.subtract(feeWithdraw);
                 } else {
                     return si.getPrice().multiply(new BigDecimal(si.getQuantity()))
                             .multiply(si.getRate())
