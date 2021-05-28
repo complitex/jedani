@@ -59,7 +59,7 @@ public class WorkerMapper extends BaseMapper {
         return sqlSession().selectOne("selectWorkersCount", filterWrapper);
     }
 
-    public List<Worker> getWorkers(String s){
+    public List<Worker> getWorkers(String s, Long type){
         if (Strings.isNullOrEmpty(s)){
             return Collections.emptyList();
         }
@@ -70,7 +70,7 @@ public class WorkerMapper extends BaseMapper {
             return Collections.emptyList();
         }
 
-        return sqlSession().selectList("selectWorkersByString", array);
+        return sqlSession().selectList("selectWorkersByString", Maps.of("array", array, "type", type));
     }
 
     public Long getWorkerLevelDepth(Long objectId){
@@ -89,4 +89,3 @@ public class WorkerMapper extends BaseMapper {
         return sqlSession().selectOne("selectWorkerUserHistoriesCount", filterWrapper);
     }
 }
-

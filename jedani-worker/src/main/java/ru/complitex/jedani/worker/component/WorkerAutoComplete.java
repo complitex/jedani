@@ -4,6 +4,7 @@ import org.apache.wicket.model.IModel;
 import ru.complitex.domain.component.form.AbstractDomainAutoComplete;
 import ru.complitex.domain.model.NumberAttributeModel;
 import ru.complitex.jedani.worker.entity.Worker;
+import ru.complitex.jedani.worker.entity.WorkerType;
 import ru.complitex.jedani.worker.mapper.WorkerMapper;
 import ru.complitex.jedani.worker.service.WorkerService;
 
@@ -41,11 +42,15 @@ public class WorkerAutoComplete extends AbstractDomainAutoComplete<Worker> {
 
     @Override
     protected List<Worker> getDomains(String input) {
-        return workerMapper.getWorkers(input);
+        return workerMapper.getWorkers(input, getWorkerType());
     }
 
     @Override
     protected String getTextValue(Worker worker) {
         return workerService.getWorkerLabel(worker);
+    }
+
+    protected Long getWorkerType() {
+        return WorkerType.PK;
     }
 }

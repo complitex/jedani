@@ -65,7 +65,7 @@ class TransferModal extends StorageModal {
             public WebMarkupContainer getPanel(String panelId) {
                 Fragment fragment = new Fragment(panelId, "sellFragment", TransferModal.this);
 
-                fragment.add(new FormGroupDateTextField("date", getModel(), Transfer.DATE));
+                fragment.add(new FormGroupDateTextField("date", getModel(), Transfer.DATE).setRequired(true));
 
                 fragment.add(getNomenclature());
 

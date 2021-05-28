@@ -27,7 +27,7 @@ class AcceptModal extends StorageModal {
     AcceptModal(String markupId, Long storageId, SerializableConsumer<AjaxRequestTarget> onUpdate) {
         super(markupId, storageId, onUpdate);
 
-        getContainer().add(new FormGroupDateTextField("date", new DateAttributeModel(getModel(), Transfer.DATE)));
+        getContainer().add(new FormGroupDateTextField("date", new DateAttributeModel(getModel(), Transfer.DATE)).setRequired(true));
 
         getContainer().add(new FormGroupPanel("nomenclature",
                 nomenclature = new NomenclatureAutoComplete(FormGroupPanel.COMPONENT_ID,

@@ -18,9 +18,9 @@ import java.util.Objects;
  * 19.10.2018 23:09
  */
 public class WorkerAutoCompleteList extends FormComponentPanel<Attribute> {
-    private ListModel<Long> listModel = new ListModel<>();
+    private final ListModel<Long> listModel = new ListModel<>();
 
-    public WorkerAutoCompleteList(String id, IModel<Attribute> model) {
+    public WorkerAutoCompleteList(String id, IModel<Attribute> model, Long type) {
         super(id, model);
 
         setOutputMarkupId(true);
@@ -31,7 +31,7 @@ public class WorkerAutoCompleteList extends FormComponentPanel<Attribute> {
 
         listModel.setObject(model.getObject().getNumberValues());
 
-        ListView<Long> listView = new ListView<Long>("items", listModel){
+        ListView<Long> listView = new ListView<>("items", listModel){
 
             @Override
             protected void populateItem(ListItem<Long> item) {
@@ -39,7 +39,12 @@ public class WorkerAutoCompleteList extends FormComponentPanel<Attribute> {
                 inputGroup.setRenderBodyOnly(!WorkerAutoCompleteList.this.isEnabled());
                 item.add(inputGroup);
 
-                inputGroup.add(new WorkerAutoComplete("item", item.getModel()).onChange(t -> {}));
+                inputGroup.add(new WorkerAutoComplete("item", item.getModel()){
+                    @Override
+                    protected Long getWorkerType() {
+                        return type;
+                    }
+                }.onChange(t -> {}));
 
                 inputGroup.add(new AjaxLink<Void>("remove") {
                     @Override
@@ -95,5 +100,9 @@ public class WorkerAutoCompleteList extends FormComponentPanel<Attribute> {
         }
 
         return true;
+    }
+
+    public WorkerAutoCompleteList(String id, IModel<Attribute> model) {
+        this(id, model, null);
     }
 }

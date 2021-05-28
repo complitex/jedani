@@ -147,7 +147,7 @@
         <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainSql"/>
     </select>
 
-    <select id="selectWorkersByString" parameterType="string" resultMap="workerResultMap">
+    <select id="selectWorkersByString" parameterType="map" resultMap="workerResultMap">
         select 'worker' entity_name, w.*,
             a.id a_id, a.domain_id a_domain_id, a.entity_attribute_id a_entity_attribute_id, a.text a_text,
             a.number a_number, a.date a_date, a.start_date a_start_date, a.end_date a_end_date, a.status a_status,
@@ -180,7 +180,9 @@
               where
                   w.status = 1
 
-                  and (wa_t.number is null or wa_t.number = 2)
+                  <if test="type != null">
+                      and (wa_t.number is null or wa_t.number = #{type})
+                  </if>
 
                   <foreach collection="array" item="i" separator="and" open="and">
                       (wa_jid.text like concat('%', #{i}) or fn_v.text like concat('%', #{i}, '%') or
