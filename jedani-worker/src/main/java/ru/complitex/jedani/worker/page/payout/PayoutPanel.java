@@ -139,6 +139,10 @@ public class PayoutPanel extends Panel {
 
                 BigDecimal paid = account.getPaid();
 
+                if (paid == null) {
+                    paid = BigDecimal.ZERO;
+                }
+
                 if (actualPeriodId.equals(account.getPeriodId())) {
                     paid = paid.add(accountService.getPaid(actualPeriodId, currencyId, rowModel.getObject().getWorkerId()));
                 }
