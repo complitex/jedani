@@ -104,9 +104,9 @@ public class RewardService implements Serializable {
     public WorkerRewardTree getWorkerRewardTree(Period period) {
         WorkerRewardTree tree = new WorkerRewardTree(workerNodeService.getWorkerNodeLevelMap());
 
+        calcPaymentVolume(tree, period);
         calcFirstLevelCount(tree, period);
         calcRegistrationCount(tree, period);
-        calcPaymentVolume(tree, period);
         calcSaleVolumes(tree, period);
 
         return tree;
@@ -187,8 +187,7 @@ public class RewardService implements Serializable {
             r.setStructureSaleVolume(r.getChildRewards().stream()
                     .reduce(r.getSaleVolume(), (v, c) -> v.add(c.getStructureSaleVolume()), BigDecimal::add));
 
-            if (r.getFirstLevelCount() >= 4 && r.getGroupRegistrationCount() >= 2 && //todo %
-                    r.getYearPaymentVolume().compareTo(new BigDecimal("200")) > 0) {
+            if (r.getFirstLevelPersonalCount() >= 4 && r.getRegistrationCount() >= 2 && r.getPaymentVolume().compareTo(BigDecimal.valueOf(200)) >= 0) {
                 r.setRank(getRank(r.getStructureSaleVolume()));
             }
         }));
@@ -204,6 +203,10 @@ public class RewardService implements Serializable {
 
             r.setYearPaymentVolume(paymentService.getYearPaymentsVolumeBySellerWorkerId(r.getWorkerNode().getObjectId()));
 
+            Date registrationDate = domainService.getDate(Worker.ENTITY_NAME, r.getWorkerId(), Worker.REGISTRATION_DATE);
+
+            r.setPk(!Dates.isMoreYear(registrationDate, period.getOperatingMonth()) || r.getYearPaymentVolume().compareTo(BigDecimal.valueOf(200)) >= 0);
+
             r.setGroupPaymentVolume(getPrivateGroup(r).stream()
                     .reduce(ZERO, (v, c) -> v.add(c.getPaymentVolume()), BigDecimal::add));
 
@@ -215,12 +218,10 @@ public class RewardService implements Serializable {
     private void calcRegistrationCount(WorkerRewardTree tree, Period period){
         tree.forEachLevel((l, rl) -> rl.forEach(r -> {
             r.setRegistrationCount(r.getChildRewards().stream()
-                    .filter(c -> c.getWorkerNode().getRegistrationDate() != null)
-                    .reduce(0L, (v, c) -> v + (isNewWorker(c, period) ? 1L : 0L), Long::sum));
+                    .reduce(0L, (v, c) -> v + (isNewWorker(c.getWorkerId(), period) ? 1L : 0L), Long::sum));
 
             r.setGroupRegistrationCount(getPrivateGroup(r).stream()
-                    .filter(c -> c.getWorkerNode().getRegistrationDate() != null)
-                    .reduce(0L, (v, c) -> v + (isNewWorker(c, period) ? 1 : 0), Long::sum));
+                    .reduce(0L, (v, c) -> v + (isNewWorker(c.getWorkerId(), period) ? 1 : 0), Long::sum));
 
             r.setStructureManagerCount(r.getChildRewards().stream()
                     .filter(WorkerReward::isManager)
@@ -228,16 +229,36 @@ public class RewardService implements Serializable {
         }));
     }
 
-    private boolean isNewWorker(WorkerReward workerReward, Period period){
-        return Dates.isSameMonth(workerReward.getWorkerNode().getRegistrationDate(), period.getOperatingMonth());
+    private boolean isNewWorker(Long workerId, Period period){
+        Date registrationDate = domainService.getDate(Worker.ENTITY_NAME, workerId, Worker.REGISTRATION_DATE);
+
+        Long status =  domainService.getNumber(Worker.ENTITY_NAME, workerId, Worker.STATUS);
+
+        return registrationDate != null && Dates.isSameMonth(registrationDate, period.getOperatingMonth()) &&
+                !Objects.equals(status, WorkerStatus.MANAGER_CHANGED);
     }
 
     private void calcFirstLevelCount(WorkerRewardTree tree, Period period){
        tree.forEachLevel((l, rl) -> rl.forEach(r -> r.setFirstLevelCount(r.getChildRewards().stream()
-                .filter(c -> c.getWorkerNode().getRegistrationDate() != null)
-                .filter(c -> c.getWorkerNode().getRegistrationDate().before(Dates.nextMonth(period.getOperatingMonth())))
+                .filter(c -> {
+                    Date registrationDate =  domainService.getDate(Worker.ENTITY_NAME, c.getWorkerId(), Worker.REGISTRATION_DATE);
+
+                    return registrationDate != null && registrationDate.before(Dates.nextMonth(period.getOperatingMonth())) && c.isPk();
+                })
+                .count())));
+
+        tree.forEachLevel((l, rl) -> rl.forEach(r -> r.setFirstLevelPersonalCount(r.getChildRewards().stream()
+                .filter(c -> {
+                    Date registrationDate =  domainService.getDate(Worker.ENTITY_NAME, c.getWorkerId(), Worker.REGISTRATION_DATE);
+
+                    Long status =  domainService.getNumber(Worker.ENTITY_NAME, c.getWorkerId(), Worker.STATUS);
+
+                    return registrationDate != null && registrationDate.before(Dates.nextMonth(period.getOperatingMonth())) &&
+                            !Objects.equals(status, WorkerStatus.MANAGER_CHANGED) && c.isPk();
+                })
                 .count())));
     }
+
 
     public BigDecimal getPersonalRewardPoint(Sale sale, List<SaleItem> saleItems){
         BigDecimal point = ZERO;

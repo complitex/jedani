@@ -90,4 +90,9 @@ public class AttributeMapper extends BaseMapper {
         return sqlSession().selectOne("selectAttributeTextValue", Maps.of("entityName", entityName,
                 "objectId", objectId, "entityAttributeId", entityAttributeId));
     }
+
+    public Date getDate(String entityName, Long objectId, Long entityAttributeId){
+        return sqlSession().selectOne("selectAttributeDate", Maps.of("entityName", entityName,
+                "objectId", objectId, "entityAttributeId", entityAttributeId));
+    }
 }

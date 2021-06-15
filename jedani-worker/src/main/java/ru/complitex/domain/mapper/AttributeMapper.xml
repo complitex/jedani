@@ -111,4 +111,12 @@
           and v.locale_id = 1
     </select>
 
+    <!--suppress SqlResolve -->
+    <select id="selectAttributeDate" parameterType="map" resultType="date">
+        select a.date from `${entityName}` d
+          left join ${entityName}_attribute a on a.domain_id = d.id
+        where d.status = 1 and d.object_id = #{objectId}
+          and a.status = 1 and a.entity_attribute_id = #{entityAttributeId}
+    </select>
+
 </mapper>

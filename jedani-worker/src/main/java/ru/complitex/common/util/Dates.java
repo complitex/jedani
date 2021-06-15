@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Date;
 
@@ -98,6 +99,17 @@ public class Dates {
         LocalDate ld2 = d2.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
         return ld1.getYear() == ld2.getYear() && ld1.getMonthValue() == ld2.getMonthValue();
+    }
+
+    public static boolean isMoreYear(Date d1, Date d2) {
+        if (d1 == null || d2 == null) {
+            return false;
+        }
+
+        LocalDate ld1 = d1.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate ld2 = d2.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+        return Math.abs(ChronoUnit.MONTHS.between(ld2, ld1)) >= 12;
     }
 
     public static String getMonthText(Date date){

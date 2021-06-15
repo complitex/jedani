@@ -24,6 +24,8 @@ public class WorkerReward {
 
     private Long firstLevelCount = 0L;
 
+    private Long firstLevelPersonalCount = 0L;
+
     private BigDecimal groupSaleVolume = ZERO;
     private BigDecimal groupPaymentVolume = ZERO;
 
@@ -35,6 +37,8 @@ public class WorkerReward {
     private Long structureManagerCount = 0L;
 
     private Long rank = 0L;
+
+    private boolean pk;
 
     private final List<Reward> rewards = new ArrayList<>();
 
@@ -150,12 +154,28 @@ public class WorkerReward {
         this.firstLevelCount = firstLevelCount;
     }
 
+    public Long getFirstLevelPersonalCount() {
+        return firstLevelPersonalCount;
+    }
+
+    public void setFirstLevelPersonalCount(Long firstLevelPersonalCount) {
+        this.firstLevelPersonalCount = firstLevelPersonalCount;
+    }
+
     public Long getRank() {
         return rank;
     }
 
     public void setRank(Long rank) {
         this.rank = rank;
+    }
+
+    public boolean isPk() {
+        return pk;
+    }
+
+    public void setPk(boolean pk) {
+        this.pk = pk;
     }
 
     public List<Reward> getRewards() {

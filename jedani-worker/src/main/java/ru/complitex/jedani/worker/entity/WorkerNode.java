@@ -3,7 +3,6 @@ package ru.complitex.jedani.worker.entity;
 import com.google.common.base.MoreObjects;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -17,8 +16,6 @@ public class WorkerNode {
     private Long left;
     private Long right;
     private Long level;
-
-    private Date registrationDate;
 
     private List<WorkerNode> childNodes = new ArrayList<>();
 
@@ -60,14 +57,6 @@ public class WorkerNode {
 
     public void setLevel(Long level) {
         this.level = level;
-    }
-
-    public Date getRegistrationDate() {
-        return registrationDate;
-    }
-
-    public void setRegistrationDate(Date registrationDate) {
-        this.registrationDate = registrationDate;
     }
 
     public List<WorkerNode> getChildNodes() {

@@ -8,6 +8,7 @@ import ru.complitex.domain.util.Domains;
 
 import javax.inject.Inject;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -122,6 +123,10 @@ public class DomainService implements Serializable {
 
     public String getTextValue(String entityName, Long objectId, Long entityAttributeId){
         return attributeMapper.getTextValue(entityName, objectId, entityAttributeId);
+    }
+
+    public Date getDate(String entityName, Long objectId, Long entityAttributeId){
+        return attributeMapper.getDate(entityName, objectId, entityAttributeId);
     }
 
     public void delete(Domain domain){

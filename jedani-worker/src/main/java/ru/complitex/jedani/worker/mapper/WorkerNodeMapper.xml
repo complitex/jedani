@@ -7,13 +7,11 @@
         <result column="left" property="left"/>
         <result column="right" property="right"/>
         <result column="level" property="level"/>
-        <result column="registration_date" property="registrationDate"/>
     </resultMap>
 
     <select id="selectAllWorkerNodes" resultMap="workerNodeResultMap">
-        select w.object_id, wa_m.number manager_id, w.left, w.right, w.level, wa_c.date registration_date from worker w
+        select w.object_id, wa_m.number manager_id, w.left, w.right, w.level from worker w
             left join worker_attribute wa_m on wa_m.domain_id = w.id and wa_m.entity_attribute_id = 17 and wa_m.status = 1
-            left join worker_attribute wa_c on wa_c.domain_id = w.id and wa_c.entity_attribute_id = 14 and wa_c.status = 1
         where w.status = 1
     </select>
 
