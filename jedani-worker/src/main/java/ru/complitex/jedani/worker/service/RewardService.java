@@ -57,9 +57,6 @@ public class RewardService implements Serializable {
     private RewardMapper rewardMapper;
 
     @Inject
-    private ExchangeRateService exchangeRateService;
-
-    @Inject
     private PriceService priceService;
 
     public List<Reward> getRewardsBySaleId(Long saleId) {
@@ -205,7 +202,7 @@ public class RewardService implements Serializable {
 
             Date registrationDate = domainService.getDate(Worker.ENTITY_NAME, r.getWorkerId(), Worker.REGISTRATION_DATE);
 
-            r.setPk(!Dates.isMoreYear(registrationDate, period.getOperatingMonth()) || r.getYearPaymentVolume().compareTo(BigDecimal.valueOf(200)) >= 0);
+            r.setPk(Dates.isLessYear(period.getOperatingMonth(), registrationDate) || r.getYearPaymentVolume().compareTo(BigDecimal.valueOf(200)) >= 0);
 
             r.setGroupPaymentVolume(getPrivateGroup(r).stream()
                     .reduce(ZERO, (v, c) -> v.add(c.getPaymentVolume()), BigDecimal::add));

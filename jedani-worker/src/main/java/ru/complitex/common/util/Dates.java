@@ -101,15 +101,26 @@ public class Dates {
         return ld1.getYear() == ld2.getYear() && ld1.getMonthValue() == ld2.getMonthValue();
     }
 
-    public static boolean isMoreYear(Date d1, Date d2) {
-        if (d1 == null || d2 == null) {
+    public static boolean isMoreYear(Date d2, Date d1) {
+        if (d2 == null || d1 == null) {
             return false;
         }
 
         LocalDate ld1 = d1.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         LocalDate ld2 = d2.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
-        return Math.abs(ChronoUnit.MONTHS.between(ld2, ld1)) >= 12;
+        return ChronoUnit.MONTHS.between(ld2, ld1) >= 12;
+    }
+
+    public static boolean isLessYear(Date d2, Date d1) {
+        if (d2 == null || d1 == null) {
+            return false;
+        }
+
+        LocalDate ld1 = d1.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate ld2 = d2.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+        return ChronoUnit.MONTHS.between(ld2, ld1) <  12;
     }
 
     public static String getMonthText(Date date){
