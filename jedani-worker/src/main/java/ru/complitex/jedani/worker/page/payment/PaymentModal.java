@@ -266,7 +266,11 @@ public class PaymentModal extends AbstractEditModal<Payment> {
         payment.setRate(rate);
 
         if (payment.getType().equals(PaymentType.AMOUNT)){
-            payment.setPoint(payment.getAmount().divide(rate, 2, RoundingMode.HALF_EVEN));
+            if (sale.isFeeWithdraw()) {
+                payment.setPoint(sale.getTotal());
+            } else {
+                payment.setPoint(payment.getAmount().divide(rate, 2, RoundingMode.HALF_EVEN));
+            }
         }else if (payment.getType().equals(PaymentType.POINT)){
             payment.setAmount(payment.getPoint().multiply(rate).setScale(2, RoundingMode.HALF_EVEN));
         }
