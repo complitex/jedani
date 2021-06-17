@@ -576,7 +576,7 @@ public class RewardService implements Serializable {
 
         updateLocal(sale, reward);
 
-        if (reward.getPoint().compareTo(ZERO) != 0) {
+        if (reward.getPoint().compareTo(ZERO) != 0 && getRewardsPointSum(sale.getObjectId(), rewardType, RewardStatus.WITHDRAWN).compareTo(ZERO) == 0) {
             domainService.save(reward);
         }
     }
