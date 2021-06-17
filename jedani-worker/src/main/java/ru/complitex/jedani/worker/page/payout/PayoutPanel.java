@@ -154,7 +154,10 @@ public class PayoutPanel extends Panel {
         columns.add(new AbstractDomainColumn<>("amount", this) {
             @Override
             public void populateItem(Item<ICellPopulator<Account>> cellItem, String componentId, IModel<Account> rowModel) {
-                Fragment fragment = new Fragment(componentId, "payout", PayoutPanel.this){};
+                Fragment fragment = new Fragment(componentId, "payout", PayoutPanel.this);
+
+                fragment.setVisible(rowModel.getObject().getPeriodId().equals(periodMapper.getActualPeriodId()));
+
                 cellItem.add(fragment);
 
                 fragment.add(new TextField<>("amount", new PropertyModel<>(rowModel, "map.amount"), BigDecimal.class)

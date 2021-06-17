@@ -21,4 +21,8 @@ public class Currency extends Domain {
     public String getName() {
         return getTextValue(NAME);
     }
+
+    public String getCode() {
+        return getText(CODE);
+    }
 }

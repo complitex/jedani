@@ -15,6 +15,7 @@ import ru.complitex.jedani.worker.page.BasePage;
 
 import javax.inject.Inject;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static ru.complitex.jedani.worker.security.JedaniRoles.ADMINISTRATORS;
@@ -28,7 +29,9 @@ public class PayoutListPage extends BasePage {
     private DomainService domainService;
 
     public PayoutListPage() {
-        List<ITab> payouts = domainService.getDomains(Currency.class, FilterWrapper.of(new Currency())).stream()
+        List<ITab> payouts = domainService.getDomains(Currency.class, FilterWrapper.of(new Currency()))
+                .stream()
+                .filter(currency -> !Objects.equals(currency.getCode(), "EUR"))
                 .map(currency -> new AbstractTab(Model.of(Attributes.capitalize(currency.getName()))) {
                     @Override
                     public WebMarkupContainer getPanel(String panelId) {
