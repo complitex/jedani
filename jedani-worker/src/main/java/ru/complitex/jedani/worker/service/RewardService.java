@@ -549,7 +549,7 @@ public class RewardService implements Serializable {
         return managers;
     }
 
-    public void calculateSaleReward(Sale sale, List<SaleItem> saleItems){
+    public void calculateSaleReward(Sale sale, List<SaleItem> saleItems, long rewardStatus){
         Reward reward = new Reward();
 
         Period period = periodMapper.getActualPeriod();
@@ -568,15 +568,22 @@ public class RewardService implements Serializable {
         reward.setWorkerId(sale.getSellerWorkerId());
         reward.setType(rewardType);
         reward.setTotal(total);
-        reward.setPoint(total);
         reward.setDate(Dates.currentDate());
         reward.setMonth(month);
-        reward.setRewardStatus(RewardStatus.WITHDRAWN);
+        reward.setRewardStatus(rewardStatus);
         reward.setPeriodId(period.getObjectId());
 
         updateLocal(sale, reward);
 
-        if (reward.getPoint().compareTo(ZERO) != 0 && getRewardsPointSum(sale.getObjectId(), rewardType, RewardStatus.WITHDRAWN).compareTo(ZERO) == 0) {
+        if (rewardStatus == RewardStatus.ESTIMATED) {
+            reward.setPoint(total.subtract(getRewardsPointSum(sale.getObjectId(), rewardType, RewardStatus.ESTIMATED)));
+        } else if (rewardStatus == RewardStatus.CHARGED) {
+            reward.setPoint(calcRewardPoint(sale, rewardType, period.getOperatingMonth(), total));
+        } else if (rewardStatus == RewardStatus.WITHDRAWN) {
+            reward.setPoint(total.subtract(getRewardsPointSum(sale.getObjectId(), rewardType, RewardStatus.WITHDRAWN)));
+        }
+
+        if (reward.getPoint().compareTo(ZERO) != 0) {
             domainService.save(reward);
         }
     }
@@ -808,7 +815,8 @@ public class RewardService implements Serializable {
             WorkerRewardTree tree = getWorkerRewardTree(period);
 
             saleService.getActiveSales().forEach(sale -> {
-                calculateSaleReward(sale, saleService.getSaleItems(sale.getObjectId()));
+                calculateSaleReward(sale, saleService.getSaleItems(sale.getObjectId()), RewardStatus.ESTIMATED);
+                calculateSaleReward(sale, saleService.getSaleItems(sale.getObjectId()), RewardStatus.CHARGED);
 
                 calculateMkBonusReward(sale, period, RewardStatus.ESTIMATED);
                 calculateMkBonusReward(sale, period, RewardStatus.CHARGED);

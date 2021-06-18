@@ -764,7 +764,7 @@ public class SaleModal extends Modal<Sale> {
             saleService.save(sale, saleItems);
 
             if (sale.isFeeWithdraw()) {
-                rewardService.calculateSaleReward(sale, saleItems);
+                rewardService.calculateSaleReward(sale, saleItems, RewardStatus.WITHDRAWN);
             }
 
             getSession().success(getString("info_sold"));
