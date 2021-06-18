@@ -573,8 +573,6 @@ public class RewardService implements Serializable {
         reward.setRewardStatus(rewardStatus);
         reward.setPeriodId(period.getObjectId());
 
-        updateLocal(sale, reward);
-
         if (rewardStatus == RewardStatus.ESTIMATED) {
             reward.setPoint(total.subtract(getRewardsPointSum(sale.getObjectId(), rewardType, RewardStatus.ESTIMATED)));
         } else if (rewardStatus == RewardStatus.CHARGED) {
@@ -582,6 +580,8 @@ public class RewardService implements Serializable {
         } else if (rewardStatus == RewardStatus.WITHDRAWN) {
             reward.setPoint(total.subtract(getRewardsPointSum(sale.getObjectId(), rewardType, RewardStatus.WITHDRAWN)));
         }
+
+        updateLocal(sale, reward);
 
         if (reward.getPoint().compareTo(ZERO) != 0) {
             domainService.save(reward);
