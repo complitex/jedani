@@ -7,7 +7,6 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel
 import de.agilecoders.wicket.core.markup.html.bootstrap.dialog.Modal;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
@@ -83,7 +82,9 @@ public class CardModal extends Modal<Card> {
         appendShowDialogJavaScript(target);
     }
 
-    public void edit(Card card, AjaxRequestTarget target){
+    public void edit(Long cardId, AjaxRequestTarget target){
+        Card card = cardService.getCard(cardId);
+
         cardModel.setObject(card);
 
         target.add(container);
@@ -129,13 +130,9 @@ public class CardModal extends Modal<Card> {
         appendCloseDialogJavaScript(target);
 
         onUpdate(target);
-
-        container.visitChildren(FormComponent.class, (c, v) -> ((FormComponent) c).clearInput());
     }
 
     private void cancel(AjaxRequestTarget target){
-        container.visitChildren(FormComponent.class, (c, v) -> ((FormComponent) c).clearInput());
-
         appendCloseDialogJavaScript(target);
     }
 

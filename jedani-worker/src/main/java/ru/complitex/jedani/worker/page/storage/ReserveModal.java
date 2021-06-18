@@ -123,7 +123,9 @@ public class ReserveModal extends Modal<Product> {
         }.setLabel(new ResourceModel("cancel")));
     }
 
-    void open(Product product, AjaxRequestTarget target){
+    void open(Long productId, AjaxRequestTarget target){
+        Product product = domainService.getDomain(Product.class, productId);
+
         productModel.setObject(product);
 
         container.setVisible(true);

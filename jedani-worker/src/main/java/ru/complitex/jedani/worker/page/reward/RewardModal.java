@@ -56,10 +56,12 @@ public class RewardModal extends AbstractEditModal<Reward> {
     }
 
     @Override
-    public void edit(Reward object, AjaxRequestTarget target) {
-        super.edit(object, target);
+    public void edit(Long rewardId, AjaxRequestTarget target) {
+        Reward reward = domainService.getDomain(Reward.class, rewardId);
 
-        model.setObject(object);
+        super.edit(rewardId, target);
+
+        model.setObject(reward);
     }
 
     @Override

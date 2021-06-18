@@ -204,8 +204,10 @@ public class PaymentModal extends AbstractEditModal<Payment> {
     }
 
     @Override
-    public void edit(Payment payment, AjaxRequestTarget target) {
-        super.edit(payment, target);
+    public void edit(Long  paymentId, AjaxRequestTarget target) {
+        super.edit(paymentId, target);
+
+        Payment payment = domainService.getDomain(Payment.class, paymentId);
 
         setModelObject(payment);
     }

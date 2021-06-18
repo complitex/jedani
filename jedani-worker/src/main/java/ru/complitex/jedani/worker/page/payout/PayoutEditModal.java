@@ -13,6 +13,7 @@ import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.util.Dates;
 import ru.complitex.domain.component.form.AbstractEditModal;
 import ru.complitex.domain.mapper.DomainMapper;
+import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.entity.Account;
 import ru.complitex.jedani.worker.entity.Payout;
 import ru.complitex.jedani.worker.mapper.PayoutMapper;
@@ -36,6 +37,9 @@ public class PayoutEditModal extends AbstractEditModal<Account> {
 
     @Inject
     private WorkerService workerService;
+
+    @Inject
+    private DomainService domainService;
 
     private final IModel<Account> accountModel = Model.of(new Account());
 
@@ -73,8 +77,10 @@ public class PayoutEditModal extends AbstractEditModal<Account> {
     }
 
     @Override
-    public void edit(Account account, AjaxRequestTarget target) {
-        super.edit(account, target);
+    public void edit(Long accountId, AjaxRequestTarget target) {
+        Account account = domainService.getDomain(Account.class, accountId);
+
+        super.edit(accountId, target);
 
         accountModel.setObject(account);
 

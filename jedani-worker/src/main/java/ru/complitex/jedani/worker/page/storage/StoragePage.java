@@ -392,7 +392,7 @@ public class StoragePage extends BasePage {
                         cellItem.add(new AjaxEventBehavior("click") {
                             @Override
                             protected void onEvent(AjaxRequestTarget target) {
-                                reserveModal.open(product, target);
+                                reserveModal.open(product.getObjectId(), target);
                             }
                         });
                     }

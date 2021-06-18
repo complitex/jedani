@@ -56,10 +56,12 @@ public class PayoutModal extends AbstractEditModal<Payout> {
     }
 
     @Override
-    public void edit(Payout object, AjaxRequestTarget target) {
-        super.edit(object, target);
+    public void edit(Long payoutId, AjaxRequestTarget target) {
+        Payout payout = domainService.getDomain(Payout.class, payoutId);
 
-        model.setObject(object);
+        super.edit(payoutId, target);
+
+        model.setObject(payout);
     }
 
     @Override

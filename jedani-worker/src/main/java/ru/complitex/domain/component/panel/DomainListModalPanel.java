@@ -232,7 +232,7 @@ public class DomainListModalPanel<T extends Domain> extends Panel {
     }
 
     protected void onEdit(T object, AjaxRequestTarget target) {
-        domainEditModal.edit(object, target);
+        domainEditModal.edit(object.getObjectId(), target);
     }
 
     protected void onRowItem(Item<T> item){

@@ -12,7 +12,6 @@ import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
@@ -264,7 +263,9 @@ public class PromotionModal extends Modal<Promotion> {
         open(target);
     }
 
-    void edit(Promotion promotion, AjaxRequestTarget target){
+    void edit(Long promotionId, AjaxRequestTarget target){
+        Promotion promotion = domainService.getDomain(Promotion.class, promotionId);
+
         promotionService.loadRules(promotion);
 
         setModelObject(promotion);
@@ -280,16 +281,12 @@ public class PromotionModal extends Modal<Promotion> {
 
     private void close(AjaxRequestTarget target){
         appendCloseDialogJavaScript(target);
-
-        container.visitChildren(FormComponent.class, (c, v) -> ((FormComponent<?>)c).clearInput());
     }
 
     private void save(AjaxRequestTarget target){
         Promotion promotion = getModelObject();
 
         promotionService.save(promotion);
-
-        container.visitChildren(FormComponent.class, (c, v) -> ((FormComponent<?>) c).clearInput());
 
         success(getString("info_promotion_saved"));
 

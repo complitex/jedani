@@ -232,11 +232,21 @@ public class DomainModal<T extends Domain> extends AbstractModal<T> {
 
     @Override
     public void create(AjaxRequestTarget target){
-       edit(newDomain(), target);
+        T domain = newDomain();
+
+        setModelObject(domain);
+
+        listView.removeAll();
+        container.setVisible(true);
+        target.add(container);
+
+        show(target);
     }
 
     @Override
-    public void edit(T domain, AjaxRequestTarget target){
+    public void edit(Long objectId, AjaxRequestTarget target){
+        T domain = domainService.getDomain(domainClass, objectId);
+
         setModelObject(domain);
 
         listView.removeAll();

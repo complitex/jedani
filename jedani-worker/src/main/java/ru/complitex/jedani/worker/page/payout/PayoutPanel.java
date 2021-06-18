@@ -221,7 +221,7 @@ public class PayoutPanel extends Panel {
                 cellItem.add(new LinkPanel(componentId, new BootstrapAjaxLink<>(LinkPanel.COMPONENT_ID, Buttons.Type.Link) {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
-                        payoutEditModal.edit(rowModel.getObject(), target);
+                        payoutEditModal.edit(rowModel.getObject().getObjectId(), target);
                     }
 
                     @Override
@@ -263,7 +263,7 @@ public class PayoutPanel extends Panel {
 
             @Override
             protected void onRowClick(Account account, AjaxRequestTarget target) {
-                payoutEditModal.edit(account, target);
+                payoutEditModal.edit(account.getObjectId(), target);
             }
 
             @Override

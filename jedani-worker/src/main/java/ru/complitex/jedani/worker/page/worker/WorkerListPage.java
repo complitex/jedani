@@ -124,9 +124,6 @@ public class WorkerListPage extends DomainListPage<Worker>{
         list.add(entity.getEntityAttribute(Worker.EMAIL).setStringType(StringType.LOWER_CASE));
         list.add(entity.getEntityAttribute(Worker.REGISTRATION_DATE));
 
-//        list.add(entity.getEntityAttribute(Worker.POSITION).withReference(Position.ENTITY_NAME, Position.NAME));
-//        list.add(entity.getEntityAttribute(Worker.TYPE));
-
         return list;
     }
 
@@ -246,7 +243,7 @@ public class WorkerListPage extends DomainListPage<Worker>{
                         Buttons.Type.Link) {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
-                        workerRemoveModal.delete(target, worker);
+                        workerRemoveModal.delete(worker.getObjectId(), target);
                     }
 
                     @Override

@@ -229,7 +229,7 @@ public class DomainListModalPage<T extends Domain> extends BasePage{
     }
 
     protected void onEdit(T object, AjaxRequestTarget target) {
-        domainModal.edit(object, target);
+        domainModal.edit(object.getObjectId(), target);
     }
 
     protected void onRowItem(Item<T> item){

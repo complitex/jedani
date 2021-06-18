@@ -102,7 +102,9 @@ public class PaymentRemoveModal extends Modal<Sale> {
         }.setLabel(new ResourceModel("cancel")));
     }
 
-    public void delete(AjaxRequestTarget target, Payment payment){
+    public void delete(Long paymentId, AjaxRequestTarget target){
+        Payment payment = domainService.getDomain(Payment.class, paymentId);
+
         paymentModel.setObject(payment);
 
         target.add(paymentLabel);

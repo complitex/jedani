@@ -79,7 +79,9 @@ public class SaleDecisionRemoveModal extends Modal<SaleDecision> {
         }.setLabel(new ResourceModel("cancel")));
     }
 
-    public void open(SaleDecision saleDecision, AjaxRequestTarget target){
+    public void open(Long saleDecisionId, AjaxRequestTarget target){
+        SaleDecision saleDecision = domainService.getDomain(SaleDecision.class, saleDecisionId);
+
         saleDecisionModel.setObject(saleDecision);
 
         target.add(container);

@@ -136,7 +136,7 @@ public class PaymentPanel extends DomainListModalPanel<Payment> {
 
     @Override
     protected void onEdit(Payment payment, AjaxRequestTarget target) {
-        paymentModal.edit(payment, target);
+        paymentModal.edit(payment.getObjectId(), target);
     }
 
     @Override
@@ -166,7 +166,7 @@ public class PaymentPanel extends DomainListModalPanel<Payment> {
                     Buttons.Type.Link) {
                 @Override
                 protected void onSubmit(AjaxRequestTarget target) {
-                    paymentRemoveModal.delete(target, rowModel.getObject());
+                    paymentRemoveModal.delete(rowModel.getObject().getObjectId(), target);
                 }
 
                 @Override

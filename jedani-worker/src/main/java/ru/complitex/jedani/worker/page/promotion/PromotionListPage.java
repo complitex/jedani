@@ -60,7 +60,7 @@ public class PromotionListPage extends DomainListModalPage<Promotion> {
         item.add(new AjaxEventBehavior("click") {
             @Override
             protected void onEvent(AjaxRequestTarget target) {
-                promotionModal.edit(item.getModel().getObject(), target);
+                promotionModal.edit(item.getModel().getObject().getObjectId(), target);
             }
         });
 

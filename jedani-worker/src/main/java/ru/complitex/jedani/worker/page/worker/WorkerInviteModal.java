@@ -12,6 +12,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
+import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.entity.Worker;
 import ru.complitex.jedani.worker.service.InviteService;
 
@@ -25,6 +26,9 @@ public class WorkerInviteModal extends Modal<Worker> {
     @Inject
     private InviteService inviteService;
 
+    @Inject
+    private DomainService domainService;
+
     private final IModel<Worker> workerModel = Model.of(new Worker());
 
     private final Component key;
@@ -35,14 +39,14 @@ public class WorkerInviteModal extends Modal<Worker> {
 
         setBackdrop(Backdrop.FALSE);
 
-        header(new LoadableDetachableModel<String>() {
+        header(new LoadableDetachableModel<>() {
             @Override
             protected String load() {
                 return getString("header");
             }
         });
 
-        IModel<String> inviteModel = new LoadableDetachableModel<String>() {
+        IModel<String> inviteModel = new LoadableDetachableModel<>() {
             @Override
             protected String load() {
                 return "https://stru.jedani-mycook.com/invite/" + inviteService.encodeKey(workerModel.getObject().getJId());
@@ -68,7 +72,9 @@ public class WorkerInviteModal extends Modal<Worker> {
         }.setLabel(new ResourceModel("ok")));
     }
 
-    public void invite(AjaxRequestTarget target, Worker worker){
+    public void invite(Long workerId, AjaxRequestTarget target){
+        Worker worker = domainService.getDomain(Worker.class, workerId);
+
         workerModel.setObject(worker);
 
         target.add(key, copy);

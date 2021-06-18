@@ -879,7 +879,7 @@ public class WorkerPage extends BasePage {
                                     Buttons.Type.Link) {
                                 @Override
                                 public void onClick(AjaxRequestTarget target) {
-                                    workerRemoveModal.delete(target, rowModel.getObject());
+                                    workerRemoveModal.delete(rowModel.getObject().getObjectId(), target);
                                 }
 
                                 @Override
@@ -973,7 +973,7 @@ public class WorkerPage extends BasePage {
                 structure.add(new AjaxLink<Worker>("invite") {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
-                        workerInviteModal.invite(target, worker);
+                        workerInviteModal.invite(worker.getObjectId(), target);
                     }
 
                     @Override

@@ -20,7 +20,6 @@ import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
-import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -651,8 +650,6 @@ public class SaleModal extends Modal<Sale> {
     private void close(AjaxRequestTarget target, boolean update){
         super.close(target);
 
-        container.visitChildren(FormComponent.class, (c, v) -> ((FormComponent<?>) c).clearInput());
-
         if (update) {
             onUpdate(target);
         }
@@ -697,7 +694,9 @@ public class SaleModal extends Modal<Sale> {
         open(target);
     }
 
-    void edit(Sale sale, AjaxRequestTarget target, boolean edit){
+    void edit(Long  saleId, AjaxRequestTarget target, boolean edit){
+        Sale sale = saleService.getSale(saleId);
+
         saleModel.setObject(sale);
 
         lastName.setObjectId(sale.getBuyerLastName());

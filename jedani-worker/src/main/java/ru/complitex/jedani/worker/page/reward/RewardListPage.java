@@ -27,7 +27,7 @@ public class RewardListPage extends BasePage {
 
             @Override
             protected void onEdit(Reward reward, AjaxRequestTarget target) {
-                rewardModal.edit(reward, target);
+                rewardModal.edit(reward.getObjectId(), target);
             }
 
             @Override

@@ -19,5 +19,5 @@ public abstract class AbstractModal<T> extends Modal<T> {
 
     public abstract void create(AjaxRequestTarget target);
 
-    public abstract void edit(T object, AjaxRequestTarget target);
+    public abstract void edit(Long objectId, AjaxRequestTarget target);
 }

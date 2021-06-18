@@ -104,7 +104,7 @@ public abstract class AbstractEditModal<T> extends AbstractModal<T> {
         appendShowDialogJavaScript(target);
     }
 
-    public void edit(T object, AjaxRequestTarget target) {
+    public void edit(Long objectId, AjaxRequestTarget target) {
         target.add(getContainer());
 
         appendShowDialogJavaScript(target);

@@ -97,8 +97,8 @@ public class SaleDecisionListPage extends DomainListModalPage<SaleDecision> {
     }
 
     @Override
-    protected void onEdit(SaleDecision object, AjaxRequestTarget target) {
-        saleDecisionModal.edit(object, target);
+    protected void onEdit(SaleDecision saleDecision, AjaxRequestTarget target) {
+        saleDecisionModal.edit(saleDecision.getObjectId(), target);
     }
 
     @Override
@@ -132,7 +132,7 @@ public class SaleDecisionListPage extends DomainListModalPage<SaleDecision> {
                 new BootstrapAjaxButton(LinkPanel.COMPONENT_ID, Buttons.Type.Link) {
                     @Override
                     protected void onSubmit(AjaxRequestTarget target) {
-                        saleDecisionRemoveModal.open(rowModel.getObject(), target);
+                        saleDecisionRemoveModal.open(rowModel.getObject().getObjectId(), target);
                     }
 
                     @Override

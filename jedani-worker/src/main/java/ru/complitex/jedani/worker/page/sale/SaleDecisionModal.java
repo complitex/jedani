@@ -12,7 +12,6 @@ import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -43,7 +42,6 @@ import ru.complitex.domain.model.NumberAttributeModel;
 import ru.complitex.domain.model.TextAttributeModel;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
-import ru.complitex.domain.util.Domains;
 import ru.complitex.jedani.worker.component.NomenclatureAutoCompleteList;
 import ru.complitex.jedani.worker.component.RuleTable;
 import ru.complitex.jedani.worker.component.TypeSelect;
@@ -273,8 +271,8 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
         appendShowDialogJavaScript(target);
     }
 
-    public void edit(SaleDecision saleDecision,  AjaxRequestTarget target){
-        saleDecision = Domains.copy(saleDecision);
+    public void edit(Long saleDecisionId,  AjaxRequestTarget target){
+        SaleDecision saleDecision = saleDecisionService.getSaleDecision(saleDecisionId);
 
         saleDecisionService.loadRules(saleDecision);
 
@@ -286,16 +284,12 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
 
     private void cancel(AjaxRequestTarget target) {
         appendCloseDialogJavaScript(target);
-
-        container.visitChildren(FormComponent.class, (c, v) -> ((FormComponent<?>) c).clearInput());
     }
 
     private void save(AjaxRequestTarget target) {
         appendCloseDialogJavaScript(target);
 
         saleDecisionService.save(getModelObject());
-
-        container.visitChildren(FormComponent.class, (c, v) -> ((FormComponent<?>) c).clearInput());
 
         getSession().success(getString("info_sale_decision_saved"));
 

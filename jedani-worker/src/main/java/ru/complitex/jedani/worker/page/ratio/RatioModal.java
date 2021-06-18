@@ -47,10 +47,12 @@ public class RatioModal extends AbstractEditModal<Ratio> {
     }
 
     @Override
-    public void edit(Ratio object, AjaxRequestTarget target) {
-        super.edit(object, target);
+    public void edit(Long ratioId, AjaxRequestTarget target) {
+        Ratio ratio = domainService.getDomain(Ratio.class, ratioId);
 
-        model.setObject(object);
+        super.edit(ratioId, target);
+
+        model.setObject(ratio);
     }
 
     @Override

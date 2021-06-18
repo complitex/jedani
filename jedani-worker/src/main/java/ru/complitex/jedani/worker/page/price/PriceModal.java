@@ -291,11 +291,20 @@ public class PriceModal extends AbstractModal<Price> {
 
     @Override
     public void create(AjaxRequestTarget target) {
-        edit(new Price(),  target);
+        Price price = new Price();
+
+        priceModel.setObject(price);
+
+        container.setVisible(true);
+        target.add(container);
+
+        appendShowDialogJavaScript(target);
     }
 
     @Override
-    public void edit(Price price, AjaxRequestTarget target) {
+    public void edit(Long priceId, AjaxRequestTarget target) {
+        Price price = domainService.getDomain(Price.class, priceId);
+
         priceModel.setObject(price);
 
         container.setVisible(true);

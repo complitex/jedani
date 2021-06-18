@@ -155,4 +155,8 @@ public class CardService implements Serializable {
 
         return null;
     }
+
+    public Card getCard(Long cardId) {
+        return domainService.getDomain(Card.class, cardId);
+    }
 }

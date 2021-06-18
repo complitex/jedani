@@ -142,7 +142,7 @@ public class SalePanel extends DomainListModalPanel<Sale> {
     @Override
     protected AbstractDomainColumn<Sale> newDomainColumn(EntityAttribute a) {
         if (a.getEntityAttributeId() == Sale.PERIOD){
-            return new AbstractDomainColumn<Sale>("period", this) {
+            return new AbstractDomainColumn<>("period", this) {
                 @Override
                 public void populateItem(Item<ICellPopulator<Sale>> cellItem, String componentId, IModel<Sale> rowModel) {
                     Period period = periodMapper.getPeriod(rowModel.getObject().getPeriodId());
@@ -158,7 +158,7 @@ public class SalePanel extends DomainListModalPanel<Sale> {
     @Override
     protected void onInitColumns(List<IColumn<Sale, Sort>> columns) {
         if (!isCurrentWorkerFilter()) {
-            columns.add(new AbstractDomainColumn<Sale>(SaleItem.FILTER_SELLER_WORKER, this) {
+            columns.add(new AbstractDomainColumn<>(SaleItem.FILTER_SELLER_WORKER, this) {
                 @Override
                 public void populateItem(Item<ICellPopulator<Sale>> cellItem, String componentId, IModel<Sale> rowModel) {
                     Sale sale = rowModel.getObject();
@@ -168,7 +168,7 @@ public class SalePanel extends DomainListModalPanel<Sale> {
             });
         }
 
-        columns.add(new AbstractDomainColumn<Sale>(SaleItem.FILTER_BUYER, this) {
+        columns.add(new AbstractDomainColumn<>(SaleItem.FILTER_BUYER, this) {
             @Override
             public void populateItem(Item<ICellPopulator<Sale>> cellItem, String componentId, IModel<Sale> rowModel) {
                 Sale sale = rowModel.getObject();
@@ -178,7 +178,7 @@ public class SalePanel extends DomainListModalPanel<Sale> {
             }
         });
 
-        columns.add(new AbstractDomainColumn<Sale>("nomenclatures", this) {
+        columns.add(new AbstractDomainColumn<>("nomenclatures", this) {
             @Override
             public void populateItem(Item<ICellPopulator<Sale>> cellItem, String componentId, IModel<Sale> rowModel) {
                 String nomenclatures = saleService.getSaleItems(rowModel.getObject().getObjectId()).stream()
@@ -190,7 +190,7 @@ public class SalePanel extends DomainListModalPanel<Sale> {
             }
         });
 
-        columns.add(new AbstractDomainColumn<Sale>("total", this) {
+        columns.add(new AbstractDomainColumn<>("total", this) {
             @Override
             public void populateItem(Item<ICellPopulator<Sale>> cellItem, String componentId, IModel<Sale> rowModel) {
                 cellItem.add(new Label(componentId, Objects.defaultIfNull(rowModel.getObject().getTotal(), BigDecimal.ZERO)
@@ -198,7 +198,7 @@ public class SalePanel extends DomainListModalPanel<Sale> {
             }
         });
 
-        columns.add(new AbstractDomainColumn<Sale>("storage", this) {
+        columns.add(new AbstractDomainColumn<>("storage", this) {
             @Override
             public void populateItem(Item<ICellPopulator<Sale>> cellItem, String componentId, IModel<Sale> rowModel) {
                 Sale sale = rowModel.getObject();
@@ -207,7 +207,7 @@ public class SalePanel extends DomainListModalPanel<Sale> {
             }
         });
 
-        columns.add(new AbstractDomainColumn<Sale>("installmentMonths", this) {
+        columns.add(new AbstractDomainColumn<>("installmentMonths", this) {
             @Override
             public void populateItem(Item<ICellPopulator<Sale>> cellItem, String componentId, IModel<Sale> rowModel) {
                 Long installmentMonths = rowModel.getObject().getInstallmentMonths();
@@ -217,7 +217,7 @@ public class SalePanel extends DomainListModalPanel<Sale> {
             }
         });
 
-        columns.add(new AbstractDomainColumn<Sale>("status", this) {
+        columns.add(new AbstractDomainColumn<>("status", this) {
             @Override
             public void populateItem(Item<ICellPopulator<Sale>> cellItem, String componentId, IModel<Sale> rowModel) {
                 Sale sale = rowModel.getObject();
@@ -262,7 +262,7 @@ public class SalePanel extends DomainListModalPanel<Sale> {
 
     @Override
     protected void onEdit(Sale sale, AjaxRequestTarget target) {
-        saleModal.edit(sale, target, !isViewOnly());
+        saleModal.edit(sale.getObjectId(), target, !isViewOnly());
     }
 
     @Override

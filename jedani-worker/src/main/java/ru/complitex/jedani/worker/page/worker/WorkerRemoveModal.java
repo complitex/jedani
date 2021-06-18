@@ -38,7 +38,7 @@ public class WorkerRemoveModal extends Modal<Worker> {
 
         setBackdrop(Backdrop.FALSE);
 
-        header(new LoadableDetachableModel<String>() {
+        header(new LoadableDetachableModel<>() {
             @Override
             protected String load() {
                 return getString(Objects.equals(workerModel.getObject().getType(), WorkerType.USER)
@@ -85,7 +85,9 @@ public class WorkerRemoveModal extends Modal<Worker> {
         }.setLabel(new ResourceModel("cancel")));
     }
 
-    public void delete(AjaxRequestTarget target, Worker worker){
+    public void delete(Long workerId, AjaxRequestTarget target){
+        Worker worker = workerService.getWorker(workerId);
+
         workerModel.setObject(worker);
 
         target.add(workerLabel, get("dialog:header:header-label"));

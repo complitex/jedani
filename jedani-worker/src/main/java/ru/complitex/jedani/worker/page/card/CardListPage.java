@@ -87,7 +87,7 @@ public class CardListPage extends DomainListModalPage<Card> {
     }
 
     @Override
-    protected void onEdit(Card object, AjaxRequestTarget target) {
-        cardModal.edit(object, target);
+    protected void onEdit(Card card, AjaxRequestTarget target) {
+        cardModal.edit(card.getObjectId(), target);
     }
 }
