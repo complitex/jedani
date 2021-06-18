@@ -629,7 +629,7 @@ public class RewardService implements Serializable {
             }
 
             if (rewardStatus == RewardStatus.CHARGED &&
-                    paymentService.getPaymentsVolumeBySaleId(sale.getObjectId(), period.getOperatingMonth()).compareTo(sale.getTotal()) == 0) {
+                    paymentService.getPaymentsVolumeBySaleId(sale.getObjectId(), period.getOperatingMonth()).compareTo(sale.getTotal()) < 0) {
                 return;
             }
 
