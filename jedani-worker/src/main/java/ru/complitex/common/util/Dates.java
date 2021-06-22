@@ -101,6 +101,13 @@ public class Dates {
         return ld1.getYear() == ld2.getYear() && ld1.getMonthValue() == ld2.getMonthValue();
     }
 
+    public static boolean isSameMonthOrBefore(Date d1, Date d2){
+        LocalDate ld1 = d1.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate ld2 = d2.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+        return (ld1.getYear() == ld2.getYear() && ld1.getMonthValue() == ld2.getMonthValue()) || ld1.isBefore(ld2);
+    }
+
     public static boolean isMoreYear(Date d2, Date d1) {
         if (d2 == null || d1 == null) {
             return false;

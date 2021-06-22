@@ -13,10 +13,7 @@ import ru.complitex.common.wicket.form.*;
 import ru.complitex.domain.component.form.AbstractEditModal;
 import ru.complitex.domain.model.NumberAttributeModel;
 import ru.complitex.domain.service.DomainService;
-import ru.complitex.jedani.worker.entity.Payment;
-import ru.complitex.jedani.worker.entity.PaymentType;
-import ru.complitex.jedani.worker.entity.Sale;
-import ru.complitex.jedani.worker.entity.SaleItem;
+import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.mapper.PeriodMapper;
 import ru.complitex.jedani.worker.service.PriceService;
 import ru.complitex.jedani.worker.service.SaleDecisionService;
@@ -63,6 +60,8 @@ public class PaymentModal extends AbstractEditModal<Payment> {
 
         setModel(Model.of(new Payment()));
 
+        Period period = periodMapper.getActualPeriod();
+
         add(new FormGroupDateTextField("date", getModel(), Payment.DATE)
                 .onUpdate(t -> {
                     Payment payment = getModelObject();
@@ -73,10 +72,12 @@ public class PaymentModal extends AbstractEditModal<Payment> {
 
                     Sale sale = !sales.isEmpty() ? sales.get(0) : null;
 
-                    if (sale != null && sale.isFeeWithdraw()) {
-                        if (!Dates.isSameDay(sale.getDate(), payment.getDate())) {
-                            error(getString("error_fee_withdraw_same_day"));
-                        }
+                    if (!Dates.isSameMonthOrBefore(payment.getDate(), period.getOperatingMonth())) {
+                        error(getString("error_date_more_than_actual"));
+                    }
+
+                    if (sale != null && sale.isFeeWithdraw() && !Dates.isSameDay(sale.getDate(), payment.getDate())) {
+                        error(getString("error_fee_withdraw_same_day"));
                     }
 
                     t.add(getFeedback());
@@ -160,10 +161,6 @@ public class PaymentModal extends AbstractEditModal<Payment> {
             Sale sale = !sales.isEmpty() ? sales.get(0) : null;
 
             if (sale != null && sale.isFeeWithdraw()) {
-                if (!Dates.isSameDay(sale.getDate(), payment.getDate())) {
-                    error(getString("error_fee_withdraw_same_day"));
-                }
-
                 if (payment.getAmount().compareTo(sale.getTotalLocal()) != 0) {
                     error(getString("error_fee_withdraw_amount"));
                 }
@@ -239,6 +236,36 @@ public class PaymentModal extends AbstractEditModal<Payment> {
 
         Sale sale = sales.get(0);
 
+        Period period = periodMapper.getActualPeriod();
+
+        if (!Dates.isSameMonthOrBefore(payment.getDate(), period.getOperatingMonth())) {
+            error(getString("error_date_more_than_actual"));
+
+            target.add(getFeedback());
+
+            return;
+        }
+
+        if (sale.isFeeWithdraw()){
+            if (!Dates.isSameDay(sale.getDate(), payment.getDate())) {
+                error(getString("error_fee_withdraw_same_day"));
+
+                target.add(getFeedback());
+
+                return;
+            }
+
+            if (payment.getAmount().compareTo(sale.getTotalLocal()) != 0) {
+                error(getString("error_fee_withdraw_local"));
+
+                target.add(getFeedback());
+
+                return;
+            }
+        }
+
+
+
         List<SaleItem> saleItems = domainService.getDomains(SaleItem.class, FilterWrapper.of((SaleItem) new SaleItem()
                 .setParentId(sale.getObjectId())));
 
@@ -298,24 +325,6 @@ public class PaymentModal extends AbstractEditModal<Payment> {
 
         if (payment.getObjectId() == null){
             payment.setPeriodId(periodMapper.getActualPeriod().getObjectId());
-        }
-
-        if (sale.isFeeWithdraw()){
-            if (!Dates.isSameDay(sale.getDate(), payment.getDate())) {
-                error(getString("error_fee_withdraw_same_day"));
-
-                target.add(getFeedback());
-
-                return;
-            }
-
-            if (payment.getAmount().compareTo(sale.getTotalLocal()) != 0) {
-                error(getString("error_fee_withdraw_local"));
-
-                target.add(getFeedback());
-
-                return;
-            }
         }
 
         payment.setCurrencyId(workerService.getCurrencyId(sale.getSellerWorkerId()));
