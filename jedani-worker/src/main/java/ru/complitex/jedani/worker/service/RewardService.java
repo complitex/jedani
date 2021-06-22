@@ -815,8 +815,12 @@ public class RewardService implements Serializable {
             WorkerRewardTree tree = getWorkerRewardTree(period);
 
             saleService.getActiveSales().forEach(sale -> {
-                calculateSaleReward(sale, saleService.getSaleItems(sale.getObjectId()), RewardStatus.ESTIMATED);
-                calculateSaleReward(sale, saleService.getSaleItems(sale.getObjectId()), RewardStatus.CHARGED);
+                if (sale.isFeeWithdraw()) {
+                    calculateSaleReward(sale, saleService.getSaleItems(sale.getObjectId()), RewardStatus.WITHDRAWN);
+                } else {
+                    calculateSaleReward(sale, saleService.getSaleItems(sale.getObjectId()), RewardStatus.ESTIMATED);
+                    calculateSaleReward(sale, saleService.getSaleItems(sale.getObjectId()), RewardStatus.CHARGED);
+                }
 
                 calculateMkBonusReward(sale, period, RewardStatus.ESTIMATED);
                 calculateMkBonusReward(sale, period, RewardStatus.CHARGED);
