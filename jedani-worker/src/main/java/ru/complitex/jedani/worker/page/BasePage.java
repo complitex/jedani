@@ -293,15 +293,15 @@ public class BasePage extends WebPage{
         menu.add(storages);
 
         WebMarkupContainer sales = new WebMarkupContainer("sales");
-        sales.setVisible(isAdmin() || isPromotionAdmin() || isSaleAdmin() || isPaymentAdmin() || isRegionalLeader());
+        sales.setVisible(isAdmin() || isPromotionAdmin() || isSaleAdmin() || isPaymentAdmin() || isPayoutAdmin() || isRegionalLeader());
         sales.add(newBehavior());
         sales.add(new WebMarkupContainer("link").add(newBehaviorLink()));
         sales.add(new WebMarkupContainer("list")
                 .add(new MenuLink("prices", PriceListPage.class).setVisible(isAdmin()))
                 .add(new MenuLink("promotions", PromotionListPage.class).setVisible(isAdmin() || isPromotionAdmin()))
                 .add(new MenuLink("decisions", SaleDecisionListPage.class).setVisible(isAdmin()))
-                .add(new MenuLink("sales", SaleListPage.class).setVisible(isAdmin() || isSaleAdmin() || isParticipant()))
-                .add(new MenuLink("payments", PaymentListPage.class).setVisible(isAdmin() || isPaymentAdmin() || isParticipant()))
+                .add(new MenuLink("sales", SaleListPage.class).setVisible(isAdmin() || isSaleAdmin() ))
+                .add(new MenuLink("payments", PaymentListPage.class).setVisible(isAdmin() || isPaymentAdmin()))
                 .add(new MenuLink("periods", PeriodListPage.class).setVisible(isAdmin() || isPaymentAdmin()))
                 .add(new MenuLink("rewards", RewardListPage.class).setVisible(isAdmin()))
                 .add(new MenuLink("parameters", RewardParameterListPage.class).setVisible(isAdmin()))

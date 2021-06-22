@@ -19,11 +19,12 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static ru.complitex.jedani.worker.security.JedaniRoles.ADMINISTRATORS;
+import static ru.complitex.jedani.worker.security.JedaniRoles.PAYOUT_ADMINISTRATORS;
 
 /**
  * @author Ivanov Anatoliy
  */
-@AuthorizeInstantiation({ADMINISTRATORS})
+@AuthorizeInstantiation({ADMINISTRATORS, PAYOUT_ADMINISTRATORS})
 public class PayoutListPage extends BasePage {
     @Inject
     private DomainService domainService;

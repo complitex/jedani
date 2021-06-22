@@ -13,6 +13,7 @@
         <group-name>PROMOTION_ADMINISTRATORS</group-name>
         <group-name>SALE_ADMINISTRATORS</group-name>
         <group-name>PAYMENT_ADMINISTRATORS</group-name>
+        <group-name>PAYOUT_ADMINISTRATORS</group-name>
         <group-name>USERS</group-name>
     </security-role-mapping>
 
@@ -39,6 +40,11 @@
     <security-role-mapping>
         <role-name>PAYMENT_ADMINISTRATORS</role-name>
         <group-name>PAYMENT_ADMINISTRATORS</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>PAYOUT_ADMINISTRATORS</role-name>
+        <group-name>PAYOUT_ADMINISTRATORS</group-name>
     </security-role-mapping>
 
     <security-role-mapping>
