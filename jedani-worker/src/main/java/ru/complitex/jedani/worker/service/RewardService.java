@@ -624,6 +624,10 @@ public class RewardService implements Serializable {
 
     private void calculateCulinaryReward(Sale sale, Period period, Long rewardStatus){
         if (sale.getCulinaryRewardPoint() != null) {
+            if (sale.getSaleStatus() == null || sale.getSaleStatus() < SaleStatus.PAID) {
+                return;
+            }
+
             if (getRewardsPointSum(sale.getObjectId(), RewardType.CULINARY_WORKSHOP, rewardStatus).compareTo(ZERO) != 0) {
                 return;
             }
