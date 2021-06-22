@@ -623,6 +623,10 @@ public class RewardService implements Serializable {
     }
 
     private void calculateCulinaryReward(Sale sale, Period period, Long rewardStatus){
+        if (sale.getCulinaryWorkerId() == null) {
+            return;
+        }
+
         if (sale.getCulinaryRewardPoint() != null) {
             if (sale.getSaleStatus() == null || sale.getSaleStatus() < SaleStatus.PAID) {
                 return;
@@ -641,7 +645,7 @@ public class RewardService implements Serializable {
 
             reward.setSaleId(sale.getObjectId());
             reward.setType(RewardType.CULINARY_WORKSHOP);
-            reward.setWorkerId(sale.getCulinaryWorkerId() != null ? sale.getCulinaryWorkerId() : sale.getSellerWorkerId());
+            reward.setWorkerId(sale.getCulinaryWorkerId());
             reward.setDate(Dates.currentDate());
             reward.setMonth(period.getOperatingMonth());
             reward.setPeriodId(period.getObjectId());
