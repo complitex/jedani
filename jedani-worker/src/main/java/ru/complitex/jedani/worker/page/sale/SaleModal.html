@@ -10,7 +10,7 @@
 
             <div class="row">
                 <div wicket:id="saleType" class="col-md-4"></div>
-                <div wicket:id="contract" class="col-md-4"></div>
+                <div wicket:id="saleContract" class="col-md-4"></div>
                 <div class="col-md-4" style="font-size: 12px">
                     <div wicket:id="sasRequest" class="pull-left" style="padding-right: 10px"></div>
                     <div wicket:id="forYourself" class="pull-left" style="padding-right: 10px"></div>
@@ -42,9 +42,9 @@
                 <tr>
                     <th>№</th>
                     <th>Товар</th>
-                    <th class="si-qty">Количество</th>
-                    <th class="si-price">Базовая цена</th>
-                    <th class="si-price">Цена</th>
+                    <th class="si-qty"><wicket:message key="quantity"/></th>
+                    <th class="si-price"><wicket:message key="basePrice"/></th>
+                    <th class="si-price"><wicket:message key="price"/></th>
                     <th class="sale-action"></th>
                 </tr>
                 </thead>

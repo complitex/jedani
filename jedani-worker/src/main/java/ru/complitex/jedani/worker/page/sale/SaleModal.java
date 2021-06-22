@@ -27,6 +27,7 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.util.parse.metapattern.MetaPattern;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidationError;
@@ -256,7 +257,7 @@ public class SaleModal extends Modal<Sale> {
                     target.add(container);
                 }))));
 
-        container.add(new FormGroupTextField<>("contract", new TextAttributeModel(saleModel, Sale.CONTRACT))
+        container.add(new FormGroupTextField<>("saleContract", new TextAttributeModel(saleModel, Sale.CONTRACT))
                 .setRequired(true)
                 .addValidator(new PatternValidator(MetaPattern.DIGITS){
                     @Override
@@ -321,7 +322,10 @@ public class SaleModal extends Modal<Sale> {
                 new NumberAttributeModel(saleModel, Sale.CULINARY_WORKER))){
             @Override
             public boolean isVisible() {
-                return Objects.equals(saleModel.getObject().getType(), SaleType.MYCOOK);
+                Sale sale = saleModel.getObject();
+
+                return Objects.equals(sale.getType(), SaleType.MYCOOK) &&
+                        (sale.getCulinaryWorkerId() != null || (sale.getSaleStatus() != null && sale.getSaleStatus() >= SaleStatus.PAID));
             }
         });
 

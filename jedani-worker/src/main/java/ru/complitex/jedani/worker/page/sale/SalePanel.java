@@ -14,12 +14,15 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.util.lang.Objects;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.Sort;
 import ru.complitex.common.util.Dates;
 import ru.complitex.common.wicket.panel.LinkPanel;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
+import ru.complitex.domain.component.datatable.DomainColumn;
 import ru.complitex.domain.component.panel.DomainListModalPanel;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
@@ -150,6 +153,8 @@ public class SalePanel extends DomainListModalPanel<Sale> {
                     cellItem.add(new Label(componentId, period != null ? Dates.getMonthText(period.getOperatingMonth()) : ""));
                 }
             };
+        } else if (a.getEntityAttributeId() == Sale.CONTRACT){
+            return new DomainColumn<>(a, new StringResourceModel("contract", this));
         }
 
         return super.newDomainColumn(a);
