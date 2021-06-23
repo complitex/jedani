@@ -23,6 +23,7 @@ import java.math.RoundingMode;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static java.math.BigDecimal.ZERO;
 import static java.math.RoundingMode.HALF_EVEN;
@@ -61,6 +62,12 @@ public class RewardService implements Serializable {
 
     public List<Reward> getRewardsBySaleId(Long saleId) {
         return domainService.getDomains(Reward.class, FilterWrapper.of(new Reward().setSaleId(saleId)));
+    }
+
+    public List<Reward> getRewardsBySaleId(Long saleId, Long rewardTypeId) {
+        return getRewardsBySaleId(saleId).stream()
+                .filter(r -> Objects.equals(r.getType(), rewardTypeId))
+                .collect(Collectors.toList());
     }
 
     public BigDecimal getRewardsPointSum(Long saleId, Long rewardTypeId, Long rewardStatusId) {
@@ -622,42 +629,46 @@ public class RewardService implements Serializable {
         }
     }
 
-    private void calculateCulinaryReward(Sale sale, Period period, Long rewardStatus){
-        if (sale.getCulinaryWorkerId() == null) {
+    private void calculateCulinaryReward(Sale sale, Period period, Long rewardStatus) {
+        if (sale.getCulinaryWorkerId() == null || sale.getCulinaryRewardPoint() == null) {
             return;
         }
 
-        if (sale.getCulinaryRewardPoint() != null) {
-            if (sale.getSaleStatus() == null || sale.getSaleStatus() < SaleStatus.PAID) {
-                return;
-            }
-
-            if (getRewardsPointSum(sale.getObjectId(), RewardType.CULINARY_WORKSHOP, rewardStatus).compareTo(ZERO) != 0) {
-                return;
-            }
-
-            if (rewardStatus == RewardStatus.CHARGED &&
-                    paymentService.getPaymentsVolumeBySaleId(sale.getObjectId(), period.getOperatingMonth()).compareTo(sale.getTotal()) < 0) {
-                return;
-            }
-
-            Reward reward = new Reward();
-
-            reward.setSaleId(sale.getObjectId());
-            reward.setType(RewardType.CULINARY_WORKSHOP);
-            reward.setWorkerId(sale.getCulinaryWorkerId());
-            reward.setDate(Dates.currentDate());
-            reward.setMonth(period.getOperatingMonth());
-            reward.setPeriodId(period.getObjectId());
-            reward.setRewardStatus(rewardStatus);
-
-            reward.setTotal(sale.getCulinaryRewardPoint());
-            reward.setPoint(sale.getCulinaryRewardPoint());
-
-            updateLocal(sale, reward);
-
-            domainService.save(reward);
+        if (sale.getSaleStatus() == null || sale.getSaleStatus() < SaleStatus.PAID) {
+            return;
         }
+
+        if (getRewardsPointSum(sale.getObjectId(), RewardType.CULINARY_WORKSHOP, rewardStatus).compareTo(ZERO) != 0) {
+            return;
+        }
+
+        Reward reward = new Reward();
+
+        reward.setSaleId(sale.getObjectId());
+        reward.setType(RewardType.CULINARY_WORKSHOP);
+        reward.setWorkerId(sale.getCulinaryWorkerId());
+        reward.setDate(Dates.currentDate());
+        reward.setMonth(period.getOperatingMonth());
+        reward.setPeriodId(period.getObjectId());
+        reward.setRewardStatus(rewardStatus);
+
+        reward.setTotal(sale.getCulinaryRewardPoint());
+        reward.setPoint(sale.getCulinaryRewardPoint());
+
+        updateLocal(sale, reward);
+
+        domainService.save(reward);
+    }
+
+    public void calculateCulinaryReward(Sale sale) {
+        Period period = periodMapper.getActualPeriod();
+
+        getRewardsBySaleId(sale.getObjectId(), RewardType.CULINARY_WORKSHOP).stream()
+                .filter(r -> Objects.equals(r.getPeriodId(), period.getObjectId()))
+                .forEach(r -> domainService.delete(r));
+
+        calculateCulinaryReward(sale, period, RewardStatus.ESTIMATED);
+        calculateCulinaryReward(sale, period, RewardStatus.CHARGED);
     }
 
     private void calculateManagerPremiumReward(Sale sale, WorkerReward workerReward, Period period, Long rewardStatus) {

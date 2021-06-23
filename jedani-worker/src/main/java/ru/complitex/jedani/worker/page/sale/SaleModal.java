@@ -257,7 +257,7 @@ public class SaleModal extends Modal<Sale> {
                     target.add(container);
                 }))));
 
-        container.add(new FormGroupTextField<>("saleContract", new TextAttributeModel(saleModel, Sale.CONTRACT))
+        container.add(new FormGroupTextField<>("contractNumber", new TextAttributeModel(saleModel, Sale.CONTRACT))
                 .setRequired(true)
                 .addValidator(new PatternValidator(MetaPattern.DIGITS){
                     @Override
@@ -769,6 +769,8 @@ public class SaleModal extends Modal<Sale> {
             if (sale.isFeeWithdraw()) {
                 rewardService.calculateSaleReward(sale, saleItems, RewardStatus.WITHDRAWN);
             }
+
+            rewardService.calculateCulinaryReward(sale);
 
             getSession().success(getString("info_sold"));
 
