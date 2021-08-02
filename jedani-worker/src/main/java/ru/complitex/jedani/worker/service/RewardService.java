@@ -499,7 +499,7 @@ public class RewardService implements Serializable {
         return point;
     }
 
-    public void calculateSaleReward(Sale sale, List<SaleItem> saleItems, long rewardStatus){
+    public void calculateSaleReward(Sale sale, List<SaleItem> saleItems, long rewardStatus) {
         Reward reward = new Reward();
 
         Period period = periodMapper.getActualPeriod();
@@ -507,6 +507,10 @@ public class RewardService implements Serializable {
         Date month = period.getOperatingMonth();
 
         Long rewardType = saleService.isMkSaleItems(saleItems) ? RewardType.MYCOOK_SALE : RewardType.BASE_ASSORTMENT_SALE;
+
+        if (getRewardsPointSum(sale.getObjectId(), rewardType, RewardStatus.WITHDRAWN).compareTo(ZERO) > 0) {
+            return;
+        }
 
         BigDecimal total = sale.getPersonalRewardPoint();
 
@@ -528,7 +532,7 @@ public class RewardService implements Serializable {
         } else if (rewardStatus == RewardStatus.CHARGED) {
             reward.setPoint(calcRewardPoint(sale, rewardType, period.getOperatingMonth(), total));
         } else if (rewardStatus == RewardStatus.WITHDRAWN) {
-            reward.setPoint(total.subtract(getRewardsPointSum(sale.getObjectId(), rewardType, RewardStatus.WITHDRAWN)));
+            reward.setPoint(total);
         }
 
         updateLocal(sale, reward);
@@ -540,6 +544,10 @@ public class RewardService implements Serializable {
 
     private void calculateBonusReward(Sale sale, Period period, long rewardStatus){
         if (sale.getMkManagerBonusRewardPoint() != null && sale.getMkManagerBonusWorkerId() != null) {
+            if (getRewardsPointSum(sale.getObjectId(), RewardType.MANAGER_MK_BONUS, rewardStatus).compareTo(ZERO) > 0) {
+                return;
+            }
+
             BigDecimal total = sale.getMkManagerBonusRewardPoint();
 
             if (total.compareTo(ZERO) > 0) {
@@ -558,7 +566,7 @@ public class RewardService implements Serializable {
                 reward.setPoint(ZERO);
 
                 if (rewardStatus == RewardStatus.ESTIMATED) {
-                    reward.setPoint(total.subtract(getRewardsPointSum(sale.getObjectId(), RewardType.MANAGER_MK_BONUS, RewardStatus.ESTIMATED)));
+                    reward.setPoint(total);
                 } else if (rewardStatus == RewardStatus.CHARGED) {
                     reward.setPoint(calcRewardPoint(sale, RewardType.MANAGER_MK_BONUS, period.getOperatingMonth(), total));
                 }
@@ -616,6 +624,10 @@ public class RewardService implements Serializable {
     }
 
     private void calculateManagerReward(Sale sale, WorkerReward workerReward, Period period, Long rewardStatus) {
+        if (getRewardsPointSum(sale.getObjectId(), RewardType.MANAGER_PREMIUM, rewardStatus).compareTo(ZERO) > 0) {
+            return;
+        }
+
         BigDecimal total = calcManagerPoint(sale, workerReward.getRank());
 
         if (total.compareTo(ZERO) > 0){
@@ -636,7 +648,7 @@ public class RewardService implements Serializable {
             reward.setPoint(ZERO);
 
             if (rewardStatus == RewardStatus.ESTIMATED) {
-                reward.setPoint(total.subtract(getRewardsPointSum(sale.getObjectId(), RewardType.MANAGER_PREMIUM, RewardStatus.ESTIMATED)));
+                reward.setPoint(total);
             } else if (rewardStatus == RewardStatus.CHARGED) {
                 reward.setPoint(calcRewardPoint(sale, RewardType.MANAGER_PREMIUM, period.getOperatingMonth(), total));
             }
