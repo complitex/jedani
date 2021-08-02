@@ -500,17 +500,17 @@ public class RewardService implements Serializable {
     }
 
     public void calculateSaleReward(Sale sale, List<SaleItem> saleItems, long rewardStatus) {
+        Long rewardType = saleService.isMkSaleItems(saleItems) ? RewardType.MYCOOK_SALE : RewardType.BASE_ASSORTMENT_SALE;
+
+        if (getRewardsPointSum(sale.getObjectId(), rewardType, rewardStatus).compareTo(ZERO) > 0) {
+            return;
+        }
+
         Reward reward = new Reward();
 
         Period period = periodMapper.getActualPeriod();
 
         Date month = period.getOperatingMonth();
-
-        Long rewardType = saleService.isMkSaleItems(saleItems) ? RewardType.MYCOOK_SALE : RewardType.BASE_ASSORTMENT_SALE;
-
-        if (getRewardsPointSum(sale.getObjectId(), rewardType, RewardStatus.WITHDRAWN).compareTo(ZERO) > 0) {
-            return;
-        }
 
         BigDecimal total = sale.getPersonalRewardPoint();
 
