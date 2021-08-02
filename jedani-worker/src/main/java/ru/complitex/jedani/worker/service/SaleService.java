@@ -127,13 +127,17 @@ public class SaleService implements Serializable {
         return saleItemMapper.getSaleItems(FilterWrapper.of((SaleItem) new SaleItem().setParentId(saleId)));
     }
 
-    public BigDecimal getSaleVolume(Long sellerWorkerId, Period period){
+    public BigDecimal getSaleVolume(List<Sale> sales){
+        return sales.stream()
+                .map(s -> s.getTotal() != null ? s.getTotal() : BigDecimal.ZERO)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public List<Sale> getSales(Long sellerWorkerId, Period period) {
         return saleMapper.getSales(FilterWrapper.of(new Sale().setSellerWorkerId(sellerWorkerId))
                 .addEntityAttributeId(Sale.TOTAL)
                 .put(Sale.FILTER_ACTUAL, true)
-                .put(Sale.FILTER_PERIOD, period.getObjectId())).stream()
-                .map(s -> s.getTotal() != null ? s.getTotal() : BigDecimal.ZERO)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+                .put(Sale.FILTER_PERIOD, period.getObjectId()));
     }
 
     public List<Nomenclature> getNomenclatures(List<SaleItem> saleItems){

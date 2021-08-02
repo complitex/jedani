@@ -26,8 +26,8 @@ public class WorkerRewardTree {
 
                 idMap.put(n.getObjectId(), r);
 
-                r.getWorkerNode().getChildNodes()
-                        .forEach(c -> r.getChildRewards().add(idMap.get(c.getObjectId())));
+                r.getWorkerNode().getNodes()
+                        .forEach(c -> r.getWorkerRewards().add(idMap.get(c.getObjectId())));
             });
 
             levelMap.put(l, list);

@@ -43,7 +43,7 @@ public class WorkerNodeService implements Serializable {
                 WorkerNode m = map.get(w.getManagerId());
 
                 if (m != null){
-                    m.getChildNodes().add(w);
+                    m.getNodes().add(w);
                 }else{
                     //log.error("getWorkerTree no manager found " + w);
                 }
@@ -56,7 +56,7 @@ public class WorkerNodeService implements Serializable {
     }
 
     private void validateWorkerTree(WorkerNode rootWorkerNode){
-        rootWorkerNode.getChildNodes().forEach(c -> validateWorkerNode(rootWorkerNode, c));
+        rootWorkerNode.getNodes().forEach(c -> validateWorkerNode(rootWorkerNode, c));
     }
 
     private void validateWorkerNode(WorkerNode managerWorkerNode, WorkerNode workerNode){
@@ -76,7 +76,7 @@ public class WorkerNodeService implements Serializable {
             throw new RuntimeException("validateWorkerNode level error " + managerWorkerNode + " " + workerNode);
         }
 
-        workerNode.getChildNodes().forEach(c -> validateWorkerNode(workerNode, c));
+        workerNode.getNodes().forEach(c -> validateWorkerNode(workerNode, c));
     }
 
     public Map<Long, List<WorkerNode>> getWorkerNodeLevelMap(){

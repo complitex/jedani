@@ -13,9 +13,12 @@ import static java.math.BigDecimal.ZERO;
 public class WorkerReward {
     private WorkerNode workerNode;
 
-    private List<WorkerReward> childRewards = new ArrayList<>();
+    private List<WorkerReward> workerRewards = new ArrayList<>();
+
+    private List<Sale> sales = new ArrayList<>();
 
     private BigDecimal saleVolume = ZERO;
+
     private BigDecimal paymentVolume = ZERO;
 
     private BigDecimal yearPaymentVolume = ZERO;
@@ -40,14 +43,62 @@ public class WorkerReward {
 
     private boolean pk;
 
-    private final List<Reward> rewards = new ArrayList<>();
+    public WorkerReward(WorkerNode workerNode) {
+        this.workerNode = workerNode;
+    }
+
+    public List<WorkerReward> getGroup() {
+        return getGroup(this);
+    }
+
+    public List<WorkerReward> getGroup(WorkerReward workerReward) {
+        List<WorkerReward> group = new ArrayList<>();
+
+        for (WorkerReward r : workerReward.getWorkerRewards()){
+            if (!r.isManager()){
+                group.add(r);
+
+                group.addAll(getGroup(r));
+            }
+        }
+
+        return group;
+    }
+
+    public List<WorkerReward> getStructureManagers(WorkerReward r){
+        List<WorkerReward> managers = new ArrayList<>();
+
+        for (WorkerReward c : r.getWorkerRewards()){
+            if (c.isManager()){
+                managers.add(c);
+            }
+
+            managers.addAll(getStructureManagers(c));
+        }
+
+        return managers;
+    }
+
+    public List<WorkerReward> getFirstStructureManagers() {
+        return getFirstStructureManagers(this);
+    }
+
+    public List<WorkerReward> getFirstStructureManagers(WorkerReward r) {
+        List<WorkerReward> managers = new ArrayList<>();
+
+        for (WorkerReward c : r.getWorkerRewards()){
+            if (c.isManager()){
+                managers.add(c);
+            } else {
+                managers.addAll(getFirstStructureManagers(c));
+            }
+        }
+
+        return managers;
+    }
 
     public boolean isManager() {
         return rank > 0;
-    }
-
-    public WorkerReward(WorkerNode workerNode) {
-        this.workerNode = workerNode;
     }
 
     public WorkerNode getWorkerNode() {
@@ -58,12 +109,20 @@ public class WorkerReward {
         this.workerNode = workerNode;
     }
 
-    public List<WorkerReward> getChildRewards() {
-        return childRewards;
+    public List<WorkerReward> getWorkerRewards() {
+        return workerRewards;
     }
 
-    public void setChildRewards(List<WorkerReward> childRewards) {
-        this.childRewards = childRewards;
+    public void setWorkerRewards(List<WorkerReward> workerRewards) {
+        this.workerRewards = workerRewards;
+    }
+
+    public List<Sale> getSales() {
+        return sales;
+    }
+
+    public void setSales(List<Sale> sales) {
+        this.sales = sales;
     }
 
     public BigDecimal getSaleVolume() {
@@ -176,10 +235,6 @@ public class WorkerReward {
 
     public void setPk(boolean pk) {
         this.pk = pk;
-    }
-
-    public List<Reward> getRewards() {
-        return rewards;
     }
 
     public Long getWorkerId(){

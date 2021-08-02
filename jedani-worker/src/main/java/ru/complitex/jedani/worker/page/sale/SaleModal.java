@@ -27,7 +27,6 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
-import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.util.parse.metapattern.MetaPattern;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidationError;
@@ -757,7 +756,7 @@ public class SaleModal extends Modal<Sale> {
 
             if (saleService.isMkSaleItems(saleItems)) {
                 sale.setMkManagerBonusRewardPoint(rewardService.getMkManagerBonusRewardPoint(sale, saleItems));
-                sale.setCulinaryRewardPoint(rewardService.getCulinaryWorkshopRewardPoint(sale, saleItems));
+                sale.setCulinaryRewardPoint(rewardService.getCulinaryRewardPoint(sale, saleItems));
             }
 
             if (sale.getObjectId() == null){

@@ -17,7 +17,7 @@ public class WorkerNode {
     private Long right;
     private Long level;
 
-    private List<WorkerNode> childNodes = new ArrayList<>();
+    private List<WorkerNode> nodes = new ArrayList<>();
 
     public Long getObjectId() {
         return objectId;
@@ -59,12 +59,12 @@ public class WorkerNode {
         this.level = level;
     }
 
-    public List<WorkerNode> getChildNodes() {
-        return childNodes;
+    public List<WorkerNode> getNodes() {
+        return nodes;
     }
 
-    public void setChildNodes(List<WorkerNode> childNodes) {
-        this.childNodes = childNodes;
+    public void setNodes(List<WorkerNode> nodes) {
+        this.nodes = nodes;
     }
 
     @Override
