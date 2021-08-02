@@ -57,8 +57,13 @@ a:focus {
     width: 100%;
 }
 
+ #content > table > tbody, #content > table > tbody > tr {
+    height: 100%;
+}
+
 #sidebar {
     width: 240px;
+    height: 100%;
     border-right: 1px solid #e7e7e7;
     background: #1b1818;
 }

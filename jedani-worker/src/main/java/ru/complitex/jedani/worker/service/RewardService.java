@@ -183,7 +183,7 @@ public class RewardService implements Serializable {
                 r.setSaleVolume(saleService.getSaleVolume(sales));
             }
 
-            r.getWorkerRewards().forEach(c -> r.getGroupSales().addAll(c.getSales()));
+            r.getGroup().forEach(c -> r.getGroupSales().addAll(c.getSales()));
 
             r.setGroupSaleVolume(r.getGroup().stream()
                     .reduce(ZERO, (v, c) -> v.add(c.getSaleVolume()), BigDecimal::add));
