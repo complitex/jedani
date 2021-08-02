@@ -573,11 +573,12 @@ public class RewardService implements Serializable {
     }
 
     private void calculateCulinaryReward(Sale sale, Period period, Long rewardStatus) {
-        if (sale.getCulinaryWorkerId() == null || sale.getCulinaryRewardPoint() == null) {
+        if (sale.getCulinaryRewardPoint() == null) {
             return;
         }
 
-        if (sale.getSaleStatus() == null || sale.getSaleStatus() < SaleStatus.PAID) {
+        if (rewardStatus.equals(RewardStatus.CHARGED) && (sale.getCulinaryWorkerId() == null ||
+                sale.getSaleStatus() == null || sale.getSaleStatus() < SaleStatus.PAID)) {
             return;
         }
 
