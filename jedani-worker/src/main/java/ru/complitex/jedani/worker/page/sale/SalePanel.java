@@ -183,6 +183,15 @@ public class SalePanel extends DomainListModalPanel<Sale> {
             }
         });
 
+        columns.add(new AbstractDomainColumn<>("culinary", this) {
+            @Override
+            public void populateItem(Item<ICellPopulator<Sale>> cellItem, String componentId, IModel<Sale> rowModel) {
+                Sale sale = rowModel.getObject();
+
+                cellItem.add(new Label(componentId, workerService.getWorkerLabel(sale.getCulinaryWorkerId())));
+            }
+        });
+
         columns.add(new AbstractDomainColumn<>("nomenclatures", this) {
             @Override
             public void populateItem(Item<ICellPopulator<Sale>> cellItem, String componentId, IModel<Sale> rowModel) {
