@@ -528,7 +528,7 @@ public class RewardService implements Serializable {
         reward.setPeriodId(period.getObjectId());
 
         if (rewardStatus == RewardStatus.ESTIMATED) {
-            reward.setPoint(total.subtract(getRewardsPointSum(sale.getObjectId(), rewardType, RewardStatus.ESTIMATED)));
+            reward.setPoint(total);
         } else if (rewardStatus == RewardStatus.CHARGED) {
             reward.setPoint(calcRewardPoint(sale, rewardType, period.getOperatingMonth(), total));
         } else if (rewardStatus == RewardStatus.WITHDRAWN) {
@@ -795,11 +795,11 @@ public class RewardService implements Serializable {
             WorkerRewardTree tree = getWorkerRewardTree(period);
 
             saleService.getActiveSales().forEach(sale -> {
+                calculateSaleReward(sale, saleService.getSaleItems(sale.getObjectId()), RewardStatus.ESTIMATED);
+                calculateSaleReward(sale, saleService.getSaleItems(sale.getObjectId()), RewardStatus.CHARGED);
+
                 if (sale.isFeeWithdraw()) {
                     calculateSaleReward(sale, saleService.getSaleItems(sale.getObjectId()), RewardStatus.WITHDRAWN);
-                } else {
-                    calculateSaleReward(sale, saleService.getSaleItems(sale.getObjectId()), RewardStatus.ESTIMATED);
-                    calculateSaleReward(sale, saleService.getSaleItems(sale.getObjectId()), RewardStatus.CHARGED);
                 }
 
                 calculateBonusReward(sale, period, RewardStatus.ESTIMATED);
