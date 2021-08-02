@@ -320,7 +320,7 @@ public class SaleModal extends Modal<Sale> {
         container.add(new FormGroupPanel("culinaryWorkshopWorker", new WorkerAutoComplete(FormGroupPanel.COMPONENT_ID,
                 new NumberAttributeModel(saleModel, Sale.CULINARY_WORKER))){
             @Override
-            public boolean isVisible() {
+            public boolean isEnabled() {
                 Sale sale = saleModel.getObject();
 
                 return Objects.equals(sale.getType(), SaleType.MYCOOK) &&

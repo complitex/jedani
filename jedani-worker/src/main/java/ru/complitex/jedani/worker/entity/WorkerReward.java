@@ -29,8 +29,12 @@ public class WorkerReward {
 
     private Long firstLevelPersonalCount = 0L;
 
+    private List<Sale> groupSales = new ArrayList<>();
+
     private BigDecimal groupSaleVolume = ZERO;
     private BigDecimal groupPaymentVolume = ZERO;
+
+    private List<Sale> structureSales = new ArrayList<>();
 
     private BigDecimal structureSaleVolume = ZERO;
     private BigDecimal structurePaymentVolume = ZERO;
@@ -149,6 +153,14 @@ public class WorkerReward {
         this.yearPaymentVolume = yearPaymentVolume;
     }
 
+    public List<Sale> getGroupSales() {
+        return groupSales;
+    }
+
+    public void setGroupSales(List<Sale> groupSales) {
+        this.groupSales = groupSales;
+    }
+
     public BigDecimal getGroupSaleVolume() {
         return groupSaleVolume;
     }
@@ -163,6 +175,14 @@ public class WorkerReward {
 
     public void setGroupPaymentVolume(BigDecimal groupPaymentVolume) {
         this.groupPaymentVolume = groupPaymentVolume;
+    }
+
+    public List<Sale> getStructureSales() {
+        return structureSales;
+    }
+
+    public void setStructureSales(List<Sale> structureSales) {
+        this.structureSales = structureSales;
     }
 
     public BigDecimal getStructureSaleVolume() {

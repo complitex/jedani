@@ -175,8 +175,14 @@ public class RewardService implements Serializable {
                 r.setSaleVolume(saleService.getSaleVolume(sales));
             }
 
+            r.getWorkerRewards().forEach(c -> r.getGroupSales().addAll(c.getSales()));
+
             r.setGroupSaleVolume(r.getGroup().stream()
                     .reduce(ZERO, (v, c) -> v.add(c.getSaleVolume()), BigDecimal::add));
+
+            r.getStructureSales().addAll(r.getSales());
+
+            r.getWorkerRewards().forEach(c -> r.getStructureSales().addAll(c.getStructureSales()));
 
             r.setStructureSaleVolume(r.getWorkerRewards().stream()
                     .reduce(r.getSaleVolume(), (v, c) -> v.add(c.getStructureSaleVolume()), BigDecimal::add));
@@ -684,12 +690,8 @@ public class RewardService implements Serializable {
         }
     }
 
-    private void calculateGroupReward(WorkerReward workerReward, Period period, Long rewardStatus){
-        List<Sale> sales = new ArrayList<>(workerReward.getSales());
-
-        workerReward.getGroup().forEach(r -> sales.addAll(r.getSales()));
-
-        sales.forEach(sale -> {
+    private void calculateGroupReward(WorkerReward workerReward, Period period, Long rewardStatus) {
+        workerReward.getGroupSales().forEach(sale -> {
             BigDecimal total = getGroupVolumePercent(workerReward.getRank())
                     .multiply(sale.getTotal())
                     .divide(new BigDecimal("100"), 5, HALF_EVEN);
@@ -728,11 +730,7 @@ public class RewardService implements Serializable {
     }
 
     private void calculateStructureReward(WorkerReward workerReward, Period period, Long rewardStatus) {
-        List<Sale> sales = new ArrayList<>(workerReward.getSales());
-
-        workerReward.getWorkerRewards().forEach(r -> sales.addAll(r.getSales()));
-
-        sales.forEach(sale ->
+        workerReward.getStructureSales().forEach(sale ->
                 workerReward.getFirstStructureManagers().forEach(m -> {
                     BigDecimal total = getGroupVolumePercent(workerReward.getRank())
                             .subtract(getGroupVolumePercent(m.getRank()))
