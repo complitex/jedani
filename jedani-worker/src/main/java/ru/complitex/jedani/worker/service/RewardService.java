@@ -77,6 +77,14 @@ public class RewardService implements Serializable {
                 .reduce(ZERO, ((t, p) -> t.add(p.getPoint())), BigDecimal::add);
     }
 
+    public BigDecimal getRewardsPointSum(Long saleId, Long rewardTypeId, Long rewardStatusId, Long managerId) {
+        return getRewardsBySaleId(saleId).stream()
+                .filter(r -> Objects.equals(r.getType(), rewardTypeId))
+                .filter(r -> Objects.equals(r.getRewardStatus(), rewardStatusId))
+                .filter(r -> Objects.equals(r.getManagerId(), managerId))
+                .reduce(ZERO, ((t, p) -> t.add(p.getPoint())), BigDecimal::add);
+    }
+
     public List<Reward> getRewards(Long periodId, Long workerId){
         return domainService.getDomains(Reward.class, FilterWrapper.of(new Reward()
                 .setWorkerId(workerId)
@@ -473,7 +481,7 @@ public class RewardService implements Serializable {
         return ZERO;
     }
 
-    public BigDecimal calcRewardPoint(Sale sale, Long rewardType, Date month, BigDecimal rewardPoint){
+    public BigDecimal calcRewardPoint(Sale sale, Long rewardType, Date month, BigDecimal rewardPoint, Long managerId) {
         BigDecimal point = ZERO;
 
         if (rewardPoint.compareTo(ZERO) > 0 && sale.getTotal() != null) {
@@ -492,11 +500,15 @@ public class RewardService implements Serializable {
                 point = point.add(rewardPoint.multiply(new BigDecimal("0.40")));
             }
 
-            point = point.subtract(getRewardsPointSum(sale.getObjectId(), rewardType, RewardStatus.CHARGED));
+            point = point.subtract(getRewardsPointSum(sale.getObjectId(), rewardType, RewardStatus.CHARGED, managerId));
 
         }
 
         return point;
+    }
+
+    public BigDecimal calcRewardPoint(Sale sale, Long rewardType, Date month, BigDecimal rewardPoint) {
+        return calcRewardPoint(sale, rewardType, month, rewardPoint, null);
     }
 
     public void calculateSaleReward(Sale sale, List<SaleItem> saleItems, long rewardStatus) {
@@ -773,7 +785,7 @@ public class RewardService implements Serializable {
                         if (rewardStatus == RewardStatus.ESTIMATED) {
                             reward.setPoint(total);
                         } else if (rewardStatus == RewardStatus.CHARGED) {
-                            reward.setPoint(calcRewardPoint(sale, RewardType.STRUCTURE_VOLUME, period.getOperatingMonth(), total));
+                            reward.setPoint(calcRewardPoint(sale, RewardType.STRUCTURE_VOLUME, period.getOperatingMonth(), total, reward.getManagerId()));
                         }
 
                         updateLocal(reward, period);
