@@ -10,7 +10,27 @@
           and exists(select sa.id from sale_attribute sa
             left join worker w on (w.object_id = sa.number and w.status = 1 and sa.entity_attribute_id = 1)
             left join worker_attribute wa_j on (wa_j.domain_id = w.id and wa_j.entity_attribute_id = 1 and wa_j.status = 1)
-            where sa.domain_id = d.id and sa.status = 1 and d.status = 1  and wa_j.text = #{map.sellerWorker})
+
+            left join worker_attribute wa_f on w.id = wa_f.domain_id and wa_f.entity_attribute_id = 2 and wa_f.status = 1
+            left join first_name f on f.object_id = wa_f.number and f.status = 1
+            left join first_name_attribute fa on f.id = fa.domain_id and fa.entity_attribute_id = 1 and fa.status = 1
+            left join first_name_value fv on fa.id = fv.attribute_id and fv.locale_id = 1
+
+            left join worker_attribute wa_m on w.id = wa_m.domain_id and wa_m.entity_attribute_id = 3 and wa_m.status = 1
+            left join middle_name m on m.object_id = wa_m.number and m.status = 1
+            left join middle_name_attribute ma on m.id = ma.domain_id and ma.entity_attribute_id = 1 and ma.status = 1
+            left join middle_name_value mv on ma.id = mv.attribute_id and mv.locale_id = 1
+
+            left join worker_attribute wa_l on w.id = wa_l.domain_id and wa_l.entity_attribute_id = 4 and wa_l.status = 1
+            left join last_name l on l.object_id = wa_l.number and l.status = 1
+            left join last_name_attribute la on l.id = la.domain_id and la.entity_attribute_id = 1 and la.status = 1
+            left join last_name_value lv on la.id = lv.attribute_id and lv.locale_id = 1
+
+            where sa.domain_id = d.id and sa.status = 1 and d.status = 1
+                and (wa_j.text = #{map.sellerWorker}
+                    or lv.text like concat('%', #{map.sellerWorker}, '%')
+                    or mv.text like concat('%', #{map.sellerWorker}, '%')
+                    or fv.text like concat('%', #{map.sellerWorker}, '%')))
       </if>
 
         <if test="map.region != null">
