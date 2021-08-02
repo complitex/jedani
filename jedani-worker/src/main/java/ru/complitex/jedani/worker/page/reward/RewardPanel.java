@@ -188,11 +188,7 @@ public class RewardPanel extends DomainListModalPanel<Reward> {
                     }
 
                     if (reward.getStructurePaymentVolume() != null && reward.getStructurePaymentVolume().compareTo(BigDecimal.ZERO) > 0) {
-                        detail += getString("structure_payment_volume") + ": " + reward.getStructurePaymentVolume().toPlainString() + "\n";
-                    }
-
-                    if (reward.getSaleId() != null) {
-                        detail += getString("contract") + ": " + domainService.getText(Sale.ENTITY_NAME, reward.getSaleId(), Sale.CONTRACT);
+                        detail += getString("structure_payment_volume") + ": " + reward.getStructurePaymentVolume().toPlainString();
                     }
 
                     cellItem.add(new MultiLineLabel(componentId, detail));
