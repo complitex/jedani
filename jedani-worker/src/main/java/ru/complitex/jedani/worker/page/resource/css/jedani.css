@@ -772,3 +772,7 @@ fieldset[disabled] .btn-flat-default.focus {
 .filter-option-inner-inner {
     display: inline-flex;
 }
+
+select.form-control {
+    height: 26px;
+}

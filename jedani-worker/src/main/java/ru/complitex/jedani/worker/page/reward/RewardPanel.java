@@ -1,16 +1,20 @@
 package ru.complitex.jedani.worker.page.reward;
 
+import de.agilecoders.wicket.core.markup.html.bootstrap.behavior.CssClassNameAppender;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.util.Dates;
+import ru.complitex.common.wicket.panel.SelectPanel;
 import ru.complitex.common.wicket.table.Table;
 import ru.complitex.common.wicket.table.TextFilter;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
@@ -18,8 +22,10 @@ import ru.complitex.domain.component.datatable.DomainColumn;
 import ru.complitex.domain.component.panel.DomainListModalPanel;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
+import ru.complitex.domain.model.NumberAttributeModel;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.component.PeriodPanel;
+import ru.complitex.jedani.worker.component.TypeSelect;
 import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.mapper.PeriodMapper;
 import ru.complitex.jedani.worker.mapper.RewardMapper;
@@ -197,8 +203,16 @@ public class RewardPanel extends DomainListModalPanel<Reward> {
         } else if (a.getEntityAttributeId().equals(Reward.STATUS)){
             return new AbstractDomainColumn<>(a) {
                 @Override
+                public Component newFilter(String componentId, Table<Reward> table) {
+                    return new SelectPanel(componentId, new TypeSelect(SelectPanel.SELECT_COMPONENT_ID,
+                            new NumberAttributeModel(table.getFilterWrapper().getObject(), Reward.STATUS),
+                            RewardStatus.ESTIMATED, RewardStatus.CHARGED, RewardStatus.PAID, RewardStatus.WITHDRAWN)
+                            .add(OnChangeAjaxBehavior.onChange(table::update)));
+                }
+
+                @Override
                 public void populateItem(Item<ICellPopulator<Reward>> cellItem, String componentId, IModel<Reward> rowModel) {
-                    cellItem.add(new Label(componentId, new StringResourceModel("status." + rowModel.getObject().getRewardStatus(), RewardPanel.this)));
+                    cellItem.add(new Label(componentId, new StringResourceModel("select." + rowModel.getObject().getRewardStatus(), RewardPanel.this)));
                 }
             };
         }
