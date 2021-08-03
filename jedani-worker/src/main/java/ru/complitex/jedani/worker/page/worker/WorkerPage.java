@@ -1324,10 +1324,10 @@ public class WorkerPage extends BasePage {
     }
 
     protected String getRewardsTotalString(Long rewardTypeId, Long periodId) {
-        BigDecimal estimated = rewardService.getRewardsTotal(periodId, worker.getObjectId(), rewardTypeId, RewardStatus.ESTIMATED);
-        BigDecimal charged = rewardService.getRewardsTotal(periodId, worker.getObjectId(), rewardTypeId, RewardStatus.CHARGED);
+        BigDecimal estimated = rewardService.getRewardsPointSumByWorker(periodId, worker.getObjectId(), rewardTypeId, RewardStatus.ESTIMATED);
+        BigDecimal charged = rewardService.getRewardsPointSumByWorker(periodId, worker.getObjectId(), rewardTypeId, RewardStatus.CHARGED);
 
-        return charged.toPlainString() + (charged.compareTo(BigDecimal.ZERO) > 0 ?  " (" + estimated.toPlainString() + ")" : "");
+        return charged.toPlainString() + (estimated.compareTo(BigDecimal.ZERO) > 0 ?  " (" + estimated.toPlainString() + ")" : "");
     }
 
     protected FilterWrapper<Worker> newFilterWrapper() {
