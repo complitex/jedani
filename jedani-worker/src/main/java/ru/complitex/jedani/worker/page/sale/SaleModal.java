@@ -118,6 +118,8 @@ public class SaleModal extends Modal<Sale> {
 
     private final Component saveButton;
 
+    private boolean enabled = true;
+
     public SaleModal(String markupId) {
         super(markupId);
 
@@ -320,11 +322,16 @@ public class SaleModal extends Modal<Sale> {
         container.add(new FormGroupPanel("culinaryWorkshopWorker", new WorkerAutoComplete(FormGroupPanel.COMPONENT_ID,
                 new NumberAttributeModel(saleModel, Sale.CULINARY_WORKER))){
             @Override
-            public boolean isEnabled() {
+            public boolean isEnabledInHierarchy() {
                 Sale sale = saleModel.getObject();
 
                 return Objects.equals(sale.getType(), SaleType.MYCOOK) &&
                         (sale.getCulinaryWorkerId() != null || (sale.getSaleStatus() != null && sale.getSaleStatus() >= SaleStatus.PAID));
+            }
+
+            @Override
+            public boolean isVisible() {
+                return Objects.equals(saleModel.getObject().getType(), SaleType.MYCOOK);
             }
         });
 
@@ -710,7 +717,7 @@ public class SaleModal extends Modal<Sale> {
 
         saleItemsModel.setObject(saleService.getSaleItems(sale.getObjectId()));
 
-        container.setEnabled(edit);
+        container.setEnabled(edit && periodMapper.getPeriod(sale.getPeriodId()).getCloseTimestamp() == null);
 
         open(target);
     }
