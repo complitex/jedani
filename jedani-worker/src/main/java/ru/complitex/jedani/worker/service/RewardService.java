@@ -342,20 +342,20 @@ public class RewardService implements Serializable {
     }
 
     public void updateLocal(Sale sale, Reward reward){
-        Date date = Dates.currentDate();
+        if (reward.getPoint().compareTo(ZERO) >= 0) {
+            Date date = Dates.currentDate();
 
-        List<SaleItem> saleItems = saleService.getSaleItems(sale.getObjectId());
+            List<SaleItem> saleItems = saleService.getSaleItems(sale.getObjectId());
 
-        if (!saleItems.isEmpty()){
-            SaleItem saleItem = saleItems.get(0);
+            if (!saleItems.isEmpty()){
+                SaleItem saleItem = saleItems.get(0);
 
-            reward.setRate(saleItem.getRate());
+                reward.setRate(saleItem.getRate());
 
-            if (reward.getRate() == null && saleItem.getSaleDecisionId() != null){
-                reward.setRate(priceService.getRate(sale, saleItem, date));
-            }
+                if (reward.getRate() == null && saleItem.getSaleDecisionId() != null){
+                    reward.setRate(priceService.getRate(sale, saleItem, date));
+                }
 
-            if (reward.getPoint().compareTo(ZERO) > 0) {
                 reward.setBasePrice(saleItem.getBasePrice());
 
                 if (sale.isFeeWithdraw()) {
@@ -379,31 +379,31 @@ public class RewardService implements Serializable {
 
                 reward.setDiscount(reward.getPrice().multiply(BigDecimal.valueOf(100).subtract(ratio))
                         .divide(reward.getBasePrice().multiply(BigDecimal.valueOf(100)), 7, HALF_EVEN));
+
+                if (reward.getRate() == null){
+                    reward.setRate(priceService.getRate(sale.getStorageId(), date));
+                }
+
+                reward.setAmount(reward.getPoint().multiply(reward.getRate()).setScale(5, HALF_EVEN));
+
+                if (reward.getDiscount() != null){
+                    reward.setAmount(reward.getAmount().multiply(reward.getDiscount()).setScale(5, HALF_EVEN));
+                }
             }
-        }
-
-        if (reward.getRate() == null){
-            reward.setRate(priceService.getRate(sale.getStorageId(), date));
-        }
-
-        if (reward.getPoint().compareTo(ZERO) != 0) {
-            reward.setAmount(reward.getPoint().multiply(reward.getRate()).setScale(5, HALF_EVEN));
-
-            if (reward.getDiscount() != null){
-                reward.setAmount(reward.getAmount().multiply(reward.getDiscount()).setScale(5, HALF_EVEN));
-            }
-        }else {
-            reward.setAmount(ZERO);
+        } else {
+            throw new RuntimeException("negative reward point error " + reward);
         }
     }
 
     private void updateLocal(Reward reward, Period period){
-        Long currencyId = workerService.getCurrencyId(reward.getWorkerId());
+        if (reward.getPoint().compareTo(ZERO) >= 0) {
+            Long currencyId = workerService.getCurrencyId(reward.getWorkerId());
 
-        reward.setRate(paymentService.getPaymentsRate(currencyId, period.getObjectId()));
+            reward.setRate(paymentService.getPaymentsRate(currencyId, period.getObjectId()));
 
-        if (reward.getPoint().compareTo(ZERO) > 0) {
             reward.setAmount(reward.getPoint().multiply(reward.getRate()).setScale(5, HALF_EVEN));
+        } else {
+            throw new RuntimeException("negative reward point error " + reward);
         }
     }
 
