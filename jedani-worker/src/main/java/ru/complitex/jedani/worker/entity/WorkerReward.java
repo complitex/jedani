@@ -260,4 +260,29 @@ public class WorkerReward {
     public Long getWorkerId(){
         return workerNode.getObjectId();
     }
+
+    @Override
+    public String toString() {
+        return "WorkerReward{" +
+                "workerNode=" + workerNode +
+                ", workerRewards=" + workerRewards +
+                ", sales=" + sales +
+                ", saleVolume=" + saleVolume +
+                ", paymentVolume=" + paymentVolume +
+                ", yearPaymentVolume=" + yearPaymentVolume +
+                ", registrationCount=" + registrationCount +
+                ", firstLevelCount=" + firstLevelCount +
+                ", firstLevelPersonalCount=" + firstLevelPersonalCount +
+                ", groupSales=" + groupSales +
+                ", groupSaleVolume=" + groupSaleVolume +
+                ", groupPaymentVolume=" + groupPaymentVolume +
+                ", structureSales=" + structureSales +
+                ", structureSaleVolume=" + structureSaleVolume +
+                ", structurePaymentVolume=" + structurePaymentVolume +
+                ", groupRegistrationCount=" + groupRegistrationCount +
+                ", structureManagerCount=" + structureManagerCount +
+                ", rank=" + rank +
+                ", pk=" + pk +
+                '}';
+    }
 }

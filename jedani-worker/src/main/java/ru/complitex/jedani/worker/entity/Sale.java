@@ -226,4 +226,9 @@ public class Sale extends Domain {
     public void setPeriodId(Long periodId){
         setNumber(PERIOD, periodId);
     }
+
+    @Override
+    public String toString() {
+        return "Sale{} " + super.toString();
+    }
 }
