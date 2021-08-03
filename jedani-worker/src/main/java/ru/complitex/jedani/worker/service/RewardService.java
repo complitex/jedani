@@ -710,10 +710,27 @@ public class RewardService implements Serializable {
     }
 
     private void calculateGroupReward(WorkerReward workerReward, Period period, Long rewardStatus) {
-        workerReward.getGroupSales().forEach(sale -> {
+        BigDecimal sum = getGroupVolumePercent(workerReward.getRank())
+                .multiply(workerReward.getGroupSaleVolume())
+                .divide(new BigDecimal("100"), 5, HALF_EVEN);
+
+        List<Sale> groupSales = workerReward.getGroupSales();
+
+        for (int i = 0; i < groupSales.size(); i++) {
+            Sale sale = groupSales.get(i);
             BigDecimal total = getGroupVolumePercent(workerReward.getRank())
                     .multiply(sale.getTotal())
                     .divide(new BigDecimal("100"), 5, HALF_EVEN);
+
+            sum = sum.subtract(total);
+
+            if (i == groupSales.size() - 1) {
+                if (sum.compareTo(ZERO) != 0) {
+                    log.info("calculateGroupReward sum " + sale + " " + sum);
+                }
+
+                total = total.add(sum);
+            }
 
             if (total.compareTo(ZERO) > 0) {
                 Reward reward = new Reward();
@@ -745,7 +762,7 @@ public class RewardService implements Serializable {
                     domainService.save(reward);
                 }
             }
-        });
+        }
     }
 
     private void calculateStructureReward(WorkerReward workerReward, Period period, Long rewardStatus) {
