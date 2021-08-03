@@ -15,6 +15,7 @@ import org.apache.wicket.model.StringResourceModel;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.util.Dates;
 import ru.complitex.common.wicket.panel.SelectPanel;
+import ru.complitex.common.wicket.table.SelectFilter;
 import ru.complitex.common.wicket.table.Table;
 import ru.complitex.common.wicket.table.TextFilter;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
@@ -204,10 +205,8 @@ public class RewardPanel extends DomainListModalPanel<Reward> {
             return new AbstractDomainColumn<>(a) {
                 @Override
                 public Component newFilter(String componentId, Table<Reward> table) {
-                    return new SelectPanel(componentId, new TypeSelect(SelectPanel.SELECT_COMPONENT_ID,
-                            new NumberAttributeModel(table.getFilterWrapper().getObject(), Reward.STATUS),
-                            RewardStatus.ESTIMATED, RewardStatus.CHARGED, RewardStatus.PAID, RewardStatus.WITHDRAWN)
-                            .add(OnChangeAjaxBehavior.onChange(table::update)));
+                    return new SelectFilter(componentId, new NumberAttributeModel(table.getFilterWrapper().getObject(), Reward.STATUS),
+                            RewardStatus.ESTIMATED, RewardStatus.CHARGED, RewardStatus.PAID, RewardStatus.WITHDRAWN);
                 }
 
                 @Override

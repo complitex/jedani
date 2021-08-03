@@ -4,6 +4,7 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.behavior.CssClassNameApp
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxButton;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.image.GlyphIconType;
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
@@ -21,15 +22,19 @@ import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.Sort;
 import ru.complitex.common.util.Dates;
 import ru.complitex.common.wicket.panel.LinkPanel;
+import ru.complitex.common.wicket.table.SelectFilter;
+import ru.complitex.common.wicket.table.Table;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.component.datatable.DomainColumn;
 import ru.complitex.domain.component.panel.DomainListModalPanel;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
+import ru.complitex.domain.model.NumberAttributeModel;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.mapper.PeriodMapper;
 import ru.complitex.jedani.worker.mapper.SaleMapper;
+import ru.complitex.jedani.worker.page.reward.RewardPanel;
 import ru.complitex.jedani.worker.service.SaleService;
 import ru.complitex.jedani.worker.service.WorkerService;
 import ru.complitex.jedani.worker.util.Nomenclatures;
@@ -231,40 +236,17 @@ public class SalePanel extends DomainListModalPanel<Sale> {
             }
         });
 
-        columns.add(new AbstractDomainColumn<>("status", this) {
+        columns.add(new DomainColumn<>(getEntity().getEntityAttribute(Sale.STATUS)) {
+            @Override
+            public Component newFilter(String componentId, Table<Sale> table) {
+                return new SelectFilter(componentId, new NumberAttributeModel(table.getFilterWrapper().getObject(), Sale.STATUS),
+                        SaleStatus.CREATED, SaleStatus.PAYING, SaleStatus.RISK, SaleStatus.NOT_PAYING, SaleStatus.PAID,
+                        SaleStatus.OVERPAID, SaleStatus.ARCHIVE);
+            }
+
             @Override
             public void populateItem(Item<ICellPopulator<Sale>> cellItem, String componentId, IModel<Sale> rowModel) {
-                Sale sale = rowModel.getObject();
-
-                String status = "";
-
-                if (sale.getSaleStatus() != null){
-                    switch (sale.getSaleStatus().intValue()){
-                        case (int) SaleStatus.CREATED:
-                            status = getString("created");
-                            break;
-                        case (int) SaleStatus.PAYING:
-                            status =  getString("paying");
-                            break;
-                        case (int) SaleStatus.RISK:
-                            status =  getString("risk");
-                            break;
-                        case (int) SaleStatus.NOT_PAYING:
-                            status =  getString("not_paying");
-                            break;
-                        case (int) SaleStatus.PAID:
-                            status =  getString("closed");
-                            break;
-                        case (int) SaleStatus.ARCHIVE:
-                            status =  getString("archive");
-                            break;
-                        case (int) SaleStatus.OVERPAID:
-                            status =  getString("overpayment");
-                            break;
-                    }
-                }
-
-                cellItem.add(new Label(componentId, status));
+                cellItem.add(new Label(componentId, new StringResourceModel("select." + rowModel.getObject().getSaleStatus(), SalePanel.this)));
             }
         });
     }

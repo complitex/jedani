@@ -121,7 +121,8 @@ public class HeadersToolbar extends AbstractToolbar {
 
                             table.setCurrentPage(0);
 
-                            target.add(ascending, table.getBody());
+                            target.add(ascending);
+                            table.update(target);
                         }
                     };
 
@@ -135,7 +136,7 @@ public class HeadersToolbar extends AbstractToolbar {
 
                             if (filter.getDefaultModelObject() != null){
                                 filter.setDefaultModelObject(null);
-                                target.add(table.getBody());
+                                table.update(target);
                             }
 
                             target.add(item);

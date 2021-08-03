@@ -80,23 +80,27 @@ public class DomainColumn<T extends Domain> extends AbstractDomainColumn<T> impl
 
         T domain = table.getFilterWrapper().getObject();
 
-        domain.getOrCreateAttribute(entityAttributeId).setEntityAttribute(entityAttribute);
+        Attribute attribute = domain.getOrCreateAttribute(entityAttributeId);
+
+        attribute.setEntityAttribute(entityAttribute);
 
         switch (entityAttribute.getValueType()){
             case NUMBER:
                 return new TextFilter<>(componentId, new NumberAttributeModel(domain, entityAttributeId))
                         .setType(Long.class)
-                        .onChange(t -> t.add(table.getBody()));
+                        .onChange(table::update);
             case DECIMAL:
                 return new TextFilter<>(componentId, new DecimalAttributeModel(domain, entityAttributeId))
                         .setType(BigDecimal.class)
-                        .onChange(t -> t.add(table.getBody()));
+                        .onChange(table::update);
             case DATE:
+                attribute.setFilter(Attribute.FILTER_SAME_DAY);
+
                 return new DateFilter(componentId, new DateAttributeModel(domain, entityAttributeId))
-                        .onChange(t -> t.add(table.getBody()));
+                        .onChange(table::update);
             default:
                 return new TextFilter<>(componentId, new TextAttributeModel(domain, entityAttributeId, StringType.DEFAULT))
-                        .onChange(t -> t.add(table.getBody()));
+                        .onChange(table::update);
         }
     }
 

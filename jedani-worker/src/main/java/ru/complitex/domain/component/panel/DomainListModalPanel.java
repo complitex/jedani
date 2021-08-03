@@ -63,6 +63,8 @@ public class DomainListModalPanel<T extends Domain> extends Panel {
 
     private final Long parentEntityAttributeId;
 
+    private Entity entity;
+
     public <P extends Domain> DomainListModalPanel(String id, Class<T> domainClass, Class<P> parentClass, Long parentEntityAttributeId) {
         super(id);
 
@@ -116,8 +118,9 @@ public class DomainListModalPanel<T extends Domain> extends Panel {
             });
         }
 
-        getEntityAttributes(entityService.getEntity(domainObject.getEntityName()))
-                .forEach(a -> columns.add(newDomainColumn(a)));
+        entity = entityService.getEntity(domainObject.getEntityName());
+
+        getEntityAttributes(entity).forEach(a -> columns.add(newDomainColumn(a)));
 
         onInitColumns(columns);
 
@@ -330,5 +333,9 @@ public class DomainListModalPanel<T extends Domain> extends Panel {
 
     protected AbstractToolbar newFooter(Table<T> table) {
         return null;
+    }
+
+    public Entity getEntity() {
+        return entity;
     }
 }
