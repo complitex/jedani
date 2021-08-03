@@ -21,23 +21,8 @@ public class RewardListPage extends BasePage {
     public RewardListPage() {
         RewardPanel rewardPanel = new RewardPanel("reward", getCurrentWorker()){
             @Override
-            protected void onCreate(AjaxRequestTarget target) {
-                rewardModal.create(target);
-            }
-
-            @Override
-            protected void onEdit(Reward reward, AjaxRequestTarget target) {
-                rewardModal.edit(reward.getObjectId(), target);
-            }
-
-            @Override
             protected boolean isCurrentWorkerFilter() {
                 return false;
-            }
-
-            @Override
-            public boolean isEditEnabled() {
-                return true;
             }
 
             @Override

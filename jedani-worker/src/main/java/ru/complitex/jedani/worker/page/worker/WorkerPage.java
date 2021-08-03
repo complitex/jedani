@@ -1327,7 +1327,7 @@ public class WorkerPage extends BasePage {
         BigDecimal estimated = rewardService.getRewardsTotal(periodId, worker.getObjectId(), rewardTypeId, RewardStatus.ESTIMATED);
         BigDecimal charged = rewardService.getRewardsTotal(periodId, worker.getObjectId(), rewardTypeId, RewardStatus.CHARGED);
 
-        return charged.toPlainString() + (estimated.compareTo(BigDecimal.ZERO) > 0 ?  " (" + estimated.toPlainString() + ")" : "");
+        return charged.toPlainString() + (charged.compareTo(BigDecimal.ZERO) > 0 ?  " (" + estimated.toPlainString() + ")" : "");
     }
 
     protected FilterWrapper<Worker> newFilterWrapper() {
