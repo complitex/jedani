@@ -172,16 +172,10 @@ public class RewardService implements Serializable {
     }
 
     private void calcSaleVolumes(WorkerRewardTree tree, Period period){
-        Set<Long> activeSaleWorkerIds = saleService.getActiveSaleWorkerIds();
-
         tree.forEachLevel((l, rl) -> rl.forEach(r -> {
-            if (activeSaleWorkerIds.contains(r.getWorkerNode().getObjectId())) {
-                List<Sale> sales = saleService.getSales(r.getWorkerNode().getObjectId(), period);
+            r.setSales(saleService.getSales(r.getWorkerNode().getObjectId(), period));
 
-                r.setSales(sales);
-
-                r.setSaleVolume(saleService.getSaleVolume(sales));
-            }
+            r.setSaleVolume(saleService.getSaleVolume(r.getSales()));
 
             r.getGroup().forEach(c -> r.getGroupSales().addAll(c.getSales()));
 
@@ -771,8 +765,8 @@ public class RewardService implements Serializable {
                         reward.setRankId(workerReward.getRank());
                         reward.setManagerId(m.getWorkerId());
                         reward.setManagerRankId(m.getRank());
-                        reward.setStructureSaleVolume(m.getStructureSaleVolume());
-                        reward.setStructurePaymentVolume(m.getStructurePaymentVolume());
+                        reward.setStructureSaleVolume(workerReward.getStructureSaleVolume());
+                        reward.setStructurePaymentVolume(workerReward.getStructurePaymentVolume());
                         reward.setDate(Dates.currentDate());
                         reward.setMonth(period.getOperatingMonth());
                         reward.setPeriodId(period.getObjectId());
