@@ -749,8 +749,8 @@ public class RewardService implements Serializable {
     }
 
     private void calculateStructureReward(WorkerReward workerReward, Period period, Long rewardStatus) {
-        workerReward.getStructureSales().forEach(sale ->
-                workerReward.getFirstStructureManagers().forEach(m -> {
+        workerReward.getFirstStructureManagers().forEach(m ->
+            m.getStructureSales().forEach(sale -> {
                     BigDecimal total = getGroupVolumePercent(workerReward.getRank())
                             .subtract(getGroupVolumePercent(m.getRank()))
                             .multiply(sale.getTotal())
