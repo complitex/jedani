@@ -860,6 +860,11 @@ public class RewardService implements Serializable {
 
                 calculateCulinaryReward(sale, period, RewardStatus.ESTIMATED);
                 calculateCulinaryReward(sale, period, RewardStatus.CHARGED);
+
+                WorkerReward workerReward = tree.getWorkerReward(sale.getSellerWorkerId());
+
+                calculateManagerReward(sale, workerReward, period, RewardStatus.ESTIMATED);
+                calculateManagerReward(sale, workerReward, period, RewardStatus.CHARGED);
             });
 
             tree.forEachLevel((l, rl) -> rl.forEach(workerReward -> {
@@ -883,13 +888,6 @@ public class RewardService implements Serializable {
                     domainService.save(reward);
                 }
             }));
-
-            saleService.getActiveSales().forEach(sale -> {
-                WorkerReward workerReward = tree.getWorkerReward(sale.getSellerWorkerId());
-
-                calculateManagerReward(sale, workerReward, period, RewardStatus.ESTIMATED);
-                calculateManagerReward(sale, workerReward, period, RewardStatus.CHARGED);
-            });
 
             tree.forEachLevel((l, rl) -> rl.forEach(workerReward -> {
                 calculatePersonalReward(workerReward, period, RewardStatus.ESTIMATED);

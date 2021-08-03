@@ -340,6 +340,7 @@ public class SaleModal extends Modal<Sale> {
                 TextField<BigDecimal> basePrice = new TextField<>("basePrice", DecimalAttributeModel.of(model, SaleItem.BASE_PRICE), BigDecimal.class);
                 basePrice.setOutputMarkupId(true);
                 basePrice.setEnabled(false);
+                basePrice.setRequired(true);
                 item.add(basePrice);
 
                 TextField<BigDecimal> price = new TextField<>("price", DecimalAttributeModel.of(model, SaleItem.PRICE), BigDecimal.class){
@@ -363,6 +364,7 @@ public class SaleModal extends Modal<Sale> {
                 };
                 price.setOutputMarkupId(true);
                 price.setEnabled(false);
+                price.setRequired(true);
                 item.add(price);
 
                 TextField<Long> quantity = new TextField<>("quantity", NumberAttributeModel.of(model, SaleItem.QUANTITY), Long.class);
@@ -742,14 +744,22 @@ public class SaleModal extends Modal<Sale> {
             return;
         }
 
-        saleItems.forEach(s -> {
-            if (!saleService.validateQuantity(sale, s)){
+        for (SaleItem s : saleItems) {
+            if (s.getPrice() == null) {
+                error(getString("error_price"));
+
+                target.add(feedback);
+
+                return;
+            }
+
+            if (!saleService.validateQuantity(sale, s)) {
                 Nomenclature n = domainService.getDomain(Nomenclature.class, s.getNomenclatureId());
 
                 getSession().warn(getString("warn_quantity") + ": " +
                         Attributes.capitalize(n.getTextValue(Nomenclature.NAME)));
             }
-        });
+        }
 
         try {
             sale.setPersonalRewardPoint(rewardService.getPersonalRewardPoint(sale, saleItems));
