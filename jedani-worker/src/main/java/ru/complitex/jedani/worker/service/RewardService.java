@@ -120,6 +120,7 @@ public class RewardService implements Serializable {
         calcFirstLevelCount(tree, period);
         calcRegistrationCount(tree, period);
         calcSaleVolumes(tree, period);
+        calcStructureManagerCount(tree, period);
 
         return tree;
     }
@@ -224,7 +225,11 @@ public class RewardService implements Serializable {
 
             r.setGroupRegistrationCount(r.getGroup().stream()
                     .reduce(0L, (v, c) -> v + (isNewWorker(c.getWorkerId(), period) ? 1 : 0), Long::sum));
+        }));
+    }
 
+    private void calcStructureManagerCount(WorkerRewardTree tree, Period period){
+        tree.forEachLevel((l, rl) -> rl.forEach(r -> {
             r.setStructureManagerCount(r.getWorkerRewards().stream()
                     .filter(WorkerReward::isManager)
                     .reduce(0L, (v, c) -> v + c.getStructureManagerCount() + 1, Long::sum));
@@ -901,7 +906,7 @@ public class RewardService implements Serializable {
             }));
 
             if (workerRewardTreeCache != null) {
-                workerRewardTreeCache.invalidateAll();
+                workerRewardTreeCache.refresh(period.getObjectId());
             }
         } catch (Exception e) {
             log.error("error calculate rewards", e);
