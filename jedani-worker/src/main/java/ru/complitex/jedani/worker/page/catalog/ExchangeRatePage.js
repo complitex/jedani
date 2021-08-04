@@ -71,6 +71,9 @@ let options = {
                 color: '#333',
                 fontSize: '13px',
                 fontFamily: 'Arial, Helvetica, sans-serif'
+            },
+            formatter: function (value) {
+                return value;
             }
         },
         axisBorder:{

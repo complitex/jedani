@@ -233,11 +233,8 @@ public class RewardService implements Serializable {
     }
 
     private void calcStructureManagerCount(WorkerRewardTree tree, Period period){
-        tree.forEachLevel((l, rl) -> rl.forEach(r -> {
-            r.setStructureManagerCount(r.getWorkerRewards().stream()
-                    .filter(WorkerReward::isManager)
-                    .reduce(0L, (v, c) -> v + c.getStructureManagerCount() + 1, Long::sum));
-        }));
+        tree.forEachLevel((l, rl) -> rl.forEach(r -> r.setStructureManagerCount(r.getWorkerRewards().stream()
+                .reduce(0L, (v, c) -> v + c.getStructureManagerCount() + (c.isManager() ? 1 : 0), Long::sum))));
     }
 
     private boolean isNewWorker(Long workerId, Period period){
