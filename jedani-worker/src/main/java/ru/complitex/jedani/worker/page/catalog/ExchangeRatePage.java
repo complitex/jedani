@@ -80,7 +80,7 @@ public class ExchangeRatePage extends BasePage {
 
         Rate filterRate = new Rate();
 
-        rate.setParentId(exchangeRate.getObjectId());
+        filterRate.setParentId(exchangeRate.getObjectId());
 
         FilterWrapper<Rate> filterWrapper = FilterWrapper.of(filterRate)
                 .sort("date", filterRate.getOrCreateAttribute(Rate.DATE));
