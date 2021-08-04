@@ -30,7 +30,7 @@ public class PeriodCloseModal extends AbstractEditModal<Period> {
     @Inject
     private PeriodMapper periodMapper;
 
-    private IModel<Boolean> calculateModel;
+    private final IModel<Boolean> calculateModel = Model.of(false);
 
     public PeriodCloseModal(String markupId) {
         super(markupId);
@@ -40,11 +40,9 @@ public class PeriodCloseModal extends AbstractEditModal<Period> {
         add(new Label("month", new LoadableDetachableModel<String>() {
             @Override
             protected String load() {
-                return Dates.getMonthText(periodMapper.getActualPeriod().getOperatingMonth());
+                return Dates.getMonthText(getModelObject().getOperatingMonth());
             }
         }));
-
-        calculateModel = Model.of(false);
 
         add(new BootstrapCheckbox("calculateRewards", calculateModel, new ResourceModel("calculateRewards")));
     }
@@ -52,7 +50,13 @@ public class PeriodCloseModal extends AbstractEditModal<Period> {
     @Override
     protected void save(AjaxRequestTarget target) {
         try {
-            periodService.closeOperatingMonth(getCurrentWorkerId(), calculateModel.getObject(), true);
+            Period period = periodMapper.getPeriod(getModelObject().getObjectId());
+
+            if (period.getCloseTimestamp() != null) {
+                throw new RuntimeException("period already closed " + period);
+            }
+
+            periodService.closeOperatingMonth(getModelObject(), calculateModel.getObject(), true, getCurrentWorkerId());
 
             if (calculateModel.getObject()) {
                 getSession().success(getString("info_rewards_calculated"));
@@ -61,12 +65,19 @@ public class PeriodCloseModal extends AbstractEditModal<Period> {
             getSession().success(getString("info_period_closed"));
             getSession().success(getString("info_accounts_updated"));
         } catch (Exception e) {
-            log.error("error calculate rewards ", e);
+            log.error("error close period", e);
 
-            getSession().error(getString("error_calculate_rewards"));
+            getSession().error(getString("error_close_period"));
         }
 
         super.save(target);
+    }
+
+    @Override
+    public void create(AjaxRequestTarget target) {
+        super.create(target);
+
+        getModel().setObject(periodMapper.getActualPeriod());
     }
 
     @Override

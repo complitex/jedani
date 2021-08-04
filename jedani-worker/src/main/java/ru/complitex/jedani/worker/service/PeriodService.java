@@ -32,9 +32,7 @@ public class PeriodService implements Serializable {
     @Inject
     private AccountService accountService;
 
-    public void closeOperatingMonth(Long workerId, boolean calculateRewards, boolean updateAccounts) throws RewardException, AccountException {
-        Period period = periodMapper.getActualPeriod();
-
+    public void closeOperatingMonth(Period period, boolean calculateRewards, boolean updateAccounts, Long workerId) throws RewardException, AccountException {
         period.setWorkerId(workerId);
         period.setCloseTimestamp(Dates.currentDate());
 
