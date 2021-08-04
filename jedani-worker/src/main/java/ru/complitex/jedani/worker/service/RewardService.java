@@ -25,6 +25,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static java.math.BigDecimal.ONE;
 import static java.math.BigDecimal.ZERO;
 import static java.math.RoundingMode.HALF_EVEN;
 
@@ -59,6 +60,9 @@ public class RewardService implements Serializable {
 
     @Inject
     private PriceService priceService;
+
+    @Inject
+    private ExchangeRateService exchangeRateService;
 
     public List<Reward> getRewardsBySaleId(Long saleId) {
         return domainService.getDomains(Reward.class, FilterWrapper.of(new Reward().setSaleId(saleId)));
@@ -346,7 +350,7 @@ public class RewardService implements Serializable {
         return ZERO;
     }
 
-    public void updateLocal(Sale sale, Reward reward){
+    public void updateLocal(Sale sale, Reward reward, Period period){
         if (reward.getPoint().compareTo(ZERO) >= 0) {
             Date date = Dates.currentDate();
 
@@ -389,7 +393,20 @@ public class RewardService implements Serializable {
                     reward.setRate(priceService.getRate(sale.getStorageId(), date));
                 }
 
-                reward.setAmount(reward.getPoint().multiply(reward.getRate()).setScale(5, HALF_EVEN));
+                Long workerCountryId = workerService.getCountryId(sale.getSellerWorkerId());
+                Long saleCountryId = saleService.getCountryId(sale);
+
+                if (!workerCountryId.equals(saleCountryId)) {
+                    Date crossDate = Dates.lastDayOfMonth(period.getOperatingMonth());
+
+                    reward.setCrossRate(exchangeRateService.getExchangeRate(workerCountryId, crossDate)
+                            .divide(exchangeRateService.getExchangeRate(saleCountryId, crossDate), 7, HALF_EVEN));
+                } else {
+                    reward.setCrossRate(ONE);
+                }
+
+                reward.setAmount(reward.getPoint().multiply(reward.getRate()).multiply(reward.getCrossRate())
+                        .setScale(5, HALF_EVEN));
 
                 if (reward.getDiscount() != null){
                     reward.setAmount(reward.getAmount().multiply(reward.getDiscount()).setScale(5, HALF_EVEN));
@@ -402,9 +419,7 @@ public class RewardService implements Serializable {
 
     private void updateLocal(Reward reward, Period period){
         if (reward.getPoint().compareTo(ZERO) >= 0) {
-            Long currencyId = workerService.getCurrencyId(reward.getWorkerId());
-
-            reward.setRate(paymentService.getPaymentsRate(currencyId, period.getObjectId()));
+            reward.setRate(getPaymentsRate(reward.getWorkerId(), period));
 
             reward.setAmount(reward.getPoint().multiply(reward.getRate()).setScale(5, HALF_EVEN));
         } else {
@@ -546,7 +561,7 @@ public class RewardService implements Serializable {
             reward.setPoint(total);
         }
 
-        updateLocal(sale, reward);
+        updateLocal(sale, reward, period);
 
         if (reward.getPoint().compareTo(ZERO) != 0) {
             domainService.save(reward);
@@ -582,7 +597,7 @@ public class RewardService implements Serializable {
                     reward.setPoint(calcRewardPoint(sale, RewardType.MANAGER_MK_BONUS, period.getOperatingMonth(), total));
                 }
 
-                updateLocal(sale, reward);
+                updateLocal(sale, reward, period);
 
                 if (reward.getPoint().compareTo(ZERO) != 0) {
                     domainService.save(reward);
@@ -618,7 +633,7 @@ public class RewardService implements Serializable {
         reward.setTotal(sale.getCulinaryRewardPoint());
         reward.setPoint(sale.getCulinaryRewardPoint());
 
-        updateLocal(sale, reward);
+        updateLocal(sale, reward, period);
 
         domainService.save(reward);
     }
@@ -664,7 +679,7 @@ public class RewardService implements Serializable {
                 reward.setPoint(calcRewardPoint(sale, RewardType.MANAGER_PREMIUM, period.getOperatingMonth(), total));
             }
 
-            updateLocal(sale, reward);
+            updateLocal(sale, reward, period);
 
             if (reward.getPoint().compareTo(ZERO) != 0) {
                 domainService.save(reward);
@@ -939,5 +954,43 @@ public class RewardService implements Serializable {
 
     public WorkerReward getWorkerReward(Worker worker){
         return getWorkerRewardTree(periodMapper.getActualPeriod()).getWorkerReward(worker.getObjectId());
+    }
+
+    public BigDecimal getPaymentsRate(Long workerId, Period period) {
+        List<Payment> payments = paymentService.getPayments(FilterWrapper.of(new Payment().setPeriodId(period.getObjectId())));
+
+        Map<Long, BigDecimal> pointSumMap = new HashMap<>();
+        Map<Long, BigDecimal> amountSumMap = new HashMap<>();
+
+        payments.stream()
+                .filter(p -> saleService.getSale(p.getSaleId()).getSellerWorkerId().equals(workerId))
+                .forEach(p -> {
+                    Long countryId = saleService.getCountryId(p.getSaleId());
+
+                    pointSumMap.put(countryId, pointSumMap.getOrDefault(countryId, ZERO).add(p.getPoint()));
+                    amountSumMap.put(countryId, amountSumMap.getOrDefault(countryId, ZERO).add(p.getAmount()));
+                });
+
+        Long workerCountryId = workerService.getCountryId(workerId);
+
+        List<BigDecimal> rates = new ArrayList<>();
+
+        Date date = Dates.lastDayOfMonth(period.getOperatingMonth());
+
+        amountSumMap.forEach((c, a) -> {
+            if (a.compareTo(ZERO) != 0) {
+                BigDecimal rate = a.divide(pointSumMap.get(c), 5, HALF_EVEN);
+
+                if (!c.equals(workerCountryId)) {
+                    rate = rate
+                            .multiply(exchangeRateService.getExchangeRate(workerCountryId, date)
+                            .divide(exchangeRateService.getExchangeRate(c, date), 5, HALF_EVEN));
+                }
+
+                rates.add(rate);
+            }
+        });
+
+        return rates.size() > 0 ? rates.stream().reduce(ZERO, BigDecimal::add).divide(new BigDecimal(rates.size()), 5, HALF_EVEN) : ONE;
     }
 }

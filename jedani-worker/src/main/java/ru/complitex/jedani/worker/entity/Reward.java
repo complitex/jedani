@@ -32,6 +32,7 @@ public class Reward extends Domain {
     public static final long BASE_PRICE = 22;
     public static final long PRICE = 23;
     public final static long PERIOD = 24;
+    public final static long CROSS_RATE = 25;
 
     public final static String FILTER_MONTH = "month";
     public final static String FILTER_ACTUAL_MONTH = "actualMonth";
@@ -235,5 +236,13 @@ public class Reward extends Domain {
 
     public BigDecimal getStructurePaymentVolume() {
         return getDecimal(STRUCTURE_PAYMENT_VOLUME);
+    }
+
+    public void setCrossRate(BigDecimal crossRate) {
+        setDecimal(CROSS_RATE, crossRate);
+    }
+
+    public BigDecimal getCrossRate() {
+        return getDecimal(CROSS_RATE);
     }
 }

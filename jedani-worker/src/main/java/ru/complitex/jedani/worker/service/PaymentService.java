@@ -2,6 +2,8 @@ package ru.complitex.jedani.worker.service;
 
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.util.Dates;
+import ru.complitex.domain.service.DomainService;
+import ru.complitex.jedani.worker.entity.Currency;
 import ru.complitex.jedani.worker.entity.Payment;
 import ru.complitex.jedani.worker.entity.Period;
 import ru.complitex.jedani.worker.mapper.PaymentMapper;
@@ -10,9 +12,7 @@ import javax.inject.Inject;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author Anatoly A. Ivanov
@@ -60,12 +60,7 @@ public class PaymentService implements Serializable {
                 .reduce(BigDecimal.ZERO, ((t, p) -> t.add(p.getPoint())), BigDecimal::add);
     }
 
-    public BigDecimal getPaymentsRate(Long currencyId, Long periodId) {
-        List<Payment> payments = paymentMapper.getPayments(FilterWrapper.of(new Payment().setCurrencyId(currencyId).setPeriodId(periodId)));
-
-        BigDecimal pointSum = payments.stream().map(Payment::getPoint).reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal amountSum = payments.stream().map(Payment::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        return amountSum.divide(pointSum, 5, RoundingMode.HALF_EVEN);
+    public List<Payment> getPayments(FilterWrapper<Payment> filterWrapper){
+        return paymentMapper.getPayments(filterWrapper);
     }
 }

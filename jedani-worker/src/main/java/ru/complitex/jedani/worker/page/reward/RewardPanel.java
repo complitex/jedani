@@ -106,6 +106,7 @@ public class RewardPanel extends DomainListModalPanel<Reward> {
         list.add(entity.getEntityAttribute(Reward.POINT));
         list.add(entity.getEntityAttribute(Reward.RATE));
         list.add(entity.getEntityAttribute(Reward.DISCOUNT));
+        list.add(entity.getEntityAttribute(Reward.CROSS_RATE));
         list.add(entity.getEntityAttribute(Reward.AMOUNT));
         list.add(entity.getEntityAttribute(Reward.DETAIL));
 

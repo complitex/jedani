@@ -1,6 +1,7 @@
 package ru.complitex.jedani.worker.service;
 
 import org.mybatis.cdi.Transactional;
+import ru.complitex.address.entity.Country;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.service.DomainService;
@@ -11,6 +12,7 @@ import ru.complitex.jedani.worker.mapper.PeriodMapper;
 import ru.complitex.jedani.worker.mapper.SaleItemMapper;
 import ru.complitex.jedani.worker.mapper.SaleMapper;
 
+import javax.ejb.Local;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -205,4 +207,11 @@ public class SaleService implements Serializable {
         return BigDecimal.ZERO;
     }
 
+    public Long getCountryId(Sale sale) {
+        return storageService.getCountryId(sale.getStorageId());
+    }
+
+    public Long getCountryId(Long saleId) {
+        return getCountryId(getSale(saleId));
+    }
 }
