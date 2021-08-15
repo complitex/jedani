@@ -950,7 +950,7 @@ public class RewardService implements Serializable {
     }
 
     public WorkerReward getWorkerReward(Worker worker){
-        return getWorkerRewardTree(periodMapper.getActualPeriod()).getWorkerReward(worker.getObjectId());
+        return getWorkerRewardTreeCache(periodMapper.getActualPeriod().getObjectId()).getWorkerReward(worker.getObjectId());
     }
 
     public BigDecimal getPaymentsRate(Long workerId, Period period) {
