@@ -45,7 +45,7 @@ import ru.complitex.common.wicket.application.ServletWebSession;
 import ru.complitex.common.wicket.converter.BigDecimalConverter;
 import ru.complitex.jedani.worker.api.VerifyResourceReference;
 import ru.complitex.jedani.worker.api.WorkerListJsonPage;
-import ru.complitex.jedani.worker.api.WorkerResourceReference;
+import ru.complitex.jedani.worker.api.WorkerJsonPage;
 import ru.complitex.jedani.worker.page.account.AccountListPage;
 import ru.complitex.jedani.worker.page.admin.ImportPage;
 import ru.complitex.jedani.worker.page.admin.SettingPage;
@@ -208,8 +208,8 @@ public class JedaniWebApplication extends WebApplication{
 
     private void configureMountApi(){
         mountResource("api/verify/${jId}", VerifyResourceReference.INSTANCE);
-        mountResource("api/worker", WorkerResourceReference.INSTANCE);
 
+        mountPage("api/worker", WorkerJsonPage.class);
         mountPage("api/workers", WorkerListJsonPage.class);
     }
 
