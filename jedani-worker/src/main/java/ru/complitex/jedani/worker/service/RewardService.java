@@ -608,8 +608,7 @@ public class RewardService implements Serializable {
             return;
         }
 
-        if (rewardStatus.equals(RewardStatus.CHARGED) && (sale.getCulinaryWorkerId() == null ||
-                sale.getSaleStatus() == null || sale.getSaleStatus() < SaleStatus.PAID)) {
+        if (sale.getCulinaryWorkerId() == null || sale.getSaleStatus() == null || sale.getSaleStatus() < SaleStatus.PAID) {
             return;
         }
 
