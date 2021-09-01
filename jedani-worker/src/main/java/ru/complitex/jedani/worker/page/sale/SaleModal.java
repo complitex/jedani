@@ -95,9 +95,6 @@ public class SaleModal extends Modal<Sale> {
     @Inject
     private WorkerService workerService;
 
-    @Inject
-    private PaymentService paymentService;
-
     private final IModel<Sale> saleModel;
     private final IModel<List<SaleItem>> saleItemsModel;
 
@@ -117,6 +114,8 @@ public class SaleModal extends Modal<Sale> {
     private Long defaultStorageId;
 
     private final Component saveButton;
+
+    private boolean culinaryEnabled = false;
 
     public SaleModal(String markupId) {
         super(markupId);
@@ -324,7 +323,7 @@ public class SaleModal extends Modal<Sale> {
                 Sale sale = saleModel.getObject();
 
                 return Objects.equals(sale.getType(), SaleType.MYCOOK) &&
-                        (sale.getCulinaryWorkerId() != null || isCulinaryEnabled());
+                        (sale.getCulinaryWorkerId() != null || culinaryEnabled);
             }
 
             @Override
@@ -474,7 +473,7 @@ public class SaleModal extends Modal<Sale> {
 
             @Override
             public boolean isVisible() {
-                return container.isEnabled() || isCulinaryEnabled();
+                return container.isEnabled() || culinaryEnabled;
             }
         }.setOutputMarkupPlaceholderTag(true)
                 .add(AttributeModifier.append("class", "btn btn-primary")));
@@ -717,6 +716,8 @@ public class SaleModal extends Modal<Sale> {
 
         container.setEnabled(edit && periodMapper.getPeriod(sale.getPeriodId()).getCloseTimestamp() == null);
 
+        culinaryEnabled = sale.getSaleStatus() == SaleStatus.PAID && sale.getCulinaryWorkerId() == null;
+
         open(target);
     }
 
@@ -794,12 +795,6 @@ public class SaleModal extends Modal<Sale> {
 
             target.add(feedback);
         }
-    }
-
-    private boolean isCulinaryEnabled() {
-        Sale sale = saleModel.getObject();
-
-        return sale.getSaleStatus() == SaleStatus.PAID && sale.getCulinaryWorkerId() == null;
     }
 
     protected void onUpdate(AjaxRequestTarget target){
