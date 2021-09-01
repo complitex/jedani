@@ -51,10 +51,7 @@ import ru.complitex.jedani.worker.exception.SaleException;
 import ru.complitex.jedani.worker.mapper.PeriodMapper;
 import ru.complitex.jedani.worker.mapper.StorageMapper;
 import ru.complitex.jedani.worker.page.BasePage;
-import ru.complitex.jedani.worker.service.PriceService;
-import ru.complitex.jedani.worker.service.RewardService;
-import ru.complitex.jedani.worker.service.SaleService;
-import ru.complitex.jedani.worker.service.WorkerService;
+import ru.complitex.jedani.worker.service.*;
 import ru.complitex.name.entity.FirstName;
 import ru.complitex.name.entity.LastName;
 import ru.complitex.name.entity.MiddleName;
@@ -98,6 +95,9 @@ public class SaleModal extends Modal<Sale> {
     @Inject
     private WorkerService workerService;
 
+    @Inject
+    private PaymentService paymentService;
+
     private final IModel<Sale> saleModel;
     private final IModel<List<SaleItem>> saleItemsModel;
 
@@ -117,8 +117,6 @@ public class SaleModal extends Modal<Sale> {
     private Long defaultStorageId;
 
     private final Component saveButton;
-
-    private boolean enabled = true;
 
     public SaleModal(String markupId) {
         super(markupId);
@@ -326,7 +324,7 @@ public class SaleModal extends Modal<Sale> {
                 Sale sale = saleModel.getObject();
 
                 return Objects.equals(sale.getType(), SaleType.MYCOOK) &&
-                        (sale.getCulinaryWorkerId() != null || (sale.getSaleStatus() != null && sale.getSaleStatus() >= SaleStatus.PAID));
+                        (sale.getCulinaryWorkerId() != null || isPaidSalePeriod());
             }
 
             @Override
@@ -476,7 +474,7 @@ public class SaleModal extends Modal<Sale> {
 
             @Override
             public boolean isVisible() {
-                return container.isEnabled();
+                return container.isEnabled() || isPaidSalePeriod();
             }
         }.setOutputMarkupPlaceholderTag(true)
                 .add(AttributeModifier.append("class", "btn btn-primary")));
@@ -796,6 +794,21 @@ public class SaleModal extends Modal<Sale> {
 
             target.add(feedback);
         }
+    }
+
+    private boolean isPaidSalePeriod() {
+        Sale sale = saleModel.getObject();
+
+        if (sale.getSaleStatus() !=  SaleStatus.PAID) {
+            return false;
+        }
+
+        Period period = paymentService.getPaymentsBySaleId(sale.getObjectId()).stream()
+                .map(payment -> periodMapper.getPeriod(payment.getPeriodId()))
+                .max(Comparator.comparing(Period::getOperatingMonth))
+                .orElse(null);
+
+        return period != null && period.getCloseTimestamp() == null;
     }
 
     protected void onUpdate(AjaxRequestTarget target){
