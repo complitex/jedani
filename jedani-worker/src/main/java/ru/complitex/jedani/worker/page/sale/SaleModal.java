@@ -324,7 +324,7 @@ public class SaleModal extends Modal<Sale> {
                 Sale sale = saleModel.getObject();
 
                 return Objects.equals(sale.getType(), SaleType.MYCOOK) &&
-                        (sale.getCulinaryWorkerId() != null || isPaidSalePeriod());
+                        (sale.getCulinaryWorkerId() != null || isCulinaryEnabled());
             }
 
             @Override
@@ -474,7 +474,7 @@ public class SaleModal extends Modal<Sale> {
 
             @Override
             public boolean isVisible() {
-                return container.isEnabled() || isPaidSalePeriod();
+                return container.isEnabled() || isCulinaryEnabled();
             }
         }.setOutputMarkupPlaceholderTag(true)
                 .add(AttributeModifier.append("class", "btn btn-primary")));
@@ -796,19 +796,10 @@ public class SaleModal extends Modal<Sale> {
         }
     }
 
-    private boolean isPaidSalePeriod() {
+    private boolean isCulinaryEnabled() {
         Sale sale = saleModel.getObject();
 
-        if (sale.getSaleStatus() !=  SaleStatus.PAID) {
-            return false;
-        }
-
-        Period period = paymentService.getPaymentsBySaleId(sale.getObjectId()).stream()
-                .map(payment -> periodMapper.getPeriod(payment.getPeriodId()))
-                .max(Comparator.comparing(Period::getOperatingMonth))
-                .orElse(null);
-
-        return period != null && period.getCloseTimestamp() == null;
+        return sale.getSaleStatus() == SaleStatus.PAID && sale.getCulinaryWorkerId() == null;
     }
 
     protected void onUpdate(AjaxRequestTarget target){
