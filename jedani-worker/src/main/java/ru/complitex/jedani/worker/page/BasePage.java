@@ -245,14 +245,14 @@ public class BasePage extends WebPage{
         menu.add(settings);
 
         WebMarkupContainer address = new WebMarkupContainer("address");
-        address.setVisible(isAdmin());
+        address.setVisible(isAdmin() || isStructureAdmin());
         address.add(newBehavior());
         address.add(new WebMarkupContainer("link").add(newBehaviorLink()));
         address.add(new WebMarkupContainer("list")
-                .add(new MenuLink("countries", CountryListPage.class).setVisible(isAdmin()))
-                .add(new MenuLink("regions", RegionListPage.class).setVisible(isAdmin()))
-                .add(new MenuLink("cityTypes", CityTypeListPage.class).setVisible(isAdmin()))
-                .add(new MenuLink("cities", CityListPage.class).setVisible(isAdmin()))
+                .add(new MenuLink("countries", CountryListPage.class))
+                .add(new MenuLink("regions", RegionListPage.class))
+                .add(new MenuLink("cityTypes", CityTypeListPage.class))
+                .add(new MenuLink("cities", CityListPage.class))
                 .add(newBehaviorList()));
         menu.add(address);
 
