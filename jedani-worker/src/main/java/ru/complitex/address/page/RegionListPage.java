@@ -14,7 +14,7 @@ import java.util.List;
  * @author Anatoly A. Ivanov
  * 19.12.2017 3:40
  */
-@AuthorizeInstantiation(JedaniRoles.ADMINISTRATORS)
+@AuthorizeInstantiation({JedaniRoles.ADMINISTRATORS, JedaniRoles.STRUCTURE_ADMINISTRATORS})
 public class RegionListPage extends DomainListModalPage<Region> {
     public RegionListPage() {
         super(Region.class, Country.class, Country.NAME);

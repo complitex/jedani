@@ -16,7 +16,7 @@ import java.util.List;
  * @author Anatoly A. Ivanov
  * 19.12.2017 9:32
  */
-@AuthorizeInstantiation(JedaniRoles.ADMINISTRATORS)
+@AuthorizeInstantiation({JedaniRoles.ADMINISTRATORS, JedaniRoles.STRUCTURE_ADMINISTRATORS})
 public class CityListPage extends DomainListModalPage<City> {
     public CityListPage() {
         super(City.class, Region.class, Region.NAME);
