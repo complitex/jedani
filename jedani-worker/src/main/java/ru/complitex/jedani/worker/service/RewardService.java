@@ -953,21 +953,20 @@ public class RewardService implements Serializable {
     }
 
     public BigDecimal getPaymentsRate(Long workerId, Period period) {
-        List<Payment> payments = paymentService.getPayments(FilterWrapper.of(new Payment().setPeriodId(period.getObjectId())));
+        Long workerCountryId = workerService.getCountryId(workerId);
 
         Map<Long, BigDecimal> pointSumMap = new HashMap<>();
         Map<Long, BigDecimal> amountSumMap = new HashMap<>();
 
-        payments.stream()
-                .filter(p -> saleService.getSale(p.getSaleId()).getSellerWorkerId().equals(workerId))
+        paymentService.getPayments(FilterWrapper.of(new Payment().setPeriodId(period.getObjectId())))
                 .forEach(p -> {
                     Long countryId = saleService.getCountryId(p.getSaleId());
 
-                    pointSumMap.put(countryId, pointSumMap.getOrDefault(countryId, ZERO).add(p.getPoint()));
-                    amountSumMap.put(countryId, amountSumMap.getOrDefault(countryId, ZERO).add(p.getAmount()));
+                    if (countryId.equals(workerCountryId)) {
+                        pointSumMap.put(countryId, pointSumMap.getOrDefault(countryId, ZERO).add(p.getPoint()));
+                        amountSumMap.put(countryId, amountSumMap.getOrDefault(countryId, ZERO).add(p.getAmount()));
+                    }
                 });
-
-        Long workerCountryId = workerService.getCountryId(workerId);
 
         List<BigDecimal> rates = new ArrayList<>();
 
@@ -980,7 +979,7 @@ public class RewardService implements Serializable {
                 if (!c.equals(workerCountryId)) {
                     rate = rate
                             .multiply(exchangeRateService.getExchangeRate(workerCountryId, date)
-                            .divide(exchangeRateService.getExchangeRate(c, date), 5, HALF_EVEN));
+                                    .divide(exchangeRateService.getExchangeRate(c, date), 5, HALF_EVEN));
                 }
 
                 rates.add(rate);
