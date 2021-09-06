@@ -203,7 +203,7 @@ public class DomainListModalPanel<T extends Domain> extends Panel {
                 parentEntityAttributeId, getEditEntityAttributes(entityService.getEntity(Domains.getEntityName(domainClass))),
                 t -> t.add(feedback, table)){
             @Override
-            protected boolean validate(Domain domain) {
+            protected boolean checkUnique(Domain domain) {
                 return DomainListModalPanel.this.validate(domain);
             }
 

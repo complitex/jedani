@@ -29,7 +29,17 @@ public class City extends Domain{
     }
 
     public City setName(String name) {
-        setText(City.NAME, name);
+        setText(NAME, name);
+
+        return this;
+    }
+
+    public String getShortName() {
+        return getTextValue(SHORT_NAME);
+    }
+
+    public City setShortName(String shortName) {
+        setText(SHORT_NAME, shortName);
 
         return this;
     }

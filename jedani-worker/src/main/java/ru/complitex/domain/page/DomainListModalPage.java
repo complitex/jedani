@@ -179,8 +179,8 @@ public class DomainListModalPage<T extends Domain> extends BasePage{
                         parentEntityAttributeId, getEditEntityAttributes(entityService.getEntity(Domains.getEntityName(domainClass))),
                         t -> t.add(feedback, table)){
                     @Override
-                    protected boolean validate(Domain domain) {
-                        return DomainListModalPage.this.validate(domain);
+                    protected boolean checkUnique(Domain domain) {
+                        return DomainListModalPage.this.checkUnique(domain);
                     }
 
                     @Override
@@ -212,7 +212,7 @@ public class DomainListModalPage<T extends Domain> extends BasePage{
         return null;
     }
 
-    protected boolean validate(Domain domain) {
+    protected boolean checkUnique(Domain domain) {
         return true;
     }
 

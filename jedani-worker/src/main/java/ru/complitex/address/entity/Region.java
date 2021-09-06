@@ -22,4 +22,24 @@ public class Region extends Domain{
     public Region() {
         super(ENTITY_NAME);
     }
+
+    public String getName() {
+        return getTextValue(NAME);
+    }
+
+    public Region setName(String name) {
+        setText(NAME, name);
+
+        return this;
+    }
+
+    public String getShortName() {
+        return getTextValue(SHORT_NAME);
+    }
+
+    public Region setShortName(String shortName) {
+        setText(SHORT_NAME, shortName);
+
+        return this;
+    }
 }

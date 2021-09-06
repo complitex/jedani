@@ -17,4 +17,24 @@ public class CityType extends Domain{
     public CityType() {
         super(ENTITY_NAME);
     }
+
+    public String getName() {
+        return getTextValue(NAME);
+    }
+
+    public CityType setName(String name) {
+        setText(NAME, name);
+
+        return this;
+    }
+
+    public String getShortName() {
+        return getTextValue(SHORT_NAME);
+    }
+
+    public CityType setShortName(String shortName) {
+        setText(SHORT_NAME, shortName);
+
+        return this;
+    }
 }

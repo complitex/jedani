@@ -863,25 +863,27 @@ public class RewardService implements Serializable {
 
             WorkerRewardTree tree = getWorkerRewardTree(period);
 
-            saleService.getActiveSales().forEach(sale -> {
-                calculateSaleReward(sale, saleService.getSaleItems(sale.getObjectId()), RewardStatus.ESTIMATED);
-                calculateSaleReward(sale, saleService.getSaleItems(sale.getObjectId()), RewardStatus.CHARGED);
+            saleService.getActiveSales().stream()
+                    .filter(sale -> !isPaidSalePeriod(sale))
+                    .forEach(sale -> {
+                        calculateSaleReward(sale, saleService.getSaleItems(sale.getObjectId()), RewardStatus.ESTIMATED);
+                        calculateSaleReward(sale, saleService.getSaleItems(sale.getObjectId()), RewardStatus.CHARGED);
 
-                if (sale.isFeeWithdraw()) {
-                    calculateSaleReward(sale, saleService.getSaleItems(sale.getObjectId()), RewardStatus.WITHDRAWN);
-                }
+                        if (sale.isFeeWithdraw()) {
+                            calculateSaleReward(sale, saleService.getSaleItems(sale.getObjectId()), RewardStatus.WITHDRAWN);
+                        }
 
-                calculateBonusReward(sale, period, RewardStatus.ESTIMATED);
-                calculateBonusReward(sale, period, RewardStatus.CHARGED);
+                        calculateBonusReward(sale, period, RewardStatus.ESTIMATED);
+                        calculateBonusReward(sale, period, RewardStatus.CHARGED);
 
-                calculateCulinaryReward(sale, period, RewardStatus.ESTIMATED);
-                calculateCulinaryReward(sale, period, RewardStatus.CHARGED);
+                        calculateCulinaryReward(sale, period, RewardStatus.ESTIMATED);
+                        calculateCulinaryReward(sale, period, RewardStatus.CHARGED);
 
-                WorkerReward workerReward = tree.getWorkerReward(sale.getSellerWorkerId());
+                        WorkerReward workerReward = tree.getWorkerReward(sale.getSellerWorkerId());
 
-                calculateManagerReward(sale, workerReward, period, RewardStatus.ESTIMATED);
-                calculateManagerReward(sale, workerReward, period, RewardStatus.CHARGED);
-            });
+                        calculateManagerReward(sale, workerReward, period, RewardStatus.ESTIMATED);
+                        calculateManagerReward(sale, workerReward, period, RewardStatus.CHARGED);
+                    });
 
             tree.forEachLevel((l, rl) -> rl.forEach(workerReward -> {
                 if (workerReward.getRank() > 0) {
@@ -987,5 +989,14 @@ public class RewardService implements Serializable {
         });
 
         return rates.size() > 0 ? rates.stream().reduce(ZERO, BigDecimal::add).divide(new BigDecimal(rates.size()), 5, HALF_EVEN) : ONE;
+    }
+
+    private boolean isPaidSalePeriod(Sale sale) {
+        return Objects.equals(sale.getSaleStatus(), SaleStatus.PAID) &&
+                paymentService.getPaymentsBySaleId(sale.getObjectId()).stream()
+                        .map(payment -> periodMapper.getPeriod(payment.getPeriodId()))
+                        .max(Comparator.comparing(Period::getOperatingMonth))
+                        .map(period -> period.getCloseTimestamp() != null)
+                        .orElse(false);
     }
 }

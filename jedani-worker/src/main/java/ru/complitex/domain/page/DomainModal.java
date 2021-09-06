@@ -270,7 +270,8 @@ public class DomainModal<T extends Domain> extends AbstractModal<T> {
         try {
             T domain = getModelObject();
 
-            if (!DomainModal.this.validate(domain)){
+            if (!DomainModal.this.checkUnique(domain)){
+                error(getString("error_unique"));
                 target.add(feedback);
 
                 return;
@@ -308,7 +309,7 @@ public class DomainModal<T extends Domain> extends AbstractModal<T> {
         close(target);
     }
 
-    protected boolean validate(Domain domain){
+    protected boolean checkUnique(Domain domain){
         return true;
     }
 }
