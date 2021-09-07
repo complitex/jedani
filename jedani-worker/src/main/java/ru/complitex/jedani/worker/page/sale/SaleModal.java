@@ -51,7 +51,10 @@ import ru.complitex.jedani.worker.exception.SaleException;
 import ru.complitex.jedani.worker.mapper.PeriodMapper;
 import ru.complitex.jedani.worker.mapper.StorageMapper;
 import ru.complitex.jedani.worker.page.BasePage;
-import ru.complitex.jedani.worker.service.*;
+import ru.complitex.jedani.worker.service.PriceService;
+import ru.complitex.jedani.worker.service.RewardService;
+import ru.complitex.jedani.worker.service.SaleService;
+import ru.complitex.jedani.worker.service.WorkerService;
 import ru.complitex.name.entity.FirstName;
 import ru.complitex.name.entity.LastName;
 import ru.complitex.name.entity.MiddleName;
@@ -714,7 +717,7 @@ public class SaleModal extends Modal<Sale> {
 
         saleItemsModel.setObject(saleService.getSaleItems(sale.getObjectId()));
 
-        container.setEnabled(edit && periodMapper.getPeriod(sale.getPeriodId()).getCloseTimestamp() == null);
+        container.setEnabled(edit && sale.getPeriodId() != null && periodMapper.getPeriod(sale.getPeriodId()).getCloseTimestamp() == null);
 
         culinaryEnabled = sale.getSaleStatus() == SaleStatus.PAID && sale.getCulinaryWorkerId() == null;
 
