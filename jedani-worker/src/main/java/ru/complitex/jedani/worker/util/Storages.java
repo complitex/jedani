@@ -65,6 +65,12 @@ public class Storages {
                 label += ", " + Attributes.capitalize(city);
             }
 
+            String name = storage.getText(Storage.NAME);
+
+            if  (name != null) {
+                label += " (" + name + ")";
+            }
+
             if (storage.getParentId() != null){
                 label += ", " + domainService.getTextOrEmpty(Worker.ENTITY_NAME,  storage.getParentId(), Worker.J_ID) + " " +
                         nameService.getLastName(domainService.getNumber(Worker.ENTITY_NAME,  storage.getParentId(),

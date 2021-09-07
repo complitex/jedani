@@ -12,6 +12,7 @@ public class Storage extends Domain {
     public static final long CITY = 1;
     public static final long WORKERS = 2;
     public static final long TYPE = 3;
+    public static final long NAME = 4;
 
     public static final String FILTER_CITY = "city";
     public static final String FILTER_REGION = "region";
@@ -45,6 +46,14 @@ public class Storage extends Domain {
 
     public void setType(Long type){
         setNumber(TYPE, type);
+    }
+
+    public String getName() {
+        return getText(NAME);
+    }
+
+    public void setName(String name) {
+        setText(NAME, name);
     }
 
     public Long getNomenclatureCount() {

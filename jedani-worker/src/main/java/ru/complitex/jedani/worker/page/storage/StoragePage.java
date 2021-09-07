@@ -49,6 +49,7 @@ import ru.complitex.domain.component.form.FormGroupDomainAutoComplete;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.model.NumberAttributeModel;
+import ru.complitex.domain.model.TextAttributeModel;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
 import ru.complitex.jedani.worker.component.WorkerAutoComplete;
@@ -157,6 +158,9 @@ public class StoragePage extends BasePage {
                 return Objects.equals(storage.getType(), StorageType.REAL);
             }
         }.setRequired(true).setEnabled(edit));
+
+        form.add(new FormGroupTextField<>("name", new TextAttributeModel(storage, Storage.NAME))
+                .setEnabled(edit));
 
         form.add(workers = new FormGroupPanel("workers", new WorkerAutoCompleteList(FormGroupPanel.COMPONENT_ID,
                 Model.of(storage.getOrCreateAttribute(Storage.WORKERS)))

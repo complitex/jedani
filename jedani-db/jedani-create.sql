@@ -2682,4 +2682,4 @@ CALL createEntityAttribute(47, 4, 4, 'Значение', 'Значення');
 
 -- Version
 
-INSERT INTO `update` (`version`) VALUE ('2.0.9');
+INSERT INTO `update` (`version`) VALUE ('2.0.11');
