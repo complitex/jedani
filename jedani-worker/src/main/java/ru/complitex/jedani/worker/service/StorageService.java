@@ -2,7 +2,6 @@ package ru.complitex.jedani.worker.service;
 
 import org.mybatis.cdi.Transactional;
 import ru.complitex.address.entity.City;
-import ru.complitex.address.entity.Country;
 import ru.complitex.address.entity.Region;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.domain.service.DomainService;
@@ -237,7 +236,14 @@ public class StorageService implements Serializable {
 
                 break;
             case (int) TransferRelocationType.GIFT:
-                p.setGiftQuantity(p.getGiftQuantity() - qty);
+                long giftQty = p.getGiftQuantity() - qty;
+
+                if (giftQty >= 0) {
+                    p.setGiftQuantity(giftQty);
+                } else {
+                    p.setGiftQuantity(0L);
+                    p.setQuantity(p.getQuantity() + giftQty);
+                }
 
                 break;
         }
