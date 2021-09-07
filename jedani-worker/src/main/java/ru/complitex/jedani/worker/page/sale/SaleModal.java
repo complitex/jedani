@@ -737,10 +737,12 @@ public class SaleModal extends Modal<Sale> {
             return;
         }
 
-        if (!sale.isForYourself()){
-            sale.setBuyerLastName(nameService.getOrCreateLastName(lastName.getInput(), lastName.getObjectId()));
-            sale.setBuyerFirstName(nameService.getOrCreateFirstName(firstName.getInput(), firstName.getObjectId()));
-            sale.setBuyerMiddleName(nameService.getOrCreateMiddleName(middleName.getInput(), middleName.getObjectId()));
+        if (!sale.isForYourself() ){
+            if (container.isEnabled()) {
+                sale.setBuyerLastName(nameService.getOrCreateLastName(lastName.getInput(), lastName.getObjectId()));
+                sale.setBuyerFirstName(nameService.getOrCreateFirstName(firstName.getInput(), firstName.getObjectId()));
+                sale.setBuyerMiddleName(nameService.getOrCreateMiddleName(middleName.getInput(), middleName.getObjectId()));
+            }
         }else{
             sale.setBuyerLastName(null);
             sale.setBuyerFirstName(null);
