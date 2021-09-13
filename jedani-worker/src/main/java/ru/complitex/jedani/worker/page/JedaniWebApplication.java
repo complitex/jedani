@@ -21,7 +21,6 @@ import org.apache.wicket.Page;
 import org.apache.wicket.Session;
 import org.apache.wicket.ajax.WicketAjaxJQueryResourceReference;
 import org.apache.wicket.cdi.CdiConfiguration;
-import org.apache.wicket.cdi.ConversationPropagation;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteBehavior;
 import org.apache.wicket.markup.html.pages.AccessDeniedPage;
 import org.apache.wicket.markup.html.pages.InternalErrorPage;
@@ -44,8 +43,8 @@ import ru.complitex.common.wicket.application.ServletUnauthorizedListener;
 import ru.complitex.common.wicket.application.ServletWebSession;
 import ru.complitex.common.wicket.converter.BigDecimalConverter;
 import ru.complitex.jedani.worker.api.VerifyResourceReference;
-import ru.complitex.jedani.worker.api.WorkerListJsonPage;
 import ru.complitex.jedani.worker.api.WorkerJsonPage;
+import ru.complitex.jedani.worker.api.WorkerListJsonPage;
 import ru.complitex.jedani.worker.page.account.AccountListPage;
 import ru.complitex.jedani.worker.page.admin.ImportPage;
 import ru.complitex.jedani.worker.page.admin.SettingPage;
@@ -91,7 +90,7 @@ public class JedaniWebApplication extends WebApplication{
 
     @Override
     protected void init() {
-        new CdiConfiguration().setPropagation(ConversationPropagation.ALL).configure(this);
+        new CdiConfiguration().configure(this);
 
         getFrameworkSettings().setSerializer(new CdiJavaSerializer(getApplicationKey()));
 

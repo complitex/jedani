@@ -77,6 +77,7 @@ import ru.complitex.domain.model.TextAttributeModel;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
 import ru.complitex.domain.util.Attributes;
+import ru.complitex.domain.util.Domains;
 import ru.complitex.jedani.worker.component.JedaniRoleSelectList;
 import ru.complitex.jedani.worker.component.PeriodPanel;
 import ru.complitex.jedani.worker.component.TypeSelect;
@@ -368,19 +369,13 @@ public class WorkerPage extends BasePage {
 
         Component region;
 
-        form.add(region = new FormGroupTextField<>("region", new LoadableDetachableModel<>() {
-            @Override
-            protected String load() {
-               Long regionId = domainService.getParentId(City.ENTITY_NAME, worker.getCityId());
+        IModel<Long> regionModel = new Model<>();
 
-                if (regionId != null) {
-                    return Attributes.capitalize(domainService.getTextValue(Region.ENTITY_NAME, regionId, Region.NAME));
-                }
+        if (worker.getCityId() != null) {
+            regionModel.setObject(domainService.getParentId(City.ENTITY_NAME, worker.getCityId()));
+        }
 
-                return "";
-            }
-        }).setEnabled(false));
-
+        form.add(region = new FormGroupDomainAutoComplete<>("region", Region.class, Region.NAME, regionModel));
 
         form.add(new FormGroupDomainAutoComplete<>("city", City.class, City.NAME,
                 new NumberAttributeModel(worker.getOrCreateAttribute(Worker.CITY))) {
@@ -398,7 +393,20 @@ public class WorkerPage extends BasePage {
             }
 
             @Override
+            protected City getFilterObject(String input) {
+                City city = Domains.newObject(City.class);
+
+                city.setParentId(regionModel.getObject());
+
+                city.getOrCreateAttribute(City.NAME).setText(input);
+
+                return city;
+            }
+
+            @Override
             protected void onUpdate(AjaxRequestTarget target) {
+                regionModel.setObject(domainService.getParentId(City.ENTITY_NAME, worker.getCityId()));
+
                 target.add(region);
             }
         }.setRequired(true));
