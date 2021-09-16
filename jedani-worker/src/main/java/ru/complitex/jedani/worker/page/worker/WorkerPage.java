@@ -1052,17 +1052,14 @@ public class WorkerPage extends BasePage {
                     finance.add(new Label("spent", spentModel));
 
                     finance.add(new Label("balance", LoadableDetachableModel.of(() -> {
-                        BigDecimal input = accountService.getBalance(worker.getObjectId(), periodModel.getObject().getObjectId());
-
-                        BigDecimal charged = chargedModel.getObject();
-                        BigDecimal paid = paidModel.getObject();
-                        BigDecimal spent = spentModel.getObject();
-
                         Long currencyId = workerService.getCurrencyId(worker.getObjectId());
 
                         String symbol = domainService.getText(Currency.ENTITY_NAME, currencyId, Currency.SYMBOL);
 
-                        return input.add(charged).subtract(paid).subtract(spent) + symbol;
+                        return inputModel.getObject().add(chargedModel.getObject())
+                                .subtract(withdrawModel.getObject())
+                                .subtract(paidModel.getObject())
+                                .subtract(spentModel.getObject()) + symbol;
                     })));
 
                     IModel<WorkerReward> rewardModel = LoadableDetachableModel.of(() ->
