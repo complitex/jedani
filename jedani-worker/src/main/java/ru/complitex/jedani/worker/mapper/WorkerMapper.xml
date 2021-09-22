@@ -47,14 +47,17 @@
 
     <sql id="selectWorkersFromRegion">
         <if test="map.region != null">
-            left join worker_attribute wa_r on wa_r.domain_id = d.id and wa_r.entity_attribute_id = 6 and wa_r.status = 1
-            left join worker_value wv_r on wv_r.attribute_id = wa_r.id
+            left join worker_attribute wa_c on wa_c.domain_id = d.id and wa_c.entity_attribute_id = 7 and wa_c.status = 1
+            left join city c on wa_c.number = c.id
+            left join region r on c.parent_id = r.id
+            left join region_attribute ra on r.id = ra.domain_id and ra.entity_attribute_id = 1 and ra.status = 1
+            left join region_value rv on ra.id = rv.attribute_id
         </if>
     </sql>
 
     <sql id="selectWorkersWhereRegion">
         <if test="map.region != null">
-            and wv_r.number = #{map.region}
+            and rv.text like concat('%', #{map.region}, '%цфклук')
         </if>
     </sql>
 
