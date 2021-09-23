@@ -57,7 +57,64 @@
 
     <sql id="selectWorkersWhereRegion">
         <if test="map.region != null">
-            and rv.text like concat('%', #{map.region}, '%цфклук')
+            and rv.text like concat('%', #{map.region}, '%')
+        </if>
+    </sql>
+
+    <sql id="selectWorkersFromRegionLeader">
+        <if test="map.regionLeader != null">
+            left join worker_attribute wa_c_rl on wa_c_rl.domain_id = d.id and wa_c_rl.entity_attribute_id = 7 and wa_c_rl.status = 1
+            left join city c_rl on wa_c_rl.number = c_rl.id
+        </if>
+    </sql>
+
+    <sql id="selectWorkersWhereRegionLeader">
+        <if test="map.regionLeader != null">
+            and c_rl.parent_id = (
+                select c.parent_id from city c left join worker_attribute wa on c.id = wa.number and wa.entity_attribute_id = 7 and wa.status = 1
+                    where wa.domain_id = #{map.regionLeader}
+            )
+        </if>
+    </sql>
+
+    <sql id="selectWorkersFromManager">
+        <if test="map.manager != null">
+            left join worker_attribute wa_m on wa_m.domain_id = d.id and wa_m.entity_attribute_id = 17 and wa_m.status = 1
+
+            left join worker_attribute wa_m_fn on wa_m_fn.domain_id = wa_m.number and wa_m_fn.entity_attribute_id = 2 and wa_m_fn.status = 1
+            left join first_name m_fn on m_fn.object_id = wa_m_fn.number and m_fn.status = 1
+            left join first_name_attribute m_fn_a on m_fn_a.domain_id = m_fn.id and m_fn_a.status = 1
+            left join first_name_value m_fn_v on m_fn_a.id = m_fn_v.attribute_id
+
+            left join worker_attribute wa_m_mn on wa_m_mn.domain_id = wa_m.number and wa_m_mn.entity_attribute_id = 3 and wa_m_mn.status = 1
+            left join middle_name m_mn on m_mn.object_id = wa_m_mn.number and m_mn.status = 1
+            left join middle_name_attribute m_mn_a on m_mn_a.domain_id = m_mn.id and m_mn_a.status = 1
+            left join middle_name_value m_mn_v on m_mn_a.id = m_mn_v.attribute_id
+
+            left join worker_attribute wa_m_ln on wa_m_ln.domain_id = wa_m.number and wa_m_ln.entity_attribute_id = 4 and wa_m_ln.status = 1
+            left join last_name m_ln on m_ln.object_id = wa_m_ln.number and m_ln.status = 1
+            left join last_name_attribute m_ln_a on m_ln_a.domain_id = m_ln.id and m_ln_a.status = 1
+            left join last_name_value m_ln_v on m_ln_a.id = m_ln_v.attribute_id
+        </if>
+    </sql>
+
+    <sql id="selectWorkersWhereManager">
+        <if test="map.manager != null">
+            and (concat(m_ln_v.text, ' ', m_fn_v.text, ' ', m_mn_v.text) like concat ('%', #{map.manager}, '%'))
+        </if>
+    </sql>
+
+    <sql id="selectWorkersFromMkStatus">
+        <if test="map.mkStatus != null">
+            left join worker_attribute wa_mk on wa_mk.domain_id = d.id and wa_mk.entity_attribute_id = 15 and wa_mk.status = 1
+            left join mk_status_attribute mka on wa_mk.number = mka.domain_id and mka.entity_attribute_id = 1 and mka.status = 1
+            left join mk_status_value mkv on mka.id = mkv.attribute_id
+        </if>
+    </sql>
+
+    <sql id="selectWorkersWhereMkStatus">
+        <if test="map.mkStatus != null">
+            and mkv.text like concat('%', #{map.mkStatus}, '%')
         </if>
     </sql>
 
@@ -71,6 +128,7 @@
         </if>
     </sql>
 
+    <!--suppress SqlResolve -->
     <sql id="selectWorkersSelectSort">
         <if test="sortProperty != null">
             <choose>
@@ -110,11 +168,17 @@
                 <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromSort"/>
                 <include refid="selectWorkersFromLogin"/>
                 <include refid="selectWorkersFromRegion"/>
+                <include refid="selectWorkersFromRegionLeader"/>
+                <include refid="selectWorkersFromManager"/>
+                <include refid="selectWorkersFromMkStatus"/>
                 <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsWhere"/>
                 <include refid="selectWorkersWhere"/>
                 <include refid="selectWorkersWhereNode"/>
                 <include refid="selectWorkersWhereLogin"/>
                 <include refid="selectWorkersWhereRegion"/>
+                <include refid="selectWorkersWhereRegionLeader"/>
+                <include refid="selectWorkersWhereManager"/>
+                <include refid="selectWorkersWhereMkStatus"/>
                 group by d.id
                 <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsOrderSort"/>
                 <include refid="selectWorkersOrderSort"/>
@@ -138,11 +202,17 @@
         <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromFilter"/>
         <include refid="selectWorkersFromLogin"/>
         <include refid="selectWorkersFromRegion"/>
+        <include refid="selectWorkersFromRegionLeader"/>
+        <include refid="selectWorkersFromManager"/>
+        <include refid="selectWorkersFromMkStatus"/>
         <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsWhere"/>
         <include refid="selectWorkersWhere"/>
         <include refid="selectWorkersWhereNode"/>
         <include refid="selectWorkersWhereLogin"/>
         <include refid="selectWorkersWhereRegion"/>
+        <include refid="selectWorkersWhereRegionLeader"/>
+        <include refid="selectWorkersWhereManager"/>
+        <include refid="selectWorkersWhereMkStatus"/>
         ) w
     </select>
 

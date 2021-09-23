@@ -51,6 +51,7 @@ public class Worker extends DomainNode {
     private Long subWorkerCount;
 
     public static final String FILTER_REGION = "region";
+    public static final String FILTER_REGION_LEADER = "regionLeader";
 
     public Worker() {
         super(ENTITY_NAME);

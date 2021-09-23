@@ -853,17 +853,49 @@ public class WorkerPage extends BasePage {
                     }
                 });
 
-                columns.add(new AbstractDomainColumn<>(new StringResourceModel("level", WorkerPage.this), new Sort("level")) {
-                    @Override
-                    public void populateItem(Item<ICellPopulator<Worker>> cellItem, String componentId, IModel<Worker> rowModel) {
-                        cellItem.add(new Label(componentId, rowModel.getObject().getLevel() - getCurrentWorker().getLevel()));
-                    }
+                if (isRegionalLeader()) {
+                    columns.add(new DomainColumn<>(entity.getEntityAttribute(Worker.BIRTHDAY)));
 
-                    @Override
-                    public Component newFilter(String componentId, Table<Worker> table) {
-                        return new TextFilter<>(componentId, new Model<>());
-                    }
-                });
+                    columns.add(new AbstractDomainColumn<>(new StringResourceModel("mkStatus", WorkerPage.this), new Sort("mkStatus")) {
+                        @Override
+                        public void populateItem(Item<ICellPopulator<Worker>> cellItem, String componentId, IModel<Worker> rowModel) {
+                            String mkStatus = domainService.getTextValue(MkStatus.ENTITY_NAME, rowModel.getObject().getMkStatus(), MkStatus.NAME);
+
+                            cellItem.add(new Label(componentId, mkStatus));
+                        }
+
+                        @Override
+                        public Component newFilter(String componentId, Table<Worker> table) {
+                            return new TextFilter<>(componentId, PropertyModel.of(table.getFilterWrapper(), "map.mkStatus"));
+                        }
+                    });
+
+                    columns.add(new AbstractDomainColumn<>(new StringResourceModel("manager", WorkerPage.this), new Sort("manager")) {
+                        @Override
+                        public void populateItem(Item<ICellPopulator<Worker>> cellItem, String componentId, IModel<Worker> rowModel) {
+                            cellItem.add(new Label(componentId, workerService.getFio(rowModel.getObject().getManagerId())));
+                        }
+
+                        @Override
+                        public Component newFilter(String componentId, Table<Worker> table) {
+                            return new TextFilter<>(componentId, PropertyModel.of(table.getFilterWrapper(), "map.manager"));
+                        }
+                    });
+                }
+
+                if (!isRegionalLeader()) {
+                    columns.add(new AbstractDomainColumn<>(new StringResourceModel("level", WorkerPage.this), new Sort("level")) {
+                        @Override
+                        public void populateItem(Item<ICellPopulator<Worker>> cellItem, String componentId, IModel<Worker> rowModel) {
+                            cellItem.add(new Label(componentId, rowModel.getObject().getLevel() - getCurrentWorker().getLevel()));
+                        }
+
+                        @Override
+                        public Component newFilter(String componentId, Table<Worker> table) {
+                            return new TextFilter<>(componentId, new Model<>());
+                        }
+                    });
+                }
 
                 columns.add(new DomainActionColumn<>(WorkerPage.class){
                     @Override
@@ -943,6 +975,10 @@ public class WorkerPage extends BasePage {
                 };
                 structure.add(table);
 
+                WebMarkupContainer structureDepth = new WebMarkupContainer("structureDepth");
+                structureDepth.setVisible(!isRegionalLeader());
+                structure.add(structureDepth);
+
                 long workerLevelDepth = worker.getObjectId() != null ? workerMapper.getWorkerLevelDepth(worker.getObjectId()) : 1;
 
                 IModel<Long> graphLevelDepthModel = Model.of(workerLevelDepth);
@@ -952,9 +988,9 @@ public class WorkerPage extends BasePage {
                                 .collect(Collectors.toList()));
                 levelDepth.setNullValid(false);
                 levelDepth.add(OnChangeAjaxBehavior.onChange(target -> {}));
-                structure.add(levelDepth );
+                structureDepth.add(levelDepth );
 
-                structure.add(new Link<Void>("structureLink") {
+                structureDepth.add(new Link<Void>("structureLink") {
                     @Override
                     public void onClick() {
                         setResponsePage(WorkerStructurePage.class, new PageParameters().add("id", worker.getObjectId())
@@ -994,152 +1030,163 @@ public class WorkerPage extends BasePage {
             }
         });
 
-        tabs.add(new AbstractTab(new StringResourceModel("sales", WorkerPage.this)) {
-            @Override
-            public WebMarkupContainer getPanel(String panelId) {
-                Fragment sale = new Fragment(panelId, "sale", WorkerPage.this);
+        if (isFinance()) {
+            tabs.add(new AbstractTab(new StringResourceModel("sales", WorkerPage.this)) {
+                @Override
+                public WebMarkupContainer getPanel(String panelId) {
+                    Fragment sale = new Fragment(panelId, "sale", WorkerPage.this);
 
-                sale.add(new SalePanel("sale", worker));
+                    sale.add(new SalePanel("sale", worker));
 
-                return sale;
-            }
-        });
-
-        tabs.add(new AbstractTab(new StringResourceModel("payments", WorkerPage.this)) {
-            @Override
-            public WebMarkupContainer getPanel(String panelId) {
-                Fragment payment = new Fragment(panelId, "payment", WorkerPage.this);
-
-                payment.add(new PaymentPanel("payment", worker));
-
-                return payment;
-            }
-        });
-
-        tabs.add(new AbstractTab(new StringResourceModel("finance", WorkerPage.this)) {
-            @Override
-            public WebMarkupContainer getPanel(String panelId) {
-                Fragment finance = new Fragment(panelId, "finance", WorkerPage.this){
-                    @Override
-                    public boolean isVisible() {
-                        return worker.getObjectId() != null;
-                    }
-                };
-                finance.setOutputMarkupId(true);
-                finance.setOutputMarkupPlaceholderTag(true);
-
-                if (worker.getObjectId() != null) {
-                    IModel<Period> periodModel = Model.of(periodMapper.getActualPeriod());
-
-                    finance.add(new Label("month", LoadableDetachableModel.of(() -> Dates.getDateText(periodModel.getObject().getOperatingMonth()))));
-
-                    IModel<BigDecimal> inputModel = LoadableDetachableModel.of(() ->
-                            accountService.getBalance(worker.getObjectId(), periodModel.getObject().getObjectId()));
-
-                    IModel<BigDecimal> chargedModel = LoadableDetachableModel.of(() ->
-                            rewardService.getRewardsLocal(periodModel.getObject().getObjectId(), worker.getObjectId(), RewardStatus.CHARGED));
-                    IModel<BigDecimal> withdrawModel = LoadableDetachableModel.of(() ->
-                            rewardService.getRewardsLocal(periodModel.getObject().getObjectId(), worker.getObjectId(), RewardStatus.WITHDRAWN));
-                    IModel<BigDecimal> paidModel = LoadableDetachableModel.of(() ->
-                            rewardService.getRewardsLocal(periodModel.getObject().getObjectId(), worker.getObjectId(), RewardStatus.PAID));
-                    IModel<BigDecimal> spentModel = LoadableDetachableModel.of(() ->
-                            rewardService.getRewardsLocal(periodModel.getObject().getObjectId(), worker.getObjectId(), RewardStatus.SPENT));
-
-                    finance.add(new Label("input", inputModel));
-                    finance.add(new Label("charged", chargedModel));
-                    finance.add(new Label("withdraw", withdrawModel));
-                    finance.add(new Label("paid", paidModel));
-                    finance.add(new Label("spent", spentModel));
-
-                    finance.add(new Label("balance", LoadableDetachableModel.of(() -> {
-                        Long currencyId = workerService.getCurrencyId(worker.getObjectId());
-
-                        String symbol = domainService.getText(Currency.ENTITY_NAME, currencyId, Currency.SYMBOL);
-
-                        return inputModel.getObject().add(chargedModel.getObject())
-                                .subtract(withdrawModel.getObject())
-                                .subtract(paidModel.getObject())
-                                .subtract(spentModel.getObject()) + symbol;
-                    })));
-
-                    IModel<WorkerReward> rewardModel = LoadableDetachableModel.of(() ->
-                            rewardService.getWorkerRewardTreeCache(periodModel.getObject().getObjectId())
-                                    .getWorkerReward(worker.getObjectId()));
-
-                    finance.add(new Label("sale_volume", LoadableDetachableModel.of(() ->
-                            rewardModel.getObject().getSaleVolume())));
-                    finance.add(new Label("payment_volume", LoadableDetachableModel.of(() ->
-                            rewardModel.getObject().getPaymentVolume())));
-                    finance.add(new Label("registration_count", LoadableDetachableModel.of(() ->
-                            rewardModel.getObject().getRegistrationCount())));
-
-                    finance.add(new Label("reward_pv", LoadableDetachableModel.of(() ->
-                            getRewardsTotalString(RewardType.PERSONAL_VOLUME, periodModel.getObject().getObjectId()))));
-                    finance.add(new Label("reward_mk", LoadableDetachableModel.of(() ->
-                            getRewardsTotalString(RewardType.MYCOOK_SALE, periodModel.getObject().getObjectId()))));
-                    finance.add(new Label("reward_ba", LoadableDetachableModel.of(() ->
-                            getRewardsTotalString(RewardType.BASE_ASSORTMENT_SALE, periodModel.getObject().getObjectId()))));
-                    finance.add(new Label("reward_mkb", LoadableDetachableModel.of(() ->
-                            getRewardsTotalString(RewardType.MANAGER_MK_BONUS, periodModel.getObject().getObjectId()))));
-                    finance.add(new Label("reward_cw", LoadableDetachableModel.of(() ->
-                            getRewardsTotalString(RewardType.CULINARY_WORKSHOP, periodModel.getObject().getObjectId()))));
-
-                    finance.add(new Link<Void>("rankLink") {
-                        @Override
-                        public void onClick() {
-                            setResponsePage(WorkerStructurePage.class, new PageParameters().add("id", worker.getObjectId()).add("level", 0));
-                        }
-                    }
-                    .add(new Label("rank", LoadableDetachableModel.of(() ->
-                            rewardModel.getObject().getRank() !=  null && rewardModel.getObject().getRank() > 0
-                                    ? domainService.getDomain(Rank.class, rewardModel.getObject().getRank()).getName()
-                                    : ""))));
-
-                    finance.add(new Label("group_sale_volume", LoadableDetachableModel.of(() ->
-                            (rewardModel.getObject().getGroupSaleVolume()))));
-                    finance.add(new Label("group_payment_volume", LoadableDetachableModel.of(() ->
-                            rewardModel.getObject().getGroupPaymentVolume())));
-                    finance.add(new Label("structure_sale_volume", LoadableDetachableModel.of(() ->
-                            rewardModel.getObject().getStructureSaleVolume())));
-                    finance.add(new Label("structure_payment_volume", LoadableDetachableModel.of(() ->
-                            rewardModel.getObject().getStructurePaymentVolume())));
-                    finance.add(new Label("group_registration_count", LoadableDetachableModel.of(() ->
-                            rewardModel.getObject().getGroupRegistrationCount())));
-                    finance.add(new Label("structure_manager_count", LoadableDetachableModel.of(() ->
-                            rewardModel.getObject().getStructureManagerCount())));
-                    finance.add(new Label("reward_mp", LoadableDetachableModel.of(() ->
-                            getRewardsTotalString(RewardType.MANAGER_PREMIUM, periodModel.getObject().getObjectId()))));
-                    finance.add(new Label("reward_gv", LoadableDetachableModel.of(() ->
-                            getRewardsTotalString(RewardType.GROUP_VOLUME, periodModel.getObject().getObjectId()))));
-                    finance.add(new Label("reward_sv", LoadableDetachableModel.of(() ->
-                            getRewardsTotalString(RewardType.STRUCTURE_VOLUME, periodModel.getObject().getObjectId()))));
-
-                    finance.add(new PeriodPanel("period"){
-                        @Override
-                        protected void onChange(AjaxRequestTarget target, Period period) {
-                            periodModel.setObject(period);
-
-                            rewardModel.detach();
-
-                            target.add(finance);
-                        }
-                    });
+                    return sale;
                 }
+            });
+        }
 
-                return finance;
-            }
-        });
+        if (isFinance()) {
+            tabs.add(new AbstractTab(new StringResourceModel("payments", WorkerPage.this)) {
+                @Override
+                public WebMarkupContainer getPanel(String panelId) {
+                    Fragment payment = new Fragment(panelId, "payment", WorkerPage.this);
 
-        tabs.add(new AbstractTab(new StringResourceModel("rewards", WorkerPage.this)) {
-            @Override
-            public WebMarkupContainer getPanel(String panelId) {
-                Fragment reward = new Fragment(panelId, "reward", WorkerPage.this);
+                    payment.add(new PaymentPanel("payment", worker));
 
-                reward.add(new RewardPanel("reward", worker));
+                    return payment;
+                }
+            });
+        }
 
-                return reward;
-            }
-        });
+        if (isFinance()) {
+            tabs.add(new AbstractTab(new StringResourceModel("finance", WorkerPage.this)) {
+                @Override
+                public WebMarkupContainer getPanel(String panelId) {
+                    Fragment finance = new Fragment(panelId, "finance", WorkerPage.this){
+                        @Override
+                        public boolean isVisible() {
+                            return worker.getObjectId() != null;
+                        }
+                    };
+                    finance.setOutputMarkupId(true);
+                    finance.setOutputMarkupPlaceholderTag(true);
+
+                    if (worker.getObjectId() != null) {
+                        IModel<Period> periodModel = Model.of(periodMapper.getActualPeriod());
+
+                        finance.add(new Label("month", LoadableDetachableModel.of(() -> Dates.getDateText(periodModel.getObject().getOperatingMonth()))));
+
+                        IModel<BigDecimal> inputModel = LoadableDetachableModel.of(() ->
+                                accountService.getBalance(worker.getObjectId(), periodModel.getObject().getObjectId()));
+
+                        IModel<BigDecimal> chargedModel = LoadableDetachableModel.of(() ->
+                                rewardService.getRewardsLocal(periodModel.getObject().getObjectId(), worker.getObjectId(), RewardStatus.CHARGED));
+                        IModel<BigDecimal> withdrawModel = LoadableDetachableModel.of(() ->
+                                rewardService.getRewardsLocal(periodModel.getObject().getObjectId(), worker.getObjectId(), RewardStatus.WITHDRAWN));
+                        IModel<BigDecimal> paidModel = LoadableDetachableModel.of(() ->
+                                rewardService.getRewardsLocal(periodModel.getObject().getObjectId(), worker.getObjectId(), RewardStatus.PAID));
+                        IModel<BigDecimal> spentModel = LoadableDetachableModel.of(() ->
+                                rewardService.getRewardsLocal(periodModel.getObject().getObjectId(), worker.getObjectId(), RewardStatus.SPENT));
+
+                        finance.add(new Label("input", inputModel));
+                        finance.add(new Label("charged", chargedModel));
+                        finance.add(new Label("withdraw", withdrawModel));
+                        finance.add(new Label("paid", paidModel));
+                        finance.add(new Label("spent", spentModel));
+
+                        finance.add(new Label("balance", LoadableDetachableModel.of(() -> {
+                            Long currencyId = workerService.getCurrencyId(worker.getObjectId());
+
+                            String symbol = domainService.getText(Currency.ENTITY_NAME, currencyId, Currency.SYMBOL);
+
+                            return inputModel.getObject().add(chargedModel.getObject())
+                                    .subtract(withdrawModel.getObject())
+                                    .subtract(paidModel.getObject())
+                                    .subtract(spentModel.getObject()) + symbol;
+                        })));
+
+                        IModel<WorkerReward> rewardModel = LoadableDetachableModel.of(() -> {
+                                WorkerReward workerReward = rewardService.getWorkerRewardTreeCache(periodModel.getObject().getObjectId())
+                                        .getWorkerReward(worker.getObjectId());
+
+                                return workerReward != null ? workerReward : new WorkerReward(new WorkerNode());
+                        });
+
+                        finance.add(new Label("sale_volume", LoadableDetachableModel.of(() ->
+                                rewardModel.getObject().getSaleVolume())));
+                        finance.add(new Label("payment_volume", LoadableDetachableModel.of(() ->
+                                rewardModel.getObject().getPaymentVolume())));
+                        finance.add(new Label("registration_count", LoadableDetachableModel.of(() ->
+                                rewardModel.getObject().getRegistrationCount())));
+
+                        finance.add(new Label("reward_pv", LoadableDetachableModel.of(() ->
+                                getRewardsTotalString(RewardType.PERSONAL_VOLUME, periodModel.getObject().getObjectId()))));
+                        finance.add(new Label("reward_mk", LoadableDetachableModel.of(() ->
+                                getRewardsTotalString(RewardType.MYCOOK_SALE, periodModel.getObject().getObjectId()))));
+                        finance.add(new Label("reward_ba", LoadableDetachableModel.of(() ->
+                                getRewardsTotalString(RewardType.BASE_ASSORTMENT_SALE, periodModel.getObject().getObjectId()))));
+                        finance.add(new Label("reward_mkb", LoadableDetachableModel.of(() ->
+                                getRewardsTotalString(RewardType.MANAGER_MK_BONUS, periodModel.getObject().getObjectId()))));
+                        finance.add(new Label("reward_cw", LoadableDetachableModel.of(() ->
+                                getRewardsTotalString(RewardType.CULINARY_WORKSHOP, periodModel.getObject().getObjectId()))));
+
+                        finance.add(new Link<Void>("rankLink") {
+                            @Override
+                            public void onClick() {
+                                setResponsePage(WorkerStructurePage.class, new PageParameters().add("id", worker.getObjectId()).add("level", 0));
+                            }
+                        }
+                        .add(new Label("rank", LoadableDetachableModel.of(() ->
+                                rewardModel.getObject().getRank() !=  null && rewardModel.getObject().getRank() > 0
+                                        ? domainService.getDomain(Rank.class, rewardModel.getObject().getRank()).getName()
+                                        : ""))));
+
+                        finance.add(new Label("group_sale_volume", LoadableDetachableModel.of(() ->
+                                (rewardModel.getObject().getGroupSaleVolume()))));
+                        finance.add(new Label("group_payment_volume", LoadableDetachableModel.of(() ->
+                                rewardModel.getObject().getGroupPaymentVolume())));
+                        finance.add(new Label("structure_sale_volume", LoadableDetachableModel.of(() ->
+                                rewardModel.getObject().getStructureSaleVolume())));
+                        finance.add(new Label("structure_payment_volume", LoadableDetachableModel.of(() ->
+                                rewardModel.getObject().getStructurePaymentVolume())));
+                        finance.add(new Label("group_registration_count", LoadableDetachableModel.of(() ->
+                                rewardModel.getObject().getGroupRegistrationCount())));
+                        finance.add(new Label("structure_manager_count", LoadableDetachableModel.of(() ->
+                                rewardModel.getObject().getStructureManagerCount())));
+                        finance.add(new Label("reward_mp", LoadableDetachableModel.of(() ->
+                                getRewardsTotalString(RewardType.MANAGER_PREMIUM, periodModel.getObject().getObjectId()))));
+                        finance.add(new Label("reward_gv", LoadableDetachableModel.of(() ->
+                                getRewardsTotalString(RewardType.GROUP_VOLUME, periodModel.getObject().getObjectId()))));
+                        finance.add(new Label("reward_sv", LoadableDetachableModel.of(() ->
+                                getRewardsTotalString(RewardType.STRUCTURE_VOLUME, periodModel.getObject().getObjectId()))));
+
+                        finance.add(new PeriodPanel("period"){
+                            @Override
+                            protected void onChange(AjaxRequestTarget target, Period period) {
+                                periodModel.setObject(period);
+
+                                rewardModel.detach();
+
+                                target.add(finance);
+                            }
+                        });
+                    }
+
+                    return finance;
+                }
+            });
+        }
+
+        if (isFinance()) {
+            tabs.add(new AbstractTab(new StringResourceModel("rewards", WorkerPage.this)) {
+                @Override
+                public WebMarkupContainer getPanel(String panelId) {
+                    Fragment reward = new Fragment(panelId, "reward", WorkerPage.this);
+
+                    reward.add(new RewardPanel("reward", worker));
+
+                    return reward;
+                }
+            });
+        }
 
         if (isAdmin()) {
             tabs.add(new AbstractTab(new StringResourceModel("history", WorkerPage.this)) {
@@ -1355,5 +1402,9 @@ public class WorkerPage extends BasePage {
 
     protected Worker getWorker(){
         return worker;
+    }
+
+    protected boolean isFinance() {
+        return true;
     }
 }
