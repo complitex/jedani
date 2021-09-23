@@ -15,8 +15,10 @@ import java.util.stream.Collectors;
 public class Attribute implements Serializable{
     public final static String FILTER_SAME_DAY = "same_day";
     public final static String FILTER_SAME_MONTH = "same_month";
+    public final static String FILTER_BEFORE_DATE = "before_date";
     public final static String FILTER_BEFORE_OR_EQUAL_DATE = "before_or_equal_date";
-    public final static String FILTER_AFTER_OR_EQUAL_OR_NULL_DATE = "after_or_equal_or_null_date";
+    public final static String FILTER_AFTER_DATE = "after_date";
+    public final static String FILTER_AFTER_OR_EQUAL_DATE = "after_or_equal_date";
 
     private Long id;
     private Long domainId;

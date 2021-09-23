@@ -373,11 +373,11 @@ public class RewardService implements Serializable {
                 BigDecimal ratio = ZERO;
 
                 List<Ratio> ratios = domainService.getDomains(Ratio.class, FilterWrapper.of((Ratio) new Ratio()
-                        .setCountryId(workerService.getCountryId(reward.getWorkerId()))
+                        .setCountryId(saleService.getCountryId(sale))
                         .setBegin(reward.getMonth())
                         .setEnd(reward.getMonth())
                         .setFilter(Ratio.BEGIN, Attribute.FILTER_BEFORE_OR_EQUAL_DATE)
-                        .setFilter(Ratio.END, Attribute.FILTER_AFTER_OR_EQUAL_OR_NULL_DATE)));
+                        .setFilter(Ratio.END, Attribute.FILTER_AFTER_DATE)));
 
                 if (!ratios.isEmpty()) {
                     ratio = ratios.get(0).getValue();

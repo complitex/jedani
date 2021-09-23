@@ -597,7 +597,7 @@ public class SaleModal extends Modal<Sale> {
                             .setBegin(sale.getDate())
                             .setEnd(sale.getDate())
                             .setFilter(Ratio.BEGIN, Attribute.FILTER_BEFORE_OR_EQUAL_DATE)
-                            .setFilter(Ratio.END, Attribute.FILTER_AFTER_OR_EQUAL_OR_NULL_DATE)));
+                            .setFilter(Ratio.END, Attribute.FILTER_AFTER_DATE)));
 
                     if (!ratios.isEmpty()) {
                         ratio = ratios.get(0).getValue();
