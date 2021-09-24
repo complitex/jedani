@@ -824,21 +824,35 @@ public class WorkerPage extends BasePage {
                         .setPrefixEntityAttribute(entityService.getEntityAttribute(City.ENTITY_NAME, City.CITY_TYPE)
                                 .withReference(CityType.class, CityType.SHORT_NAME))));
 
-                columns.add(new AbstractDomainColumn<>(new StringResourceModel("region", WorkerPage.this), new Sort("region")) {
-                    @Override
-                    public void populateItem(Item<ICellPopulator<Worker>> cellItem, String componentId, IModel<Worker> rowModel) {
-                        Long regionId = domainService.getParentId(City.ENTITY_NAME, rowModel.getObject().getCityId());
+                if (!isRegionalLeader()) {
+                    columns.add(new AbstractDomainColumn<>(new StringResourceModel("region", WorkerPage.this), new Sort("region")) {
+                        @Override
+                        public void populateItem(Item<ICellPopulator<Worker>> cellItem, String componentId, IModel<Worker> rowModel) {
+                            Long regionId = domainService.getParentId(City.ENTITY_NAME, rowModel.getObject().getCityId());
 
-                        Region region = domainService.getDomain(Region.class, regionId);
+                            Region region = domainService.getDomain(Region.class, regionId);
 
-                        cellItem.add(new Label(componentId, Attributes.capitalizeWords(region.getTextValue(Region.NAME))));
-                    }
+                            cellItem.add(new Label(componentId, Attributes.capitalizeWords(region.getTextValue(Region.NAME))));
+                        }
 
-                    @Override
-                    public Component newFilter(String componentId, Table<Worker> table) {
-                        return new TextFilter<>(componentId, PropertyModel.of(table.getFilterWrapper(), "map.region"));
-                    }
-                });
+                        @Override
+                        public Component newFilter(String componentId, Table<Worker> table) {
+                            return new TextFilter<>(componentId, PropertyModel.of(table.getFilterWrapper(), "map.region"));
+                        }
+                    });
+                }
+
+                if (isRegionalLeader()) {
+                    columns.add(new DomainColumn<>(entity.getEntityAttribute(Worker.BIRTHDAY)));
+                    columns.add(new DomainColumn<>(entity.getEntityAttribute(Worker.PHONE)));
+                    columns.add(new DomainColumn<>(entity.getEntityAttribute(Worker.EMAIL)) {
+                        @Override
+                        public void populateItem(Item<ICellPopulator<Worker>> cellItem, String componentId, IModel<Worker> rowModel) {
+                            cellItem.add(new Label(componentId, Objects.requireNonNullElse(rowModel.getObject().getEmail(), "").toLowerCase()));
+                        }
+                    });
+                    columns.add(new DomainColumn<>(entity.getEntityAttribute(Worker.REGISTRATION_DATE)));
+                }
 
                 columns.add(new AbstractDomainColumn<>(new StringResourceModel("subWorkersCount", WorkerPage.this),
                         new Sort("subWorkersCount")) {
@@ -854,8 +868,6 @@ public class WorkerPage extends BasePage {
                 });
 
                 if (isRegionalLeader()) {
-                    columns.add(new DomainColumn<>(entity.getEntityAttribute(Worker.BIRTHDAY)));
-
                     columns.add(new AbstractDomainColumn<>(new StringResourceModel("mkStatus", WorkerPage.this), new Sort("mkStatus")) {
                         @Override
                         public void populateItem(Item<ICellPopulator<Worker>> cellItem, String componentId, IModel<Worker> rowModel) {
