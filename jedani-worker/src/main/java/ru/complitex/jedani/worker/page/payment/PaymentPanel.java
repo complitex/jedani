@@ -86,7 +86,7 @@ public class PaymentPanel extends DomainListModalPanel<Payment> {
     @Override
     protected List<EntityAttribute> getEntityAttributes(Entity entity) {
         return entity.getEntityAttributes(Payment.DATE, Payment.PERIOD, Payment.CONTRACT,
-                Payment.PERIOD_START, Payment.PERIOD_END, Payment.POINT, Payment.AMOUNT);
+                Payment.PERIOD_START, Payment.PERIOD_END, Payment.POINT, Payment.AMOUNT, Payment.RATE);
     }
 
     @Override
