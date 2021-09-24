@@ -2,8 +2,6 @@ package ru.complitex.jedani.worker.service;
 
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.util.Dates;
-import ru.complitex.domain.service.DomainService;
-import ru.complitex.jedani.worker.entity.Currency;
 import ru.complitex.jedani.worker.entity.Payment;
 import ru.complitex.jedani.worker.entity.Period;
 import ru.complitex.jedani.worker.mapper.PaymentMapper;
@@ -11,8 +9,9 @@ import ru.complitex.jedani.worker.mapper.PaymentMapper;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Anatoly A. Ivanov
@@ -33,7 +32,7 @@ public class PaymentService implements Serializable {
 
     public BigDecimal getPaymentsVolumeBySaleId(Long saleId, Date month){
         return getPaymentsBySaleId(saleId).stream()
-                .filter(p -> p.getDate().before(Dates.lastDayOfMonth(month)))
+                .filter(p -> p.getDate().before(Dates.lastDayOfMonth(month)) || p.getDate().equals(Dates.lastDayOfMonth(month)))
                 .reduce(BigDecimal.ZERO, ((t, p) -> t.add(p.getPoint())), BigDecimal::add);
     }
 
