@@ -123,7 +123,7 @@ public class ExchangeRateService implements Serializable {
 
         rate.setParentId(domainService.getNumber(Country.ENTITY_NAME, countryId, Country.EXCHANGE_RATE_EUR));
         rate.setDate(date);
-        rate.setFilter(Rate.DATE, Attribute.FILTER_BEFORE_OR_EQUAL_DATE);
+        rate.setFilter(Rate.DATE, Attribute.FILTER_AFTER_OR_EQUAL_DATE);
 
         List<Rate> rates = domainService.getDomains(Rate.class, FilterWrapper.of(rate)
                         .sort("date", rate.getAttribute(Rate.DATE), false)
