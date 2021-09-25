@@ -64,53 +64,111 @@ public class RewardService implements Serializable {
     @Inject
     private ExchangeRateService exchangeRateService;
 
-    public List<Reward> getRewardsBySaleId(Long saleId) {
-        return domainService.getDomains(Reward.class, FilterWrapper.of(new Reward().setSaleId(saleId)));
+    private transient LoadingCache<Long, List<Reward>> rewardsBySaleIdCache;
+
+    private LoadingCache<Long, List<Reward>> getRewardsBySaleIdCache() {
+        if (rewardsBySaleIdCache == null){
+            rewardsBySaleIdCache = CacheBuilder.newBuilder()
+                    .expireAfterAccess(5, TimeUnit.MINUTES)
+                    .build(CacheLoader.from(saleId ->
+                            domainService.getDomains(Reward.class, FilterWrapper.of(new Reward().setSaleId(saleId)))));
+        }
+
+        return rewardsBySaleIdCache;
+    }
+
+    public List<Reward> getRewardsBySaleIdFromCache(Long saleId) {
+        try {
+            return getRewardsBySaleIdCache().get(saleId);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public List<Reward> getRewardsBySaleId(Long saleId, Long rewardTypeId) {
-        return getRewardsBySaleId(saleId).stream()
+        return getRewardsBySaleIdFromCache(saleId).stream()
                 .filter(r -> Objects.equals(r.getType(), rewardTypeId))
                 .collect(Collectors.toList());
     }
 
     public BigDecimal getRewardsPointSum(Long saleId, Long rewardTypeId, Long rewardStatusId) {
-        return getRewardsBySaleId(saleId).stream()
+        return getRewardsBySaleIdFromCache(saleId).stream()
                 .filter(r -> Objects.equals(r.getType(), rewardTypeId))
                 .filter(r -> Objects.equals(r.getRewardStatus(), rewardStatusId))
                 .reduce(ZERO, ((t, p) -> t.add(p.getPoint())), BigDecimal::add);
     }
 
     public BigDecimal getRewardsPointSumBySale(Long saleId, Long rewardTypeId, Long rewardStatusId, Long managerId) {
-        return getRewardsBySaleId(saleId).stream()
+        return getRewardsBySaleIdFromCache(saleId).stream()
                 .filter(r -> Objects.equals(r.getType(), rewardTypeId))
                 .filter(r -> Objects.equals(r.getRewardStatus(), rewardStatusId))
                 .filter(r -> Objects.equals(r.getManagerId(), managerId))
                 .reduce(ZERO, ((t, p) -> t.add(p.getPoint())), BigDecimal::add);
     }
 
+    private static class PeriodWorkerId {
+        private final Long periodId;
+        private final Long workerId;
+
+        public PeriodWorkerId(Long periodId, Long workerId) {
+            this.periodId = periodId;
+            this.workerId = workerId;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o instanceof PeriodWorkerId) {
+                return periodId.equals(((PeriodWorkerId) o).periodId) && workerId.equals(((PeriodWorkerId) o).workerId);
+            }
+
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(periodId, workerId);
+        }
+    }
+
+    private transient LoadingCache<PeriodWorkerId, List<Reward>> rewardsByPeriodAndWorkerCache;
+
+    private LoadingCache<PeriodWorkerId, List<Reward>> getRewardsByPeriodWorkerIdCache() {
+        if (rewardsByPeriodAndWorkerCache == null){
+            rewardsByPeriodAndWorkerCache = CacheBuilder.newBuilder()
+                    .expireAfterAccess(5, TimeUnit.MINUTES)
+                    .build(CacheLoader.from(periodWorkerId ->
+                            domainService.getDomains(Reward.class, FilterWrapper.of(new Reward()
+                                    .setWorkerId(periodWorkerId.workerId)
+                                    .setPeriodId(periodWorkerId.periodId)))));
+        }
+
+        return rewardsByPeriodAndWorkerCache;
+    }
+
+    public List<Reward> getRewardsFromCache(Long periodId, Long workerId){
+        try {
+            return getRewardsByPeriodWorkerIdCache().get(new PeriodWorkerId(periodId, workerId));
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public BigDecimal getRewardsPointSumByWorker(Long periodId, Long workerId, Long rewardTypeId, Long rewardStatusId) {
-        return getRewards(periodId, workerId).stream()
+        return getRewardsFromCache(periodId, workerId).stream()
                 .filter(r -> Objects.equals(r.getType(), rewardTypeId))
                 .filter(r -> Objects.equals(r.getRewardStatus(), rewardStatusId))
                 .reduce(ZERO, ((t, p) -> t.add(p.getPoint())), BigDecimal::add);
     }
 
-    public List<Reward> getRewards(Long periodId, Long workerId){
-        return domainService.getDomains(Reward.class, FilterWrapper.of(new Reward()
-                .setWorkerId(workerId)
-                .setPeriodId(periodId)));
-    }
-
     public BigDecimal getRewardsLocal(Long periodId, Long workerId, Long rewardStatusId) {
-        return getRewards(periodId, workerId).stream()
+        return getRewardsFromCache(periodId, workerId).stream()
                 .filter(r -> Objects.equals(r.getRewardStatus(), rewardStatusId))
                 .map(r -> r.getAmount() != null ? r.getAmount() : ZERO)
                 .reduce(ZERO, BigDecimal::add);
     }
 
     public BigDecimal getRewardsLocalByCurrency(Long periodId, Long rewardStatusId, Long currencyId) {
-        return getRewards(periodId, null).stream()
+        return getRewardsFromCache(periodId, null).stream()
                 .filter(r -> Objects.equals(r.getRewardStatus(), rewardStatusId))
                 .filter(r -> Objects.equals(workerService.getCurrencyId(r.getWorkerId()), currencyId))
                 .map(r -> r.getAmount() != null ? r.getAmount() : ZERO)
@@ -144,7 +202,7 @@ public class RewardService implements Serializable {
         try {
             return getWorkerRewardTreeCache().get(periodId);
         } catch (ExecutionException e) {
-            return null;
+            throw  new RuntimeException(e);
         }
     }
 
@@ -176,7 +234,7 @@ public class RewardService implements Serializable {
         return 0L;
     }
 
-    private void calcSaleVolumes(WorkerRewardTree tree, Period period){
+    private void calcSaleVolumes(WorkerRewardTree tree, Period period) {
         tree.forEachLevel((l, rl) -> rl.forEach(r -> {
             r.setSales(saleService.getSales(r.getWorkerNode().getObjectId(), period));
 
@@ -416,7 +474,7 @@ public class RewardService implements Serializable {
 
     private void updateLocal(Reward reward, Period period){
         if (reward.getPoint().compareTo(ZERO) >= 0) {
-            reward.setRate(getPaymentsRate(reward.getWorkerId(), period));
+            reward.setRate(getPaymentsRateFromCache(period.getObjectId(), reward.getWorkerId()));
 
             reward.setAmount(reward.getPoint().multiply(reward.getRate()).setScale(5, HALF_EVEN));
         } else {
@@ -734,6 +792,7 @@ public class RewardService implements Serializable {
 
         for (int i = 0; i < groupSales.size(); i++) {
             Sale sale = groupSales.get(i);
+
             BigDecimal total = getGroupVolumePercent(workerReward.getRank())
                     .multiply(sale.getTotal())
                     .divide(new BigDecimal("100"), 5, HALF_EVEN);
@@ -854,12 +913,115 @@ public class RewardService implements Serializable {
         }
     }
 
+    private transient LoadingCache<Long, BigDecimal> parameterCache;
+
+    private LoadingCache<Long, BigDecimal> getParameterCache(){
+        if (parameterCache == null){
+            parameterCache = CacheBuilder.newBuilder()
+                    .expireAfterAccess(5, TimeUnit.MINUTES)
+                    .build(CacheLoader.from(rewardParameterId ->
+                            domainService.getDomain(RewardParameter.class, rewardParameterId)
+                            .getDecimal(RewardParameter.VALUE)));
+
+        }
+
+        return parameterCache;
+    }
+
+    public BigDecimal getParameter(Long rewardParameterId){
+        try {
+            return getParameterCache().get(rewardParameterId);
+        } catch (Exception e) {
+            throw  new RuntimeException(e);
+        }
+    }
+
+    public WorkerReward getWorkerReward(Worker worker){
+        return getWorkerRewardTreeCache(periodMapper.getActualPeriod().getObjectId()).getWorkerReward(worker.getObjectId());
+    }
+
+    private BigDecimal getPaymentsRate(Long periodId, Long workerId) {
+        Period period = periodMapper.getPeriod(periodId);
+
+        Long workerCountryId = workerService.getCountryId(workerId);
+
+        Map<Long, BigDecimal> pointSumMap = new HashMap<>();
+        Map<Long, BigDecimal> amountSumMap = new HashMap<>();
+
+        paymentService.getPayments(FilterWrapper.of(new Payment().setPeriodId(period.getObjectId())))
+                .forEach(p -> {
+                    Long countryId = saleService.getCountryId(p.getSaleId());
+
+                    if (countryId.equals(workerCountryId)) {
+                        pointSumMap.put(countryId, pointSumMap.getOrDefault(countryId, ZERO).add(p.getPoint()));
+                        amountSumMap.put(countryId, amountSumMap.getOrDefault(countryId, ZERO).add(p.getAmount()));
+                    }
+                });
+
+        List<BigDecimal> rates = new ArrayList<>();
+
+        Date date = Dates.lastDayOfMonth(period.getOperatingMonth());
+
+        amountSumMap.forEach((c, a) -> {
+            if (a.compareTo(ZERO) != 0) {
+                BigDecimal rate = a.divide(pointSumMap.get(c), 5, HALF_EVEN);
+
+                if (!c.equals(workerCountryId)) {
+                    rate = rate
+                            .multiply(exchangeRateService.getExchangeRate(workerCountryId, date)
+                                    .divide(exchangeRateService.getExchangeRate(c, date), 5, HALF_EVEN));
+                }
+
+                rates.add(rate);
+            }
+        });
+
+        return rates.size() > 0 ? rates.stream().reduce(ZERO, BigDecimal::add).divide(new BigDecimal(rates.size()), 5, HALF_EVEN) : ONE;
+    }
+
+    private transient LoadingCache<PeriodWorkerId, BigDecimal> paymentRateCache;
+
+    private LoadingCache<PeriodWorkerId, BigDecimal> getPaymentRateCache() {
+        if (paymentRateCache == null ){
+            paymentRateCache = CacheBuilder.newBuilder()
+                    .expireAfterAccess(5, TimeUnit.MINUTES)
+                    .build(CacheLoader.from(periodWorkerId -> getPaymentsRate(periodWorkerId.periodId, periodWorkerId.workerId)));
+        }
+
+        return paymentRateCache;
+    }
+
+    public BigDecimal getPaymentsRateFromCache(Long periodId, Long workerId) {
+        try {
+            return getPaymentRateCache().get(new PeriodWorkerId(periodId, workerId));
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private boolean isPaidSalePeriod(Sale sale) {
+        return Objects.equals(sale.getSaleStatus(), SaleStatus.PAID) &&
+                paymentService.getPaymentsBySaleId(sale.getObjectId()).stream()
+                        .map(payment -> periodMapper.getPeriod(payment.getPeriodId()))
+                        .max(Comparator.comparing(Period::getOperatingMonth))
+                        .map(period -> period.getCloseTimestamp() != null)
+                        .orElse(false);
+    }
+
     @Transactional(rollbackFor = RewardException.class)
     public void calculateRewards() throws RewardException {
         try {
             Period period = periodMapper.getActualPeriod();
 
             rewardMapper.deleteRewards(period.getObjectId());
+
+            getRewardsBySaleIdCache().invalidateAll();
+
+            getRewardsByPeriodWorkerIdCache().invalidateAll();
+
+            getPaymentRateCache().invalidateAll();
+
+            getParameterCache().invalidateAll();
 
             WorkerRewardTree tree = getWorkerRewardTree(period);
 
@@ -926,77 +1088,5 @@ public class RewardService implements Serializable {
 
             throw new RewardException(e.getMessage());
         }
-    }
-
-    private transient LoadingCache<Long, BigDecimal> parameterCache;
-
-    private LoadingCache<Long, BigDecimal> getParameterCache(){
-        if (parameterCache == null){
-            parameterCache = CacheBuilder.newBuilder()
-                    .expireAfterAccess(1, TimeUnit.MINUTES)
-                    .build(CacheLoader.from(rewardParameterId -> domainService.getDomain(RewardParameter.class, rewardParameterId)
-                            .getDecimal(RewardParameter.VALUE)));
-
-        }
-
-        return parameterCache;
-    }
-
-    public BigDecimal getParameter(Long rewardParameterId){
-        try {
-            return getParameterCache().get(rewardParameterId);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    public WorkerReward getWorkerReward(Worker worker){
-        return getWorkerRewardTreeCache(periodMapper.getActualPeriod().getObjectId()).getWorkerReward(worker.getObjectId());
-    }
-
-    public BigDecimal getPaymentsRate(Long workerId, Period period) {
-        Long workerCountryId = workerService.getCountryId(workerId);
-
-        Map<Long, BigDecimal> pointSumMap = new HashMap<>();
-        Map<Long, BigDecimal> amountSumMap = new HashMap<>();
-
-        paymentService.getPayments(FilterWrapper.of(new Payment().setPeriodId(period.getObjectId())))
-                .forEach(p -> {
-                    Long countryId = saleService.getCountryId(p.getSaleId());
-
-                    if (countryId.equals(workerCountryId)) {
-                        pointSumMap.put(countryId, pointSumMap.getOrDefault(countryId, ZERO).add(p.getPoint()));
-                        amountSumMap.put(countryId, amountSumMap.getOrDefault(countryId, ZERO).add(p.getAmount()));
-                    }
-                });
-
-        List<BigDecimal> rates = new ArrayList<>();
-
-        Date date = Dates.lastDayOfMonth(period.getOperatingMonth());
-
-        amountSumMap.forEach((c, a) -> {
-            if (a.compareTo(ZERO) != 0) {
-                BigDecimal rate = a.divide(pointSumMap.get(c), 5, HALF_EVEN);
-
-                if (!c.equals(workerCountryId)) {
-                    rate = rate
-                            .multiply(exchangeRateService.getExchangeRate(workerCountryId, date)
-                                    .divide(exchangeRateService.getExchangeRate(c, date), 5, HALF_EVEN));
-                }
-
-                rates.add(rate);
-            }
-        });
-
-        return rates.size() > 0 ? rates.stream().reduce(ZERO, BigDecimal::add).divide(new BigDecimal(rates.size()), 5, HALF_EVEN) : ONE;
-    }
-
-    private boolean isPaidSalePeriod(Sale sale) {
-        return Objects.equals(sale.getSaleStatus(), SaleStatus.PAID) &&
-                paymentService.getPaymentsBySaleId(sale.getObjectId()).stream()
-                        .map(payment -> periodMapper.getPeriod(payment.getPeriodId()))
-                        .max(Comparator.comparing(Period::getOperatingMonth))
-                        .map(period -> period.getCloseTimestamp() != null)
-                        .orElse(false);
     }
 }
