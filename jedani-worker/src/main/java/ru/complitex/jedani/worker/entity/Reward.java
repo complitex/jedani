@@ -1,5 +1,6 @@
 package ru.complitex.jedani.worker.entity;
 
+import ru.complitex.common.util.Dates;
 import ru.complitex.domain.entity.Domain;
 
 import java.math.BigDecimal;
@@ -42,6 +43,21 @@ public class Reward extends Domain {
         super(ENTITY_NAME);
 
         setUseDateAttribute(true);
+    }
+
+    public Reward(Reward reward, Period period) {
+        this();
+
+        setSaleId(reward.getSaleId());
+        setWorkerId(reward.getWorkerId());
+        setGroupSaleVolume(reward.getGroupSaleVolume());
+        setGroupPaymentVolume(reward.getGroupPaymentVolume());
+        setRankId(reward.getRankId());
+        setRewardStatus(RewardStatus.CHARGED);
+        setTotal(reward.getTotal());
+        setDate(Dates.currentDate());
+        setMonth(period.getOperatingMonth());
+        setPeriodId(period.getObjectId());
     }
 
     public Date getDate(){

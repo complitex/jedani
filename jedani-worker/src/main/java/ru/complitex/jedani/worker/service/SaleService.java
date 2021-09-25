@@ -133,6 +133,12 @@ public class SaleService implements Serializable {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
+    public List<Sale> getSales(Long sellerWorkerId) {
+        return saleMapper.getSales(FilterWrapper.of(new Sale().setSellerWorkerId(sellerWorkerId))
+                .addEntityAttributeId(Sale.TOTAL)
+                .put(Sale.FILTER_ACTUAL, true));
+    }
+
     public List<Sale> getSales(Long sellerWorkerId, Period period) {
         return saleMapper.getSales(FilterWrapper.of(new Sale().setSellerWorkerId(sellerWorkerId))
                 .addEntityAttributeId(Sale.TOTAL)

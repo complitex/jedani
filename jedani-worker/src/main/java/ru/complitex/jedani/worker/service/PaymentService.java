@@ -30,12 +30,6 @@ public class PaymentService implements Serializable {
                 .reduce(BigDecimal.ZERO, ((t, p) -> t.add(p.getPoint())), BigDecimal::add);
     }
 
-    public BigDecimal getPaymentsVolumeBySaleId(Long saleId, Date month){
-        return getPaymentsBySaleId(saleId).stream()
-                .filter(p -> p.getDate().before(Dates.lastDayOfMonth(month)) || p.getDate().equals(Dates.lastDayOfMonth(month)))
-                .reduce(BigDecimal.ZERO, ((t, p) -> t.add(p.getPoint())), BigDecimal::add);
-    }
-
     public List<Payment> getPaymentsBySellerWorkerId(Long sellerWorkerId){
         return paymentMapper.getPayments(FilterWrapper.of(new Payment()).put(Payment.FILTER_SELLER_WORKER_ID, sellerWorkerId));
     }
