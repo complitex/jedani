@@ -1,7 +1,6 @@
 package ru.complitex.jedani.worker.service;
 
 import org.mybatis.cdi.Transactional;
-import ru.complitex.address.entity.Country;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.service.DomainService;
@@ -12,7 +11,6 @@ import ru.complitex.jedani.worker.mapper.PeriodMapper;
 import ru.complitex.jedani.worker.mapper.SaleItemMapper;
 import ru.complitex.jedani.worker.mapper.SaleMapper;
 
-import javax.ejb.Local;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -169,13 +167,13 @@ public class SaleService implements Serializable {
         return domainService.getDomain(Sale.class, saleId);
     }
 
-    public void updateSale(Sale sale, BigDecimal paymentTotalLocal){
-        if (sale.getTotalLocal() != null){
-            if (sale.getTotalLocal().compareTo(paymentTotalLocal) == 0){
+    public void updateSaleByTotal(Sale sale, BigDecimal paymentTotal){
+        if (sale.getTotal() != null){
+            if (sale.getTotal().compareTo(paymentTotal) == 0){
                 sale.setSaleStatus(SaleStatus.PAID);
-            }else if (sale.getTotalLocal().compareTo(paymentTotalLocal) < 0){
+            }else if (sale.getTotal().compareTo(paymentTotal) < 0){
                 sale.setSaleStatus(SaleStatus.OVERPAID);
-            }else if (paymentTotalLocal.compareTo(sale.getTotal().divide(BigDecimal.TEN, 2, RoundingMode.HALF_EVEN)) >= 0){
+            }else if (paymentTotal.compareTo(sale.getTotal().divide(BigDecimal.TEN, 2, RoundingMode.HALF_EVEN)) >= 0){
                 sale.setSaleStatus(SaleStatus.PAYING);
             }else {
                 sale.setSaleStatus(SaleStatus.CREATED);

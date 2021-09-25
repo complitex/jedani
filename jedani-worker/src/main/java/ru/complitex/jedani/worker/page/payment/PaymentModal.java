@@ -306,13 +306,13 @@ public class PaymentModal extends AbstractEditModal<Payment> {
 
         payment.setSaleId(sale.getObjectId());
 
-        BigDecimal paymentTotalLocal = domainService.getDomains(Payment.class, FilterWrapper.of(new Payment()
+        BigDecimal paymentTotal = domainService.getDomains(Payment.class, FilterWrapper.of(new Payment()
                 .setContract(payment.getContract()))).stream()
                 .filter(p -> !p.getObjectId().equals(payment.getObjectId()) && p.getAmount() != null)
-                .map(Payment::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add)
-                .add(payment.getAmount());
+                .map(Payment::getPoint).reduce(BigDecimal.ZERO, BigDecimal::add)
+                .add(payment.getPoint());
 
-        if (sale.getTotalLocal() != null && paymentTotalLocal.compareTo(sale.getTotalLocal()) > 0 && !warnTotal){
+        if (sale.getTotal() != null && paymentTotal.compareTo(sale.getTotal()) > 0 && !warnTotal){
             warn(getString("error_payment_more_than_sale_total"));
             target.add(getFeedback());
 
@@ -331,7 +331,7 @@ public class PaymentModal extends AbstractEditModal<Payment> {
 
         domainService.save(payment);
 
-        saleService.updateSale(sale, paymentTotalLocal);
+        saleService.updateSaleByTotal(sale, paymentTotal);
 
         success(getString("info_payment_saved"));
 

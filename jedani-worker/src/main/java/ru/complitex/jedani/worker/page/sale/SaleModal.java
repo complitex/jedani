@@ -16,7 +16,6 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
-import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
@@ -25,6 +24,7 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.util.parse.metapattern.MetaPattern;
@@ -213,7 +213,8 @@ public class SaleModal extends Modal<Sale> {
 
             @Override
             public boolean isVisible() {
-                return saleModel.getObject().getType() == SaleType.MYCOOK && saleModel.getObject().getInstallmentMonths() == 0;
+                return Objects.equals(saleModel.getObject().getType(), SaleType.MYCOOK) &&
+                        Objects.equals(saleModel.getObject().getInstallmentMonths(), 0L);
             }
         });
 
@@ -350,20 +351,7 @@ public class SaleModal extends Modal<Sale> {
                 basePrice.setRequired(true);
                 item.add(basePrice);
 
-                TextField<BigDecimal> price = new TextField<>("price", DecimalAttributeModel.of(model, SaleItem.PRICE), BigDecimal.class){
-                    @Override
-                    protected void onComponentTag(ComponentTag tag) {
-                        super.onComponentTag(tag);
-
-                        SaleDecision saleDecision = domainService.getDomain(SaleDecision.class, model.getObject().getSaleDecisionId());
-
-                        String title = (saleDecision != null ? saleDecision.getName() + "; " : "") +
-                                (model.getObject().getRate() != null ? getString("rate") + ": " +
-                                        model.getObject().getRate().toPlainString() : "");
-
-                        tag.put("title",  title);
-                    }
-
+                TextField<BigDecimal> price = new TextField<>("price", DecimalAttributeModel.of(model, SaleItem.PRICE), BigDecimal.class) {
                     @Override
                     protected String getModelValue() {
                         return model.getObject().getQuantity() != null ? super.getModelValue() : null;
@@ -373,6 +361,14 @@ public class SaleModal extends Modal<Sale> {
                 price.setEnabled(false);
                 price.setRequired(true);
                 item.add(price);
+
+                item.add(new Label("saleDecision", LoadableDetachableModel.of(() -> {
+                    SaleDecision saleDecision = domainService.getDomain(SaleDecision.class, model.getObject().getSaleDecisionId());
+
+                    return  (saleDecision != null ? saleDecision.getObjectId() + ". " +saleDecision.getName() + ". " : "") +
+                            (model.getObject().getRate() != null ? getString("rate") + ": " +
+                                    model.getObject().getRate().toPlainString() : "");
+                })).setOutputMarkupId(true));
 
                 TextField<Long> quantity = new TextField<>("quantity", NumberAttributeModel.of(model, SaleItem.QUANTITY), Long.class);
                 quantity.setRequired(true)
@@ -520,7 +516,7 @@ public class SaleModal extends Modal<Sale> {
 
         Sale sale = saleModel.getObject();
 
-        if (sale.getType() != SaleType.MYCOOK || sale.getInstallmentMonths() != 0){
+        if (!Objects.equals(sale.getType(), SaleType.MYCOOK) || !Objects.equals(sale.getInstallmentMonths(), 0L)){
             sale.setFeeWithdraw(null);
         }
 
@@ -636,7 +632,7 @@ public class SaleModal extends Modal<Sale> {
             updateBasePrices();
             updatePrices(updateInitialPayment);
 
-            saleItems.stream().forEach(c -> target.add(c.get("price"), c.get("basePrice")));
+            saleItems.stream().forEach(c -> target.add(c.get("price"), c.get("basePrice"), c.get("saleDecision")));
 
             container.get("total").modelChanged();
             container.get("totalLocal").modelChanged();

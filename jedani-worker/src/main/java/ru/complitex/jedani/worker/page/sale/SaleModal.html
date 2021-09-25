@@ -48,8 +48,8 @@
                     <th class="sale-action"></th>
                 </tr>
                 </thead>
-                <tbody>
-                <tr wicket:id="saleItems">
+                <tbody wicket:id="saleItems">
+                <tr>
                     <td class="sale-id"><span wicket:id="index"></span></td>
                     <td><span wicket:id="nomenclature"></span></td>
                     <td><input class="form-control si-qty" wicket:id="quantity"/></td>
@@ -58,6 +58,11 @@
                     <td class="sale-action">
                         <div><a wicket:id="update" title="Обновить"></a></div>
                         <div><a wicket:id="remove" title="Удалить"></a></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="5">
+                        <span wicket:id="saleDecision"></span>
                     </td>
                 </tr>
                 </tbody>
