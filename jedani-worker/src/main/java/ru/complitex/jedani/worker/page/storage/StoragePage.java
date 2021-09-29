@@ -5,6 +5,7 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxLink
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
 import de.agilecoders.wicket.core.markup.html.bootstrap.image.GlyphIconType;
+import de.agilecoders.wicket.core.markup.html.bootstrap.tabs.AjaxBootstrapTabbedPanel;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.select.BootstrapSelect;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.select.BootstrapSelectConfig;
 import org.apache.wicket.Component;
@@ -17,11 +18,14 @@ import org.apache.wicket.authorization.UnauthorizedInstantiationException;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
+import org.apache.wicket.extensions.markup.html.tabs.AbstractTab;
+import org.apache.wicket.extensions.markup.html.tabs.ITab;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
+import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -55,6 +59,7 @@ import ru.complitex.domain.service.EntityService;
 import ru.complitex.jedani.worker.component.WorkerAutoComplete;
 import ru.complitex.jedani.worker.component.WorkerAutoCompleteList;
 import ru.complitex.jedani.worker.entity.*;
+import ru.complitex.jedani.worker.mapper.ProductMapper;
 import ru.complitex.jedani.worker.mapper.StorageMapper;
 import ru.complitex.jedani.worker.mapper.TransferMapper;
 import ru.complitex.jedani.worker.page.BasePage;
@@ -94,6 +99,9 @@ public class StoragePage extends BasePage {
 
     @Inject
     private WorkerService workerService;
+
+    @Inject
+    private ProductMapper productMapper;
 
     public StoragePage(PageParameters pageParameters) {
         super(pageParameters);
@@ -270,38 +278,22 @@ public class StoragePage extends BasePage {
 
         //Products
 
-        Provider<Product> productProvider = new Provider<>(FilterWrapper.<Product>of(
-                new Product(){{setParentId(storageId);}}).sort("id", false)) {
-            @Override
-            public List<Product> getList() {
-                return  domainService.getDomains(Product.class, getFilterState());
-            }
-
-            @Override
-            public Long getCount() {
-                return domainService.getDomainsCount(getFilterState());
-            }
-        };
-
-        FilterForm<FilterWrapper<Product>> productForm = new FilterForm<>("productForm", productProvider){
-            @Override
-            protected boolean wantSubmitOnParentFormSubmit() {
-                return false;
-            }
-        };
-        tables.add(productForm);
-
         List<IColumn<Product, Sort>> productColumns = new ArrayList<>();
+        List<IColumn<Product, Sort>> sparePartColumns = new ArrayList<>();
 
         if (storageId != null) {
-            productColumns.add(new DomainIdColumn<>());
-
             Entity productEntity = entityService.getEntity(Product.ENTITY_NAME);
 
-            productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.NOMENCLATURE)
-                    .withReferences(Nomenclature.class, Nomenclature.CODE, Nomenclature.NAME)));
+            IColumn<Product, Sort> id = new DomainIdColumn<>();
+            productColumns.add(id);
+            sparePartColumns.add(id);
 
-            productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.QUANTITY)){
+            IColumn<Product, Sort> nomenclature = new DomainColumn<>(productEntity.getEntityAttribute(Product.NOMENCLATURE)
+                    .withReferences(Nomenclature.class, Nomenclature.CODE, Nomenclature.NAME));
+            productColumns.add(nomenclature);
+            sparePartColumns.add(nomenclature);
+
+            IColumn<Product, Sort> quantity = new DomainColumn<>(productEntity.getEntityAttribute(Product.QUANTITY)){
                 @Override
                 public void populateItem(Item<ICellPopulator<Product>> cellItem, String componentId, IModel<Product> rowModel) {
                     super.populateItem(cellItem, componentId, rowModel);
@@ -319,17 +311,22 @@ public class StoragePage extends BasePage {
                         });
                     }
                 }
-            });
-            productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.SENDING_QUANTITY)));
+            };
+            productColumns.add(quantity);
+            sparePartColumns.add(quantity);
 
-            productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.RECEIVING_QUANTITY)){
+            IColumn<Product, Sort> sendingQty = new DomainColumn<>(productEntity.getEntityAttribute(Product.SENDING_QUANTITY));
+            productColumns.add(sendingQty);
+            sparePartColumns.add(sendingQty);
+
+            IColumn<Product, Sort> receivingQty = new DomainColumn<>(productEntity.getEntityAttribute(Product.RECEIVING_QUANTITY)) {
                 @Override
                 public void populateItem(Item<ICellPopulator<Product>> cellItem, String componentId, IModel<Product> rowModel) {
                     super.populateItem(cellItem, componentId, rowModel);
 
                     Product product = rowModel.getObject();
 
-                    if (edit && product.getNumber(Product.RECEIVING_QUANTITY, 0L) > 0){
+                    if (edit && product.getNumber(Product.RECEIVING_QUANTITY, 0L) > 0) {
                         cellItem.add(new CssClassNameAppender("pointer"));
 
                         cellItem.add(new AjaxEventBehavior("click") {
@@ -340,9 +337,11 @@ public class StoragePage extends BasePage {
                         });
                     }
                 }
-            });
+            };
+            productColumns.add(receivingQty);
+            sparePartColumns.add(receivingQty);
 
-            productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.GIFT_QUANTITY)){
+            productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.GIFT_QUANTITY)) {
                 @Override
                 public void populateItem(Item<ICellPopulator<Product>> cellItem, String componentId, IModel<Product> rowModel) {
                     super.populateItem(cellItem, componentId, rowModel);
@@ -361,9 +360,10 @@ public class StoragePage extends BasePage {
                     }
                 }
             });
+
             productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.GIFT_SENDING_QUANTITY)));
 
-            productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.GIFT_RECEIVING_QUANTITY)){
+            productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.GIFT_RECEIVING_QUANTITY)) {
                 @Override
                 public void populateItem(Item<ICellPopulator<Product>> cellItem, String componentId, IModel<Product> rowModel) {
                     super.populateItem(cellItem, componentId, rowModel);
@@ -383,7 +383,7 @@ public class StoragePage extends BasePage {
                 }
             });
 
-            productColumns.add(new DomainColumn<>(productEntity.getEntityAttribute(Product.RESERVE_QUANTITY)){
+            IColumn<Product, Sort> reserveQuantityColumn = new DomainColumn<>(productEntity.getEntityAttribute(Product.RESERVE_QUANTITY)) {
                 @Override
                 public void populateItem(Item<ICellPopulator<Product>> cellItem, String componentId, IModel<Product> rowModel) {
                     super.populateItem(cellItem, componentId, rowModel);
@@ -401,9 +401,11 @@ public class StoragePage extends BasePage {
                         });
                     }
                 }
-            });
+            };
+            productColumns.add(reserveQuantityColumn);
+            sparePartColumns.add(reserveQuantityColumn);
 
-            productColumns.add(new DomainActionColumn<>(){
+            IColumn<Product, Sort> actionColumn = new DomainActionColumn<>() {
                 @Override
                 public void populateItem(Item<ICellPopulator<Product>> cellItem, String componentId, IModel<Product> rowModel) {
                     cellItem.add(new LinkPanel(componentId, new BootstrapAjaxLink<Void>(LinkPanel.COMPONENT_ID,
@@ -414,17 +416,93 @@ public class StoragePage extends BasePage {
                         }
                     }.setIconType(GlyphIconType.share)).setVisible(edit));
                 }
-            });
+            };
+
+            productColumns.add(actionColumn);
+            sparePartColumns.add(actionColumn);
         }
 
-        Table<Product> productTable = new Table<>("table", productColumns, productProvider, 15, "storagePageProduct"){
+        Provider<Product> productProvider = new Provider<>(FilterWrapper.of((Product) new Product()
+                        .setParentId(storageId)).put(Product.FILTER_NOMENCLATURE_TYPE, NomenclatureType.BASE_ASSORTMENT)
+                .sort("id", false)) {
             @Override
-            public boolean isVisible() {
-                return storageId != null;
+            public List<Product> getList() {
+                return  productMapper.getProducts(getFilterState());
+            }
+
+            @Override
+            public Long getCount() {
+                return productMapper.getProductsCount(getFilterState());
             }
         };
-        productTable.setVisible(storageId != null);
-        productForm.add(productTable);
+
+        Provider<Product> sparePartProvider = new Provider<>(FilterWrapper.of((Product) new Product()
+                        .setParentId(storageId)).put(Product.FILTER_NOMENCLATURE_TYPE, NomenclatureType.SPARE_PART)
+                .sort("id", false)) {
+            @Override
+            public List<Product> getList() {
+                return  productMapper.getProducts(getFilterState());
+            }
+
+            @Override
+            public Long getCount() {
+                return productMapper.getProductsCount(getFilterState());
+            }
+        };
+
+        List<ITab> tabs = new ArrayList<>();
+
+        tabs.add(new AbstractTab(new ResourceModel("products")) {
+            @Override
+            public WebMarkupContainer getPanel(String s) {
+                Fragment fragment = new Fragment(s, "tableFragment", StoragePage.this);
+
+                FilterForm<FilterWrapper<Product>> form = new FilterForm<>("filterForm", productProvider) {
+                    @Override
+                    protected boolean wantSubmitOnParentFormSubmit() {
+                        return false;
+                    }
+                };
+                fragment.add(form);
+
+                Table<Product> table = new Table<>("table", productColumns, productProvider, 15, "storagePageProduct") {
+                    @Override
+                    public boolean isVisible() {
+                        return storageId != null;
+                    }
+                };
+                form.add(table);
+
+                return fragment;
+            }
+        });
+
+        tabs.add(new AbstractTab(new ResourceModel("spareParts")) {
+            @Override
+            public WebMarkupContainer getPanel(String s) {
+                Fragment fragment = new Fragment(s, "tableFragment", StoragePage.this);
+
+                FilterForm<FilterWrapper<Product>> form = new FilterForm<>("filterForm", productProvider) {
+                    @Override
+                    protected boolean wantSubmitOnParentFormSubmit() {
+                        return false;
+                    }
+                };
+                fragment.add(form);
+
+                Table<Product> table = new Table<>("table", sparePartColumns, sparePartProvider, 15, "storagePageSpareParts") {
+                    @Override
+                    public boolean isVisible() {
+                        return storageId != null;
+                    }
+                };
+                form.add(table);
+
+                return fragment;
+            }
+        });
+
+        tables.add(new AjaxBootstrapTabbedPanel<>("tabs", tabs));
 
         //Transfers
 

@@ -46,5 +46,6 @@
         <mapper resource="ru/complitex/jedani/worker/mapper/PeriodMapper.xml"/>
         <mapper resource="ru/complitex/jedani/worker/mapper/RewardMapper.xml"/>
         <mapper resource="ru/complitex/jedani/worker/mapper/PayoutMapper.xml"/>
+        <mapper resource="ru/complitex/jedani/worker/mapper/ProductMapper.xml"/>
     </mappers>
 </configuration>

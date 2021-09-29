@@ -18,6 +18,8 @@ public class Product extends Domain {
     public static final long GIFT_RECEIVING_QUANTITY = 7;
     public static final long RESERVE_QUANTITY = 8;
 
+    public static final String FILTER_NOMENCLATURE_TYPE = "nomenclatureType";
+
     public Product() {
         super(ENTITY_NAME);
     }

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ru.complitex.jedani.worker.mapper.ProductMapper">
+    <resultMap id="productResultMap" type="ru.complitex.jedani.worker.entity.Product"
+               extends="ru.complitex.domain.mapper.DomainMapper.domainResultMapJoin">
+    </resultMap>
+
+    <sql id="selectProductsFrom">
+        <if test="map.nomenclatureType != null">
+            left join product_attribute pa_n on d.id = pa_n.domain_id and pa_n.entity_attribute_id = 1 and pa_n.status = 1
+            left join nomenclature_attribute na_t on pa_n.number = na_t.domain_id and na_t.entity_attribute_id = 4 and na_t.status = 1
+        </if>
+    </sql>
+
+    <sql id="selectProductsWhere">
+        <if test="map.nomenclatureType != null">
+            and na_t.number = #{map.nomenclatureType}
+        </if>
+    </sql>
+
+    <!--suppress SqlResolve -->
+    <select id="selectProducts" parameterType="ru.complitex.common.entity.FilterWrapper" resultMap="productResultMap">
+        select d.*, '${object.entityName}' entity_name,
+          <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsSelect"/>
+        from (
+          select dd.d_id dd_id
+        from (
+            select d.id d_id
+                <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFrom"/>
+                <include refid="selectProductsFrom"/>
+                <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromFilter"/>
+                <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromSort"/>
+                <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsWhere"/>
+                <include refid="selectProductsWhere"/>
+                group by d.id
+                <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsOrderSort"/>
+            ) dd
+            ${limit}
+        ) o
+        left join `product` d on d.id = o.dd_id
+        left join product_attribute a on a.domain_id = d.id and a.status = 1
+        left join product_value v on v.attribute_id = a.id
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromSort"/>
+        group by d.id, a.id, v.id
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsOrderSort"/>
+    </select>
+
+    <!--suppress SqlResolve -->
+    <select id="selectProductsCount" parameterType="ru.complitex.common.entity.FilterWrapper" resultType="long">
+        select count(distinct p.object_id) from (select d.object_id
+            <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFrom"/>
+            <include refid="selectProductsFrom"/>
+            <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsFromFilter"/>
+            <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsWhere"/>
+            <include refid="selectProductsWhere"/>
+        ) p
+    </select>
+</mapper>

@@ -231,7 +231,14 @@ class TransferModal extends StorageModal {
                             public Long getObject(String id, IModel<? extends List<? extends Long>> choices) {
                                 return id != null && !id.isEmpty() ? Long.valueOf(id) : null;
                             }
-                        }).with(new BootstrapSelectConfig().withNoneSelectedText("")).setRequired(true)));
+                        }).with(new BootstrapSelectConfig().withNoneSelectedText("")).setRequired(true)) {
+                    @Override
+                    public boolean isVisible() {
+                        Nomenclature nomenclature = domainService.getDomain(Nomenclature.class, product.getNomenclatureId());
+
+                        return nomenclature != null && nomenclature.getType().equals(NomenclatureType.BASE_ASSORTMENT);
+                    }
+                }.setOutputMarkupPlaceholderTag(true));
 
                 fragment.add(new FormGroupTextField<>("comment", new TextAttributeModel(getModel(), Transfer.COMMENT,
                         StringType.DEFAULT)));
@@ -278,7 +285,14 @@ class TransferModal extends StorageModal {
                             public Long getObject(String id, IModel<? extends List<? extends Long>> choices) {
                                 return id != null && !id.isEmpty() ? Long.valueOf(id) : null;
                             }
-                        }).with(new BootstrapSelectConfig().withNoneSelectedText("")).setRequired(true)));
+                        }).with(new BootstrapSelectConfig().withNoneSelectedText("")).setRequired(true)){
+                    @Override
+                    public boolean isVisible() {
+                        Nomenclature nomenclature = domainService.getDomain(Nomenclature.class, product.getNomenclatureId());
+
+                        return nomenclature != null && nomenclature.getType().equals(NomenclatureType.BASE_ASSORTMENT);
+                    }
+                }.setOutputMarkupPlaceholderTag(true));
 
                 fragment.add(new FormGroupTextField<>("quantity", new NumberAttributeModel(getModel(),
                         Transfer.QUANTITY)).setRequired(true).setType(Long.class).setRequired(true));
