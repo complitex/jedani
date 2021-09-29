@@ -264,8 +264,6 @@ public class PaymentModal extends AbstractEditModal<Payment> {
             }
         }
 
-
-
         List<SaleItem> saleItems = domainService.getDomains(SaleItem.class, FilterWrapper.of((SaleItem) new SaleItem()
                 .setParentId(sale.getObjectId())));
 

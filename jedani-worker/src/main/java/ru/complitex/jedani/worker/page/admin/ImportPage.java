@@ -18,9 +18,14 @@ import org.apache.wicket.protocol.ws.api.WebSocketRequestHandler;
 import org.apache.wicket.protocol.ws.api.message.IWebSocketPushMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.complitex.common.entity.FilterWrapper;
+import ru.complitex.domain.service.DomainService;
+import ru.complitex.jedani.worker.entity.Sale;
 import ru.complitex.jedani.worker.page.BasePage;
 import ru.complitex.jedani.worker.security.JedaniRoles;
 import ru.complitex.jedani.worker.service.ImportService;
+import ru.complitex.jedani.worker.service.PaymentService;
+import ru.complitex.jedani.worker.service.SaleService;
 import ru.complitex.jedani.worker.service.WorkerNodeService;
 
 import javax.inject.Inject;
@@ -39,6 +44,15 @@ public class ImportPage extends BasePage{
 
     @Inject
     private WorkerNodeService workerNodeService;
+
+    @Inject
+    private DomainService domainService;
+
+    @Inject
+    private PaymentService paymentService;
+
+    @Inject
+    private SaleService saleService;
 
     private class PushMessage implements IWebSocketPushMessage{
         private String text;
@@ -184,6 +198,18 @@ public class ImportPage extends BasePage{
 
                     log.error("Ошибка обновления индекса ", e);
                 }
+
+                target.add(feedback);
+            }
+        });
+
+        add(new IndicatingAjaxLink<>("updateSaleStatus") {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                domainService.getDomains(Sale.class, FilterWrapper.of(new Sale())).forEach(sale ->
+                        saleService.updateSaleByTotal(sale, paymentService.getPaymentsVolumeBySaleId(sale.getObjectId())));
+
+                success("Статусы продаж обновлены");
 
                 target.add(feedback);
             }
