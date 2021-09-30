@@ -127,7 +127,7 @@ public class RewardService implements Serializable {
 
         @Override
         public int hashCode() {
-            return Objects.hash(periodId, workerId);
+            return Objects.hash(workerId, periodId);
         }
     }
 
@@ -407,75 +407,91 @@ public class RewardService implements Serializable {
     }
 
     public void updateLocal(Sale sale, Reward reward, Period period){
-        if (reward.getPoint().compareTo(ZERO) >= 0) {
-            Date date = Dates.currentDate();
+        try {
+            if (reward.getPoint().compareTo(ZERO) >= 0) {
+                Date date = Dates.currentDate();
 
-            List<SaleItem> saleItems = saleService.getSaleItems(sale.getObjectId());
+                List<SaleItem> saleItems = saleService.getSaleItems(sale.getObjectId());
 
-            if (!saleItems.isEmpty()){
-                SaleItem saleItem = saleItems.get(0);
+                if (!saleItems.isEmpty()){
+                    SaleItem saleItem = saleItems.get(0);
 
-                reward.setRate(saleItem.getRate());
+                    reward.setRate(saleItem.getRate());
 
-                if (reward.getRate() == null && saleItem.getSaleDecisionId() != null){
-                    reward.setRate(priceService.getRate(sale, saleItem, date));
+                    if (reward.getRate() == null && saleItem.getSaleDecisionId() != null){
+                        reward.setRate(priceService.getRate(sale, saleItem, date));
+                    }
+
+                    reward.setBasePrice(saleItem.getBasePrice());
+
+                    if (sale.isFeeWithdraw()) {
+                        reward.setPrice(saleItem.getPrice().add(reward.getTotal()));
+                    }else{
+                        reward.setPrice(saleItem.getPrice());
+                    }
+
+                    BigDecimal ratio = ZERO;
+
+                    List<Ratio> ratios = domainService.getDomains(Ratio.class, FilterWrapper.of((Ratio) new Ratio()
+                            .setCountryId(saleService.getCountryId(sale))
+                            .setBegin(reward.getMonth())
+                            .setEnd(reward.getMonth())
+                            .setFilter(Ratio.BEGIN, Attribute.FILTER_BEFORE_OR_EQUAL_DATE)
+                            .setFilter(Ratio.END, Attribute.FILTER_AFTER_DATE)));
+
+                    if (!ratios.isEmpty()) {
+                        ratio = ratios.get(0).getValue();
+                    }
+
+                    reward.setDiscount(reward.getPrice().multiply(BigDecimal.valueOf(100).subtract(ratio))
+                            .divide(reward.getBasePrice().multiply(BigDecimal.valueOf(100)), 7, HALF_EVEN));
+
+                    if (reward.getRate() == null){
+                        reward.setRate(priceService.getRate(sale.getStorageId(), date));
+                    }
+
+                    Long workerCountryId = workerService.getCountryId(sale.getSellerWorkerId());
+                    Long saleCountryId = saleService.getCountryId(sale);
+
+                    if (!workerCountryId.equals(saleCountryId)) {
+                        Date crossDate = Dates.lastDayOfMonth(period.getOperatingMonth());
+
+                        reward.setCrossRate(exchangeRateService.getExchangeRate(workerCountryId, crossDate)
+                                .divide(exchangeRateService.getExchangeRate(saleCountryId, crossDate), 7, HALF_EVEN));
+                    } else {
+                        reward.setCrossRate(ONE);
+                    }
+
+                    reward.setAmount(reward.getPoint().multiply(reward.getRate()).multiply(reward.getCrossRate())
+                            .setScale(5, HALF_EVEN));
+
+                    if (reward.getDiscount() != null){
+                        reward.setAmount(reward.getAmount().multiply(reward.getDiscount()).setScale(5, HALF_EVEN));
+                    }
                 }
-
-                reward.setBasePrice(saleItem.getBasePrice());
-
-                if (sale.isFeeWithdraw()) {
-                    reward.setPrice(saleItem.getPrice().add(reward.getTotal()));
-                }else{
-                    reward.setPrice(saleItem.getPrice());
-                }
-
-                BigDecimal ratio = ZERO;
-
-                List<Ratio> ratios = domainService.getDomains(Ratio.class, FilterWrapper.of((Ratio) new Ratio()
-                        .setCountryId(saleService.getCountryId(sale))
-                        .setBegin(reward.getMonth())
-                        .setEnd(reward.getMonth())
-                        .setFilter(Ratio.BEGIN, Attribute.FILTER_BEFORE_OR_EQUAL_DATE)
-                        .setFilter(Ratio.END, Attribute.FILTER_AFTER_DATE)));
-
-                if (!ratios.isEmpty()) {
-                    ratio = ratios.get(0).getValue();
-                }
-
-                reward.setDiscount(reward.getPrice().multiply(BigDecimal.valueOf(100).subtract(ratio))
-                        .divide(reward.getBasePrice().multiply(BigDecimal.valueOf(100)), 7, HALF_EVEN));
-
-                if (reward.getRate() == null){
-                    reward.setRate(priceService.getRate(sale.getStorageId(), date));
-                }
-
-                Long workerCountryId = workerService.getCountryId(sale.getSellerWorkerId());
-                Long saleCountryId = saleService.getCountryId(sale);
-
-                if (!workerCountryId.equals(saleCountryId)) {
-                    Date crossDate = Dates.lastDayOfMonth(period.getOperatingMonth());
-
-                    reward.setCrossRate(exchangeRateService.getExchangeRate(workerCountryId, crossDate)
-                            .divide(exchangeRateService.getExchangeRate(saleCountryId, crossDate), 7, HALF_EVEN));
-                } else {
-                    reward.setCrossRate(ONE);
-                }
-
-                reward.setAmount(reward.getPoint().multiply(reward.getRate()).multiply(reward.getCrossRate())
-                        .setScale(5, HALF_EVEN));
-
-                if (reward.getDiscount() != null){
-                    reward.setAmount(reward.getAmount().multiply(reward.getDiscount()).setScale(5, HALF_EVEN));
-                }
+            } else {
+                throw new RuntimeException("negative reward point error " + reward);
             }
+        } catch (Exception e) {
+            log.error("error updateLocal {}, {}", sale, reward);
+
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void updateLocalByWorker(Reward reward, Period period) {
+        if (reward.getPoint().compareTo(ZERO) >= 0) {
+            reward.setRate(getPaymentsRateByWorkerId(reward.getWorkerId(), period.getObjectId()));
+
+            reward.setAmount(reward.getPoint().multiply(reward.getRate()).setScale(5, HALF_EVEN));
         } else {
             throw new RuntimeException("negative reward point error " + reward);
         }
     }
 
-    private void updateLocal(Reward reward, Period period){
+    private void updateLocalBySale(Reward reward, Period period) {
         if (reward.getPoint().compareTo(ZERO) >= 0) {
-            reward.setRate(getPaymentsRateFromCache(reward.getWorkerId(), period.getObjectId()));
+            reward.setRate(getPaymentsRateBySaleId(reward.getSaleId(), period.getObjectId()));
 
             reward.setAmount(reward.getPoint().multiply(reward.getRate()).setScale(5, HALF_EVEN));
         } else {
@@ -705,45 +721,64 @@ public class RewardService implements Serializable {
     }
 
     private void calculateManagerReward(Sale sale, WorkerReward workerReward, Period period, Long rewardStatus) {
-        if (getRewardsPointSum(sale.getObjectId(), RewardType.MANAGER_PREMIUM, rewardStatus).compareTo(ZERO) > 0) {
-            return;
-        }
+        if (Objects.equals(sale.getPeriodId(), period.getObjectId())) {
+            BigDecimal total = calcManagerPoint(sale, workerReward.getRank());
 
-        BigDecimal total = calcManagerPoint(sale, workerReward.getRank());
+            if (total.compareTo(ZERO) > 0){
+                Reward reward = new Reward();
 
-        if (total.compareTo(ZERO) > 0){
-            Reward reward = new Reward();
+                reward.setSaleId(sale.getObjectId());
+                reward.setWorkerId(sale.getSellerWorkerId());
+                reward.setType(RewardType.MANAGER_PREMIUM);
+                reward.setDate(Dates.currentDate());
+                reward.setMonth(period.getOperatingMonth());
+                reward.setStructureSaleVolume(workerReward.getStructureSaleVolume());
+                reward.setRankId(workerReward.getRank());
+                reward.setPeriodId(period.getObjectId());
+                reward.setRewardStatus(rewardStatus);
 
-            reward.setSaleId(sale.getObjectId());
-            reward.setWorkerId(sale.getSellerWorkerId());
-            reward.setType(RewardType.MANAGER_PREMIUM);
-            reward.setDate(Dates.currentDate());
-            reward.setMonth(period.getOperatingMonth());
-            reward.setStructureSaleVolume(workerReward.getStructureSaleVolume());
-            reward.setRankId(workerReward.getRank());
-            reward.setPeriodId(period.getObjectId());
-            reward.setRewardStatus(rewardStatus);
+                reward.setTotal(total);
 
-            reward.setTotal(total);
+                reward.setPoint(ZERO);
 
-            reward.setPoint(ZERO);
+                if (rewardStatus == RewardStatus.ESTIMATED) {
+                    reward.setPoint(total);
+                } else if (rewardStatus == RewardStatus.CHARGED) {
+                    reward.setPoint(calculateRewardPoint(sale, RewardType.MANAGER_PREMIUM, total));
+                }
 
-            if (rewardStatus == RewardStatus.ESTIMATED) {
-                reward.setPoint(total);
-            } else if (rewardStatus == RewardStatus.CHARGED) {
-                reward.setPoint(calculateRewardPoint(sale, RewardType.MANAGER_PREMIUM, total));
+                updateLocal(sale, reward, period);
+
+                if (reward.getPoint().compareTo(ZERO) != 0) {
+                    domainService.save(reward);
+                }
             }
+        } else if (rewardStatus == RewardStatus.CHARGED) {
+            Reward r = getRewardsBySaleId(sale.getObjectId()).stream()
+                    .filter(r1 -> r1.getRewardStatus().equals(RewardStatus.ESTIMATED))
+                    .filter(r1 -> r1.getType().equals(RewardType.MANAGER_PREMIUM))
+                    .findFirst().orElse(null);
 
-            updateLocal(sale, reward, period);
+            if (r != null) {
+                BigDecimal point = calculateRewardPoint(sale, RewardType.GROUP_VOLUME, r.getTotal());
 
-            if (reward.getPoint().compareTo(ZERO) != 0) {
-                domainService.save(reward);
+                if (point.compareTo(ZERO) != 0) {
+                    Reward reward = new Reward(r, period);
+
+                    reward.setType(RewardType.MANAGER_PREMIUM);
+                    reward.setRewardStatus(RewardStatus.CHARGED);
+                    reward.setPoint(point);
+
+                    updateLocal(sale, reward, period);
+
+                    domainService.save(reward);
+                }
             }
         }
     }
 
     private void calculatePersonalReward(WorkerReward workerReward, Period period, Long rewardStatus) {
-        if (workerReward.getSaleVolume().compareTo(getParameter(43L)) >= 0) {
+        if (workerReward.getPaymentVolume().compareTo(getParameter(43L)) >= 0) {
             Reward reward = new Reward();
 
             reward.setType(RewardType.PERSONAL_VOLUME);
@@ -776,7 +811,7 @@ public class RewardService implements Serializable {
                 }
             }
 
-            updateLocal(reward, period);
+            updateLocalByWorker(reward, period);
 
             if (reward.getPoint().compareTo(ZERO) != 0) {
                 domainService.save(reward);
@@ -832,7 +867,7 @@ public class RewardService implements Serializable {
                     reward.setPoint(calculateRewardPoint(sale, RewardType.GROUP_VOLUME, total));
                 }
 
-                updateLocal(reward, period);
+                updateLocalBySale(reward, period);
 
                 if (reward.getPoint().compareTo(ZERO) != 0) {
                     domainService.save(reward);
@@ -840,26 +875,28 @@ public class RewardService implements Serializable {
             }
         }
 
-        saleService.getSales(workerReward.getWorkerId())
-                .forEach(sale -> getRewardsBySaleId(sale.getObjectId()).stream()
-                        .filter(r -> r.getType() == RewardType.GROUP_VOLUME)
-                        .filter(r -> r.getRewardStatus() == RewardStatus.ESTIMATED)
-                        .filter(r -> !Objects.equals(r.getPeriodId(), period.getObjectId()))
-                        .forEach(r -> {
-                            BigDecimal point = calculateRewardPoint(sale, RewardType.GROUP_VOLUME, r.getTotal());
+        if (rewardStatus == RewardStatus.CHARGED) {
+            saleService.getSales(workerReward.getWorkerId())
+                    .forEach(sale -> getRewardsBySaleId(sale.getObjectId()).stream()
+                            .filter(r -> r.getType() == RewardType.GROUP_VOLUME)
+                            .filter(r -> r.getRewardStatus() == RewardStatus.ESTIMATED)
+                            .filter(r -> !Objects.equals(r.getPeriodId(), period.getObjectId()))
+                            .forEach(r -> {
+                                BigDecimal point = calculateRewardPoint(sale, RewardType.GROUP_VOLUME, r.getTotal());
 
-                            if (point.compareTo(ZERO) != 0) {
-                                Reward reward = new Reward(r, period);
+                                if (point.compareTo(ZERO) != 0) {
+                                    Reward reward = new Reward(r, period);
 
-                                reward.setType(RewardType.GROUP_VOLUME);
-                                reward.setRewardStatus(RewardStatus.CHARGED);
-                                reward.setPoint(point);
+                                    reward.setType(RewardType.GROUP_VOLUME);
+                                    reward.setRewardStatus(RewardStatus.CHARGED);
+                                    reward.setPoint(point);
 
-                                updateLocal(reward, period);
+                                    updateLocalBySale(reward, period);
 
-                                domainService.save(reward);
-                            }
-                        }));
+                                    domainService.save(reward);
+                                }
+                            }));
+        }
     }
 
     private void calculateStructureReward(WorkerReward workerReward, Period period, Long rewardStatus) {
@@ -925,7 +962,7 @@ public class RewardService implements Serializable {
                         reward.setPoint(calculateRewardPoint(sale, RewardType.STRUCTURE_VOLUME, total, reward.getManagerId()));
                     }
 
-                    updateLocal(reward, period);
+                    updateLocalBySale(reward, period);
 
                     if (reward.getPoint().compareTo(ZERO) != 0) {
                         domainService.save(reward);
@@ -934,26 +971,28 @@ public class RewardService implements Serializable {
             }
         }
 
-        saleService.getSales(workerReward.getWorkerId())
-                .forEach(sale -> getRewardsBySaleId(sale.getObjectId()).stream()
-                        .filter(r -> r.getType() == RewardType.STRUCTURE_VOLUME)
-                        .filter(r -> r.getRewardStatus() == RewardStatus.ESTIMATED)
-                        .filter(r -> !Objects.equals(r.getPeriodId(), period.getObjectId()))
-                        .forEach(r -> {
-                            BigDecimal point = calculateRewardPoint(sale, RewardType.STRUCTURE_VOLUME, r.getTotal(), r.getManagerId());
+        if (rewardStatus == RewardStatus.CHARGED) {
+            saleService.getSales(workerReward.getWorkerId())
+                    .forEach(sale -> getRewardsBySaleId(sale.getObjectId()).stream()
+                            .filter(r -> r.getType() == RewardType.STRUCTURE_VOLUME)
+                            .filter(r -> r.getRewardStatus() == RewardStatus.ESTIMATED)
+                            .filter(r -> !Objects.equals(r.getPeriodId(), period.getObjectId()))
+                            .forEach(r -> {
+                                BigDecimal point = calculateRewardPoint(sale, RewardType.STRUCTURE_VOLUME, r.getTotal(), r.getManagerId());
 
-                            if (point.compareTo(ZERO) != 0) {
-                                Reward reward = new Reward(r, period);
+                                if (point.compareTo(ZERO) != 0) {
+                                    Reward reward = new Reward(r, period);
 
-                                reward.setType(RewardType.STRUCTURE_VOLUME);
-                                reward.setRewardStatus(RewardStatus.CHARGED);
-                                reward.setPoint(point);
+                                    reward.setType(RewardType.STRUCTURE_VOLUME);
+                                    reward.setRewardStatus(RewardStatus.CHARGED);
+                                    reward.setPoint(point);
 
-                                updateLocal(reward, period);
+                                    updateLocalBySale(reward, period);
 
-                                domainService.save(reward);
-                            }
-                        }));
+                                    domainService.save(reward);
+                                }
+                            }));
+        }
     }
 
     private transient LoadingCache<Long, BigDecimal> parameterCache;
@@ -983,19 +1022,17 @@ public class RewardService implements Serializable {
         return getWorkerRewardTreeCache(periodMapper.getActualPeriod().getObjectId()).getWorkerReward(worker.getObjectId());
     }
 
-    private BigDecimal getPaymentsRate(Long workerId, Long periodId) {
+    private BigDecimal getPaymentsRate(Long countryId, Long periodId) {
         Period period = periodMapper.getPeriod(periodId);
-
-        Long workerCountryId = workerService.getCountryId(workerId);
 
         Map<Long, BigDecimal> pointSumMap = new HashMap<>();
         Map<Long, BigDecimal> amountSumMap = new HashMap<>();
 
         paymentService.getPayments(FilterWrapper.of(new Payment().setPeriodId(period.getObjectId())))
                 .forEach(p -> {
-                    Long countryId = saleService.getCountryId(p.getSaleId());
+                    Long saleCountryId = saleService.getCountryId(p.getSaleId());
 
-                    if (countryId.equals(workerCountryId)) {
+                    if (countryId.equals(saleCountryId)) {
                         pointSumMap.put(countryId, pointSumMap.getOrDefault(countryId, ZERO).add(p.getPoint()));
                         amountSumMap.put(countryId, amountSumMap.getOrDefault(countryId, ZERO).add(p.getAmount()));
                     }
@@ -1009,9 +1046,9 @@ public class RewardService implements Serializable {
             if (a.compareTo(ZERO) != 0) {
                 BigDecimal rate = a.divide(pointSumMap.get(c), 5, HALF_EVEN);
 
-                if (!c.equals(workerCountryId)) {
+                if (!c.equals(countryId)) {
                     rate = rate
-                            .multiply(exchangeRateService.getExchangeRate(workerCountryId, date)
+                            .multiply(exchangeRateService.getExchangeRate(countryId, date)
                                     .divide(exchangeRateService.getExchangeRate(c, date), 5, HALF_EVEN));
                 }
 
@@ -1022,22 +1059,56 @@ public class RewardService implements Serializable {
         return rates.size() > 0 ? rates.stream().reduce(ZERO, BigDecimal::add).divide(new BigDecimal(rates.size()), 5, HALF_EVEN) : ONE;
     }
 
-    private transient LoadingCache<WorkerPeriodId, BigDecimal> paymentRateCache;
 
-    private LoadingCache<WorkerPeriodId, BigDecimal> getPaymentRateCache() {
+    private static class CountryPeriodId {
+        private final Long countryId;
+        private final Long periodId;
+
+        public CountryPeriodId(Long countryId, Long periodId) {
+            this.countryId = countryId;
+            this.periodId = periodId;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o instanceof CountryPeriodId) {
+                return Objects.equals(countryId, ((CountryPeriodId) o).countryId) &&
+                        Objects.equals(periodId, ((CountryPeriodId) o).periodId);
+            }
+
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(countryId, periodId);
+        }
+    }
+
+    private transient LoadingCache<CountryPeriodId, BigDecimal> paymentRateCache;
+
+    private LoadingCache<CountryPeriodId, BigDecimal> getPaymentRateCache() {
         if (paymentRateCache == null ){
             paymentRateCache = CacheBuilder.newBuilder()
                     .expireAfterAccess(5, TimeUnit.MINUTES)
-                    .build(CacheLoader.from(workerPeriodId ->
-                            getPaymentsRate(workerPeriodId.workerId, workerPeriodId.periodId)));
+                    .build(CacheLoader.from(countryPeriodId ->
+                            getPaymentsRate(countryPeriodId.countryId, countryPeriodId.periodId)));
         }
 
         return paymentRateCache;
     }
 
-    public BigDecimal getPaymentsRateFromCache(Long workerId, Long periodId) {
+    private BigDecimal getPaymentsRateByWorkerId(Long workerId, Long periodId) {
         try {
-            return getPaymentRateCache().get(new WorkerPeriodId(workerId, periodId));
+            return getPaymentRateCache().get(new CountryPeriodId(workerService.getCountryId(workerId), periodId));
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private BigDecimal getPaymentsRateBySaleId(Long saleId, Long periodId) {
+        try {
+            return getPaymentRateCache().get(new CountryPeriodId(saleService.getCountryId(saleId), periodId));
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
         }
@@ -1087,8 +1158,10 @@ public class RewardService implements Serializable {
 
                         WorkerReward workerReward = tree.getWorkerReward(sale.getSellerWorkerId());
 
-                        calculateManagerReward(sale, workerReward, period, RewardStatus.ESTIMATED);
-                        calculateManagerReward(sale, workerReward, period, RewardStatus.CHARGED);
+                        if (!sale.isSasRequest()) {
+                            calculateManagerReward(sale, workerReward, period, RewardStatus.ESTIMATED);
+                            calculateManagerReward(sale, workerReward, period, RewardStatus.CHARGED);
+                        }
                     });
 
             tree.forEachLevel((l, rl) -> rl.forEach(workerReward -> {
