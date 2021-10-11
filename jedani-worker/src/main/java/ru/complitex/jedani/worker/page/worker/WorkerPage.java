@@ -565,7 +565,12 @@ public class WorkerPage extends BasePage {
 
                         manager = workerMapper.getWorker(worker.getNumber(Worker.MANAGER));
                     }
-                }).onChange(t -> t.add(managerPhone, managerEmail)));
+                }){
+            @Override
+            protected Long getWorkerType() {
+                return null;
+            }
+        }.onChange(t -> t.add(managerPhone, managerEmail)));
 
         form.add(new IndicatingAjaxButton("save") {
             @Override
