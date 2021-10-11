@@ -948,7 +948,7 @@ public class WorkerPage extends BasePage {
                         repeatingView.add(new LinkPanel(repeatingView.newChildId(), new BootstrapBookmarkablePageLink<>(LinkPanel.COMPONENT_ID,
                                 WorkerPage.this.getClass(), pageParameters, Buttons.Type.Link).setIconType(GlyphIconType.edit)));
 
-                        if (!isViewOnly()) {
+                        if (!isViewOnly() && isEditEnabled()) {
                             repeatingView.add(new LinkPanel(repeatingView.newChildId(), new BootstrapAjaxLink<Worker>(LinkPanel.COMPONENT_ID,
                                     Buttons.Type.Link) {
                                 @Override
@@ -1431,7 +1431,7 @@ public class WorkerPage extends BasePage {
     }
 
     protected boolean isViewOnly(){
-        return !isAdmin() || !isStructureAdmin() || !isCurrentWorkerPage();
+        return false;
     }
 
     protected Worker getWorker(){
