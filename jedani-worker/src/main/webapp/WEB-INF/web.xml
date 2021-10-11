@@ -53,6 +53,9 @@
         <role-name>STRUCTURE_ADMINISTRATORS</role-name>
     </security-role>
     <security-role>
+        <role-name>STRUCTURE_VIEW</role-name>
+    </security-role>
+    <security-role>
         <role-name>SALE_ADMINISTRATORS</role-name>
     </security-role>
     <security-role>

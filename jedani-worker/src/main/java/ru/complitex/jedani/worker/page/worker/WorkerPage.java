@@ -209,7 +209,7 @@ public class WorkerPage extends BasePage {
                 if (!Objects.equals(currentCity.getParentId(), city.getParentId())){
                     throw new UnauthorizedInstantiationException(WorkerPage.class);
                 }
-            }else if (worker.isParticipant() && !isStructureAdmin()){
+            }else if (worker.isParticipant() && !isStructureAdmin() && !isStructureView()){
                 if ((getCurrentWorker().getRight() < worker.getRight()) || (getCurrentWorker().getLeft() > worker.getLeft())){
                     throw new UnauthorizedInstantiationException(WorkerPage.class);
                 }
@@ -248,7 +248,12 @@ public class WorkerPage extends BasePage {
         };
 
         //Worker
-        FilterForm<FilterWrapper<Worker>> form = new FilterForm<>("form", provider);
+        FilterForm<FilterWrapper<Worker>> form = new FilterForm<>("form", provider) {
+            @Override
+            public boolean isEnabled() {
+                return isEditEnabled();
+            }
+        };
         add(form);
 
         form.add(new FormGroupSelectPanel("type", new TypeSelect(FormGroupPanel.COMPONENT_ID,
@@ -416,6 +421,7 @@ public class WorkerPage extends BasePage {
         if (isAdmin()){
             roles.add(JedaniRoles.ADMINISTRATORS);
             roles.add(JedaniRoles.STRUCTURE_ADMINISTRATORS);
+            roles.add(JedaniRoles.STRUCTURE_VIEW);
             roles.add(JedaniRoles.PROMOTION_ADMINISTRATORS);
             roles.add(JedaniRoles.SALE_ADMINISTRATORS);
             roles.add(JedaniRoles.PAYMENT_ADMINISTRATORS);
@@ -424,6 +430,7 @@ public class WorkerPage extends BasePage {
             roles.add(JedaniRoles.USERS);
         }else if (isStructureAdmin()){
             roles.add(JedaniRoles.STRUCTURE_ADMINISTRATORS);
+            roles.add(JedaniRoles.STRUCTURE_VIEW);
             roles.add(JedaniRoles.PROMOTION_ADMINISTRATORS);
             roles.add(JedaniRoles.SALE_ADMINISTRATORS);
             roles.add(JedaniRoles.PAYMENT_ADMINISTRATORS);
@@ -455,12 +462,12 @@ public class WorkerPage extends BasePage {
 
         PasswordTextField password = new PasswordTextField("userPassword", new PropertyModel<>(user, "password"));
         password.setRequired(false);
-        password.setVisible(!isViewOnly());
+        password.setVisible(!isViewOnly() && isEditEnabled());
         form.add(password);
 
         PasswordTextField confirmPassword = new PasswordTextField("confirmPassword", new PropertyModel<>(user, "confirmPassword"));
         confirmPassword.setRequired(false);
-        confirmPassword.setVisible(!isViewOnly());
+        confirmPassword.setVisible(!isViewOnly() && isEditEnabled());
         form.add(confirmPassword);
 
 
@@ -525,7 +532,7 @@ public class WorkerPage extends BasePage {
 
             @Override
             public boolean isVisible() {
-                return (isAdmin() || isStructureAdmin()) && manager != null;
+                return (isAdmin() || isStructureAdmin() || isStructureView()) && manager != null;
             }
         });
 
@@ -806,7 +813,7 @@ public class WorkerPage extends BasePage {
 
             @Override
             public boolean isVisible() {
-                return !isViewOnly();
+                return !isViewOnly() && isEditEnabled();
             }
         });
 
@@ -1394,7 +1401,7 @@ public class WorkerPage extends BasePage {
 
             @Override
             public boolean isVisible() {
-                return !isViewOnly();
+                return !isViewOnly() && isEditEnabled();
             }
         };
         back.add(new Label("label", getString("cancel")));
@@ -1420,11 +1427,11 @@ public class WorkerPage extends BasePage {
     }
 
     protected boolean isEditEnabled(){
-        return isAdmin() || isStructureAdmin() || (isUser() && !isCurrentWorkerPage());
+        return isAdmin() || isStructureAdmin() || isCurrentWorkerPage();
     }
 
     protected boolean isViewOnly(){
-        return false;
+        return !isAdmin() || !isStructureAdmin() || !isCurrentWorkerPage();
     }
 
     protected Worker getWorker(){
