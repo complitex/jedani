@@ -421,6 +421,10 @@ public class BasePage extends WebPage{
         return getHttpServletRequest().isUserInRole(JedaniRoles.STRUCTURE_ADMINISTRATORS);
     }
 
+    public boolean isStructureView(){
+        return getHttpServletRequest().isUserInRole(JedaniRoles.STRUCTURE_VIEW);
+    }
+
     public boolean isPromotionAdmin(){
         return getHttpServletRequest().isUserInRole(JedaniRoles.PROMOTION_ADMINISTRATORS);
     }

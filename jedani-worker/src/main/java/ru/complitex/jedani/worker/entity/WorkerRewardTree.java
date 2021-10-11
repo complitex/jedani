@@ -8,10 +8,10 @@ import java.util.function.BiConsumer;
  * 25.10.2019 9:50 PM
  */
 public class WorkerRewardTree {
-    private Long treeDepth;
+    private final Long treeDepth;
 
-    private Map<Long, WorkerReward> idMap = new HashMap<>();
-    private Map<Long, List<WorkerReward>> levelMap = new HashMap<>();
+    private final Map<Long, WorkerReward> idMap = new HashMap<>();
+    private final Map<Long, List<WorkerReward>> levelMap = new HashMap<>();
 
     public WorkerRewardTree(Map<Long, List<WorkerNode>> workerNodeMap) {
         treeDepth = workerNodeMap.keySet().stream().max(Comparator.naturalOrder()).orElse(-1L);

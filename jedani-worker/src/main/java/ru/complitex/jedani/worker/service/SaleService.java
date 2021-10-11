@@ -151,18 +151,24 @@ public class SaleService implements Serializable {
                 .collect(Collectors.toList());
     }
 
-    public boolean isMkPremiumSaleItems(List<SaleItem> saleItems){
+    public boolean isMycookPremiumSaleItems(List<SaleItem> saleItems){
         return getNomenclatures(saleItems).stream()
                 .anyMatch(n -> n.getCode() != null && n.getCode().contains("MK-PREM"));
     }
 
-    public boolean isMkTouchSaleItems(List<SaleItem> saleItems){
+    public boolean isMycookTouchSaleItems(List<SaleItem> saleItems){
         return getNomenclatures(saleItems).stream()
                 .anyMatch(n -> n.getCode() != null && n.getCode().contains("MK-TOUCH"));
     }
 
-    public boolean isMkSaleItems(List<SaleItem> saleItems){
+    public boolean isMycookSaleItems(List<SaleItem> saleItems){
         return getNomenclatures(saleItems).stream()
+                .anyMatch(n -> n.getCode() != null && (n.getCode().contains("MK-PREM") ||
+                        n.getCode().contains("MK-TOUCH")));
+    }
+
+    public boolean isMycook(Long saleId){
+        return getNomenclatures(getSaleItems(saleId)).stream()
                 .anyMatch(n -> n.getCode() != null && (n.getCode().contains("MK-PREM") ||
                         n.getCode().contains("MK-TOUCH")));
     }

@@ -313,7 +313,7 @@ public class SaleModal extends Modal<Sale> {
                 })));
 
         container.add(new FormGroupPanel("managerMycookBonusWorker", new WorkerAutoComplete(FormGroupPanel.COMPONENT_ID,
-                new NumberAttributeModel(saleModel, Sale.MK_MANAGER_BONUS_WORKER))){
+                new NumberAttributeModel(saleModel, Sale.MANAGER_BONUS_WORKER))){
             @Override
             public boolean isVisible() {
                 return Objects.equals(saleModel.getObject().getType(), SaleType.MYCOOK);
@@ -771,8 +771,8 @@ public class SaleModal extends Modal<Sale> {
         try {
             sale.setPersonalRewardPoint(rewardService.getPersonalRewardPoint(sale, saleItems));
 
-            if (saleService.isMkSaleItems(saleItems)) {
-                sale.setMkManagerBonusRewardPoint(rewardService.getMkManagerBonusRewardPoint(sale, saleItems));
+            if (saleService.isMycookSaleItems(saleItems)) {
+                sale.setManagerBonusRewardPoint(rewardService.getMkManagerBonusRewardPoint(sale, saleItems));
                 sale.setCulinaryRewardPoint(rewardService.getCulinaryRewardPoint(sale, saleItems));
             }
 
@@ -783,7 +783,7 @@ public class SaleModal extends Modal<Sale> {
             saleService.save(sale, saleItems);
 
             if (sale.isFeeWithdraw()) {
-                rewardService.calculateSaleReward(sale, saleItems, RewardStatus.WITHDRAWN);
+                rewardService.calculateSaleReward(sale, saleItems, periodMapper.getActualPeriod(), RewardStatus.WITHDRAWN);
             }
 
             rewardService.calculateCulinaryReward(sale);

@@ -47,6 +47,8 @@ public class WorkerReward {
 
     private boolean pk;
 
+    private List<Reward> rewards = new ArrayList<>();
+
     public WorkerReward(WorkerNode workerNode) {
         this.workerNode = workerNode;
     }
@@ -103,6 +105,10 @@ public class WorkerReward {
 
     public boolean isManager() {
         return rank > 0;
+    }
+
+    public void addReward(Reward reward) {
+        rewards.add(reward);
     }
 
     public WorkerNode getWorkerNode() {
@@ -259,6 +265,14 @@ public class WorkerReward {
 
     public Long getWorkerId(){
         return workerNode.getObjectId();
+    }
+
+    public List<Reward> getRewards() {
+        return rewards;
+    }
+
+    public void setRewards(List<Reward> rewards) {
+        this.rewards = rewards;
     }
 
     @Override
