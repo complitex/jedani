@@ -577,6 +577,16 @@ public class WorkerPage extends BasePage {
                         return;
                     }
 
+                    if (worker.isParticipant()) {
+                        Worker manager = workerMapper.getWorker(worker.getManagerId());
+
+                        if (manager.getLeft() > worker.getLeft() && manager.getRight() < worker.getRight()) {
+                            error(getString("error_manager_worker_structure"));
+                            target.add(feedback);
+                            return;
+                        }
+                    }
+
                     if (!worker.isParticipant()){
                         worker.setManagerId(null);
                         worker.setJId(null);
@@ -1132,11 +1142,11 @@ public class WorkerPage extends BasePage {
                         finance.add(new Label("reward_pv", LoadableDetachableModel.of(() ->
                                 getRewardsTotalString(RewardType.PERSONAL_VOLUME, periodModel.getObject().getObjectId()))));
                         finance.add(new Label("reward_mk", LoadableDetachableModel.of(() ->
-                                getRewardsTotalString(RewardType.MYCOOK_SALE, periodModel.getObject().getObjectId()))));
+                                getRewardsTotalString(RewardType.PERSONAL_MYCOOK, periodModel.getObject().getObjectId()))));
                         finance.add(new Label("reward_ba", LoadableDetachableModel.of(() ->
-                                getRewardsTotalString(RewardType.BASE_ASSORTMENT_SALE, periodModel.getObject().getObjectId()))));
+                                getRewardsTotalString(RewardType.PERSONAL_RANGE, periodModel.getObject().getObjectId()))));
                         finance.add(new Label("reward_mkb", LoadableDetachableModel.of(() ->
-                                getRewardsTotalString(RewardType.MANAGER_MK_BONUS, periodModel.getObject().getObjectId()))));
+                                getRewardsTotalString(RewardType.MANAGER_BONUS, periodModel.getObject().getObjectId()))));
                         finance.add(new Label("reward_cw", LoadableDetachableModel.of(() ->
                                 getRewardsTotalString(RewardType.CULINARY_WORKSHOP, periodModel.getObject().getObjectId()))));
 
