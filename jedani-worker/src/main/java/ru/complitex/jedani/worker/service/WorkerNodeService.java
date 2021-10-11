@@ -105,13 +105,15 @@ public class WorkerNodeService implements Serializable {
 
     @Transactional
     public void moveIndex(Worker worker){
-        Worker manager = workerMapper.getWorker(worker.getManagerId());
+//        Worker manager = workerMapper.getWorker(worker.getManagerId());
+//
+//        if (!worker.getId().equals(manager.getId()) && (worker.getLeft() >= manager.getLeft() ||
+//                worker.getRight() <= manager.getRight())) {
+//            domainNodeService.move(manager, worker);
+//        } else {
+//            rebuildIndex();
+//        }
 
-        if (!worker.getId().equals(manager.getId()) && (worker.getLeft() >= manager.getLeft() ||
-                worker.getRight() <= manager.getRight())) {
-            domainNodeService.move(manager, worker);
-        } else {
-            rebuildIndex();
-        }
+        rebuildIndex();
     }
 }
