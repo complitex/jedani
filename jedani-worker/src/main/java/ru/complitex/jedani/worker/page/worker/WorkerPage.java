@@ -1427,7 +1427,7 @@ public class WorkerPage extends BasePage {
     }
 
     protected boolean isEditEnabled(){
-        return isAdmin() || isStructureAdmin() || isCurrentWorkerPage();
+        return isAdmin() || isStructureAdmin() || isCurrentWorkerPage() || worker.getObjectId() == null;
     }
 
     protected boolean isViewOnly(){
