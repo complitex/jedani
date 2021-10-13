@@ -48,7 +48,6 @@ a:focus {
     text-decoration: none;
 }
 
-
 .navbar-masthead.navbar-inverse .navbar-nav > li > a {
     color: #f28100;
 }
@@ -69,7 +68,7 @@ a:focus {
 }
 
 .main {
-    padding-top: 12px;
+    padding-top: 8px;
     padding-bottom: 24px;
     vertical-align: top;
     width: 100%;
@@ -86,8 +85,7 @@ a:focus {
 }
 
 .nav > li > a {
-    padding: 8px 22px;
-
+    padding: 8px 15px;
 }
 
 .sidebar-nav .nav > li > a:hover {
@@ -103,6 +101,7 @@ a:focus {
 
 .sidebar-nav li > ul > li > a {
     color: #acacac;
+    padding: 4px 15px;
 }
 
 .navbar {
@@ -110,11 +109,15 @@ a:focus {
 }
 
 .sidebar-nav {
-    padding-top: 6px;
+    padding-top: 8px;
 }
 
 .sidebar-nav .nav ul a {
-    padding-left: 30px;
+    padding-left: 29px;
+}
+
+.metismenu .has-arrow::after {
+    right: 15px;
 }
 
 .form-import {
