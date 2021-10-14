@@ -723,7 +723,8 @@ public class SaleModal extends Modal<Sale> {
     private void save(AjaxRequestTarget target){
         Sale sale = saleModel.getObject();
 
-        List<Sale> sales = domainService.getDomains(Sale.class, FilterWrapper.of(new Sale().setContract(sale.getContract())));
+        List<Sale> sales = domainService.getDomains(Sale.class, FilterWrapper.of(new Sale().setContract(sale.getContract()))
+                .setFilter(FilterWrapper.FILTER_EQUAL));
 
         if (sales.stream().anyMatch(s -> !s.getObjectId().equals(sale.getObjectId()))){
             error(getString("error_sale_contract_exists"));
@@ -772,7 +773,7 @@ public class SaleModal extends Modal<Sale> {
             sale.setPersonalRewardPoint(rewardService.getPersonalRewardPoint(sale, saleItems));
 
             if (saleService.isMycookSaleItems(saleItems)) {
-                sale.setManagerBonusRewardPoint(rewardService.getMkManagerBonusRewardPoint(sale, saleItems));
+                sale.setManagerBonusRewardPoint(rewardService.getManagerBonusRewardPoint(sale, saleItems));
                 sale.setCulinaryRewardPoint(rewardService.getCulinaryRewardPoint(sale, saleItems));
             }
 

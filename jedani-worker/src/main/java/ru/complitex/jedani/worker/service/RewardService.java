@@ -378,7 +378,7 @@ public class RewardService implements Serializable {
         return point;
     }
 
-    public BigDecimal getMkManagerBonusRewardPoint(Sale sale, List<SaleItem> saleItems){
+    public BigDecimal getManagerBonusRewardPoint(Sale sale, List<SaleItem> saleItems){
         BigDecimal point = ZERO;
 
         if (sale.getType() == SaleType.MYCOOK){
