@@ -12,7 +12,7 @@
     </context-param>
 
     <session-config>
-        <session-timeout>1440</session-timeout>
+        <session-timeout>10080</session-timeout>
         <cookie-config>
             <name>jsessionid</name>
         </cookie-config>
@@ -20,7 +20,7 @@
 
     <filter>
         <filter-name>auth</filter-name>
-        <filter-class>ru.complitex.common.wicket.application.JSessionIdFilter</filter-class>
+        <filter-class>ru.complitex.common.wicket.application.SessionFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>auth</filter-name>
