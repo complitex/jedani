@@ -583,17 +583,17 @@ public class WorkerPage extends BasePage {
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
                 try {
-                    if (worker.isParticipant() && worker.getManagerId() == null){
-                        error(getString("error_manager_is_empty"));
-                        target.add(feedback);
-                        return;
-                    }
-
                     if (worker.isParticipant()) {
-                        Worker manager = workerMapper.getWorker(worker.getManagerId());
+                        if (worker.getManagerId() != null) {
+                            Worker manager = workerMapper.getWorker(worker.getManagerId());
 
-                        if (manager.getLeft() > worker.getLeft() && manager.getRight() < worker.getRight()) {
-                            error(getString("error_manager_worker_structure"));
+                            if (manager.getLeft() > worker.getLeft() && manager.getRight() < worker.getRight()) {
+                                error(getString("error_manager_worker_structure"));
+                                target.add(feedback);
+                                return;
+                            }
+                        } else {
+                            error(getString("error_manager_is_empty"));
                             target.add(feedback);
                             return;
                         }
