@@ -584,7 +584,13 @@ public class WorkerPage extends BasePage {
             protected void onSubmit(AjaxRequestTarget target) {
                 try {
                     if (worker.isParticipant()) {
-                        if (worker.getManagerId() != null) {
+                        if (worker.getManagerId() == null) {
+                            error(getString("error_manager_is_empty"));
+                            target.add(feedback);
+                            return;
+                        }
+
+                        if (worker.getObjectId() != null) {
                             Worker manager = workerMapper.getWorker(worker.getManagerId());
 
                             if (manager.getLeft() > worker.getLeft() && manager.getRight() < worker.getRight()) {
@@ -592,10 +598,6 @@ public class WorkerPage extends BasePage {
                                 target.add(feedback);
                                 return;
                             }
-                        } else {
-                            error(getString("error_manager_is_empty"));
-                            target.add(feedback);
-                            return;
                         }
                     }
 
