@@ -1,13 +1,9 @@
 package ru.complitex.jedani.worker.api;
 
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
-import org.apache.wicket.cdi.NonContextual;
 import org.apache.wicket.markup.MarkupType;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.request.handler.TextRequestHandler;
-import org.apache.wicket.request.resource.AbstractResource;
-import org.apache.wicket.request.resource.IResource;
-import org.apache.wicket.request.resource.ResourceReference;
 import ru.complitex.common.util.Dates;
 import ru.complitex.jedani.worker.entity.Worker;
 import ru.complitex.jedani.worker.entity.WorkerReward;
@@ -17,9 +13,13 @@ import ru.complitex.jedani.worker.service.RewardService;
 import ru.complitex.jedani.worker.service.WorkerService;
 
 import javax.inject.Inject;
-import javax.json.*;
+import javax.json.Json;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObjectBuilder;
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
+
+import static java.math.BigDecimal.ZERO;
 
 /**
  * @author Anatoly Ivanov
@@ -81,12 +81,12 @@ public class WorkerJsonPage extends WebPage {
 
             WorkerReward workerReward = rewardService.getWorkerReward(worker);
 
-            json.add("sale_volume", workerReward.getSaleVolume());
-            json.add("payment_volume", workerReward.getPaymentVolume());
-            json.add("group_sale_volume", workerReward.getGroupSaleVolume());
-            json.add("group_payment_volume", workerReward.getGroupPaymentVolume());
-            json.add("structure_sale_volume", workerReward.getStructureSaleVolume());
-            json.add("structure_payment_volume", workerReward.getStructurePaymentVolume());
+            json.add("sale_volume", workerReward != null ? workerReward.getSaleVolume(): ZERO);
+            json.add("payment_volume", workerReward != null ? workerReward.getPaymentVolume() : ZERO);
+            json.add("group_sale_volume", workerReward != null ? workerReward.getGroupSaleVolume() : ZERO);
+            json.add("group_payment_volume", workerReward != null ? workerReward.getGroupPaymentVolume() : ZERO);
+            json.add("structure_sale_volume", workerReward != null ? workerReward.getStructureSaleVolume() : ZERO);
+            json.add("structure_payment_volume", workerReward != null ? workerReward.getStructurePaymentVolume() : ZERO);
 
             if (worker.getBirthday() != null) {
                 json.add("birthday", Dates.getDateText(worker.getBirthday()));
