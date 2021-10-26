@@ -1008,6 +1008,11 @@ public class WorkerPage extends BasePage {
                         return rowItem;
 
                     }
+
+                    @Override
+                    public boolean isEnabledInHierarchy() {
+                        return true;
+                    }
                 };
                 structure.add(table);
 
@@ -1058,7 +1063,7 @@ public class WorkerPage extends BasePage {
 
                     @Override
                     public boolean isVisible() {
-                        return worker.getObjectId() != null;
+                        return worker.getObjectId() != null && isEditEnabled();
                     }
                 });
 
@@ -1389,7 +1394,7 @@ public class WorkerPage extends BasePage {
 
         form.add(new AjaxBootstrapTabbedPanel<>("info", tabs).setVisible(worker.getObjectId() != null));
 
-        Link<Worker> back = new Link<Worker>("back") {
+        Link<Worker> back = new Link<>("back") {
             @Override
             public void onClick() {
                 PageParameters pageParameters = new PageParameters();
