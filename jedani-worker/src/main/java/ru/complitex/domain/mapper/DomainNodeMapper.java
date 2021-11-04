@@ -26,7 +26,7 @@ public class DomainNodeMapper extends BaseMapper {
         sqlSession().update("clearDomainNodeIndex", new DomainNode(entityName, objectId));
     }
 
-    private List<DomainNode> getChildren(DomainNode domainNode, Long parentEntityAttributeId){
+    public List<DomainNode> getChildren(DomainNode domainNode, Long parentEntityAttributeId){
         domainNode.getMap().put("parentEntityAttributeId", parentEntityAttributeId);
 
         return sqlSession().selectList("selectDomainNodeChildren", domainNode);

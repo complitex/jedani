@@ -7,7 +7,10 @@ import ru.complitex.domain.mapper.DomainNodeMapper;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Anatoly A. Ivanov
@@ -97,5 +100,86 @@ public class DomainNodeService implements Serializable {
         } finally {
             domainNodeMapper.unlockTables();
         }
+    }
+
+    @Transactional
+    public void rebuildIndex(String entityName, Long rootObjectId, Long parentEntityAttributeId) {
+        try {
+            domainNodeMapper.lockTablesWrite(entityName, entityName + " as d", entityName + "_attribute as a");
+
+            DomainNode root = domainNodeMapper.getDomainNode(entityName, rootObjectId);
+
+            Map<Long, List<DomainNode>> map = new LinkedHashMap<>();
+
+            loadIndex(root, parentEntityAttributeId, map);
+
+            clearIndex(root, map);
+
+            rebuildIndex(root, map);
+
+            updateIndex(root, map);
+        } finally {
+            domainNodeMapper.unlockTables();
+        }
+
+        if (!validate(entityName)){
+            throw new RuntimeException("Index is not validated");
+        }
+    }
+
+    private void loadIndex(DomainNode parent, Long parentEntityAttributeId, Map<Long, List<DomainNode>> map) {
+        List<DomainNode> domainNodes = domainNodeMapper.getChildren(parent, parentEntityAttributeId);
+
+        map.put(parent.getObjectId(), domainNodes);
+
+        for (DomainNode domainNode :  domainNodes) {
+            loadIndex(domainNode, parentEntityAttributeId, map);
+        }
+    }
+
+    private void clearIndex(DomainNode root, Map<Long, List<DomainNode>> map) {
+        map.values().forEach(domainNodes  ->
+                domainNodes.forEach(domainNode -> {
+                    domainNode.setLeft(0L);
+                    domainNode.setRight(0L);
+                    domainNode.setLevel(0L);
+                }));
+
+        map.put(0L, List.of(root));
+
+        root.setLeft(1L);
+        root.setRight(2L);
+        root.setLevel(0L);
+    }
+
+    private void rebuildIndex(DomainNode parent,  Map<Long, List<DomainNode>> map) {
+        Long right = parent.getRight();
+        Long level  = parent.getLevel();
+
+        for (DomainNode domainNode : map.get(parent.getObjectId())) {
+            map.values().stream()
+                    .flatMap(Collection::stream)
+                    .filter(n -> n.getLeft() >= right)
+                    .forEach(n -> n.setLeft(n.getLeft() + 2));
+
+            map.values().stream()
+                    .flatMap(Collection::stream)
+                    .filter(n -> n.getRight() >= right)
+                    .forEach(n -> n.setRight(n.getRight() + 2));
+
+            domainNode.setLeft(right);
+            domainNode.setRight(right+ 1);
+            domainNode.setLevel(level + 1);
+
+            rebuildIndex(domainNode, map);
+        }
+    }
+
+    private void updateIndex(DomainNode root, Map<Long, List<DomainNode>> map) {
+        domainNodeMapper.update(root);
+
+        map.values().stream()
+                .flatMap(Collection::stream)
+                .forEach(n -> domainNodeMapper.update(n));
     }
 }
