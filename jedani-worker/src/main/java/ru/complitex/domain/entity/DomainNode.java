@@ -9,6 +9,11 @@ public class DomainNode extends Domain{
     private Long right;
     private Long level;
 
+    private Long updateLeft;
+    private Long updateRight;
+    private Long updateLevel;
+
+
     public DomainNode() {
     }
 
@@ -48,5 +53,29 @@ public class DomainNode extends Domain{
 
     public void setLevel(Long level) {
         this.level = level;
+    }
+
+    public Long getUpdateLeft() {
+        return updateLeft;
+    }
+
+    public void setUpdateLeft(Long updateLeft) {
+        this.updateLeft = updateLeft;
+    }
+
+    public Long getUpdateRight() {
+        return updateRight;
+    }
+
+    public void setUpdateRight(Long updateRight) {
+        this.updateRight = updateRight;
+    }
+
+    public Long getUpdateLevel() {
+        return updateLevel;
+    }
+
+    public void setUpdateLevel(Long updateLevel) {
+        this.updateLevel = updateLevel;
     }
 }

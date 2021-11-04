@@ -7,10 +7,7 @@ import ru.complitex.domain.mapper.DomainNodeMapper;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Anatoly A. Ivanov
@@ -140,46 +137,72 @@ public class DomainNodeService implements Serializable {
     private void clearIndex(DomainNode root, Map<Long, List<DomainNode>> map) {
         map.values().forEach(domainNodes  ->
                 domainNodes.forEach(domainNode -> {
-                    domainNode.setLeft(0L);
-                    domainNode.setRight(0L);
-                    domainNode.setLevel(0L);
+                    domainNode.setUpdateLeft(0L);
+                    domainNode.setUpdateRight(0L);
+                    domainNode.setUpdateLevel(0L);
                 }));
 
         map.put(0L, List.of(root));
 
-        root.setLeft(1L);
-        root.setRight(2L);
-        root.setLevel(0L);
+        root.setUpdateLeft(1L);
+        root.setUpdateRight(2L);
+        root.setUpdateLevel(0L);
     }
 
     private void rebuildIndex(DomainNode parent,  Map<Long, List<DomainNode>> map) {
-        Long right = parent.getRight();
-        Long level  = parent.getLevel();
+        Long right = parent.getUpdateRight();
+        Long level  = parent.getUpdateLevel();
 
         for (DomainNode domainNode : map.get(parent.getObjectId())) {
             map.values().stream()
                     .flatMap(Collection::stream)
-                    .filter(n -> n.getLeft() >= right)
-                    .forEach(n -> n.setLeft(n.getLeft() + 2));
+                    .filter(n -> n.getUpdateLeft() >= right)
+                    .forEach(n -> n.setUpdateLeft(n.getUpdateLeft() + 2));
 
             map.values().stream()
                     .flatMap(Collection::stream)
-                    .filter(n -> n.getRight() >= right)
-                    .forEach(n -> n.setRight(n.getRight() + 2));
+                    .filter(n -> n.getUpdateRight() >= right)
+                    .forEach(n -> n.setUpdateRight(n.getUpdateRight() + 2));
 
-            domainNode.setLeft(right);
-            domainNode.setRight(right+ 1);
-            domainNode.setLevel(level + 1);
+            domainNode.setUpdateLeft(right);
+            domainNode.setUpdateRight(right+ 1);
+            domainNode.setUpdateLevel(level + 1);
 
             rebuildIndex(domainNode, map);
         }
     }
 
+    private void update(DomainNode domainNode) {
+        boolean update = false;
+
+        if (!Objects.equals(domainNode.getLeft(), domainNode.getUpdateLeft())) {
+            domainNode.setLeft(domainNode.getUpdateLeft());
+
+            update = true;
+        }
+
+        if (!Objects.equals(domainNode.getRight(), domainNode.getUpdateRight())) {
+            domainNode.setRight(domainNode.getUpdateRight());
+
+            update = true;
+        }
+
+        if (!Objects.equals(domainNode.getLevel(), domainNode.getUpdateLevel())) {
+            domainNode.setLevel(domainNode.getUpdateLevel());
+
+            update = true;
+        }
+
+        if (update) {
+            domainNodeMapper.update(domainNode);
+        }
+    }
+
     private void updateIndex(DomainNode root, Map<Long, List<DomainNode>> map) {
-        domainNodeMapper.update(root);
+        update(root);
 
         map.values().stream()
                 .flatMap(Collection::stream)
-                .forEach(n -> domainNodeMapper.update(n));
+                .forEach(this::update);
     }
 }
