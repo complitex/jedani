@@ -273,7 +273,7 @@ public class BasePage extends WebPage{
         menu.add(catalog);
 
         WebMarkupContainer workers = new WebMarkupContainer("workers");
-        workers.setVisible(isAdmin() || isStructureAdmin());
+        workers.setVisible(isAdmin() || isStructureAdmin() || isStructureView());
         workers.add(newBehavior());
         workers.add(new WebMarkupContainer("link").add(newBehaviorLink()));
         workers.add(new WebMarkupContainer("list")

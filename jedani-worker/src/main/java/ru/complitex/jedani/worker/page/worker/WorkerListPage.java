@@ -84,6 +84,8 @@ public class WorkerListPage extends DomainListPage<Worker>{
                 target.add(getFeedback(), getTable());
             }
         });
+
+        setAddVisible(isAdmin() || isStructureAdmin());
     }
 
     @Override
@@ -98,7 +100,7 @@ public class WorkerListPage extends DomainListPage<Worker>{
             City city = domainService.getDomain(City.class, getCurrentWorker().getCityId());
 
             filterWrapper.put(Worker.FILTER_REGION, city.getParentId());
-        } else if (currentWorker.isParticipant() && isUser() && !isAdmin() && !isStructureAdmin()){
+        } else if (currentWorker.isParticipant() && isUser() && !isAdmin() && !isStructureAdmin() && !isStructureView()){
             worker.setLeft(currentWorker.getLeft());
             worker.setRight(currentWorker.getRight());
             worker.setLevel(currentWorker.getLevel());
@@ -257,7 +259,8 @@ public class WorkerListPage extends DomainListPage<Worker>{
                     public boolean isVisible() {
                         return !worker.getStatus().equals(Status.ARCHIVE) &&
                                 !Objects.equals(worker.getObjectId(), 1L) &&
-                                !Objects.equals(worker.getObjectId(), getCurrentWorker().getId());
+                                !Objects.equals(worker.getObjectId(), getCurrentWorker().getId())
+                                && (isAdmin() || isStructureAdmin());
                     }
                 }.setIconType(GlyphIconType.remove)));
             }
