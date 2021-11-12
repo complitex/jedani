@@ -8,6 +8,7 @@ import ru.complitex.domain.util.Domains;
 
 import javax.inject.Inject;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,6 +35,10 @@ public class DomainService implements Serializable {
 
     public <T extends Domain> List<T> getDomains(Class<T> domainClass, FilterWrapper<T> filterWrapper){
         return getDomains(domainClass, filterWrapper, false);
+    }
+
+    public <T extends Domain> List<T> getDomains(Class<T> domainClass, T filterObject){
+        return getDomains(domainClass, FilterWrapper.of(filterObject), false);
     }
 
     public <T extends Domain> Long getDomainsCount(FilterWrapper<T> filterWrapper){
@@ -127,6 +132,12 @@ public class DomainService implements Serializable {
 
     public Date getDate(String entityName, Long objectId, Long entityAttributeId){
         return attributeMapper.getDate(entityName, objectId, entityAttributeId);
+    }
+
+    public BigDecimal getDecimal(String entityName, Long objectId, Long entityAttributeId) {
+        String text = getText(entityName, objectId, entityAttributeId);
+
+        return text != null && !text.isEmpty() ? new BigDecimal(text) : null;
     }
 
     public void delete(Domain domain){

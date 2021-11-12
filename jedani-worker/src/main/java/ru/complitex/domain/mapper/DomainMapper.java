@@ -35,7 +35,7 @@ public class DomainMapper extends BaseMapper {
         }
 
         if (domain.getStartDate() == null){
-            domain.setStartDate(new Date());
+            domain.setStartDate(Dates.currentDate());
         }
 
         if (domain.getStatus() == null){

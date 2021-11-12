@@ -171,12 +171,12 @@ public class Sale extends Domain {
         setBoolean(FOR_YOURSELF, forYourself);
     }
 
-    public Long getMkManagerBonusWorkerId(){
+    public Long getManagerBonusWorkerId(){
         return getNumber(MANAGER_BONUS_WORKER);
     }
 
-    public void setMkManagerBonusWorkerId(Long mkManagerBonusWorkerId){
-        setNumber(MANAGER_BONUS_WORKER, mkManagerBonusWorkerId);
+    public void setManagerBonusWorkerId(Long managerBonusWorkerId){
+        setNumber(MANAGER_BONUS_WORKER, managerBonusWorkerId);
     }
 
     public Long getCulinaryWorkerId(){

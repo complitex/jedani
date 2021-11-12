@@ -3,8 +3,8 @@ package ru.complitex.jedani.worker.page.reward;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.markup.html.basic.Label;
 import ru.complitex.jedani.worker.entity.WorkerNode;
-import ru.complitex.jedani.worker.entity.WorkerReward;
-import ru.complitex.jedani.worker.entity.WorkerRewardTree;
+import ru.complitex.jedani.worker.entity.RewardNode;
+import ru.complitex.jedani.worker.entity.RewardTree;
 import ru.complitex.jedani.worker.mapper.PeriodMapper;
 import ru.complitex.jedani.worker.page.BasePage;
 import ru.complitex.jedani.worker.service.RewardService;
@@ -28,16 +28,16 @@ public class RewardTreePage extends BasePage {
     public PeriodMapper periodMapper;
 
     public RewardTreePage() {
-        WorkerRewardTree tree = rewardService.getWorkerRewardTree(periodMapper.getActualPeriod());
+        RewardTree tree = rewardService.getRewardTree(periodMapper.getActualPeriod());
 
         StringBuilder rewards = new StringBuilder();
 
         for (long l = 1; l <= tree.getTreeDepth(); ++l){
-            List<WorkerReward> list = tree.getWorkerRewards(l);
+            List<RewardNode> list = tree.getRewardNodes(l);
 
             rewards.append("Level: ").append(l).append("\n");
 
-            for (WorkerReward wr : list){
+            for (RewardNode wr : list){
                 if ((wr.getSaleVolume().compareTo(ZERO) > 0) ||
                         wr.getStructureSaleVolume().compareTo(ZERO) > 0 ||
                         wr.getPaymentVolume().compareTo(ZERO) > 0 ||

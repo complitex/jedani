@@ -38,6 +38,9 @@ public class Reward extends Domain {
     public final static String FILTER_MONTH = "month";
     public final static String FILTER_ACTUAL_MONTH = "actualMonth";
     public final static String FILTER_PERIOD = "period";
+    public final static String FILTER_NULL_DETAIL_STATUS = "nullDetailStatus";
+
+    private BigDecimal saleTotal;
 
     public Reward() {
         super(ENTITY_NAME);
@@ -52,7 +55,7 @@ public class Reward extends Domain {
         setWorkerId(reward.getWorkerId());
         setGroupSaleVolume(reward.getGroupSaleVolume());
         setGroupPaymentVolume(reward.getGroupPaymentVolume());
-        setRankId(reward.getRankId());
+        setRank(reward.getRank());
         setRewardStatus(RewardStatus.CHARGED);
         setTotal(reward.getTotal());
         setDate(Dates.currentDate());
@@ -102,8 +105,16 @@ public class Reward extends Domain {
         setNumber(TYPE, type);
     }
 
-    public void setRankId(Long rankId){
-        setNumber(RANK, rankId);
+    public void setRank(Long rank){
+        setNumber(RANK, rank);
+    }
+
+    public Long getDetailStatus() {
+        return getNumber(DETAIL);
+    }
+
+    public void setDetailStatus(Long detailStatus) {
+        setNumber(DETAIL, detailStatus);
     }
 
     public Long getSaleId() {
@@ -174,7 +185,7 @@ public class Reward extends Domain {
         setDecimal(AMOUNT, amount);
     }
 
-    public Long getRankId() {
+    public Long getRank() {
         return getNumber(RANK);
     }
 
@@ -188,20 +199,22 @@ public class Reward extends Domain {
         return this;
     }
 
-    public Long getManagerRankId() {
+    public Long getManagerRank() {
         return getNumber(MANAGER_RANK);
     }
 
-    public void setManagerRankId(Long managerRankId){
-        setNumber(MANAGER_RANK, managerRankId);
+    public void setManagerRank(Long managerRank){
+        setNumber(MANAGER_RANK, managerRank);
     }
 
     public Long getRewardStatus(){
         return getNumber(STATUS);
     }
 
-    public void setRewardStatus(Long rewardStatus){
+    public Reward setRewardStatus(Long rewardStatus){
         setNumber(STATUS, rewardStatus);
+
+        return this;
     }
 
     public void setBasePrice(BigDecimal basePrice){
@@ -260,5 +273,13 @@ public class Reward extends Domain {
 
     public BigDecimal getCrossRate() {
         return getDecimal(CROSS_RATE);
+    }
+
+    public BigDecimal getSaleTotal() {
+        return saleTotal;
+    }
+
+    public void setSaleTotal(BigDecimal saleTotal) {
+        this.saleTotal = saleTotal;
     }
 }

@@ -2,6 +2,7 @@ package ru.complitex.jedani.worker.entity;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static java.math.BigDecimal.ZERO;
@@ -10,10 +11,10 @@ import static java.math.BigDecimal.ZERO;
  * @author Anatoly A. Ivanov
  * 16.10.2019 11:00 AM
  */
-public class WorkerReward {
+public class RewardNode {
     private WorkerNode workerNode;
 
-    private List<WorkerReward> workerRewards = new ArrayList<>();
+    private List<RewardNode> rewardNodes = new ArrayList<>();
 
     private List<Sale> sales = new ArrayList<>();
 
@@ -23,7 +24,11 @@ public class WorkerReward {
 
     private BigDecimal yearPaymentVolume = ZERO;
 
+    private Date registrationDate;
+
     private Long registrationCount = 0L;
+
+    private Long status;
 
     private Long firstLevelCount = 0L;
 
@@ -49,18 +54,18 @@ public class WorkerReward {
 
     private List<Reward> rewards = new ArrayList<>();
 
-    public WorkerReward(WorkerNode workerNode) {
+    public RewardNode(WorkerNode workerNode) {
         this.workerNode = workerNode;
     }
 
-    public List<WorkerReward> getGroup() {
+    public List<RewardNode> getGroup() {
         return getGroup(this);
     }
 
-    public List<WorkerReward> getGroup(WorkerReward workerReward) {
-        List<WorkerReward> group = new ArrayList<>();
+    public List<RewardNode> getGroup(RewardNode workerReward) {
+        List<RewardNode> group = new ArrayList<>();
 
-        for (WorkerReward r : workerReward.getWorkerRewards()){
+        for (RewardNode r : workerReward.getRewardNodes()){
             if (!r.isManager()){
                 group.add(r);
 
@@ -71,10 +76,10 @@ public class WorkerReward {
         return group;
     }
 
-    public List<WorkerReward> getStructureManagers(WorkerReward r){
-        List<WorkerReward> managers = new ArrayList<>();
+    public List<RewardNode> getStructureManagers(RewardNode r){
+        List<RewardNode> managers = new ArrayList<>();
 
-        for (WorkerReward c : r.getWorkerRewards()){
+        for (RewardNode c : r.getRewardNodes()){
             if (c.isManager()){
                 managers.add(c);
             }
@@ -85,14 +90,14 @@ public class WorkerReward {
         return managers;
     }
 
-    public List<WorkerReward> getFirstStructureManagers() {
+    public List<RewardNode> getFirstStructureManagers() {
         return getFirstStructureManagers(this);
     }
 
-    public List<WorkerReward> getFirstStructureManagers(WorkerReward r) {
-        List<WorkerReward> managers = new ArrayList<>();
+    public List<RewardNode> getFirstStructureManagers(RewardNode r) {
+        List<RewardNode> managers = new ArrayList<>();
 
-        for (WorkerReward c : r.getWorkerRewards()){
+        for (RewardNode c : r.getRewardNodes()){
             if (c.isManager()){
                 managers.add(c);
             } else {
@@ -119,12 +124,12 @@ public class WorkerReward {
         this.workerNode = workerNode;
     }
 
-    public List<WorkerReward> getWorkerRewards() {
-        return workerRewards;
+    public List<RewardNode> getRewardNodes() {
+        return rewardNodes;
     }
 
-    public void setWorkerRewards(List<WorkerReward> workerRewards) {
-        this.workerRewards = workerRewards;
+    public void setRewardNodes(List<RewardNode> rewardNodes) {
+        this.rewardNodes = rewardNodes;
     }
 
     public List<Sale> getSales() {
@@ -207,12 +212,28 @@ public class WorkerReward {
         this.structurePaymentVolume = structurePaymentVolume;
     }
 
+    public Date getRegistrationDate() {
+        return registrationDate;
+    }
+
+    public void setRegistrationDate(Date registrationDate) {
+        this.registrationDate = registrationDate;
+    }
+
     public Long getRegistrationCount() {
         return registrationCount;
     }
 
     public void setRegistrationCount(Long registrationCount) {
         this.registrationCount = registrationCount;
+    }
+
+    public Long getStatus() {
+        return status;
+    }
+
+    public void setStatus(Long status) {
+        this.status = status;
     }
 
     public Long getGroupRegistrationCount() {
@@ -279,7 +300,7 @@ public class WorkerReward {
     public String toString() {
         return "WorkerReward{" +
                 "workerNode=" + workerNode +
-                ", workerRewards=" + workerRewards +
+                ", workerRewards=" + rewardNodes +
                 ", sales=" + sales +
                 ", saleVolume=" + saleVolume +
                 ", paymentVolume=" + paymentVolume +

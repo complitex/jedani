@@ -6,7 +6,7 @@ import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.request.handler.TextRequestHandler;
 import ru.complitex.common.util.Dates;
 import ru.complitex.jedani.worker.entity.Worker;
-import ru.complitex.jedani.worker.entity.WorkerReward;
+import ru.complitex.jedani.worker.entity.RewardNode;
 import ru.complitex.jedani.worker.security.JedaniRoles;
 import ru.complitex.jedani.worker.service.InviteService;
 import ru.complitex.jedani.worker.service.RewardService;
@@ -79,7 +79,7 @@ public class WorkerJsonPage extends WebPage {
                 json.add("email", worker.getEmail());
             }
 
-            WorkerReward workerReward = rewardService.getWorkerReward(worker);
+            RewardNode workerReward = rewardService.getWorkerReward(worker);
 
             json.add("sale_volume", workerReward != null ? workerReward.getSaleVolume(): ZERO);
             json.add("payment_volume", workerReward != null ? workerReward.getPaymentVolume() : ZERO);

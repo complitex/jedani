@@ -127,12 +127,6 @@ public class SaleService implements Serializable {
         return saleItemMapper.getSaleItems(FilterWrapper.of((SaleItem) new SaleItem().setParentId(saleId)));
     }
 
-    public BigDecimal getSaleVolume(List<Sale> sales){
-        return sales.stream()
-                .map(s -> s.getTotal() != null ? s.getTotal() : BigDecimal.ZERO)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
-
     public List<Sale> getSales(Long sellerWorkerId) {
         return saleMapper.getSales(FilterWrapper.of(new Sale().setSellerWorkerId(sellerWorkerId))
                 .put(Sale.FILTER_ACTUAL, true));

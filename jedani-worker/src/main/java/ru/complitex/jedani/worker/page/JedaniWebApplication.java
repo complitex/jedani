@@ -61,6 +61,7 @@ import ru.complitex.jedani.worker.page.ratio.RatioListPage;
 import ru.complitex.jedani.worker.page.resource.*;
 import ru.complitex.jedani.worker.page.reward.RewardListPage;
 import ru.complitex.jedani.worker.page.reward.RewardParameterListPage;
+import ru.complitex.jedani.worker.page.reward.RewardTestPage;
 import ru.complitex.jedani.worker.page.reward.RewardTreePage;
 import ru.complitex.jedani.worker.page.sale.SaleDecisionListPage;
 import ru.complitex.jedani.worker.page.sale.SaleListPage;
@@ -152,7 +153,8 @@ public class JedaniWebApplication extends WebApplication{
         mountPage("reward-types", RewardTypeListPage.class);
         mountPage("rewards", RewardListPage.class);
         mountPage("reward-parameters", RewardParameterListPage.class);
-        mountPage("rewards_tree", RewardTreePage.class);
+        mountPage("reward-tree", RewardTreePage.class);
+        mountPage("reward-test", RewardTestPage.class);
         mountPage("payments", PaymentListPage.class);
         mountPage("periods", PeriodListPage.class);
         mountPage("invite/${key}", InvitePage.class);

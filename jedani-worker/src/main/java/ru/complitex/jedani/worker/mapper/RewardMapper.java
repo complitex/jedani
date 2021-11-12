@@ -3,8 +3,10 @@ package ru.complitex.jedani.worker.mapper;
 import org.mybatis.cdi.Transactional;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.mybatis.BaseMapper;
+import ru.complitex.common.util.Maps;
 import ru.complitex.jedani.worker.entity.Reward;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -28,5 +30,10 @@ public class RewardMapper extends BaseMapper {
             sqlSession().delete("deleteRewardAttributesByDomainIds", ids);
             sqlSession().delete("deleteRewardsByIds", ids);
         }
+    }
+
+    public BigDecimal getRewardsPointSum(Long rewardTypeId, Long saleId, Long managerId, Long rewardStatusId) {
+        return sqlSession().selectOne("selectRewardsPointSum", Maps.of("rewardTypeId", rewardTypeId, "saleId", saleId,
+                "managerId", managerId, "rewardStatusId", rewardStatusId));
     }
 }

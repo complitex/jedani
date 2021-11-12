@@ -7,27 +7,27 @@ import java.util.function.BiConsumer;
  * @author Anatoly A. Ivanov
  * 25.10.2019 9:50 PM
  */
-public class WorkerRewardTree {
+public class RewardTree {
     private final Long treeDepth;
 
-    private final Map<Long, WorkerReward> idMap = new HashMap<>();
-    private final Map<Long, List<WorkerReward>> levelMap = new HashMap<>();
+    private final Map<Long, RewardNode> idMap = new HashMap<>();
+    private final Map<Long, List<RewardNode>> levelMap = new HashMap<>();
 
-    public WorkerRewardTree(Map<Long, List<WorkerNode>> workerNodeMap) {
+    public RewardTree(Map<Long, List<WorkerNode>> workerNodeMap) {
         treeDepth = workerNodeMap.keySet().stream().max(Comparator.naturalOrder()).orElse(-1L);
 
         for (long l = treeDepth; l > 0; l--){
-            List<WorkerReward> list = new ArrayList<>();
+            List<RewardNode> list = new ArrayList<>();
 
             workerNodeMap.get(l).forEach(n -> {
-                WorkerReward r = new WorkerReward(n);
+                RewardNode r = new RewardNode(n);
 
                 list.add(r);
 
                 idMap.put(n.getObjectId(), r);
 
                 r.getWorkerNode().getNodes()
-                        .forEach(c -> r.getWorkerRewards().add(idMap.get(c.getObjectId())));
+                        .forEach(c -> r.getRewardNodes().add(idMap.get(c.getObjectId())));
             });
 
             levelMap.put(l, list);
@@ -38,15 +38,15 @@ public class WorkerRewardTree {
         return treeDepth;
     }
 
-    public WorkerReward getWorkerReward(Long workerId){
+    public RewardNode getRewardNode(Long workerId){
         return idMap.get(workerId);
     }
 
-    public List<WorkerReward> getWorkerRewards(Long level){
+    public List<RewardNode> getRewardNodes(Long level){
         return levelMap.get(level);
     }
 
-    public void forEachLevel(BiConsumer<Long, List<WorkerReward>> action){
+    public void forEachLevel(BiConsumer<Long, List<RewardNode>> action){
         for (long l = treeDepth; l > 0 ; l--){
             action.accept(l, levelMap.get(l));
         }

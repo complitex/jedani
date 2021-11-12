@@ -79,7 +79,7 @@ public class WorkerNodeService implements Serializable {
         workerNode.getNodes().forEach(c -> validateWorkerNode(workerNode, c));
     }
 
-    public Map<Long, List<WorkerNode>> getWorkerNodeLevelMap(){
+    public Map<Long, List<WorkerNode>> getWorkerNodeMap() {
         List<WorkerNode> workerNodes = workerNodeMapper.getAllWorkerNodes();
 
         validateWorkerTree(getWorkerTree(workerNodes, 2L));

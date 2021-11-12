@@ -1144,11 +1144,11 @@ public class WorkerPage extends BasePage {
                                     .subtract(spentModel.getObject()) + symbol;
                         })));
 
-                        IModel<WorkerReward> rewardModel = LoadableDetachableModel.of(() -> {
-                                WorkerReward workerReward = rewardService.getWorkerRewardTreeCache(periodModel.getObject().getObjectId())
-                                        .getWorkerReward(worker.getObjectId());
+                        IModel<RewardNode> rewardModel = LoadableDetachableModel.of(() -> {
+                                RewardNode workerReward = rewardService.getRewardTreeCache(periodModel.getObject().getObjectId())
+                                        .getRewardNode(worker.getObjectId());
 
-                                return workerReward != null ? workerReward : new WorkerReward(new WorkerNode());
+                                return workerReward != null ? workerReward : new RewardNode(new WorkerNode());
                         });
 
                         finance.add(new Label("sale_volume", LoadableDetachableModel.of(() ->

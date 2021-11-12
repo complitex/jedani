@@ -11,7 +11,7 @@ import ru.complitex.common.util.Dates;
 import ru.complitex.domain.component.form.AbstractEditModal;
 import ru.complitex.jedani.worker.entity.Period;
 import ru.complitex.jedani.worker.mapper.PeriodMapper;
-import ru.complitex.jedani.worker.service.RewardService;
+import ru.complitex.jedani.worker.service.CompensationService;
 
 import javax.inject.Inject;
 
@@ -26,7 +26,7 @@ public class PeriodCalculateModal extends AbstractEditModal<Period> {
     private PeriodMapper periodMapper;
 
     @Inject
-    private RewardService rewardService;
+    private CompensationService compensationService;
 
     public PeriodCalculateModal(String markupId) {
         super(markupId);
@@ -51,7 +51,7 @@ public class PeriodCalculateModal extends AbstractEditModal<Period> {
     @Override
     protected void save(AjaxRequestTarget target) {
         try {
-            rewardService.calculateRewards();
+            compensationService.calculateRewards();
 
             getSession().success(getString("info_rewards_calculated"));
         } catch (Exception e) {

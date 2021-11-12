@@ -37,6 +37,10 @@
             left join last_name_attribute la on l.id = la.domain_id and la.entity_attribute_id = 1 and la.status = 1
             left join last_name_value lv on la.id = lv.attribute_id and lv.locale_id = 1
         </if>
+
+        <if test="map.nullDetailStatus != null">
+            left join reward_attribute ra_sd on ra_sd.domain_id = d.id and ra_sd.entity_attribute_id = 6 and ra_sd.status = 1
+        </if>
     </sql>
 
     <sql id="selectRewardsWhere">
@@ -62,6 +66,10 @@
                 or lv.text like concat('%', #{map.worker}, '%')
                 or mv.text like concat('%', #{map.worker}, '%')
                 or fv.text like concat('%', #{map.worker}, '%'))
+        </if>
+
+        <if test="map.nullDetailStatus != null">
+            and (ra_sd.number is null)
         </if>
     </sql>
 
@@ -125,4 +133,17 @@
         delete from reward_attribute
         where domain_id in <foreach collection="list" open="(" separator="," close=")" item="i">#{i}</foreach>
     </delete>
+
+    <select id="selectRewardsPointSum" parameterType="map" resultType="bigdecimal">
+        select sum(cast(ra_p.text as decimal)) from reward r
+            left join reward_attribute ra_st on r.id = ra_st.domain_id and ra_st.entity_attribute_id = 21 and ra_st.status = 1
+            left join reward_attribute ra_p on r.id = ra_p.domain_id and ra_p.entity_attribute_id = 3 and ra_p.status = 1
+            left join reward_attribute ra_t on r.id = ra_t.domain_id and ra_t.entity_attribute_id = 4 and ra_t.status = 1
+            left join reward_attribute ra_s on r.id = ra_s.domain_id and ra_s.entity_attribute_id = 7 and ra_s.status = 1
+            left join reward_attribute ra_m on r.id = ra_m.domain_id and ra_m.entity_attribute_id = 18 and ra_m.status = 1
+        where r.status = 1
+          and ra_t.number = #{rewardTypeId} and ra_s.number = #{saleId}
+          <if test="managerId != null"> and ra_m.number = #{and ra_m.number} </if>
+          and ra_st.number = #{rewardStatusId};
+    </select>
 </mapper>

@@ -1,20 +1,16 @@
 package ru.complitex.jedani.worker.page.reward;
 
-import de.agilecoders.wicket.core.markup.html.bootstrap.behavior.CssClassNameAppender;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.util.Dates;
-import ru.complitex.common.wicket.panel.SelectPanel;
 import ru.complitex.common.wicket.table.SelectFilter;
 import ru.complitex.common.wicket.table.Table;
 import ru.complitex.common.wicket.table.TextFilter;
@@ -26,7 +22,6 @@ import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.model.NumberAttributeModel;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.component.PeriodPanel;
-import ru.complitex.jedani.worker.component.TypeSelect;
 import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.mapper.PeriodMapper;
 import ru.complitex.jedani.worker.mapper.RewardMapper;
@@ -163,16 +158,16 @@ public class RewardPanel extends DomainListModalPanel<Reward> {
 
                     String detail = "";
 
-                    if (reward.getRankId() != null) {
-                        detail += getString("rank") + ": " + (domainService.getTextValue(Rank.ENTITY_NAME, reward.getRankId(), Rank.NAME)).toUpperCase() + "\n";
+                    if (reward.getRank() != null) {
+                        detail += getString("rank") + ": " + (domainService.getTextValue(Rank.ENTITY_NAME, reward.getRank(), Rank.NAME)).toUpperCase() + "\n";
                     }
 
                     if (reward.getManagerId() != null) {
                         detail += getString("manager") + ": " + workerService.getSimpleWorkerLabel(reward.getManagerId()) + "\n";
                     }
 
-                    if (reward.getManagerRankId() != null) {
-                        detail += getString("manager_rank") + ": " + (domainService.getTextValue(Rank.ENTITY_NAME, reward.getManagerRankId(), Rank.NAME)).toUpperCase() + "\n";
+                    if (reward.getManagerRank() != null) {
+                        detail += getString("manager_rank") + ": " + (domainService.getTextValue(Rank.ENTITY_NAME, reward.getManagerRank(), Rank.NAME)).toUpperCase() + "\n";
                     }
 
                     if (reward.getSaleVolume() != null && reward.getSaleVolume().compareTo(BigDecimal.ZERO) > 0) {

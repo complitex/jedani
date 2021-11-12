@@ -4,6 +4,7 @@ import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.mybatis.BaseMapper;
 import ru.complitex.jedani.worker.entity.Payment;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -17,5 +18,9 @@ public class PaymentMapper extends BaseMapper {
 
     public Long getPaymentsCount(FilterWrapper<Payment> filterWrapper){
         return sqlSession().selectOne("selectPaymentsCount", filterWrapper);
+    }
+
+    public BigDecimal getPaymentsPointSum(Long saleId) {
+        return sqlSession().selectOne("selectPaymentsPointSum", saleId);
     }
 }

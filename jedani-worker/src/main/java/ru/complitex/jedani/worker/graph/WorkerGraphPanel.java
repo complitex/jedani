@@ -64,7 +64,7 @@ public class WorkerGraphPanel extends Panel {
         return lastName.substring(0, Math.min(6, lastName.length()));
     }
 
-    private String getRewardLabel(WorkerReward workerReward){
+    private String getRewardLabel(RewardNode workerReward){
         String rewards = "";
 
         if (workerReward == null) {
@@ -131,26 +131,26 @@ public class WorkerGraphPanel extends Panel {
                 .setStatus(FilterWrapper.STATUS_ACTIVE_AND_ARCHIVE)
                 .put("levelDepth", levelDepth != 0 ? levelDepth : null)));
 
-        WorkerRewardTree rewards = (levelDepth == 0)
-                ? rewardService.getWorkerRewardTree(periodMapper.getActualPeriod())
+        RewardTree rewards = (levelDepth == 0)
+                ? rewardService.getRewardTree(periodMapper.getActualPeriod())
                 : null;
 
         elements =  " {data: {id: '" + worker.getObjectId() + "', " +
                 "label: '" + worker.getText(Worker.J_ID) + "\\n" + getLabel(worker) +
-                (rewards != null ? "\\n" + getRewardLabel(rewards.getWorkerReward(worker.getObjectId())) : "") + "'}, " +
+                (rewards != null ? "\\n" + getRewardLabel(rewards.getRewardNode(worker.getObjectId())) : "") + "'}, " +
                 getStyle(worker, 0) + "}";
 
         if (!workers.isEmpty()) {
             elements += "," + workers.stream()
-                    .filter(w -> rewards == null || !getRewardLabel(rewards.getWorkerReward(w.getObjectId())).isEmpty())
+                    .filter(w -> rewards == null || !getRewardLabel(rewards.getRewardNode(w.getObjectId())).isEmpty())
                     .map(w -> " {data: {id: '" + w.getObjectId() + "', " +
                             "label: '" + w.getText(Worker.J_ID) + "\\n" + getLabel(w) +
-                            (rewards != null ? "\\n" + getRewardLabel(rewards.getWorkerReward(w.getObjectId())) : "") + "'}, " +
+                            (rewards != null ? "\\n" + getRewardLabel(rewards.getRewardNode(w.getObjectId())) : "") + "'}, " +
                             getStyle(w, worker.getLevel().intValue()) + "}")
                     .collect(Collectors.joining(","));
 
             elements += "," + workers.stream()
-                    .filter(w -> rewards == null || !getRewardLabel(rewards.getWorkerReward(w.getObjectId())).isEmpty())
+                    .filter(w -> rewards == null || !getRewardLabel(rewards.getRewardNode(w.getObjectId())).isEmpty())
                     .map(w -> " {data: {id: 'e" + w.getObjectId() + "', " +
                             "source: '" + w.getManagerId() + "', " +
                             "target: '" + w.getObjectId() + "'}}")
