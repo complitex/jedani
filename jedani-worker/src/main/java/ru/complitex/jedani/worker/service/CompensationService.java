@@ -485,7 +485,11 @@ public class CompensationService {
 
     private void save(Reward reward) {
         if (test) {
-            rewards.add(reward);
+            Reward r = new Reward();
+
+            r.copy(reward, true);
+
+            rewards.add(r);
         } else {
             reward.setObjectId(null);
             reward.setStartDate(Dates.currentDate());
@@ -538,7 +542,7 @@ public class CompensationService {
 
     @Transactional
     public void calculateRewards() {
-        Period period = periodMapper.getActualPeriod();
+        Period period = periodMapper.getPeriod(17L);
 
         rewardMapper.deleteRewards(period.getObjectId());
 

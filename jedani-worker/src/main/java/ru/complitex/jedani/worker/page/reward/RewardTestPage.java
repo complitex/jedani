@@ -56,5 +56,52 @@ public class RewardTestPage extends BasePage {
 
         add(new Label("test", rewardService.getRewards().size() + " " + rewardServiceSum.toPlainString() + " " + rewardServiceTime + " = " +
                 compensationService.getRewards().size() + " " + compensationServiceSum.toPlainString() + " " + compensationServiceTime));
+
+        StringBuilder rewards = new StringBuilder();
+
+        rewardService.getRewards().forEach(reward -> {
+            if (compensationService.getRewards().stream()
+                    .noneMatch(r -> Objects.equals(reward.getWorkerId(), r.getWorkerId()) &&
+                            Objects.equals(reward.getPoint(), r.getPoint()) &&
+                            Objects.equals(reward.getType(), r.getType()) &&
+                            Objects.equals(reward.getSaleId(), r.getSaleId()) &&
+                            Objects.equals(reward.getRewardStatus(), r.getRewardStatus()) &&
+                            Objects.equals(reward.getPeriodId(), r.getPeriodId()))) {
+                rewards.append("workerId: ").append(reward.getWorkerId())
+                        .append(", point: ").append(reward.getPoint())
+                        .append(", type: ").append(reward.getType())
+                        .append(", rank: ").append(reward.getRank())
+                        .append(", saleId: ").append(reward.getSaleId())
+                        .append(", status: ").append(reward.getRewardStatus())
+                        .append(", periodId: ").append(reward.getPeriodId())
+                        .append("</br>");
+            }
+        });
+
+        add(new Label("rewards", rewards.toString()).setEscapeModelStrings(false));
+
+        StringBuilder compensations = new StringBuilder();
+
+        compensationService.getRewards().forEach(reward -> {
+            if (rewardService.getRewards().stream()
+                    .noneMatch(r -> Objects.equals(reward.getWorkerId(), r.getWorkerId()) &&
+                            Objects.equals(reward.getPoint(), r.getPoint()) &&
+                            Objects.equals(reward.getType(), r.getType()) &&
+                            Objects.equals(reward.getSaleId(), r.getSaleId()) &&
+                            Objects.equals(reward.getRewardStatus(), r.getRewardStatus()) &&
+                            Objects.equals(reward.getPeriodId(), r.getPeriodId()))) {
+                compensations.append("workerId: ").append(reward.getWorkerId())
+                        .append(",  point: ").append(reward.getPoint())
+                        .append(", type: ").append(reward.getType())
+                        .append(", rank: ").append(reward.getRank())
+                        .append(", saleId: ").append(reward.getSaleId())
+                        .append(", status: ").append(reward.getRewardStatus())
+                        .append(", periodId: ").append(reward.getPeriodId())
+                        .append("</br>");
+            }
+        });
+
+        add(new Label("compensations", compensations.toString()).setEscapeModelStrings(false));
     }
 }
+

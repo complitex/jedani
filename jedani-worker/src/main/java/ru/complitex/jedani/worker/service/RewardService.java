@@ -1192,7 +1192,7 @@ public class RewardService implements Serializable {
     @Transactional(rollbackFor = RewardException.class)
     public void calculateRewards() throws RewardException {
         try {
-            Period period = periodMapper.getActualPeriod();
+            Period period = periodMapper.getPeriod(17L);
 
             rewardMapper.deleteRewards(period.getObjectId());
 
