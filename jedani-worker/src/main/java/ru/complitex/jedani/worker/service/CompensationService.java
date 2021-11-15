@@ -569,11 +569,11 @@ public class CompensationService {
                                 calculateReward(getManagerPremiumReward(rewardNode, sale, saleItem, period));
                             }
                         }
-
-                        calculateReward(getRankReward(rewardNode, period));
-
-                        calculateReward(getPersonalVolumeReward(rewardNode, period));
                     });
+
+            calculateReward(getRankReward(rewardNode, period));
+
+            calculateReward(getPersonalVolumeReward(rewardNode, period));
 
             getGroupVolumeRewards(rewardNode, period).forEach(this::calculateReward);
 
