@@ -136,38 +136,42 @@ public class CompensationService {
     }
 
     private Reward getReward(Long typeId, Long workerId, BigDecimal point, Sale sale, SaleItem saleItem, Period period, Long countryId) {
-        Reward reward = new Reward();
+        if (workerId != null) {
+            Reward reward = new Reward();
 
-        reward.setType(typeId);
-        reward.setWorkerId(workerId);
+            reward.setType(typeId);
+            reward.setWorkerId(workerId);
 
-        if (sale != null) {
-            reward.setSaleId(sale.getObjectId());
-            reward.setSaleTotal(sale.getTotal());
+            if (sale != null) {
+                reward.setSaleId(sale.getObjectId());
+                reward.setSaleTotal(sale.getTotal());
 
-            if (saleItem != null) {
-                reward.setBasePrice(saleItem.getBasePrice());
-                reward.setPrice(getPrice(sale, saleItem));
-                reward.setRate(getRate(sale, saleItem));
-                reward.setCrossRate(getCrossRate(sale));
-                reward.setDiscount(getDiscount(sale, saleItem));
+                if (saleItem != null) {
+                    reward.setBasePrice(saleItem.getBasePrice());
+                    reward.setPrice(getPrice(sale, saleItem));
+                    reward.setRate(getRate(sale, saleItem));
+                    reward.setCrossRate(getCrossRate(sale));
+                    reward.setDiscount(getDiscount(sale, saleItem));
+                }
             }
+
+            if (countryId != null) {
+                reward.setRate(getPaymentRate(workerId, period));
+            }
+
+            reward.setPoint(point);
+            reward.setTotal(point);
+
+            updateAmount(reward);
+
+            reward.setDate(Dates.currentDate());
+            reward.setMonth(period.getOperatingMonth());
+            reward.setPeriodId(period.getObjectId());
+
+            return reward;
         }
 
-        if (countryId != null) {
-            reward.setRate(getPaymentRate(workerId, period));
-        }
-
-        reward.setPoint(point);
-        reward.setTotal(point);
-
-        updateAmount(reward);
-
-        reward.setDate(Dates.currentDate());
-        reward.setMonth(period.getOperatingMonth());
-        reward.setPeriodId(period.getObjectId());
-
-        return reward;
+        return null;
     }
 
     private Reward getReward(Long typeId, Long workerId, BigDecimal point, Sale sale, SaleItem saleItem, Period period) {
