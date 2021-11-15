@@ -542,7 +542,7 @@ public class CompensationService {
 
     @Transactional
     public void calculateRewards() {
-        Period period = periodMapper.getPeriod(17L);
+        Period period = periodMapper.getActualPeriod();
 
         rewardMapper.deleteRewards(period.getObjectId());
 
