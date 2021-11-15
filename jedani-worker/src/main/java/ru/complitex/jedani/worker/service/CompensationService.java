@@ -97,7 +97,7 @@ public class CompensationService {
                 .setFilter(Ratio.BEGIN, Attribute.FILTER_BEFORE_OR_EQUAL_DATE)
                 .setFilter(Ratio.END, Attribute.FILTER_AFTER_DATE)));
 
-        return !ratios.isEmpty() ? ratios.get(0).getValue() : null;
+        return !ratios.isEmpty() ? ratios.get(0).getValue() : ZERO;
     }
 
     private BigDecimal getDiscount(Sale sale, SaleItem saleItem) {
@@ -136,42 +136,38 @@ public class CompensationService {
     }
 
     private Reward getReward(Long typeId, Long workerId, BigDecimal point, Sale sale, SaleItem saleItem, Period period, Long countryId) {
-        if (workerId != null) {
-            Reward reward = new Reward();
+        Reward reward = new Reward();
 
-            reward.setType(typeId);
-            reward.setWorkerId(workerId);
+        reward.setType(typeId);
+        reward.setWorkerId(workerId);
 
-            if (sale != null) {
-                reward.setSaleId(sale.getObjectId());
-                reward.setSaleTotal(sale.getTotal());
+        if (sale != null) {
+            reward.setSaleId(sale.getObjectId());
+            reward.setSaleTotal(sale.getTotal());
 
-                if (saleItem != null) {
-                    reward.setBasePrice(saleItem.getBasePrice());
-                    reward.setPrice(getPrice(sale, saleItem));
-                    reward.setRate(getRate(sale, saleItem));
-                    reward.setCrossRate(getCrossRate(sale));
-                    reward.setDiscount(getDiscount(sale, saleItem));
-                }
+            if (saleItem != null) {
+                reward.setBasePrice(saleItem.getBasePrice());
+                reward.setPrice(getPrice(sale, saleItem));
+                reward.setRate(getRate(sale, saleItem));
+                reward.setCrossRate(getCrossRate(sale));
+                reward.setDiscount(getDiscount(sale, saleItem));
             }
-
-            if (countryId != null) {
-                reward.setRate(getPaymentRate(workerId, period));
-            }
-
-            reward.setPoint(point);
-            reward.setTotal(point);
-
-            updateAmount(reward);
-
-            reward.setDate(Dates.currentDate());
-            reward.setMonth(period.getOperatingMonth());
-            reward.setPeriodId(period.getObjectId());
-
-            return reward;
         }
 
-        return null;
+        if (countryId != null) {
+            reward.setRate(getPaymentRate(workerId, period));
+        }
+
+        reward.setPoint(point);
+        reward.setTotal(point);
+
+        updateAmount(reward);
+
+        reward.setDate(Dates.currentDate());
+        reward.setMonth(period.getOperatingMonth());
+        reward.setPeriodId(period.getObjectId());
+
+        return reward;
     }
 
     private Reward getReward(Long typeId, Long workerId, BigDecimal point, Sale sale, SaleItem saleItem, Period period) {
@@ -187,16 +183,20 @@ public class CompensationService {
     }
 
     private Reward getManagerBonusReward(Sale sale, SaleItem saleItem, Period period) {
-        if (sale.getManagerBonusRewardPoint().compareTo(ZERO) > 0) {
-            return getReward(MANAGER_BONUS, sale.getManagerBonusWorkerId(), sale.getManagerBonusRewardPoint(), sale, saleItem, period);
+        if (sale.getManagerBonusRewardPoint() != null && sale.getManagerBonusRewardPoint().compareTo(ZERO) > 0 && sale.getManagerBonusWorkerId() != null) {
+            if (getRewardsPointSum(MANAGER_BONUS, sale.getObjectId(), sale.getManagerBonusWorkerId(), CHARGED).compareTo(ZERO) == 0) {
+                return getReward(MANAGER_BONUS, sale.getManagerBonusWorkerId(), sale.getManagerBonusRewardPoint(), sale, saleItem, period);
+            }
         }
 
         return null;
     }
 
     private Reward getCulinaryReward(Sale sale, SaleItem saleItem, Period period) {
-        if (sale.getCulinaryRewardPoint().compareTo(ZERO) > 0) {
-            return getReward(CULINARY_WORKSHOP, sale.getCulinaryWorkerId(), sale.getCulinaryRewardPoint(), sale, saleItem, period);
+        if (sale.getCulinaryRewardPoint() != null && sale.getCulinaryRewardPoint().compareTo(ZERO) > 0 && sale.getCulinaryWorkerId() != null) {
+            if (getRewardsPointSum(CULINARY_WORKSHOP, sale.getObjectId(), sale.getManagerBonusWorkerId(), CHARGED).compareTo(ZERO) == 0) {
+                return getReward(CULINARY_WORKSHOP, sale.getCulinaryWorkerId(), sale.getCulinaryRewardPoint(), sale, saleItem, period);
+            }
         }
 
         return null;
@@ -549,28 +549,29 @@ public class CompensationService {
         RewardTree rewardTree = new RewardTree(workerNodeService.getWorkerNodeMap());
 
         rewardTreeService.updateRewardTree(rewardTree, period, rewardNode -> {
-            rewardNode.getSales().stream()
-                    .filter(sale -> Objects.equals(sale.getPeriodId(), period.getObjectId()))
+            rewardNode.getSales()
                     .forEach(sale -> {
                         List<SaleItem> saleItems = saleService.getSaleItems(sale.getObjectId());
 
                         if (!saleItems.isEmpty()) {
                             SaleItem saleItem = saleItems.get(0);
 
-                            Reward personalMycookReward = getPersonalMycookReward(sale, saleItem, period);
+                            if (Objects.equals(sale.getPeriodId(), period.getObjectId())) {
+                                Reward personalMycookReward = getPersonalMycookReward(sale, saleItem, period);
 
-                            calculateReward(personalMycookReward);
+                                calculateReward(personalMycookReward);
 
-                            if (sale.isFeeWithdraw()) {
-                                withdrawReward(personalMycookReward);
-                            }
+                                if (sale.isFeeWithdraw()) {
+                                    withdrawReward(personalMycookReward);
+                                }
 
-                            calculateReward(getManagerBonusReward(sale, saleItem, period));
+                                if (!sale.isSasRequest()) {
+                                    calculateReward(getManagerPremiumReward(rewardNode, sale, saleItem, period));
+                                }
+                            } else {
+                                calculateReward(getManagerBonusReward(sale, saleItem, period));
 
-                            calculateReward(getCulinaryReward(sale, saleItem, period));
-
-                            if (!sale.isSasRequest()) {
-                                calculateReward(getManagerPremiumReward(rewardNode, sale, saleItem, period));
+                                calculateReward(getCulinaryReward(sale, saleItem, period));
                             }
                         }
                     });
