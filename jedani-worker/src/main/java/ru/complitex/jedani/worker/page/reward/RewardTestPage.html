@@ -1,9 +1,21 @@
 <wicket:extend xmlns:wicket="http://wicket.apache.org">
     <div wicket:id="test"></div>
     <br/>
-    <span>rewards</span>
-    <div wicket:id="rewards"></div>
-    <br/>
-    <span>compensations</span>
-    <div wicket:id="compensations"></div>
+
+    <table>
+        <thead>
+        <tr>
+            <th>rewards</th>
+            <th>compensations</th>
+            <th>rewards2</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr style="vertical-align: top">
+            <td wicket:id="rewards"></td>
+            <td wicket:id="compensations"></td>
+            <td wicket:id="rewards2"></td>
+        </tr>
+        </tbody>
+    </table>
 </wicket:extend>

@@ -27,9 +27,6 @@ public class RewardTreeService {
     private PaymentService paymentService;
 
     @Inject
-    private WorkerNodeService workerNodeService;
-
-    @Inject
     private CacheService cacheService;
 
     private BigDecimal getParameter(Long rewardParameterId) {
@@ -81,14 +78,13 @@ public class RewardTreeService {
         rewardNode.setGroupPaymentVolume(rewardNode.getGroup().stream()
                 .reduce(ZERO, (v, r) -> v.add(r.getPaymentVolume()), BigDecimal::add));
 
-        rewardNode.setStructurePaymentVolume(rewardNode.getRewardNodes().stream()
-                .reduce(rewardNode.getPaymentVolume(), (v, r) -> v.add(r.getStructurePaymentVolume()), BigDecimal::add));
-
-        rewardNode.getGroup().forEach(r ->
-                rewardNode.getGroupSales().addAll(r.getSales()));
+        rewardNode.getGroup().forEach(r -> rewardNode.getGroupSales().addAll(r.getSales()));
 
         rewardNode.setGroupSaleVolume(rewardNode.getGroup().stream()
                 .reduce(ZERO, (v, r) -> v.add(r.getSaleVolume()), BigDecimal::add));
+
+        rewardNode.setStructurePaymentVolume(rewardNode.getRewardNodes().stream()
+                .reduce(rewardNode.getPaymentVolume(), (v, r) -> v.add(r.getStructurePaymentVolume()), BigDecimal::add));
 
         rewardNode.getStructureSales().addAll(rewardNode.getSales());
 
@@ -100,7 +96,7 @@ public class RewardTreeService {
 
         rewardNode.setRegistrationDate(domainService.getDate(Worker.ENTITY_NAME, rewardNode.getWorkerId(), Worker.REGISTRATION_DATE));
 
-        rewardNode.setStatus(domainService.getNumber(Worker.ENTITY_NAME, rewardNode.getWorkerId(), Worker.STATUS));
+        rewardNode.setWorkerStatus(domainService.getNumber(Worker.ENTITY_NAME, rewardNode.getWorkerId(), Worker.STATUS));
 
         rewardNode.setPk(Dates.isLessYear(period.getOperatingMonth(), rewardNode.getRegistrationDate()) ||
                 rewardNode.getYearPaymentVolume().compareTo(BigDecimal.valueOf(200)) >= 0);
@@ -114,19 +110,19 @@ public class RewardTreeService {
         rewardNode.setFirstLevelPersonalCount(rewardNode.getRewardNodes().stream()
                 .filter(r -> r.getRegistrationDate() != null &&
                         r.getRegistrationDate().before(Dates.nextMonth(period.getOperatingMonth())) &&
-                        !Objects.equals(r.getStatus(), WorkerStatus.MANAGER_CHANGED) &&
+                        !Objects.equals(r.getWorkerStatus(), WorkerStatus.MANAGER_CHANGED) &&
                         r.isPk())
                 .count());
 
         rewardNode.setRegistrationCount(rewardNode.getRewardNodes().stream()
                 .reduce(0L, (v, r) -> v + (r.getRegistrationDate() != null &&
                         Dates.isSameMonth(r.getRegistrationDate(), period.getOperatingMonth()) &&
-                        !Objects.equals(r.getStatus(), WorkerStatus.MANAGER_CHANGED) ? 1L : 0L), Long::sum));
+                        !Objects.equals(r.getWorkerStatus(), WorkerStatus.MANAGER_CHANGED) ? 1L : 0L), Long::sum));
 
         rewardNode.setGroupRegistrationCount(rewardNode.getGroup().stream()
                 .reduce(0L, (v, r) -> v + (r.getRegistrationDate() != null &&
                         Dates.isSameMonth(r.getRegistrationDate(), period.getOperatingMonth()) &&
-                        !Objects.equals(r.getStatus(), WorkerStatus.MANAGER_CHANGED) ? 1 : 0), Long::sum));
+                        !Objects.equals(r.getWorkerStatus(), WorkerStatus.MANAGER_CHANGED) ? 1 : 0), Long::sum));
 
         if (rewardNode.getFirstLevelPersonalCount() >= 4 &&
                 rewardNode.getGroupRegistrationCount() >= 2 &&

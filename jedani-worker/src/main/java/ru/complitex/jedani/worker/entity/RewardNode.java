@@ -28,7 +28,7 @@ public class RewardNode {
 
     private Long registrationCount = 0L;
 
-    private Long status;
+    private Long workerStatus;
 
     private Long firstLevelCount = 0L;
 
@@ -228,12 +228,12 @@ public class RewardNode {
         this.registrationCount = registrationCount;
     }
 
-    public Long getStatus() {
-        return status;
+    public Long getWorkerStatus() {
+        return workerStatus;
     }
 
-    public void setStatus(Long status) {
-        this.status = status;
+    public void setWorkerStatus(Long workerStatus) {
+        this.workerStatus = workerStatus;
     }
 
     public Long getGroupRegistrationCount() {
