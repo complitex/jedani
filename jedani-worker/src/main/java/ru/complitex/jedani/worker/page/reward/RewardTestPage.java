@@ -33,14 +33,12 @@ public class RewardTestPage extends BasePage {
     private CompensationService compensationService;
 
     public RewardTestPage() {
-        rewardService.setTest(true);
-
         long rewardServiceTime = System.currentTimeMillis();
 
         try {
-            rewardService.calculateRewards();
+            rewardService.testRewards();
         } catch (RewardException e) {
-            throw new RuntimeException();
+            throw new RuntimeException(e);
         }
 
         rewardServiceTime = System.currentTimeMillis() - rewardServiceTime;
@@ -51,14 +49,12 @@ public class RewardTestPage extends BasePage {
 
         compensationServiceTime = System.currentTimeMillis() - compensationServiceTime;
 
-        rewardService2.setTest(true);
-
         long rewardServiceTime2 = System.currentTimeMillis();
 
         try {
-            rewardService2.calculateRewards();
+            rewardService2.testRewards();
         } catch (RewardException e) {
-            throw new RuntimeException();
+            throw new RuntimeException(e);
         }
 
         rewardServiceTime2 = System.currentTimeMillis() - rewardServiceTime2;
@@ -86,7 +82,7 @@ public class RewardTestPage extends BasePage {
                 .sorted(Comparator.comparing(Reward::getWorkerId)).collect(Collectors.toList())))
                 .setEscapeModelStrings(false));
         add(new Label("c", getRewards(compensationService.getRewards().stream()
-                .sorted(Comparator.comparing(Reward::getWorkerId)).collect(Collectors.toList())))
+                .sorted(Comparator.comparing(reward -> Objects.requireNonNullElse(reward.getWorkerId(), -1L))).collect(Collectors.toList())))
                 .setEscapeModelStrings(false));
         add(new Label("r2", getRewards(rewardService2.getRewards().stream()
                 .sorted(Comparator.comparing(Reward::getWorkerId)).collect(Collectors.toList())))

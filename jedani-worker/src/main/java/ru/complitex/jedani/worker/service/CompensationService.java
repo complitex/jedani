@@ -54,6 +54,9 @@ public class CompensationService {
     private PaymentMapper paymentMapper;
 
     @Inject
+    private PaymentService paymentService;
+
+    @Inject
     private CacheService cacheService;
 
     @Inject
@@ -194,7 +197,7 @@ public class CompensationService {
 
     private Reward getCulinaryReward(Sale sale, SaleItem saleItem, Period period) {
         if (sale.getCulinaryRewardPoint() != null && sale.getCulinaryRewardPoint().compareTo(ZERO) > 0 && sale.getCulinaryWorkerId() != null) {
-            if (getRewardsPointSum(CULINARY_WORKSHOP, sale.getObjectId(), sale.getManagerBonusWorkerId(), CHARGED).compareTo(ZERO) == 0) {
+            if (getRewardsPointSum(CULINARY_WORKSHOP, sale.getObjectId(), sale.getCulinaryWorkerId(), CHARGED).compareTo(ZERO) == 0) {
                 return getReward(CULINARY_WORKSHOP, sale.getCulinaryWorkerId(), sale.getCulinaryRewardPoint(), sale, saleItem, period);
             }
         }
@@ -452,7 +455,7 @@ public class CompensationService {
             BigDecimal saleTotal = reward.getSaleTotal();
 
             if (saleTotal == null) {
-                domainService.getDecimal(Sale.ENTITY_NAME, reward.getSaleId(), Sale.TOTAL);
+                saleTotal = domainService.getDecimal(Sale.ENTITY_NAME, reward.getSaleId(), Sale.TOTAL);
             }
 
             if (saleTotal != null && saleTotal.compareTo(ZERO) > 0) {
@@ -536,8 +539,16 @@ public class CompensationService {
     }
 
     private List<Reward> getEstimatedRewards() {
-        return rewardMapper.getRewards(FilterWrapper.of(new Reward().setRewardStatus(ESTIMATED))
-                .put(Reward.FILTER_NULL_DETAIL_STATUS, true));
+        return rewardMapper.getRewards(FilterWrapper.of(new Reward().setRewardStatus(ESTIMATED)));
+    }
+
+    private boolean isPaidSalePeriod(Sale sale) {
+        return Objects.equals(sale.getSaleStatus(), SaleStatus.PAID) &&
+                paymentService.getPaymentsBySaleId(sale.getObjectId()).stream()
+                        .map(payment -> periodMapper.getPeriod(payment.getPeriodId()))
+                        .max(Comparator.comparing(Period::getOperatingMonth))
+                        .map(period -> period.getCloseTimestamp() != null)
+                        .orElse(false);
     }
 
     @Transactional
@@ -553,7 +564,8 @@ public class CompensationService {
         RewardTree rewardTree = new RewardTree(workerNodeService.getWorkerNodeMap());
 
         rewardTreeService.updateRewardTree(rewardTree, period, rewardNode -> {
-            rewardNode.getSales()
+            rewardNode.getSales().stream()
+                    .filter(this::isPaidSalePeriod)
                     .forEach(sale -> {
                         List<SaleItem> saleItems = saleService.getSaleItems(sale.getObjectId());
 
@@ -572,6 +584,10 @@ public class CompensationService {
                                 if (!sale.isSasRequest()) {
                                     calculateReward(getManagerPremiumReward(rewardNode, sale, saleItem, period));
                                 }
+
+                                calculateReward(getManagerBonusReward(sale, saleItem, period));
+
+                                calculateReward(getCulinaryReward(sale, saleItem, period));
                             } else {
                                 calculateReward(getManagerBonusReward(sale, saleItem, period));
 

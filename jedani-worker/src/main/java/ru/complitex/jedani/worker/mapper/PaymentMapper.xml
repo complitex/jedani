@@ -71,7 +71,7 @@
     </select>
 
     <select id="selectPaymentsPointSum" parameterType="long" resultType="bigdecimal">
-        select sum(cast(pa_p.text as decimal)) from payment p
+        select sum(cast(pa_p.text as decimal(10, 5))) from payment p
             left join payment_attribute pa_s on p.id = pa_s.domain_id and pa_s.entity_attribute_id = 9 and pa_s.status = 1
             left join payment_attribute pa_p on p.id = pa_p.domain_id and pa_p.entity_attribute_id = 7 and pa_p.status = 1
         where p.status = 1 and pa_s.number = #{saleId}

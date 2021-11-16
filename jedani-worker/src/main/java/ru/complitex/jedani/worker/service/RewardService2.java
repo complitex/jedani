@@ -731,17 +731,6 @@ public class RewardService2 implements Serializable {
         }
     }
 
-    public void calculateCulinaryReward(Sale sale) {
-        Period period = periodMapper.getActualPeriod();
-
-        getRewardsBySaleId(sale.getObjectId(), RewardType.CULINARY_WORKSHOP).stream()
-                .filter(r -> Objects.equals(r.getPeriodId(), period.getObjectId()))
-                .forEach(r -> domainService.delete(r));
-
-        calculateCulinaryReward(sale, period, RewardStatus.ESTIMATED);
-        calculateCulinaryReward(sale, period, RewardStatus.CHARGED);
-    }
-
     private void calculateManagerReward(Sale sale, RewardNode rewardNode, Period period, Long rewardStatus) {
         if (Objects.equals(sale.getPeriodId(), period.getObjectId())) {
             BigDecimal total = calcManagerPoint(sale, rewardNode.getRank());
@@ -786,7 +775,7 @@ public class RewardService2 implements Serializable {
                     .findFirst().orElse(null);
 
             if (r != null) {
-                BigDecimal point = calculateRewardPoint(sale, RewardType.GROUP_VOLUME, r.getTotal());
+                BigDecimal point = calculateRewardPoint(sale, RewardType.MANAGER_PREMIUM, r.getTotal());
 
                 if (point.compareTo(ZERO) != 0) {
                     Reward reward = new Reward(r, period);
@@ -1193,7 +1182,7 @@ public class RewardService2 implements Serializable {
             RewardTree tree = getRewardTree(period);
 
             saleService.getActiveSales().stream()
-                    .filter(sale -> !isPaidSalePeriod(sale))
+                    .filter(this::isPaidSalePeriod)
                     .forEach(sale -> {
                         calculateSaleReward(sale, saleService.getSaleItems(sale.getObjectId()), period, RewardStatus.ESTIMATED);
                         calculateSaleReward(sale, saleService.getSaleItems(sale.getObjectId()), period, RewardStatus.CHARGED);
@@ -1263,12 +1252,12 @@ public class RewardService2 implements Serializable {
         }
     }
 
-    public boolean isTest() {
-        return test;
-    }
+    public void testRewards() throws RewardException {
+        test = true;
 
-    public void setTest(boolean test) {
-        this.test = test;
+        calculateRewards();
+
+        test = false;
     }
 
     public List<Reward> getRewards() {

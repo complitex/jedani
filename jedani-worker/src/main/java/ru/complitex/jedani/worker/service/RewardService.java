@@ -1209,7 +1209,7 @@ public class RewardService implements Serializable {
             RewardTree tree = getRewardTree(period);
 
             saleService.getActiveSales().stream()
-                    .filter(sale -> !isPaidSalePeriod(sale))
+                    .filter(this::isPaidSalePeriod)
                     .forEach(sale -> {
                         calculateSaleReward(sale, saleService.getSaleItems(sale.getObjectId()), period, RewardStatus.ESTIMATED);
                         calculateSaleReward(sale, saleService.getSaleItems(sale.getObjectId()), period, RewardStatus.CHARGED);
@@ -1279,12 +1279,12 @@ public class RewardService implements Serializable {
         }
     }
 
-    public boolean isTest() {
-        return test;
-    }
+    public void testRewards() throws RewardException {
+        test = true;
 
-    public void setTest(boolean test) {
-        this.test = test;
+        calculateRewards();
+
+        test = false;
     }
 
     public List<Reward> getRewards() {

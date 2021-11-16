@@ -135,7 +135,7 @@
     </delete>
 
     <select id="selectRewardsPointSum" parameterType="map" resultType="bigdecimal">
-        select sum(cast(ra_p.text as decimal)) from reward r
+        select sum(cast(ra_p.text as decimal(10, 5))) from reward r
             left join reward_attribute ra_st on r.id = ra_st.domain_id and ra_st.entity_attribute_id = 21 and ra_st.status = 1
             left join reward_attribute ra_p on r.id = ra_p.domain_id and ra_p.entity_attribute_id = 3 and ra_p.status = 1
             left join reward_attribute ra_t on r.id = ra_t.domain_id and ra_t.entity_attribute_id = 4 and ra_t.status = 1
@@ -143,7 +143,7 @@
             left join reward_attribute ra_m on r.id = ra_m.domain_id and ra_m.entity_attribute_id = 18 and ra_m.status = 1
         where r.status = 1
           and ra_t.number = #{rewardTypeId} and ra_s.number = #{saleId}
-          <if test="managerId != null"> and ra_m.number = #{and ra_m.number} </if>
-          and ra_st.number = #{rewardStatusId};
+          <if test="managerId != null"> and ra_m.number = #{managerId}</if>
+          and ra_st.number = #{rewardStatusId}
     </select>
 </mapper>
