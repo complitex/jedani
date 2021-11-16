@@ -802,7 +802,7 @@ public class RewardService implements Serializable {
                     .findFirst().orElse(null);
 
             if (r != null) {
-                BigDecimal point = calculateRewardPoint(sale, RewardType.GROUP_VOLUME, r.getTotal());
+                BigDecimal point = calculateRewardPoint(sale, RewardType.MANAGER_PREMIUM, r.getTotal());
 
                 if (point.compareTo(ZERO) != 0) {
                     Reward reward = new Reward(r, period);
