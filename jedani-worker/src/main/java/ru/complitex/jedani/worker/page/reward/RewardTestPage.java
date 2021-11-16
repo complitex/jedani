@@ -11,8 +11,10 @@ import ru.complitex.jedani.worker.service.RewardService2;
 
 import javax.inject.Inject;
 import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static ru.complitex.jedani.worker.security.JedaniRoles.ADMINISTRATORS;
 
@@ -80,6 +82,16 @@ public class RewardTestPage extends BasePage {
                 compensationService.getRewards().size() + " " + compensationServiceSum.toPlainString() + " " + compensationServiceTime + " = " +
                 rewardService2.getRewards().size() + " " + rewardServiceSum2.toPlainString() + " " + rewardServiceTime2));
 
+        add(new Label("r", getRewards(rewardService.getRewards().stream()
+                .sorted(Comparator.comparing(Reward::getWorkerId)).collect(Collectors.toList())))
+                .setEscapeModelStrings(false));
+        add(new Label("c", getRewards(compensationService.getRewards().stream()
+                .sorted(Comparator.comparing(Reward::getWorkerId)).collect(Collectors.toList())))
+                .setEscapeModelStrings(false));
+        add(new Label("r2", getRewards(rewardService2.getRewards().stream()
+                .sorted(Comparator.comparing(Reward::getWorkerId)).collect(Collectors.toList())))
+                .setEscapeModelStrings(false));
+
         add(new Label("rewards", "" +
                 getRewardsDiff("-c", rewardService.getRewards(), compensationService.getRewards()) + "<br/>" +
                 getRewardsDiff("+c", compensationService.getRewards(), rewardService.getRewards()) + "<br/>" +
@@ -100,6 +112,22 @@ public class RewardTestPage extends BasePage {
                 getRewardsDiff("-c", rewardService2.getRewards(), compensationService.getRewards()) + "<br/>" +
                 getRewardsDiff("+c", compensationService.getRewards(), rewardService2.getRewards()))
                 .setEscapeModelStrings(false));
+    }
+
+    private String getRewards(List<Reward> list) {
+        StringBuilder rewards = new StringBuilder();
+
+        list.forEach(reward -> rewards
+                .append("workerId: ").append(reward.getWorkerId())
+                .append(", point: ").append(reward.getPoint())
+                .append(", type: ").append(reward.getType())
+                .append(", rank: ").append(reward.getRank())
+                .append(", saleId: ").append(reward.getSaleId())
+                .append(", status: ").append(reward.getRewardStatus())
+                .append(", periodId: ").append(reward.getPeriodId())
+                .append("</br>"));
+
+        return rewards.toString();
     }
 
     private String getRewardsDiff(String prefix, List<Reward> list1, List<Reward> list2) {
@@ -126,5 +154,8 @@ public class RewardTestPage extends BasePage {
         });
         return rewards.toString();
     }
+
+
 }
+
 
