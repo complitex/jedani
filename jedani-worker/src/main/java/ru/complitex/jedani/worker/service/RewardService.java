@@ -802,7 +802,7 @@ public class RewardService implements Serializable {
                     .findFirst().orElse(null);
 
             if (r != null) {
-                BigDecimal point = calculateRewardPoint(sale, RewardType.MANAGER_PREMIUM, r.getTotal());
+                BigDecimal point = calculateRewardPoint(sale, RewardType.GROUP_VOLUME, r.getTotal());
 
                 if (point.compareTo(ZERO) != 0) {
                     Reward reward = new Reward(r, period);
@@ -1209,7 +1209,7 @@ public class RewardService implements Serializable {
             RewardTree tree = getRewardTree(period);
 
             saleService.getActiveSales().stream()
-                    .filter(this::isPaidSalePeriod)
+                    .filter(sale -> !isPaidSalePeriod(sale))
                     .forEach(sale -> {
                         calculateSaleReward(sale, saleService.getSaleItems(sale.getObjectId()), period, RewardStatus.ESTIMATED);
                         calculateSaleReward(sale, saleService.getSaleItems(sale.getObjectId()), period, RewardStatus.CHARGED);
