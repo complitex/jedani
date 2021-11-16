@@ -12,7 +12,7 @@ import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.graph.resource.CytoscapeCoseJsResourceReference;
 import ru.complitex.jedani.worker.mapper.PeriodMapper;
 import ru.complitex.jedani.worker.mapper.WorkerMapper;
-import ru.complitex.jedani.worker.service.RewardService;
+import ru.complitex.jedani.worker.service.RewardService2;
 import ru.complitex.name.service.NameService;
 
 import javax.inject.Inject;
@@ -38,7 +38,7 @@ public class WorkerGraphPanel extends Panel {
     private PeriodMapper periodMapper;
 
     @Inject
-    private RewardService rewardService;
+    private RewardService2 rewardService;
 
     @Inject
     private DomainService domainService;

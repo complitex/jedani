@@ -14,7 +14,7 @@ import ru.complitex.jedani.worker.entity.Payout;
 import ru.complitex.jedani.worker.entity.RewardStatus;
 import ru.complitex.jedani.worker.mapper.PayoutMapper;
 import ru.complitex.jedani.worker.service.AccountService;
-import ru.complitex.jedani.worker.service.RewardService;
+import ru.complitex.jedani.worker.service.RewardService2;
 
 import javax.inject.Inject;
 import java.math.BigDecimal;
@@ -24,7 +24,7 @@ import java.math.BigDecimal;
  */
 public class PayoutSummary extends AbstractToolbar {
     @Inject
-    private RewardService rewardService;
+    private RewardService2 rewardService;
 
     @Inject
     private AccountService accountService;

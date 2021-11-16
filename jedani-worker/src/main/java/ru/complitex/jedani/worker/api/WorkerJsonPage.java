@@ -5,11 +5,11 @@ import org.apache.wicket.markup.MarkupType;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.request.handler.TextRequestHandler;
 import ru.complitex.common.util.Dates;
-import ru.complitex.jedani.worker.entity.Worker;
 import ru.complitex.jedani.worker.entity.RewardNode;
+import ru.complitex.jedani.worker.entity.Worker;
 import ru.complitex.jedani.worker.security.JedaniRoles;
 import ru.complitex.jedani.worker.service.InviteService;
-import ru.complitex.jedani.worker.service.RewardService;
+import ru.complitex.jedani.worker.service.RewardService2;
 import ru.complitex.jedani.worker.service.WorkerService;
 
 import javax.inject.Inject;
@@ -34,7 +34,7 @@ public class WorkerJsonPage extends WebPage {
     private InviteService inviteService;
 
     @Inject
-    private RewardService rewardService;
+    private RewardService2 rewardService;
 
     public WorkerJsonPage() {
         Principal principal = ((HttpServletRequest)getRequest().getContainerRequest()).getUserPrincipal();

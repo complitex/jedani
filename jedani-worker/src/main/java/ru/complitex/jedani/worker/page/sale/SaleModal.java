@@ -52,7 +52,7 @@ import ru.complitex.jedani.worker.mapper.PeriodMapper;
 import ru.complitex.jedani.worker.mapper.StorageMapper;
 import ru.complitex.jedani.worker.page.BasePage;
 import ru.complitex.jedani.worker.service.PriceService;
-import ru.complitex.jedani.worker.service.RewardService;
+import ru.complitex.jedani.worker.service.RewardService2;
 import ru.complitex.jedani.worker.service.SaleService;
 import ru.complitex.jedani.worker.service.WorkerService;
 import ru.complitex.name.entity.FirstName;
@@ -90,7 +90,7 @@ public class SaleModal extends Modal<Sale> {
     private PriceService priceService;
 
     @Inject
-    private RewardService rewardService;
+    private RewardService2 rewardService;
 
     @Inject
     private PeriodMapper periodMapper;

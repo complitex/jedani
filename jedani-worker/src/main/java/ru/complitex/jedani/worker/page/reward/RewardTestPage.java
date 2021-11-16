@@ -8,6 +8,7 @@ import ru.complitex.jedani.worker.page.BasePage;
 import ru.complitex.jedani.worker.service.CompensationService;
 import ru.complitex.jedani.worker.service.RewardService;
 import ru.complitex.jedani.worker.service.RewardService2;
+import ru.complitex.jedani.worker.service.WorkerService;
 
 import javax.inject.Inject;
 import java.math.BigDecimal;
@@ -31,6 +32,9 @@ public class RewardTestPage extends BasePage {
 
     @Inject
     private CompensationService compensationService;
+
+    @Inject
+    private WorkerService workerService;
 
     public RewardTestPage() {
         long rewardServiceTime = System.currentTimeMillis();
@@ -146,6 +150,7 @@ public class RewardTestPage extends BasePage {
                         .append(", status: ").append(reward.getRewardStatus())
                         .append(", periodId: ").append(reward.getPeriodId())
                         .append(reward.getEstimatedId() != null ? ", estimatedId: " + reward.getEstimatedId() : "")
+                        .append(reward.getWorkerId() != null ? ", jId: " + workerService.getJId(reward.getWorkerId()) : "")
                         .append("</br>");
             }
         });

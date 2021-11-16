@@ -2,12 +2,12 @@ package ru.complitex.jedani.worker.page.reward;
 
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.markup.html.basic.Label;
-import ru.complitex.jedani.worker.entity.WorkerNode;
 import ru.complitex.jedani.worker.entity.RewardNode;
 import ru.complitex.jedani.worker.entity.RewardTree;
+import ru.complitex.jedani.worker.entity.WorkerNode;
 import ru.complitex.jedani.worker.mapper.PeriodMapper;
 import ru.complitex.jedani.worker.page.BasePage;
-import ru.complitex.jedani.worker.service.RewardService;
+import ru.complitex.jedani.worker.service.RewardService2;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -22,7 +22,7 @@ import static ru.complitex.jedani.worker.security.JedaniRoles.ADMINISTRATORS;
 @AuthorizeInstantiation({ADMINISTRATORS})
 public class RewardTreePage extends BasePage {
     @Inject
-    private RewardService rewardService;
+    private RewardService2 rewardService;
 
     @Inject
     public PeriodMapper periodMapper;

@@ -151,7 +151,7 @@ public class WorkerPage extends BasePage {
     private PeriodMapper periodMapper;
 
     @Inject
-    private RewardService rewardService;
+    private RewardService2 rewardService;
 
     @Inject
     private AccountService accountService;

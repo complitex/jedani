@@ -735,6 +735,17 @@ public class RewardService2 implements Serializable {
         }
     }
 
+    public void calculateCulinaryReward(Sale sale) {
+        Period period = periodMapper.getActualPeriod();
+
+        getRewardsBySaleId(sale.getObjectId(), RewardType.CULINARY_WORKSHOP).stream()
+                .filter(r -> Objects.equals(r.getPeriodId(), period.getObjectId()))
+                .forEach(r -> domainService.delete(r));
+
+        calculateCulinaryReward(sale, period, RewardStatus.ESTIMATED);
+        calculateCulinaryReward(sale, period, RewardStatus.CHARGED);
+    }
+
     private void calculateManagerReward(Sale sale, RewardNode rewardNode, Period period, Long rewardStatus) {
         if (Objects.equals(sale.getPeriodId(), period.getObjectId())) {
             BigDecimal total = calcManagerPoint(sale, rewardNode.getRank());
