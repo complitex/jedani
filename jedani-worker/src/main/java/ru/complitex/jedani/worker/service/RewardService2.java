@@ -644,6 +644,8 @@ public class RewardService2 implements Serializable {
 
                             updateLocalBySale(reward, period);
 
+                            reward.setEstimatedId(reward.getObjectId());
+
                             if (test) {
                                 rewards.add(reward);
                             } else {
@@ -684,6 +686,8 @@ public class RewardService2 implements Serializable {
                 }
 
                 updateLocal(sale, reward, period);
+
+                reward.setEstimatedId(reward.getObjectId());
 
                 if (reward.getPoint().compareTo(ZERO) != 0) {
                     if (test) {
@@ -785,6 +789,8 @@ public class RewardService2 implements Serializable {
                     reward.setPoint(point);
 
                     updateLocal(sale, reward, period);
+
+                    reward.setEstimatedId(reward.getObjectId());
 
                     if (test) {
                         rewards.add(reward);
@@ -920,6 +926,8 @@ public class RewardService2 implements Serializable {
 
                                     updateLocalBySale(reward, period);
 
+                                    reward.setEstimatedId(reward.getObjectId());
+
                                     if (test) {
                                         rewards.add(reward);
                                     } else {
@@ -1023,6 +1031,8 @@ public class RewardService2 implements Serializable {
                                     reward.setPoint(point);
 
                                     updateLocalBySale(reward, period);
+
+                                    reward.setEstimatedId(reward.getObjectId());
 
                                     if (test) {
                                         rewards.add(reward);

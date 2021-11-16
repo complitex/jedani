@@ -42,6 +42,8 @@ public class Reward extends Domain {
 
     private BigDecimal saleTotal;
 
+    private Long estimatedId;
+
     public Reward() {
         super(ENTITY_NAME);
 
@@ -281,5 +283,13 @@ public class Reward extends Domain {
 
     public void setSaleTotal(BigDecimal saleTotal) {
         this.saleTotal = saleTotal;
+    }
+
+    public Long getEstimatedId() {
+        return estimatedId;
+    }
+
+    public void setEstimatedId(Long estimatedId) {
+        this.estimatedId = estimatedId;
     }
 }

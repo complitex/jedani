@@ -492,6 +492,10 @@ public class CompensationService {
 
             r.copy(reward, true);
 
+            if (r.getRewardStatus().equals(CHARGED)) {
+                r.setEstimatedId(reward.getObjectId());
+            }
+
             rewards.add(r);
         } else {
             reward.setObjectId(null);
