@@ -12,7 +12,7 @@ import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.graph.resource.CytoscapeCoseJsResourceReference;
 import ru.complitex.jedani.worker.mapper.PeriodMapper;
 import ru.complitex.jedani.worker.mapper.WorkerMapper;
-import ru.complitex.jedani.worker.service.RewardService2;
+import ru.complitex.jedani.worker.service.RewardTreeCacheService;
 import ru.complitex.name.service.NameService;
 
 import javax.inject.Inject;
@@ -38,7 +38,7 @@ public class WorkerGraphPanel extends Panel {
     private PeriodMapper periodMapper;
 
     @Inject
-    private RewardService2 rewardService;
+    private RewardTreeCacheService rewardTreeCacheService;
 
     @Inject
     private DomainService domainService;
@@ -46,9 +46,9 @@ public class WorkerGraphPanel extends Panel {
     private String elements;
     private String fileName;
 
-    private Worker worker;
-    private Long levelDepth;
-    private boolean volume;
+    private final Worker worker;
+    private final Long levelDepth;
+    private final boolean volume;
 
     public WorkerGraphPanel(String id, Worker worker, Long levelDepth, boolean volume) {
         super(id);
@@ -132,7 +132,7 @@ public class WorkerGraphPanel extends Panel {
                 .put("levelDepth", levelDepth != 0 ? levelDepth : null)));
 
         RewardTree rewards = (levelDepth == 0)
-                ? rewardService.getRewardTree(periodMapper.getActualPeriod())
+                ? rewardTreeCacheService.getRewardTreeCache(periodMapper.getActualPeriod().getObjectId())
                 : null;
 
         elements =  " {data: {id: '" + worker.getObjectId() + "', " +

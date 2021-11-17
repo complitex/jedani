@@ -3,6 +3,7 @@ package ru.complitex.jedani.worker.service;
 import ru.complitex.common.util.Dates;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.entity.*;
+import ru.complitex.jedani.worker.mapper.PeriodMapper;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -28,6 +29,12 @@ public class RewardTreeService {
 
     @Inject
     private CacheService cacheService;
+
+    @Inject
+    private WorkerNodeService workerNodeService;
+
+    @Inject
+    private PeriodMapper periodMapper;
 
     private BigDecimal getParameter(Long rewardParameterId) {
         return cacheService.getParameter(rewardParameterId);
@@ -139,7 +146,17 @@ public class RewardTreeService {
                 rewardNodes.forEach(rewardNode -> {
                     updateRewardNode(rewardNode, period);
 
-                    consumer.accept(rewardNode);
+                    if (consumer != null) {
+                        consumer.accept(rewardNode);
+                    }
                 }));
+    }
+
+    public RewardTree getRewardTree(Long periodId) {
+        RewardTree rewardTree = new RewardTree(workerNodeService.getWorkerNodeMap());
+
+        updateRewardTree(rewardTree, periodMapper.getPeriod(periodId), null);
+
+        return rewardTree;
     }
 }

@@ -7,7 +7,7 @@ import ru.complitex.jedani.worker.entity.RewardTree;
 import ru.complitex.jedani.worker.entity.WorkerNode;
 import ru.complitex.jedani.worker.mapper.PeriodMapper;
 import ru.complitex.jedani.worker.page.BasePage;
-import ru.complitex.jedani.worker.service.RewardService2;
+import ru.complitex.jedani.worker.service.RewardTreeService;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -22,13 +22,13 @@ import static ru.complitex.jedani.worker.security.JedaniRoles.ADMINISTRATORS;
 @AuthorizeInstantiation({ADMINISTRATORS})
 public class RewardTreePage extends BasePage {
     @Inject
-    private RewardService2 rewardService;
+    private RewardTreeService rewardTreeService;
 
     @Inject
     public PeriodMapper periodMapper;
 
     public RewardTreePage() {
-        RewardTree tree = rewardService.getRewardTree(periodMapper.getActualPeriod());
+        RewardTree tree = rewardTreeService.getRewardTree(periodMapper.getActualPeriod().getObjectId());
 
         StringBuilder rewards = new StringBuilder();
 

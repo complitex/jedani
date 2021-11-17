@@ -151,7 +151,10 @@ public class WorkerPage extends BasePage {
     private PeriodMapper periodMapper;
 
     @Inject
-    private RewardService2 rewardService;
+    private RewardCacheService rewardCacheService;
+
+    @Inject
+    private RewardTreeCacheService rewardTreeCacheService;
 
     @Inject
     private AccountService accountService;
@@ -1119,13 +1122,13 @@ public class WorkerPage extends BasePage {
                                 accountService.getBalance(worker.getObjectId(), periodModel.getObject().getObjectId()));
 
                         IModel<BigDecimal> chargedModel = LoadableDetachableModel.of(() ->
-                                rewardService.getRewardsLocal(periodModel.getObject().getObjectId(), worker.getObjectId(), RewardStatus.CHARGED));
+                                rewardCacheService.getRewardsLocal(periodModel.getObject().getObjectId(), worker.getObjectId(), RewardStatus.CHARGED));
                         IModel<BigDecimal> withdrawModel = LoadableDetachableModel.of(() ->
-                                rewardService.getRewardsLocal(periodModel.getObject().getObjectId(), worker.getObjectId(), RewardStatus.WITHDRAWN));
+                                rewardCacheService.getRewardsLocal(periodModel.getObject().getObjectId(), worker.getObjectId(), RewardStatus.WITHDRAWN));
                         IModel<BigDecimal> paidModel = LoadableDetachableModel.of(() ->
-                                rewardService.getRewardsLocal(periodModel.getObject().getObjectId(), worker.getObjectId(), RewardStatus.PAID));
+                                rewardCacheService.getRewardsLocal(periodModel.getObject().getObjectId(), worker.getObjectId(), RewardStatus.PAID));
                         IModel<BigDecimal> spentModel = LoadableDetachableModel.of(() ->
-                                rewardService.getRewardsLocal(periodModel.getObject().getObjectId(), worker.getObjectId(), RewardStatus.SPENT));
+                                rewardCacheService.getRewardsLocal(periodModel.getObject().getObjectId(), worker.getObjectId(), RewardStatus.SPENT));
 
                         finance.add(new Label("input", inputModel));
                         finance.add(new Label("charged", chargedModel));
@@ -1145,8 +1148,8 @@ public class WorkerPage extends BasePage {
                         })));
 
                         IModel<RewardNode> rewardModel = LoadableDetachableModel.of(() -> {
-                                RewardNode workerReward = rewardService.getRewardTreeCache(periodModel.getObject().getObjectId())
-                                        .getRewardNode(worker.getObjectId());
+                                RewardNode workerReward = rewardTreeCacheService.getRewardNode(periodModel.getObject().getObjectId(),
+                                        worker.getObjectId());
 
                                 return workerReward != null ? workerReward : new RewardNode(new WorkerNode());
                         });
@@ -1417,8 +1420,8 @@ public class WorkerPage extends BasePage {
     }
 
     protected String getRewardsTotalString(Long rewardTypeId, Long periodId) {
-        BigDecimal estimated = rewardService.getRewardsPointSumByWorker(periodId, worker.getObjectId(), rewardTypeId, RewardStatus.ESTIMATED);
-        BigDecimal charged = rewardService.getRewardsPointSumByWorker(periodId, worker.getObjectId(), rewardTypeId, RewardStatus.CHARGED);
+        BigDecimal estimated = rewardCacheService.getRewardsPointSumByWorker(periodId, worker.getObjectId(), rewardTypeId, RewardStatus.ESTIMATED);
+        BigDecimal charged = rewardCacheService.getRewardsPointSumByWorker(periodId, worker.getObjectId(), rewardTypeId, RewardStatus.CHARGED);
 
         return charged.toPlainString() + (estimated.compareTo(BigDecimal.ZERO) > 0 ?  " (" + estimated.toPlainString() + ")" : "");
     }

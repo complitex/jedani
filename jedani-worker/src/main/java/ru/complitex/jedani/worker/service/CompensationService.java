@@ -177,12 +177,79 @@ public class CompensationService {
         return getReward(typeId, workerId, point, sale, saleItem, period, null);
     }
 
-    private Reward getPersonalMycookReward(Sale sale, SaleItem saleItem, Period period) {
+    public BigDecimal getPersonalRewardPoint(Sale sale, List<SaleItem> saleItems){
+        BigDecimal point = ZERO;
+
+        if (sale.getType() == SaleType.MYCOOK){
+            Worker w = workerService.getWorker(sale.getSellerWorkerId());
+
+            if (w.getMkStatus() == null){
+                w.setMkStatus(MkStatus.STATUS_PROMO);
+            }
+
+            boolean mkPremium = saleService.isMycookPremiumSaleItems(saleItems);
+            boolean mkTouch = saleService.isMycookTouchSaleItems(saleItems);
+
+            if (sale.isSasRequest()){
+                point = getParameter(1L);
+            }else if (w.getMkStatus() == MkStatus.STATUS_PROMO){
+                if (mkPremium){
+                    point = getParameter(2L);
+                }else if (mkTouch){
+                    point = getParameter(3L);
+                }
+            }else if (w.getMkStatus() == MkStatus.STATUS_JUST){
+                if (mkPremium){
+                    point = getParameter(4L);
+                }else if (mkTouch){
+                    point = getParameter(5L);
+                }
+            }else if (w.getMkStatus() == MkStatus.STATUS_VIP){
+                if (sale.getManagerBonusWorkerId() != null){
+                    if (mkPremium){
+                        point = getParameter(6L).subtract(getParameter(9L));
+                    }else if (mkTouch){
+                        point = getParameter(7L).subtract(getParameter(10L));
+                    }
+                }else if (mkPremium){
+                    point = getParameter(6L);
+                }else if (mkTouch){
+                    point = getParameter(7L);
+                }
+            }
+        }else if (sale.getType() == SaleType.BASE_ASSORTMENT && sale.getTotal() != null){
+            point = sale.getTotal().multiply(getParameter(8L));
+        }
+
+        return point;
+    }
+
+    public Reward getPersonalMycookReward(Sale sale, SaleItem saleItem, Period period) {
         if (sale.getPersonalRewardPoint().compareTo(ZERO) > 0) {
             return getReward(PERSONAL_MYCOOK, sale.getSellerWorkerId(), sale.getPersonalRewardPoint(), sale, saleItem, period);
         }
 
         return null;
+    }
+
+    public BigDecimal getManagerBonusRewardPoint(Sale sale, List<SaleItem> saleItems){
+        BigDecimal point = ZERO;
+
+        if (sale.getType() == SaleType.MYCOOK){
+            Worker w = workerService.getWorker(sale.getSellerWorkerId());
+
+            if (w.getMkStatus() == null){
+                w.setMkStatus(MkStatus.STATUS_PROMO);
+            }
+
+            if (saleService.isMycookPremiumSaleItems(saleItems)){
+                point = getParameter(9L);
+            }else if (saleService.isMycookTouchSaleItems(saleItems)){
+                point = getParameter(10L);
+            }
+        }
+
+        return point;
     }
 
     private Reward getManagerBonusReward(Sale sale, SaleItem saleItem, Period period) {
@@ -195,7 +262,19 @@ public class CompensationService {
         return null;
     }
 
-    private Reward getCulinaryReward(Sale sale, SaleItem saleItem, Period period) {
+    public BigDecimal getCulinaryRewardPoint(Sale sale, List<SaleItem> saleItems){
+        if (saleService.isMycookSaleItems(saleItems)){
+            if (!sale.isSasRequest()) {
+                return getParameter(41L);
+            } else {
+                return getParameter(42L);
+            }
+        }
+
+        return ZERO;
+    }
+
+    public Reward getCulinaryReward(Sale sale, SaleItem saleItem, Period period) {
         if (sale.getCulinaryRewardPoint() != null && sale.getCulinaryRewardPoint().compareTo(ZERO) > 0 && sale.getCulinaryWorkerId() != null) {
             if (getRewardsPointSum(CULINARY_WORKSHOP, sale.getObjectId(), sale.getCulinaryWorkerId(), CHARGED).compareTo(ZERO) == 0) {
                 return getReward(CULINARY_WORKSHOP, sale.getCulinaryWorkerId(), sale.getCulinaryRewardPoint(), sale, saleItem, period);
@@ -209,7 +288,7 @@ public class CompensationService {
         return cacheService.getParameter(rewardParameterId);
     }
 
-    private BigDecimal getManagerMycookPoint(Long rank) {
+    private BigDecimal getManagerPremiumPoint(Long rank) {
         switch (rank.intValue()) {
             case (int) RankType.MANAGER_ASSISTANT:
                 return getParameter(48L);
@@ -239,7 +318,7 @@ public class CompensationService {
     }
 
     private Reward getManagerPremiumReward(RewardNode rewardNode, Sale sale, SaleItem saleItem, Period period) {
-        BigDecimal point = getManagerMycookPoint(rewardNode.getRank());
+        BigDecimal point = getManagerPremiumPoint(rewardNode.getRank());
 
         if (point.compareTo(ZERO) > 0) {
             Reward reward = getReward(MANAGER_PREMIUM, sale.getSellerWorkerId(), point, sale, saleItem, period);
@@ -527,7 +606,7 @@ public class CompensationService {
         }
     }
 
-    private void withdrawReward(Reward reward) {
+    public void withdrawReward(Reward reward) {
         if (reward != null) {
             reward.setRewardStatus(WITHDRAWN);
 
@@ -535,7 +614,7 @@ public class CompensationService {
         }
     }
 
-    private void calculateReward(Reward reward) {
+    public void calculateReward(Reward reward) {
         if (reward != null) {
             estimateReward(reward);
             chargeReward(reward);

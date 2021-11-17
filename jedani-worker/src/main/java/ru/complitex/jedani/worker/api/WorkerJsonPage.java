@@ -9,7 +9,7 @@ import ru.complitex.jedani.worker.entity.RewardNode;
 import ru.complitex.jedani.worker.entity.Worker;
 import ru.complitex.jedani.worker.security.JedaniRoles;
 import ru.complitex.jedani.worker.service.InviteService;
-import ru.complitex.jedani.worker.service.RewardService2;
+import ru.complitex.jedani.worker.service.RewardTreeCacheService;
 import ru.complitex.jedani.worker.service.WorkerService;
 
 import javax.inject.Inject;
@@ -34,7 +34,7 @@ public class WorkerJsonPage extends WebPage {
     private InviteService inviteService;
 
     @Inject
-    private RewardService2 rewardService;
+    private RewardTreeCacheService rewardTreeCacheService;
 
     public WorkerJsonPage() {
         Principal principal = ((HttpServletRequest)getRequest().getContainerRequest()).getUserPrincipal();
@@ -79,7 +79,7 @@ public class WorkerJsonPage extends WebPage {
                 json.add("email", worker.getEmail());
             }
 
-            RewardNode workerReward = rewardService.getWorkerReward(worker);
+            RewardNode workerReward = rewardTreeCacheService.getRewardNode(worker.getObjectId());
 
             json.add("sale_volume", workerReward != null ? workerReward.getSaleVolume(): ZERO);
             json.add("payment_volume", workerReward != null ? workerReward.getPaymentVolume() : ZERO);

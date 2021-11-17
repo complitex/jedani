@@ -51,10 +51,7 @@ import ru.complitex.jedani.worker.exception.SaleException;
 import ru.complitex.jedani.worker.mapper.PeriodMapper;
 import ru.complitex.jedani.worker.mapper.StorageMapper;
 import ru.complitex.jedani.worker.page.BasePage;
-import ru.complitex.jedani.worker.service.PriceService;
-import ru.complitex.jedani.worker.service.RewardService2;
-import ru.complitex.jedani.worker.service.SaleService;
-import ru.complitex.jedani.worker.service.WorkerService;
+import ru.complitex.jedani.worker.service.*;
 import ru.complitex.name.entity.FirstName;
 import ru.complitex.name.entity.LastName;
 import ru.complitex.name.entity.MiddleName;
@@ -90,7 +87,7 @@ public class SaleModal extends Modal<Sale> {
     private PriceService priceService;
 
     @Inject
-    private RewardService2 rewardService;
+    private CompensationService compensationService;
 
     @Inject
     private PeriodMapper periodMapper;
@@ -528,7 +525,7 @@ public class SaleModal extends Modal<Sale> {
                     sale.getInstallmentMonths(), sale.isForYourself(), si.getQuantity(), null);
 
             if (sale.isFeeWithdraw()){
-                price = price.subtract(rewardService.getPersonalRewardPoint(sale, saleItemsModel.getObject()));
+                price = price.subtract(compensationService.getPersonalRewardPoint(sale, saleItemsModel.getObject()));
             }
 
             si.setPrice(price);
@@ -552,7 +549,7 @@ public class SaleModal extends Modal<Sale> {
                     sale.getInstallmentMonths(), sale.isForYourself(), si.getQuantity(), paymentPercent);
 
             if (sale.isFeeWithdraw()){
-                price = price.subtract(rewardService.getPersonalRewardPoint(sale, saleItemsModel.getObject()));
+                price = price.subtract(compensationService.getPersonalRewardPoint(sale, saleItemsModel.getObject()));
             }
 
             si.setPrice(price);
@@ -582,7 +579,7 @@ public class SaleModal extends Modal<Sale> {
         if (saleItems.stream().noneMatch(si -> si.getPrice() == null || si.getQuantity() == null || si.getRate() == null)){
             sale.setTotalLocal(saleItems.stream().map(si -> {
                 if (sale.isFeeWithdraw() && sale.getSellerWorkerId() != null && sale.getDate() != null) {
-                    BigDecimal reward = rewardService.getPersonalRewardPoint(sale, saleItemsModel.getObject());
+                    BigDecimal reward = compensationService.getPersonalRewardPoint(sale, saleItemsModel.getObject());
 
                     BigDecimal price = si.getPrice().add(reward);
 
@@ -770,11 +767,11 @@ public class SaleModal extends Modal<Sale> {
         }
 
         try {
-            sale.setPersonalRewardPoint(rewardService.getPersonalRewardPoint(sale, saleItems));
+            sale.setPersonalRewardPoint(compensationService.getPersonalRewardPoint(sale, saleItems));
 
             if (saleService.isMycookSaleItems(saleItems)) {
-                sale.setManagerBonusRewardPoint(rewardService.getManagerBonusRewardPoint(sale, saleItems));
-                sale.setCulinaryRewardPoint(rewardService.getCulinaryRewardPoint(sale, saleItems));
+                sale.setManagerBonusRewardPoint(compensationService.getManagerBonusRewardPoint(sale, saleItems));
+                sale.setCulinaryRewardPoint(compensationService.getCulinaryRewardPoint(sale, saleItems));
             }
 
             if (sale.getObjectId() == null){
@@ -783,11 +780,20 @@ public class SaleModal extends Modal<Sale> {
 
             saleService.save(sale, saleItems);
 
+            Period period = periodMapper.getActualPeriod();
+
             if (sale.isFeeWithdraw()) {
-                rewardService.calculateSaleReward(sale, saleItems, periodMapper.getActualPeriod(), RewardStatus.WITHDRAWN);
+                Reward personalMycookReward = compensationService.getPersonalMycookReward(sale, saleItems.get(0), period);
+
+                compensationService.calculateReward(personalMycookReward);
+                compensationService.withdrawReward(personalMycookReward);
             }
 
-            rewardService.calculateCulinaryReward(sale);
+            if (sale.getCulinaryWorkerId() != null) {
+                Reward culinaryReward = compensationService.getCulinaryReward(sale, saleItems.get(0), period);
+
+                compensationService.calculateReward(culinaryReward);
+            }
 
             getSession().success(getString("info_sold"));
 
