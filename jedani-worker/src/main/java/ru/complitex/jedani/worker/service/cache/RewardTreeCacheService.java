@@ -7,7 +7,6 @@ import ru.complitex.jedani.worker.entity.RewardNode;
 import ru.complitex.jedani.worker.entity.RewardTree;
 import ru.complitex.jedani.worker.mapper.PeriodMapper;
 import ru.complitex.jedani.worker.service.RewardTreeService;
-import ru.complitex.jedani.worker.service.WorkerNodeService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -20,13 +19,10 @@ import java.util.concurrent.ExecutionException;
 @ApplicationScoped
 public class RewardTreeCacheService implements Serializable {
     @Inject
-    private WorkerNodeService workerNodeService;
+    private PeriodMapper periodMapper;
 
     @Inject
     private RewardTreeService rewardTreeService;
-
-    @Inject
-    private PeriodMapper periodMapper;
 
     private transient LoadingCache<Long, RewardTree> rewardTreeCache;
 
