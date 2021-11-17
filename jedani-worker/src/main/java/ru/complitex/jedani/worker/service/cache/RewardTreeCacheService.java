@@ -1,4 +1,4 @@
-package ru.complitex.jedani.worker.service;
+package ru.complitex.jedani.worker.service.cache;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -6,6 +6,8 @@ import com.google.common.cache.LoadingCache;
 import ru.complitex.jedani.worker.entity.RewardNode;
 import ru.complitex.jedani.worker.entity.RewardTree;
 import ru.complitex.jedani.worker.mapper.PeriodMapper;
+import ru.complitex.jedani.worker.service.RewardTreeService;
+import ru.complitex.jedani.worker.service.WorkerNodeService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;

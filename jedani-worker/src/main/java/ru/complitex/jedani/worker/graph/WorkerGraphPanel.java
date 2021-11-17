@@ -12,7 +12,7 @@ import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.graph.resource.CytoscapeCoseJsResourceReference;
 import ru.complitex.jedani.worker.mapper.PeriodMapper;
 import ru.complitex.jedani.worker.mapper.WorkerMapper;
-import ru.complitex.jedani.worker.service.RewardTreeCacheService;
+import ru.complitex.jedani.worker.service.cache.RewardTreeCacheService;
 import ru.complitex.name.service.NameService;
 
 import javax.inject.Inject;

@@ -11,6 +11,8 @@ import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.mapper.PaymentMapper;
 import ru.complitex.jedani.worker.mapper.PeriodMapper;
 import ru.complitex.jedani.worker.mapper.RewardMapper;
+import ru.complitex.jedani.worker.service.cache.ParameterCacheService;
+import ru.complitex.jedani.worker.service.cache.PaymentCacheService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -57,9 +59,6 @@ public class CompensationService {
     private PaymentService paymentService;
 
     @Inject
-    private CacheService cacheService;
-
-    @Inject
     private RewardMapper rewardMapper;
 
     @Inject
@@ -67,6 +66,12 @@ public class CompensationService {
 
     @Inject
     private RewardTreeService rewardTreeService;
+
+    @Inject
+    private PaymentCacheService paymentCacheService;
+
+    @Inject
+    private ParameterCacheService parameterCacheService;
 
     private boolean test = false;
 
@@ -135,7 +140,7 @@ public class CompensationService {
     }
 
     private BigDecimal getPaymentRate(Long countryId, Period period) {
-        return cacheService.getPaymentRateByCountryId(countryId, period.getObjectId());
+        return paymentCacheService.getPaymentRateByCountryId(countryId, period.getObjectId());
     }
 
     private Reward getReward(Long typeId, Long workerId, BigDecimal point, Sale sale, SaleItem saleItem, Period period, Long countryId) {
@@ -285,7 +290,7 @@ public class CompensationService {
     }
 
     private BigDecimal getParameter(Long rewardParameterId) {
-        return cacheService.getParameter(rewardParameterId);
+        return parameterCacheService.getParameter(rewardParameterId);
     }
 
     private BigDecimal getManagerPremiumPoint(Long rank) {
@@ -640,7 +645,9 @@ public class CompensationService {
 
         rewardMapper.deleteRewards(period.getObjectId());
 
-        cacheService.clear();
+        paymentCacheService.clear();
+
+        parameterCacheService.clear();
 
         rewards.clear();
 

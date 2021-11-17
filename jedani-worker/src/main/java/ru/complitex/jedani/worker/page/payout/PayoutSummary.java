@@ -14,7 +14,7 @@ import ru.complitex.jedani.worker.entity.Payout;
 import ru.complitex.jedani.worker.entity.RewardStatus;
 import ru.complitex.jedani.worker.mapper.PayoutMapper;
 import ru.complitex.jedani.worker.service.AccountService;
-import ru.complitex.jedani.worker.service.RewardCacheService;
+import ru.complitex.jedani.worker.service.cache.RewardCacheService;
 
 import javax.inject.Inject;
 import java.math.BigDecimal;

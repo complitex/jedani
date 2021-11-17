@@ -4,6 +4,8 @@ import ru.complitex.common.util.Dates;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.mapper.PeriodMapper;
+import ru.complitex.jedani.worker.service.cache.ParameterCacheService;
+import ru.complitex.jedani.worker.service.cache.SaleCacheService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -22,22 +24,25 @@ public class RewardTreeService {
     private DomainService domainService;
 
     @Inject
+    private PeriodMapper periodMapper;
+
+    @Inject
     private SaleService saleService;
 
     @Inject
     private PaymentService paymentService;
 
     @Inject
-    private CacheService cacheService;
-
-    @Inject
     private WorkerNodeService workerNodeService;
 
     @Inject
-    private PeriodMapper periodMapper;
+    private SaleCacheService saleCacheService;
+
+    @Inject
+    private ParameterCacheService parameterCacheService;
 
     private BigDecimal getParameter(Long rewardParameterId) {
-        return cacheService.getParameter(rewardParameterId);
+        return parameterCacheService.getParameter(rewardParameterId);
     }
 
     private Long getRank(BigDecimal saleVolume) {
@@ -69,7 +74,7 @@ public class RewardTreeService {
     }
 
     private void updateRewardNode(RewardNode rewardNode, Period period) {
-        if (cacheService.hasActiveSale(rewardNode.getWorkerNode().getObjectId())) {
+        if (saleCacheService.hasActiveSale(rewardNode.getWorkerNode().getObjectId())) {
             rewardNode.setSales(saleService.getSales(rewardNode.getWorkerId()));
 
             rewardNode.setSaleVolume(rewardNode.getSales().stream()

@@ -1,4 +1,4 @@
-package ru.complitex.jedani.worker.service;
+package ru.complitex.jedani.worker.service.cache;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -7,6 +7,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.entity.Reward;
+import ru.complitex.jedani.worker.service.WorkerService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;

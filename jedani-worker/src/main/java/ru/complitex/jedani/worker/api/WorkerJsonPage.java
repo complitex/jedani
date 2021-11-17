@@ -9,7 +9,7 @@ import ru.complitex.jedani.worker.entity.RewardNode;
 import ru.complitex.jedani.worker.entity.Worker;
 import ru.complitex.jedani.worker.security.JedaniRoles;
 import ru.complitex.jedani.worker.service.InviteService;
-import ru.complitex.jedani.worker.service.RewardTreeCacheService;
+import ru.complitex.jedani.worker.service.cache.RewardTreeCacheService;
 import ru.complitex.jedani.worker.service.WorkerService;
 
 import javax.inject.Inject;

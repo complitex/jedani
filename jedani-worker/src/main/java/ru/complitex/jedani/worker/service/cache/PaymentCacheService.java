@@ -1,4 +1,4 @@
-package ru.complitex.jedani.worker.service;
+package ru.complitex.jedani.worker.service.cache;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -6,14 +6,16 @@ import com.google.common.cache.LoadingCache;
 import org.apache.commons.lang3.tuple.Pair;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.util.Dates;
-import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.entity.Payment;
 import ru.complitex.jedani.worker.entity.Period;
-import ru.complitex.jedani.worker.entity.RewardParameter;
 import ru.complitex.jedani.worker.mapper.PeriodMapper;
+import ru.complitex.jedani.worker.service.ExchangeRateService;
+import ru.complitex.jedani.worker.service.PaymentService;
+import ru.complitex.jedani.worker.service.SaleService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
@@ -26,10 +28,7 @@ import static java.math.RoundingMode.HALF_EVEN;
  * @author Ivanov Anatoliy
  */
 @ApplicationScoped
-public class CacheService {
-    @Inject
-    private DomainService domainService;
-
+public class PaymentCacheService implements Serializable {
     @Inject
     private PeriodMapper periodMapper;
 
@@ -41,31 +40,6 @@ public class CacheService {
 
     @Inject
     private ExchangeRateService exchangeRateService;
-
-    @Inject
-    private WorkerService workerService;
-
-    private transient LoadingCache<Long, BigDecimal> parameterCache;
-
-    private LoadingCache<Long, BigDecimal> getParameterCache() {
-        if (parameterCache == null) {
-            parameterCache = CacheBuilder.newBuilder()
-                    .build(CacheLoader.from(rewardParameterId ->
-                            domainService.getDomain(RewardParameter.class, rewardParameterId)
-                                    .getDecimal(RewardParameter.VALUE)));
-
-        }
-
-        return parameterCache;
-    }
-
-    public BigDecimal getParameter(Long rewardParameterId) {
-        try {
-            return getParameterCache().get(rewardParameterId);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     private BigDecimal getPaymentRate(Long countryId, Long periodId) {
         Period period = periodMapper.getPeriod(periodId);
@@ -123,24 +97,7 @@ public class CacheService {
         }
     }
 
-    private transient Set<Long> activeSaleWorkerIds;
-
-    public Set<Long> getActiveSaleWorkerIds() {
-        if (activeSaleWorkerIds == null) {
-            activeSaleWorkerIds = saleService.getActiveSaleWorkerIds();
-        }
-
-        return activeSaleWorkerIds;
-    }
-
-    public boolean hasActiveSale(Long workerId) {
-        return getActiveSaleWorkerIds().contains(workerId);
-    }
-
     public void clear() {
-        getParameterCache().invalidateAll();
         getPaymentRateCache().invalidateAll();
-
-        activeSaleWorkerIds = null;
     }
 }

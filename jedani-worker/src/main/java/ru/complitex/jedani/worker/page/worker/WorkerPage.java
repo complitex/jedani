@@ -92,6 +92,8 @@ import ru.complitex.jedani.worker.page.reward.RewardPanel;
 import ru.complitex.jedani.worker.page.sale.SalePanel;
 import ru.complitex.jedani.worker.security.JedaniRoles;
 import ru.complitex.jedani.worker.service.*;
+import ru.complitex.jedani.worker.service.cache.RewardCacheService;
+import ru.complitex.jedani.worker.service.cache.RewardTreeCacheService;
 import ru.complitex.name.entity.FirstName;
 import ru.complitex.name.entity.LastName;
 import ru.complitex.name.entity.MiddleName;
