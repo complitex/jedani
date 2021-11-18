@@ -13,15 +13,19 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.StringResourceModel;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.util.Dates;
 import ru.complitex.common.wicket.panel.LinkPanel;
 import ru.complitex.common.wicket.table.Table;
 import ru.complitex.common.wicket.table.TextFilter;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
+import ru.complitex.domain.component.datatable.DomainColumn;
 import ru.complitex.domain.component.panel.DomainListModalPanel;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
+import ru.complitex.domain.entity.StringType;
+import ru.complitex.domain.model.TextAttributeModel;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.component.PeriodPanel;
 import ru.complitex.jedani.worker.entity.Payment;
@@ -85,7 +89,7 @@ public class PaymentPanel extends DomainListModalPanel<Payment> {
 
     @Override
     protected List<EntityAttribute> getEntityAttributes(Entity entity) {
-        return entity.getEntityAttributes(Payment.DATE, Payment.PERIOD, Payment.CONTRACT,
+        return entity.getEntityAttributes(Payment.DATE, Payment.PERIOD, Payment.SALE,
                 Payment.PERIOD_START, Payment.PERIOD_END, Payment.POINT, Payment.RATE, Payment.AMOUNT);
     }
 
@@ -115,8 +119,15 @@ public class PaymentPanel extends DomainListModalPanel<Payment> {
                     return new TextFilter<>(componentId, Model.of());
                 }
             };
-        } else if (a.getEntityAttributeId().equals(Payment.SALE)){
-            return new AbstractDomainColumn<>(a) {
+        } else if (a.getEntityAttributeId().equals(Payment.SALE)) {
+            return new DomainColumn<>(a, new StringResourceModel("sale", this)) {
+                @Override
+                public Component newFilter(String componentId, Table<Payment> table) {
+                    return new TextFilter<>(componentId, new TextAttributeModel(table.getFilterWrapper().getObject(),
+                            Payment.CONTRACT, StringType.DEFAULT))
+                            .onChange(table::update);
+                }
+
                 @Override
                 public void populateItem(Item<ICellPopulator<Payment>> cellItem, String componentId, IModel<Payment> rowModel) {
                     Sale sale = domainService.getDomain(Sale.class, rowModel.getObject().getSaleId());
