@@ -5,10 +5,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import ru.complitex.jedani.worker.entity.Reward;
 import ru.complitex.jedani.worker.exception.RewardException;
 import ru.complitex.jedani.worker.page.BasePage;
-import ru.complitex.jedani.worker.service.CompensationService;
-import ru.complitex.jedani.worker.service.RewardService;
-import ru.complitex.jedani.worker.service.RewardService2;
-import ru.complitex.jedani.worker.service.WorkerService;
+import ru.complitex.jedani.worker.service.*;
 
 import javax.inject.Inject;
 import java.math.BigDecimal;
@@ -34,6 +31,9 @@ public class RewardTestPage extends BasePage {
 
     @Inject
     private WorkerService workerService;
+
+    @Inject
+    private SaleService saleService;
 
     public RewardTestPage() {
         long rewardServiceTime = System.currentTimeMillis();
@@ -121,9 +121,11 @@ public class RewardTestPage extends BasePage {
                 .append(", t: ").append(reward.getType())
                 .append(", r: ").append(reward.getRank())
                 .append(", s: ").append(reward.getRewardStatus())
-                .append(", pId: ").append(reward.getPeriodId())
                 .append(reward.getEstimatedId() != null ? ", eId: " + reward.getEstimatedId() : "")
+                .append(reward.getSaleId() != null ? ", c: " + saleService.getContract(reward.getSaleId()) : "")
                 .append(reward.getWorkerId() != null ? ", jId: " + workerService.getJId(reward.getWorkerId()) : "")
+                .append(reward.getEstimatedId() != null ? ", eId: " + reward.getEstimatedId() : "")
+                .append(", pId: ").append(reward.getPeriodId())
                 .append("</br>"));
 
         return rewards.toString();
@@ -147,9 +149,10 @@ public class RewardTestPage extends BasePage {
                         .append(", t: ").append(reward.getType())
                         .append(", r: ").append(reward.getRank())
                         .append(", s: ").append(reward.getRewardStatus())
-                        .append(", pId: ").append(reward.getPeriodId())
-                        .append(reward.getEstimatedId() != null ? ", eId: " + reward.getEstimatedId() : "")
+                        .append(reward.getSaleId() != null ? ", c: " + saleService.getContract(reward.getSaleId()) : "")
                         .append(reward.getWorkerId() != null ? ", jId: " + workerService.getJId(reward.getWorkerId()) : "")
+                        .append(reward.getEstimatedId() != null ? ", eId: " + reward.getEstimatedId() : "")
+                        .append(", pId: ").append(reward.getPeriodId())
                         .append("</br>");
             }
         });

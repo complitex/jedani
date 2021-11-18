@@ -216,4 +216,8 @@ public class SaleService implements Serializable {
     public Long getCountryId(Long saleId) {
         return getCountryId(getSale(saleId));
     }
+
+    public String getContract(Long saleId) {
+        return domainService.getText(Sale.ENTITY_NAME, saleId, Sale.CONTRACT);
+    }
 }
