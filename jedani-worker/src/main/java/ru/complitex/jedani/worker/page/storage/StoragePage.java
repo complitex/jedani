@@ -423,7 +423,7 @@ public class StoragePage extends BasePage {
         }
 
         Provider<Product> productProvider = new Provider<>(FilterWrapper.of((Product) new Product()
-                        .setParentId(storageId)).put(Product.FILTER_NOMENCLATURE_TYPE, NomenclatureType.BASE_ASSORTMENT)
+                        .setParentId(storageId)).put(Product.FILTER_NOMENCLATURE_TYPE, NomenclatureType.RANGE)
                 .sort("id", false)) {
             @Override
             public List<Product> getList() {

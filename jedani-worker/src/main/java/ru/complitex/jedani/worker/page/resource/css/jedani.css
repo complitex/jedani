@@ -369,22 +369,35 @@ form label[required=required]:after {
     vertical-align: middle !important;
 }
 
-.sale-action {
+.sale-table .nomenclature {
+    width: 100%;
+}
+
+.sale-table .sale-decision {
+    border-top: none;
+    padding: 0;
+    text-align: center;
+}
+
+.sale-table .sale-action {
     padding-left: 0 !important;
-    width: 55px;
     vertical-align: middle !important;
 }
 
-.sale-action div {
+.sale-table .sale-action div {
     display: table-cell;
 }
 
-.sale-action a {
+.sale-table .sale-action a {
     padding: 0 5px;
 }
 
 .sale-table .bootstrap-select {
     width: 100% !important;
+}
+
+.sale-table tfoot tr td {
+    border: none;
 }
 
 .si-qty {

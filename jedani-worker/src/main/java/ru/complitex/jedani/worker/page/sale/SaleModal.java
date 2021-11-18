@@ -51,7 +51,10 @@ import ru.complitex.jedani.worker.exception.SaleException;
 import ru.complitex.jedani.worker.mapper.PeriodMapper;
 import ru.complitex.jedani.worker.mapper.StorageMapper;
 import ru.complitex.jedani.worker.page.BasePage;
-import ru.complitex.jedani.worker.service.*;
+import ru.complitex.jedani.worker.service.CompensationService;
+import ru.complitex.jedani.worker.service.PriceService;
+import ru.complitex.jedani.worker.service.SaleService;
+import ru.complitex.jedani.worker.service.WorkerService;
 import ru.complitex.name.entity.FirstName;
 import ru.complitex.name.entity.LastName;
 import ru.complitex.name.entity.MiddleName;
@@ -217,7 +220,7 @@ public class SaleModal extends Modal<Sale> {
 
         container.add(new FormGroupSelectPanel("saleType", new BootstrapSelect<>(FormGroupPanel.COMPONENT_ID,
                 NumberAttributeModel.of(saleModel, Sale.TYPE),
-                Arrays.asList(SaleType.MYCOOK, SaleType.BASE_ASSORTMENT),
+                Arrays.asList(SaleType.MYCOOK, SaleType.RANGE),
                 new IChoiceRenderer<>() {
                     @Override
                     public Object getDisplayValue(Long object) {
@@ -225,7 +228,7 @@ public class SaleModal extends Modal<Sale> {
                             case (int) SaleType.MYCOOK:
                                 return getString("mycook");
 
-                            case (int) SaleType.BASE_ASSORTMENT:
+                            case (int) SaleType.RANGE:
                                 return getString("baseAssortment");
 
                             default:
@@ -381,7 +384,7 @@ public class SaleModal extends Modal<Sale> {
                 item.add(quantity);
 
                 item.add(new NomenclatureAutoComplete("nomenclature", NumberAttributeModel.of(model,
-                        SaleItem.NOMENCLATURE)){
+                        SaleItem.NOMENCLATURE)) {
                     @Override
                     protected Nomenclature getFilterObject(String input) {
                         Nomenclature nomenclature = super.getFilterObject(input);
@@ -390,7 +393,7 @@ public class SaleModal extends Modal<Sale> {
                         if (saleModel.getObject().getType().equals(SaleType.MYCOOK)) {
                             attribute.setNumber(NomenclatureType.MYCOOK);
                         }else{
-                            attribute.setNumber(NomenclatureType.BASE_ASSORTMENT);
+                            attribute.setNumber(NomenclatureType.RANGE);
                         }
                         nomenclature.put(Domain.FILTER_ATTRIBUTES, Collections.singleton(attribute));
 
@@ -423,7 +426,7 @@ public class SaleModal extends Modal<Sale> {
 
                     @Override
                     public boolean isVisible() {
-                        return container.isEnabled();
+                        return container.isEnabled() && saleModel.getObject().getType().equals(SaleType.RANGE) ;
                     }
                 }.setIconType(GlyphIconType.remove));
             }
@@ -441,7 +444,7 @@ public class SaleModal extends Modal<Sale> {
 
             @Override
             public boolean isVisible() {
-                return container.isEnabled();
+                return container.isEnabled() && saleModel.getObject().getType().equals(SaleType.RANGE);
             }
         });
 

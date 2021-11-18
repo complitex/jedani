@@ -161,7 +161,7 @@ public class SaleDecisionModal extends Modal<SaleDecision> {
 
         container.add(new FormGroupSelectPanel("nomenclatureType", new TypeSelect(FormGroupSelectPanel.COMPONENT_ID,
                 NumberAttributeModel.of(getModel(), SaleDecision.NOMENCLATURE_TYPE),
-                NomenclatureType.MYCOOK, NomenclatureType.BASE_ASSORTMENT)
+                NomenclatureType.MYCOOK, NomenclatureType.RANGE)
                 .add(new CssClassNameAppender("form-control"))
                 .add(OnChangeAjaxBehavior.onChange(t -> t.add(nomenclatures, nomenclatureContainer))))) ;
 

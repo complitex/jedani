@@ -76,7 +76,7 @@ public class NomenclatureListPage extends DomainListModalPage<Nomenclature> {
                              case (int) NomenclatureType.MYCOOK:
                                  type = getString("select.1");
                                  break;
-                             case (int) NomenclatureType.BASE_ASSORTMENT:
+                             case (int) NomenclatureType.RANGE:
                                  type = getString("select.2");
                                  break;
                              case (int) NomenclatureType.SPARE_PART:
@@ -101,7 +101,7 @@ public class NomenclatureListPage extends DomainListModalPage<Nomenclature> {
 
         if (attribute.getEntityAttributeId().equals(Nomenclature.TYPE)){
             return new SelectPanel(componentId, new TypeSelect(SelectPanel.SELECT_COMPONENT_ID,
-                    NumberAttributeModel.of(attribute), NomenclatureType.MYCOOK, NomenclatureType.BASE_ASSORTMENT, NomenclatureType.SPARE_PART)
+                    NumberAttributeModel.of(attribute), NomenclatureType.MYCOOK, NomenclatureType.RANGE, NomenclatureType.SPARE_PART)
                     .add(new CssClassNameAppender("form-control")));
         }
 

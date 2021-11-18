@@ -6,6 +6,6 @@ package ru.complitex.jedani.worker.entity;
  */
 public class NomenclatureType {
     public static final long MYCOOK = 1;
-    public static final long BASE_ASSORTMENT = 2;
+    public static final long RANGE = 2;
     public static final long SPARE_PART = 3;
 }

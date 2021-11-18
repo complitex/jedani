@@ -236,7 +236,7 @@ class TransferModal extends StorageModal {
                     public boolean isVisible() {
                         Nomenclature nomenclature = domainService.getDomain(Nomenclature.class, product.getNomenclatureId());
 
-                        return nomenclature != null && nomenclature.getType().equals(NomenclatureType.BASE_ASSORTMENT);
+                        return nomenclature != null && nomenclature.getType().equals(NomenclatureType.RANGE);
                     }
                 }.setOutputMarkupPlaceholderTag(true));
 
@@ -290,7 +290,7 @@ class TransferModal extends StorageModal {
                     public boolean isVisible() {
                         Nomenclature nomenclature = domainService.getDomain(Nomenclature.class, product.getNomenclatureId());
 
-                        return nomenclature != null && nomenclature.getType().equals(NomenclatureType.BASE_ASSORTMENT);
+                        return nomenclature != null && nomenclature.getType().equals(NomenclatureType.RANGE);
                     }
                 }.setOutputMarkupPlaceholderTag(true));
 

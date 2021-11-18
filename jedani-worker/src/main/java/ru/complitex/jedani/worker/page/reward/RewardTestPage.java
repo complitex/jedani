@@ -125,6 +125,8 @@ public class RewardTestPage extends BasePage {
                 .append(", saleId: ").append(reward.getSaleId())
                 .append(", status: ").append(reward.getRewardStatus())
                 .append(", periodId: ").append(reward.getPeriodId())
+                .append(reward.getEstimatedId() != null ? ", estimatedId: " + reward.getEstimatedId() : "")
+                .append(reward.getWorkerId() != null ? ", jId: " + workerService.getJId(reward.getWorkerId()) : "")
                 .append("</br>"));
 
         return rewards.toString();

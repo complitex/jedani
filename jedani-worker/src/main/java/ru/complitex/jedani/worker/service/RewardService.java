@@ -373,7 +373,7 @@ public class RewardService implements Serializable {
                     point = getParameter(7L);
                 }
             }
-        }else if (sale.getType() == SaleType.BASE_ASSORTMENT && sale.getTotal() != null){
+        }else if (sale.getType() == SaleType.RANGE && sale.getTotal() != null){
             point = sale.getTotal().multiply(getParameter(8L));
         }
 
@@ -537,7 +537,7 @@ public class RewardService implements Serializable {
     private BigDecimal calcManagerPoint(Sale sale, Long mkParameterId, Long baParameterId){
         if (sale.getType() == SaleType.MYCOOK){
             return getParameter(mkParameterId);
-        }else if (sale.getType() == SaleType.BASE_ASSORTMENT && sale.getTotal() != null){
+        }else if (sale.getType() == SaleType.RANGE && sale.getTotal() != null){
             return sale.getTotal().multiply(getParameter(baParameterId));
         }
 

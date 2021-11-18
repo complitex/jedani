@@ -230,7 +230,7 @@ public class CompensationService {
                     point = getParameter(7L);
                 }
             }
-        }else if (sale.getType() == SaleType.BASE_ASSORTMENT && sale.getTotal() != null){
+        }else if (sale.getType() == SaleType.RANGE && sale.getTotal() != null){
             point = sale.getTotal().multiply(getParameter(8L));
         }
 
