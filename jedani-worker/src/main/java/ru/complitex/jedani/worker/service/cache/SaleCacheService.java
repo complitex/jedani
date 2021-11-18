@@ -19,7 +19,7 @@ public class SaleCacheService implements Serializable {
 
     public Set<Long> getSaleWorkerIds() {
         if (saleWorkerIds == null) {
-            saleWorkerIds = saleService.getActiveSaleWorkerIds();
+            saleWorkerIds = saleService.getSaleWorkerIds();
         }
 
         return saleWorkerIds;

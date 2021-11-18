@@ -83,13 +83,13 @@ public class RewardTestPage extends BasePage {
                 rewardService2.getRewards().size() + " " + rewardServiceSum2.toPlainString() + " " + rewardServiceTime2));
 
         add(new Label("r", getRewards(rewardService.getRewards().stream()
-                .sorted(Comparator.comparing(Reward::getWorkerId)).collect(Collectors.toList())))
+                .sorted(Comparator.comparing(reward ->  Objects.requireNonNullElse(reward.getSaleId(), -1L))).collect(Collectors.toList())))
                 .setEscapeModelStrings(false));
         add(new Label("c", getRewards(compensationService.getRewards().stream()
                 .sorted(Comparator.comparing(reward -> Objects.requireNonNullElse(reward.getWorkerId(), -1L))).collect(Collectors.toList())))
                 .setEscapeModelStrings(false));
         add(new Label("r2", getRewards(rewardService2.getRewards().stream()
-                .sorted(Comparator.comparing(Reward::getWorkerId)).collect(Collectors.toList())))
+                .sorted(Comparator.comparing(reward ->  Objects.requireNonNullElse(reward.getSaleId(), -1L))).collect(Collectors.toList())))
                 .setEscapeModelStrings(false));
 
         add(new Label("rewards", "" +
@@ -118,14 +118,14 @@ public class RewardTestPage extends BasePage {
         StringBuilder rewards = new StringBuilder();
 
         list.forEach(reward -> rewards
-                .append("workerId: ").append(reward.getWorkerId())
-                .append(", point: ").append(reward.getPoint())
-                .append(", type: ").append(reward.getType())
-                .append(", rank: ").append(reward.getRank())
-                .append(", saleId: ").append(reward.getSaleId())
-                .append(", status: ").append(reward.getRewardStatus())
-                .append(", periodId: ").append(reward.getPeriodId())
-                .append(reward.getEstimatedId() != null ? ", estimatedId: " + reward.getEstimatedId() : "")
+                .append("sId: ").append(reward.getSaleId())
+                .append(", wId: ").append(reward.getWorkerId())
+                .append(", p: ").append(reward.getPoint())
+                .append(", t: ").append(reward.getType())
+                .append(", r: ").append(reward.getRank())
+                .append(", s: ").append(reward.getRewardStatus())
+                .append(", pId: ").append(reward.getPeriodId())
+                .append(reward.getEstimatedId() != null ? ", eId: " + reward.getEstimatedId() : "")
                 .append(reward.getWorkerId() != null ? ", jId: " + workerService.getJId(reward.getWorkerId()) : "")
                 .append("</br>"));
 
@@ -144,22 +144,20 @@ public class RewardTestPage extends BasePage {
                             Objects.equals(reward.getRewardStatus(), r.getRewardStatus()) &&
                             Objects.equals(reward.getPeriodId(), r.getPeriodId()))) {
                 rewards.append(prefix).append(" ")
-                        .append("workerId: ").append(reward.getWorkerId())
-                        .append(", point: ").append(reward.getPoint())
-                        .append(", type: ").append(reward.getType())
-                        .append(", rank: ").append(reward.getRank())
-                        .append(", saleId: ").append(reward.getSaleId())
-                        .append(", status: ").append(reward.getRewardStatus())
-                        .append(", periodId: ").append(reward.getPeriodId())
-                        .append(reward.getEstimatedId() != null ? ", estimatedId: " + reward.getEstimatedId() : "")
+                        .append("sId: ").append(reward.getSaleId())
+                        .append(", wId: ").append(reward.getWorkerId())
+                        .append(", p: ").append(reward.getPoint())
+                        .append(", t: ").append(reward.getType())
+                        .append(", r: ").append(reward.getRank())
+                        .append(", s: ").append(reward.getRewardStatus())
+                        .append(", pId: ").append(reward.getPeriodId())
+                        .append(reward.getEstimatedId() != null ? ", eId: " + reward.getEstimatedId() : "")
                         .append(reward.getWorkerId() != null ? ", jId: " + workerService.getJId(reward.getWorkerId()) : "")
                         .append("</br>");
             }
         });
         return rewards.toString();
     }
-
-
 }
 
 

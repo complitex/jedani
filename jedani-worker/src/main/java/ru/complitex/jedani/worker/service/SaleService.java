@@ -187,11 +187,11 @@ public class SaleService implements Serializable {
         }
     }
 
-    public List<Sale> getActiveSales(){
+    public List<Sale> getSales(){
         return saleMapper.getSales(FilterWrapper.of(new Sale()).put(Sale.FILTER_ACTUAL, true));
     }
 
-    public Set<Long> getActiveSaleWorkerIds(){
+    public Set<Long> getSaleWorkerIds(){
         return saleMapper.getSales(FilterWrapper.of(new Sale())
                         .addEntityAttributeId(Sale.SELLER_WORKER)
                         .put(Sale.FILTER_ACTUAL, true)).stream()

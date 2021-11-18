@@ -235,7 +235,7 @@ public class RewardService2 implements Serializable {
     }
 
     private void calculateRewardTree(RewardTree rewardTree, Period period) {
-        Set<Long> activeSaleWorkerIds = saleService.getActiveSaleWorkerIds();
+        Set<Long> activeSaleWorkerIds = saleService.getSaleWorkerIds();
 
         rewardTree.forEachLevel((l, rl) -> rl.forEach(r -> {
             r.setFirstLevelCount(r.getRewardNodes().stream()
@@ -1202,7 +1202,7 @@ public class RewardService2 implements Serializable {
 
             RewardTree tree = getRewardTree(period);
 
-            saleService.getActiveSales().stream()
+            saleService.getSales().stream()
                     .filter(this::isPaidSalePeriod)
                     .forEach(sale -> {
                         calculateSaleReward(sale, saleService.getSaleItems(sale.getObjectId()), period, RewardStatus.ESTIMATED);
