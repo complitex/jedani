@@ -74,7 +74,7 @@ public class RewardTreeService {
     }
 
     private void updateRewardNode(RewardNode rewardNode, Period period) {
-        if (saleCacheService.hasActiveSale(rewardNode.getWorkerNode().getObjectId())) {
+        if (saleCacheService.hasSale(rewardNode.getWorkerNode().getObjectId())) {
             rewardNode.setSales(saleService.getSales(rewardNode.getWorkerId()));
 
             rewardNode.setSaleVolume(rewardNode.getSales().stream()

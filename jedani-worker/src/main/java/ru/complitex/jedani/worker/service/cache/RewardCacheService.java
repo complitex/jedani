@@ -16,7 +16,6 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
 import static java.math.BigDecimal.ZERO;
 
@@ -31,24 +30,23 @@ public class RewardCacheService implements Serializable {
     @Inject
     private WorkerService workerService;
 
-    private transient LoadingCache<Pair<Long, Long>, List<Reward>> rewardsByPeriodAndWorkerCache;
+    private transient LoadingCache<Pair<Long, Long>, List<Reward>> rewardsCache;
 
-    private LoadingCache<Pair<Long, Long>, List<Reward>> getRewardsByPeriodWorkerIdCache() {
-        if (rewardsByPeriodAndWorkerCache == null){
-            rewardsByPeriodAndWorkerCache = CacheBuilder.newBuilder()
-                    .expireAfterAccess(5, TimeUnit.MINUTES)
+    private LoadingCache<Pair<Long, Long>, List<Reward>> getRewardsCache() {
+        if (rewardsCache == null) {
+            rewardsCache = CacheBuilder.newBuilder()
                     .build(CacheLoader.from(pair ->
                             domainService.getDomains(Reward.class, FilterWrapper.of(new Reward()
-                                    .setWorkerId(pair.getLeft())
-                                    .setPeriodId(pair.getRight())))));
+                                    .setPeriodId(pair.getLeft())
+                                    .setWorkerId(pair.getRight())))));
         }
 
-        return rewardsByPeriodAndWorkerCache;
+        return rewardsCache;
     }
 
     public List<Reward> getRewardsFromCache(Long periodId, Long workerId) {
         try {
-            return getRewardsByPeriodWorkerIdCache().get(Pair.of(workerId, periodId));
+            return getRewardsCache().get(Pair.of(periodId, workerId));
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
         }
@@ -74,5 +72,9 @@ public class RewardCacheService implements Serializable {
                 .filter(r -> Objects.equals(workerService.getCurrencyId(r.getWorkerId()), currencyId))
                 .map(r -> r.getAmount() != null ? r.getAmount() : ZERO)
                 .reduce(ZERO, BigDecimal::add);
+    }
+
+    public void clear() {
+        getRewardsCache().invalidateAll();
     }
 }

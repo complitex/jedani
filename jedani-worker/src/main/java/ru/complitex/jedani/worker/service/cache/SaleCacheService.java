@@ -15,21 +15,21 @@ public class SaleCacheService implements Serializable {
     @Inject
     private SaleService saleService;
 
-    private transient Set<Long> activeSaleWorkerIds;
+    private transient Set<Long> saleWorkerIds;
 
-    public Set<Long> getActiveSaleWorkerIds() {
-        if (activeSaleWorkerIds == null) {
-            activeSaleWorkerIds = saleService.getActiveSaleWorkerIds();
+    public Set<Long> getSaleWorkerIds() {
+        if (saleWorkerIds == null) {
+            saleWorkerIds = saleService.getActiveSaleWorkerIds();
         }
 
-        return activeSaleWorkerIds;
+        return saleWorkerIds;
     }
 
-    public boolean hasActiveSale(Long workerId) {
-        return getActiveSaleWorkerIds().contains(workerId);
+    public boolean hasSale(Long workerId) {
+        return getSaleWorkerIds().contains(workerId);
     }
 
     public void clear() {
-        activeSaleWorkerIds = null;
+        saleWorkerIds = null;
     }
 }

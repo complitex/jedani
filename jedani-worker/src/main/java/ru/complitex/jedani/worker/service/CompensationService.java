@@ -11,8 +11,7 @@ import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.mapper.PaymentMapper;
 import ru.complitex.jedani.worker.mapper.PeriodMapper;
 import ru.complitex.jedani.worker.mapper.RewardMapper;
-import ru.complitex.jedani.worker.service.cache.ParameterCacheService;
-import ru.complitex.jedani.worker.service.cache.PaymentCacheService;
+import ru.complitex.jedani.worker.service.cache.*;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -68,10 +67,19 @@ public class CompensationService {
     private RewardTreeService rewardTreeService;
 
     @Inject
+    private SaleCacheService saleCacheService;
+
+    @Inject
     private PaymentCacheService paymentCacheService;
 
     @Inject
     private ParameterCacheService parameterCacheService;
+
+    @Inject
+    private RewardTreeCacheService rewardTreeCacheService;
+
+    @Inject
+    private RewardCacheService rewardCacheService;
 
     private boolean test = false;
 
@@ -645,9 +653,11 @@ public class CompensationService {
 
         rewardMapper.deleteRewards(period.getObjectId());
 
+        saleCacheService.clear();
         paymentCacheService.clear();
-
         parameterCacheService.clear();
+        rewardTreeCacheService.clear();
+        rewardCacheService.clear();
 
         rewards.clear();
 

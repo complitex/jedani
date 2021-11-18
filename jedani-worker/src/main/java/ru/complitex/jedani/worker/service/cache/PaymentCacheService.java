@@ -75,7 +75,11 @@ public class PaymentCacheService implements Serializable {
             }
         });
 
-        return rates.size() > 0 ? rates.stream().reduce(ZERO, BigDecimal::add).divide(new BigDecimal(rates.size()), 5, HALF_EVEN) : ONE;
+        return rates.size() > 0
+                ? rates.stream()
+                .reduce(ZERO, BigDecimal::add)
+                .divide(new BigDecimal(rates.size()), 5, HALF_EVEN)
+                : ONE;
     }
 
     private transient LoadingCache<Pair<Long, Long>, BigDecimal> paymentRateCache;

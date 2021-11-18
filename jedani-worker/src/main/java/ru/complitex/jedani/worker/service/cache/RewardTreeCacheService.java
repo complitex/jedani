@@ -43,11 +43,15 @@ public class RewardTreeCacheService implements Serializable {
         }
     }
 
-    public RewardNode getRewardNode(Long workerId){
+    public RewardNode getRewardNode(Long workerId) {
         return getRewardTreeCache(periodMapper.getActualPeriod().getObjectId()).getRewardNode(workerId);
     }
 
-    public RewardNode getRewardNode(Long periodId, Long workerId){
+    public RewardNode getRewardNode(Long periodId, Long workerId) {
         return getRewardTreeCache(periodId).getRewardNode(workerId);
+    }
+
+    public void clear() {
+        getRewardTreeCache().invalidateAll();
     }
 }
