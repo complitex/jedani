@@ -15,7 +15,6 @@ import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static ru.complitex.jedani.worker.security.JedaniRoles.ADMINISTRATORS;
 
@@ -82,15 +81,13 @@ public class RewardTestPage extends BasePage {
                 compensationService.getRewards().size() + " " + compensationServiceSum.toPlainString() + " " + compensationServiceTime + " = " +
                 rewardService2.getRewards().size() + " " + rewardServiceSum2.toPlainString() + " " + rewardServiceTime2));
 
-        add(new Label("r", getRewards(rewardService.getRewards().stream()
-                .sorted(Comparator.comparing(reward ->  Objects.requireNonNullElse(reward.getSaleId(), -1L))).collect(Collectors.toList())))
-                .setEscapeModelStrings(false));
-        add(new Label("c", getRewards(compensationService.getRewards().stream()
-                .sorted(Comparator.comparing(reward -> Objects.requireNonNullElse(reward.getWorkerId(), -1L))).collect(Collectors.toList())))
-                .setEscapeModelStrings(false));
-        add(new Label("r2", getRewards(rewardService2.getRewards().stream()
-                .sorted(Comparator.comparing(reward ->  Objects.requireNonNullElse(reward.getSaleId(), -1L))).collect(Collectors.toList())))
-                .setEscapeModelStrings(false));
+        rewardService.getRewards().sort(Comparator.comparing(reward ->  Objects.requireNonNullElse(reward.getSaleId(), -1L)));
+        compensationService.getRewards().sort(Comparator.comparing(reward ->  Objects.requireNonNullElse(reward.getSaleId(), -1L)));
+        rewardService2.getRewards().sort(Comparator.comparing(reward ->  Objects.requireNonNullElse(reward.getSaleId(), -1L)));
+
+        add(new Label("r", getRewards(rewardService.getRewards())).setEscapeModelStrings(false));
+        add(new Label("c", getRewards(compensationService.getRewards())).setEscapeModelStrings(false));
+        add(new Label("r2", getRewards(rewardService2.getRewards())).setEscapeModelStrings(false));
 
         add(new Label("rewards", "" +
                 getRewardsDiff("-c", rewardService.getRewards(), compensationService.getRewards()) + "<br/>" +
@@ -159,5 +156,3 @@ public class RewardTestPage extends BasePage {
         return rewards.toString();
     }
 }
-
-
