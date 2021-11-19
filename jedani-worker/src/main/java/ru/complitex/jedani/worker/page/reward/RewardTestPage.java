@@ -141,7 +141,7 @@ public class RewardTestPage extends BasePage {
 
             Reward r1 = list2.stream()
                     .filter(r -> Objects.equals(reward.getWorkerId(), r.getWorkerId()) &&
-                            Objects.equals(reward.getPoint(), r.getPoint()) &&
+                            !Objects.equals(reward.getPoint(), r.getPoint()) &&
                             Objects.equals(reward.getType(), r.getType()) &&
                             Objects.equals(reward.getSaleId(), r.getSaleId()) &&
                             Objects.equals(reward.getRewardStatus(), r.getRewardStatus()) &&
@@ -149,8 +149,7 @@ public class RewardTestPage extends BasePage {
                     .findAny()
                     .orElse(null);
 
-
-            if (r1 != null ) {
+            if (r1 != null) {
                 append(prefix + "+-", rewards, reward);
                 append(prefix + "-+", rewards, r1);
             }
