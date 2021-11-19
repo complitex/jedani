@@ -475,7 +475,7 @@ public class RewardService2 implements Serializable {
 
             reward.setAmount(reward.getPoint().multiply(reward.getRate()).setScale(5, HALF_EVEN));
         } else {
-            throw new RuntimeException("negative reward point error " + reward);
+            //throw new RuntimeException("negative reward point error " + reward);
         }
     }
 
@@ -485,7 +485,7 @@ public class RewardService2 implements Serializable {
 
             reward.setAmount(reward.getPoint().multiply(reward.getRate()).setScale(5, HALF_EVEN));
         } else {
-            throw new RuntimeException("negative reward point error " + reward);
+            //throw new RuntimeException("negative reward point error " + reward);
         }
     }
 
@@ -623,7 +623,11 @@ public class RewardService2 implements Serializable {
             updateLocal(sale, reward, period);
 
             if (reward.getPoint().compareTo(ZERO) != 0) {
-                domainService.save(reward);
+                if (test) {
+                    rewards.add(reward);
+                } else {
+                    domainService.save(reward);
+                }
             }
         }
 
@@ -1184,11 +1188,11 @@ public class RewardService2 implements Serializable {
     }
 
     @Transactional(rollbackFor = RewardException.class)
-    public void calculateRewards() throws RewardException {
+    public void calculateRewards(Period period) throws RewardException {
         try {
-            Period period = periodMapper.getActualPeriod();
-
-            rewardMapper.deleteRewards(period.getObjectId());
+            if (!test) {
+                rewardMapper.deleteRewards(period.getObjectId());
+            }
 
             rewards.clear();
 
@@ -1204,6 +1208,7 @@ public class RewardService2 implements Serializable {
 
             saleService.getSales().stream()
                     .filter(this::isPaidSalePeriod)
+                    .filter(sale -> sale.getPeriodId() <= period.getObjectId())
                     .forEach(sale -> {
                         calculateSaleReward(sale, saleService.getSaleItems(sale.getObjectId()), period, RewardStatus.ESTIMATED);
                         calculateSaleReward(sale, saleService.getSaleItems(sale.getObjectId()), period, RewardStatus.CHARGED);
@@ -1273,10 +1278,15 @@ public class RewardService2 implements Serializable {
         }
     }
 
-    public void testRewards() throws RewardException {
+    @Transactional(rollbackFor = RewardException.class)
+    public void calculateRewards() throws RewardException {
+        calculateRewards(periodMapper.getActualPeriod());
+    }
+
+    public void testRewards(Period period) throws RewardException {
         test = true;
 
-        calculateRewards();
+        calculateRewards(period);
 
         test = false;
     }

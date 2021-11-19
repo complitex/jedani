@@ -648,10 +648,10 @@ public class CompensationService {
     }
 
     @Transactional
-    public void calculateRewards() {
-        Period period = periodMapper.getActualPeriod();
-
-        rewardMapper.deleteRewards(period.getObjectId());
+    public void calculateRewards(Period period) {
+        if (!test) {
+            rewardMapper.deleteRewards(period.getObjectId());
+        }
 
         saleCacheService.clear();
         paymentCacheService.clear();
@@ -666,6 +666,7 @@ public class CompensationService {
         rewardTreeService.updateRewardTree(rewardTree, period, rewardNode -> {
             rewardNode.getSales().stream()
                     .filter(this::isPaidSalePeriod)
+                    .filter(sale -> sale.getPeriodId() <= period.getObjectId())
                     .forEach(sale -> {
                         List<SaleItem> saleItems = saleService.getSaleItems(sale.getObjectId());
 
@@ -712,10 +713,15 @@ public class CompensationService {
        });
     }
 
-    public void testRewards() {
+    @Transactional
+    public void calculateRewards() {
+        calculateRewards(periodMapper.getActualPeriod());
+    }
+
+    public void testRewards(Period period) {
         test = true;
 
-        calculateRewards();
+        calculateRewards(period);
 
         test = false;
     }

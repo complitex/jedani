@@ -2,8 +2,10 @@ package ru.complitex.jedani.worker.page.reward;
 
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.markup.html.basic.Label;
+import ru.complitex.jedani.worker.entity.Period;
 import ru.complitex.jedani.worker.entity.Reward;
 import ru.complitex.jedani.worker.exception.RewardException;
+import ru.complitex.jedani.worker.mapper.PeriodMapper;
 import ru.complitex.jedani.worker.page.BasePage;
 import ru.complitex.jedani.worker.service.*;
 
@@ -35,11 +37,16 @@ public class RewardTestPage extends BasePage {
     @Inject
     private SaleService saleService;
 
+    @Inject
+    private PeriodMapper periodMapper;
+
     public RewardTestPage() {
+        Period period = periodMapper.getPeriod(17L);
+
         long rewardServiceTime = System.currentTimeMillis();
 
         try {
-            rewardService.testRewards();
+            rewardService.testRewards(period);
         } catch (RewardException e) {
             throw new RuntimeException(e);
         }
@@ -48,14 +55,14 @@ public class RewardTestPage extends BasePage {
 
         long compensationServiceTime = System.currentTimeMillis();
 
-        compensationService.testRewards();
+        compensationService.testRewards(period);
 
         compensationServiceTime = System.currentTimeMillis() - compensationServiceTime;
 
         long rewardServiceTime2 = System.currentTimeMillis();
 
         try {
-            rewardService2.testRewards();
+            rewardService2.testRewards(period);
         } catch (RewardException e) {
             throw new RuntimeException(e);
         }
@@ -114,19 +121,7 @@ public class RewardTestPage extends BasePage {
     private String getRewards(List<Reward> list) {
         StringBuilder rewards = new StringBuilder();
 
-        list.forEach(reward -> rewards
-                .append("sId: ").append(reward.getSaleId())
-                .append(", wId: ").append(reward.getWorkerId())
-                .append(", p: ").append(reward.getPoint())
-                .append(", t: ").append(reward.getType())
-                .append(", r: ").append(reward.getRank())
-                .append(", s: ").append(reward.getRewardStatus())
-                .append(reward.getEstimatedId() != null ? ", eId: " + reward.getEstimatedId() : "")
-                .append(reward.getSaleId() != null ? ", c: " + saleService.getContract(reward.getSaleId()) : "")
-                .append(reward.getWorkerId() != null ? ", jId: " + workerService.getJId(reward.getWorkerId()) : "")
-                .append(reward.getEstimatedId() != null ? ", eId: " + reward.getEstimatedId() : "")
-                .append(", pId: ").append(reward.getPeriodId())
-                .append("</br>"));
+        list.forEach(reward -> append("", rewards, reward));
 
         return rewards.toString();
     }
@@ -137,25 +132,45 @@ public class RewardTestPage extends BasePage {
         list1.forEach(reward -> {
             if (list2.stream()
                     .noneMatch(r -> Objects.equals(reward.getWorkerId(), r.getWorkerId()) &&
-                            Objects.equals(reward.getPoint(), r.getPoint()) &&
                             Objects.equals(reward.getType(), r.getType()) &&
                             Objects.equals(reward.getSaleId(), r.getSaleId()) &&
                             Objects.equals(reward.getRewardStatus(), r.getRewardStatus()) &&
                             Objects.equals(reward.getPeriodId(), r.getPeriodId()))) {
-                rewards.append(prefix).append(" ")
-                        .append("sId: ").append(reward.getSaleId())
-                        .append(", wId: ").append(reward.getWorkerId())
-                        .append(", p: ").append(reward.getPoint())
-                        .append(", t: ").append(reward.getType())
-                        .append(", r: ").append(reward.getRank())
-                        .append(", s: ").append(reward.getRewardStatus())
-                        .append(reward.getSaleId() != null ? ", c: " + saleService.getContract(reward.getSaleId()) : "")
-                        .append(reward.getWorkerId() != null ? ", jId: " + workerService.getJId(reward.getWorkerId()) : "")
-                        .append(reward.getEstimatedId() != null ? ", eId: " + reward.getEstimatedId() : "")
-                        .append(", pId: ").append(reward.getPeriodId())
-                        .append("</br>");
+                append(prefix, rewards, reward);
+            }
+
+            Reward r1 = list2.stream()
+                    .filter(r -> Objects.equals(reward.getWorkerId(), r.getWorkerId()) &&
+                            Objects.equals(reward.getPoint(), r.getPoint()) &&
+                            Objects.equals(reward.getType(), r.getType()) &&
+                            Objects.equals(reward.getSaleId(), r.getSaleId()) &&
+                            Objects.equals(reward.getRewardStatus(), r.getRewardStatus()) &&
+                            Objects.equals(reward.getPeriodId(), r.getPeriodId()))
+                    .findAny()
+                    .orElse(null);
+
+
+            if (r1 != null ) {
+                append(prefix + "+-", rewards, reward);
+                append(prefix + "-+", rewards, r1);
             }
         });
+
         return rewards.toString();
+    }
+
+    private void append(String prefix, StringBuilder rewards, Reward reward) {
+        rewards.append(prefix).append(" ")
+                .append("sId: ").append(reward.getSaleId())
+                .append(", wId: ").append(reward.getWorkerId())
+                .append(", p: ").append(reward.getPoint())
+                .append(", t: ").append(reward.getType())
+                .append(", r: ").append(reward.getRank())
+                .append(", s: ").append(reward.getRewardStatus())
+                .append(reward.getSaleId() != null ? ", c: " + saleService.getContract(reward.getSaleId()) : "")
+                .append(reward.getWorkerId() != null ? ", jId: " + workerService.getJId(reward.getWorkerId()) : "")
+                .append(reward.getEstimatedId() != null ? ", eId: " + reward.getEstimatedId() : "")
+                .append(", pId: ").append(reward.getPeriodId())
+                .append("</br>");
     }
 }
