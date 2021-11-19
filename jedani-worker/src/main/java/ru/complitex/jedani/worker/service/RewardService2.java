@@ -460,7 +460,9 @@ public class RewardService2 implements Serializable {
                     }
                 }
             } else {
-                throw new RuntimeException("negative reward point error " + reward);
+                if (!test) {
+                    throw new RuntimeException("negative reward point error " + reward);
+                }
             }
         } catch (Exception e) {
             log.error("error updateLocal {}, {}", sale, reward);
@@ -475,7 +477,9 @@ public class RewardService2 implements Serializable {
 
             reward.setAmount(reward.getPoint().multiply(reward.getRate()).setScale(5, HALF_EVEN));
         } else {
-            //throw new RuntimeException("negative reward point error " + reward);
+            if (!test) {
+                throw new RuntimeException("negative reward point error " + reward);
+            }
         }
     }
 
@@ -485,7 +489,9 @@ public class RewardService2 implements Serializable {
 
             reward.setAmount(reward.getPoint().multiply(reward.getRate()).setScale(5, HALF_EVEN));
         } else {
-            //throw new RuntimeException("negative reward point error " + reward);
+            if (!test) {
+                throw new RuntimeException("negative reward point error " + reward);
+            }
         }
     }
 
