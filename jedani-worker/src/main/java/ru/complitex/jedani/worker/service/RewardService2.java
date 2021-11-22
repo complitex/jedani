@@ -422,10 +422,12 @@ public class RewardService2 implements Serializable {
 
                     BigDecimal ratio = ZERO;
 
+                    Date month = periodMapper.getPeriod(sale.getPeriodId()).getOperatingMonth();
+
                     List<Ratio> ratios = domainService.getDomains(Ratio.class, FilterWrapper.of((Ratio) new Ratio()
                             .setCountryId(saleService.getCountryId(sale))
-                            .setBegin(reward.getMonth())
-                            .setEnd(reward.getMonth())
+                            .setBegin(month)
+                            .setEnd(month)
                             .setFilter(Ratio.BEGIN, Attribute.FILTER_BEFORE_OR_EQUAL_DATE)
                             .setFilter(Ratio.END, Attribute.FILTER_AFTER_DATE)));
 
