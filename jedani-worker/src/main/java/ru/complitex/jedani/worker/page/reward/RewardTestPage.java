@@ -4,6 +4,7 @@ import org.apache.wicket.authroles.authorization.strategies.role.annotations.Aut
 import org.apache.wicket.markup.html.basic.Label;
 import ru.complitex.jedani.worker.entity.Period;
 import ru.complitex.jedani.worker.entity.Reward;
+import ru.complitex.jedani.worker.entity.RewardStatus;
 import ru.complitex.jedani.worker.exception.RewardException;
 import ru.complitex.jedani.worker.mapper.PeriodMapper;
 import ru.complitex.jedani.worker.page.BasePage;
@@ -14,6 +15,7 @@ import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 import static ru.complitex.jedani.worker.security.JedaniRoles.ADMINISTRATORS;
 
@@ -69,24 +71,13 @@ public class RewardTestPage extends BasePage {
 
         rewardServiceTime2 = System.currentTimeMillis() - rewardServiceTime2;
 
-        BigDecimal rewardServiceSum = rewardService.getRewards().stream()
-                .map(Reward::getPoint)
-                .filter(Objects::nonNull)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        List<Reward> rewards = rewardService.getRewards();
+        List<Reward> compensations = compensationService.getRewards();
+        List<Reward> rewards2 = rewardService2.getRewards();
 
-        BigDecimal compensationServiceSum = compensationService.getRewards().stream()
-                .map(Reward::getPoint)
-                .filter(Objects::nonNull)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        BigDecimal rewardServiceSum2 = rewardService2.getRewards().stream()
-                .map(Reward::getPoint)
-                .filter(Objects::nonNull)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        add(new Label("test", rewardService.getRewards().size() + " " + rewardServiceSum.toPlainString() + " " + rewardServiceTime + " = " +
-                compensationService.getRewards().size() + " " + compensationServiceSum.toPlainString() + " " + compensationServiceTime + " = " +
-                rewardService2.getRewards().size() + " " + rewardServiceSum2.toPlainString() + " " + rewardServiceTime2));
+        add(new Label("test", getSize(rewards)+ ", " + getSum(rewards) + ", " + rewardServiceTime + " = " +
+                getSize(compensations) + ", " + getSum(compensations) + ", " + compensationServiceTime + " = " +
+                getSize(rewards2) + ", " + getSum(rewards2) + ", " + rewardServiceTime2));
 
         rewardService.getRewards().sort(Comparator.comparing(reward ->  Objects.requireNonNullElse(reward.getSaleId(), -1L)));
         compensationService.getRewards().sort(Comparator.comparing(reward ->  Objects.requireNonNullElse(reward.getSaleId(), -1L)));
@@ -172,4 +163,62 @@ public class RewardTestPage extends BasePage {
                 .append(", pId: ").append(reward.getPeriodId())
                 .append("</br>");
     }
+
+    private Stream<Reward> getEstimatedStream(List<Reward> rewards) {
+        return rewards.stream().filter(reward -> reward.getRewardStatus().equals(RewardStatus.ESTIMATED));
+    }
+
+    private Stream<Reward> getChargedStream(List<Reward> rewards) {
+        return rewards.stream().filter(reward -> reward.getRewardStatus().equals(RewardStatus.CHARGED));
+    }
+
+    private Stream<Reward> getWithdrawnStream(List<Reward> rewards) {
+        return rewards.stream().filter(reward -> reward.getRewardStatus().equals(RewardStatus.WITHDRAWN));
+    }
+
+    private String getEstimatedSize(List<Reward> rewards) {
+        return  getEstimatedStream(rewards).count() + "";
+    }
+
+    private String getChargedSize(List<Reward> rewards) {
+        return getChargedStream(rewards).count() + "";
+    }
+
+    private String getWithdrawnSize(List<Reward> rewards) {
+        return getWithdrawnStream(rewards).count() + "";
+    }
+
+    private String getSize(List<Reward> rewards) {
+        return getEstimatedSize(rewards) + " / " + getChargedSize(rewards) + " / " + getWithdrawnSize(rewards);
+    }
+
+    private String getEstimatedSum(List<Reward> rewards) {
+        return  getEstimatedStream(rewards)
+                .map(Reward::getPoint)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .toPlainString();
+    }
+
+    private String getChargedSum(List<Reward> rewards) {
+        return getChargedStream(rewards)
+                .map(Reward::getPoint)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .toPlainString();
+    }
+
+    private String getWithdrawnSum(List<Reward> rewards) {
+        return getWithdrawnStream(rewards)
+                .map(Reward::getPoint)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .toPlainString();
+    }
+
+    private String getSum(List<Reward> rewards) {
+        return getEstimatedSum(rewards) + " / " + getChargedSum(rewards) + " / " + getWithdrawnSum(rewards);
+    }
+
+
 }
