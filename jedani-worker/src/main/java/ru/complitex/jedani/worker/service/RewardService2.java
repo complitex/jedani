@@ -596,10 +596,6 @@ public class RewardService2 implements Serializable {
     public void calculateSaleReward(Sale sale, List<SaleItem> saleItems, Period period, long rewardStatus) {
         Long rewardType = saleService.isMycookSaleItems(saleItems) ? RewardType.PERSONAL_MYCOOK : RewardType.PERSONAL_RANGE;
 
-        if (getRewardsPointSum(sale.getObjectId(), rewardType, rewardStatus).compareTo(ZERO) > 0) {
-            return;
-        }
-
         {
             Reward reward = new Reward();
 
@@ -632,7 +628,9 @@ public class RewardService2 implements Serializable {
                 if (test) {
                     rewards.add(reward);
                 } else {
-                    domainService.save(reward);
+                    if (getRewardsPointSum(sale.getObjectId(), rewardType, rewardStatus).compareTo(ZERO) > 0) {
+                        domainService.save(reward);
+                    }
                 }
             }
         }
@@ -668,10 +666,6 @@ public class RewardService2 implements Serializable {
 
     private void calculateBonusReward(Sale sale, Period period, long rewardStatus){
         if (sale.getManagerBonusRewardPoint() != null && sale.getManagerBonusWorkerId() != null) {
-            if (getRewardsPointSum(sale.getObjectId(), RewardType.MANAGER_BONUS, rewardStatus).compareTo(ZERO) > 0) {
-                return;
-            }
-
             BigDecimal total = sale.getManagerBonusRewardPoint();
 
             if (total.compareTo(ZERO) > 0) {
@@ -703,7 +697,9 @@ public class RewardService2 implements Serializable {
                     if (test) {
                         rewards.add(reward);
                     } else {
-                        domainService.save(reward);
+                        if (getRewardsPointSum(sale.getObjectId(), RewardType.MANAGER_BONUS, rewardStatus).compareTo(ZERO) > 0) {
+                            domainService.save(reward);
+                        }
                     }
                 }
             }
@@ -716,10 +712,6 @@ public class RewardService2 implements Serializable {
         }
 
         if (sale.getCulinaryWorkerId() == null || sale.getSaleStatus() == null || sale.getSaleStatus() < SaleStatus.PAID) {
-            return;
-        }
-
-        if (getRewardsPointSum(sale.getObjectId(), RewardType.CULINARY_WORKSHOP, rewardStatus).compareTo(ZERO) != 0) {
             return;
         }
 
@@ -741,7 +733,9 @@ public class RewardService2 implements Serializable {
         if (test) {
             rewards.add(reward);
         } else {
-            domainService.save(reward);
+            if (getRewardsPointSum(sale.getObjectId(), RewardType.CULINARY_WORKSHOP, rewardStatus).compareTo(ZERO) != 0) {
+                domainService.save(reward);
+            }
         }
     }
 

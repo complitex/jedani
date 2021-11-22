@@ -609,7 +609,9 @@ public class CompensationService {
         if (reward.getObjectId() != null &&
                 Objects.equals(reward.getRewardStatus(), ESTIMATED) &&
                 Objects.equals(reward.getDetailStatus(), CHARGED)) {
-            domainService.save(reward);
+            if (!test) {
+                domainService.save(reward);
+            }
         }
 
         if (reward.getPoint() != null && reward.getPoint().compareTo(ZERO) > 0) {

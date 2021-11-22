@@ -117,8 +117,8 @@ public class RewardTestPage extends BasePage {
                 .setEscapeModelStrings(false));
 
         add(new Label("db", "" +
-                getRewardsDiff("-r", db, rewards) + "<br/>" +
-                getRewardsDiff("+r", rewards, db) + "<br/>" +
+                getRewardsDiff("-r2", db, rewards2) + "<br/>" +
+                getRewardsDiff("+r2", rewards2, db) + "<br/>" +
                 getRewardsDiff("-c", db, compensations) + "<br/>" +
                 getRewardsDiff("+c", compensations, db))
                 .setEscapeModelStrings(false));
@@ -204,7 +204,7 @@ public class RewardTestPage extends BasePage {
     }
 
     private String getSize(List<Reward> rewards) {
-        return getEstimatedSize(rewards) + " / " + getChargedSize(rewards) + " / " + getWithdrawnSize(rewards);
+        return getEstimatedSize(rewards) + "/" + getChargedSize(rewards) + "/" + getWithdrawnSize(rewards);
     }
 
     private String getEstimatedSum(List<Reward> rewards) {
@@ -232,7 +232,7 @@ public class RewardTestPage extends BasePage {
     }
 
     private String getSum(List<Reward> rewards) {
-        return getEstimatedSum(rewards) + " / " + getChargedSum(rewards) + " / " + getWithdrawnSum(rewards);
+        return getEstimatedSum(rewards) + "/" + getChargedSum(rewards) + "/" + getWithdrawnSum(rewards);
     }
 
 
