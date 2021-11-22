@@ -569,7 +569,7 @@ public class CompensationService {
                     reward.setDetailStatus(CHARGED);
                 }
 
-                BigDecimal sum = getRewardsPointSum(rewardType, reward.getSaleId(), reward.getManagerId(), CHARGED);
+                BigDecimal sum = !test ? getRewardsPointSum(rewardType, reward.getSaleId(), reward.getManagerId(), CHARGED) : ZERO;
 
                 reward.setPoint(point.subtract(sum));
             } else {

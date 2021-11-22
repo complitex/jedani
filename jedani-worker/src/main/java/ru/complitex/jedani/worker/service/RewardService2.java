@@ -582,7 +582,7 @@ public class RewardService2 implements Serializable {
                 point = point.add(rewardPoint.multiply(new BigDecimal("0.40")));
             }
 
-            point = point.subtract(getRewardsPointSumBySale(sale.getObjectId(), rewardType, RewardStatus.CHARGED, managerId));
+            point = point.subtract(!test ? getRewardsPointSumBySale(sale.getObjectId(), rewardType, RewardStatus.CHARGED, managerId) : ZERO);
 
         }
 
