@@ -606,12 +606,10 @@ public class CompensationService {
     private void chargeReward(Reward reward) {
         updateRewardPoint(reward.getType(), reward);
 
-        if (reward.getObjectId() != null &&
+        if (!test && reward.getObjectId() != null &&
                 Objects.equals(reward.getRewardStatus(), ESTIMATED) &&
                 Objects.equals(reward.getDetailStatus(), CHARGED)) {
-            if (!test) {
-                domainService.save(reward);
-            }
+            domainService.save(reward);
         }
 
         if (reward.getPoint() != null && reward.getPoint().compareTo(ZERO) > 0) {

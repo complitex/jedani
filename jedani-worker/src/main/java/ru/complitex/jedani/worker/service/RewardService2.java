@@ -650,7 +650,7 @@ public class RewardService2 implements Serializable {
                             reward.setRewardStatus(RewardStatus.CHARGED);
                             reward.setPoint(point);
 
-                            updateLocalBySale(reward, period);
+                            updateLocal(sale, reward, period);
 
                             reward.setEstimatedId(reward.getObjectId());
 
