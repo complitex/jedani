@@ -2,11 +2,13 @@ package ru.complitex.jedani.worker.page.reward;
 
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.markup.html.basic.Label;
+import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.jedani.worker.entity.Period;
 import ru.complitex.jedani.worker.entity.Reward;
 import ru.complitex.jedani.worker.entity.RewardStatus;
 import ru.complitex.jedani.worker.exception.RewardException;
 import ru.complitex.jedani.worker.mapper.PeriodMapper;
+import ru.complitex.jedani.worker.mapper.RewardMapper;
 import ru.complitex.jedani.worker.page.BasePage;
 import ru.complitex.jedani.worker.service.*;
 
@@ -41,6 +43,9 @@ public class RewardTestPage extends BasePage {
 
     @Inject
     private PeriodMapper periodMapper;
+    
+    @Inject
+    private RewardMapper rewardMapper;
 
     public RewardTestPage() {
         Period period = periodMapper.getPeriod(17L);
@@ -74,38 +79,48 @@ public class RewardTestPage extends BasePage {
         List<Reward> rewards = rewardService.getRewards();
         List<Reward> compensations = compensationService.getRewards();
         List<Reward> rewards2 = rewardService2.getRewards();
+        List<Reward> db = rewardMapper.getRewards(FilterWrapper.of(new Reward().setPeriodId(period.getObjectId())));
 
         add(new Label("test", getSize(rewards)+ ", " + getSum(rewards) + ", " + rewardServiceTime + " = " +
                 getSize(compensations) + ", " + getSum(compensations) + ", " + compensationServiceTime + " = " +
-                getSize(rewards2) + ", " + getSum(rewards2) + ", " + rewardServiceTime2));
+                getSize(rewards2) + ", " + getSum(rewards2) + ", " + rewardServiceTime2 + " = " +
+                getSize(db) + ", " + getSum(db)));
 
-        rewardService.getRewards().sort(Comparator.comparing(reward ->  Objects.requireNonNullElse(reward.getSaleId(), -1L)));
-        compensationService.getRewards().sort(Comparator.comparing(reward ->  Objects.requireNonNullElse(reward.getSaleId(), -1L)));
-        rewardService2.getRewards().sort(Comparator.comparing(reward ->  Objects.requireNonNullElse(reward.getSaleId(), -1L)));
+        rewards.sort(Comparator.comparing(reward ->  Objects.requireNonNullElse(reward.getSaleId(), -1L)));
+        compensations.sort(Comparator.comparing(reward ->  Objects.requireNonNullElse(reward.getSaleId(), -1L)));
+        rewards2.sort(Comparator.comparing(reward ->  Objects.requireNonNullElse(reward.getSaleId(), -1L)));
 
-        add(new Label("r", getRewards(rewardService.getRewards())).setEscapeModelStrings(false));
-        add(new Label("c", getRewards(compensationService.getRewards())).setEscapeModelStrings(false));
-        add(new Label("r2", getRewards(rewardService2.getRewards())).setEscapeModelStrings(false));
+        add(new Label("r", getRewards(rewards)).setEscapeModelStrings(false));
+        add(new Label("c", getRewards(compensations)).setEscapeModelStrings(false));
+        add(new Label("r2", getRewards(rewards2)).setEscapeModelStrings(false));
+        add(new Label("d", getRewards(db)).setEscapeModelStrings(false));
 
         add(new Label("rewards", "" +
-                getRewardsDiff("-c", rewardService.getRewards(), compensationService.getRewards()) + "<br/>" +
-                getRewardsDiff("+c", compensationService.getRewards(), rewardService.getRewards()) + "<br/>" +
-                getRewardsDiff("-r2", rewardService.getRewards(), rewardService2.getRewards()) + "<br/>" +
-                getRewardsDiff("+r2", compensationService.getRewards(), rewardService2.getRewards()))
+                getRewardsDiff("-c", rewards, compensations) + "<br/>" +
+                getRewardsDiff("+c", compensations, rewards) + "<br/>" +
+                getRewardsDiff("-r2", rewards, rewards2) + "<br/>" +
+                getRewardsDiff("+r2", compensations, rewards2))
                 .setEscapeModelStrings(false));
 
         add(new Label("compensations", "" +
-                getRewardsDiff("-r", compensationService.getRewards(), rewardService.getRewards()) + "<br/>" +
-                getRewardsDiff("+r", rewardService.getRewards(), compensationService.getRewards()) + "<br/>" +
-                getRewardsDiff("-r2", compensationService.getRewards(), rewardService2.getRewards()) + "<br/>" +
-                getRewardsDiff("+r2", rewardService2.getRewards(), compensationService.getRewards()))
+                getRewardsDiff("-r", compensations, rewards) + "<br/>" +
+                getRewardsDiff("+r", rewards, compensations) + "<br/>" +
+                getRewardsDiff("-r2", compensations, rewards2) + "<br/>" +
+                getRewardsDiff("+r2", rewards2, compensations))
                 .setEscapeModelStrings(false));
 
         add(new Label("rewards2", "" +
-                getRewardsDiff("-r", rewardService2.getRewards(), rewardService.getRewards()) + "<br/>" +
-                getRewardsDiff("+r", rewardService.getRewards(), rewardService2.getRewards()) + "<br/>" +
-                getRewardsDiff("-c", rewardService2.getRewards(), compensationService.getRewards()) + "<br/>" +
-                getRewardsDiff("+c", compensationService.getRewards(), rewardService2.getRewards()))
+                getRewardsDiff("-r", rewards2, rewards) + "<br/>" +
+                getRewardsDiff("+r", rewards, rewards2) + "<br/>" +
+                getRewardsDiff("-c", rewards2, compensations) + "<br/>" +
+                getRewardsDiff("+c", compensations, rewards2))
+                .setEscapeModelStrings(false));
+
+        add(new Label("db", "" +
+                getRewardsDiff("-r", db, rewards) + "<br/>" +
+                getRewardsDiff("+r", rewards, db) + "<br/>" +
+                getRewardsDiff("-c", db, compensations) + "<br/>" +
+                getRewardsDiff("+c", compensations, db))
                 .setEscapeModelStrings(false));
     }
 

@@ -848,13 +848,10 @@ public class RewardService2 implements Serializable {
 
             reward.setPoint(ZERO);
 
-            if (rewardStatus == RewardStatus.ESTIMATED ||  getRewardsPointSumByWorker(period.getObjectId(), reward.getWorkerId(),
-                    RewardType.PERSONAL_VOLUME, RewardStatus.CHARGED).compareTo(ZERO) == 0) {
-                if (rewardNode.getPaymentVolume().compareTo(avgPoint) < 0) {
-                    reward.setPoint(lowerPoint);
-                } else {
-                    reward.setPoint(greaterPoint);
-                }
+            if (rewardNode.getPaymentVolume().compareTo(avgPoint) < 0) {
+                reward.setPoint(lowerPoint);
+            } else {
+                reward.setPoint(greaterPoint);
             }
 
             updateLocalByWorker(reward, period);
@@ -863,7 +860,10 @@ public class RewardService2 implements Serializable {
                 if (test) {
                     rewards.add(reward);
                 } else {
-                    domainService.save(reward);
+                    if (getRewardsPointSumByWorker(period.getObjectId(), reward.getWorkerId(), RewardType.PERSONAL_VOLUME,
+                            RewardStatus.CHARGED).compareTo(ZERO) == 0) {
+                        domainService.save(reward);
+                    }
                 }
             }
         }
