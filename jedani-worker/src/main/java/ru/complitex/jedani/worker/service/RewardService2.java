@@ -1178,13 +1178,11 @@ public class RewardService2 implements Serializable {
         }
     }
 
-    private boolean isPaidSalePeriod(Sale sale) {
-        return Objects.equals(sale.getSaleStatus(), SaleStatus.PAID) &&
+    private boolean isNotPaidOrCharged(Sale sale) {
+        return !Objects.equals(sale.getSaleStatus(), SaleStatus.PAID) ||
                 paymentService.getPaymentsBySaleId(sale.getObjectId()).stream()
                         .map(payment -> periodMapper.getPeriod(payment.getPeriodId()))
-                        .max(Comparator.comparing(Period::getOperatingMonth))
-                        .map(period -> period.getCloseTimestamp() != null)
-                        .orElse(false);
+                        .noneMatch(period -> period.getCloseTimestamp() == null);
     }
 
     @Transactional(rollbackFor = RewardException.class)
@@ -1207,7 +1205,7 @@ public class RewardService2 implements Serializable {
             RewardTree tree = getRewardTree(period);
 
             saleService.getSales().stream()
-                    .filter(this::isPaidSalePeriod)
+                    .filter(this::isNotPaidOrCharged)
                     .filter(sale -> sale.getPeriodId() <= period.getObjectId())
                     .forEach(sale -> {
                         calculateSaleReward(sale, saleService.getSaleItems(sale.getObjectId()), period, RewardStatus.ESTIMATED);

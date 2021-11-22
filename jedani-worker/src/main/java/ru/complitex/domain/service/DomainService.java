@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -138,6 +139,10 @@ public class DomainService implements Serializable {
         String text = getText(entityName, objectId, entityAttributeId);
 
         return text != null && !text.isEmpty() ? new BigDecimal(text) : null;
+    }
+
+    public boolean isBoolean(String entityName, Long objectId, Long entityAttributeId){
+        return Objects.equals(attributeMapper.getNumber(entityName, objectId, entityAttributeId), 1L);
     }
 
     public void delete(Domain domain){

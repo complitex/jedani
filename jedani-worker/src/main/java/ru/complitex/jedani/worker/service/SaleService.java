@@ -220,4 +220,8 @@ public class SaleService implements Serializable {
     public String getContract(Long saleId) {
         return domainService.getText(Sale.ENTITY_NAME, saleId, Sale.CONTRACT);
     }
+
+    public boolean isFeeWithdraw(Long saleId) {
+        return domainService.isBoolean(Sale.ENTITY_NAME, saleId, Sale.FEE_WITHDRAW);
+    }
 }
