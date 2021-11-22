@@ -598,9 +598,11 @@ public class CompensationService {
     }
 
     private void estimateReward(Reward reward) {
-        reward.setRewardStatus(ESTIMATED);
+        if (reward != null) {
+            reward.setRewardStatus(ESTIMATED);
 
-        save(reward);
+            save(reward);
+        }
     }
 
     private void chargeReward(Reward reward) {
