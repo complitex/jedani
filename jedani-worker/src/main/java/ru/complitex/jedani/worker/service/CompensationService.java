@@ -238,7 +238,7 @@ public class CompensationService {
     }
 
     public Reward getPersonalMycookReward(Sale sale, SaleItem saleItem, Period period) {
-        if (sale.getPersonalRewardPoint().compareTo(ZERO) > 0) {
+        if (sale.getPersonalRewardPoint() != null && sale.getPersonalRewardPoint().compareTo(ZERO) > 0) {
             return getReward(PERSONAL_MYCOOK, sale.getSellerWorkerId(), sale.getPersonalRewardPoint(), sale, saleItem, period);
         }
 
@@ -604,18 +604,20 @@ public class CompensationService {
     }
 
     private void chargeReward(Reward reward) {
-        updateRewardPoint(reward.getType(), reward);
+        if (reward != null) {
+            updateRewardPoint(reward.getType(), reward);
 
-        if (!test && reward.getObjectId() != null &&
-                Objects.equals(reward.getRewardStatus(), ESTIMATED) &&
-                Objects.equals(reward.getDetailStatus(), CHARGED)) {
-            domainService.save(reward);
-        }
+            if (!test && reward.getObjectId() != null &&
+                    Objects.equals(reward.getRewardStatus(), ESTIMATED) &&
+                    Objects.equals(reward.getDetailStatus(), CHARGED)) {
+                domainService.save(reward);
+            }
 
-        if (reward.getPoint() != null && reward.getPoint().compareTo(ZERO) != 0) {
-            reward.setRewardStatus(CHARGED);
+            if (reward.getPoint() != null && reward.getPoint().compareTo(ZERO) != 0) {
+                reward.setRewardStatus(CHARGED);
 
-            save(reward);
+                save(reward);
+            }
         }
     }
 
@@ -628,10 +630,8 @@ public class CompensationService {
     }
 
     public void calculateReward(Reward reward) {
-        if (reward != null) {
-            estimateReward(reward);
-            chargeReward(reward);
-        }
+        estimateReward(reward);
+        chargeReward(reward);
     }
 
     private boolean isNotPaidOrCharged(Sale sale) {
