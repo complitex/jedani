@@ -81,10 +81,20 @@ public class RewardTestPage extends BasePage {
         List<Reward> rewards2 = rewardService2.getRewards();
         List<Reward> db = rewardMapper.getRewards(FilterWrapper.of(new Reward().setPeriodId(period.getObjectId())));
 
-        add(new Label("test", getSize(rewards)+ ", " + getSum(rewards) + ", " + rewardServiceTime + " = " +
-                getSize(compensations) + ", " + getSum(compensations) + ", " + compensationServiceTime + " = " +
-                getSize(rewards2) + ", " + getSum(rewards2) + ", " + rewardServiceTime2 + " = " +
-                getSize(db) + ", " + getSum(db)));
+        add(new Label("rz", getSize(rewards)));
+        add(new Label("rs", getSum(rewards)));
+        add(new Label("rt", rewardServiceTime));
+
+        add(new Label("cz", getSize(compensations)));
+        add(new Label("cs", getSum(compensations)));
+        add(new Label("ct", compensationServiceTime));
+
+        add(new Label("r2z", getSize(rewards2)));
+        add(new Label("r2s", getSum(rewards2)));
+        add(new Label("r2t", rewardServiceTime2));
+
+        add(new Label("dz", getSize(db)));
+        add(new Label("ds", getSum(db)));
 
         rewards.sort(Comparator.comparing(reward ->  Objects.requireNonNullElse(reward.getSaleId(), -1L)));
         compensations.sort(Comparator.comparing(reward ->  Objects.requireNonNullElse(reward.getSaleId(), -1L)));
@@ -204,7 +214,7 @@ public class RewardTestPage extends BasePage {
     }
 
     private String getSize(List<Reward> rewards) {
-        return getEstimatedSize(rewards) + "/" + getChargedSize(rewards) + "/" + getWithdrawnSize(rewards);
+        return "e: " + getEstimatedSize(rewards) + ", c:" + getChargedSize(rewards) + ", w:" + getWithdrawnSize(rewards);
     }
 
     private String getEstimatedSum(List<Reward> rewards) {
@@ -232,7 +242,7 @@ public class RewardTestPage extends BasePage {
     }
 
     private String getSum(List<Reward> rewards) {
-        return getEstimatedSum(rewards) + "/" + getChargedSum(rewards) + "/" + getWithdrawnSum(rewards);
+        return "e: " + getEstimatedSum(rewards) + ", c: " + getChargedSum(rewards) + ", w: " + getWithdrawnSum(rewards);
     }
 
 

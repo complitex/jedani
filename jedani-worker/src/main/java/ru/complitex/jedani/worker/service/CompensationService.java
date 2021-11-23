@@ -267,9 +267,7 @@ public class CompensationService {
 
     private Reward getManagerBonusReward(Sale sale, SaleItem saleItem, Period period) {
         if (sale.getManagerBonusRewardPoint() != null && sale.getManagerBonusRewardPoint().compareTo(ZERO) > 0 && sale.getManagerBonusWorkerId() != null) {
-            if (getRewardsPointSumBefore(MANAGER_BONUS, sale.getObjectId(), sale.getManagerBonusWorkerId(), CHARGED, period.getObjectId()).compareTo(ZERO) == 0) { //todo move
-                return getReward(MANAGER_BONUS, sale.getManagerBonusWorkerId(), sale.getManagerBonusRewardPoint(), sale, saleItem, period);
-            }
+            return getReward(MANAGER_BONUS, sale.getManagerBonusWorkerId(), sale.getManagerBonusRewardPoint(), sale, saleItem, period);
         }
 
         return null;
@@ -289,9 +287,7 @@ public class CompensationService {
 
     public Reward getCulinaryReward(Sale sale, SaleItem saleItem, Period period) {
         if (sale.getCulinaryRewardPoint() != null && sale.getCulinaryRewardPoint().compareTo(ZERO) > 0 && sale.getCulinaryWorkerId() != null) {
-            if (getRewardsPointSumBefore(CULINARY_WORKSHOP, sale.getObjectId(), sale.getCulinaryWorkerId(), CHARGED, period.getObjectId()).compareTo(ZERO) == 0) { //todo move
-                return getReward(CULINARY_WORKSHOP, sale.getCulinaryWorkerId(), sale.getCulinaryRewardPoint(), sale, saleItem, period);
-            }
+            return getReward(CULINARY_WORKSHOP, sale.getCulinaryWorkerId(), sale.getCulinaryRewardPoint(), sale, saleItem, period);
         }
 
         return null;
@@ -569,7 +565,7 @@ public class CompensationService {
                     reward.setDetailStatus(CHARGED);
                 }
 
-                BigDecimal sum =getRewardsPointSumBefore(rewardType, reward.getSaleId(), reward.getManagerId(), CHARGED, reward.getPeriodId());
+                BigDecimal sum = getRewardsPointSumBefore(rewardType, reward.getSaleId(), reward.getManagerId(), CHARGED, reward.getPeriodId());
 
                 reward.setPoint(point.subtract(sum));
             } else {
@@ -590,8 +586,6 @@ public class CompensationService {
 
             rewards.add(r);
         } else {
-            //todo has saved
-
             reward.setObjectId(null);
             reward.setStartDate(Dates.currentDate());
 
@@ -600,7 +594,8 @@ public class CompensationService {
     }
 
     private void estimateReward(Reward reward) {
-        if (reward != null) {
+        if (reward != null && getRewardsPointSumBefore(reward.getType(), reward.getSaleId(), reward.getManagerId(), ESTIMATED,
+                reward.getPeriodId()).compareTo(ZERO) == 0) {
             reward.setRewardStatus(ESTIMATED);
 
             save(reward);
@@ -626,7 +621,8 @@ public class CompensationService {
     }
 
     public void withdrawReward(Reward reward) {
-        if (reward != null) {
+        if (reward != null && getRewardsPointSumBefore(reward.getType(), reward.getSaleId(), reward.getManagerId(), WITHDRAWN,
+                reward.getPeriodId()).compareTo(ZERO) == 0) {
             reward.setRewardStatus(WITHDRAWN);
 
             save(reward);
@@ -635,14 +631,8 @@ public class CompensationService {
 
     public void calculateReward(Reward reward) {
         estimateReward(reward);
-        chargeReward(reward);
-    }
 
-    private boolean isNotPaidOrCharged(Sale sale) {
-        return !Objects.equals(sale.getSaleStatus(), SaleStatus.PAID) ||
-                paymentService.getPaymentsBySaleId(sale.getObjectId()).stream()
-                        .map(payment -> periodMapper.getPeriod(payment.getPeriodId()))
-                        .noneMatch(period -> period.getCloseTimestamp() == null);
+        chargeReward(reward);
     }
 
     @Transactional
@@ -663,43 +653,28 @@ public class CompensationService {
 
         rewardTreeService.updateRewardTree(rewardTree, period, rewardNode -> {
             rewardNode.getSales().stream()
-                    .filter(this::isNotPaidOrCharged)
-                    .filter(sale -> sale.getPeriodId() <= period.getObjectId())
+                    .filter(sale -> !test || sale.getPeriodId() <= period.getObjectId())
                     .forEach(sale -> {
                         List<SaleItem> saleItems = saleService.getSaleItems(sale.getObjectId());
 
                         if (!saleItems.isEmpty()) {
                             SaleItem saleItem = saleItems.get(0);
 
-                            if (Objects.equals(sale.getPeriodId(), period.getObjectId())) {
-                                Reward personalMycookReward = getPersonalMycookReward(sale, saleItem, period);
+                            Reward personalMycookReward = getPersonalMycookReward(sale, saleItem, period);
 
-                                calculateReward(personalMycookReward);
+                            calculateReward(personalMycookReward);
 
-                                if (sale.isFeeWithdraw()) {
-                                    withdrawReward(personalMycookReward);
-                                }
-
-                                if (!sale.isSasRequest()) {
-                                    calculateReward(getManagerPremiumReward(rewardNode, sale, saleItem, period));
-                                }
-
-                                calculateReward(getManagerBonusReward(sale, saleItem, period));
-
-                                calculateReward(getCulinaryReward(sale, saleItem, period));
-                            } else {
-                                if (!sale.isFeeWithdraw()) {
-                                    chargeReward(getPersonalMycookReward(sale, saleItem, period));
-                                }
-
-                                if (!sale.isSasRequest()) {
-                                    chargeReward(getManagerPremiumReward(rewardNode, sale, saleItem, period));
-                                }
-
-                                chargeReward(getManagerBonusReward(sale, saleItem, period));
-
-                                calculateReward(getCulinaryReward(sale, saleItem, period));
+                            if (sale.isFeeWithdraw()) {
+                                withdrawReward(personalMycookReward);
                             }
+
+                            if (!sale.isSasRequest()) {
+                                calculateReward(getManagerPremiumReward(rewardNode, sale, saleItem, period));
+                            }
+
+                            calculateReward(getManagerBonusReward(sale, saleItem, period));
+
+                            calculateReward(getCulinaryReward(sale, saleItem, period));
                         }
                     });
 
