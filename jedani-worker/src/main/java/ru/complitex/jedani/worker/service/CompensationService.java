@@ -267,7 +267,7 @@ public class CompensationService {
 
     private Reward getManagerBonusReward(Sale sale, SaleItem saleItem, Period period) {
         if (sale.getManagerBonusRewardPoint() != null && sale.getManagerBonusRewardPoint().compareTo(ZERO) > 0 && sale.getManagerBonusWorkerId() != null) {
-            if (getRewardsPointSum(MANAGER_BONUS, sale.getObjectId(), sale.getManagerBonusWorkerId(), CHARGED).compareTo(ZERO) == 0) {
+            if (getRewardsPointSumBefore(MANAGER_BONUS, sale.getObjectId(), sale.getManagerBonusWorkerId(), CHARGED, period.getObjectId()).compareTo(ZERO) == 0) { //todo move
                 return getReward(MANAGER_BONUS, sale.getManagerBonusWorkerId(), sale.getManagerBonusRewardPoint(), sale, saleItem, period);
             }
         }
@@ -289,7 +289,7 @@ public class CompensationService {
 
     public Reward getCulinaryReward(Sale sale, SaleItem saleItem, Period period) {
         if (sale.getCulinaryRewardPoint() != null && sale.getCulinaryRewardPoint().compareTo(ZERO) > 0 && sale.getCulinaryWorkerId() != null) {
-            if (getRewardsPointSum(CULINARY_WORKSHOP, sale.getObjectId(), sale.getCulinaryWorkerId(), CHARGED).compareTo(ZERO) == 0) {
+            if (getRewardsPointSumBefore(CULINARY_WORKSHOP, sale.getObjectId(), sale.getCulinaryWorkerId(), CHARGED, period.getObjectId()).compareTo(ZERO) == 0) { //todo move
                 return getReward(CULINARY_WORKSHOP, sale.getCulinaryWorkerId(), sale.getCulinaryRewardPoint(), sale, saleItem, period);
             }
         }
@@ -536,8 +536,8 @@ public class CompensationService {
         return sum != null ? sum : ZERO;
     }
 
-    public BigDecimal getRewardsPointSum(Long rewardTypeId, Long saleId, Long managerId, Long rewardStatusId) {
-        BigDecimal sum = rewardMapper.getRewardsPointSum(rewardTypeId, saleId, managerId, rewardStatusId);
+    public BigDecimal getRewardsPointSumBefore(Long rewardTypeId, Long saleId, Long managerId, Long rewardStatusId, Long periodId) {
+        BigDecimal sum = rewardMapper.getRewardsPointSum(rewardTypeId, saleId, managerId, rewardStatusId, periodId, "before");
 
         return sum != null ? sum : ZERO;
     }
@@ -569,7 +569,7 @@ public class CompensationService {
                     reward.setDetailStatus(CHARGED);
                 }
 
-                BigDecimal sum = !test ? getRewardsPointSum(rewardType, reward.getSaleId(), reward.getManagerId(), CHARGED) : ZERO;
+                BigDecimal sum =getRewardsPointSumBefore(rewardType, reward.getSaleId(), reward.getManagerId(), CHARGED, reward.getPeriodId());
 
                 reward.setPoint(point.subtract(sum));
             } else {
@@ -590,6 +590,8 @@ public class CompensationService {
 
             rewards.add(r);
         } else {
+            //todo has saved
+
             reward.setObjectId(null);
             reward.setStartDate(Dates.currentDate());
 
