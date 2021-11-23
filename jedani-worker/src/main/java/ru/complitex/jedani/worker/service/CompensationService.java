@@ -17,6 +17,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.math.BigDecimal.ONE;
 import static java.math.BigDecimal.ZERO;
@@ -436,35 +437,35 @@ public class CompensationService {
 
             BigDecimal sum = percent.multiply(rewardNode.getGroupSaleVolume()).divide(BD_100, 5, HALF_EVEN);
 
-            List<Sale> groupSales = rewardNode.getGroupSales();
+            List<Sale> groupSales = rewardNode.getGroupSales().stream()
+                    .filter(sale -> Objects.equals(sale.getPeriodId(), period.getObjectId()))
+                    .collect(Collectors.toList());
 
             for (int i = 0; i < groupSales.size(); i++) {
                 Sale sale = groupSales.get(i);
 
-                if (Objects.equals(sale.getPeriodId(), period.getObjectId())) {
-                    BigDecimal point = percent.multiply(sale.getTotal()).divide(BD_100, 5, HALF_EVEN);
+                BigDecimal point = percent.multiply(sale.getTotal()).divide(BD_100, 5, HALF_EVEN);
 
-                    sum = sum.subtract(point);
+                sum = sum.subtract(point);
 
-                    if (i == groupSales.size() - 1) {
-                        if (sum.compareTo(ZERO) != 0) {
-                            log.warn("getGroupVolumeRewards sum " + sale + " " + sum);
-                        }
-
-                        point = point.add(sum);
+                if (i == groupSales.size() - 1) {
+                    if (sum.compareTo(ZERO) != 0) {
+                        log.warn("getGroupVolumeRewards sum " + sale + " " + sum);
                     }
 
-                    if (point.compareTo(ZERO) > 0) {
-                        Long countryId = saleService.getCountryId(sale.getObjectId());
+                    point = point.add(sum);
+                }
 
-                        Reward reward = getReward(GROUP_VOLUME, rewardNode.getWorkerId(), point, sale, null, period, countryId);
+                if (point.compareTo(ZERO) > 0) {
+                    Long countryId = saleService.getCountryId(sale.getObjectId());
 
-                        reward.setRank(rewardNode.getRank());
-                        reward.setGroupSaleVolume(rewardNode.getGroupSaleVolume());
-                        reward.setGroupPaymentVolume(rewardNode.getGroupPaymentVolume());
+                    Reward reward = getReward(GROUP_VOLUME, rewardNode.getWorkerId(), point, sale, null, period, countryId);
 
-                        rewards.add(reward);
-                    }
+                    reward.setRank(rewardNode.getRank());
+                    reward.setGroupSaleVolume(rewardNode.getGroupSaleVolume());
+                    reward.setGroupPaymentVolume(rewardNode.getGroupPaymentVolume());
+
+                    rewards.add(reward);
                 }
             }
 
@@ -493,40 +494,40 @@ public class CompensationService {
         for (int i = 0; i < firstStructureManagers.size(); i++) {
             RewardNode m = firstStructureManagers.get(i);
 
-            List<Sale> structureSales = m.getStructureSales();
+            List<Sale> structureSales = m.getStructureSales().stream()
+                    .filter(sale -> Objects.equals(sale.getPeriodId(), period.getObjectId()))
+                    .collect(Collectors.toList());
 
             for (int j = 0; j < structureSales.size(); j++) {
                 Sale sale = structureSales.get(j);
 
-                if (Objects.equals(sale.getPeriodId(), period.getObjectId())) {
-                    BigDecimal point = getGroupVolumePercent(rewardNode.getRank())
-                            .subtract(getGroupVolumePercent(m.getRank()))
-                            .multiply(sale.getTotal())
-                            .divide(BD_100, 5, HALF_EVEN);
+                BigDecimal point = getGroupVolumePercent(rewardNode.getRank())
+                        .subtract(getGroupVolumePercent(m.getRank()))
+                        .multiply(sale.getTotal())
+                        .divide(BD_100, 5, HALF_EVEN);
 
-                    sum = sum.subtract(point);
+                sum = sum.subtract(point);
 
-                    if (i == firstStructureManagers.size() - 1 && j == structureSales.size() - 1) {
-                        if (sum.compareTo(ZERO) != 0) {
-                            log.warn("getStructureVolumeRewards sum " + m + " " + sale + " " + sum);
-                        }
-
-                        point = point.add(sum);
+                if (i == firstStructureManagers.size() - 1 && j == structureSales.size() - 1) {
+                    if (sum.compareTo(ZERO) != 0) {
+                        log.warn("getStructureVolumeRewards sum " + m + " " + sale + " " + sum);
                     }
 
-                    if (point.compareTo(ZERO) > 0) {
-                        Long countryId = saleService.getCountryId(sale.getObjectId());
+                    point = point.add(sum);
+                }
 
-                        Reward reward = getReward(STRUCTURE_VOLUME, rewardNode.getWorkerId(), point, sale, null, period, countryId);
+                if (point.compareTo(ZERO) > 0) {
+                    Long countryId = saleService.getCountryId(sale.getObjectId());
 
-                        reward.setRank(rewardNode.getRank());
-                        reward.setManagerId(m.getWorkerId());
-                        reward.setManagerRank(m.getRank());
-                        reward.setStructureSaleVolume(rewardNode.getStructureSaleVolume());
-                        reward.setStructurePaymentVolume(rewardNode.getStructurePaymentVolume());
+                    Reward reward = getReward(STRUCTURE_VOLUME, rewardNode.getWorkerId(), point, sale, null, period, countryId);
 
-                        rewards.add(reward);
-                    }
+                    reward.setRank(rewardNode.getRank());
+                    reward.setManagerId(m.getWorkerId());
+                    reward.setManagerRank(m.getRank());
+                    reward.setStructureSaleVolume(rewardNode.getStructureSaleVolume());
+                    reward.setStructurePaymentVolume(rewardNode.getStructurePaymentVolume());
+
+                    rewards.add(reward);
                 }
             }
         }
