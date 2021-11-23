@@ -327,13 +327,21 @@ public class CompensationService {
     }
 
     private Reward getManagerPremiumReward(RewardNode rewardNode, Sale sale, SaleItem saleItem, Period period) {
-        BigDecimal point = getManagerPremiumPoint(rewardNode.getRank());
+        Long rank = period.getObjectId().equals(sale.getPeriodId())
+                ? rewardNode.getRank()
+                : rewardTreeCacheService.getRewardNode(sale.getPeriodId(), rewardNode.getWorkerId()).getRank();
+
+
+        BigDecimal point = getManagerPremiumPoint(rank);
 
         if (point.compareTo(ZERO) > 0) {
             Reward reward = getReward(MANAGER_PREMIUM, sale.getSellerWorkerId(), point, sale, saleItem, period);
 
-            reward.setRank(rewardNode.getRank());
-            reward.setStructureSaleVolume(rewardNode.getStructureSaleVolume());
+            reward.setRank(rank);
+
+            reward.setStructureSaleVolume(period.getObjectId().equals(sale.getPeriodId())
+                    ? rewardNode.getStructureSaleVolume()
+                    : rewardTreeCacheService.getRewardNode(sale.getPeriodId(), rewardNode.getWorkerId()).getStructureSaleVolume());
 
             return reward;
         }
