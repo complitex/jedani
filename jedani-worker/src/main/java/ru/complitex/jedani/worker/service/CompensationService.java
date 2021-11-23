@@ -204,34 +204,34 @@ public class CompensationService {
             boolean mkPremium = saleService.isMycookPremiumSaleItems(saleItems);
             boolean mkTouch = saleService.isMycookTouchSaleItems(saleItems);
 
-            if (sale.isSasRequest()){
+            if (sale.isSasRequest()) {
                 point = getParameter(1L);
-            }else if (w.getMkStatus() == MkStatus.STATUS_PROMO){
-                if (mkPremium){
+            }else if (w.getMkStatus() == MkStatus.STATUS_PROMO) {
+                if (mkPremium) {
                     point = getParameter(2L);
-                }else if (mkTouch){
+                }else if (mkTouch) {
                     point = getParameter(3L);
                 }
             }else if (w.getMkStatus() == MkStatus.STATUS_JUST){
-                if (mkPremium){
+                if (mkPremium) {
                     point = getParameter(4L);
-                }else if (mkTouch){
+                }else if (mkTouch) {
                     point = getParameter(5L);
                 }
-            }else if (w.getMkStatus() == MkStatus.STATUS_VIP){
-                if (sale.getManagerBonusWorkerId() != null){
-                    if (mkPremium){
+            }else if (w.getMkStatus() == MkStatus.STATUS_VIP) {
+                if (sale.getManagerBonusWorkerId() != null) {
+                    if (mkPremium) {
                         point = getParameter(6L).subtract(getParameter(9L));
-                    }else if (mkTouch){
+                    }else if (mkTouch) {
                         point = getParameter(7L).subtract(getParameter(10L));
                     }
-                }else if (mkPremium){
+                }else if (mkPremium) {
                     point = getParameter(6L);
-                }else if (mkTouch){
+                }else if (mkTouch) {
                     point = getParameter(7L);
                 }
             }
-        }else if (sale.getType() == SaleType.RANGE && sale.getTotal() != null){
+        }else if (sale.getType() == SaleType.RANGE && sale.getTotal() != null) {
             point = sale.getTotal().multiply(getParameter(8L));
         }
 
@@ -649,13 +649,9 @@ public class CompensationService {
             rewardMapper.deleteRewards(period.getObjectId());
         }
 
-        saleCacheService.clear();
-        paymentCacheService.clear();
-        parameterCacheService.clear();
-        rewardTreeCacheService.clear();
-        rewardCacheService.clear();
-
         rewards.clear();
+
+        clearCache();
 
         RewardTree rewardTree = new RewardTree(workerNodeService.getWorkerNodeMap());
 
@@ -696,6 +692,14 @@ public class CompensationService {
         });
     }
 
+    private void clearCache() {
+        saleCacheService.clear();
+        paymentCacheService.clear();
+        parameterCacheService.clear();
+        rewardTreeCacheService.clear();
+        rewardCacheService.clear();
+    }
+
     @Transactional
     public void calculateRewards() {
         calculateRewards(periodMapper.getActualPeriod());
@@ -705,6 +709,8 @@ public class CompensationService {
         test = true;
 
         calculateRewards(period);
+
+        clearCache();
 
         test = false;
     }
