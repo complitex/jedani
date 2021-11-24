@@ -700,12 +700,6 @@ public class CompensationService {
 
             getStructureVolumeRewards(rewardNode, period).forEach(this::calculateReward);
 
-            getEstimatedRewards(period).forEach(reward -> {
-                reward.setPeriodId(period.getObjectId());
-
-                chargeReward(reward);
-            });
-
             if (!test) {
                 WorkerNode workerNode = rewardNode.getWorkerNode();
 
@@ -713,6 +707,12 @@ public class CompensationService {
 
                 domainService.save(workerNode);
             }
+        });
+
+        getEstimatedRewards(period).forEach(reward -> {
+            reward.setPeriodId(period.getObjectId());
+
+            chargeReward(reward);
         });
     }
 
