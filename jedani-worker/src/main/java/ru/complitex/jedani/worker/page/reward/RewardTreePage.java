@@ -46,7 +46,7 @@ public class RewardTreePage extends BasePage {
                     WorkerNode n = wr.getWorkerNode();
 
                     rewards.append("\n")
-                            .append("objectId: ").append(n.getObjectId())
+                            .append("objectId: ").append(n.getWorkerId())
                             .append(", managerId: ").append(n.getManagerId());
 
                     if (wr.getSaleVolume().compareTo(ZERO) > 0){

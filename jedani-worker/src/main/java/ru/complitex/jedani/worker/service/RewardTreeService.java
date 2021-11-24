@@ -74,7 +74,7 @@ public class RewardTreeService {
     }
 
     private void updateRewardNode(RewardNode rewardNode, Period period) {
-        if (saleCacheService.hasSale(rewardNode.getWorkerNode().getObjectId())) {
+        if (saleCacheService.hasSale(rewardNode.getWorkerNode().getWorkerId())) {
             rewardNode.setSales(saleService.getSales(rewardNode.getWorkerId()));
 
             rewardNode.setSaleVolume(rewardNode.getSales().stream()
@@ -82,9 +82,9 @@ public class RewardTreeService {
                     .map(s -> s.getTotal() != null ? s.getTotal() : BigDecimal.ZERO)
                     .reduce(BigDecimal.ZERO, BigDecimal::add));
 
-            rewardNode.setPaymentVolume(paymentService.getPaymentsVolumeBySellerWorkerId(rewardNode.getWorkerNode().getObjectId(), period));
+            rewardNode.setPaymentVolume(paymentService.getPaymentsVolumeBySellerWorkerId(rewardNode.getWorkerNode().getWorkerId(), period));
 
-            rewardNode.setYearPaymentVolume(paymentService.getYearPaymentsVolumeBySellerWorkerId(rewardNode.getWorkerNode().getObjectId()));
+            rewardNode.setYearPaymentVolume(paymentService.getYearPaymentsVolumeBySellerWorkerId(rewardNode.getWorkerNode().getWorkerId()));
         }
 
         rewardNode.setGroupPaymentVolume(rewardNode.getGroup().stream()

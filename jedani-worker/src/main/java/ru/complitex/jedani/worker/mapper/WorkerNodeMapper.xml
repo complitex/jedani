@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="ru.complitex.jedani.worker.mapper.WorkerNodeMapper">
     <resultMap id="workerNodeResultMap" type="ru.complitex.jedani.worker.entity.WorkerNode">
-        <id column="object_id" property="objectId"/>
+        <id column="object_id" property="workerId"/>
         <result column="manager_id" property="managerId"/>
         <result column="left" property="left"/>
         <result column="right" property="right"/>
@@ -15,4 +15,9 @@
         where w.status = 1
     </select>
 
+    <delete id="deleteWorkerNodes" parameterType="long">
+        delete wn from worker_node wn
+            left join worker_node_attribute wna_p on wna_p.domain_id = wn.id and wna_p.entity_attribute_id = 6 and wna_p.status = 1
+        where wna_p.number = #{periodId}
+    </delete>
 </mapper>

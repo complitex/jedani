@@ -36,7 +36,7 @@ public class WorkerNodeService implements Serializable {
 
     public WorkerNode getWorkerTree(List<WorkerNode> workerNodes, Long rootWorkerId){
         Map<Long, WorkerNode> map = workerNodes.stream()
-                .collect(Collectors.toMap(w -> Objects.defaultIfNull(w.getObjectId(), -1L), w -> w));
+                .collect(Collectors.toMap(w -> Objects.defaultIfNull(w.getWorkerId(), -1L), w -> w));
 
         map.forEach((k, w) -> {
             if (w.getManagerId() != -1L){
@@ -60,7 +60,7 @@ public class WorkerNodeService implements Serializable {
     }
 
     private void validateWorkerNode(WorkerNode managerWorkerNode, WorkerNode workerNode){
-        if (!workerNode.getManagerId().equals(managerWorkerNode.getObjectId())){
+        if (!workerNode.getManagerId().equals(managerWorkerNode.getWorkerId())){
             throw new RuntimeException("validateWorkerNode manager id error " + managerWorkerNode + " " + workerNode);
         }
 

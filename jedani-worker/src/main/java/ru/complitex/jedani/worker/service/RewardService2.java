@@ -265,11 +265,11 @@ public class RewardService2 implements Serializable {
                     })
                     .count());
 
-            if (activeSaleWorkerIds.contains(r.getWorkerNode().getObjectId())) {
-                r.setPaymentVolume(paymentService.getPaymentsVolumeBySellerWorkerId(r.getWorkerNode().getObjectId(), period));
+            if (activeSaleWorkerIds.contains(r.getWorkerNode().getWorkerId())) {
+                r.setPaymentVolume(paymentService.getPaymentsVolumeBySellerWorkerId(r.getWorkerNode().getWorkerId(), period));
             }
 
-            r.setYearPaymentVolume(paymentService.getYearPaymentsVolumeBySellerWorkerId(r.getWorkerNode().getObjectId()));
+            r.setYearPaymentVolume(paymentService.getYearPaymentsVolumeBySellerWorkerId(r.getWorkerNode().getWorkerId()));
 
             Date registrationDate = domainService.getDate(Worker.ENTITY_NAME, r.getWorkerId(), Worker.REGISTRATION_DATE);
 
@@ -281,7 +281,7 @@ public class RewardService2 implements Serializable {
             r.setStructurePaymentVolume(r.getRewardNodes().stream()
                     .reduce(r.getPaymentVolume(), (v, c) -> v.add(c.getStructurePaymentVolume()), BigDecimal::add));
 
-            r.setSales(saleService.getSales(r.getWorkerNode().getObjectId(), period));
+            r.setSales(saleService.getSales(r.getWorkerNode().getWorkerId(), period));
 
             r.setSaleVolume(r.getSales().stream()
                     .map(s -> s.getTotal() != null ? s.getTotal() : BigDecimal.ZERO)
@@ -832,7 +832,7 @@ public class RewardService2 implements Serializable {
             Reward reward = new Reward();
 
             reward.setType(RewardType.PERSONAL_VOLUME);
-            reward.setWorkerId(rewardNode.getWorkerNode().getObjectId());
+            reward.setWorkerId(rewardNode.getWorkerNode().getWorkerId());
             reward.setSaleVolume(rewardNode.getSaleVolume());
             reward.setPaymentVolume(rewardNode.getPaymentVolume());
             reward.setDate(Dates.currentDate());

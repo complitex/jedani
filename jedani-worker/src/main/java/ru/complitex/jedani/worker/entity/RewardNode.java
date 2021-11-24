@@ -285,7 +285,7 @@ public class RewardNode {
     }
 
     public Long getWorkerId(){
-        return workerNode.getObjectId();
+        return workerNode.getWorkerId();
     }
 
     public List<Reward> getRewards() {

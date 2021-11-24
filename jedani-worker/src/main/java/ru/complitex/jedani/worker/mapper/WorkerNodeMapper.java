@@ -14,4 +14,7 @@ public class WorkerNodeMapper extends BaseMapper {
         return sqlSession().selectList("selectAllWorkerNodes");
     }
 
+    public void deleteWorkerNodes(Long periodId) {
+        sqlSession().delete("deleteWorkerNodes", periodId);
+    }
 }

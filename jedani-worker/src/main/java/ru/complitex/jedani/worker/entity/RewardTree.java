@@ -24,10 +24,10 @@ public class RewardTree {
 
                 list.add(r);
 
-                idMap.put(n.getObjectId(), r);
+                idMap.put(n.getWorkerId(), r);
 
                 r.getWorkerNode().getNodes()
-                        .forEach(c -> r.getRewardNodes().add(idMap.get(c.getObjectId())));
+                        .forEach(c -> r.getRewardNodes().add(idMap.get(c.getWorkerId())));
             });
 
             levelMap.put(l, list);

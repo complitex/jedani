@@ -269,7 +269,7 @@ BEGIN
             KEY `key_start_date` (`start_date`),
             KEY `key_end_date` (`end_date`),
             KEY `key_status` (`status`),
-            CONSTRAINT `fk_', entityName, '_attribute__', entityName, '` FOREIGN KEY (`domain_id`) REFERENCES `', entityName, '` (`id`),
+            CONSTRAINT `fk_', entityName, '_attribute__', entityName, '` FOREIGN KEY (`domain_id`) REFERENCES `', entityName, '` (`id`) ON DELETE CASCADE,
             CONSTRAINT `fk_', entityName, '_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
         ) ENGINE = InnoDB
           CHARSET = utf8
@@ -290,7 +290,7 @@ BEGIN
             KEY `key_attribute_id` (`attribute_id`),
             KEY `key_locale` (`locale_id`),
             KEY `key_value` (`text`(128)),
-            CONSTRAINT `fk_', entityName, '_value__', entityName, '_attribute` FOREIGN KEY (`attribute_id`) REFERENCES `', entityName, '_attribute` (`id`),
+            CONSTRAINT `fk_', entityName, '_value__', entityName, '_attribute` FOREIGN KEY (`attribute_id`) REFERENCES `', entityName, '_attribute` (`id`)  ON DELETE CASCADE,
             CONSTRAINT `fk_', entityName, '_value__locale` FOREIGN KEY (`locale_id`) REFERENCES `locale` (`id`)
         ) ENGINE = InnoDB
           CHARSET = utf8
@@ -2665,7 +2665,7 @@ CALL createEntityAttributeWithReference(46, 1, 11, 20, 'Сотрудник', 'С
 CALL createEntityAttribute(46, 2, 6, 'Дата', 'Дата');
 CALL createEntityAttributeWithReference(46, 3, 11, 42, 'Операционный месяц', 'Операційний місяць');
 CALL createEntityAttributeWithReference(46, 4, 11, 30, 'Локальная валюта', 'Локальна валюта');
-CALL createEntityAttribute(46,5, 4, 'Сумма', 'Сумма');
+CALL createEntityAttribute(46, 5, 4, 'Сумма', 'Сумма');
 
 -- ---------------------------
 -- Ratio
@@ -2679,7 +2679,21 @@ CALL createEntityAttribute(47, 2, 6, 'Дата окончания', 'Дата з
 CALL createEntityAttributeWithReference(47, 3, 11, 1, 'Страна', 'Країна');
 CALL createEntityAttribute(47, 4, 4, 'Значение', 'Значення');
 
+-- ---------------------------
+-- Worker Node
+-- ---------------------------
+
+CALL createDomainTables('worker_node', 'Структура');
+
+CALL createEntity(48, 'worker_node', 'Структура', 'Структура');
+CALL createEntityAttributeWithReference(48, 1, 11, 20, 'Сотрудник', 'Співробітник');
+CALL createEntityAttributeWithReference(48, 2, 11, 20, 'Менеджер', 'Менеджер');
+CALL createEntityAttribute(48, 3, 5, 'Лево', 'Лівий');
+CALL createEntityAttribute(48, 4, 5, 'Право', 'Право');
+CALL createEntityAttribute(48, 5, 5, 'Уровень', 'Рівень');
+CALL createEntityAttributeWithReference(48, 6, 11, 42, 'Операционный месяц', 'Операційний місяць');
+
 
 -- Version
 
-INSERT INTO `update` (`version`) VALUE ('2.0.11');
+INSERT INTO `update` (`version`) VALUE ('2.0.12');

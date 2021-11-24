@@ -1,6 +1,5 @@
 package ru.complitex.jedani.worker.mapper;
 
-import org.mybatis.cdi.Transactional;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.mybatis.BaseMapper;
 import ru.complitex.common.util.Maps;
@@ -22,14 +21,8 @@ public class RewardMapper extends BaseMapper {
         return sqlSession().selectOne("selectRewardsCount", filterWrapper);
     }
 
-    @Transactional
     public void deleteRewards(Long periodId){
-        List<Long> ids = sqlSession().selectList("selectRewardIdsByPeriod", periodId);
-
-        if (!ids.isEmpty()) {
-            sqlSession().delete("deleteRewardAttributesByDomainIds", ids);
-            sqlSession().delete("deleteRewardsByIds", ids);
-        }
+        sqlSession().delete("deleteRewards", periodId);
     }
 
     public BigDecimal getRewardsPointSum(Long rewardTypeId, Long saleId, Long managerId, Long rewardStatusId, Long periodId, String filter) {

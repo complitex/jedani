@@ -1,6 +1,6 @@
 package ru.complitex.jedani.worker.entity;
 
-import com.google.common.base.MoreObjects;
+import ru.complitex.domain.entity.Domain;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,54 +9,64 @@ import java.util.List;
  * @author Anatoly A. Ivanov
  * 16.10.2019 11:00 AM
  */
-public class WorkerNode {
-    private Long objectId;
-    private Long managerId;
+public class WorkerNode extends Domain {
+    public static final String ENTITY_NAME = "worker_node";
 
-    private Long left;
-    private Long right;
-    private Long level;
+    public static final long WORKER_ID = 1;
+    public static final long MANAGER_ID = 2;
+    public static final long LEFT = 3;
+    public static final long RIGHT = 4;
+    public static final long LEVEL = 5;
+    public static final long PERIOD = 6;
 
     private List<WorkerNode> nodes = new ArrayList<>();
 
-    public Long getObjectId() {
-        return objectId;
+    public Long getWorkerId() {
+        return getNumber(WORKER_ID);
     }
 
-    public void setObjectId(Long objectId) {
-        this.objectId = objectId;
+    public void setWorkerId(Long workerId) {
+        setNumber(WORKER_ID, workerId);
     }
 
     public Long getManagerId() {
-        return managerId;
+        return getNumber(MANAGER_ID);
     }
 
     public void setManagerId(Long managerId) {
-        this.managerId = managerId;
+        setNumber(MANAGER_ID, managerId);
     }
 
     public Long getLeft() {
-        return left;
+        return getNumber(LEFT);
     }
 
     public void setLeft(Long left) {
-        this.left = left;
+        setNumber(LEFT, left);
     }
 
     public Long getRight() {
-        return right;
+        return getNumber(RIGHT);
     }
 
     public void setRight(Long right) {
-        this.right = right;
+        setNumber(RIGHT, right);
     }
 
     public Long getLevel() {
-        return level;
+        return getNumber(LEVEL);
     }
 
     public void setLevel(Long level) {
-        this.level = level;
+        setNumber(LEVEL, level);
+    }
+
+    public Long getPeriodId() {
+        return getNumber(PERIOD);
+    }
+
+    public void setPeriodId(Long periodId) {
+        setNumber(PERIOD, periodId);
     }
 
     public List<WorkerNode> getNodes() {
@@ -65,16 +75,5 @@ public class WorkerNode {
 
     public void setNodes(List<WorkerNode> nodes) {
         this.nodes = nodes;
-    }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("objectId", objectId)
-                .add("managerId", managerId)
-                .add("left", left)
-                .add("right", right)
-                .add("level", level)
-                .toString();
     }
 }

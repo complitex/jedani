@@ -124,14 +124,10 @@
         where ra_p.number = #{periodId}
     </select>
 
-    <delete id="deleteRewardsByIds" parameterType="list">
-        delete from reward
-        where id in <foreach collection="list" open="(" separator="," close=")" item="i">#{i}</foreach>
-    </delete>
-
-    <delete id="deleteRewardAttributesByDomainIds" parameterType="list">
-        delete from reward_attribute
-        where domain_id in <foreach collection="list" open="(" separator="," close=")" item="i">#{i}</foreach>
+    <delete id="deleteRewards" parameterType="long">
+        delete r from reward r
+            left join reward_attribute ra_p on ra_p.domain_id = r.id and ra_p.entity_attribute_id = 24 and ra_p.status = 1
+        where ra_p.number = #{periodId}
     </delete>
 
     <select id="selectRewardsPointSum" parameterType="map" resultType="bigdecimal">
