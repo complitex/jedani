@@ -654,9 +654,9 @@ public class CompensationService {
     @Transactional
     public void calculateRewards(Period period) {
         if (!test) {
-            workerNodeMapper.deleteWorkerNodes(period.getObjectId());
-
             rewardMapper.deleteRewards(period.getObjectId());
+
+            workerNodeMapper.deleteWorkerNodes(period.getObjectId());
         }
 
         rewards.clear();

@@ -21,6 +21,10 @@ public class WorkerNode extends Domain {
 
     private List<WorkerNode> workerNodes = new ArrayList<>();
 
+    public WorkerNode() {
+        super(ENTITY_NAME);
+    }
+
     public Long getWorkerId() {
         return getNumber(WORKER_ID);
     }
