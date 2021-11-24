@@ -81,11 +81,11 @@ public class Attribute implements Serializable{
         objectId = attribute.objectId;
     }
 
-    public Value getValue(Long localeId){
-        if (values != null){
-            return values.stream().filter(sc -> localeId.equals(sc.getLocaleId()))
-                    .findFirst()
-                    .orElse(null);
+    public Value getValue(Long localeId) {
+        for (Value value : values) {
+            if (localeId.equals(value.getLocaleId())) {
+                return value;
+            }
         }
 
         return null;
@@ -96,6 +96,7 @@ public class Attribute implements Serializable{
 
         if (value == null){
             value = new Value(localeId);
+
             values.add(value);
         }
 
@@ -132,6 +133,7 @@ public class Attribute implements Serializable{
 
     public void addNumberValue(Long number){
         Value value = new Value();
+
         value.setNumber(number);
 
         values.add(value);

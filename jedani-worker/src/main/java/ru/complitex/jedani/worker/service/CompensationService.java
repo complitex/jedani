@@ -707,7 +707,11 @@ public class CompensationService {
             });
 
             if (!test) {
-                domainService.save(rewardNode.getWorkerNode());
+                WorkerNode workerNode = rewardNode.getWorkerNode();
+
+                workerNode.setPeriodId(period.getObjectId());
+
+                domainService.save(workerNode);
             }
         });
     }

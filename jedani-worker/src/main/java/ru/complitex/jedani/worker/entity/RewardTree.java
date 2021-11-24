@@ -26,7 +26,7 @@ public class RewardTree {
 
                 idMap.put(n.getWorkerId(), r);
 
-                r.getWorkerNode().getNodes()
+                r.getWorkerNode().getWorkerNodes()
                         .forEach(c -> r.getRewardNodes().add(idMap.get(c.getWorkerId())));
             });
 

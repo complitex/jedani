@@ -92,25 +92,27 @@ public class Domain implements Serializable{
     }
 
     public Attribute getOrCreateAttribute(Long entityAttributeId) {
-        return attributes.stream()
-                .filter(a -> a.getEntityAttributeId().equals(entityAttributeId))
-                .filter(a -> a.getEndDate() == null)
-                .findAny()
-                .orElseGet(() -> {
-                    Attribute attribute = new Attribute(entityAttributeId);
-                    attributes.add(attribute);
+        Attribute attribute = getAttribute(entityAttributeId);
 
-                    return attribute;
-                });
+        if (attribute != null) {
+            return attribute;
+        }
+
+        attribute = new Attribute(entityAttributeId);
+
+        attributes.add(attribute);
+
+        return attribute;
     }
 
-
     public Attribute getAttribute(Long entityAttributeId) {
-        return attributes.stream()
-                .filter(a -> a.getEntityAttributeId().equals(entityAttributeId))
-                .filter(a -> a.getEndDate() == null)
-                .findAny()
-                .orElse(null);
+        for (Attribute attribute : attributes) {
+            if (attribute.getEntityAttributeId().equals(entityAttributeId) &&  attribute.getEndDate() == null) {
+                return attribute;
+            }
+        }
+
+        return null;
     }
 
     public List<Attribute> getAttributes(Long entityAttributeId) {
@@ -429,5 +431,17 @@ public class Domain implements Serializable{
                 .add("map", map)
                 .add("parentEntityAttribute", parentEntityAttribute)
                 .toString();
+    }
+
+    public static void main(String[] args) {
+        Domain domain = new Domain();
+
+        long time = System.currentTimeMillis();
+
+        for (long l = 0; l < 100000; l++) {
+            domain.setNumber(1L, l);
+        }
+
+        System.out.println(System.currentTimeMillis() - time);
     }
 }

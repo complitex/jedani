@@ -19,7 +19,7 @@ public class WorkerNode extends Domain {
     public static final long LEVEL = 5;
     public static final long PERIOD = 6;
 
-    private List<WorkerNode> nodes = new ArrayList<>();
+    private List<WorkerNode> workerNodes = new ArrayList<>();
 
     public Long getWorkerId() {
         return getNumber(WORKER_ID);
@@ -69,11 +69,11 @@ public class WorkerNode extends Domain {
         setNumber(PERIOD, periodId);
     }
 
-    public List<WorkerNode> getNodes() {
-        return nodes;
+    public List<WorkerNode> getWorkerNodes() {
+        return workerNodes;
     }
 
-    public void setNodes(List<WorkerNode> nodes) {
-        this.nodes = nodes;
+    public void setWorkerNodes(List<WorkerNode> workerNodes) {
+        this.workerNodes = workerNodes;
     }
 }
