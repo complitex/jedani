@@ -87,24 +87,26 @@ public class RewardTreeService {
             rewardNode.setYearPaymentVolume(paymentService.getYearPaymentsVolumeBySellerWorkerId(rewardNode.getWorkerNode().getWorkerId()));
         }
 
-        rewardNode.setGroupPaymentVolume(rewardNode.getGroup().stream()
-                .reduce(ZERO, (v, r) -> v.add(r.getPaymentVolume()), BigDecimal::add));
 
         rewardNode.getGroup().forEach(r -> rewardNode.getGroupSales().addAll(r.getSales()));
 
         rewardNode.setGroupSaleVolume(rewardNode.getGroup().stream()
                 .reduce(ZERO, (v, r) -> v.add(r.getSaleVolume()), BigDecimal::add));
 
-        rewardNode.setStructurePaymentVolume(rewardNode.getRewardNodes().stream()
-                .reduce(rewardNode.getPaymentVolume(), (v, r) -> v.add(r.getStructurePaymentVolume()), BigDecimal::add));
+        rewardNode.setGroupPaymentVolume(rewardNode.getGroup().stream()
+                .reduce(ZERO, (v, r) -> v.add(r.getPaymentVolume()), BigDecimal::add));
+
 
         rewardNode.getStructureSales().addAll(rewardNode.getSales());
 
-        rewardNode.getRewardNodes().forEach(r ->
-                rewardNode.getStructureSales().addAll(r.getStructureSales()));
+        rewardNode.getRewardNodes().forEach(r -> rewardNode.getStructureSales().addAll(r.getStructureSales()));
 
         rewardNode.setStructureSaleVolume(rewardNode.getRewardNodes().stream()
                 .reduce(rewardNode.getSaleVolume(), (v, r) -> v.add(r.getStructureSaleVolume()), BigDecimal::add));
+
+        rewardNode.setStructurePaymentVolume(rewardNode.getRewardNodes().stream()
+                .reduce(rewardNode.getPaymentVolume(), (v, r) -> v.add(r.getStructurePaymentVolume()), BigDecimal::add));
+
 
         rewardNode.setRegistrationDate(domainService.getDate(Worker.ENTITY_NAME, rewardNode.getWorkerId(), Worker.REGISTRATION_DATE));
 
@@ -112,6 +114,7 @@ public class RewardTreeService {
 
         rewardNode.setPk(Dates.isLessYear(period.getOperatingMonth(), rewardNode.getRegistrationDate()) ||
                 rewardNode.getYearPaymentVolume().compareTo(BigDecimal.valueOf(200)) >= 0);
+
 
         rewardNode.setFirstLevelCount(rewardNode.getRewardNodes().stream()
                 .filter(r -> r.getRegistrationDate() != null &&
@@ -136,14 +139,15 @@ public class RewardTreeService {
                         Dates.isSameMonth(r.getRegistrationDate(), period.getOperatingMonth()) &&
                         !Objects.equals(r.getWorkerStatus(), WorkerStatus.MANAGER_CHANGED) ? 1 : 0), Long::sum));
 
+        rewardNode.setStructureManagerCount(rewardNode.getRewardNodes().stream()
+                .reduce(0L, (v, c) -> v + c.getStructureManagerCount() + (c.isManager() ? 1 : 0), Long::sum));
+
+
         if (rewardNode.getFirstLevelPersonalCount() >= 4 &&
                 rewardNode.getGroupRegistrationCount() >= 2 &&
                 rewardNode.getPaymentVolume().compareTo(BigDecimal.valueOf(200)) >= 0) {
             rewardNode.setRank(getRank(rewardNode.getStructureSaleVolume()));
         }
-
-        rewardNode.setStructureManagerCount(rewardNode.getRewardNodes().stream()
-                .reduce(0L, (v, c) -> v + c.getStructureManagerCount() + (c.isManager() ? 1 : 0), Long::sum));
     }
 
     public void updateRewardTree(RewardTree rewardTree, Period period, Consumer<RewardNode> consumer) {

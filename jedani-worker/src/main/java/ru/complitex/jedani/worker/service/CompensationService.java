@@ -8,10 +8,7 @@ import ru.complitex.common.util.Dates;
 import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.entity.*;
-import ru.complitex.jedani.worker.mapper.PaymentMapper;
-import ru.complitex.jedani.worker.mapper.PeriodMapper;
-import ru.complitex.jedani.worker.mapper.RewardMapper;
-import ru.complitex.jedani.worker.mapper.WorkerNodeMapper;
+import ru.complitex.jedani.worker.mapper.*;
 import ru.complitex.jedani.worker.service.cache.*;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -42,10 +39,13 @@ public class CompensationService {
     private PaymentMapper paymentMapper;
 
     @Inject
+    private WorkerNodeMapper workerNodeMapper;
+
+    @Inject
     private RewardMapper rewardMapper;
 
     @Inject
-    private WorkerNodeMapper workerNodeMapper;
+    private RewardNodeMapper rewardNodeMapper;
 
     @Inject
     private DomainService domainService;
@@ -653,10 +653,14 @@ public class CompensationService {
 
     @Transactional
     public void calculateRewards(Period period) {
-        if (!test) {
-            rewardMapper.deleteRewards(period.getObjectId());
+        Long periodId = period.getObjectId();
 
-            workerNodeMapper.deleteWorkerNodes(period.getObjectId());
+        if (!test) {
+            rewardMapper.deleteRewards(periodId);
+
+            rewardNodeMapper.deleteRewardNodes(periodId);
+
+            workerNodeMapper.deleteWorkerNodes(periodId);
         }
 
         rewards.clear();
@@ -703,9 +707,21 @@ public class CompensationService {
             if (!test) {
                 WorkerNode workerNode = rewardNode.getWorkerNode();
 
-                workerNode.setPeriodId(period.getObjectId());
+                workerNode.setPeriodId(periodId);
 
                 domainService.save(workerNode);
+
+                RewardNode rn = new RewardNode();
+
+                rn.copy(rewardNode, true);
+
+                rn.zeroToNull();
+
+                if (!rn.isNull()) {
+                    rn.setPeriodId(periodId);
+
+                    domainService.save(rn);
+                }
             }
         });
 

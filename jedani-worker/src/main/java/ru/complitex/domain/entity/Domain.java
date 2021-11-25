@@ -9,6 +9,8 @@ import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.math.BigDecimal.ZERO;
+
 /**
  * @author Anatoly A. Ivanov
  * 30.11.2017 15:29
@@ -412,6 +414,18 @@ public class Domain implements Serializable{
         return this;
     }
 
+    public void zeroToNull() {
+        for (Attribute attribute : getAttributes()) {
+            if (Objects.equals(attribute.getNumber(), 0L)) {
+                attribute.setNumber(null);
+            }
+
+            if (Objects.equals(attribute.getDecimal(), ZERO)) {
+                attribute.setDecimal(null);
+            }
+        }
+    }
+
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this).omitNullValues()
@@ -431,17 +445,5 @@ public class Domain implements Serializable{
                 .add("map", map)
                 .add("parentEntityAttribute", parentEntityAttribute)
                 .toString();
-    }
-
-    public static void main(String[] args) {
-        Domain domain = new Domain();
-
-        long time = System.currentTimeMillis();
-
-        for (long l = 0; l < 100000; l++) {
-            domain.setNumber(1L, l);
-        }
-
-        System.out.println(System.currentTimeMillis() - time);
     }
 }
