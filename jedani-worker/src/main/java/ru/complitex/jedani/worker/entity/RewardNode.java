@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static java.math.BigDecimal.ZERO;
-
 /**
  * @author Anatoly A. Ivanov
  * 16.10.2019 11:00 AM
@@ -58,40 +56,26 @@ public class RewardNode extends Domain {
         this.workerNode = workerNode;
 
         setWorkerId(workerNode.getWorkerId());
-
-        setSaleVolume(ZERO);
-        setPaymentVolume(ZERO);
-        setYearPaymentVolume(ZERO);
-        setGroupSaleVolume(ZERO);
-        setGroupPaymentVolume(ZERO);
-        setStructureSaleVolume(ZERO);
-        setStructurePaymentVolume(ZERO);
-        setFirstLevelCount(0L);
-        setFirstLevelPersonalCount(0L);
-        setRegistrationCount(0L);
-        setGroupRegistrationCount(0L);
-        setStructureManagerCount(0L);
-        setRank(0L);
     }
 
     public boolean isNull() {
         return getSaleVolume() == null &&
                 getPaymentVolume() == null &&
                 getYearPaymentVolume() == null &&
-                getGroupSaleVolume() == null  &&
-                getGroupPaymentVolume() == null  &&
-                getStructureSaleVolume() == null  &&
-                getStructurePaymentVolume() == null  &&
-                getFirstLevelCount() == null  &&
-                getFirstLevelPersonalCount() == null  &&
-                getRegistrationCount() == null  &&
-                getGroupRegistrationCount() == null  &&
-                getStructureManagerCount() == null  &&
-                getRank() == null ;
+                getGroupSaleVolume() == null &&
+                getGroupPaymentVolume() == null &&
+                getStructureSaleVolume() == null &&
+                getStructurePaymentVolume() == null &&
+                getFirstLevelCount() == null &&
+                getFirstLevelPersonalCount() == null &&
+                getRegistrationCount() == null &&
+                getGroupRegistrationCount() == null &&
+                getStructureManagerCount() == null &&
+                getRank() == null;
     }
 
     public Long getWorkerId(){
-        return getNumber(WORKER);
+        return getNumberOrZero(WORKER);
     }
 
     public void setWorkerId(Long workerId) {
@@ -99,7 +83,7 @@ public class RewardNode extends Domain {
     }
 
     public BigDecimal getSaleVolume() {
-        return getDecimal(SALE_VOLUME);
+        return getDecimalOrZero(SALE_VOLUME);
     }
 
     public void setSaleVolume(BigDecimal saleVolume) {
@@ -107,7 +91,7 @@ public class RewardNode extends Domain {
     }
 
     public BigDecimal getPaymentVolume() {
-        return getDecimal(PAYMENT_VOLUME);
+        return getDecimalOrZero(PAYMENT_VOLUME);
     }
 
     public void setPaymentVolume(BigDecimal paymentVolume) {
@@ -115,7 +99,7 @@ public class RewardNode extends Domain {
     }
 
     public BigDecimal getYearPaymentVolume() {
-        return getDecimal(YEAR_PAYMENT_VOLUME);
+        return getDecimalOrZero(YEAR_PAYMENT_VOLUME);
     }
 
     public void setYearPaymentVolume(BigDecimal yearPaymentVolume) {
@@ -123,7 +107,7 @@ public class RewardNode extends Domain {
     }
 
     public BigDecimal getGroupSaleVolume() {
-        return getDecimal(GROUP_SALE_VOLUME);
+        return getDecimalOrZero(GROUP_SALE_VOLUME);
     }
 
     public void setGroupSaleVolume(BigDecimal groupSaleVolume) {
@@ -131,7 +115,7 @@ public class RewardNode extends Domain {
     }
 
     public BigDecimal getGroupPaymentVolume() {
-        return getDecimal(GROUP_PAYMENT_VOLUME);
+        return getDecimalOrZero(GROUP_PAYMENT_VOLUME);
     }
 
     public void setGroupPaymentVolume(BigDecimal groupPaymentVolume) {
@@ -139,7 +123,7 @@ public class RewardNode extends Domain {
     }
 
     public BigDecimal getStructureSaleVolume() {
-        return getDecimal(STRUCTURE_SALE_VOLUME);
+        return getDecimalOrZero(STRUCTURE_SALE_VOLUME);
     }
 
     public void setStructureSaleVolume(BigDecimal structureSaleVolume) {
@@ -147,7 +131,7 @@ public class RewardNode extends Domain {
     }
 
     public BigDecimal getStructurePaymentVolume() {
-        return getDecimal(STRUCTURE_PAYMENT_VOLUME);
+        return getDecimalOrZero(STRUCTURE_PAYMENT_VOLUME);
     }
 
     public void setStructurePaymentVolume(BigDecimal structurePaymentVolume) {
@@ -155,7 +139,7 @@ public class RewardNode extends Domain {
     }
 
     public Long getWorkerStatus() {
-        return getNumber(WORKER_STATUS);
+        return getNumberOrZero(WORKER_STATUS);
     }
 
     public void setWorkerStatus(Long workerStatus) {
@@ -171,7 +155,7 @@ public class RewardNode extends Domain {
     }
 
     public Long getFirstLevelCount() {
-        return getNumber(FIRST_LEVEL_COUNT);
+        return getNumberOrZero(FIRST_LEVEL_COUNT);
     }
 
     public void setFirstLevelCount(Long firstLevelCount) {
@@ -179,7 +163,7 @@ public class RewardNode extends Domain {
     }
 
     public Long getFirstLevelPersonalCount() {
-        return getNumber(FIRST_LEVEL_PERSONAL_COUNT);
+        return getNumberOrZero(FIRST_LEVEL_PERSONAL_COUNT);
     }
 
     public void setFirstLevelPersonalCount(Long firstLevelPersonalCount) {
@@ -187,7 +171,7 @@ public class RewardNode extends Domain {
     }
 
     public Long getRegistrationCount() {
-        return getNumber(REGISTRATION_COUNT);
+        return getNumberOrZero(REGISTRATION_COUNT);
     }
 
     public void setRegistrationCount(Long registrationCount) {
@@ -195,7 +179,7 @@ public class RewardNode extends Domain {
     }
 
     public Long getGroupRegistrationCount() {
-        return getNumber(GROUP_REGISTRATION_COUNT);
+        return getNumberOrZero(GROUP_REGISTRATION_COUNT);
     }
 
     public void setGroupRegistrationCount(Long groupRegistrationCount) {
@@ -203,7 +187,7 @@ public class RewardNode extends Domain {
     }
 
     public Long getStructureManagerCount() {
-        return getNumber(STRUCTURE_MANAGER_COUNT);
+        return getNumberOrZero(STRUCTURE_MANAGER_COUNT);
     }
 
     public void setStructureManagerCount(Long structureManagerCount) {
@@ -211,7 +195,7 @@ public class RewardNode extends Domain {
     }
 
     public Long getRank() {
-        return getNumber(RANK);
+        return getNumberOrZero(RANK);
     }
 
     public void setRank(Long rank) {
@@ -219,7 +203,7 @@ public class RewardNode extends Domain {
     }
 
     public Long getPeriodId() {
-        return getNumber(PERIOD);
+        return getNumberOrZero(PERIOD);
     }
 
     public void setPeriodId(Long periodId) {

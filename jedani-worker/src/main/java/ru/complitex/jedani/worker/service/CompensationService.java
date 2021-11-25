@@ -671,9 +671,9 @@ public class CompensationService {
 
         rewardTreeService.updateRewardTree(rewardTree, period, rewardNode -> {
             rewardNode.getSales().stream()
-                    .filter(sale -> !test || sale.getPeriodId() <= period.getObjectId())
+                    .filter(sale -> !test || sale.getPeriodId() <= periodId)
                     .forEach(sale -> {
-                            if (Objects.equals(sale.getPeriodId(), period.getObjectId())) {
+                            if (Objects.equals(sale.getPeriodId(), periodId)) {
                                 SaleItem saleItem = saleService.getSaleItem(sale.getObjectId());
 
                                 Reward personalMycookReward = getPersonalMycookReward(sale, saleItem, period);
@@ -711,16 +711,12 @@ public class CompensationService {
 
                 domainService.save(workerNode);
 
-                RewardNode rn = new RewardNode();
+                rewardNode.zeroToNull();
 
-                rn.copy(rewardNode, true);
+                if (!rewardNode.isNull()) {
+                    rewardNode.setPeriodId(periodId);
 
-                rn.zeroToNull();
-
-                if (!rn.isNull()) {
-                    rn.setPeriodId(periodId);
-
-                    domainService.save(rn);
+                    domainService.save(rewardNode);
                 }
             }
         });
