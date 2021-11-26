@@ -137,7 +137,15 @@ public class RewardTestPage extends BasePage {
     private String getRewards(List<Reward> list) {
         StringBuilder rewards = new StringBuilder();
 
-        list.forEach(reward -> append("", rewards, reward));
+        for (int i = 4; i < 14; i++) {
+            long type = i;
+
+            list.stream()
+                    .filter(reward -> reward.getType() == type)
+                    .forEach(reward -> append("", rewards, reward));
+
+            rewards.append("</br>");
+        }
 
         return rewards.toString();
     }
@@ -145,31 +153,39 @@ public class RewardTestPage extends BasePage {
     private String getRewardsDiff(String prefix, List<Reward> list1, List<Reward> list2) {
         StringBuilder rewards = new StringBuilder();
 
-        list1.forEach(reward -> {
-            if (list2.stream()
-                    .noneMatch(r -> Objects.equals(reward.getWorkerId(), r.getWorkerId()) &&
-                            Objects.equals(reward.getType(), r.getType()) &&
-                            Objects.equals(reward.getSaleId(), r.getSaleId()) &&
-                            Objects.equals(reward.getRewardStatus(), r.getRewardStatus()) &&
-                            Objects.equals(reward.getPeriodId(), r.getPeriodId()))) {
-                append(prefix, rewards, reward);
-            }
+        for (int i = 4; i < 14; i++) {
+            long type = i;
 
-            Reward r1 = list2.stream()
-                    .filter(r -> Objects.equals(reward.getWorkerId(), r.getWorkerId()) &&
-                            !Objects.equals(reward.getPoint(), r.getPoint()) &&
-                            Objects.equals(reward.getType(), r.getType()) &&
-                            Objects.equals(reward.getSaleId(), r.getSaleId()) &&
-                            Objects.equals(reward.getRewardStatus(), r.getRewardStatus()) &&
-                            Objects.equals(reward.getPeriodId(), r.getPeriodId()))
-                    .findAny()
-                    .orElse(null);
+            list1.stream()
+                    .filter(reward -> reward.getType() == type)
+                    .forEach(reward -> {
+                if (list2.stream()
+                        .noneMatch(r -> Objects.equals(reward.getWorkerId(), r.getWorkerId()) &&
+                                Objects.equals(reward.getType(), r.getType()) &&
+                                Objects.equals(reward.getSaleId(), r.getSaleId()) &&
+                                Objects.equals(reward.getRewardStatus(), r.getRewardStatus()) &&
+                                Objects.equals(reward.getPeriodId(), r.getPeriodId()))) {
+                    append(prefix, rewards, reward);
+                }
 
-            if (r1 != null) {
-                append(prefix + "+-", rewards, reward);
-                append(prefix + "-+", rewards, r1);
-            }
-        });
+                Reward r1 = list2.stream()
+                        .filter(r -> Objects.equals(reward.getWorkerId(), r.getWorkerId()) &&
+                                !Objects.equals(reward.getPoint(), r.getPoint()) &&
+                                Objects.equals(reward.getType(), r.getType()) &&
+                                Objects.equals(reward.getSaleId(), r.getSaleId()) &&
+                                Objects.equals(reward.getRewardStatus(), r.getRewardStatus()) &&
+                                Objects.equals(reward.getPeriodId(), r.getPeriodId()))
+                        .findAny()
+                        .orElse(null);
+
+                if (r1 != null) {
+                    append(prefix + "+-", rewards, reward);
+                    append(prefix + "-+", rewards, r1);
+                }
+            });
+
+            rewards.append("</br>");
+        }
 
         return rewards.toString();
     }
