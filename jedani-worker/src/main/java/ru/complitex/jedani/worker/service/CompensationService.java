@@ -659,7 +659,9 @@ public class CompensationService {
 
     private List<Reward> getEstimatedRewards(Period period) {
         return rewardMapper.getRewards(FilterWrapper.of(new Reward().setRewardStatus(ESTIMATED))).stream()
-                .filter(reward -> reward.getPoint() != null && !isEstimatedAndCharged(reward, period))
+                .filter(reward -> reward.getPoint() != null)
+                .filter(reward -> periodMapper.getOperationMonth(reward.getPeriodId()).before(period.getOperatingMonth()))
+                .filter(reward -> !isEstimatedAndCharged(reward, period))
                 .collect(Collectors.toList());
     }
 

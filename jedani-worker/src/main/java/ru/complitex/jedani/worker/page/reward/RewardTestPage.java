@@ -214,7 +214,7 @@ public class RewardTestPage extends BasePage {
     }
 
     private String getSize(List<Reward> rewards) {
-        return "e: " + getEstimatedSize(rewards) + ", c:" + getChargedSize(rewards) + ", w:" + getWithdrawnSize(rewards);
+        return "e: " + getEstimatedSize(rewards) + ", c: " + getChargedSize(rewards) + ", w: " + getWithdrawnSize(rewards);
     }
 
     private String getEstimatedSum(List<Reward> rewards) {
@@ -244,6 +244,4 @@ public class RewardTestPage extends BasePage {
     private String getSum(List<Reward> rewards) {
         return "e: " + getEstimatedSum(rewards) + ", c: " + getChargedSum(rewards) + ", w: " + getWithdrawnSum(rewards);
     }
-
-
 }
