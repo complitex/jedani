@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.util.Dates;
 import ru.complitex.domain.entity.Attribute;
+import ru.complitex.domain.entity.Status;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.mapper.*;
@@ -106,7 +107,7 @@ public class CompensationService {
     }
 
     private BigDecimal getRatio(Sale sale) {
-        Date month =  periodMapper.getPeriod(sale.getPeriodId()).getOperatingMonth();
+        Date month =  periodMapper.getOperationMonth(sale.getPeriodId());
 
         List<Ratio> ratios = domainService.getDomains(Ratio.class, FilterWrapper.of((Ratio) new Ratio()
                 .setCountryId(saleService.getCountryId(sale))
@@ -129,7 +130,7 @@ public class CompensationService {
         Long saleCountryId = saleService.getCountryId(sale);
 
         if (!workerCountryId.equals(saleCountryId)) {
-            Date crossDate = Dates.lastDayOfMonth(periodMapper.getPeriod(sale.getPeriodId()).getOperatingMonth());
+            Date crossDate = Dates.lastDayOfMonth(periodMapper.getOperationMonth(sale.getPeriodId()));
 
             return exchangeRateService.getExchangeRate(workerCountryId, crossDate)
                     .divide(exchangeRateService.getExchangeRate(saleCountryId, crossDate), 7, HALF_EVEN);
@@ -570,8 +571,6 @@ public class CompensationService {
 
                 if (paid.compareTo(new BigDecimal("1")) >= 0) {
                     point = point.add(reward.getPoint().multiply(new BigDecimal("0.40")));
-
-                    reward.setDetailStatus(CHARGED);
                 }
 
                 BigDecimal sum = getRewardsPointSumBefore(rewardType, reward.getSaleId(), reward.getManagerId(), CHARGED, reward.getPeriodId());
@@ -602,9 +601,30 @@ public class CompensationService {
         }
     }
 
+    private boolean isEstimated(Reward reward) {
+        return getRewardsPointSumBefore(reward.getType(), reward.getSaleId(), reward.getManagerId(), ESTIMATED,  reward.getPeriodId())
+                .compareTo(ZERO) != 0;
+    }
+
+    private boolean isCharged(Reward reward) {
+        return getRewardsPointSumBefore(reward.getType(), reward.getSaleId(), reward.getManagerId(), ESTIMATED, reward.getPeriodId())
+                .compareTo(ZERO) != 0;
+    }
+
+    private boolean isEstimatedAndCharged(Reward reward, Period period) {
+        Long periodId = period != null ? period.getObjectId() : reward.getPeriodId();
+
+        return getRewardsPointSumBefore(reward.getType(), reward.getSaleId(), reward.getManagerId(), ESTIMATED, periodId)
+                .compareTo(getRewardsPointSumBefore(reward.getType(), reward.getSaleId(), reward.getManagerId(), CHARGED, periodId)) == 0;
+    }
+
+    private boolean isWithdraw(Reward reward) {
+        return getRewardsPointSumBefore(reward.getType(), reward.getSaleId(), reward.getManagerId(), WITHDRAWN,
+                reward.getPeriodId()).compareTo(ZERO) != 0;
+    }
+
     private void estimateReward(Reward reward) {
-        if (reward != null && getRewardsPointSumBefore(reward.getType(), reward.getSaleId(), reward.getManagerId(), ESTIMATED,
-                reward.getPeriodId()).compareTo(ZERO) == 0) {
+        if (reward != null && !isEstimated(reward) && !isCharged(reward)) {
             reward.setRewardStatus(ESTIMATED);
 
             save(reward);
@@ -615,12 +635,6 @@ public class CompensationService {
         if (reward != null) {
             updateRewardPoint(reward.getType(), reward);
 
-            if (!test && reward.getObjectId() != null &&
-                    Objects.equals(reward.getRewardStatus(), ESTIMATED) &&
-                    Objects.equals(reward.getDetailStatus(), CHARGED)) {
-                domainService.save(reward);
-            }
-
             if (reward.getPoint() != null && reward.getPoint().compareTo(ZERO) != 0) {
                 reward.setRewardStatus(CHARGED);
 
@@ -630,8 +644,7 @@ public class CompensationService {
     }
 
     public void withdrawReward(Reward reward) {
-        if (reward != null && getRewardsPointSumBefore(reward.getType(), reward.getSaleId(), reward.getManagerId(), WITHDRAWN,
-                reward.getPeriodId()).compareTo(ZERO) == 0) {
+        if (reward != null && !isWithdraw(reward)) {
             reward.setRewardStatus(WITHDRAWN);
 
             save(reward);
@@ -644,17 +657,9 @@ public class CompensationService {
         chargeReward(reward);
     }
 
-    private boolean isCharged(Reward reward, Period period) {
-        BigDecimal estimated  = getRewardsPointSumBefore(reward.getType(), reward.getSaleId(), reward.getManagerId(), ESTIMATED, period.getObjectId());
-
-        BigDecimal charged = getRewardsPointSumBefore(reward.getType(), reward.getSaleId(), reward.getManagerId(), CHARGED, period.getObjectId());
-
-        return estimated != null && charged != null && estimated.compareTo(charged) == 0;
-    }
-
     private List<Reward> getEstimatedRewards(Period period) {
         return rewardMapper.getRewards(FilterWrapper.of(new Reward().setRewardStatus(ESTIMATED))).stream()
-                .filter(reward -> reward.getPoint() != null && !isCharged(reward, period))
+                .filter(reward -> reward.getPoint() != null && !isEstimatedAndCharged(reward, period))
                 .collect(Collectors.toList());
     }
 
@@ -668,6 +673,8 @@ public class CompensationService {
             rewardNodeMapper.deleteRewardNodes(periodId);
 
             workerNodeMapper.deleteWorkerNodes(periodId);
+
+            repair();
         }
 
         rewards.clear();
@@ -758,6 +765,22 @@ public class CompensationService {
         clearCache();
 
         test = false;
+    }
+
+    private void repair() {
+        rewardMapper.getRewards(FilterWrapper.of(new Reward())).forEach(this::repair);
+    }
+
+    private void repair(Reward reward) {
+        if (Objects.equals(reward.getType(), CULINARY_WORKSHOP) && reward.getWorkerId() == null) {
+            reward.setDetail("empty worker");
+
+            reward.setStatus(Status.ARCHIVE);
+
+            log.debug("empty worker {}", reward);
+
+            domainService.save(reward);
+        }
     }
 
     public List<Reward> getRewards() {

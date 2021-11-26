@@ -111,12 +111,12 @@ public class Reward extends Domain {
         setNumber(RANK, rank);
     }
 
-    public Long getDetailStatus() {
-        return getNumber(DETAIL);
+    public String getDetail() {
+        return getText(DETAIL);
     }
 
-    public void setDetailStatus(Long detailStatus) {
-        setNumber(DETAIL, detailStatus);
+    public void setDetail(String detail) {
+        setText(DETAIL, detail);
     }
 
     public Long getSaleId() {
