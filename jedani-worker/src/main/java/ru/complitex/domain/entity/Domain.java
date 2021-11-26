@@ -156,10 +156,6 @@ public class Domain implements Serializable{
         return attribute != null ? attribute.getNumber() != null ? attribute.getNumber() : defaultNumber : defaultNumber;
     }
 
-    public Long getNumberOrZero(Long entityAttributeId) {
-        return getNumber(entityAttributeId, 0L);
-    }
-
     public Domain setNumber(Long entityAttributeId, Long number){
         getOrCreateAttribute(entityAttributeId).setNumber(number);
 
@@ -192,10 +188,10 @@ public class Domain implements Serializable{
         return text != null && !text.isEmpty()  ? new BigDecimal(text) : null;
     }
 
-    public BigDecimal getDecimalOrZero(Long entityAttributeId) {
-        BigDecimal decimal = getDecimal(entityAttributeId);
+    public BigDecimal getDecimal(Long entityAttributeId, BigDecimal defaultNumber){
+        Attribute attribute = getAttribute(entityAttributeId);
 
-        return decimal != null ? decimal : ZERO;
+        return attribute != null ? attribute.getDecimal() != null ? attribute.getDecimal() : defaultNumber : defaultNumber;
     }
 
     public Domain setDecimal(Long entityAttributeId, BigDecimal decimal){
