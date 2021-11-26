@@ -174,7 +174,7 @@ public class CompensationService {
         }
 
         if (countryId != null) {
-            reward.setRate(getPaymentRate(workerId, period));
+            reward.setRate(getPaymentRate(countryId, period));
         }
 
         reward.setPoint(point);
