@@ -38,4 +38,8 @@ public class PeriodMapper extends BaseMapper {
     public Date getActualOperatingMonth(){
         return getActualPeriod().getOperatingMonth();
     }
+
+    public Date getOperationMonth(Long periodId) {
+        return sqlSession().selectOne("selectPeriodOperationMonth", periodId);
+    }
 }

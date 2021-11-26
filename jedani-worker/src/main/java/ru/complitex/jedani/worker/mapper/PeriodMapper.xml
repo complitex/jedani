@@ -52,4 +52,9 @@
 
         where d.status = 1 and pa_m.date = #{date}
     </select>
+
+    <select id="selectPeriodOperationMonth" parameterType="long" resultType="date">
+        select pa.date from period_attribute pa left join `period` p on pa.domain_id = p.id
+            where pa.entity_attribute_id = 1 and pa.status = 1 and p.object_id = #{periodId} and p.status = 1
+    </select>
 </mapper>

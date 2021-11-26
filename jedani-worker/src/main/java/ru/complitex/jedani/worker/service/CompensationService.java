@@ -644,10 +644,17 @@ public class CompensationService {
         chargeReward(reward);
     }
 
+    private boolean isCharged(Reward reward, Period period) {
+        BigDecimal estimated  = getRewardsPointSumBefore(reward.getType(), reward.getSaleId(), reward.getManagerId(), ESTIMATED, period.getObjectId());
+
+        BigDecimal charged = getRewardsPointSumBefore(reward.getType(), reward.getSaleId(), reward.getManagerId(), CHARGED, period.getObjectId());
+
+        return estimated != null && charged != null && estimated.compareTo(charged) == 0;
+    }
+
     private List<Reward> getEstimatedRewards(Period period) {
-        return rewardMapper.getRewards(FilterWrapper.of(new Reward().setRewardStatus(ESTIMATED))
-                .put(Reward.FILTER_NULL_DETAIL_STATUS, true)).stream()
-                .filter(reward -> reward.getPeriodId() < period.getObjectId())
+        return rewardMapper.getRewards(FilterWrapper.of(new Reward().setRewardStatus(ESTIMATED))).stream()
+                .filter(reward -> reward.getPoint() != null && !isCharged(reward, period))
                 .collect(Collectors.toList());
     }
 
