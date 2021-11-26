@@ -729,6 +729,8 @@ public class CompensationService {
         });
 
         getEstimatedRewards(period).forEach(reward -> {
+            reward.setDate(Dates.currentDate());
+            reward.setMonth(period.getOperatingMonth());
             reward.setPeriodId(period.getObjectId());
 
             chargeReward(reward);
