@@ -36,8 +36,8 @@ public class RegionListPage extends DomainListModalPage<Region> {
 
     @Override
     protected boolean checkUnique(Domain domain) {
-        String name = domain.getText(Region.NAME);
-        String shortName = domain.getText(Region.SHORT_NAME);
+        String name = domain.getTextValue(Region.NAME);
+        String shortName = domain.getTextValue(Region.SHORT_NAME);
 
         return domainService.getDomains(Region.class, FilterWrapper.of(new Region().setName(name))).size() == 0 &&
                 (shortName == null || domainService.getDomains(Region.class, FilterWrapper.of(new Region().setShortName(shortName))).size() == 0);

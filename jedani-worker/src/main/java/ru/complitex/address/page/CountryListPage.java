@@ -46,8 +46,8 @@ public class CountryListPage extends DomainListModalPage<Country> {
 
     @Override
     protected boolean checkUnique(Domain domain) {
-        String name = domain.getText(Country.NAME);
-        String shortName = domain.getText(Country.SHORT_NAME);
+        String name = domain.getTextValue(Country.NAME);
+        String shortName = domain.getTextValue(Country.SHORT_NAME);
 
         return domainService.getDomains(Country.class, FilterWrapper.of(new Country().setName(name))).size() == 0 &&
                 (shortName == null || domainService.getDomains(Country.class, FilterWrapper.of(new Country().setShortName(shortName))).size() == 0);

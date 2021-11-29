@@ -40,8 +40,8 @@ public class CityTypeListPage extends DomainListModalPage<CityType> {
 
     @Override
     protected boolean checkUnique(Domain domain) {
-        String name = domain.getText(CityType.NAME);
-        String shortName = domain.getText(CityType.SHORT_NAME);
+        String name = domain.getTextValue(CityType.NAME);
+        String shortName = domain.getTextValue(CityType.SHORT_NAME);
 
         return domainService.getDomains(CityType.class, FilterWrapper.of(new CityType().setName(name))).size() == 0 &&
                 (shortName== null || domainService.getDomains(CityType.class, FilterWrapper.of(new CityType().setShortName(shortName))).size() == 0);
