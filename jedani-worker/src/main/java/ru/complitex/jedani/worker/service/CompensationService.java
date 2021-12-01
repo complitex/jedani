@@ -439,6 +439,7 @@ public class CompensationService {
 
             List<Sale> groupSales = rewardNode.getGroupSales().stream()
                     .filter(sale -> Objects.equals(sale.getPeriodId(), period.getObjectId()))
+                    .filter(sale -> !Objects.equals(sale.getSaleStatus(), SaleStatus.CREATED))
                     .collect(Collectors.toList());
 
             for (int i = 0; i < groupSales.size(); i++) {
@@ -496,6 +497,7 @@ public class CompensationService {
 
             List<Sale> structureSales = m.getStructureSales().stream()
                     .filter(sale -> Objects.equals(sale.getPeriodId(), period.getObjectId()))
+                    .filter(sale -> !Objects.equals(sale.getSaleStatus(), SaleStatus.CREATED))
                     .collect(Collectors.toList());
 
             for (int j = 0; j < structureSales.size(); j++) {
@@ -687,6 +689,7 @@ public class CompensationService {
         rewardTreeService.updateRewardTree(rewardTree, period, rewardNode -> {
             rewardNode.getSales().stream()
                     .filter(sale -> !test || sale.getPeriodId() <= periodId)
+                    .filter(sale -> !Objects.equals(sale.getSaleStatus(), SaleStatus.CREATED))
                     .forEach(sale -> {
                             if (Objects.equals(sale.getPeriodId(), periodId)) {
                                 SaleItem saleItem = saleService.getSaleItem(sale.getObjectId());

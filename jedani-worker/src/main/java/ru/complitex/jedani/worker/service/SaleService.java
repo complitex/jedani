@@ -27,13 +27,7 @@ import java.util.stream.Collectors;
  */
 public class SaleService implements Serializable {
     @Inject
-    private DomainService domainService;
-
-    @Inject
-    private EntityService entityService;
-
-    @Inject
-    private StorageService storageService;
+    private PeriodMapper periodMapper;
 
     @Inject
     private SaleMapper saleMapper;
@@ -42,7 +36,16 @@ public class SaleService implements Serializable {
     private SaleItemMapper saleItemMapper;
 
     @Inject
-    private PeriodMapper periodMapper;
+    private EntityService entityService;
+
+    @Inject
+    private DomainService domainService;
+
+    @Inject
+    private StorageService storageService;
+
+    @Inject
+    private SaleDecisionService saleDecisionService;
 
     @Transactional(rollbackFor = SaleException.class)
     public void save(Sale sale, List<SaleItem> saleItems) throws SaleException {
@@ -175,13 +178,19 @@ public class SaleService implements Serializable {
         return domainService.getDomain(Sale.class, saleId);
     }
 
-    public void updateSaleByTotal(Sale sale, BigDecimal paymentTotal){
-        if (sale.getTotal() != null){
-            if (sale.getTotal().compareTo(paymentTotal) == 0){
+    public boolean isPaying(Sale sale, BigDecimal paymentTotal) {
+        BigDecimal percent = new BigDecimal("0.1");
+
+        return paymentTotal.compareTo(sale.getTotal().multiply(percent)) >= 0;
+    }
+
+    public void updateSaleByTotal(Sale sale, BigDecimal paymentTotal) {
+        if (sale.getTotal() != null) {
+            if (sale.getTotal().compareTo(paymentTotal) == 0) {
                 sale.setSaleStatus(SaleStatus.PAID);
-            }else if (sale.getTotal().compareTo(paymentTotal) < 0){
+            }else if (sale.getTotal().compareTo(paymentTotal) < 0) {
                 sale.setSaleStatus(SaleStatus.OVERPAID);
-            }else if (paymentTotal.compareTo(sale.getTotal().divide(BigDecimal.TEN, 2, RoundingMode.HALF_EVEN)) >= 0){
+            }else if (isPaying(sale, paymentTotal)) {
                 sale.setSaleStatus(SaleStatus.PAYING);
             }else {
                 sale.setSaleStatus(SaleStatus.CREATED);

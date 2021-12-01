@@ -79,6 +79,7 @@ public class RewardTreeService {
 
             rewardNode.setSaleVolume(rewardNode.getSales().stream()
                     .filter(s -> Objects.equals(s.getPeriodId(), period.getObjectId()))
+                    .filter(s -> !Objects.equals(s.getSaleStatus(), SaleStatus.CREATED))
                     .map(s -> s.getTotal() != null ? s.getTotal() : BigDecimal.ZERO)
                     .reduce(BigDecimal.ZERO, BigDecimal::add));
 
