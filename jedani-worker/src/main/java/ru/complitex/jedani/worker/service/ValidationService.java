@@ -3,6 +3,7 @@ package ru.complitex.jedani.worker.service;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.mapper.RewardMapper;
+import ru.complitex.jedani.worker.mapper.SaleMapper;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -21,6 +22,9 @@ import static java.math.BigDecimal.ZERO;
 public class ValidationService implements Serializable {
     @Inject
     private RewardMapper rewardMapper;
+
+    @Inject
+    private SaleMapper saleMapper;
 
     public List<Reward> validateRewardChargedSum() {
         List<Reward> rewards = new ArrayList<>();
@@ -104,6 +108,35 @@ public class ValidationService implements Serializable {
 
                     if (estimated.isEmpty()) {
                         errors.add(RewardError.ESTIMATED_EMPTY);
+                    }
+
+                    if (!errors.isEmpty()) {
+                        reward.setErrors(errors);
+                        rewards.add(reward);
+                    }
+                });
+
+        return rewards;
+    }
+
+    public List<Reward> validateRewardWithdraw() {
+        List<Reward> rewards = new ArrayList<>();
+
+        saleMapper.getSales(FilterWrapper.of(new Sale().setFeeWithdraw(true)))
+                .forEach(sale -> {
+                    List<Long> errors = new ArrayList<>();
+
+                    Reward reward = new Reward();
+
+                    reward.setSaleId(sale.getObjectId());
+                    reward.setRewardStatus(RewardStatus.WITHDRAWN);
+
+                    List<Reward> estimated = rewardMapper.getRewards(FilterWrapper.of(new Reward()
+                            .setSaleId(sale.getObjectId())
+                            .setRewardStatus(RewardStatus.WITHDRAWN)));
+
+                    if (estimated.isEmpty()) {
+                        errors.add(RewardError.WITHDRAW_EMPTY);
                     }
 
                     if (!errors.isEmpty()) {

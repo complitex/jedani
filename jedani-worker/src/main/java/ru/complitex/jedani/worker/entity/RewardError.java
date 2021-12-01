@@ -16,4 +16,5 @@ public class RewardError implements Serializable {
     public final static long CROSS_RATE_NOT_EQUAL = 8;
     public final static long DISCOUNT_NOT_EQUAL = 9;
     public final static long ESTIMATED_EMPTY = 10;
+    public final static long WITHDRAW_EMPTY = 11;
 }

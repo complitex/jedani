@@ -796,7 +796,6 @@ public class CompensationService {
 
             domainService.delete(reward);
         }
-
     }
 
     public List<Reward> getRewards() {

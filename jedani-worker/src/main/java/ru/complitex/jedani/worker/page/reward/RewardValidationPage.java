@@ -39,6 +39,11 @@ public class RewardValidationPage extends BasePage {
         validationService.validateRewardEstimated()
                 .forEach(reward -> appendReward(stringBuilder, reward));
 
+        stringBuilder.append("</br>");
+
+        validationService.validateRewardWithdraw()
+                .forEach(reward -> appendReward(stringBuilder, reward));
+
         add(new Label("test", (System.nanoTime() - time)).setEscapeModelStrings(false));
 
         add(new Label("rewards", stringBuilder.toString()).setEscapeModelStrings(false));

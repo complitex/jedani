@@ -215,8 +215,10 @@ public class Sale extends Domain {
         return isBoolean(FEE_WITHDRAW);
     }
 
-    public void setFeeWithdraw(Boolean feeWithdraw){
+    public Sale setFeeWithdraw(Boolean feeWithdraw){
         setBoolean(FEE_WITHDRAW, feeWithdraw);
+
+        return this;
     }
 
     public Long getPeriodId(){
