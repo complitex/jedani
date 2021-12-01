@@ -193,8 +193,8 @@ public class SaleService implements Serializable {
             paymentPercent = saleDecision.getRules().stream()
                     .flatMap(rule -> rule.getConditions().stream())
                     .filter(rc -> Objects.equals(rc.getType(), SaleDecisionConditionType.PAYMENT_PERCENT.getId()))
-                    .filter(rc -> rc.getDecimal(RuleCondition.CONDITION) != null)
-                    .map(rc -> rc.getDecimal(RuleCondition.CONDITION).divide(new BigDecimal(100), 2, RoundingMode.HALF_EVEN))
+                    .filter(rc -> rc.getNumber(RuleCondition.CONDITION) != null)
+                    .map(rc -> new BigDecimal(rc.getNumber(RuleCondition.CONDITION)).divide(new BigDecimal(100), 2, RoundingMode.HALF_EVEN))
                     .filter(p -> p.compareTo(percent) < 0)
                     .findFirst()
                     .orElse(null);
