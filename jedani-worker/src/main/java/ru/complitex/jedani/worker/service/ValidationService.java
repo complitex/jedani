@@ -88,4 +88,30 @@ public class ValidationService implements Serializable {
 
         return rewards;
     }
+
+    public List<Reward> validateRewardEstimated() {
+        List<Reward> rewards = new ArrayList<>();
+
+        rewardMapper.getRewards(FilterWrapper.of(new Reward().setRewardStatus(RewardStatus.CHARGED)))
+                .forEach(reward -> {
+                    List<Long> errors = new ArrayList<>();
+
+                    List<Reward> estimated = rewardMapper.getRewards(FilterWrapper.of(new Reward()
+                            .setType(reward.getType())
+                            .setSaleId(reward.getSaleId())
+                            .setManagerId(reward.getManagerId())
+                            .setRewardStatus(RewardStatus.ESTIMATED)));
+
+                    if (estimated.isEmpty()) {
+                        errors.add(RewardError.ESTIMATED_EMPTY);
+                    }
+
+                    if (!errors.isEmpty()) {
+                        reward.setErrors(errors);
+                        rewards.add(reward);
+                    }
+                });
+
+        return rewards;
+    }
 }
