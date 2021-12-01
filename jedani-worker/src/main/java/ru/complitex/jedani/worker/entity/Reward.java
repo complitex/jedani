@@ -5,6 +5,7 @@ import ru.complitex.domain.entity.Domain;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 public class Reward extends Domain {
     public static final String ENTITY_NAME = "reward";
@@ -43,6 +44,8 @@ public class Reward extends Domain {
     private BigDecimal saleTotal;
 
     private Long estimatedId;
+
+    private List<Long> errors;
 
     public Reward() {
         super(ENTITY_NAME);
@@ -291,5 +294,13 @@ public class Reward extends Domain {
 
     public void setEstimatedId(Long estimatedId) {
         this.estimatedId = estimatedId;
+    }
+
+    public List<Long> getErrors() {
+        return errors;
+    }
+
+    public void setErrors(List<Long> errors) {
+        this.errors = errors;
     }
 }

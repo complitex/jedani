@@ -543,7 +543,7 @@ public class CompensationService {
     }
 
     public BigDecimal getRewardsPointSumBefore(Long rewardTypeId, Long saleId, Long managerId, Long rewardStatusId, Long periodId) {
-        BigDecimal sum = rewardMapper.getRewardsPointSum(rewardTypeId, saleId, managerId, rewardStatusId, periodId, "before");
+        BigDecimal sum = rewardMapper.getRewardsPointSumBefore(rewardTypeId, saleId, managerId, rewardStatusId, periodId);
 
         return sum != null ? sum : ZERO;
     }

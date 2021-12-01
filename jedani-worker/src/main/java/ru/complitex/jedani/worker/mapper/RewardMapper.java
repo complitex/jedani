@@ -29,4 +29,17 @@ public class RewardMapper extends BaseMapper {
         return sqlSession().selectOne("selectRewardsPointSum", Maps.of("rewardTypeId", rewardTypeId, "saleId", saleId,
                 "managerId", managerId, "rewardStatusId", rewardStatusId, "periodId", periodId, "filter", filter));
     }
+
+    public BigDecimal getRewardsPointSumBefore(Long rewardTypeId, Long saleId, Long managerId, Long rewardStatusId, Long periodId) {
+        return getRewardsPointSum(rewardTypeId, saleId, managerId, rewardStatusId, periodId, "before");
+    }
+
+    public BigDecimal getRewardsAmountSum(Long rewardTypeId, Long saleId, Long managerId, Long rewardStatusId, Long periodId, String filter) {
+        return sqlSession().selectOne("selectRewardsAmountSum", Maps.of("rewardTypeId", rewardTypeId, "saleId", saleId,
+                "managerId", managerId, "rewardStatusId", rewardStatusId, "periodId", periodId, "filter", filter));
+    }
+
+    public BigDecimal getRewardsAmountSumBefore(Long rewardTypeId, Long saleId, Long managerId, Long rewardStatusId, Long periodId) {
+        return getRewardsAmountSum(rewardTypeId, saleId, managerId, rewardStatusId, periodId, "before");
+    }
 }
