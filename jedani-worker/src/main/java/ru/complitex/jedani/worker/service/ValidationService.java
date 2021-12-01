@@ -22,14 +22,14 @@ public class ValidationService implements Serializable {
     @Inject
     private RewardMapper rewardMapper;
 
-    public List<Reward> validateRewardChargedSum(Period period) {
+    public List<Reward> validateRewardChargedSum() {
         List<Reward> rewards = new ArrayList<>();
 
         rewardMapper.getRewards(FilterWrapper.of(new Reward().setRewardStatus(RewardStatus.ESTIMATED)))
                 .forEach(reward -> {
                     List<Long> errors = new ArrayList<>();
 
-                    BigDecimal pointSum = rewardMapper.getRewardsPointSumBefore(reward.getType(), reward.getSaleId(), reward.getManagerId(), RewardStatus.CHARGED, period.getId());
+                    BigDecimal pointSum = rewardMapper.getRewardsPointSum(reward.getType(), reward.getSaleId(), reward.getManagerId(), RewardStatus.CHARGED);
 
                     if (reward.getTotal() != null) {
                         if (pointSum != null) {
@@ -44,7 +44,7 @@ public class ValidationService implements Serializable {
                     }
 
 
-                    BigDecimal amountSum = rewardMapper.getRewardsAmountSumBefore(reward.getType(), reward.getSaleId(), reward.getManagerId(), RewardStatus.CHARGED, period.getId());
+                    BigDecimal amountSum = rewardMapper.getRewardsAmountSum(reward.getType(), reward.getSaleId(), reward.getManagerId(), RewardStatus.CHARGED);
 
                     if (reward.getAmount() != null) {
                         if (amountSum != null) {
@@ -57,6 +57,28 @@ public class ValidationService implements Serializable {
                     } else if (!Objects.equals(reward.getType(), RewardType.RANK)) {
                         errors.add(RewardError.AMOUNT_NULL);
                     }
+
+                    rewardMapper.getRewards(FilterWrapper.of(new Reward()
+                            .setType(reward.getType())
+                            .setSaleId(reward.getSaleId())
+                            .setManagerId(reward.getManagerId())
+                            .setRewardStatus(RewardStatus.CHARGED)))
+                            .forEach(r -> {
+                                if (reward.getSaleId() != null) {
+                                    if (!Objects.equals(r.getRate(), reward.getRate())) {
+                                        errors.add(RewardError.RATE_NOT_EQUAL);
+                                    }
+
+                                    if (!Objects.equals(r.getCrossRate(), reward.getCrossRate())) {
+                                        errors.add(RewardError.CROSS_RATE_NOT_EQUAL);
+                                    }
+
+                                    if (!Objects.equals(r.getDiscount(), reward.getDiscount())) {
+                                        errors.add(RewardError.DISCOUNT_NOT_EQUAL);
+                                    }
+                                }
+                            });
+
 
                     if (!errors.isEmpty()) {
                         reward.setErrors(errors);

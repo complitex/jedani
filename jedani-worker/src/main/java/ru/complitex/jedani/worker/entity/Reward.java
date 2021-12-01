@@ -106,8 +106,10 @@ public class Reward extends Domain {
         return getNumber(TYPE);
     }
 
-    public void setType(Long type){
+    public Reward setType(Long type){
         setNumber(TYPE, type);
+
+        return this;
     }
 
     public void setRank(Long rank){

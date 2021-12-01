@@ -34,6 +34,10 @@ public class RewardMapper extends BaseMapper {
         return getRewardsPointSum(rewardTypeId, saleId, managerId, rewardStatusId, periodId, "before");
     }
 
+    public BigDecimal getRewardsPointSum(Long rewardTypeId, Long saleId, Long managerId, Long rewardStatusId) {
+        return getRewardsPointSum(rewardTypeId, saleId, managerId, rewardStatusId, null, null);
+    }
+
     public BigDecimal getRewardsAmountSum(Long rewardTypeId, Long saleId, Long managerId, Long rewardStatusId, Long periodId, String filter) {
         return sqlSession().selectOne("selectRewardsAmountSum", Maps.of("rewardTypeId", rewardTypeId, "saleId", saleId,
                 "managerId", managerId, "rewardStatusId", rewardStatusId, "periodId", periodId, "filter", filter));
@@ -41,5 +45,9 @@ public class RewardMapper extends BaseMapper {
 
     public BigDecimal getRewardsAmountSumBefore(Long rewardTypeId, Long saleId, Long managerId, Long rewardStatusId, Long periodId) {
         return getRewardsAmountSum(rewardTypeId, saleId, managerId, rewardStatusId, periodId, "before");
+    }
+
+    public BigDecimal getRewardsAmountSum(Long rewardTypeId, Long saleId, Long managerId, Long rewardStatusId) {
+        return getRewardsAmountSum(rewardTypeId, saleId, managerId, rewardStatusId, null, null);
     }
 }

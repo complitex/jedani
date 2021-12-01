@@ -2,7 +2,6 @@ package ru.complitex.jedani.worker.page.reward;
 
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.markup.html.basic.Label;
-import ru.complitex.jedani.worker.entity.Period;
 import ru.complitex.jedani.worker.mapper.PeriodMapper;
 import ru.complitex.jedani.worker.page.BasePage;
 import ru.complitex.jedani.worker.service.SaleService;
@@ -33,11 +32,9 @@ public class RewardValidationPage extends BasePage {
     public RewardValidationPage() {
         long time = System.nanoTime();
 
-        Period period = periodMapper.getPeriod(17L);
-
         StringBuilder stringBuilder = new StringBuilder();
 
-        validationService.validateRewardChargedSum(period)
+        validationService.validateRewardChargedSum()
                 .forEach(reward -> {
                     stringBuilder
                             .append("rId: ").append(reward.getId())
@@ -58,6 +55,5 @@ public class RewardValidationPage extends BasePage {
         add(new Label("test", (System.nanoTime() - time)).setEscapeModelStrings(false));
 
         add(new Label("rewards", stringBuilder.toString()).setEscapeModelStrings(false));
-
     }
 }
