@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.util.Dates;
 import ru.complitex.domain.entity.Attribute;
-import ru.complitex.domain.entity.Status;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.mapper.*;
@@ -777,22 +776,27 @@ public class CompensationService {
         if (Objects.equals(reward.getType(), CULINARY_WORKSHOP) && reward.getWorkerId() == null) {
             reward.setDetail("empty worker");
 
-            reward.setStatus(Status.ARCHIVE);
+            log.warn("empty worker {}", reward);
 
-            log.debug("empty worker {}", reward);
-
-            domainService.save(reward);
+            domainService.delete(reward);
         }
 
         if (periodMapper.getPeriod(reward.getPeriodId()) == null) {
             reward.setDetail("empty period");
 
-            reward.setStatus(Status.ARCHIVE);
+            log.warn("empty period {}", reward);
 
-            log.debug("empty period {}", reward);
-
-            domainService.save(reward);
+            domainService.delete(reward);
         }
+
+        if (reward.getPoint() != null && reward.getPoint().compareTo(ZERO) == 0) {
+            reward.setDetail("zero point");
+
+            log.warn("zero point {}", reward);
+
+            domainService.delete(reward);
+        }
+
     }
 
     public List<Reward> getRewards() {
