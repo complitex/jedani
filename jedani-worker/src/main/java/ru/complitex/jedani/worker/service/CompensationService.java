@@ -783,6 +783,16 @@ public class CompensationService {
 
             domainService.save(reward);
         }
+
+        if (periodMapper.getPeriod(reward.getPeriodId()) == null) {
+            reward.setDetail("empty period");
+
+            reward.setStatus(Status.ARCHIVE);
+
+            log.debug("empty period {}", reward);
+
+            domainService.save(reward);
+        }
     }
 
     public List<Reward> getRewards() {
