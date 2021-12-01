@@ -179,9 +179,7 @@ public class SaleService implements Serializable {
     }
 
     public boolean isPaying(Sale sale, BigDecimal paymentTotal) {
-        BigDecimal percent = new BigDecimal("0.1");
-
-        BigDecimal paymentPercent = null;
+        long percent = 10;
 
         SaleItem saleItem = getSaleItems(sale.getObjectId()).get(0);
 
@@ -190,17 +188,18 @@ public class SaleService implements Serializable {
 
             saleDecisionService.loadRules(saleDecision);
 
-            paymentPercent = saleDecision.getRules().stream()
+             percent = saleDecision.getRules().stream()
                     .flatMap(rule -> rule.getConditions().stream())
                     .filter(rc -> Objects.equals(rc.getType(), SaleDecisionConditionType.PAYMENT_PERCENT.getId()))
-                    .filter(rc -> rc.getNumber(RuleCondition.CONDITION) != null)
-                    .map(rc -> new BigDecimal(rc.getNumber(RuleCondition.CONDITION)).divide(new BigDecimal(100), 2, RoundingMode.HALF_EVEN))
-                    .filter(p -> p.compareTo(percent) < 0)
+                    .map(rc -> rc.getNumber(RuleCondition.CONDITION))
+                    .filter(Objects::nonNull)
+                    .filter(p -> p < 10)
                     .findFirst()
-                    .orElse(null);
+                    .orElse(percent);
         }
 
-        return paymentTotal.compareTo(sale.getTotal().multiply(paymentPercent != null ? paymentPercent : percent)) >= 0;
+        return paymentTotal.compareTo(sale.getTotal().multiply(new BigDecimal(percent))
+                .divide(new BigDecimal(100), 2, RoundingMode.HALF_EVEN)) >= 0;
     }
 
     public void updateSaleByTotal(Sale sale, BigDecimal paymentTotal) {
