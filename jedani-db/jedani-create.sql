@@ -2700,7 +2700,7 @@ CALL createEntityAttributeWithReference(48, 6, 11, 42, 'Операционный
 
 CALL createDomainTables('reward_node', 'Структура вознаграждений');
 
-CALL createEntity(49, 'worker_node', 'Структура вознаграждений', 'Структура винагород');
+CALL createEntity(49, 'reward_node', 'Структура вознаграждений', 'Структура винагород');
 CALL createEntityAttributeWithReference(49, 1, 11, 20, 'Сотрудник', 'Співробітник');
 CALL createEntityAttribute(49, 2, 4, 'Оборот', 'Оборот');
 CALL createEntityAttribute(49, 3, 4, 'Финансовый оборот', 'Фінансовий оборот');
