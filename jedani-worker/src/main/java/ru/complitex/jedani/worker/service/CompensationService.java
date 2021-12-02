@@ -683,6 +683,8 @@ public class CompensationService {
             repair();
         }
 
+        repair();
+
         rewards.clear();
 
         clearCache();
@@ -800,6 +802,15 @@ public class CompensationService {
             reward.setDetail("zero point");
 
             log.warn("zero point {}", reward);
+
+            domainService.delete(reward);
+        }
+
+        if (Objects.equals(reward.getType(), MANAGER_PREMIUM) &&
+                saleService.getManagerBonusWorkerId(reward.getSaleId()) == null) {
+            reward.setDetail("empty manager bonus worker");
+
+            log.warn("empty manager bonus worker {}", reward);
 
             domainService.delete(reward);
         }

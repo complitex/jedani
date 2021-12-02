@@ -255,4 +255,8 @@ public class SaleService implements Serializable {
     public boolean isFeeWithdraw(Long saleId) {
         return domainService.isBoolean(Sale.ENTITY_NAME, saleId, Sale.FEE_WITHDRAW);
     }
+
+    public Long getManagerBonusWorkerId(Long saleId) {
+        return domainService.getNumber(Sale.ENTITY_NAME, saleId, Sale.MANAGER_BONUS_WORKER);
+    }
 }
