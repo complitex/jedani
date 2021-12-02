@@ -806,7 +806,7 @@ public class CompensationService {
             domainService.delete(reward);
         }
 
-        if (Objects.equals(reward.getType(), MANAGER_PREMIUM) &&
+        if (Objects.equals(reward.getType(), MANAGER_BONUS) &&
                 saleService.getManagerBonusWorkerId(reward.getSaleId()) == null) {
             reward.setDetail("empty manager bonus worker");
 
