@@ -2,6 +2,7 @@ package ru.complitex.jedani.worker.page.reward;
 
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.jedani.worker.entity.Period;
 import ru.complitex.jedani.worker.entity.Reward;
@@ -48,8 +49,12 @@ public class RewardTestPage extends BasePage {
     @Inject
     private RewardMapper rewardMapper;
 
-    public RewardTestPage() {
-        Period period = periodMapper.getPeriod(17L);
+    public RewardTestPage(PageParameters pageParameters) {
+        Long periodId = pageParameters.get("periodId").toOptionalLong();
+
+        Period period = periodId != null
+                ? periodMapper.getPeriod(periodId)
+                : periodMapper.getActualPeriod();
 
         long rewardServiceTime = System.currentTimeMillis();
 

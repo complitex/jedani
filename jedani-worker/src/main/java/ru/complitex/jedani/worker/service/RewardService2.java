@@ -603,8 +603,8 @@ public class RewardService2 implements Serializable {
         return calculateRewardPoint(sale, rewardType, rewardPoint, null, period);
     }
 
-    public void calculateSaleReward(Sale sale, List<SaleItem> saleItems, Period period, long rewardStatus) {
-        Long rewardType = saleService.isMycookSaleItems(saleItems) ? RewardType.PERSONAL_MYCOOK : RewardType.PERSONAL_RANGE;
+    public void calculateSaleReward(Sale sale, Period period, long rewardStatus) {
+        Long rewardType = sale.getType().equals(SaleType.MYCOOK) ? RewardType.PERSONAL_MYCOOK : RewardType.PERSONAL_RANGE;
 
         {
             Reward reward = new Reward();
@@ -634,43 +634,14 @@ public class RewardService2 implements Serializable {
 
             updateLocal(sale, reward, period);
 
-            if (reward.getPoint().compareTo(ZERO) != 0) {
+            if (reward.getPoint().compareTo(ZERO) != 0 && (rewardStatus == RewardStatus.CHARGED ||
+                    getRewardsPointSumBefore(sale.getObjectId(), rewardType, rewardStatus, period).compareTo(ZERO) == 0)) {
                 if (test) {
                     rewards.add(reward);
                 } else {
-                    if (getRewardsPointSumBefore(sale.getObjectId(), rewardType, rewardStatus, period).compareTo(ZERO) > 0) {
-                        domainService.save(reward);
-                    }
+                    domainService.save(reward);
                 }
             }
-        }
-
-        if (rewardStatus == RewardStatus.CHARGED) {
-            getRewardsBySaleId(sale.getObjectId()).stream()
-                    .filter(r -> Objects.equals(r.getType(), rewardType))
-                    .filter(r -> r.getRewardStatus() == RewardStatus.ESTIMATED)
-                    .filter(r -> !Objects.equals(r.getPeriodId(), period.getObjectId()))
-                    .forEach(r -> {
-                        BigDecimal point = calculateRewardPoint(sale, rewardType, r.getTotal(), period);
-
-                        if (point.compareTo(ZERO) != 0) {
-                            Reward reward = new Reward(r, period);
-
-                            reward.setType(rewardType);
-                            reward.setRewardStatus(RewardStatus.CHARGED);
-                            reward.setPoint(point);
-
-                            updateLocal(sale, reward, period);
-
-                            reward.setEstimatedId(reward.getObjectId());
-
-                            if (test) {
-                                rewards.add(reward);
-                            } else {
-                                domainService.save(reward);
-                            }
-                        }
-                    });
         }
     }
 
@@ -703,13 +674,12 @@ public class RewardService2 implements Serializable {
 
                 reward.setEstimatedId(reward.getObjectId());
 
-                if (reward.getPoint().compareTo(ZERO) != 0) {
+                if (reward.getPoint().compareTo(ZERO) != 0 && (rewardStatus == RewardStatus.CHARGED ||
+                        getRewardsPointSumBefore(sale.getObjectId(), RewardType.MANAGER_BONUS, rewardStatus, period).compareTo(ZERO) == 0)) {
                     if (test) {
                         rewards.add(reward);
                     } else {
-                        if (getRewardsPointSumBefore(sale.getObjectId(), RewardType.MANAGER_BONUS, rewardStatus, period).compareTo(ZERO) > 0) {
-                            domainService.save(reward);
-                        }
+                        domainService.save(reward);
                     }
                 }
             }
@@ -717,11 +687,7 @@ public class RewardService2 implements Serializable {
     }
 
     private void calculateCulinaryReward(Sale sale, Period period, Long rewardStatus) {
-        if (sale.getCulinaryRewardPoint() == null) {
-            return;
-        }
-
-        if (sale.getCulinaryWorkerId() == null || sale.getSaleStatus() == null || sale.getSaleStatus() < SaleStatus.PAID) {
+        if (sale.getCulinaryRewardPoint() == null || sale.getCulinaryWorkerId() == null || sale.getSaleStatus() == null || sale.getSaleStatus() < SaleStatus.PAID) {
             return;
         }
 
@@ -740,10 +706,11 @@ public class RewardService2 implements Serializable {
 
         updateLocal(sale, reward, period);
 
-        if (test) {
-            rewards.add(reward);
-        } else {
-            if (getRewardsPointSumBefore(sale.getObjectId(), RewardType.CULINARY_WORKSHOP, rewardStatus, period).compareTo(ZERO) != 0) {
+        if (reward.getPoint().compareTo(ZERO) != 0 &&
+                getRewardsPointSumBefore(sale.getObjectId(), RewardType.CULINARY_WORKSHOP, rewardStatus, period).compareTo(ZERO) == 0) {
+            if (test) {
+                rewards.add(reward);
+            } else {
                 domainService.save(reward);
             }
         }
@@ -789,11 +756,14 @@ public class RewardService2 implements Serializable {
 
                 updateLocal(sale, reward, period);
 
-                if (reward.getPoint().compareTo(ZERO) != 0) {
-                    if (test) {
-                        rewards.add(reward);
-                    } else {
-                        domainService.save(reward);
+                if (reward.getPoint().compareTo(ZERO) != 0 && (rewardStatus == RewardStatus.CHARGED ||
+                        getRewardsPointSumBefore(sale.getObjectId(), RewardType.MANAGER_PREMIUM, rewardStatus, period).compareTo(ZERO) == 0)) {
+                    if (reward.getPoint().compareTo(ZERO) != 0) {
+                        if (test) {
+                            rewards.add(reward);
+                        } else {
+                            domainService.save(reward);
+                        }
                     }
                 }
             }
@@ -864,10 +834,7 @@ public class RewardService2 implements Serializable {
                 if (test) {
                     rewards.add(reward);
                 } else {
-                    if (getRewardsPointSumByWorker(period.getObjectId(), reward.getWorkerId(), RewardType.PERSONAL_VOLUME,
-                            RewardStatus.CHARGED).compareTo(ZERO) == 0) {
-                        domainService.save(reward);
-                    }
+                    domainService.save(reward);
                 }
             }
         }
@@ -1188,13 +1155,6 @@ public class RewardService2 implements Serializable {
         }
     }
 
-    private boolean isNotPaidOrCharged(Sale sale) {
-        return !Objects.equals(sale.getSaleStatus(), SaleStatus.PAID) ||
-                paymentService.getPaymentsBySaleId(sale.getObjectId()).stream()
-                        .map(payment -> periodMapper.getPeriod(payment.getPeriodId()))
-                        .noneMatch(period -> period.getCloseTimestamp() == null);
-    }
-
     @Transactional(rollbackFor = RewardException.class)
     public void calculateRewards(Period period) throws RewardException {
         try {
@@ -1215,14 +1175,13 @@ public class RewardService2 implements Serializable {
             RewardTree tree = getRewardTree(period);
 
             saleService.getSales().stream()
-                    .filter(this::isNotPaidOrCharged)
                     .filter(sale -> sale.getPeriodId() <= period.getObjectId())
                     .forEach(sale -> {
-                        calculateSaleReward(sale, saleService.getSaleItems(sale.getObjectId()), period, RewardStatus.ESTIMATED);
-                        calculateSaleReward(sale, saleService.getSaleItems(sale.getObjectId()), period, RewardStatus.CHARGED);
+                        calculateSaleReward(sale, period, RewardStatus.ESTIMATED);
+                        calculateSaleReward(sale, period, RewardStatus.CHARGED);
 
                         if (sale.isFeeWithdraw()) {
-                            calculateSaleReward(sale, saleService.getSaleItems(sale.getObjectId()), period, RewardStatus.WITHDRAWN);
+                            calculateSaleReward(sale, period, RewardStatus.WITHDRAWN);
                         }
 
                         calculateBonusReward(sale, period, RewardStatus.ESTIMATED);
