@@ -134,9 +134,13 @@ public class SaleService implements Serializable {
         return saleItemMapper.getSaleItems(FilterWrapper.of((SaleItem) new SaleItem().setParentId(saleId))).get(0);
     }
 
-    public List<Sale> getSales(Long sellerWorkerId) {
-        return saleMapper.getSales(FilterWrapper.of(new Sale().setSellerWorkerId(sellerWorkerId))
-                .put(Sale.FILTER_ACTUAL, true));
+    public List<Sale> getSalesBeforeOrEqual(Long sellerWorkerId, Long periodId) {
+        return  saleMapper.getSales(FilterWrapper.of(new Sale().setSellerWorkerId(sellerWorkerId))
+                .put(Sale.FILTER_ACTUAL, true))
+                .stream()
+                .filter(sale -> periodMapper.getOperationMonth(sale.getPeriodId())
+                        .compareTo(periodMapper.getOperationMonth(periodId)) <= 0)
+                .collect(Collectors.toList());
     }
 
     public List<Sale> getSales(Long sellerWorkerId, Period period) {

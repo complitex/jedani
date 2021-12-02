@@ -899,7 +899,7 @@ public class RewardService2 implements Serializable {
         }
 
         if (rewardStatus == RewardStatus.CHARGED) {
-            saleService.getSales(rewardNode.getWorkerId())
+            saleService.getSalesBeforeOrEqual(rewardNode.getWorkerId(), period.getObjectId())
                     .forEach(sale -> getRewardsBySaleId(sale.getObjectId()).stream()
                             .filter(r -> r.getType() == RewardType.GROUP_VOLUME)
                             .filter(r -> r.getRewardStatus() == RewardStatus.ESTIMATED)
@@ -1005,7 +1005,7 @@ public class RewardService2 implements Serializable {
         }
 
         if (rewardStatus == RewardStatus.CHARGED) {
-            saleService.getSales(rewardNode.getWorkerId())
+            saleService.getSalesBeforeOrEqual(rewardNode.getWorkerId(), period.getObjectId())
                     .forEach(sale -> getRewardsBySaleId(sale.getObjectId()).stream()
                             .filter(r -> r.getType() == RewardType.STRUCTURE_VOLUME)
                             .filter(r -> r.getRewardStatus() == RewardStatus.ESTIMATED)
