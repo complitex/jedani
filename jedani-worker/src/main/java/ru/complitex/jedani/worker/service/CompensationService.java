@@ -83,6 +83,8 @@ public class CompensationService {
     @Inject
     private RewardCacheService rewardCacheService;
 
+    private final boolean incremental = true;
+
     private boolean test = false;
 
     private List<Reward> rewards = new ArrayList<>();
@@ -695,7 +697,7 @@ public class CompensationService {
             rewardNode.getSales().stream()
                     .filter(sale -> !test || sale.getPeriodId() <= periodId)
                     .forEach(sale -> {
-                            if (Objects.equals(sale.getPeriodId(), periodId)) {
+                            if (!incremental || Objects.equals(sale.getPeriodId(), periodId)) {
                                 SaleItem saleItem = saleService.getSaleItem(sale.getObjectId());
 
                                 Reward personalReward = getPersonalReward(sale, saleItem, period);
@@ -745,13 +747,18 @@ public class CompensationService {
             }
         });
 
-        getEstimatedRewards(period).forEach(reward -> {
-            reward.setDate(Dates.currentDate());
-            reward.setMonth(period.getOperatingMonth());
-            reward.setPeriodId(period.getObjectId());
+        getEstimatedRewards(period).stream()
+                .filter(reward -> incremental ||
+                        Objects.equals(reward.getType(), PERSONAL_VOLUME) ||
+                        Objects.equals(reward.getType(), GROUP_VOLUME) ||
+                        Objects.equals(reward.getType(), STRUCTURE_VOLUME))
+                .forEach(reward -> {
+                    reward.setDate(Dates.currentDate());
+                    reward.setMonth(period.getOperatingMonth());
+                    reward.setPeriodId(period.getObjectId());
 
-            chargeReward(reward);
-        });
+                    chargeReward(reward);
+                });
     }
 
     private void clearCache() {
