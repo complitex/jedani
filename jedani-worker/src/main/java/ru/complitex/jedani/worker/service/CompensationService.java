@@ -712,7 +712,9 @@ public class CompensationService {
 
                                 calculateReward(getCulinaryReward(sale, saleItem, period));
                             } else {
-                                calculateReward(getCulinaryReward(sale, saleService.getSaleItem(sale.getObjectId()), period));
+                                if (getRewardsPointSumBefore(CULINARY_WORKSHOP, sale.getObjectId(), null, ESTIMATED, periodId).compareTo(ZERO) == 0) {
+                                    calculateReward(getCulinaryReward(sale, saleService.getSaleItem(sale.getObjectId()), period));
+                                }
                             }
                     });
 

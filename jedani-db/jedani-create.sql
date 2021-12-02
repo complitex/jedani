@@ -2485,6 +2485,7 @@ CALL createEntityAttribute(40, 22, 4, 'Базования цена', 'Базов
 CALL createEntityAttribute(40, 23, 4, 'Цена', 'Ціна');
 CALL createEntityAttributeWithReference(40, 24, 11, 42, 'Операционный месяц', 'Операційний місяць');
 CALL createEntityAttribute(40, 25, 4, 'Кросс-курс', 'Крос-курс');
+CALL createEntityAttributeWithReference(40, 26, 11, 40, 'Рассчитано', 'Розрахований');
 
 -- ---------------------------
 -- Reward Parameter
@@ -2720,4 +2721,4 @@ CALL createEntityAttributeWithReference(49, 17, 11, 42, 'Операционны�
 
 -- Version
 
-INSERT INTO `update` (`version`) VALUE ('2.0.13');
+INSERT INTO `update` (`version`) VALUE ('2.0.14');

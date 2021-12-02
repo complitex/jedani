@@ -35,6 +35,7 @@ public class Reward extends Domain {
     public static final long PRICE = 23;
     public final static long PERIOD = 24;
     public final static long CROSS_RATE = 25;
+    public final static long ESTIMATED = 26;
 
     public final static String FILTER_MONTH = "month";
     public final static String FILTER_ACTUAL_MONTH = "actualMonth";
@@ -42,8 +43,6 @@ public class Reward extends Domain {
     public final static String FILTER_NULL_DETAIL_STATUS = "nullDetailStatus";
 
     private BigDecimal saleTotal;
-
-    private Long estimatedId;
 
     private List<Long> errors;
 
@@ -282,20 +281,20 @@ public class Reward extends Domain {
         return getDecimal(CROSS_RATE);
     }
 
+    public Long getEstimatedId() {
+        return getNumber(ESTIMATED);
+    }
+
+    public void setEstimatedId(Long estimatedId) {
+        setNumber(ESTIMATED, estimatedId);
+    }
+
     public BigDecimal getSaleTotal() {
         return saleTotal;
     }
 
     public void setSaleTotal(BigDecimal saleTotal) {
         this.saleTotal = saleTotal;
-    }
-
-    public Long getEstimatedId() {
-        return estimatedId;
-    }
-
-    public void setEstimatedId(Long estimatedId) {
-        this.estimatedId = estimatedId;
     }
 
     public List<Long> getErrors() {

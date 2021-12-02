@@ -758,12 +758,10 @@ public class RewardService2 implements Serializable {
 
                 if (reward.getPoint().compareTo(ZERO) != 0 && (rewardStatus == RewardStatus.CHARGED ||
                         getRewardsPointSumBefore(sale.getObjectId(), RewardType.MANAGER_PREMIUM, rewardStatus, period).compareTo(ZERO) == 0)) {
-                    if (reward.getPoint().compareTo(ZERO) != 0) {
-                        if (test) {
-                            rewards.add(reward);
-                        } else {
-                            domainService.save(reward);
-                        }
+                    if (test) {
+                        rewards.add(reward);
+                    } else {
+                        domainService.save(reward);
                     }
                 }
             }
