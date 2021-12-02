@@ -786,10 +786,10 @@ public class SaleModal extends Modal<Sale> {
             Period period = periodMapper.getActualPeriod();
 
             if (sale.isFeeWithdraw()) {
-                Reward personalMycookReward = compensationService.getPersonalMycookReward(sale, saleItems.get(0), period);
+                Reward personalReward = compensationService.getPersonalReward(sale, saleItems.get(0), period);
 
-                compensationService.calculateReward(personalMycookReward);
-                compensationService.withdrawReward(personalMycookReward);
+                compensationService.calculateReward(personalReward);
+                compensationService.withdrawReward(personalReward);
             }
 
             if (sale.getCulinaryWorkerId() != null) {

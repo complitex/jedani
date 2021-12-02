@@ -239,9 +239,12 @@ public class CompensationService {
         return point;
     }
 
-    public Reward getPersonalMycookReward(Sale sale, SaleItem saleItem, Period period) {
+    public Reward getPersonalReward(Sale sale, SaleItem saleItem, Period period) {
         if (sale.getPersonalRewardPoint() != null && sale.getPersonalRewardPoint().compareTo(ZERO) > 0) {
-            return getReward(PERSONAL_MYCOOK, sale.getSellerWorkerId(), sale.getPersonalRewardPoint(), sale, saleItem, period);
+            Long rewardType = Objects.equals(sale.getType(), SaleType.MYCOOK) ? PERSONAL_MYCOOK :
+                    Objects.equals(sale.getType(), SaleType.RANGE) ? PERSONAL_RANGE : 0;
+
+            return getReward(rewardType, sale.getSellerWorkerId(), sale.getPersonalRewardPoint(), sale, saleItem, period);
         }
 
         return null;
@@ -689,17 +692,16 @@ public class CompensationService {
         rewardTreeService.updateRewardTree(rewardTree, period, rewardNode -> {
             rewardNode.getSales().stream()
                     .filter(sale -> !test || sale.getPeriodId() <= periodId)
-                    .filter(sale -> !Objects.equals(sale.getSaleStatus(), SaleStatus.CREATED))
                     .forEach(sale -> {
                             if (Objects.equals(sale.getPeriodId(), periodId)) {
                                 SaleItem saleItem = saleService.getSaleItem(sale.getObjectId());
 
-                                Reward personalMycookReward = getPersonalMycookReward(sale, saleItem, period);
+                                Reward personalReward = getPersonalReward(sale, saleItem, period);
 
-                                calculateReward(personalMycookReward);
+                                calculateReward(personalReward);
 
                                 if (sale.isFeeWithdraw()) {
-                                    withdrawReward(personalMycookReward);
+                                    withdrawReward(personalReward);
                                 }
 
                                 if (!sale.isSasRequest()) {
