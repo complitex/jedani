@@ -31,7 +31,7 @@ public class RewardValidationPage extends BasePage {
 
         StringBuilder stringBuilder = new StringBuilder();
 
-        validationService.validateRewardChargedSum()
+        validationService.validateRewardCharged()
                 .forEach(reward -> appendReward(stringBuilder, reward));
 
         stringBuilder.append("</br>");
@@ -42,6 +42,11 @@ public class RewardValidationPage extends BasePage {
         stringBuilder.append("</br>");
 
         validationService.validateRewardWithdraw()
+                .forEach(reward -> appendReward(stringBuilder, reward));
+
+        stringBuilder.append("</br>");
+
+        validationService.validateSales()
                 .forEach(reward -> appendReward(stringBuilder, reward));
 
         add(new Label("test", (System.nanoTime() - time)).setEscapeModelStrings(false));

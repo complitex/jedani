@@ -2,6 +2,7 @@ package ru.complitex.jedani.worker.service;
 
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.jedani.worker.entity.*;
+import ru.complitex.jedani.worker.mapper.PeriodMapper;
 import ru.complitex.jedani.worker.mapper.RewardMapper;
 import ru.complitex.jedani.worker.mapper.SaleMapper;
 
@@ -10,6 +11,7 @@ import javax.inject.Inject;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -21,12 +23,18 @@ import static java.math.BigDecimal.ZERO;
 @ApplicationScoped
 public class ValidationService implements Serializable {
     @Inject
+    private PeriodMapper periodMapper;
+
+    @Inject
     private RewardMapper rewardMapper;
 
     @Inject
     private SaleMapper saleMapper;
 
-    public List<Reward> validateRewardChargedSum() {
+    @Inject
+    private PaymentService paymentService;
+
+    public List<Reward> validateRewardCharged() {
         List<Reward> rewards = new ArrayList<>();
 
         rewardMapper.getRewards(FilterWrapper.of(new Reward().setRewardStatus(RewardStatus.ESTIMATED)))
@@ -138,6 +146,109 @@ public class ValidationService implements Serializable {
                     if (estimated.isEmpty()) {
                         errors.add(RewardError.WITHDRAW_EMPTY);
                     }
+
+                    if (!errors.isEmpty()) {
+                        reward.setErrors(errors);
+                        rewards.add(reward);
+                    }
+                });
+
+        return rewards;
+    }
+
+    public List<Reward> validateSales() {
+        List<Reward> rewards = new ArrayList<>();
+
+        saleMapper.getSales(new FilterWrapper<>(new Sale().setSaleStatus(SaleStatus.PAID)))
+                .forEach(sale -> {
+                    Long saleId = sale.getObjectId();
+
+                    Reward reward = new Reward();
+
+                    reward.setSaleId(saleId);
+
+                    List<Long> errors = new ArrayList<>();
+
+                    List<Payment> payments = paymentService.getPaymentsBySaleId(saleId);
+
+
+                    BigDecimal paymentsSum = payments.stream().map(Payment::getPoint).reduce(ZERO, BigDecimal::add);
+
+                    if (paymentsSum.compareTo(sale.getTotal()) < 0) {
+                        errors.add(RewardError.PAYMENT_SUM_LESS_THAN_PAID_SALE_TOTAL);
+                    }
+
+
+                    Arrays.asList(
+                            sale.getType() == SaleType.MYCOOK
+                                            ? RewardType.PERSONAL_MYCOOK
+                                            : RewardType.PERSONAL_RANGE,
+                                    RewardType.PERSONAL_VOLUME,
+                                    RewardType.CULINARY_WORKSHOP,
+                                    RewardType.MANAGER_BONUS,
+                                    RewardType.MANAGER_PREMIUM,
+                                    RewardType.GROUP_VOLUME,
+                                    RewardType.STRUCTURE_VOLUME)
+                            .forEach(rewardType -> {
+                                BigDecimal estimatedPoint = rewardMapper.getRewardsPointSum(rewardType, saleId, null, RewardStatus.ESTIMATED);
+                                BigDecimal chargedPoint = rewardMapper.getRewardsPointSum(rewardType, saleId, null, RewardStatus.CHARGED);
+                                BigDecimal withdrawPoint = rewardMapper.getRewardsPointSum(rewardType, saleId, null, RewardStatus.WITHDRAWN);
+
+                                if (!Objects.equals(estimatedPoint, chargedPoint)) {
+                                    errors.add(RewardError.ESTIMATED_POINT_NOT_EQUAL_CHARGED);
+                                }
+
+                                if (sale.isFeeWithdraw() && !Objects.equals(estimatedPoint, withdrawPoint)) {
+                                    errors.add(RewardError.ESTIMATED_POINT_NOT_EQUAL_WITHDRAW);
+                                }
+
+
+                                BigDecimal estimatedAmount = rewardMapper.getRewardsAmountSum(rewardType, saleId, null, RewardStatus.ESTIMATED);
+                                BigDecimal chargedAmount = rewardMapper.getRewardsAmountSum(rewardType, saleId, null, RewardStatus.CHARGED);
+                                BigDecimal withdrawAmount = rewardMapper.getRewardsAmountSum(rewardType, saleId, null, RewardStatus.WITHDRAWN);
+
+                                if (!Objects.equals(estimatedAmount, chargedAmount)) {
+                                    errors.add(RewardError.ESTIMATED_AMOUNT_NOT_EQUAL_CHARGED);
+                                }
+
+                                if (sale.isFeeWithdraw() && !Objects.equals(estimatedAmount, withdrawAmount)) {
+                                    errors.add(RewardError.ESTIMATED_AMOUNT_NOT_EQUAL_WITHDRAW);
+                                }
+                            });
+
+
+                    if (rewardMapper.getRewardsAmountSum(RewardType.PERSONAL_MYCOOK, saleId, null, null) == null) {
+                        errors.add(RewardError.PERSONAL_MYCOOK_REWARD_NOT_EXISTS);
+                    }
+
+                    if (rewardMapper.getRewardsAmountSum(RewardType.PERSONAL_RANGE, saleId, null, null) == null) {
+                        errors.add(RewardError.PERSONAL_RANGE_REWARD_NOT_EXISTS);
+                    }
+
+                    if (rewardMapper.getRewardsAmountSum(RewardType.PERSONAL_VOLUME, saleId, null, null) == null) {
+                        errors.add(RewardError.PERSONAL_VOLUME_REWARD_NOT_EXISTS);
+                    }
+
+                    if (rewardMapper.getRewardsAmountSum(RewardType.CULINARY_WORKSHOP, saleId, null, null) == null) {
+                        errors.add(RewardError.CULINARY_WORKSHOP_REWARD_NOT_EXISTS);
+                    }
+
+                    if (rewardMapper.getRewardsAmountSum(RewardType.MANAGER_BONUS, saleId, null, null) == null) {
+                        errors.add(RewardError.MANAGER_BONUS_REWARD_NOT_EXISTS);
+                    }
+
+                    if (rewardMapper.getRewardsAmountSum(RewardType.MANAGER_PREMIUM, saleId, null, null) == null) {
+                        errors.add(RewardError.MANAGER_PREMIUM_REWARD_NOT_EXISTS);
+                    }
+
+                    if (rewardMapper.getRewardsAmountSum(RewardType.GROUP_VOLUME, saleId, null, null) == null) {
+                        errors.add(RewardError.GROUP_VOLUME_REWARD_NOT_EXISTS);
+                    }
+
+                    if (rewardMapper.getRewardsAmountSum(RewardType.STRUCTURE_VOLUME, saleId, null, null) == null) {
+                        errors.add(RewardError.STRUCTURE_VOLUME_REWARD_NOT_EXISTS);
+                    }
+
 
                     if (!errors.isEmpty()) {
                         reward.setErrors(errors);

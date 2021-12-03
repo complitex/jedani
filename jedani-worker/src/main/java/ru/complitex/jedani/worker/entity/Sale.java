@@ -155,8 +155,10 @@ public class Sale extends Domain {
         return this;
     }
 
-    public void setSaleStatus(Long saleStatus){
+    public Sale setSaleStatus(Long saleStatus){
         setNumber(STATUS, saleStatus);
+
+        return this;
     }
 
     public Long getSaleStatus(){
