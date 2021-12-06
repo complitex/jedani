@@ -4,7 +4,7 @@ import ru.complitex.common.util.Dates;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.mapper.PeriodMapper;
-import ru.complitex.jedani.worker.service.cache.ParameterCacheService;
+import ru.complitex.jedani.worker.service.cache.RewardParameterCacheService;
 import ru.complitex.jedani.worker.service.cache.SaleCacheService;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -14,6 +14,8 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 import static java.math.BigDecimal.ZERO;
+import static ru.complitex.jedani.worker.entity.RankType.*;
+import static ru.complitex.jedani.worker.entity.RewardParameterType.*;
 
 /**
  * @author Ivanov Anatoliy
@@ -39,35 +41,35 @@ public class RewardTreeService {
     private SaleCacheService saleCacheService;
 
     @Inject
-    private ParameterCacheService parameterCacheService;
+    private RewardParameterCacheService parameterCacheService;
 
-    private BigDecimal getParameter(Long rewardParameterId) {
-        return parameterCacheService.getParameter(rewardParameterId);
+    private BigDecimal getParameter(Long rewardParameterId, Period period) {
+        return parameterCacheService.getParameter(rewardParameterId, period.getObjectId());
     }
 
-    private Long getRank(BigDecimal saleVolume) {
-        if (saleVolume.compareTo(getParameter(20L)) >= 0) {
-            return RankType.PLATINUM_DIRECTOR;
-        }else if (saleVolume.compareTo(getParameter(19L)) >= 0) {
-            return RankType.GOLD_DIRECTOR;
-        }else if (saleVolume.compareTo(getParameter(18L)) >= 0) {
-            return RankType.SILVER_DIRECTOR;
-        }else if (saleVolume.compareTo(getParameter(17L)) >= 0) {
-            return RankType.REGIONAL_MANAGER;
-        }else if (saleVolume.compareTo(getParameter(16L)) >= 0) {
-            return RankType.AREA_MANAGER;
-        }else if (saleVolume.compareTo(getParameter(15L)) >= 0) {
-            return RankType.DIVISION_MANAGER;
-        }else if (saleVolume.compareTo(getParameter(14L)) >= 0) {
-            return RankType.SENIOR_MANAGER;
-        }else if (saleVolume.compareTo(getParameter(13L)) >= 0) {
-            return RankType.SENIOR_ASSISTANT;
-        }else if (saleVolume.compareTo(getParameter(12L)) >= 0) {
-            return RankType.TEAM_MANAGER;
-        }else if (saleVolume.compareTo(getParameter(11L)) >= 0) {
-            return RankType.MANAGER_JUNIOR;
-        }else if (saleVolume.compareTo(getParameter(47L)) >= 0) {
-            return RankType.MANAGER_ASSISTANT;
+    private Long getRank(BigDecimal saleVolume, Period period) {
+        if (saleVolume.compareTo(getParameter(RANK_PLATINUM_DIRECTOR, period)) >= 0) {
+            return PLATINUM_DIRECTOR;
+        }else if (saleVolume.compareTo(getParameter(RANK_GOLD_DIRECTOR, period)) >= 0) {
+            return GOLD_DIRECTOR;
+        }else if (saleVolume.compareTo(getParameter(RANK_SILVER_DIRECTOR, period)) >= 0) {
+            return SILVER_DIRECTOR;
+        }else if (saleVolume.compareTo(getParameter(RANK_REGIONAL_MANAGER, period)) >= 0) {
+            return REGIONAL_MANAGER;
+        }else if (saleVolume.compareTo(getParameter(RANK_AREA_MANAGER, period)) >= 0) {
+            return AREA_MANAGER;
+        }else if (saleVolume.compareTo(getParameter(RANK_DIVISION_MANAGER, period)) >= 0) {
+            return DIVISION_MANAGER;
+        }else if (saleVolume.compareTo(getParameter(RANK_SENIOR_MANAGER, period)) >= 0) {
+            return SENIOR_MANAGER;
+        }else if (saleVolume.compareTo(getParameter(RANK_SENIOR_ASSISTANT, period)) >= 0) {
+            return SENIOR_ASSISTANT;
+        }else if (saleVolume.compareTo(getParameter(RANK_TEAM_MANAGER, period)) >= 0) {
+            return TEAM_MANAGER;
+        }else if (saleVolume.compareTo(getParameter(RANK_MANAGER_JUNIOR, period)) >= 0) {
+            return MANAGER_JUNIOR;
+        }else if (saleVolume.compareTo(getParameter(RANK_MANAGER_ASSISTANT, period)) >= 0) {
+            return MANAGER_ASSISTANT;
         }
 
         return 0L;
@@ -147,7 +149,7 @@ public class RewardTreeService {
         if (rewardNode.getFirstLevelPersonalCount() >= 4 &&
                 rewardNode.getGroupRegistrationCount() >= 2 &&
                 rewardNode.getPaymentVolume().compareTo(BigDecimal.valueOf(200)) >= 0) {
-            rewardNode.setRank(getRank(rewardNode.getStructureSaleVolume()));
+            rewardNode.setRank(getRank(rewardNode.getStructureSaleVolume(), period));
         }
     }
 

@@ -47,7 +47,7 @@ public class PayoutSummary extends AbstractToolbar {
                 symbol = "";
             }
 
-            BigDecimal charged = rewardCacheService.getRewardsLocalByCurrency(account.getPeriodId(), RewardStatus.CHARGED, account.getCurrencyId());
+            BigDecimal charged = rewardCacheService.getRewardsLocalByCurrency(RewardStatus.CHARGED, account.getCurrencyId(), account.getPeriodId());
 
             return accountService.getCharged(account.getPeriodId(), account.getCurrencyId()).add(charged).toPlainString() + symbol;
         })));

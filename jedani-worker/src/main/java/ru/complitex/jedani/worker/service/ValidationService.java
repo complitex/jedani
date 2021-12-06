@@ -186,7 +186,7 @@ public class ValidationService implements Serializable {
                                     RewardType.PERSONAL_VOLUME,
                                     RewardType.CULINARY_WORKSHOP,
                                     RewardType.MANAGER_BONUS,
-                                    RewardType.MANAGER_PREMIUM,
+                                    RewardType.MANAGER_MYCOOK,
                                     RewardType.GROUP_VOLUME,
                                     RewardType.STRUCTURE_VOLUME)
                             .forEach(rewardType -> {
@@ -237,7 +237,7 @@ public class ValidationService implements Serializable {
                         errors.add(RewardError.MANAGER_BONUS_REWARD_NOT_EXISTS);
                     }
 
-                    if (rewardMapper.getRewardsAmountSum(RewardType.MANAGER_PREMIUM, saleId, null, null) == null) {
+                    if (rewardMapper.getRewardsAmountSum(RewardType.MANAGER_MYCOOK, saleId, null, null) == null) {
                         errors.add(RewardError.MANAGER_PREMIUM_REWARD_NOT_EXISTS);
                     }
 

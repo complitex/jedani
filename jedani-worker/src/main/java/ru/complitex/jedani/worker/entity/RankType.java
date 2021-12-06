@@ -1,10 +1,12 @@
 package ru.complitex.jedani.worker.entity;
 
+import java.io.Serializable;
+
 /**
  * @author Anatoly A. Ivanov
  * 19.11.2019 14:07 PM
  */
-public class RankType {
+public class RankType implements Serializable {
     public static final long RECOMMENDING_GUESTS = 1;
     public static final long PROFESSIONAL_CONSULTANT = 2;
     public static final long MANAGER_JUNIOR = 3;

@@ -777,7 +777,7 @@ public class RewardService implements Serializable {
 
                 reward.setSaleId(sale.getObjectId());
                 reward.setWorkerId(sale.getSellerWorkerId());
-                reward.setType(RewardType.MANAGER_PREMIUM);
+                reward.setType(RewardType.MANAGER_MYCOOK);
                 reward.setDate(Dates.currentDate());
                 reward.setMonth(period.getOperatingMonth());
                 reward.setStructureSaleVolume(rewardNode.getStructureSaleVolume());
@@ -792,7 +792,7 @@ public class RewardService implements Serializable {
                 if (rewardStatus == RewardStatus.ESTIMATED) {
                     reward.setPoint(total);
                 } else if (rewardStatus == RewardStatus.CHARGED) {
-                    reward.setPoint(calculateRewardPoint(sale, RewardType.MANAGER_PREMIUM, total));
+                    reward.setPoint(calculateRewardPoint(sale, RewardType.MANAGER_MYCOOK, total));
                 }
 
                 updateLocal(sale, reward, period);
@@ -808,7 +808,7 @@ public class RewardService implements Serializable {
         } else if (rewardStatus == RewardStatus.CHARGED) {
             Reward r = getRewardsBySaleId(sale.getObjectId()).stream()
                     .filter(r1 -> r1.getRewardStatus().equals(RewardStatus.ESTIMATED))
-                    .filter(r1 -> r1.getType().equals(RewardType.MANAGER_PREMIUM))
+                    .filter(r1 -> r1.getType().equals(RewardType.MANAGER_MYCOOK))
                     .findFirst().orElse(null);
 
             if (r != null) {
@@ -817,7 +817,7 @@ public class RewardService implements Serializable {
                 if (point.compareTo(ZERO) != 0) {
                     Reward reward = new Reward(r, period);
 
-                    reward.setType(RewardType.MANAGER_PREMIUM);
+                    reward.setType(RewardType.MANAGER_MYCOOK);
                     reward.setRewardStatus(RewardStatus.CHARGED);
                     reward.setPoint(point);
 

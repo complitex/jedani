@@ -2,6 +2,9 @@ package ru.complitex.jedani.worker.entity;
 
 import ru.complitex.domain.entity.Domain;
 
+import java.math.BigDecimal;
+import java.util.Date;
+
 /**
  * @author Anatoly A. Ivanov
  * 20.11.2019 1:31 PM
@@ -19,5 +22,29 @@ public class RewardParameter extends Domain {
         super(ENTITY_NAME);
 
         setUseDateAttribute(true);
+    }
+
+    public Date getBegin() {
+        return getDate(DATE_BEGIN);
+    }
+
+    public RewardParameter setBegin(Date date) {
+        setDate(DATE_BEGIN, date);
+
+        return this;
+    }
+
+    public Date getEnd() {
+        return getDate(DATE_END);
+    }
+
+    public RewardParameter setEnd(Date date) {
+        setDate(DATE_END, date);
+
+        return this;
+    }
+
+    public BigDecimal getValue() {
+        return getDecimal(VALUE);
     }
 }

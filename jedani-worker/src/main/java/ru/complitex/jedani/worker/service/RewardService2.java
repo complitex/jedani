@@ -736,7 +736,7 @@ public class RewardService2 implements Serializable {
 
                 reward.setSaleId(sale.getObjectId());
                 reward.setWorkerId(sale.getSellerWorkerId());
-                reward.setType(RewardType.MANAGER_PREMIUM);
+                reward.setType(RewardType.MANAGER_MYCOOK);
                 reward.setDate(Dates.currentDate());
                 reward.setMonth(period.getOperatingMonth());
                 reward.setStructureSaleVolume(rewardNode.getStructureSaleVolume());
@@ -751,13 +751,13 @@ public class RewardService2 implements Serializable {
                 if (rewardStatus == RewardStatus.ESTIMATED) {
                     reward.setPoint(total);
                 } else if (rewardStatus == RewardStatus.CHARGED) {
-                    reward.setPoint(calculateRewardPoint(sale, RewardType.MANAGER_PREMIUM, total, period));
+                    reward.setPoint(calculateRewardPoint(sale, RewardType.MANAGER_MYCOOK, total, period));
                 }
 
                 updateLocal(sale, reward, period);
 
                 if (reward.getPoint().compareTo(ZERO) != 0 && (rewardStatus == RewardStatus.CHARGED ||
-                        getRewardsPointSumBefore(sale.getObjectId(), RewardType.MANAGER_PREMIUM, rewardStatus, period).compareTo(ZERO) == 0)) {
+                        getRewardsPointSumBefore(sale.getObjectId(), RewardType.MANAGER_MYCOOK, rewardStatus, period).compareTo(ZERO) == 0)) {
                     if (test) {
                         rewards.add(reward);
                     } else {
@@ -768,16 +768,16 @@ public class RewardService2 implements Serializable {
         } else if (rewardStatus == RewardStatus.CHARGED) {
             Reward r = getRewardsBySaleId(sale.getObjectId()).stream()
                     .filter(r1 -> r1.getRewardStatus().equals(RewardStatus.ESTIMATED))
-                    .filter(r1 -> r1.getType().equals(RewardType.MANAGER_PREMIUM))
+                    .filter(r1 -> r1.getType().equals(RewardType.MANAGER_MYCOOK))
                     .findFirst().orElse(null);
 
             if (r != null) {
-                BigDecimal point = calculateRewardPoint(sale, RewardType.MANAGER_PREMIUM, r.getTotal(), period);
+                BigDecimal point = calculateRewardPoint(sale, RewardType.MANAGER_MYCOOK, r.getTotal(), period);
 
                 if (point.compareTo(ZERO) != 0) {
                     Reward reward = new Reward(r, period);
 
-                    reward.setType(RewardType.MANAGER_PREMIUM);
+                    reward.setType(RewardType.MANAGER_MYCOOK);
                     reward.setRewardStatus(RewardStatus.CHARGED);
                     reward.setPoint(point);
 

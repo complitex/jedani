@@ -49,9 +49,7 @@ public class SaleService implements Serializable {
 
     @Transactional(rollbackFor = SaleException.class)
     public void save(Sale sale, List<SaleItem> saleItems) throws SaleException {
-        if (sale.getObjectId() == null) {
-            sale.setPeriodId(periodMapper.getActualPeriod().getObjectId());
-        } else {
+        if (sale.getObjectId() != null) {
             domainService.getDomains(SaleItem.class, FilterWrapper.of((SaleItem) new SaleItem().setParentId(sale.getObjectId())))
                     .forEach(si -> {
                         if (saleItems.stream().noneMatch(si0 -> Objects.equals(si.getObjectId(), si0.getObjectId()))){

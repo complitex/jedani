@@ -2447,10 +2447,11 @@ CALL insertDomainText(6, 'reward_type', 'Личный финансовый об�
 CALL insertDomainText(7, 'reward_type', 'Личная продажа', 'Особистий продаж');
 CALL insertDomainText(8, 'reward_type', 'Кулинарный практикум', 'Кулінарний практикум');
 CALL insertDomainText(9, 'reward_type', 'Менеджерский Майкук бонус', 'Менеджерський Майкук бонус');
-CALL insertDomainText(10, 'reward_type', 'Менеджерская надбавка', 'Менеджерська надбавка');
+CALL insertDomainText(10, 'reward_type', 'Менеджерская надбавка МК', 'Менеджерська надбавка МК');
 CALL insertDomainText(11, 'reward_type', 'Оборот группы', 'Оборот групи');
 CALL insertDomainText(12, 'reward_type', 'Оборот структуры', 'Оборот структури');
 CALL insertDomainText(13, 'reward_type', 'Ранг', 'Ранг');
+CALL insertDomainText(14, 'reward_type', 'Менеджерская надбавка БА', 'Менеджерская надбавка БА');
 
 
 -- ---------------------------
@@ -2721,4 +2722,4 @@ CALL createEntityAttributeWithReference(49, 17, 11, 42, 'Операционны�
 
 -- Version
 
-INSERT INTO `update` (`version`) VALUE ('2.0.14');
+INSERT INTO `update` (`version`) VALUE ('2.0.15');

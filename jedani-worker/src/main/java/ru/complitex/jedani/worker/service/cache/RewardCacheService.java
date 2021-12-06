@@ -37,37 +37,37 @@ public class RewardCacheService implements Serializable {
             rewardsCache = CacheBuilder.newBuilder()
                     .build(CacheLoader.from(pair ->
                             domainService.getDomains(Reward.class, FilterWrapper.of(new Reward()
-                                    .setPeriodId(pair.getLeft())
-                                    .setWorkerId(pair.getRight())))));
+                                    .setWorkerId(pair.getLeft())
+                                    .setPeriodId(pair.getRight())))));
         }
 
         return rewardsCache;
     }
 
-    public List<Reward> getRewardsFromCache(Long periodId, Long workerId) {
+    public List<Reward> getRewardsFromCache(Long workerId, Long periodId) {
         try {
-            return getRewardsCache().get(Pair.of(periodId, workerId));
+            return getRewardsCache().get(Pair.of(workerId, periodId));
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public BigDecimal getRewardsPointSumByWorker(Long periodId, Long workerId, Long rewardTypeId, Long rewardStatusId) {
-        return getRewardsFromCache(periodId, workerId).stream()
+    public BigDecimal getRewardsPointSumByWorker(Long workerId, Long rewardTypeId, Long rewardStatusId, Long periodId) {
+        return getRewardsFromCache(workerId, periodId).stream()
                 .filter(r -> Objects.equals(r.getType(), rewardTypeId))
                 .filter(r -> Objects.equals(r.getRewardStatus(), rewardStatusId))
                 .reduce(ZERO, ((t, p) -> t.add(p.getPoint())), BigDecimal::add);
     }
 
-    public BigDecimal getRewardsLocal(Long periodId, Long workerId, Long rewardStatusId) {
-        return getRewardsFromCache(periodId, workerId).stream()
+    public BigDecimal getRewardsLocal(Long workerId, Long rewardStatusId, Long periodId) {
+        return getRewardsFromCache(workerId, periodId).stream()
                 .filter(r -> Objects.equals(r.getRewardStatus(), rewardStatusId))
                 .map(r -> r.getAmount() != null ? r.getAmount() : ZERO)
                 .reduce(ZERO, BigDecimal::add);
     }
 
-    public BigDecimal getRewardsLocalByCurrency(Long periodId, Long rewardStatusId, Long currencyId) {
-        return getRewardsFromCache(periodId, null).stream()
+    public BigDecimal getRewardsLocalByCurrency(Long rewardStatusId, Long currencyId, Long periodId) {
+        return getRewardsFromCache(null, periodId).stream()
                 .filter(r -> Objects.equals(r.getRewardStatus(), rewardStatusId))
                 .filter(r -> Objects.equals(workerService.getCurrencyId(r.getWorkerId()), currencyId))
                 .map(r -> r.getAmount() != null ? r.getAmount() : ZERO)

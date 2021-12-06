@@ -10,10 +10,11 @@ public class RewardType extends Domain {
     public static final long PERSONAL_VOLUME = 6;
     public static final long CULINARY_WORKSHOP = 8;
     public static final long MANAGER_BONUS = 9;
-    public static final long MANAGER_PREMIUM = 10;
+    public static final long MANAGER_MYCOOK = 10;
     public static final long GROUP_VOLUME = 11;
     public static final long STRUCTURE_VOLUME = 12;
     public static final long RANK = 13;
+    public static final long MANAGER_RANGE = 14;
 
     public static final long NAME = 1;
 

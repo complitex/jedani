@@ -516,6 +516,8 @@ public class SaleModal extends Modal<Sale> {
 
         Sale sale = saleModel.getObject();
 
+        Period period = periodMapper.getPeriod(sale.getPeriodId());
+
         if (!Objects.equals(sale.getType(), SaleType.MYCOOK) || !Objects.equals(sale.getInstallmentMonths(), 0L)){
             sale.setFeeWithdraw(null);
         }
@@ -528,7 +530,7 @@ public class SaleModal extends Modal<Sale> {
                     sale.getInstallmentMonths(), sale.isForYourself(), si.getQuantity(), null);
 
             if (sale.isFeeWithdraw()){
-                price = price.subtract(compensationService.getPersonalRewardPoint(sale, saleItemsModel.getObject()));
+                price = price.subtract(compensationService.getPersonalRewardPoint(sale, saleItemsModel.getObject(), period));
             }
 
             si.setPrice(price);
@@ -552,7 +554,7 @@ public class SaleModal extends Modal<Sale> {
                     sale.getInstallmentMonths(), sale.isForYourself(), si.getQuantity(), paymentPercent);
 
             if (sale.isFeeWithdraw()){
-                price = price.subtract(compensationService.getPersonalRewardPoint(sale, saleItemsModel.getObject()));
+                price = price.subtract(compensationService.getPersonalRewardPoint(sale, saleItemsModel.getObject(), period));
             }
 
             si.setPrice(price);
@@ -572,6 +574,9 @@ public class SaleModal extends Modal<Sale> {
 
     private void updateTotal(){
         Sale sale = saleModel.getObject();
+
+        Period period = periodMapper.getPeriod(sale.getPeriodId());
+
         List<SaleItem> saleItems = saleItemsModel.getObject();
 
         if (saleItems.stream().noneMatch(si -> si.getQuantity() == null || si.getPrice() == null)) {
@@ -582,7 +587,7 @@ public class SaleModal extends Modal<Sale> {
         if (saleItems.stream().noneMatch(si -> si.getPrice() == null || si.getQuantity() == null || si.getRate() == null)){
             sale.setTotalLocal(saleItems.stream().map(si -> {
                 if (sale.isFeeWithdraw() && sale.getSellerWorkerId() != null && sale.getDate() != null) {
-                    BigDecimal reward = compensationService.getPersonalRewardPoint(sale, saleItemsModel.getObject());
+                    BigDecimal reward = compensationService.getPersonalRewardPoint(sale, saleItemsModel.getObject(), period);
 
                     BigDecimal price = si.getPrice().add(reward);
 
@@ -681,12 +686,15 @@ public class SaleModal extends Modal<Sale> {
 
         Sale sale = new Sale();
 
+        Period period = periodMapper.getActualPeriod();
+
         sale.setSellerWorkerId(sellerWorkerId);
         sale.setType(SaleType.MYCOOK);
-        sale.setDate(periodMapper.getActualOperatingMonth());
         sale.setInstallmentMonths(0L);
         sale.setStorageId(defaultStorageId);
         sale.setSaleStatus(SaleStatus.CREATED);
+        sale.setDate(period.getOperatingMonth());
+        sale.setPeriodId(period.getObjectId());
 
         saleModel.setObject(sale);
 
@@ -722,6 +730,8 @@ public class SaleModal extends Modal<Sale> {
 
     private void save(AjaxRequestTarget target){
         Sale sale = saleModel.getObject();
+
+        Period period = periodMapper.getPeriod(sale.getPeriodId());
 
         List<Sale> sales = domainService.getDomains(Sale.class, FilterWrapper.of(new Sale().setContract(sale.getContract()))
                 .setFilter(FilterWrapper.FILTER_EQUAL));
@@ -770,11 +780,11 @@ public class SaleModal extends Modal<Sale> {
         }
 
         try {
-            sale.setPersonalRewardPoint(compensationService.getPersonalRewardPoint(sale, saleItems));
+            sale.setPersonalRewardPoint(compensationService.getPersonalRewardPoint(sale, saleItems, period));
 
             if (saleService.isMycookSaleItems(saleItems)) {
-                sale.setManagerBonusRewardPoint(compensationService.getManagerBonusRewardPoint(sale, saleItems));
-                sale.setCulinaryRewardPoint(compensationService.getCulinaryRewardPoint(sale, saleItems));
+                sale.setManagerBonusRewardPoint(compensationService.getManagerBonusRewardPoint(sale, saleItems, period));
+                sale.setCulinaryRewardPoint(compensationService.getCulinaryRewardPoint(sale, period));
             }
 
             if (sale.getObjectId() == null){
@@ -782,8 +792,6 @@ public class SaleModal extends Modal<Sale> {
             }
 
             saleService.save(sale, saleItems);
-
-            Period period = periodMapper.getActualPeriod();
 
             if (sale.isFeeWithdraw()) {
                 Reward personalReward = compensationService.getPersonalReward(sale, saleItems.get(0), period);
