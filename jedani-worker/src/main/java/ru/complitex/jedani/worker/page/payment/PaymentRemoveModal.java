@@ -70,7 +70,7 @@ public class PaymentRemoveModal extends Modal<Sale> {
                 domainService.delete(paymentModel.getObject());
 
                 BigDecimal paymentTotal = domainService.getDomains(Payment.class, FilterWrapper.of(new Payment()
-                        .setContract(payment.getContract()))).stream()
+                        .setSaleId(payment.getSaleId()))).stream()
                         .map(Payment::getPoint).reduce(BigDecimal.ZERO, BigDecimal::add);
 
                 Sale sale = saleService.getSale(payment.getSaleId());

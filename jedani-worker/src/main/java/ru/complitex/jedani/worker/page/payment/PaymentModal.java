@@ -305,7 +305,7 @@ public class PaymentModal extends AbstractEditModal<Payment> {
         payment.setSaleId(sale.getObjectId());
 
         BigDecimal paymentTotal = domainService.getDomains(Payment.class, FilterWrapper.of(new Payment()
-                .setContract(payment.getContract()))).stream()
+                .setSaleId(sale.getObjectId()))).stream()
                 .filter(p -> !p.getObjectId().equals(payment.getObjectId()) && p.getAmount() != null)
                 .map(Payment::getPoint).reduce(BigDecimal.ZERO, BigDecimal::add)
                 .add(payment.getPoint());
