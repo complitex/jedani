@@ -3,6 +3,8 @@ package ru.complitex.jedani.worker.service.cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.complitex.jedani.worker.entity.RewardNode;
 import ru.complitex.jedani.worker.entity.RewardTree;
 import ru.complitex.jedani.worker.mapper.PeriodMapper;
@@ -18,6 +20,8 @@ import java.util.concurrent.ExecutionException;
  */
 @ApplicationScoped
 public class RewardTreeCacheService implements Serializable {
+    private final Logger log = LoggerFactory.getLogger(RewardTreeCacheService.class);
+
     @Inject
     private PeriodMapper periodMapper;
 
@@ -29,7 +33,15 @@ public class RewardTreeCacheService implements Serializable {
     private LoadingCache<Long, RewardTree> getRewardTreeCache() {
         if (rewardTreeCache == null) {
             rewardTreeCache = CacheBuilder.newBuilder()
-                    .build(CacheLoader.from(rewardTreeService::getRewardTree));
+                    .build(CacheLoader.from(periodId -> {
+                        try {
+                            return rewardTreeService.getRewardTree(periodId);
+                        } catch (Exception e) {
+                            log.error("error getRewardTreeCache", e);
+
+                           throw e;
+                        }
+                    }));
         }
 
         return rewardTreeCache;
