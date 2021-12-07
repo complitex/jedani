@@ -508,67 +508,73 @@ public class SaleModal extends Modal<Sale> {
     }
 
     private void updatePrices(boolean updateInitialPayment){
-        BigDecimal basePricesTotal = saleItemsModel.getObject().stream()
-                .map(si -> si.getQuantity() != null && si.getBasePrice() != null
-                        ? si.getBasePrice().multiply(new BigDecimal(si.getQuantity()))
-                        : ZERO)
-                .reduce(ZERO, BigDecimal::add);
+        try {
+            BigDecimal basePricesTotal = saleItemsModel.getObject().stream()
+                    .map(si -> si.getQuantity() != null && si.getBasePrice() != null
+                            ? si.getBasePrice().multiply(new BigDecimal(si.getQuantity()))
+                            : ZERO)
+                    .reduce(ZERO, BigDecimal::add);
 
-        Sale sale = saleModel.getObject();
+            Sale sale = saleModel.getObject();
 
-        Period period = periodMapper.getPeriod(sale.getPeriodId());
+            Period period = periodMapper.getPeriod(sale.getPeriodId());
 
-        if (!Objects.equals(sale.getType(), SaleType.MYCOOK) || !Objects.equals(sale.getInstallmentMonths(), 0L)){
-            sale.setFeeWithdraw(null);
-        }
-
-        saleItemsModel.getObject().forEach(si -> {
-            SaleDecision saleDecision = priceService.getSaleDecision(sale.getStorageId(), si.getNomenclatureId(),
-                    sale.getDate(), basePricesTotal, sale.getInstallmentMonths(), sale.isForYourself(), si.getQuantity(), null);
-
-            BigDecimal price = priceService.getPrice(saleDecision, sale.getDate(), si.getBasePrice(), basePricesTotal,
-                    sale.getInstallmentMonths(), sale.isForYourself(), si.getQuantity(), null);
-
-            if (sale.isFeeWithdraw()){
-                price = price.subtract(compensationService.getPersonalRewardPoint(sale, saleItemsModel.getObject(), period));
+            if (!Objects.equals(sale.getType(), SaleType.MYCOOK) || !Objects.equals(sale.getInstallmentMonths(), 0L)){
+                sale.setFeeWithdraw(null);
             }
 
-            si.setPrice(price);
-        });
+            saleItemsModel.getObject().forEach(si -> {
+                SaleDecision saleDecision = priceService.getSaleDecision(sale.getStorageId(), si.getNomenclatureId(),
+                        sale.getDate(), basePricesTotal, sale.getInstallmentMonths(), sale.isForYourself(), si.getQuantity(), null);
 
-        updateTotal();
+                BigDecimal price = priceService.getPrice(saleDecision, sale.getDate(), si.getBasePrice(), basePricesTotal,
+                        sale.getInstallmentMonths(), sale.isForYourself(), si.getQuantity(), null);
 
-        if (updateInitialPayment){
-            updateInitialPayment();
-        }
+                if (sale.isFeeWithdraw()){
+                    price = price.subtract(compensationService.getPersonalRewardPoint(sale, saleItemsModel.getObject(), period));
+                }
 
-        Long paymentPercent = saleService.getPaymentPercent(sale).longValue();
+                si.setPrice(price);
+            });
 
-        saleItemsModel.getObject().forEach(si -> {
-            SaleDecision saleDecision = priceService.getSaleDecision(sale.getStorageId(), si.getNomenclatureId(),
-                    sale.getDate(), basePricesTotal, sale.getInstallmentMonths(), sale.isForYourself(), si.getQuantity(), paymentPercent);
+            updateTotal();
 
-            si.setSaleDecisionId(saleDecision != null ? saleDecision.getObjectId() : null);
-
-            BigDecimal price = priceService.getPrice(saleDecision, sale.getDate(), si.getBasePrice(), basePricesTotal,
-                    sale.getInstallmentMonths(), sale.isForYourself(), si.getQuantity(), paymentPercent);
-
-            if (sale.isFeeWithdraw()){
-                price = price.subtract(compensationService.getPersonalRewardPoint(sale, saleItemsModel.getObject(), period));
+            if (updateInitialPayment){
+                updateInitialPayment();
             }
 
-            si.setPrice(price);
+            Long paymentPercent = saleService.getPaymentPercent(sale).longValue();
 
-            BigDecimal rate = priceService.getRate(sale.getStorageId(), sale.getDate());
+            saleItemsModel.getObject().forEach(si -> {
+                SaleDecision saleDecision = priceService.getSaleDecision(sale.getStorageId(), si.getNomenclatureId(),
+                        sale.getDate(), basePricesTotal, sale.getInstallmentMonths(), sale.isForYourself(), si.getQuantity(), paymentPercent);
 
-            si.setRate(priceService.getRate(saleDecision, sale.getDate(), rate, basePricesTotal,
-                    sale.getInstallmentMonths(), sale.isForYourself(), si.getQuantity(), paymentPercent));
-        });
+                si.setSaleDecisionId(saleDecision != null ? saleDecision.getObjectId() : null);
 
-        updateTotal();
+                BigDecimal price = priceService.getPrice(saleDecision, sale.getDate(), si.getBasePrice(), basePricesTotal,
+                        sale.getInstallmentMonths(), sale.isForYourself(), si.getQuantity(), paymentPercent);
 
-        if (updateInitialPayment){
-            updateInitialPayment();
+                if (sale.isFeeWithdraw()){
+                    price = price.subtract(compensationService.getPersonalRewardPoint(sale, saleItemsModel.getObject(), period));
+                }
+
+                si.setPrice(price);
+
+                BigDecimal rate = priceService.getRate(sale.getStorageId(), sale.getDate());
+
+                si.setRate(priceService.getRate(saleDecision, sale.getDate(), rate, basePricesTotal,
+                        sale.getInstallmentMonths(), sale.isForYourself(), si.getQuantity(), paymentPercent));
+            });
+
+            updateTotal();
+
+            if (updateInitialPayment){
+                updateInitialPayment();
+            }
+        } catch (Exception e) {
+            log.error("updatePrices error {}", saleModel.getObject(), e);
+
+            throw e;
         }
     }
 
