@@ -8,12 +8,12 @@ import java.util.List;
 public class SaleDecision extends Domain {
     public static final String ENTITY_NAME = "sale_decision";
 
-    public final static long NAME = 1;
-    public final static long DATE_BEGIN = 2;
-    public final static long DATE_END = 3;
-    public final static long COUNTRY = 4;
-    public final static long NOMENCLATURES = 5;
-    public final static long NOMENCLATURE_TYPE = 6;
+    public static final long NAME = 1;
+    public static final long DATE_BEGIN = 2;
+    public static final long DATE_END = 3;
+    public static final long COUNTRY = 4;
+    public static final long NOMENCLATURES = 5;
+    public static final long NOMENCLATURE_TYPE = 6;
 
     public static final String FILTER_DATE = "date";
     public static final String FILTER_NOMENCLATURE = "nomenclature";

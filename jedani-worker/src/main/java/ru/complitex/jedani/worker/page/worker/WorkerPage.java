@@ -120,7 +120,7 @@ import java.util.stream.LongStream;
 public class WorkerPage extends BasePage {
     private final Logger log = LoggerFactory.getLogger(Worker.class);
 
-    public final static String PHOTO_FILE_PREFIX = "photo_";
+    public static final String PHOTO_FILE_PREFIX = "photo_";
 
     @Inject
     private EntityMapper entityMapper;

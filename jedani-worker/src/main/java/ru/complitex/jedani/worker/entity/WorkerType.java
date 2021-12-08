@@ -7,6 +7,6 @@ import java.io.Serializable;
  * 01.03.2019 17:47
  */
 public class WorkerType implements Serializable {
-    public final static long USER = 1;
-    public final static long PK = 2;
+    public static final long USER = 1;
+    public static final long PK = 2;
 }

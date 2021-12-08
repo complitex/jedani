@@ -16,8 +16,8 @@ import static java.math.BigDecimal.ZERO;
  * 30.11.2017 15:29
  */
 public class Domain implements Serializable{
-    public final static String FILTER_ATTRIBUTES = "attributes";
-    public final static String FILTER_EXCLUDE_OBJECT_IDS = "excludeObjectIds";
+    public static final String FILTER_ATTRIBUTES = "attributes";
+    public static final String FILTER_EXCLUDE_OBJECT_IDS = "excludeObjectIds";
 
     private Long id;
     private Long objectId;

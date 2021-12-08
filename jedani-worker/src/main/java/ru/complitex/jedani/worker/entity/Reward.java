@@ -33,14 +33,14 @@ public class Reward extends Domain {
     public static final long STATUS = 21;
     public static final long BASE_PRICE = 22;
     public static final long PRICE = 23;
-    public final static long PERIOD = 24;
-    public final static long CROSS_RATE = 25;
-    public final static long ESTIMATED = 26;
+    public static final long PERIOD = 24;
+    public static final long CROSS_RATE = 25;
+    public static final long ESTIMATED = 26;
 
-    public final static String FILTER_MONTH = "month";
-    public final static String FILTER_ACTUAL_MONTH = "actualMonth";
-    public final static String FILTER_PERIOD = "period";
-    public final static String FILTER_NULL_DETAIL_STATUS = "nullDetailStatus";
+    public static final String FILTER_MONTH = "month";
+    public static final String FILTER_ACTUAL_MONTH = "actualMonth";
+    public static final String FILTER_PERIOD = "period";
+    public static final String FILTER_NULL_DETAIL_STATUS = "nullDetailStatus";
 
     private BigDecimal saleTotal;
 

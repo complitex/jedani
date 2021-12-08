@@ -34,7 +34,7 @@ public class Sale extends Domain {
     public static final long MANAGER_BONUS_REWARD_POINT = 20;
     public static final long CULINARY_REWARD_POINT = 21;
     public static final long FEE_WITHDRAW = 22;
-    public final static long PERIOD = 23;
+    public static final long PERIOD = 23;
 
 
     public static final String FILTER_SELLER_WORKER = "sellerWorker";

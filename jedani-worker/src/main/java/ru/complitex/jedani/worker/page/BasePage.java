@@ -46,6 +46,7 @@ import ru.complitex.jedani.worker.page.admin.ImportPage;
 import ru.complitex.jedani.worker.page.admin.SettingPage;
 import ru.complitex.jedani.worker.page.card.CardListPage;
 import ru.complitex.jedani.worker.page.catalog.*;
+import ru.complitex.jedani.worker.page.parameter.ParameterListPage;
 import ru.complitex.jedani.worker.page.payment.PaymentListPage;
 import ru.complitex.jedani.worker.page.payout.PayoutListPage;
 import ru.complitex.jedani.worker.page.period.PeriodListPage;
@@ -269,6 +270,7 @@ public class BasePage extends WebPage{
                 .add(new MenuLink("exchangeRate", ExchangeRateListPage.class))
                 .add(new MenuLink("rank", RankListPage.class).setVisible(isAdmin()))
                 .add(new MenuLink("reward_type", RewardTypeListPage.class).setVisible(isAdmin()))
+                .add(new MenuLink("parameter", ParameterListPage.class).setVisible(isAdmin()))
                 .add(newBehaviorList()));
         menu.add(catalog);
 

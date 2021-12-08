@@ -2720,6 +2720,15 @@ CALL createEntityAttribute(49, 15, 5, 'Количество менеджеров
 CALL createEntityAttribute(49, 16, 5, 'Ранг', 'Ранг');
 CALL createEntityAttributeWithReference(49, 17, 11, 42, 'Операционный месяц', 'Операційний місяць');
 
+-- ---------------------------
+-- Parameter
+-- ---------------------------
+
+CALL createDomainTables('parameter', 'Параметр');
+CALL createEntityAttribute(50, 1, 5, 'Номер', 'Номер');
+CALL createEntityAttribute(50, 2, 5, 'Тип', 'Тип');
+CALL createEntityAttribute(50, 3, 2, 'Название', 'Назва');
+
 -- Version
 
-INSERT INTO `update` (`version`) VALUE ('2.0.15');
+INSERT INTO `update` (`version`) VALUE ('2.0.16');

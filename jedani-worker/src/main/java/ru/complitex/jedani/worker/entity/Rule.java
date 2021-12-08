@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Objects;
 
 public class Rule extends Domain {
-    public final static String ENTITY_NAME = "rule";
+    public static final String ENTITY_NAME = "rule";
 
-    public final static long INDEX = 1;
+    public static final long INDEX = 1;
 
     private List<RuleCondition> conditions = new ArrayList<>();
     private List<RuleAction> actions = new ArrayList<>();

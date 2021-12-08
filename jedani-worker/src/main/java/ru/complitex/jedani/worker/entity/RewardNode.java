@@ -14,25 +14,25 @@ import static java.math.BigDecimal.ZERO;
  * 16.10.2019 11:00 AM
  */
 public class RewardNode extends Domain {
-    public final static String ENTITY_NAME = "reward_node";
+    public static final String ENTITY_NAME = "reward_node";
 
-    public final static long WORKER = 1;
-    public final static long SALE_VOLUME = 2;
-    public final static long PAYMENT_VOLUME = 3;
-    public final static long YEAR_PAYMENT_VOLUME = 4;
-    public final static long GROUP_SALE_VOLUME = 5;
-    public final static long GROUP_PAYMENT_VOLUME = 6;
-    public final static long STRUCTURE_SALE_VOLUME = 7;
-    public final static long STRUCTURE_PAYMENT_VOLUME = 8;
-    public final static long WORKER_STATUS = 9;
-    public final static long PK = 10;
-    public final static long FIRST_LEVEL_COUNT = 11;
-    public final static long FIRST_LEVEL_PERSONAL_COUNT = 12;
-    public final static long REGISTRATION_COUNT = 13;
-    public final static long GROUP_REGISTRATION_COUNT = 14;
-    public final static long STRUCTURE_MANAGER_COUNT = 15;
-    public final static long RANK = 16;
-    public final static long PERIOD = 17;
+    public static final long WORKER = 1;
+    public static final long SALE_VOLUME = 2;
+    public static final long PAYMENT_VOLUME = 3;
+    public static final long YEAR_PAYMENT_VOLUME = 4;
+    public static final long GROUP_SALE_VOLUME = 5;
+    public static final long GROUP_PAYMENT_VOLUME = 6;
+    public static final long STRUCTURE_SALE_VOLUME = 7;
+    public static final long STRUCTURE_PAYMENT_VOLUME = 8;
+    public static final long WORKER_STATUS = 9;
+    public static final long PK = 10;
+    public static final long FIRST_LEVEL_COUNT = 11;
+    public static final long FIRST_LEVEL_PERSONAL_COUNT = 12;
+    public static final long REGISTRATION_COUNT = 13;
+    public static final long GROUP_REGISTRATION_COUNT = 14;
+    public static final long STRUCTURE_MANAGER_COUNT = 15;
+    public static final long RANK = 16;
+    public static final long PERIOD = 17;
 
     private WorkerNode workerNode;
 

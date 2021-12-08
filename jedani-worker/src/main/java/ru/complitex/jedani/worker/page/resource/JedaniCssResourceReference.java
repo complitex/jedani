@@ -14,7 +14,7 @@ import java.util.List;
  * 11.04.2018 16:46
  */
 public class JedaniCssResourceReference extends CssResourceReference {
-    public final static JedaniCssResourceReference INSTANCE = new JedaniCssResourceReference();
+    public static final JedaniCssResourceReference INSTANCE = new JedaniCssResourceReference();
 
     private JedaniCssResourceReference() {
         super(JedaniCssResourceReference.class, "css/jedani.css");
