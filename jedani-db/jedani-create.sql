@@ -2503,100 +2503,104 @@ CALL createEntityAttribute(43, 5, 4, 'Значение', 'Значення');
 
 DELIMITER //
 
-CREATE PROCEDURE insertRewardParameter(IN objectId BIGINT, IN rewardTypeId BIGINT, IN text VARCHAR(128) CHARSET utf8,
-                                       IN value VARCHAR(64) CHARSET utf8)
+CREATE PROCEDURE insertParameter(IN parameterId BIGINT, IN parameterTypeId BIGINT, IN name VARCHAR(128) CHARSET utf8)
 BEGIN
-    SET @insertDomain = CONCAT('INSERT INTO `reward_parameter`(id, object_id) VALUE (', objectId, ', ', objectId, ');');
-    PREPARE QUERY FROM @insertDomain; EXECUTE QUERY; DEALLOCATE PREPARE QUERY;
+    SET @insert = CONCAT('INSERT INTO `parameter` (object_id) VALUE(0);');
+    PREPARE QUERY FROM @insert;
+    EXECUTE QUERY; DEALLOCATE PREPARE QUERY;
 
-    SET @insertAttribute = CONCAT('INSERT INTO `reward_parameter_attribute`(domain_id, entity_attribute_id, text) VALUE (',
-                                  objectId, ', 3,', rewardTypeId, ');');
-    PREPARE QUERY FROM @insertAttribute; EXECUTE QUERY; DEALLOCATE PREPARE QUERY;
+    SET @objectId = last_insert_id();
 
-    SET @insertAttribute = CONCAT('INSERT INTO `reward_parameter_attribute`(domain_id, entity_attribute_id) VALUE (',
-                                  objectId, ', 4);');
-    PREPARE QUERY FROM @insertAttribute; EXECUTE QUERY; DEALLOCATE PREPARE QUERY;
+    SET @update = CONCAT('UPDATE `parameter` SET object_id = ', @objectId, ' WHERE id = ', @objectId);
+    PREPARE QUERY FROM @update;
+    EXECUTE QUERY; DEALLOCATE PREPARE QUERY;
 
-    SET @attributeId = LAST_INSERT_ID();
-    SET @insertAttributeValue = CONCAT('INSERT INTO `reward_parameter_value`(attribute_id, locale_id, text) VALUES (',
-                                       @attributeId , ', 1, ''', text, '''), (',
-                                       @attributeId , ', 2, ''', text, ''');');
-    PREPARE QUERY FROM @insertAttributeValue; EXECUTE QUERY; DEALLOCATE PREPARE QUERY;
 
-    SET @insertAttribute = CONCAT('INSERT INTO `reward_parameter_attribute`(domain_id, entity_attribute_id, text) VALUE (',
-                                  objectId, ', 5,', value, ');');
-    PREPARE QUERY FROM @insertAttribute; EXECUTE QUERY; DEALLOCATE PREPARE QUERY;
+    SET @insert = CONCAT('INSERT INTO `parameter_attribute`(domain_id, entity_attribute_id, number) ',
+                         'VALUE (', @objectId, ', 1,', parameterId, ');');
+    PREPARE QUERY FROM @insert;
+    EXECUTE QUERY; DEALLOCATE PREPARE QUERY;
+
+    SET @insert = CONCAT('INSERT INTO `parameter_attribute`(domain_id, entity_attribute_id, number) ',
+                         'VALUE (', @objectId, ', 2,', parameterTypeId, ');');
+    PREPARE QUERY FROM @insert;
+    EXECUTE QUERY; DEALLOCATE PREPARE QUERY;
+
+    SET @insert = CONCAT('INSERT INTO `parameter_attribute`(domain_id, entity_attribute_id, text) ',
+                         'VALUE (', @objectId, ', 3,''', name, ''');');
+    PREPARE QUERY FROM @insert;
+    EXECUTE QUERY; DEALLOCATE PREPARE QUERY;
 END //
 
 DELIMITER ;
 
-CALL insertRewardParameter(1, 4, 'Базовое вознаграждение при продаже МК по заявке из САП', '80');
-CALL insertRewardParameter(2, 4, 'Базовое вознаграждение для ПК со статусом "Promo" (МК премиум)', '80');
-CALL insertRewardParameter(3, 4, 'Базовое вознаграждение для ПК со статусом "Promo" (МК тач)', '90');
-CALL insertRewardParameter(4, 4, 'Базовое вознаграждение для ПК со статусом "Just" (МК премиум)', '120');
-CALL insertRewardParameter(5, 4, 'Базовое вознаграждение для ПК со статусом "Just" (МК тач)', '130');
-CALL insertRewardParameter(6, 4, 'Базовое вознаграждение для ПК со статусом "VIP" (МК премиум)', '170');
-CALL insertRewardParameter(7, 4, 'Базовое вознаграждение для ПК со статусом "VIP" (МК тач)', '195');
-CALL insertRewardParameter(8, 4, 'Базовое вознаграждение при продаже БА (% от суммы ДКП)', '0.15');
+CALL insertParameter(1, 1, 'Базовое вознаграждение при продаже МК по заявке из САП');
+CALL insertParameter(2, 1, 'Базовое вознаграждение для ПК со статусом "Promo" (МК премиум)');
+CALL insertParameter(3, 1, 'Базовое вознаграждение для ПК со статусом "Promo" (МК тач)');
+CALL insertParameter(4, 1, 'Базовое вознаграждение для ПК со статусом "Just" (МК премиум)');
+CALL insertParameter(5, 1, 'Базовое вознаграждение для ПК со статусом "Just" (МК тач)');
+CALL insertParameter(6, 1, 'Базовое вознаграждение для ПК со статусом "VIP" (МК премиум)');
+CALL insertParameter(7, 1, 'Базовое вознаграждение для ПК со статусом "VIP" (МК тач)');
+CALL insertParameter(8, 1, 'Базовое вознаграждение при продаже БА (% от суммы ДКП)');
 
-CALL insertRewardParameter(9, 9, 'Менеджерский Майкук бонус (МК премиум)', '50');
-CALL insertRewardParameter(10, 9, 'Менеджерский Майкук бонус (МК тач)', '65');
+CALL insertParameter(9, 1, 'Менеджерский Майкук бонус (МК премиум)');
+CALL insertParameter(10, 1, 'Менеджерский Майкук бонус (МК тач)');
 
-CALL insertRewardParameter(47, 10, 'Групповой оборот для получения ранга Менеджер ассистент', '1000');
-CALL insertRewardParameter(11, 10, 'Групповой оборот для получения ранга Менеджер юниор', '3000');
-CALL insertRewardParameter(12, 10, 'Групповой оборот для получения ранга Тим менеджер', '6000');
-CALL insertRewardParameter(13, 10, 'Групповой оборот для получения ранга Ассистент сеньора', '8000');
-CALL insertRewardParameter(14, 10, 'Групповой оборот для получения ранга Сеньор менеджер', '12000');
-CALL insertRewardParameter(15, 10, 'Групповой оборот для получения ранга Дивизион менеджер', '16000');
-CALL insertRewardParameter(16, 10, 'Групповой оборот для получения ранга Ареа менеджер', '22000');
-CALL insertRewardParameter(17, 10, 'Групповой оборот для получения ранга Региональный менеджер', '35000');
-CALL insertRewardParameter(18, 10, 'Групповой оборот для получения ранга Серебрянный директор', '60000');
-CALL insertRewardParameter(19, 10, 'Групповой оборот для получения ранга Золотой директор', '75000');
-CALL insertRewardParameter(20, 10, 'Групповой оборот для получения ранга Платиновый директор', '100000');
+CALL insertParameter(11, 1, 'Групповой оборот для получения ранга Менеджер ассистент');
+CALL insertParameter(12, 1, 'Групповой оборот для получения ранга Менеджер юниор');
+CALL insertParameter(13, 1, 'Групповой оборот для получения ранга Тим менеджер');
+CALL insertParameter(14, 1, 'Групповой оборот для получения ранга Ассистент сеньора');
+CALL insertParameter(15, 1, 'Групповой оборот для получения ранга Сеньор менеджер');
+CALL insertParameter(16, 1, 'Групповой оборот для получения ранга Дивизион менеджер');
+CALL insertParameter(17, 1, 'Групповой оборот для получения ранга Ареа менеджер');
+CALL insertParameter(18, 1, 'Групповой оборот для получения ранга Региональный менеджер');
+CALL insertParameter(19, 1, 'Групповой оборот для получения ранга Серебрянный директор');
+CALL insertParameter(20, 1, 'Групповой оборот для получения ранга Золотой директор');
+CALL insertParameter(21, 1, 'Групповой оборот для получения ранга Платиновый директор');
 
-CALL insertRewardParameter(48, 10, 'Менеджерские надбавки МК для ранга Менеджер ассистент', '0');
-CALL insertRewardParameter(21, 10, 'Менеджерские надбавки МК для ранга Менеджер юниор', '20');
-CALL insertRewardParameter(22, 10, 'Менеджерские надбавки МК для ранга Тим менеджер', '20');
-CALL insertRewardParameter(23, 10, 'Менеджерские надбавки МК для ранга Ассистент сеньора', '25');
-CALL insertRewardParameter(24, 10, 'Менеджерские надбавки МК для ранга Сеньор менеджер', '50');
-CALL insertRewardParameter(25, 10, 'Менеджерские надбавки МК для ранга Дивизион менеджер', '50');
-CALL insertRewardParameter(26, 10, 'Менеджерские надбавки МК для ранга Ареа менеджер', '70');
-CALL insertRewardParameter(27, 10, 'Менеджерские надбавки МК для ранга Региональный менеджер', '70');
-CALL insertRewardParameter(28, 10, 'Менеджерские надбавки МК для ранга Серебрянный директор', '90');
-CALL insertRewardParameter(29, 10, 'Менеджерские надбавки МК для ранга Золотой директор', '90');
-CALL insertRewardParameter(30, 10, 'Менеджерские надбавки МК для ранга Платиновый директор', '90');
+CALL insertParameter(22, 1, 'Менеджерские надбавки МК для ранга Менеджер ассистент');
+CALL insertParameter(23, 1, 'Менеджерские надбавки МК для ранга Менеджер юниор');
+CALL insertParameter(24, 1, 'Менеджерские надбавки МК для ранга Тим менеджер');
+CALL insertParameter(25, 1, 'Менеджерские надбавки МК для ранга Ассистент сеньора');
+CALL insertParameter(26, 1, 'Менеджерские надбавки МК для ранга Сеньор менеджер');
+CALL insertParameter(27, 1, 'Менеджерские надбавки МК для ранга Дивизион менеджер');
+CALL insertParameter(28, 1, 'Менеджерские надбавки МК для ранга Ареа менеджер');
+CALL insertParameter(29, 1, 'Менеджерские надбавки МК для ранга Региональный менеджер');
+CALL insertParameter(30, 1, 'Менеджерские надбавки МК для ранга Серебрянный директор');
+CALL insertParameter(31, 1, 'Менеджерские надбавки МК для ранга Золотой директор');
+CALL insertParameter(32, 1, 'Менеджерские надбавки МК для ранга Платиновый директор');
 
-CALL insertRewardParameter(49, 10, 'Менеджерские надбавки БА (%) для ранга Менеджер ассистент', '0');
-CALL insertRewardParameter(31, 10, 'Менеджерские надбавки БА (%) для ранга Менеджер юниор', '0.02');
-CALL insertRewardParameter(32, 10, 'Менеджерские надбавки БА (%) для ранга Тим менеджер', '0.02');
-CALL insertRewardParameter(33, 10, 'Менеджерские надбавки БА (%) для ранга Ассистент сеньора', '0.03');
-CALL insertRewardParameter(34, 10, 'Менеджерские надбавки БА (%) для ранга Сеньор менеджер', '0.05');
-CALL insertRewardParameter(35, 10, 'Менеджерские надбавки БА (%) для ранга Дивизион менеджер', '0.05');
-CALL insertRewardParameter(36, 10, 'Менеджерские надбавки БА (%) для ранга Ареа менеджер', '0.07');
-CALL insertRewardParameter(37, 10, 'Менеджерские надбавки БА (%) для ранга Региональный менеджер', '0.07');
-CALL insertRewardParameter(38, 10, 'Менеджерские надбавки БА (%) для ранга Серебрянный директор', '0.09');
-CALL insertRewardParameter(39, 10, 'Менеджерские надбавки БА (%) для ранга Золотой директор', '0.09');
-CALL insertRewardParameter(40, 10, 'Менеджерские надбавки БА (%) для ранга Платиновый директор', '0.09');
+CALL insertParameter(33, 1, 'Менеджерские надбавки БА (%) для ранга Менеджер ассистент');
+CALL insertParameter(34, 1, 'Менеджерские надбавки БА (%) для ранга Менеджер юниор');
+CALL insertParameter(35, 1, 'Менеджерские надбавки БА (%) для ранга Тим менеджер');
+CALL insertParameter(36, 1, 'Менеджерские надбавки БА (%) для ранга Ассистент сеньора');
+CALL insertParameter(37, 1, 'Менеджерские надбавки БА (%) для ранга Сеньор менеджер');
+CALL insertParameter(38, 1, 'Менеджерские надбавки БА (%) для ранга Дивизион менеджер');
+CALL insertParameter(39, 1, 'Менеджерские надбавки БА (%) для ранга Ареа менеджер');
+CALL insertParameter(40, 1, 'Менеджерские надбавки БА (%) для ранга Региональный менеджер');
+CALL insertParameter(41, 1, 'Менеджерские надбавки БА (%) для ранга Серебрянный директор');
+CALL insertParameter(42, 1, 'Менеджерские надбавки БА (%) для ранга Золотой директор');
+CALL insertParameter(43, 1, 'Менеджерские надбавки БА (%) для ранга Платиновый директор');
 
-CALL insertRewardParameter(41, 8, 'Вознаграждение за КП', '25');
-CALL insertRewardParameter(42, 8, 'Вознаграждение за КП по заявке из САП', '15');
+CALL insertParameter(44, 1, 'Вознаграждение за КП');
+CALL insertParameter(45, 1, 'Вознаграждение за КП по заявке из САП');
 
-CALL insertRewardParameter(43, 6, 'Минимальное количество баллов для получения бонуса за личный финансовый оборот', '2000');
-CALL insertRewardParameter(44, 6, 'Среднее значение количества баллов для получения бонуса за личный финансовый оборот', '3000');
-CALL insertRewardParameter(45, 6, 'Бонус за личный финансовый оборот меньше среднего значения', '50');
-CALL insertRewardParameter(46, 6, 'Бонус за личный финансовый оборот больше средного значения', '100');
+CALL insertParameter(46, 1, 'Минимальное количество баллов для получения бонуса за личный финансовый оборот');
+CALL insertParameter(47, 1, 'Среднее значение количества баллов для получения бонуса за личный финансовый оборот');
+CALL insertParameter(48, 1, 'Бонус за личный финансовый оборот меньше среднего значения');
+CALL insertParameter(49, 1, 'Бонус за личный финансовый оборот больше средного значения');
 
-CALL insertRewardParameter(50, 11, 'Выплаты (%) за групповой оборот для ранга Менеджер ассистент', '1.5');
-CALL insertRewardParameter(51, 11, 'Выплаты (%) за групповой оборот для ранга Менеджер юниор', '3');
-CALL insertRewardParameter(52, 11, 'Выплаты (%) за групповой оборот для ранга Тим менеджер', '5');
-CALL insertRewardParameter(53, 11, 'Выплаты (%) за групповой оборот для ранга Ассистент сеньора', '5.5');
-CALL insertRewardParameter(54, 11, 'Выплаты (%) за групповой оборот для ранга Сеньор менеджер', '6.5');
-CALL insertRewardParameter(55, 11, 'Выплаты (%) за групповой оборот для ранга Дивизион менеджер', '7.5');
-CALL insertRewardParameter(56, 11, 'Выплаты (%) за групповой оборот для ранга Ареа менеджер', '8');
-CALL insertRewardParameter(57, 11, 'Выплаты (%) за групповой оборот для ранга Региональный менеджер', '9');
-CALL insertRewardParameter(58, 11, 'Выплаты (%) за групповой оборот для ранга Серебрянный директор', '10');
-CALL insertRewardParameter(59, 11, 'Выплаты (%) за групповой оборот для ранга Золотой директор', '11');
-CALL insertRewardParameter(60, 11, 'Выплаты (%) за групповой оборот для ранга Платиновый директор', '12');
+CALL insertParameter(50, 1, 'Выплаты (%) за групповой оборот для ранга Менеджер ассистент');
+CALL insertParameter(51, 1, 'Выплаты (%) за групповой оборот для ранга Менеджер юниор');
+CALL insertParameter(52, 1, 'Выплаты (%) за групповой оборот для ранга Тим менеджер');
+CALL insertParameter(53, 1, 'Выплаты (%) за групповой оборот для ранга Ассистент сеньора');
+CALL insertParameter(54, 1, 'Выплаты (%) за групповой оборот для ранга Сеньор менеджер');
+CALL insertParameter(55, 1, 'Выплаты (%) за групповой оборот для ранга Дивизион менеджер');
+CALL insertParameter(56, 1, 'Выплаты (%) за групповой оборот для ранга Ареа менеджер');
+CALL insertParameter(57, 1, 'Выплаты (%) за групповой оборот для ранга Региональный менеджер');
+CALL insertParameter(58, 1, 'Выплаты (%) за групповой оборот для ранга Серебрянный директор');
+CALL insertParameter(59, 1, 'Выплаты (%) за групповой оборот для ранга Золотой директор');
+CALL insertParameter(60, 1, 'Выплаты (%) за групповой оборот для ранга Платиновый директор');
 
 -- ---------------------------
 -- Payment
@@ -2731,4 +2735,4 @@ CALL createEntityAttribute(50, 3, 2, 'Название', 'Назва');
 
 -- Version
 
-INSERT INTO `update` (`version`) VALUE ('2.0.16');
+INSERT INTO `update` (`version`) VALUE ('2.0.17');
