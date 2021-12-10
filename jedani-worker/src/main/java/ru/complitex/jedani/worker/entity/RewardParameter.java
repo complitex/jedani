@@ -17,6 +17,7 @@ public class RewardParameter extends Domain {
     public static final long REWARD_TYPE = 3;
     public static final long NAME = 4;
     public static final long VALUE = 5;
+    public static final long PARAMETER = 6;
 
     public RewardParameter() {
         super(ENTITY_NAME);
@@ -46,5 +47,13 @@ public class RewardParameter extends Domain {
 
     public BigDecimal getValue() {
         return getDecimal(VALUE);
+    }
+
+    public Long getParameterId() {
+        return getNumber(PARAMETER);
+    }
+
+    public void setParameterId(Long parameterId) {
+        setNumber(PARAMETER, parameterId);
     }
 }

@@ -14,4 +14,9 @@ public class MkStatusListPage extends DomainListModalPage<MkStatus> {
     public MkStatusListPage() {
         super(MkStatus.class);
     }
+
+    @Override
+    protected boolean isEditEnabled() {
+        return false;
+    }
 }

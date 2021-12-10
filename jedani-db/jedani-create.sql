@@ -2500,6 +2500,7 @@ CALL createEntityAttribute(43, 2, 6, 'Дата окончания', 'Дата з
 CALL createEntityAttributeWithReference(43, 3, 11, 39, 'Тип вознаграждения', 'Тип винагороди');
 CALL createEntityAttribute(43, 4, 0, 'Название', 'Назва');
 CALL createEntityAttribute(43, 5, 4, 'Значение', 'Значення');
+CALL createEntityAttributeWithReference(43, 6, 11, 50, 'Параметр', 'Параметр');
 
 DELIMITER //
 
@@ -2735,4 +2736,4 @@ CALL createEntityAttribute(50, 3, 2, 'Название', 'Назва');
 
 -- Version
 
-INSERT INTO `update` (`version`) VALUE ('2.0.17');
+INSERT INTO `update` (`version`) VALUE ('2.0.18');

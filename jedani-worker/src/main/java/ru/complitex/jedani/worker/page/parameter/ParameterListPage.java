@@ -10,4 +10,9 @@ public class ParameterListPage extends DomainListModalPage<Parameter> {
     public ParameterListPage() {
         super(Parameter.class);
     }
+
+    @Override
+    protected boolean isEditEnabled() {
+        return false;
+    }
 }

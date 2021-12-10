@@ -164,7 +164,7 @@ public class DomainListModalPage<T extends Domain> extends BasePage{
 
             @Override
             public boolean isVisible() {
-                return isCreateEnabled();
+                return isCreateEnabled() && isEditEnabled();
             }
         });
 

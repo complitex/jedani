@@ -14,4 +14,9 @@ public class PositionListPage extends DomainListModalPage<Position> {
     public PositionListPage() {
         super(Position.class);
     }
+
+    @Override
+    protected boolean isEditEnabled() {
+        return false;
+    }
 }

@@ -10,4 +10,9 @@ public class RankListPage extends DomainListModalPage<Rank> {
     public RankListPage() {
         super(Rank.class);
     }
+
+    @Override
+    protected boolean isEditEnabled() {
+        return false;
+    }
 }

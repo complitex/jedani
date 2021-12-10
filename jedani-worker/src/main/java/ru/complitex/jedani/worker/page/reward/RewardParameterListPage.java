@@ -26,6 +26,7 @@ public class RewardParameterListPage extends DomainListModalPage<RewardParameter
     protected List<EntityAttribute> getEntityAttributes(Entity entity) {
         List<EntityAttribute> list = new ArrayList<>();
 
+        list.add(entity.getEntityAttribute(RewardParameter.PARAMETER));
         list.add(entity.getEntityAttribute(RewardParameter.NAME));
         list.add(entity.getEntityAttribute(RewardParameter.REWARD_TYPE).withReference(RewardType.class, RewardType.NAME));
         list.add(entity.getEntityAttribute(RewardParameter.DATE_BEGIN));

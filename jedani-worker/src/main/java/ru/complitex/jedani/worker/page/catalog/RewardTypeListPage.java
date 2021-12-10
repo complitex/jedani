@@ -10,4 +10,9 @@ public class RewardTypeListPage extends DomainListModalPage<RewardType> {
     public RewardTypeListPage() {
         super(RewardType.class);
     }
+
+    @Override
+    protected boolean isEditEnabled() {
+        return false;
+    }
 }
