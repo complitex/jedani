@@ -101,4 +101,6 @@ CALL insertParameter(58, 1, 'Выплаты (%) за групповой обор
 CALL insertParameter(59, 1, 'Выплаты (%) за групповой оборот для ранга Золотой директор');
 CALL insertParameter(60, 1, 'Выплаты (%) за групповой оборот для ранга Платиновый директор');
 
+DROP PROCEDURE insertParameter;
+
 INSERT INTO `update` (`version`) VALUE ('2.0.17');

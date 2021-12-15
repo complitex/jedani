@@ -14,8 +14,6 @@ public class Parameter extends Domain {
 
     public Parameter() {
         super(ENTITY_NAME);
-
-        setUseDateAttribute(true);
     }
 
     public Long getParameterId() {
