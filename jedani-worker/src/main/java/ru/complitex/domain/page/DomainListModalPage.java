@@ -187,6 +187,11 @@ public class DomainListModalPage<T extends Domain> extends BasePage{
                     protected Component newComponent(String componentId, Attribute attribute) {
                         return DomainListModalPage.this.newEditComponent(componentId, attribute);
                     }
+
+                    @Override
+                    protected void onSave(Domain domain) {
+                        DomainListModalPage.this.onSave(domain);
+                    }
                 };
             }
 
@@ -214,6 +219,10 @@ public class DomainListModalPage<T extends Domain> extends BasePage{
 
     protected boolean checkUnique(Domain domain) {
         return true;
+    }
+
+    protected void onSave(Domain domain) {
+
     }
 
     protected void onCreate(AjaxRequestTarget target) {

@@ -285,6 +285,8 @@ public class DomainModal<T extends Domain> extends AbstractModal<T> {
 
             domainService.save(domain);
 
+            onSave(domain);
+
             getSession().success(entity.getValue().getText() + " " + getString("info_saved"));
 
             close(target);
@@ -311,5 +313,8 @@ public class DomainModal<T extends Domain> extends AbstractModal<T> {
 
     protected boolean checkUnique(Domain domain){
         return true;
+    }
+
+    protected void onSave(Domain domain) {
     }
 }

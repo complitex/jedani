@@ -51,10 +51,30 @@ public class RewardParameterListPage extends DomainListModalPage<RewardParameter
         return domainService.getDomains(RewardParameter.class, FilterWrapper.of(new RewardParameter()
                         .setParameterId(domain.getNumber(RewardParameter.PARAMETER)))).stream()
                 .filter(rewardParameter -> !Objects.equals(rewardParameter.getObjectId(), domain.getObjectId()))
-                .noneMatch(rewardParameter ->
-                        ((rewardParameter.getBegin() == null || begin == null || rewardParameter.getBegin().before(begin)) &&
-                                (rewardParameter.getEnd() == null || begin == null || rewardParameter.getEnd().after(begin))) ||
-                                ((rewardParameter.getBegin() == null || end == null || rewardParameter.getBegin().before(end)) &&
-                                        (rewardParameter.getEnd() == null || end == null || rewardParameter.getEnd().after(end))));
+                .filter(rewardParameter -> rewardParameter.getEnd() != null || begin == null ||
+                        (rewardParameter.getBegin() != null && rewardParameter.getBegin().compareTo(begin) > 0))
+                .noneMatch(rewardParameter -> {
+                    Date b = rewardParameter.getBegin();
+                    Date e = rewardParameter.getEnd();
+
+                    return (b == null || end == null || b.before(end)) && (e == null || end != null && e.after(end)) ||
+                            (begin == null || e == null || begin.before(e)) && (end == null || e != null && end.after(e));
+                });
+    }
+
+    @Override
+    protected void onSave(Domain domain) {
+        Date begin = domain.getDate(RewardParameter.DATE_BEGIN);
+
+        domainService.getDomains(RewardParameter.class, FilterWrapper.of(new RewardParameter()
+                .setParameterId(domain.getNumber(RewardParameter.PARAMETER)))).stream()
+                .filter(rewardParameter -> !Objects.equals(rewardParameter.getObjectId(), domain.getObjectId()))
+                .filter(rewardParameter -> rewardParameter.getBegin() == null || rewardParameter.getBegin().compareTo(begin) <= 0)
+                .filter(rewardParameter -> rewardParameter.getEnd() == null)
+                .forEach(rewardParameter -> {
+                    rewardParameter.setEnd(begin);
+
+                    domainService.save(rewardParameter);
+                });
     }
 }
