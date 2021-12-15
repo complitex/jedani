@@ -53,7 +53,9 @@ public class RewardParameter extends Domain {
         return getNumber(PARAMETER);
     }
 
-    public void setParameterId(Long parameterId) {
+    public RewardParameter setParameterId(Long parameterId) {
         setNumber(PARAMETER, parameterId);
+
+        return this;
     }
 }
