@@ -4,9 +4,9 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import org.apache.commons.lang3.tuple.Pair;
-import ru.complitex.domain.service.DomainService;
-import ru.complitex.jedani.worker.entity.RewardParameter;
+import ru.complitex.jedani.worker.entity.Period;
 import ru.complitex.jedani.worker.mapper.PeriodMapper;
+import ru.complitex.jedani.worker.mapper.RewardParameterMapper;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -21,16 +21,20 @@ public class RewardParameterCacheService implements Serializable {
      @Inject
     private PeriodMapper periodMapper;
 
-    @Inject
-    private DomainService domainService;
+     @Inject
+     private RewardParameterMapper rewardParameterMapper;
 
     private transient LoadingCache<Pair<Long, Long>, BigDecimal> rewardParameterCache;
 
     private LoadingCache<Pair<Long, Long>, BigDecimal> getRewardParameterCache() {
         if (rewardParameterCache == null) {
             rewardParameterCache = CacheBuilder.newBuilder()
-                    .build(CacheLoader.from(pair -> domainService.getDomain(RewardParameter.class, pair.getLeft())
-                            .getDecimal(RewardParameter.VALUE)));
+                    .build(CacheLoader.from(pair -> {
+                        Period period = periodMapper.getPeriod(pair.getRight());
+
+                        return rewardParameterMapper.getRewardParameterValue(pair.getLeft(), period.getOperatingMonth());
+                    }));
+
         }
 
         return rewardParameterCache;

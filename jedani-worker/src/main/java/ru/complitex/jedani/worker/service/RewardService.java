@@ -3,6 +3,7 @@ package ru.complitex.jedani.worker.service;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import org.apache.commons.lang3.tuple.Pair;
 import org.mybatis.cdi.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +15,7 @@ import ru.complitex.jedani.worker.entity.*;
 import ru.complitex.jedani.worker.exception.RewardException;
 import ru.complitex.jedani.worker.mapper.PeriodMapper;
 import ru.complitex.jedani.worker.mapper.RewardMapper;
+import ru.complitex.jedani.worker.mapper.RewardParameterMapper;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -59,6 +61,9 @@ public class RewardService implements Serializable {
     private RewardMapper rewardMapper;
 
     @Inject
+    private RewardParameterMapper rewardParameterMapper;
+
+    @Inject
     private PriceService priceService;
 
     @Inject
@@ -71,7 +76,7 @@ public class RewardService implements Serializable {
     private transient LoadingCache<Long, List<Reward>> rewardsBySaleIdCache;
 
     private LoadingCache<Long, List<Reward>> getRewardsBySaleIdCache() {
-        if (rewardsBySaleIdCache == null){
+        if (rewardsBySaleIdCache == null) {
             rewardsBySaleIdCache = CacheBuilder.newBuilder()
                     .expireAfterAccess(5, TimeUnit.MINUTES)
                     .build(CacheLoader.from(saleId ->
@@ -138,7 +143,7 @@ public class RewardService implements Serializable {
     private transient LoadingCache<WorkerPeriodId, List<Reward>> rewardsByPeriodAndWorkerCache;
 
     private LoadingCache<WorkerPeriodId, List<Reward>> getRewardsByPeriodWorkerIdCache() {
-        if (rewardsByPeriodAndWorkerCache == null){
+        if (rewardsByPeriodAndWorkerCache == null) {
             rewardsByPeriodAndWorkerCache = CacheBuilder.newBuilder()
                     .expireAfterAccess(5, TimeUnit.MINUTES)
                     .build(CacheLoader.from(workerPeriodId ->
@@ -150,7 +155,7 @@ public class RewardService implements Serializable {
         return rewardsByPeriodAndWorkerCache;
     }
 
-    public List<Reward> getRewardsFromCache(Long periodId, Long workerId){
+    public List<Reward> getRewardsFromCache(Long periodId, Long workerId) {
         try {
             return getRewardsByPeriodWorkerIdCache().get(new WorkerPeriodId(workerId, periodId));
         } catch (ExecutionException e) {
@@ -194,8 +199,8 @@ public class RewardService implements Serializable {
 
     private transient LoadingCache<Long, RewardTree> rewardTreeCache;
 
-    private LoadingCache<Long, RewardTree> getRewardTreeCache(){
-        if (rewardTreeCache == null){
+    private LoadingCache<Long, RewardTree> getRewardTreeCache() {
+        if (rewardTreeCache == null) {
             rewardTreeCache = CacheBuilder.newBuilder().build(CacheLoader.from(periodId ->
                     getRewardTree(periodMapper.getPeriod(periodId))));
         }
@@ -207,32 +212,32 @@ public class RewardService implements Serializable {
         try {
             return getRewardTreeCache().get(periodId);
         } catch (ExecutionException e) {
-            throw  new RuntimeException(e);
+            throw new RuntimeException(e);
         }
     }
 
-    private Long getRank(BigDecimal saleVolume) {
-        if (saleVolume.compareTo(getParameter(20L)) >= 0){
+    private Long getRank(BigDecimal saleVolume, Period period) {
+        if (saleVolume.compareTo(getRewardParameter(20L, period)) >= 0) {
             return RankType.PLATINUM_DIRECTOR;
-        }else if (saleVolume.compareTo(getParameter(19L)) >= 0){
+        } else if (saleVolume.compareTo(getRewardParameter(19L, period)) >= 0) {
             return RankType.GOLD_DIRECTOR;
-        }else if (saleVolume.compareTo(getParameter(18L)) >= 0){
+        } else if (saleVolume.compareTo(getRewardParameter(18L, period)) >= 0) {
             return RankType.SILVER_DIRECTOR;
-        }else if (saleVolume.compareTo(getParameter(17L)) >= 0){
+        } else if (saleVolume.compareTo(getRewardParameter(17L, period)) >= 0) {
             return RankType.REGIONAL_MANAGER;
-        }else if (saleVolume.compareTo(getParameter(16L)) >= 0){
+        } else if (saleVolume.compareTo(getRewardParameter(16L, period)) >= 0) {
             return RankType.AREA_MANAGER;
-        }else if (saleVolume.compareTo(getParameter(15L)) >= 0){
+        } else if (saleVolume.compareTo(getRewardParameter(15L, period)) >= 0) {
             return RankType.DIVISION_MANAGER;
-        }else if (saleVolume.compareTo(getParameter(14L)) >= 0){
+        } else if (saleVolume.compareTo(getRewardParameter(14L, period)) >= 0) {
             return RankType.SENIOR_MANAGER;
-        }else if (saleVolume.compareTo(getParameter(13L)) >= 0){
+        } else if (saleVolume.compareTo(getRewardParameter(13L, period)) >= 0) {
             return RankType.SENIOR_ASSISTANT;
-        }else if (saleVolume.compareTo(getParameter(12L)) >= 0){
+        } else if (saleVolume.compareTo(getRewardParameter(12L, period)) >= 0) {
             return RankType.TEAM_MANAGER;
-        }else if (saleVolume.compareTo(getParameter(11L)) >= 0){
+        } else if (saleVolume.compareTo(getRewardParameter(11L, period)) >= 0) {
             return RankType.MANAGER_JUNIOR;
-        }else if (saleVolume.compareTo(getParameter(47L)) >= 0){
+        } else if (saleVolume.compareTo(getRewardParameter(47L, period)) >= 0) {
             return RankType.MANAGER_ASSISTANT;
         }
 
@@ -260,12 +265,12 @@ public class RewardService implements Serializable {
                     .reduce(r.getSaleVolume(), (v, c) -> v.add(c.getStructureSaleVolume()), BigDecimal::add));
 
             if (r.getFirstLevelPersonalCount() >= 4 && r.getGroupRegistrationCount() >= 2 && r.getPaymentVolume().compareTo(BigDecimal.valueOf(200)) >= 0) {
-                r.setRank(getRank(r.getStructureSaleVolume()));
+                r.setRank(getRank(r.getStructureSaleVolume(), period));
             }
         }));
     }
 
-    private void calcPaymentVolume(RewardTree tree, Period period){
+    private void calcPaymentVolume(RewardTree tree, Period period) {
         Set<Long> activeSaleWorkerIds = saleService.getSaleWorkerIds();
 
         tree.forEachLevel((l, rl) -> rl.forEach(r -> {
@@ -287,7 +292,7 @@ public class RewardService implements Serializable {
         }));
     }
 
-    private void calcRegistrationCount(RewardTree tree, Period period){
+    private void calcRegistrationCount(RewardTree tree, Period period) {
         tree.forEachLevel((l, rl) -> rl.forEach(r -> {
             r.setRegistrationCount(r.getRewardNodes().stream()
                     .reduce(0L, (v, c) -> v + (isNewWorker(c.getWorkerId(), period) ? 1L : 0L), Long::sum));
@@ -297,24 +302,24 @@ public class RewardService implements Serializable {
         }));
     }
 
-    private void calcStructureManagerCount(RewardTree tree, Period period){
+    private void calcStructureManagerCount(RewardTree tree, Period period) {
         tree.forEachLevel((l, rl) -> rl.forEach(r -> r.setStructureManagerCount(r.getRewardNodes().stream()
                 .reduce(0L, (v, c) -> v + c.getStructureManagerCount() + (c.isManager() ? 1 : 0), Long::sum))));
     }
 
-    private boolean isNewWorker(Long workerId, Period period){
+    private boolean isNewWorker(Long workerId, Period period) {
         Date registrationDate = domainService.getDate(Worker.ENTITY_NAME, workerId, Worker.REGISTRATION_DATE);
 
-        Long status =  domainService.getNumber(Worker.ENTITY_NAME, workerId, Worker.STATUS);
+        Long status = domainService.getNumber(Worker.ENTITY_NAME, workerId, Worker.STATUS);
 
         return registrationDate != null && Dates.isSameMonth(registrationDate, period.getOperatingMonth()) &&
                 !Objects.equals(status, WorkerStatus.MANAGER_CHANGED);
     }
 
-    private void calcFirstLevelCount(RewardTree tree, Period period){
+    private void calcFirstLevelCount(RewardTree tree, Period period) {
         tree.forEachLevel((l, rl) -> rl.forEach(r -> r.setFirstLevelCount(r.getRewardNodes().stream()
                 .filter(c -> {
-                    Date registrationDate =  domainService.getDate(Worker.ENTITY_NAME, c.getWorkerId(), Worker.REGISTRATION_DATE);
+                    Date registrationDate = domainService.getDate(Worker.ENTITY_NAME, c.getWorkerId(), Worker.REGISTRATION_DATE);
 
                     return registrationDate != null && registrationDate.before(Dates.nextMonth(period.getOperatingMonth())) && c.isPk();
                 })
@@ -322,9 +327,9 @@ public class RewardService implements Serializable {
 
         tree.forEachLevel((l, rl) -> rl.forEach(r -> r.setFirstLevelPersonalCount(r.getRewardNodes().stream()
                 .filter(c -> {
-                    Date registrationDate =  domainService.getDate(Worker.ENTITY_NAME, c.getWorkerId(), Worker.REGISTRATION_DATE);
+                    Date registrationDate = domainService.getDate(Worker.ENTITY_NAME, c.getWorkerId(), Worker.REGISTRATION_DATE);
 
-                    Long status =  domainService.getNumber(Worker.ENTITY_NAME, c.getWorkerId(), Worker.STATUS);
+                    Long status = domainService.getNumber(Worker.ENTITY_NAME, c.getWorkerId(), Worker.STATUS);
 
                     return registrationDate != null && registrationDate.before(Dates.nextMonth(period.getOperatingMonth())) &&
                             !Objects.equals(status, WorkerStatus.MANAGER_CHANGED) && c.isPk();
@@ -333,98 +338,98 @@ public class RewardService implements Serializable {
     }
 
 
-    public BigDecimal getPersonalRewardPoint(Sale sale, List<SaleItem> saleItems){
+    public BigDecimal getPersonalRewardPoint(Sale sale, List<SaleItem> saleItems, Period period) {
         BigDecimal point = ZERO;
 
-        if (sale.getType() == SaleType.MYCOOK){
+        if (sale.getType() == SaleType.MYCOOK) {
             Worker w = workerService.getWorker(sale.getSellerWorkerId());
 
-            if (w.getMkStatus() == null){
+            if (w.getMkStatus() == null) {
                 w.setMkStatus(MkStatus.STATUS_PROMO);
             }
 
             boolean mkPremium = saleService.isMycookPremiumSaleItems(saleItems);
             boolean mkTouch = saleService.isMycookTouchSaleItems(saleItems);
 
-            if (sale.isSasRequest()){
-                point = getParameter(1L);
-            }else if (w.getMkStatus() == MkStatus.STATUS_PROMO){
-                if (mkPremium){
-                    point = getParameter(2L);
-                }else if (mkTouch){
-                    point = getParameter(3L);
+            if (sale.isSasRequest()) {
+                point = getRewardParameter(1L, period);
+            } else if (w.getMkStatus() == MkStatus.STATUS_PROMO) {
+                if (mkPremium) {
+                    point = getRewardParameter(2L, period);
+                } else if (mkTouch) {
+                    point = getRewardParameter(3L, period);
                 }
-            }else if (w.getMkStatus() == MkStatus.STATUS_JUST){
-                if (mkPremium){
-                    point = getParameter(4L);
-                }else if (mkTouch){
-                    point = getParameter(5L);
+            } else if (w.getMkStatus() == MkStatus.STATUS_JUST) {
+                if (mkPremium) {
+                    point = getRewardParameter(4L, period);
+                } else if (mkTouch) {
+                    point = getRewardParameter(5L, period);
                 }
-            }else if (w.getMkStatus() == MkStatus.STATUS_VIP){
-                if (sale.getManagerBonusWorkerId() != null){
-                    if (mkPremium){
-                        point = getParameter(6L).subtract(getParameter(9L));
-                    }else if (mkTouch){
-                        point = getParameter(7L).subtract(getParameter(10L));
+            } else if (w.getMkStatus() == MkStatus.STATUS_VIP) {
+                if (sale.getManagerBonusWorkerId() != null) {
+                    if (mkPremium) {
+                        point = getRewardParameter(6L, period).subtract(getRewardParameter(9L, period));
+                    } else if (mkTouch) {
+                        point = getRewardParameter(7L, period).subtract(getRewardParameter(10L, period));
                     }
-                }else if (mkPremium){
-                    point = getParameter(6L);
-                }else if (mkTouch){
-                    point = getParameter(7L);
+                } else if (mkPremium) {
+                    point = getRewardParameter(6L, period);
+                } else if (mkTouch) {
+                    point = getRewardParameter(7L, period);
                 }
             }
-        }else if (sale.getType() == SaleType.RANGE && sale.getTotal() != null){
-            point = sale.getTotal().multiply(getParameter(8L));
+        } else if (sale.getType() == SaleType.RANGE && sale.getTotal() != null) {
+            point = sale.getTotal().multiply(getRewardParameter(8L, period));
         }
 
         return point;
     }
 
-    public BigDecimal getManagerBonusRewardPoint(Sale sale, List<SaleItem> saleItems){
+    public BigDecimal getManagerBonusRewardPoint(Sale sale, List<SaleItem> saleItems, Period period) {
         BigDecimal point = ZERO;
 
-        if (sale.getType() == SaleType.MYCOOK){
+        if (sale.getType() == SaleType.MYCOOK) {
             Worker w = workerService.getWorker(sale.getSellerWorkerId());
 
-            if (w.getMkStatus() == null){
+            if (w.getMkStatus() == null) {
                 w.setMkStatus(MkStatus.STATUS_PROMO);
             }
 
-            if (saleService.isMycookPremiumSaleItems(saleItems)){
-                point = getParameter(9L);
-            }else if (saleService.isMycookTouchSaleItems(saleItems)){
-                point = getParameter(10L);
+            if (saleService.isMycookPremiumSaleItems(saleItems)) {
+                point = getRewardParameter(9L, period);
+            } else if (saleService.isMycookTouchSaleItems(saleItems)) {
+                point = getRewardParameter(10L, period);
             }
         }
 
         return point;
     }
 
-    public BigDecimal getCulinaryRewardPoint(Sale sale, List<SaleItem> saleItems){
-        if (saleService.isMycookSaleItems(saleItems)){
+    public BigDecimal getCulinaryRewardPoint(Sale sale, List<SaleItem> saleItems, Period period) {
+        if (saleService.isMycookSaleItems(saleItems)) {
             if (!sale.isSasRequest()) {
-                return getParameter(41L);
+                return getRewardParameter(41L, period);
             } else {
-                return getParameter(42L);
+                return getRewardParameter(42L, period);
             }
         }
 
         return ZERO;
     }
 
-    public void updateLocal(Sale sale, Reward reward, Period period){
+    public void updateLocal(Sale sale, Reward reward, Period period) {
         try {
             if (reward.getPoint().compareTo(ZERO) >= 0) {
                 Date date = Dates.currentDate();
 
                 List<SaleItem> saleItems = saleService.getSaleItems(sale.getObjectId());
 
-                if (!saleItems.isEmpty()){
+                if (!saleItems.isEmpty()) {
                     SaleItem saleItem = saleItems.get(0);
 
                     reward.setRate(saleItem.getRate());
 
-                    if (reward.getRate() == null && saleItem.getSaleDecisionId() != null){
+                    if (reward.getRate() == null && saleItem.getSaleDecisionId() != null) {
                         reward.setRate(priceService.getRate(sale, saleItem, date));
                     }
 
@@ -432,7 +437,7 @@ public class RewardService implements Serializable {
 
                     if (sale.isFeeWithdraw()) {
                         reward.setPrice(saleItem.getPrice().add(reward.getTotal()));
-                    }else{
+                    } else {
                         reward.setPrice(saleItem.getPrice());
                     }
 
@@ -452,7 +457,7 @@ public class RewardService implements Serializable {
                     reward.setDiscount(reward.getPrice().multiply(BigDecimal.valueOf(100).subtract(ratio))
                             .divide(reward.getBasePrice().multiply(BigDecimal.valueOf(100)), 7, HALF_EVEN));
 
-                    if (reward.getRate() == null){
+                    if (reward.getRate() == null) {
                         reward.setRate(priceService.getRate(sale.getStorageId(), date));
                     }
 
@@ -471,7 +476,7 @@ public class RewardService implements Serializable {
                     reward.setAmount(reward.getPoint().multiply(reward.getRate()).multiply(reward.getCrossRate())
                             .setScale(5, HALF_EVEN));
 
-                    if (reward.getDiscount() != null){
+                    if (reward.getDiscount() != null) {
                         reward.setAmount(reward.getAmount().multiply(reward.getDiscount()).setScale(5, HALF_EVEN));
                     }
                 }
@@ -511,69 +516,69 @@ public class RewardService implements Serializable {
         }
     }
 
-    private BigDecimal calcManagerPoint(Sale sale, Long rank){
-        switch (rank.intValue()){
+    private BigDecimal calcManagerPoint(Sale sale, Long rank, Period period) {
+        switch (rank.intValue()) {
             case (int) RankType.MANAGER_ASSISTANT:
-                return calcManagerPoint(sale, 48L, 49L);
+                return calcManagerPoint(sale, 48L, 49L, period);
             case (int) RankType.MANAGER_JUNIOR:
-                return calcManagerPoint(sale, 21L, 31L);
+                return calcManagerPoint(sale, 21L, 31L, period);
             case (int) RankType.TEAM_MANAGER:
-                return calcManagerPoint(sale, 22L, 32L);
+                return calcManagerPoint(sale, 22L, 32L, period);
             case (int) RankType.SENIOR_ASSISTANT:
-                return calcManagerPoint(sale, 23L, 33L);
+                return calcManagerPoint(sale, 23L, 33L, period);
             case (int) RankType.SENIOR_MANAGER:
-                return calcManagerPoint(sale, 24L, 34L);
+                return calcManagerPoint(sale, 24L, 34L, period);
             case (int) RankType.DIVISION_MANAGER:
-                return calcManagerPoint(sale, 25L, 35L);
+                return calcManagerPoint(sale, 25L, 35L, period);
             case (int) RankType.AREA_MANAGER:
-                return calcManagerPoint(sale, 26L, 36L);
+                return calcManagerPoint(sale, 26L, 36L, period);
             case (int) RankType.REGIONAL_MANAGER:
-                return calcManagerPoint(sale, 27L, 37L);
+                return calcManagerPoint(sale, 27L, 37L, period);
             case (int) RankType.SILVER_DIRECTOR:
-                return calcManagerPoint(sale, 28L, 38L);
+                return calcManagerPoint(sale, 28L, 38L, period);
             case (int) RankType.GOLD_DIRECTOR:
-                return calcManagerPoint(sale, 29L, 39L);
+                return calcManagerPoint(sale, 29L, 39L, period);
             case (int) RankType.PLATINUM_DIRECTOR:
-                return calcManagerPoint(sale, 30L, 40L);
+                return calcManagerPoint(sale, 30L, 40L, period);
         }
 
         return ZERO;
     }
 
-    private BigDecimal calcManagerPoint(Sale sale, Long mkParameterId, Long baParameterId){
-        if (sale.getType() == SaleType.MYCOOK){
-            return getParameter(mkParameterId);
-        }else if (sale.getType() == SaleType.RANGE && sale.getTotal() != null){
-            return sale.getTotal().multiply(getParameter(baParameterId));
+    private BigDecimal calcManagerPoint(Sale sale, Long mkParameterId, Long baParameterId, Period period) {
+        if (sale.getType() == SaleType.MYCOOK) {
+            return getRewardParameter(mkParameterId, period);
+        } else if (sale.getType() == SaleType.RANGE && sale.getTotal() != null) {
+            return sale.getTotal().multiply(getRewardParameter(baParameterId, period));
         }
 
         return ZERO;
     }
 
-    private BigDecimal getGroupVolumePercent(Long rank){
-        switch (rank.intValue()){
+    private BigDecimal getGroupVolumePercent(Long rank, Period period) {
+        switch (rank.intValue()) {
             case (int) RankType.MANAGER_ASSISTANT:
-                return getParameter(50L);
+                return getRewardParameter(50L, period);
             case (int) RankType.MANAGER_JUNIOR:
-                return getParameter(51L);
+                return getRewardParameter(51L, period);
             case (int) RankType.TEAM_MANAGER:
-                return getParameter(52L);
+                return getRewardParameter(52L, period);
             case (int) RankType.SENIOR_ASSISTANT:
-                return getParameter(53L);
+                return getRewardParameter(53L, period);
             case (int) RankType.SENIOR_MANAGER:
-                return getParameter(54L);
+                return getRewardParameter(54L, period);
             case (int) RankType.DIVISION_MANAGER:
-                return getParameter(55L);
+                return getRewardParameter(55L, period);
             case (int) RankType.AREA_MANAGER:
-                return getParameter(56L);
+                return getRewardParameter(56L, period);
             case (int) RankType.REGIONAL_MANAGER:
-                return getParameter(57L);
+                return getRewardParameter(57L, period);
             case (int) RankType.SILVER_DIRECTOR:
-                return getParameter(58L);
+                return getRewardParameter(58L, period);
             case (int) RankType.GOLD_DIRECTOR:
-                return getParameter(59L);
+                return getRewardParameter(59L, period);
             case (int) RankType.PLATINUM_DIRECTOR:
-                return getParameter(60L);
+                return getRewardParameter(60L, period);
         }
 
         return ZERO;
@@ -586,15 +591,15 @@ public class RewardService implements Serializable {
             BigDecimal paid = paymentService.getPaymentsVolumeBySaleId(sale.getObjectId())
                     .divide(sale.getTotal(), 5, RoundingMode.HALF_EVEN);
 
-            if (paid.compareTo(new BigDecimal("0.2")) >= 0){
+            if (paid.compareTo(new BigDecimal("0.2")) >= 0) {
                 point = point.add(rewardPoint).multiply(new BigDecimal("0.25"));
             }
 
-            if (paid.compareTo(new BigDecimal("0.7")) >= 0){
+            if (paid.compareTo(new BigDecimal("0.7")) >= 0) {
                 point = point.add(rewardPoint.multiply(new BigDecimal("0.35")));
             }
 
-            if (paid.compareTo(new BigDecimal("1")) >= 0){
+            if (paid.compareTo(new BigDecimal("1")) >= 0) {
                 point = point.add(rewardPoint.multiply(new BigDecimal("0.40")));
             }
 
@@ -621,7 +626,7 @@ public class RewardService implements Serializable {
 
             BigDecimal total = sale.getPersonalRewardPoint();
 
-            if (total == null){
+            if (total == null) {
                 return;
             }
 
@@ -680,7 +685,7 @@ public class RewardService implements Serializable {
         }
     }
 
-    private void calculateBonusReward(Sale sale, Period period, long rewardStatus){
+    private void calculateBonusReward(Sale sale, Period period, long rewardStatus) {
         if (sale.getManagerBonusRewardPoint() != null && sale.getManagerBonusWorkerId() != null) {
             if (getRewardsPointSum(sale.getObjectId(), RewardType.MANAGER_BONUS, rewardStatus).compareTo(ZERO) > 0) {
                 return;
@@ -770,9 +775,9 @@ public class RewardService implements Serializable {
 
     private void calculateManagerReward(Sale sale, RewardNode rewardNode, Period period, Long rewardStatus) {
         if (Objects.equals(sale.getPeriodId(), period.getObjectId())) {
-            BigDecimal total = calcManagerPoint(sale, rewardNode.getRank());
+            BigDecimal total = calcManagerPoint(sale, rewardNode.getRank(), period);
 
-            if (total.compareTo(ZERO) > 0){
+            if (total.compareTo(ZERO) > 0) {
                 Reward reward = new Reward();
 
                 reward.setSaleId(sale.getObjectId());
@@ -834,7 +839,7 @@ public class RewardService implements Serializable {
     }
 
     private void calculatePersonalReward(RewardNode rewardNode, Period period, Long rewardStatus) {
-        if (rewardNode.getPaymentVolume().compareTo(getParameter(43L)) >= 0) {
+        if (rewardNode.getPaymentVolume().compareTo(getRewardParameter(43L, period)) >= 0) {
             Reward reward = new Reward();
 
             reward.setType(RewardType.PERSONAL_VOLUME);
@@ -846,19 +851,19 @@ public class RewardService implements Serializable {
             reward.setPeriodId(period.getObjectId());
             reward.setRewardStatus(rewardStatus);
 
-            BigDecimal avgPoint = getParameter(44L);
-            BigDecimal lowerPoint = getParameter(45L);
-            BigDecimal greaterPoint = getParameter(46L);
+            BigDecimal avgPoint = getRewardParameter(44L, period);
+            BigDecimal lowerPoint = getRewardParameter(45L, period);
+            BigDecimal greaterPoint = getRewardParameter(46L, period);
 
             if (rewardNode.getPaymentVolume().compareTo(avgPoint) < 0) {
                 reward.setTotal(lowerPoint);
-            }else {
+            } else {
                 reward.setTotal(greaterPoint);
             }
 
             reward.setPoint(ZERO);
 
-            if (rewardStatus == RewardStatus.ESTIMATED ||  getRewardsPointSumByWorker(period.getObjectId(), reward.getWorkerId(),
+            if (rewardStatus == RewardStatus.ESTIMATED || getRewardsPointSumByWorker(period.getObjectId(), reward.getWorkerId(),
                     RewardType.PERSONAL_VOLUME, RewardStatus.CHARGED).compareTo(ZERO) == 0) {
                 if (rewardNode.getPaymentVolume().compareTo(avgPoint) < 0) {
                     reward.setPoint(lowerPoint);
@@ -880,7 +885,7 @@ public class RewardService implements Serializable {
     }
 
     private void calculateGroupReward(RewardNode rewardNode, Period period, Long rewardStatus) {
-        BigDecimal sum = getGroupVolumePercent(rewardNode.getRank())
+        BigDecimal sum = getGroupVolumePercent(rewardNode.getRank(), period)
                 .multiply(rewardNode.getGroupSaleVolume())
                 .divide(new BigDecimal("100"), 5, HALF_EVEN);
 
@@ -889,7 +894,7 @@ public class RewardService implements Serializable {
         for (int i = 0; i < groupSales.size(); i++) {
             Sale sale = groupSales.get(i);
 
-            BigDecimal total = getGroupVolumePercent(rewardNode.getRank())
+            BigDecimal total = getGroupVolumePercent(rewardNode.getRank(), period)
                     .multiply(sale.getTotal())
                     .divide(new BigDecimal("100"), 5, HALF_EVEN);
 
@@ -971,8 +976,8 @@ public class RewardService implements Serializable {
         BigDecimal sum = ZERO;
 
         for (RewardNode m : rewardNode.getFirstStructureManagers()) {
-            BigDecimal total = getGroupVolumePercent(rewardNode.getRank())
-                    .subtract(getGroupVolumePercent(m.getRank()))
+            BigDecimal total = getGroupVolumePercent(rewardNode.getRank(), period)
+                    .subtract(getGroupVolumePercent(m.getRank(), period))
                     .multiply(m.getStructureSaleVolume())
                     .divide(new BigDecimal("100"), 5, HALF_EVEN);
 
@@ -989,8 +994,8 @@ public class RewardService implements Serializable {
             for (int j = 0; j < structureSales.size(); j++) {
                 Sale sale = structureSales.get(j);
 
-                BigDecimal total = getGroupVolumePercent(rewardNode.getRank())
-                        .subtract(getGroupVolumePercent(m.getRank()))
+                BigDecimal total = getGroupVolumePercent(rewardNode.getRank(), period)
+                        .subtract(getGroupVolumePercent(m.getRank(), period))
                         .multiply(sale.getTotal())
                         .divide(new BigDecimal("100"), 5, HALF_EVEN);
 
@@ -1071,30 +1076,28 @@ public class RewardService implements Serializable {
         }
     }
 
-    private transient LoadingCache<Long, BigDecimal> parameterCache;
+    private transient LoadingCache<Pair<Long, Date>, BigDecimal> rewardParameterCache;
 
-    private LoadingCache<Long, BigDecimal> getParameterCache(){
-        if (parameterCache == null){
-            parameterCache = CacheBuilder.newBuilder()
-                    .expireAfterAccess(5, TimeUnit.MINUTES)
-                    .build(CacheLoader.from(rewardParameterId ->
-                            domainService.getDomain(RewardParameter.class, rewardParameterId)
-                                    .getDecimal(RewardParameter.VALUE)));
+    private LoadingCache<Pair<Long, Date>, BigDecimal> getRewardParameterCache() {
+        if (rewardParameterCache == null) {
+            rewardParameterCache = CacheBuilder.newBuilder()
+                    .build(CacheLoader.from(pair ->
+                            rewardParameterMapper.getRewardParameterValue(pair.getLeft(), pair.getRight())));
 
         }
 
-        return parameterCache;
+        return rewardParameterCache;
     }
 
-    public BigDecimal getParameter(Long rewardParameterId){
+    public BigDecimal getRewardParameter(Long rewardParameterId, Period period) {
         try {
-            return getParameterCache().get(rewardParameterId);
+            return getRewardParameterCache().get(Pair.of(rewardParameterId, period.getOperatingMonth()));
         } catch (Exception e) {
-            throw  new RuntimeException(e);
+            throw new RuntimeException(e);
         }
     }
 
-    public RewardNode getWorkerReward(Worker worker){
+    public RewardNode getWorkerReward(Worker worker) {
         return getRewardTreeCache(periodMapper.getActualPeriod().getObjectId()).getRewardNode(worker.getObjectId());
     }
 
@@ -1164,7 +1167,7 @@ public class RewardService implements Serializable {
     private transient LoadingCache<CountryPeriodId, BigDecimal> paymentRateCache;
 
     private LoadingCache<CountryPeriodId, BigDecimal> getPaymentRateCache() {
-        if (paymentRateCache == null ){
+        if (paymentRateCache == null) {
             paymentRateCache = CacheBuilder.newBuilder()
                     .expireAfterAccess(5, TimeUnit.MINUTES)
                     .build(CacheLoader.from(countryPeriodId ->
@@ -1214,7 +1217,7 @@ public class RewardService implements Serializable {
 
             getPaymentRateCache().invalidateAll();
 
-            getParameterCache().invalidateAll();
+            getRewardParameterCache().invalidateAll();
 
             RewardTree tree = getRewardTree(period);
 

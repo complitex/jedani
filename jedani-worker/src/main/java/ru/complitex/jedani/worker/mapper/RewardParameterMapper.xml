@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ru.complitex.jedani.worker.mapper.RewardParameterMapper">
+    <select id="selectRewardParameterValue" parameterType="map" resultType="string">
+        select rpa_v.text from reward_parameter rp
+           left join reward_parameter_attribute rpa_b on rp.id = rpa_b.domain_id and rpa_b.entity_attribute_id = 1 and rpa_b.status = 1
+           left join reward_parameter_attribute rpa_e on rp.id = rpa_e.domain_id and rpa_e.entity_attribute_id = 2 and rpa_e.status = 1
+           left join reward_parameter_attribute rpa_v on rp.id = rpa_v.domain_id and rpa_v.entity_attribute_id = 5 and rpa_v.status = 1
+           left join reward_parameter_attribute rpa_p on rp.id = rpa_p.domain_id and rpa_p.entity_attribute_id = 6 and rpa_p.status = 1
+           left join parameter p on rpa_p.number = p.object_id and p.status = 1
+           left join parameter_attribute pa on p.id = pa.domain_id and pa.entity_attribute_id = 1 and pa.status = 1
+        where rp.status = 1 and pa.number = #{parameterId}
+          and (rpa_b.date is null or  #{date} >= rpa_b.date)
+          and (rpa_e.date is null or rpa_e.date >= #{date})
+    </select>
+</mapper>
