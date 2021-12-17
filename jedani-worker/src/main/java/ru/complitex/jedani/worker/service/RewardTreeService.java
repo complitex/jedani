@@ -1,5 +1,6 @@
 package ru.complitex.jedani.worker.service;
 
+import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.util.Dates;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.entity.*;
@@ -10,6 +11,7 @@ import ru.complitex.jedani.worker.service.cache.SaleCacheService;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -145,10 +147,15 @@ public class RewardTreeService {
         rewardNode.setStructureManagerCount(rewardNode.getRewardNodes().stream()
                 .reduce(0L, (v, c) -> v + c.getStructureManagerCount() + (c.isManager() ? 1 : 0), Long::sum));
 
+        List<RewardRank> rewardRanks = domainService.getDomains(RewardRank.class,
+                new FilterWrapper<>(new RewardRank()
+                        .setWorkerId(rewardNode.getWorkerId())
+                        .setPeriodId(period.getObjectId())));
 
         if (rewardNode.getFirstLevelPersonalCount() >= 4 &&
                 rewardNode.getGroupRegistrationCount() >= 2 &&
-                rewardNode.getPaymentVolume().compareTo(BigDecimal.valueOf(200)) >= 0) {
+                rewardNode.getPaymentVolume().compareTo(BigDecimal.valueOf(200)) >= 0 &&
+                (rewardRanks.isEmpty() || !Objects.equals(rewardRanks.get(0).getRank(), 0L))) {
             rewardNode.setRank(getRank(rewardNode.getStructureSaleVolume(), period));
         }
     }

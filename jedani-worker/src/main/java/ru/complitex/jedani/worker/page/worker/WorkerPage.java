@@ -8,6 +8,8 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
 import de.agilecoders.wicket.core.markup.html.bootstrap.image.GlyphIconType;
 import de.agilecoders.wicket.core.markup.html.bootstrap.tabs.AjaxBootstrapTabbedPanel;
+import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.checkbox.bootstraptoggle.BootstrapToggle;
+import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.checkbox.bootstraptoggle.BootstrapToggleConfig;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.Component;
@@ -91,7 +93,10 @@ import ru.complitex.jedani.worker.page.payment.PaymentPanel;
 import ru.complitex.jedani.worker.page.reward.RewardPanel;
 import ru.complitex.jedani.worker.page.sale.SalePanel;
 import ru.complitex.jedani.worker.security.JedaniRoles;
-import ru.complitex.jedani.worker.service.*;
+import ru.complitex.jedani.worker.service.AccountService;
+import ru.complitex.jedani.worker.service.CardService;
+import ru.complitex.jedani.worker.service.WorkerNodeService;
+import ru.complitex.jedani.worker.service.WorkerService;
 import ru.complitex.jedani.worker.service.cache.RewardCacheService;
 import ru.complitex.jedani.worker.service.cache.RewardTreeCacheService;
 import ru.complitex.name.entity.FirstName;
@@ -166,6 +171,8 @@ public class WorkerPage extends BasePage {
 
     private String photoDir;
     private FileUploadField photoUploadFiled;
+
+    private Map<Long, RewardRank> rewardRankMap = new HashMap<>();
 
     public WorkerPage(PageParameters parameters) {
         Long id = parameters.get("id").toOptionalLong();
@@ -758,6 +765,18 @@ public class WorkerPage extends BasePage {
                             cardService.save(cardObject);
                         }
 
+                        rewardRankMap.forEach((periodId, rewardRank) -> {
+                            List<RewardRank> rewardRanks = domainService.getDomains(RewardRank.class,
+                                    FilterWrapper.of(new RewardRank()
+                                            .setWorkerId(worker.getObjectId())
+                                            .setPeriodId(periodId)));
+
+                            if (!rewardRanks.isEmpty() && !rewardRanks.get(0).getRank().equals(rewardRank.getRank()) ||
+                                    rewardRank.getRank() != null) {
+                                domainService.save(rewardRank);
+                            }
+                        });
+
                         success(getString("info_updated"));
                     }
 
@@ -1150,8 +1169,7 @@ public class WorkerPage extends BasePage {
                         })));
 
                         IModel<RewardNode> rewardModel = LoadableDetachableModel.of(() -> {
-                                RewardNode workerReward = rewardTreeCacheService.getRewardNode(worker.getObjectId(), periodModel.getObject().getObjectId()
-                                );
+                                RewardNode workerReward = rewardTreeCacheService.getRewardNode(worker.getObjectId(), periodModel.getObject().getObjectId());
 
                                 return workerReward != null ? workerReward : new RewardNode(new WorkerNode());
                         });
@@ -1203,6 +1221,36 @@ public class WorkerPage extends BasePage {
                                 getRewardsTotalString(RewardType.GROUP_VOLUME, periodModel.getObject().getObjectId()))));
                         finance.add(new Label("reward_sv", LoadableDetachableModel.of(() ->
                                 getRewardsTotalString(RewardType.STRUCTURE_VOLUME, periodModel.getObject().getObjectId()))));
+
+                        domainService.getDomains(RewardRank.class,FilterWrapper.of(new RewardRank().setWorkerId(worker.getObjectId())))
+                                .forEach(rewardRank -> rewardRankMap.putIfAbsent(rewardRank.getPeriodId(), rewardRank));
+
+                        finance.add(new BootstrapToggle("flag", new IModel<>() {
+                            @Override
+                            public Boolean getObject() {
+                                rewardRankMap.putIfAbsent(periodModel.getObject().getObjectId(),
+                                        new RewardRank()
+                                                .setWorkerId(worker.getObjectId())
+                                                .setPeriodId(periodModel.getObject().getObjectId()));
+
+                                return !Objects.equals(rewardRankMap.get(periodModel.getObject().getObjectId()).getRank(), 0L);
+                            }
+
+                            @Override
+                            public void setObject(Boolean object) {
+                                rewardRankMap.get(periodModel.getObject().getObjectId()).setRank(object ? null : 0L);
+                            }
+                        }, new BootstrapToggleConfig().withSize(BootstrapToggleConfig.Size.mini)) {
+                            @Override
+                            protected IModel<String> getOnLabel() {
+                                return new StringResourceModel("on", WorkerPage.this);
+                            }
+
+                            @Override
+                            protected IModel<String> getOffLabel() {
+                                return new StringResourceModel("off", WorkerPage.this);
+                            }
+                        });
 
                         finance.add(new PeriodPanel("period"){
                             @Override

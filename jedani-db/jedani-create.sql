@@ -2730,9 +2730,22 @@ CALL createEntityAttributeWithReference(49, 17, 11, 42, 'Операционны�
 -- ---------------------------
 
 CALL createDomainTables('parameter', 'Параметр');
+
+CALL createEntity(50, 'parameter', 'Параметр', 'Параметр');
 CALL createEntityAttribute(50, 1, 5, 'Номер', 'Номер');
 CALL createEntityAttribute(50, 2, 5, 'Тип', 'Тип');
 CALL createEntityAttribute(50, 3, 2, 'Название', 'Назва');
+
+-- ---------------------------
+-- Reward rank
+-- ---------------------------
+
+CALL createDomainTables('reward_rank', 'Ранг вознаграждений');
+
+CALL createEntity(51, 'reward_rank', 'Ранг вознаграждений', 'Ранг винагород');
+CALL createEntityAttributeWithReference(51, 1, 11, 20, 'Сотрудник', 'Співробітник');
+CALL createEntityAttribute(51, 2, 5,  'Ранг', 'Ранг');
+CALL createEntityAttributeWithReference(51, 3, 11, 42, 'Операционный месяц', 'Операційний місяць');
 
 -- Version
 
