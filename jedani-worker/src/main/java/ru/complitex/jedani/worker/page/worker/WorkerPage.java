@@ -1250,7 +1250,7 @@ public class WorkerPage extends BasePage {
                             protected IModel<String> getOffLabel() {
                                 return new StringResourceModel("off", WorkerPage.this);
                             }
-                        });
+                        }.setEnabled(isAdmin()));
 
                         finance.add(new PeriodPanel("period"){
                             @Override
