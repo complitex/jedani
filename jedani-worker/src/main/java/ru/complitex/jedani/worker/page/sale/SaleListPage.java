@@ -37,7 +37,7 @@ public class SaleListPage extends BasePage {
 
             @Override
             public boolean isRemoveEnabled() {
-                return isUserInRole(JedaniRoles.ADMINISTRATORS) || isUserInRole(JedaniRoles.SALE_ADMINISTRATORS);
+                return false;
             }
         };
 

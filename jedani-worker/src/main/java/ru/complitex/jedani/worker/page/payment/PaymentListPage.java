@@ -28,7 +28,7 @@ public class PaymentListPage extends BasePage {
 
             @Override
             protected boolean isRemoveEnabled() {
-                return isUserInRole(JedaniRoles.ADMINISTRATORS) || isUserInRole(JedaniRoles.PAYMENT_ADMINISTRATORS);
+                return false;
             }
 
             @Override
