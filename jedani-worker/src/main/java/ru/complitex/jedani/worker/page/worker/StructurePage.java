@@ -8,6 +8,7 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.image.GlyphIconType;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
+import org.apache.wicket.authorization.UnauthorizedInstantiationException;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
@@ -74,6 +75,10 @@ public class StructurePage extends DomainListPage<Worker>{
 
     public StructurePage() {
         super(Worker.class, WorkerPage.class);
+
+        if (isStructure() && (!isAdmin() || !isStructureAdmin() || !isStructureView() || !isRegionalLeader())) {
+            throw new UnauthorizedInstantiationException(getClass());
+        }
 
         Form<?> form = new Form<>("workerRemoveForm");
         getContainer().add(form);
