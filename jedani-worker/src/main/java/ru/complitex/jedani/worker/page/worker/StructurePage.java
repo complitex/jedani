@@ -57,7 +57,7 @@ import java.util.Objects;
  * 20.12.2017 7:11
  */
 @AuthorizeInstantiation({JedaniRoles.AUTHORIZED})
-public class WorkerListPage extends DomainListPage<Worker>{
+public class StructurePage extends DomainListPage<Worker>{
     @Inject
     private EntityService entityService;
 
@@ -72,7 +72,7 @@ public class WorkerListPage extends DomainListPage<Worker>{
 
     private final WorkerRemoveModal workerRemoveModal;
 
-    public WorkerListPage() {
+    public StructurePage() {
         super(Worker.class, WorkerPage.class);
 
         Form<?> form = new Form<>("workerRemoveForm");
@@ -88,6 +88,10 @@ public class WorkerListPage extends DomainListPage<Worker>{
         setAddVisible(isAdmin() || isStructureAdmin());
     }
 
+    protected boolean isStructure() {
+        return true;
+    }
+
     @Override
     protected FilterWrapper<Worker> newFilterWrapper(Worker worker) {
         FilterWrapper<Worker> filterWrapper =  super.newFilterWrapper(worker);
@@ -100,7 +104,7 @@ public class WorkerListPage extends DomainListPage<Worker>{
             City city = domainService.getDomain(City.class, getCurrentWorker().getCityId());
 
             filterWrapper.put(Worker.FILTER_REGION, city.getParentId());
-        } else if (currentWorker.isParticipant() && isUser() && !isAdmin() && !isStructureAdmin() && !isStructureView()){
+        } else if (!isStructure() || (currentWorker.isParticipant() && isUser() && !isAdmin() && !isStructureAdmin() && !isStructureView())){
             worker.setLeft(currentWorker.getLeft());
             worker.setRight(currentWorker.getRight());
             worker.setLevel(currentWorker.getLevel());

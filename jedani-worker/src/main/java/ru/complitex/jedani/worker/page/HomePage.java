@@ -1,6 +1,6 @@
 package ru.complitex.jedani.worker.page;
 
-import ru.complitex.jedani.worker.page.worker.WorkerListPage;
+import ru.complitex.jedani.worker.page.worker.StructurePage;
 import ru.complitex.jedani.worker.page.worker.WorkerPage;
 
 /**
@@ -11,7 +11,7 @@ public class HomePage extends BasePage{
 
     public HomePage() {
         if (isAdmin()){
-            setResponsePage(WorkerListPage.class);
+            setResponsePage(StructurePage.class);
         }else {
             setResponsePage(WorkerPage.class);
         }

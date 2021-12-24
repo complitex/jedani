@@ -62,7 +62,7 @@ import ru.complitex.jedani.worker.page.storage.NomenclatureListPage;
 import ru.complitex.jedani.worker.page.storage.StorageListPage;
 import ru.complitex.jedani.worker.page.storage.StoragePage;
 import ru.complitex.jedani.worker.page.worker.RegionalLeaderPage;
-import ru.complitex.jedani.worker.page.worker.WorkerListPage;
+import ru.complitex.jedani.worker.page.worker.StructurePage;
 import ru.complitex.jedani.worker.page.worker.WorkerPage;
 import ru.complitex.jedani.worker.security.JedaniRoles;
 import ru.complitex.jedani.worker.service.WorkerService;
@@ -279,7 +279,7 @@ public class BasePage extends WebPage{
         workers.add(newBehavior());
         workers.add(new WebMarkupContainer("link").add(newBehaviorLink()));
         workers.add(new WebMarkupContainer("list")
-                .add(new MenuLink("workers", WorkerListPage.class).addMenuPageClass(WorkerPage.class))
+                .add(new MenuLink("structure", StructurePage.class).addMenuPageClass(WorkerPage.class))
                 .add(new MenuLink("cards", CardListPage.class).setVisible(isAdmin() || isStructureAdmin()))
                 .add(newBehaviorList()));
         menu.add(workers);
