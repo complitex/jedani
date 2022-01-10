@@ -76,7 +76,7 @@ public class StructurePage extends DomainListPage<Worker>{
     public StructurePage() {
         super(Worker.class, WorkerPage.class);
 
-        if (isStructure() && (!isAdmin() && !isStructureAdmin() && !isStructureView() && !isRegionalLeader())) {
+        if (isStructure() && !isAdmin() && !isStructureAdmin() && !isStructureView() && !isRegionalLeader()) {
             throw new UnauthorizedInstantiationException(getClass());
         }
 
@@ -89,8 +89,6 @@ public class StructurePage extends DomainListPage<Worker>{
                 target.add(getFeedback(), getTable());
             }
         });
-
-        setAddVisible(isAdmin() || isStructureAdmin());
     }
 
     protected boolean isStructure() {
