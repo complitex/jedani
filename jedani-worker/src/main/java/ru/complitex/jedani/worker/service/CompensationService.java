@@ -147,14 +147,10 @@ public class CompensationService {
     }
 
     private void updateAmount(Reward reward) {
-        if (reward.getPoint().compareTo(ZERO) >= 0) {
-            reward.setAmount(reward.getPoint().multiply(reward.getRate())
-                    .multiply(reward.getCrossRate() != null ? reward.getCrossRate() : ONE)
-                    .multiply(reward.getDiscount() != null ? reward.getDiscount() : ONE)
-                    .setScale(5, HALF_EVEN));
-        } else {
-            throw new RuntimeException("negative reward point error " + reward);
-        }
+        reward.setAmount(reward.getPoint().multiply(reward.getRate())
+                .multiply(reward.getCrossRate() != null ? reward.getCrossRate() : ONE)
+                .multiply(reward.getDiscount() != null ? reward.getDiscount() : ONE)
+                .setScale(5, HALF_EVEN));
     }
 
     private BigDecimal getPaymentRate(Long countryId, Period period) {
@@ -683,6 +679,8 @@ public class CompensationService {
             updateRewardPoint(reward.getType(), reward);
 
             if (reward.getPoint() != null && reward.getPoint().compareTo(ZERO) != 0) {
+                updateAmount(reward);
+
                 reward.setRewardStatus(CHARGED);
 
                 save(reward);
