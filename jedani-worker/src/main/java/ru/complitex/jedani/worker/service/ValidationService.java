@@ -159,7 +159,7 @@ public class ValidationService implements Serializable {
     public List<Reward> validateSales() {
         List<Reward> rewards = new ArrayList<>();
 
-        saleMapper.getSales(new FilterWrapper<>())
+        saleMapper.getSales(new FilterWrapper<>(new Sale()))
                 .forEach(sale -> {
                     if (sale.getPersonalRewardPoint() == null || sale.getPersonalRewardPoint().compareTo(ZERO) == 0) {
                         Reward reward = new Reward();
@@ -173,7 +173,7 @@ public class ValidationService implements Serializable {
                         rewards.add(reward);
                     }
 
-                    if (Objects.equals(sale.getSaleStatus(), SaleStatus.PAID)) {
+                    if (Objects.equals(sale.getSaleStatus(), SaleStatus.PAID) || Objects.equals(sale.getSaleStatus(), SaleStatus.OVERPAID)) {
                         Long saleId = sale.getObjectId();
 
                         Reward reward = new Reward();
