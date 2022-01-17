@@ -19,6 +19,7 @@ import org.apache.wicket.protocol.ws.api.message.IWebSocketPushMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.complitex.common.entity.FilterWrapper;
+import ru.complitex.common.wicket.util.WebSockets;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.entity.Sale;
 import ru.complitex.jedani.worker.page.BasePage;
@@ -53,18 +54,6 @@ public class ImportPage extends BasePage{
 
     @Inject
     private SaleService saleService;
-
-    private class PushMessage implements IWebSocketPushMessage{
-        private String text;
-
-        public PushMessage(String text) {
-            this.text = text;
-        }
-
-        public String getText() {
-            return text;
-        }
-    }
 
     public ImportPage() {
         FeedbackPanel feedback = new NotificationPanel("feedback");
@@ -145,9 +134,9 @@ public class ImportPage extends BasePage{
         info.add(new WebSocketBehavior(){
             @Override
             protected void onPush(WebSocketRequestHandler handler, IWebSocketPushMessage message) {
-                if (message instanceof PushMessage){
+                if (message instanceof WebSockets.TextMessage){
                     try {
-                        String s = ((PushMessage)message).getText();
+                        String s = ((WebSockets.TextMessage)message).getText();
 
                         if (!Objects.equals(infoModel.getObject(), s)){
                             infoModel.setObject(s);
@@ -169,7 +158,7 @@ public class ImportPage extends BasePage{
 
                     ImportService.Status status =
                             importService.importWorkers(userUploadField.getFileUpload().getInputStream(),
-                                    p -> broadcaster.broadcastAll(getApplication(), new PushMessage(p)));
+                                    p -> broadcaster.broadcastAll(getApplication(), new WebSockets.TextMessage(p)));
 
                     info.setDefaultModelObject("");
                     target.add(info);

@@ -1,6 +1,5 @@
 package ru.complitex.jedani.worker.service;
 
-import org.mybatis.cdi.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.complitex.common.entity.FilterWrapper;
@@ -15,6 +14,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static java.math.BigDecimal.ONE;
@@ -666,15 +666,19 @@ public class CompensationService {
                 reward.getPeriodId()).compareTo(ZERO) != 0;
     }
 
-    private void estimateReward(Reward reward) {
+    private void estimateReward(Reward reward, Consumer<Reward> consumer) {
         if (reward != null && !isEstimated(reward) && !isCharged(reward)) {
             reward.setRewardStatus(ESTIMATED);
 
             save(reward);
+
+            if (consumer != null) {
+                consumer.accept(reward);
+            }
         }
     }
 
-    private void chargeReward(Reward reward) {
+    private void chargeReward(Reward reward, Consumer<Reward> consumer) {
         if (reward != null) {
             updateRewardPoint(reward.getType(), reward);
 
@@ -684,22 +688,38 @@ public class CompensationService {
                 reward.setRewardStatus(CHARGED);
 
                 save(reward);
+
+                if (consumer != null) {
+                    consumer.accept(reward);
+                }
+            }
+        }
+    }
+
+    public void withdrawReward(Reward reward, Consumer<Reward> consumer) {
+        if (reward != null && !isWithdraw(reward)) {
+            reward.setRewardStatus(WITHDRAWN);
+
+            save(reward);
+
+            if (consumer != null) {
+                consumer.accept(reward);
             }
         }
     }
 
     public void withdrawReward(Reward reward) {
-        if (reward != null && !isWithdraw(reward)) {
-            reward.setRewardStatus(WITHDRAWN);
+        withdrawReward(reward, null);
+    }
 
-            save(reward);
-        }
+    public void calculateReward(Reward reward, Consumer<Reward> consumer) {
+        estimateReward(reward, consumer);
+
+        chargeReward(reward, consumer);
     }
 
     public void calculateReward(Reward reward) {
-        estimateReward(reward);
-
-        chargeReward(reward);
+        calculateReward(reward, null);
     }
 
     private List<Reward> getEstimatedRewards(Period period) {
@@ -710,8 +730,7 @@ public class CompensationService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional
-    public void calculateRewards(Period period) {
+    public void calculateRewards(Period period, Consumer<Reward> consumer) {
         Long periodId = period.getObjectId();
 
         if (!test) {
@@ -741,33 +760,33 @@ public class CompensationService {
 
                                 Reward personalReward = getPersonalReward(sale, saleItem, period);
 
-                                calculateReward(personalReward);
+                                calculateReward(personalReward, consumer);
 
                                 if (sale.isFeeWithdraw()) {
-                                    withdrawReward(personalReward);
+                                    withdrawReward(personalReward, consumer);
                                 }
 
                                 if (!sale.isSasRequest()) {
-                                    calculateReward(getManagerReward(rewardNode, sale, saleItem, period));
+                                    calculateReward(getManagerReward(rewardNode, sale, saleItem, period), consumer);
                                 }
 
-                                calculateReward(getManagerBonusReward(sale, saleItem, period));
+                                calculateReward(getManagerBonusReward(sale, saleItem, period), consumer);
 
-                                calculateReward(getCulinaryReward(sale, saleItem, period));
+                                calculateReward(getCulinaryReward(sale, saleItem, period), consumer);
                             } else {
                                 if (getRewardsPointSumBefore(CULINARY_WORKSHOP, sale.getObjectId(), null, ESTIMATED, periodId).compareTo(ZERO) == 0) {
-                                    calculateReward(getCulinaryReward(sale, saleService.getSaleItem(sale.getObjectId()), period));
+                                    calculateReward(getCulinaryReward(sale, saleService.getSaleItem(sale.getObjectId()), period), consumer);
                                 }
                             }
                     });
 
-            calculateReward(getRankReward(rewardNode, period));
+            calculateReward(getRankReward(rewardNode, period), consumer);
 
-            calculateReward(getPersonalVolumeReward(rewardNode, period));
+            calculateReward(getPersonalVolumeReward(rewardNode, period), consumer);
 
-            getGroupVolumeRewards(rewardNode, period).forEach(this::calculateReward);
+            getGroupVolumeRewards(rewardNode, period).forEach(reward -> calculateReward(reward, consumer));
 
-            getStructureVolumeRewards(rewardNode, period).forEach(this::calculateReward);
+            getStructureVolumeRewards(rewardNode, period).forEach(reward -> calculateReward(reward, consumer));
 
             if (!test) {
                 WorkerNode workerNode = rewardNode.getWorkerNode();
@@ -796,7 +815,7 @@ public class CompensationService {
                     reward.setMonth(period.getOperatingMonth());
                     reward.setPeriodId(period.getObjectId());
 
-                    chargeReward(reward);
+                    chargeReward(reward, consumer);
                 });
     }
 
@@ -808,15 +827,14 @@ public class CompensationService {
         rewardCacheService.clear();
     }
 
-    @Transactional
-    public void calculateRewards() {
-        calculateRewards(periodMapper.getActualPeriod());
+    public void calculateRewards(Consumer<Reward> consumer) {
+        calculateRewards(periodMapper.getActualPeriod(), consumer);
     }
 
     public void testRewards(Period period) {
         test = true;
 
-        calculateRewards(period);
+        calculateRewards(period, null);
 
         clearCache();
 

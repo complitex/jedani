@@ -9,7 +9,6 @@ import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.model.IModel;
@@ -52,22 +51,17 @@ public abstract class AbstractEditModal<T> extends AbstractModal<T> {
         feedback.showRenderedMessages(false);
         container.add(feedback);
 
-        addButton(new IndicatingAjaxButton(Modal.BUTTON_MARKUP_ID, getSaveLabelModel()) {
+        addButton(new BootstrapAjaxLink<Void>(Modal.BUTTON_MARKUP_ID, Buttons.Type.Default) {
             @Override
-            protected void onSubmit(AjaxRequestTarget target) {
+            public void onClick(AjaxRequestTarget target) {
                 save(target);
-            }
-
-            @Override
-            protected void onError(AjaxRequestTarget target) {
-                target.add(container);
             }
 
             @Override
             public boolean isVisible() {
                 return AbstractEditModal.this.isEditable() && AbstractEditModal.this.isSaveVisible();
             }
-        }.setOutputMarkupPlaceholderTag(true)
+        }.setLabel(getSaveLabelModel())
                 .add(AttributeModifier.append("class", "btn btn-primary")));
 
         addButton(new BootstrapAjaxLink<Void>(Modal.BUTTON_MARKUP_ID, Buttons.Type.Default) {

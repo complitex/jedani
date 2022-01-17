@@ -16,8 +16,6 @@ import static ru.complitex.jedani.worker.security.JedaniRoles.ADMINISTRATORS;
  */
 @AuthorizeInstantiation({ADMINISTRATORS})
 public class RewardListPage extends BasePage {
-    private final RewardModal rewardModal;
-
     public RewardListPage() {
         RewardPanel rewardPanel = new RewardPanel("reward", getCurrentWorker()){
             @Override
@@ -44,10 +42,10 @@ public class RewardListPage extends BasePage {
         Form<?> rewardForm = new Form<>("rewardForm");
         add(rewardForm);
 
-        rewardModal = new RewardModal("rewardModal")
+        RewardModal rewardModal = new RewardModal("rewardModal")
                 .onUpdate(rewardPanel::update);
 
-        rewardForm.add(rewardModal );
+        rewardForm.add(rewardModal);
 
         Form<?> periodCalculateForm = new Form<>("periodCalculateForm");
         add(periodCalculateForm);
