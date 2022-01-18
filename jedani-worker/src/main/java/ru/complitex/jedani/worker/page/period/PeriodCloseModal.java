@@ -1,6 +1,5 @@
 package ru.complitex.jedani.worker.page.period;
 
-import de.agilecoders.wicket.core.markup.html.bootstrap.form.BootstrapCheckbox;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
@@ -22,7 +21,7 @@ import javax.inject.Inject;
  * 18.11.2019 2:07 AM
  */
 public class PeriodCloseModal extends AbstractEditModal<Period> {
-    private Logger log = LoggerFactory.getLogger(PeriodCloseModal.class);
+    private final Logger log = LoggerFactory.getLogger(PeriodCloseModal.class);
 
     @Inject
     private PeriodService periodService;
@@ -43,8 +42,6 @@ public class PeriodCloseModal extends AbstractEditModal<Period> {
                 return Dates.getMonthText(getModelObject().getOperatingMonth());
             }
         }));
-
-        add(new BootstrapCheckbox("calculateRewards", calculateModel, new ResourceModel("calculateRewards")));
     }
 
     @Override
@@ -56,7 +53,7 @@ public class PeriodCloseModal extends AbstractEditModal<Period> {
                 throw new RuntimeException("period already closed " + period);
             }
 
-            periodService.closeOperatingMonth(getModelObject(), calculateModel.getObject(), true, getCurrentWorkerId());
+            periodService.closeOperatingMonth(getModelObject(), true, getCurrentWorkerId());
 
             if (calculateModel.getObject()) {
                 getSession().success(getString("info_rewards_calculated"));

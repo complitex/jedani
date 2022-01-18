@@ -32,7 +32,7 @@ public class PeriodService implements Serializable {
     @Inject
     private AccountService accountService;
 
-    public void closeOperatingMonth(Period period, boolean calculateRewards, boolean updateAccounts, Long workerId) throws RewardException, AccountException {
+    public void closeOperatingMonth(Period period, boolean updateAccounts, Long workerId) throws RewardException, AccountException {
         period.setWorkerId(workerId);
         period.setCloseTimestamp(Dates.currentDate());
 
@@ -43,10 +43,6 @@ public class PeriodService implements Serializable {
         actualPeriod.setOperatingMonth(Dates.nextMonth(period.getOperatingMonth()));
 
         domainService.save(actualPeriod);
-
-        if (calculateRewards){
-            rewardService.calculateRewards();
-        }
 
         if (updateAccounts){
             accountService.updateAccounts();
