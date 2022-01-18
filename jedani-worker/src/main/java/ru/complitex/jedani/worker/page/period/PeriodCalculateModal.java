@@ -165,6 +165,8 @@ public class PeriodCalculateModal extends AbstractEditModal<Period> {
                 WebSockets.sendMessage(new WebSockets.CommandMessage("begin"), pageId);
 
                 compensationService.calculateRewards(reward -> {
+                    log.info(reward.toString());
+
                     if (System.currentTimeMillis() - time.get() >= 250) {
                         Worker worker = workerService.getWorker(reward.getWorkerId());
 
