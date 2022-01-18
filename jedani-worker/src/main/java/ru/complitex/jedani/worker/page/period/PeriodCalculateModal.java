@@ -20,6 +20,7 @@ import ru.complitex.domain.component.form.AbstractEditModal;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.jedani.worker.entity.Period;
 import ru.complitex.jedani.worker.entity.RewardType;
+import ru.complitex.jedani.worker.entity.Worker;
 import ru.complitex.jedani.worker.mapper.PeriodMapper;
 import ru.complitex.jedani.worker.service.CompensationService;
 import ru.complitex.jedani.worker.service.WorkerService;
@@ -165,7 +166,13 @@ public class PeriodCalculateModal extends AbstractEditModal<Period> {
 
                 compensationService.calculateRewards(reward -> {
                     if (System.currentTimeMillis() - time.get() >= 250) {
-                        String info = workerService.getSimpleWorkerLabel(reward.getWorkerId()) + " - " +
+                        Worker worker = workerService.getWorker(reward.getWorkerId());
+
+                        String jId = workerService.getJId(reward.getWorkerId());
+
+                        String lastName = workerService.getLastName(reward.getWorkerId());
+
+                        String info = worker.getLevel() + ": " + jId + ", " + lastName + " - " +
                                 domainService.getTextValue(RewardType.ENTITY_NAME, reward.getType(), RewardType.NAME);
 
                         WebSockets.sendMessage(new WebSockets.TextMessage(info), pageId);

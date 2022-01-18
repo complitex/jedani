@@ -97,6 +97,12 @@ public class WorkerService implements Serializable {
         return Attributes.capitalize(nameService.getLastName(worker.getNumber(Worker.LAST_NAME)));
     }
 
+    public String getLastName(Long workerId){
+        Long lastNameId = domainService.getNumber(Worker.ENTITY_NAME, workerId, Worker.LAST_NAME);
+
+        return Attributes.capitalize(nameService.getLastName(lastNameId));
+    }
+
     public String getFirstName(Worker worker){
         return Attributes.capitalize(nameService.getFirstName(worker.getNumber(Worker.FIRST_NAME)));
     }
