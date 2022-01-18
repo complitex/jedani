@@ -1,5 +1,6 @@
 package ru.complitex.jedani.worker.service;
 
+import org.mybatis.cdi.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.complitex.common.entity.FilterWrapper;
@@ -730,6 +731,7 @@ public class CompensationService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public void calculateRewards(Period period, Consumer<Reward> consumer) {
         Long periodId = period.getObjectId();
 
@@ -827,6 +829,7 @@ public class CompensationService {
         rewardCacheService.clear();
     }
 
+    @Transactional
     public void calculateRewards(Consumer<Reward> consumer) {
         calculateRewards(periodMapper.getActualPeriod(), consumer);
     }
