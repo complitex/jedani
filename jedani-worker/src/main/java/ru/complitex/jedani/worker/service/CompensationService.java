@@ -637,7 +637,7 @@ public class CompensationService {
             }
 
             rewards.add(r);
-        } else {
+        } else if (reward.getPoint() == null || reward.getPoint().compareTo(ZERO) > 0) {
             reward.setObjectId(null);
             reward.setStartDate(Dates.currentDate());
 
