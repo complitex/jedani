@@ -149,7 +149,9 @@
         <if test="managerId != null">
             and (ra_m.number = #{managerId} or ra_m.number is null)
          </if>
-        and ra_st.number = #{rewardStatusId}
+         <if test="rewardStatusId != null">
+             and ra_st.number = #{rewardStatusId}
+         </if>
         <if test="filter == 'before'">
             and (select pa.date from `period` p
             left join period_attribute pa on p.id = pa.domain_id and pa.entity_attribute_id = 1 and pa.status = 1
