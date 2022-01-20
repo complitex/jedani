@@ -27,7 +27,8 @@ public class RewardError implements Serializable {
     public static final long PERSONAL_VOLUME_REWARD_NOT_EXISTS = 19;
     public static final long CULINARY_WORKSHOP_REWARD_NOT_EXISTS = 20;
     public static final long MANAGER_BONUS_REWARD_NOT_EXISTS = 21;
-    public static final long MANAGER_PREMIUM_REWARD_NOT_EXISTS = 22;
-    public static final long GROUP_VOLUME_REWARD_NOT_EXISTS = 23;
-    public static final long STRUCTURE_VOLUME_REWARD_NOT_EXISTS = 24;
+    public static final long MANAGER_MYCOOK_REWARD_NOT_EXISTS = 22;
+    public static final long MANAGER_RANGE_REWARD_NOT_EXISTS = 23;
+    public static final long GROUP_VOLUME_REWARD_NOT_EXISTS = 24;
+    public static final long STRUCTURE_VOLUME_REWARD_NOT_EXISTS = 25;
 }

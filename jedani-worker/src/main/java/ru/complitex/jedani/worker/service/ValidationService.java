@@ -226,37 +226,41 @@ public class ValidationService implements Serializable {
                                 });
 
 
-                        if (rewardMapper.getRewardsAmountSum(null, RewardType.PERSONAL_MYCOOK, saleId, null, null) == null) {
+                        if (sale.getType().equals(SaleType.MYCOOK) &&
+                                rewardMapper.getRewardsAmountSum(null, RewardType.PERSONAL_MYCOOK, saleId, null, null) == null) {
                             errors.add(RewardError.PERSONAL_MYCOOK_REWARD_NOT_EXISTS);
                         }
 
-                        if (rewardMapper.getRewardsAmountSum(null, RewardType.PERSONAL_RANGE, saleId, null, null) == null) {
+                        if (sale.getType().equals(SaleType.RANGE) &&
+                                rewardMapper.getRewardsAmountSum(null, RewardType.PERSONAL_RANGE, saleId, null, null) == null) {
                             errors.add(RewardError.PERSONAL_RANGE_REWARD_NOT_EXISTS);
                         }
 
-                        if (rewardMapper.getRewardsAmountSum(null, RewardType.PERSONAL_VOLUME, saleId, null, null) == null) {
-                            errors.add(RewardError.PERSONAL_VOLUME_REWARD_NOT_EXISTS);
-                        }
+//                        if (rewardMapper.getRewardsAmountSum(null, RewardType.PERSONAL_VOLUME, saleId, null, null) == null) {
+//                            errors.add(RewardError.PERSONAL_VOLUME_REWARD_NOT_EXISTS);
+//                        }
 
-                        if (rewardMapper.getRewardsAmountSum(null, RewardType.CULINARY_WORKSHOP, saleId, null, null) == null) {
+                        if (sale.getCulinaryWorkerId() != null &&
+                                rewardMapper.getRewardsAmountSum(null, RewardType.CULINARY_WORKSHOP, saleId, null, null) == null) {
                             errors.add(RewardError.CULINARY_WORKSHOP_REWARD_NOT_EXISTS);
                         }
 
-                        if (rewardMapper.getRewardsAmountSum(null, RewardType.MANAGER_BONUS, saleId, null, null) == null) {
+                        if (sale.getManagerBonusWorkerId() != null &&
+                                rewardMapper.getRewardsAmountSum(null, RewardType.MANAGER_BONUS, saleId, null, null) == null) {
                             errors.add(RewardError.MANAGER_BONUS_REWARD_NOT_EXISTS);
                         }
 
-                        if (rewardMapper.getRewardsAmountSum(null, RewardType.MANAGER_MYCOOK, saleId, null, null) == null) {
-                            errors.add(RewardError.MANAGER_PREMIUM_REWARD_NOT_EXISTS);
-                        }
+//                        if (rewardMapper.getRewardsAmountSum(null, RewardType.MANAGER_MYCOOK, saleId, null, null) == null) {
+//                            errors.add(RewardError.MANAGER_MYCOOK_REWARD_NOT_EXISTS);
+//                        }
 
-                        if (rewardMapper.getRewardsAmountSum(null, RewardType.GROUP_VOLUME, saleId, null, null) == null) {
-                            errors.add(RewardError.GROUP_VOLUME_REWARD_NOT_EXISTS);
-                        }
-
-                        if (rewardMapper.getRewardsAmountSum(null, RewardType.STRUCTURE_VOLUME, saleId, null, null) == null) {
-                            errors.add(RewardError.STRUCTURE_VOLUME_REWARD_NOT_EXISTS);
-                        }
+//                        if (rewardMapper.getRewardsAmountSum(null, RewardType.GROUP_VOLUME, saleId, null, null) == null) {
+//                            errors.add(RewardError.GROUP_VOLUME_REWARD_NOT_EXISTS);
+//                        }
+//
+//                        if (rewardMapper.getRewardsAmountSum(null, RewardType.STRUCTURE_VOLUME, saleId, null, null) == null) {
+//                            errors.add(RewardError.STRUCTURE_VOLUME_REWARD_NOT_EXISTS);
+//                        }
 
 
                         if (!errors.isEmpty()) {
