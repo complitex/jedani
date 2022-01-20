@@ -200,28 +200,61 @@ public class ValidationService implements Serializable {
                                         RewardType.STRUCTURE_VOLUME)
                                 .forEach(rewardType -> {
                                     BigDecimal estimatedPoint = rewardMapper.getRewardsPointSum(null, rewardType, saleId, null, RewardStatus.ESTIMATED);
-                                    BigDecimal chargedPoint = rewardMapper.getRewardsPointSum(null, rewardType, saleId, null, RewardStatus.CHARGED);
-                                    BigDecimal withdrawPoint = rewardMapper.getRewardsPointSum(null, rewardType, saleId, null, RewardStatus.WITHDRAWN);
 
-                                    if (!Objects.equals(estimatedPoint, chargedPoint)) {
+                                    if (estimatedPoint == null) {
+                                        estimatedPoint = ZERO;
+                                    }
+
+                                    BigDecimal chargedPoint = rewardMapper.getRewardsPointSum(null, rewardType, saleId, null, RewardStatus.CHARGED);
+
+                                    if (chargedPoint == null) {
+                                        chargedPoint = ZERO;
+                                    }
+
+                                    if (estimatedPoint.compareTo(chargedPoint) != 0) {
                                         errors.add(RewardError.ESTIMATED_POINT_NOT_EQUAL_CHARGED);
                                     }
 
-                                    if (sale.isFeeWithdraw() && !Objects.equals(estimatedPoint, withdrawPoint)) {
-                                        errors.add(RewardError.ESTIMATED_POINT_NOT_EQUAL_WITHDRAW);
+
+                                    if (rewardType == RewardType.PERSONAL_MYCOOK || rewardType == RewardType.PERSONAL_RANGE) {
+                                        BigDecimal withdrawPoint = rewardMapper.getRewardsPointSum(null, rewardType, saleId, null, RewardStatus.WITHDRAWN);
+
+                                        if (withdrawPoint == null) {
+                                            withdrawPoint = ZERO;
+                                        }
+
+                                        if (sale.isFeeWithdraw() && estimatedPoint.compareTo(withdrawPoint) != 0) {
+                                            errors.add(RewardError.ESTIMATED_POINT_NOT_EQUAL_WITHDRAW);
+                                        }
                                     }
 
 
                                     BigDecimal estimatedAmount = rewardMapper.getRewardsAmountSum(null, rewardType, saleId, null, RewardStatus.ESTIMATED);
-                                    BigDecimal chargedAmount = rewardMapper.getRewardsAmountSum(null, rewardType, saleId, null, RewardStatus.CHARGED);
-                                    BigDecimal withdrawAmount = rewardMapper.getRewardsAmountSum(null, rewardType, saleId, null, RewardStatus.WITHDRAWN);
 
-                                    if (!Objects.equals(estimatedAmount, chargedAmount)) {
+                                    if (estimatedAmount == null) {
+                                        estimatedAmount = ZERO;
+                                    }
+
+                                    BigDecimal chargedAmount = rewardMapper.getRewardsAmountSum(null, rewardType, saleId, null, RewardStatus.CHARGED);
+
+                                    if (chargedAmount == null) {
+                                        chargedAmount = ZERO;
+                                    }
+
+                                    if (estimatedAmount.compareTo(chargedAmount) != 0) {
                                         errors.add(RewardError.ESTIMATED_AMOUNT_NOT_EQUAL_CHARGED);
                                     }
 
-                                    if (sale.isFeeWithdraw() && !Objects.equals(estimatedAmount, withdrawAmount)) {
-                                        errors.add(RewardError.ESTIMATED_AMOUNT_NOT_EQUAL_WITHDRAW);
+                                    if (rewardType == RewardType.PERSONAL_MYCOOK || rewardType == RewardType.PERSONAL_RANGE) {
+                                        BigDecimal withdrawAmount = rewardMapper.getRewardsAmountSum(null, rewardType, saleId, null, RewardStatus.WITHDRAWN);
+
+                                        if (withdrawAmount == null) {
+                                            withdrawAmount = ZERO;
+                                        }
+
+                                        if (sale.isFeeWithdraw() && estimatedAmount.compareTo(withdrawAmount) != 0) {
+                                            errors.add(RewardError.ESTIMATED_AMOUNT_NOT_EQUAL_WITHDRAW);
+                                        }
                                     }
                                 });
 

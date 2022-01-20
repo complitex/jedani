@@ -9,6 +9,8 @@ import ru.complitex.jedani.worker.service.ValidationService;
 import ru.complitex.jedani.worker.service.WorkerService;
 
 import javax.inject.Inject;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static ru.complitex.jedani.worker.security.JedaniRoles.ADMINISTRATORS;
 
@@ -63,11 +65,15 @@ public class RewardValidationPage extends BasePage {
                 .append(", t: ").append(reward.getType())
                 .append(", r: ").append(reward.getRank())
                 .append(", s: ").append(reward.getRewardStatus())
-                .append(", e: ").append(reward.getErrors())
+                .append(", e: ").append(getErrors(reward.getErrors()))
                 .append(reward.getSaleId() != null ? ", c: " + saleService.getContract(reward.getSaleId()) : "")
                 .append(reward.getWorkerId() != null ? ", jId: " + workerService.getJId(reward.getWorkerId()) : "")
                 .append(reward.getEstimatedId() != null ? ", eId: " + reward.getEstimatedId() : "")
                 .append(", pId: ").append(reward.getPeriodId())
                 .append("</br>");
+    }
+
+    private List<String> getErrors(List<Long> errors) {
+        return errors.stream().map(e -> getString("error." + e)).collect(Collectors.toList());
     }
 }
