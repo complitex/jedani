@@ -2,7 +2,6 @@ package ru.complitex.jedani.worker.service;
 
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.jedani.worker.entity.*;
-import ru.complitex.jedani.worker.mapper.PeriodMapper;
 import ru.complitex.jedani.worker.mapper.RewardMapper;
 import ru.complitex.jedani.worker.mapper.SaleMapper;
 
@@ -23,9 +22,6 @@ import static java.math.BigDecimal.ZERO;
 @ApplicationScoped
 public class ValidationService implements Serializable {
     @Inject
-    private PeriodMapper periodMapper;
-
-    @Inject
     private RewardMapper rewardMapper;
 
     @Inject
@@ -41,7 +37,7 @@ public class ValidationService implements Serializable {
                 .forEach(reward -> {
                     List<Long> errors = new ArrayList<>();
 
-                    BigDecimal pointSum = rewardMapper.getRewardsPointSum(reward.getType(), reward.getSaleId(), reward.getManagerId(), RewardStatus.CHARGED);
+                    BigDecimal pointSum = rewardMapper.getRewardsPointSum(reward.getWorkerId(), reward.getType(), reward.getSaleId(), reward.getManagerId(), RewardStatus.CHARGED, null, null);
 
                     if (reward.getTotal() != null) {
                         if (pointSum != null) {
@@ -56,7 +52,7 @@ public class ValidationService implements Serializable {
                     }
 
 
-                    BigDecimal amountSum = rewardMapper.getRewardsAmountSum(reward.getType(), reward.getSaleId(), reward.getManagerId(), RewardStatus.CHARGED);
+                    BigDecimal amountSum = rewardMapper.getRewardsAmountSum(reward.getWorkerId(), reward.getType(), reward.getSaleId(), reward.getManagerId(), RewardStatus.CHARGED);
 
                     if (reward.getAmount() != null) {
                         if (amountSum != null) {
@@ -203,9 +199,9 @@ public class ValidationService implements Serializable {
                                         RewardType.GROUP_VOLUME,
                                         RewardType.STRUCTURE_VOLUME)
                                 .forEach(rewardType -> {
-                                    BigDecimal estimatedPoint = rewardMapper.getRewardsPointSum(rewardType, saleId, null, RewardStatus.ESTIMATED);
-                                    BigDecimal chargedPoint = rewardMapper.getRewardsPointSum(rewardType, saleId, null, RewardStatus.CHARGED);
-                                    BigDecimal withdrawPoint = rewardMapper.getRewardsPointSum(rewardType, saleId, null, RewardStatus.WITHDRAWN);
+                                    BigDecimal estimatedPoint = rewardMapper.getRewardsPointSum(null, rewardType, saleId, null, RewardStatus.ESTIMATED);
+                                    BigDecimal chargedPoint = rewardMapper.getRewardsPointSum(null, rewardType, saleId, null, RewardStatus.CHARGED);
+                                    BigDecimal withdrawPoint = rewardMapper.getRewardsPointSum(null, rewardType, saleId, null, RewardStatus.WITHDRAWN);
 
                                     if (!Objects.equals(estimatedPoint, chargedPoint)) {
                                         errors.add(RewardError.ESTIMATED_POINT_NOT_EQUAL_CHARGED);
@@ -216,9 +212,9 @@ public class ValidationService implements Serializable {
                                     }
 
 
-                                    BigDecimal estimatedAmount = rewardMapper.getRewardsAmountSum(rewardType, saleId, null, RewardStatus.ESTIMATED);
-                                    BigDecimal chargedAmount = rewardMapper.getRewardsAmountSum(rewardType, saleId, null, RewardStatus.CHARGED);
-                                    BigDecimal withdrawAmount = rewardMapper.getRewardsAmountSum(rewardType, saleId, null, RewardStatus.WITHDRAWN);
+                                    BigDecimal estimatedAmount = rewardMapper.getRewardsAmountSum(null, rewardType, saleId, null, RewardStatus.ESTIMATED);
+                                    BigDecimal chargedAmount = rewardMapper.getRewardsAmountSum(null, rewardType, saleId, null, RewardStatus.CHARGED);
+                                    BigDecimal withdrawAmount = rewardMapper.getRewardsAmountSum(null, rewardType, saleId, null, RewardStatus.WITHDRAWN);
 
                                     if (!Objects.equals(estimatedAmount, chargedAmount)) {
                                         errors.add(RewardError.ESTIMATED_AMOUNT_NOT_EQUAL_CHARGED);
@@ -230,35 +226,35 @@ public class ValidationService implements Serializable {
                                 });
 
 
-                        if (rewardMapper.getRewardsAmountSum(RewardType.PERSONAL_MYCOOK, saleId, null, null) == null) {
+                        if (rewardMapper.getRewardsAmountSum(null, RewardType.PERSONAL_MYCOOK, saleId, null, null) == null) {
                             errors.add(RewardError.PERSONAL_MYCOOK_REWARD_NOT_EXISTS);
                         }
 
-                        if (rewardMapper.getRewardsAmountSum(RewardType.PERSONAL_RANGE, saleId, null, null) == null) {
+                        if (rewardMapper.getRewardsAmountSum(null, RewardType.PERSONAL_RANGE, saleId, null, null) == null) {
                             errors.add(RewardError.PERSONAL_RANGE_REWARD_NOT_EXISTS);
                         }
 
-                        if (rewardMapper.getRewardsAmountSum(RewardType.PERSONAL_VOLUME, saleId, null, null) == null) {
+                        if (rewardMapper.getRewardsAmountSum(null, RewardType.PERSONAL_VOLUME, saleId, null, null) == null) {
                             errors.add(RewardError.PERSONAL_VOLUME_REWARD_NOT_EXISTS);
                         }
 
-                        if (rewardMapper.getRewardsAmountSum(RewardType.CULINARY_WORKSHOP, saleId, null, null) == null) {
+                        if (rewardMapper.getRewardsAmountSum(null, RewardType.CULINARY_WORKSHOP, saleId, null, null) == null) {
                             errors.add(RewardError.CULINARY_WORKSHOP_REWARD_NOT_EXISTS);
                         }
 
-                        if (rewardMapper.getRewardsAmountSum(RewardType.MANAGER_BONUS, saleId, null, null) == null) {
+                        if (rewardMapper.getRewardsAmountSum(null, RewardType.MANAGER_BONUS, saleId, null, null) == null) {
                             errors.add(RewardError.MANAGER_BONUS_REWARD_NOT_EXISTS);
                         }
 
-                        if (rewardMapper.getRewardsAmountSum(RewardType.MANAGER_MYCOOK, saleId, null, null) == null) {
+                        if (rewardMapper.getRewardsAmountSum(null, RewardType.MANAGER_MYCOOK, saleId, null, null) == null) {
                             errors.add(RewardError.MANAGER_PREMIUM_REWARD_NOT_EXISTS);
                         }
 
-                        if (rewardMapper.getRewardsAmountSum(RewardType.GROUP_VOLUME, saleId, null, null) == null) {
+                        if (rewardMapper.getRewardsAmountSum(null, RewardType.GROUP_VOLUME, saleId, null, null) == null) {
                             errors.add(RewardError.GROUP_VOLUME_REWARD_NOT_EXISTS);
                         }
 
-                        if (rewardMapper.getRewardsAmountSum(RewardType.STRUCTURE_VOLUME, saleId, null, null) == null) {
+                        if (rewardMapper.getRewardsAmountSum(null, RewardType.STRUCTURE_VOLUME, saleId, null, null) == null) {
                             errors.add(RewardError.STRUCTURE_VOLUME_REWARD_NOT_EXISTS);
                         }
 

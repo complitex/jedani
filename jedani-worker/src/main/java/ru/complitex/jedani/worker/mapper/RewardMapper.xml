@@ -131,18 +131,24 @@
     </delete>
 
     <sql id="selectRewardsSumSql">
-        left join reward_attribute ra_st on r.id = ra_st.domain_id and ra_st.entity_attribute_id = 21 and ra_st.status = 1
+        left join reward_attribute ra_w on r.id = ra_w.domain_id and ra_w.entity_attribute_id = 2 and ra_w.status = 1
         left join reward_attribute ra_t on r.id = ra_t.domain_id and ra_t.entity_attribute_id = 4 and ra_t.status = 1
         left join reward_attribute ra_s on r.id = ra_s.domain_id and ra_s.entity_attribute_id = 7 and ra_s.status = 1
         left join reward_attribute ra_m on r.id = ra_m.domain_id and ra_m.entity_attribute_id = 18 and ra_m.status = 1
+        left join reward_attribute ra_st on r.id = ra_st.domain_id and ra_st.entity_attribute_id = 21 and ra_st.status = 1
         <if test="filter == 'before'">
             left join reward_attribute ra_pd on r.id = ra_pd.domain_id and ra_pd.entity_attribute_id = 24 and ra_pd.status = 1
             left join `period` p on p.object_id = ra_pd.number and p.status = 1
             left join period_attribute pa_m on p.id = pa_m.domain_id and pa_m.entity_attribute_id = 1 and pa_m.status = 1
         </if>
         where r.status = 1
+        <if test="workerId != null">
+            and ra_w.number = #{workerId}
+        </if>
         and ra_t.number = #{rewardTypeId} and ra_s.number = #{saleId}
-        <if test="managerId != null"> and ra_m.number = #{managerId}</if>
+        <if test="managerId != null">
+            and (ra_m.number = #{managerId} or ra_m.number is null)
+         </if>
         and ra_st.number = #{rewardStatusId}
         <if test="filter == 'before'">
             and (select pa.date from `period` p

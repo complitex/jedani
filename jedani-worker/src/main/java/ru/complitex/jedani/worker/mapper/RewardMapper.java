@@ -25,29 +25,25 @@ public class RewardMapper extends BaseMapper {
         sqlSession().delete("deleteRewards", periodId);
     }
 
-    public BigDecimal getRewardsPointSum(Long rewardTypeId, Long saleId, Long managerId, Long rewardStatusId, Long periodId, String filter) {
-        return sqlSession().selectOne("selectRewardsPointSum", Maps.of("rewardTypeId", rewardTypeId, "saleId", saleId,
+    public BigDecimal getRewardsPointSum(Long workerId, Long rewardTypeId, Long saleId, Long managerId, Long rewardStatusId, Long periodId, String filter) {
+        return sqlSession().selectOne("selectRewardsPointSum", Maps.of("workerId", workerId, "rewardTypeId", rewardTypeId, "saleId", saleId,
                 "managerId", managerId, "rewardStatusId", rewardStatusId, "periodId", periodId, "filter", filter));
     }
 
-    public BigDecimal getRewardsPointSumBefore(Long rewardTypeId, Long saleId, Long managerId, Long rewardStatusId, Long periodId) {
-        return getRewardsPointSum(rewardTypeId, saleId, managerId, rewardStatusId, periodId, "before");
+    public BigDecimal getRewardsPointSumBefore(Long workerId, Long rewardTypeId, Long saleId, Long managerId, Long rewardStatusId, Long periodId) {
+        return getRewardsPointSum(workerId, rewardTypeId, saleId, managerId, rewardStatusId, periodId, "before");
     }
 
-    public BigDecimal getRewardsPointSum(Long rewardTypeId, Long saleId, Long managerId, Long rewardStatusId) {
-        return getRewardsPointSum(rewardTypeId, saleId, managerId, rewardStatusId, null, null);
+    public BigDecimal getRewardsPointSum(Long workerId, Long rewardTypeId, Long saleId, Long managerId, Long rewardStatusId) {
+        return getRewardsPointSum(workerId, rewardTypeId, saleId, managerId, rewardStatusId, null, null);
     }
 
-    public BigDecimal getRewardsAmountSum(Long rewardTypeId, Long saleId, Long managerId, Long rewardStatusId, Long periodId, String filter) {
-        return sqlSession().selectOne("selectRewardsAmountSum", Maps.of("rewardTypeId", rewardTypeId, "saleId", saleId,
+    public BigDecimal getRewardsAmountSum(Long workerId, Long rewardTypeId, Long saleId, Long managerId, Long rewardStatusId, Long periodId, String filter) {
+        return sqlSession().selectOne("selectRewardsAmountSum", Maps.of("workerId", workerId, "rewardTypeId", rewardTypeId, "saleId", saleId,
                 "managerId", managerId, "rewardStatusId", rewardStatusId, "periodId", periodId, "filter", filter));
     }
 
-    public BigDecimal getRewardsAmountSumBefore(Long rewardTypeId, Long saleId, Long managerId, Long rewardStatusId, Long periodId) {
-        return getRewardsAmountSum(rewardTypeId, saleId, managerId, rewardStatusId, periodId, "before");
-    }
-
-    public BigDecimal getRewardsAmountSum(Long rewardTypeId, Long saleId, Long managerId, Long rewardStatusId) {
-        return getRewardsAmountSum(rewardTypeId, saleId, managerId, rewardStatusId, null, null);
+    public BigDecimal getRewardsAmountSum(Long workerId, Long rewardTypeId, Long saleId, Long managerId, Long rewardStatusId) {
+        return getRewardsAmountSum(workerId, rewardTypeId, saleId, managerId, rewardStatusId, null, null);
     }
 }

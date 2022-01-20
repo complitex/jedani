@@ -586,8 +586,8 @@ public class CompensationService {
         return sum != null ? sum : ZERO;
     }
 
-    public BigDecimal getRewardsPointSumBefore(Long rewardTypeId, Long saleId, Long managerId, Long rewardStatusId, Long periodId) {
-        BigDecimal sum = rewardMapper.getRewardsPointSumBefore(rewardTypeId, saleId, managerId, rewardStatusId, periodId);
+    public BigDecimal getRewardsPointSumBefore(Long workerId, Long rewardTypeId, Long saleId, Long managerId, Long rewardStatusId, Long periodId) {
+        BigDecimal sum = rewardMapper.getRewardsPointSumBefore(workerId, rewardTypeId, saleId, managerId, rewardStatusId, periodId);
 
         return sum != null ? sum : ZERO;
     }
@@ -617,7 +617,7 @@ public class CompensationService {
                     point = point.add(reward.getPoint().multiply(new BigDecimal("0.40")));
                 }
 
-                BigDecimal sum = getRewardsPointSumBefore(rewardType, reward.getSaleId(), reward.getManagerId(), CHARGED, reward.getPeriodId());
+                BigDecimal sum = getRewardsPointSumBefore(reward.getWorkerId(), rewardType, reward.getSaleId(), reward.getManagerId(), CHARGED, reward.getPeriodId());
 
                 reward.setPoint(point.subtract(sum));
             } else {
@@ -646,24 +646,24 @@ public class CompensationService {
     }
 
     private boolean isEstimated(Reward reward) {
-        return getRewardsPointSumBefore(reward.getType(), reward.getSaleId(), reward.getManagerId(), ESTIMATED,  reward.getPeriodId())
+        return getRewardsPointSumBefore(reward.getWorkerId(), reward.getType(), reward.getSaleId(), reward.getManagerId(), ESTIMATED,  reward.getPeriodId())
                 .compareTo(ZERO) != 0;
     }
 
     private boolean isCharged(Reward reward) {
-        return getRewardsPointSumBefore(reward.getType(), reward.getSaleId(), reward.getManagerId(), ESTIMATED, reward.getPeriodId())
+        return getRewardsPointSumBefore(reward.getWorkerId(), reward.getType(), reward.getSaleId(), reward.getManagerId(), ESTIMATED, reward.getPeriodId())
                 .compareTo(ZERO) != 0;
     }
 
     private boolean isEstimatedAndCharged(Reward reward, Period period) {
         Long periodId = period != null ? period.getObjectId() : reward.getPeriodId();
 
-        return getRewardsPointSumBefore(reward.getType(), reward.getSaleId(), reward.getManagerId(), ESTIMATED, periodId)
-                .compareTo(getRewardsPointSumBefore(reward.getType(), reward.getSaleId(), reward.getManagerId(), CHARGED, periodId)) == 0;
+        return getRewardsPointSumBefore(reward.getWorkerId(), reward.getType(), reward.getSaleId(), reward.getManagerId(), ESTIMATED, periodId)
+                .compareTo(getRewardsPointSumBefore(reward.getWorkerId(), reward.getType(), reward.getSaleId(), reward.getManagerId(), CHARGED, periodId)) == 0;
     }
 
     private boolean isWithdraw(Reward reward) {
-        return getRewardsPointSumBefore(reward.getType(), reward.getSaleId(), reward.getManagerId(), WITHDRAWN,
+        return getRewardsPointSumBefore(reward.getWorkerId(), reward.getType(), reward.getSaleId(), reward.getManagerId(), WITHDRAWN,
                 reward.getPeriodId()).compareTo(ZERO) != 0;
     }
 
@@ -776,7 +776,8 @@ public class CompensationService {
 
                                 calculateReward(getCulinaryReward(sale, saleItem, period), consumer);
                             } else {
-                                if (getRewardsPointSumBefore(CULINARY_WORKSHOP, sale.getObjectId(), null, ESTIMATED, periodId).compareTo(ZERO) == 0) {
+                                if (getRewardsPointSumBefore(sale.getCulinaryWorkerId(), CULINARY_WORKSHOP, sale.getObjectId(), null, ESTIMATED, periodId)
+                                        .compareTo(ZERO) == 0) {
                                     calculateReward(getCulinaryReward(sale, saleService.getSaleItem(sale.getObjectId()), period), consumer);
                                 }
                             }
@@ -816,6 +817,7 @@ public class CompensationService {
                     reward.setDate(Dates.currentDate());
                     reward.setMonth(period.getOperatingMonth());
                     reward.setPeriodId(period.getObjectId());
+                    reward.setEstimatedId(reward.getObjectId());
 
                     chargeReward(reward, consumer);
                 });
