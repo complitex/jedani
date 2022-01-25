@@ -165,7 +165,7 @@ public class DomainNodeService implements Serializable {
                     .forEach(n -> n.setUpdateRight(n.getUpdateRight() + 2));
 
             domainNode.setUpdateLeft(right);
-            domainNode.setUpdateRight(right+ 1);
+            domainNode.setUpdateRight(right + 1);
             domainNode.setUpdateLevel(level + 1);
 
             rebuildIndex(domainNode, map);

@@ -90,6 +90,9 @@ public class CompensationService {
     @Inject
     private RewardCacheService rewardCacheService;
 
+    @Inject
+    private PaymentService paymentService;
+
     private final boolean incremental = true;
 
     private boolean test = false;
@@ -731,6 +734,11 @@ public class CompensationService {
                 .collect(Collectors.toList());
     }
 
+    private boolean hasPayment(Long saleId, Long periodId) {
+        return paymentService.getPaymentsBySaleId(saleId).stream()
+                .anyMatch(payment -> Objects.equals(payment.getPeriodId(), periodId));
+    }
+
     @Transactional
     public void calculateRewards(Period period, Consumer<Reward> consumer) {
         Long periodId = period.getObjectId();
@@ -813,6 +821,7 @@ public class CompensationService {
                         Objects.equals(reward.getType(), PERSONAL_VOLUME) ||
                         Objects.equals(reward.getType(), GROUP_VOLUME) ||
                         Objects.equals(reward.getType(), STRUCTURE_VOLUME))
+                .filter(reward -> hasPayment(reward.getSaleId(), periodId))
                 .forEach(reward -> {
                     reward.setDate(Dates.currentDate());
                     reward.setMonth(period.getOperatingMonth());
