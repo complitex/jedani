@@ -1,5 +1,6 @@
 package ru.complitex.domain.component.form;
 
+import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxButton;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxLink;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
@@ -51,17 +52,22 @@ public abstract class AbstractEditModal<T> extends AbstractModal<T> {
         feedback.showRenderedMessages(false);
         container.add(feedback);
 
-        addButton(new BootstrapAjaxLink<Void>(Modal.BUTTON_MARKUP_ID, Buttons.Type.Default) {
+        addButton(new BootstrapAjaxButton(Modal.BUTTON_MARKUP_ID, getSaveLabelModel(), Buttons.Type.Default) {
             @Override
-            public void onClick(AjaxRequestTarget target) {
+            protected void onSubmit(AjaxRequestTarget target) {
                 save(target);
+            }
+
+            @Override
+            protected void onError(AjaxRequestTarget target) {
+                target.add(container);
             }
 
             @Override
             public boolean isVisible() {
                 return AbstractEditModal.this.isEditable() && AbstractEditModal.this.isSaveVisible();
             }
-        }.setLabel(getSaveLabelModel())
+        }.setOutputMarkupPlaceholderTag(true)
                 .add(AttributeModifier.append("class", "btn btn-primary")));
 
         addButton(new BootstrapAjaxLink<Void>(Modal.BUTTON_MARKUP_ID, Buttons.Type.Default) {
