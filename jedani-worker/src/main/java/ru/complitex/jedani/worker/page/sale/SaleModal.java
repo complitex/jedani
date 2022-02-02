@@ -807,7 +807,7 @@ public class SaleModal extends Modal<Sale> {
             }
 
             if (sale.getCulinaryWorkerId() != null) {
-                Reward culinaryReward = compensationService.getCulinaryReward(sale, saleItems.get(0), period);
+                Reward culinaryReward = compensationService.getCulinaryReward(sale, saleItems.get(0), periodMapper.getActualPeriod());
 
                 compensationService.calculateReward(culinaryReward);
             }
