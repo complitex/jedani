@@ -26,6 +26,7 @@ import ru.complitex.address.entity.Region;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.Sort;
 import ru.complitex.common.wicket.panel.LinkPanel;
+import ru.complitex.common.wicket.table.SelectFilter;
 import ru.complitex.common.wicket.table.Table;
 import ru.complitex.common.wicket.table.TextFilter;
 import ru.complitex.domain.component.datatable.AbstractDomainColumn;
@@ -200,6 +201,20 @@ public class StructurePage extends DomainListPage<Worker>{
             @Override
             public Component newFilter(String componentId, Table<Worker> table) {
                 return new TextFilter<>(componentId, PropertyModel.of(table.getFilterWrapper(), "map.level"));
+            }
+        });
+
+        //noinspection Duplicates
+        columns.add(new AbstractDomainColumn<>(new StringResourceModel("status", this), new Sort("status")) {
+            @Override
+            public void populateItem(Item<ICellPopulator<Worker>> cellItem, String componentId, IModel<Worker> rowModel) {
+                cellItem.add(new Label(componentId, new StringResourceModel("status." + rowModel.getObject().getStatus().getId(), StructurePage.this)));
+            }
+
+            @Override
+            public Component newFilter(String componentId, Table<Worker> table) {
+                return new SelectFilter(componentId, "status", PropertyModel.of(table.getFilterWrapper(), "map.status"),
+                        Status.ACTIVE.getId(), Status.ARCHIVE.getId());
             }
         });
     }

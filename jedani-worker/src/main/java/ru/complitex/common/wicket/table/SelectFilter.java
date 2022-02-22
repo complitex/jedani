@@ -12,10 +12,14 @@ import ru.complitex.jedani.worker.component.TypeSelect;
 public class SelectFilter extends AbstractFilter<Long> {
     private final TypeSelect typeSelect;
 
-    public SelectFilter(String id, IModel<Long> model, Long... types) {
+    public SelectFilter(String id, String key, IModel<Long> model, Long... types) {
         super(id, model);
 
-        add(typeSelect = new TypeSelect("select", model, types));
+        add(typeSelect = new TypeSelect("select", key, model, types));
+    }
+
+    public SelectFilter(String id, IModel<Long> model, Long... types) {
+        this(id, null, model, types);
     }
 
     @Override

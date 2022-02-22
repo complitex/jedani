@@ -12,13 +12,13 @@ import java.util.List;
  * 19.02.2019 21:52
  */
 public class TypeSelect extends DropDownChoice<Long> {
-    public TypeSelect(String id, IModel<Long> model, Long... types) {
+    public TypeSelect(String id, String key, IModel<Long> model, Long... types) {
         super(id, model, Arrays.asList(types));
 
         setChoiceRenderer(new IChoiceRenderer<>() {
             @Override
             public Object getDisplayValue(Long object) {
-                return getString(id + "." + object);
+                return getString((key != null ? key : id) + "." + object);
             }
 
             @Override
@@ -33,5 +33,9 @@ public class TypeSelect extends DropDownChoice<Long> {
         });
 
         setNullValid(true);
+    }
+
+    public TypeSelect(String id, IModel<Long> model, Long... types) {
+        this(id, null, model, types);
     }
 }

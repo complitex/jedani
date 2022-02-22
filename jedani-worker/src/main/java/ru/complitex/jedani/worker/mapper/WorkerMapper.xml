@@ -126,6 +126,9 @@
             and (select count(w.object_id) from worker w where w.left > (select d.left) and (select d.right) > w.right
                 and w.status = 1) = #{map.subWorkersCount}
         </if>
+        <if test="map.status != null">
+            and (d.status = #{map.status})
+        </if>
     </sql>
 
     <!--suppress SqlResolve -->
