@@ -1,6 +1,5 @@
 package ru.complitex.domain.component.form;
 
-import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxButton;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxLink;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
@@ -15,6 +14,7 @@ import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.danekja.java.util.function.serializable.SerializableConsumer;
+import ru.complitex.common.wicket.form.IndicatingAjaxButton;
 import ru.complitex.domain.page.AbstractModal;
 import ru.complitex.jedani.worker.page.BasePage;
 
@@ -29,6 +29,8 @@ public abstract class AbstractEditModal<T> extends AbstractModal<T> {
     private final NotificationPanel feedback;
 
     private SerializableConsumer<AjaxRequestTarget> onUpdate;
+
+    private final IndicatingAjaxButton saveButton;
 
     public AbstractEditModal(String markupId) {
         super(markupId);
@@ -52,7 +54,7 @@ public abstract class AbstractEditModal<T> extends AbstractModal<T> {
         feedback.showRenderedMessages(false);
         container.add(feedback);
 
-        addButton(new BootstrapAjaxButton(Modal.BUTTON_MARKUP_ID, getSaveLabelModel(), Buttons.Type.Default) {
+        saveButton = new IndicatingAjaxButton(Modal.BUTTON_MARKUP_ID, getSaveLabelModel()) {
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
                 save(target);
@@ -67,8 +69,11 @@ public abstract class AbstractEditModal<T> extends AbstractModal<T> {
             public boolean isVisible() {
                 return AbstractEditModal.this.isEditable() && AbstractEditModal.this.isSaveVisible();
             }
-        }.setOutputMarkupPlaceholderTag(true)
-                .add(AttributeModifier.append("class", "btn btn-primary")));
+        };
+        saveButton.setOutputMarkupPlaceholderTag(true);
+        saveButton.setOutputMarkupId(true);
+        saveButton.add(AttributeModifier.append("class", "btn btn-primary"));
+        addButton(saveButton);
 
         addButton(new BootstrapAjaxLink<Void>(Modal.BUTTON_MARKUP_ID, Buttons.Type.Default) {
             @Override
@@ -113,7 +118,7 @@ public abstract class AbstractEditModal<T> extends AbstractModal<T> {
     protected void save(AjaxRequestTarget target) {
         appendCloseDialogJavaScript(target);
 
-        container.visitChildren(FormComponent.class, (c, v) -> ((FormComponent)c).clearInput());
+        container.visitChildren(FormComponent.class, (c, v) -> ((FormComponent<?>)c).clearInput());
 
         if (onUpdate != null) {
             onUpdate.accept(target);
@@ -123,7 +128,7 @@ public abstract class AbstractEditModal<T> extends AbstractModal<T> {
     protected void cancel(AjaxRequestTarget target) {
         appendCloseDialogJavaScript(target);
 
-        container.visitChildren(FormComponent.class, (c, v) -> ((FormComponent)c).clearInput());
+        container.visitChildren(FormComponent.class, (c, v) -> ((FormComponent<?>)c).clearInput());
     }
 
     @SuppressWarnings("unchecked")
@@ -167,5 +172,9 @@ public abstract class AbstractEditModal<T> extends AbstractModal<T> {
 
     protected boolean isStructureAdmin(){
         return Objects.requireNonNull(getBasePage()).isStructureAdmin();
+    }
+
+    public IndicatingAjaxButton getSaveButton() {
+        return saveButton;
     }
 }
